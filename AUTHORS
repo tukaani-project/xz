@@ -1,0 +1,18 @@
+
+Authors of LZMA Utils
+---------------------
+
+Igor Pavlov
+  * designed LZMA as an algorithm;
+  * wrote an implementation known as LZMA SDK, which is part of
+    the bigger 7-Zip project.
+
+Ville Koskinen
+  * wrote the first version of the gzip-like lzma command line
+    utility (C++)
+  * helped a lot with the documentation.
+
+Lasse Collin
+  * ported LZMA SDK to C and zlib-like API (liblzma);
+  * rewrote the command line tool again to use liblzma and pthreads.
+

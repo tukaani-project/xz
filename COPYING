@@ -1,0 +1,24 @@
+
+LZMA Utils Licenses
+-------------------
+
+    Different licenses apply to different files in this package. Here
+    is a rough summary of which license apply to which parts of this
+    package (but check the individual files to be sure!):
+      - Everything under src/liblzma/check is public domain.
+      - Everything else under the src directory is under the GNU LGPL
+        2.1 or (at your opinion) any later version.
+      - Outside the src directory, there are some files that are under
+        the GNU GPL 2 or (at your opinion) any later version, or under
+        the GNU GPL 3 or (at your opinion) any later version.
+      - Most documentation files are under an all-permissive license.
+
+    The following license texts are included in the following files
+    in this package:
+      - COPYING.LGPLv2.1: GNU Lesser General Public License version 2.1
+      - COPYING.GPLv2: GNU General Public License version 2
+      - COPYING.GPLv3: GNU General Public License version 3
+
+    If you have questions, don't hesitate to ask the copyright holder(s)
+    for more information.
+

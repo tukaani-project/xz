@@ -1,0 +1,445 @@
+# translation of fi.po to Finnish
+# This file is put in the public domain.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fi\n"
+"Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
+"POT-Creation-Date: 2007-12-01 18:36+0200\n"
+"PO-Revision-Date: 2007-08-09 22:14+0300\n"
+"Last-Translator: Lasse Collin <lasse.collin@tukaani.org>\n"
+"Language-Team: Finnish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/lzma/help.c:28
+#, c-format
+msgid "Try `%s --help' for more information."
+msgstr "Lisätietoja saa komennolla \"%s --help\"."
+
+#: src/lzma/help.c:36
+#, c-format
+msgid ""
+"Usage: %s [OPTION]... [FILE]...\n"
+"Compress or decompress FILEs in the .lzma format.\n"
+"\n"
+msgstr ""
+"Käyttö: %s [VALITSIN]... [TIEDOSTO]...\n"
+"Pakkaa tai purkaa .lzma-muotoiset TIEDOSTOt\n"
+"\n"
+
+#: src/lzma/help.c:40
+msgid "Mandatory arguments to long options are mandatory for short options too.\n"
+msgstr "Pitkien valitsinten pakolliset argumentit ovat pakollisia myös lyhyille.\n"
+
+#: src/lzma/help.c:44
+msgid ""
+" Operation mode:\n"
+"\n"
+"  -z, --compress      force compression\n"
+"  -d, --decompress    force decompression\n"
+"  -t, --test          test compressed file integrity\n"
+"  -l, --list          list block sizes, total sizes, and possible metadata\n"
+msgstr ""
+
+#: src/lzma/help.c:53
+msgid ""
+" Operation modifiers:\n"
+"\n"
+"  -k, --keep          keep (don't delete) input files\n"
+"  -f, --force         force overwrite of output file and (de)compress links\n"
+"  -c, --stdout        write to standard output and don't delete input files\n"
+"  -S, --suffix=.SUF   use suffix `.SUF' on compressed files instead of `.lzma'\n"
+"  -F, --format=FMT    file format to encode or decode; possible values are\n"
+"                      `auto', `native', `single', `multi', and `alone'\n"
+"      --files=[FILE]  read filenames to process from FILE; if FILE is\n"
+"                      omitted, filenames are read from the standard input;\n"
+"                      filenames must be terminated with the newline character\n"
+"      --files0=[FILE] like --files but use the nul byte as terminator\n"
+msgstr ""
+
+#: src/lzma/help.c:68
+msgid ""
+" Compression presets and basic compression options:\n"
+"\n"
+"  -1 .. -2            fast compression\n"
+"  -3 .. -6            good compression; default is -6 if memory limit allows\n"
+"  -7 .. -9            excellent compression, but needs a lot of memory\n"
+"\n"
+"  -C, --check=CHECK   integrity check type: `crc32', `crc64' (default),\n"
+"                      or `sha256'\n"
+msgstr ""
+
+#: src/lzma/help.c:79
+msgid ""
+" Custom filter chain for compression (alternative for using presets):\n"
+"\n"
+"  --lzma=[OPTS]       LZMA filter; OPTS is a comma-separated list of zero or\n"
+"                      more of the following options (valid values; default):\n"
+"                        dict=NUM   dictionary size in bytes (1 - 1Gi; 8Mi)\n"
+"                        lc=NUM     number of literal context bits (0-8; 3)\n"
+"                        lp=NUM     number of literal position bits (0-4; 0)\n"
+"                        pb=NUM     number of position bits (0-4; 2)\n"
+"                        mode=MODE  compression mode (`fast' or `best'; `best')\n"
+"                        fb=NUM     number of fast bytes (5-273; 128)\n"
+"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
+"                        mfc=NUM    match finder cycles; 0=automatic (default)\n"
+"\n"
+"  --x86               x86 filter (sometimes called BCJ filter)\n"
+"  --powerpc           PowerPC (big endian) filter\n"
+"  --ia64              IA64 (Itanium) filter\n"
+"  --arm               ARM filter\n"
+"  --armthumb          ARM-Thumb filter\n"
+"  --sparc             SPARC filter\n"
+"\n"
+"  --copy              No filtering (useful only when specified alone)\n"
+"  --subblock=[OPTS]   Subblock filter; valid OPTS (valid values; default):\n"
+"                        size=NUM    number of bytes of data per subblock\n"
+"                                    (1 - 256Mi; 4Ki)\n"
+"                        rle=NUM     run-length encoder chunk size (0-256; 0)\n"
+msgstr ""
+
+#: src/lzma/help.c:119
+msgid ""
+" Resource usage options:\n"
+"\n"
+"  -M, --memory=NUM    use roughly NUM bytes of memory at maximum\n"
+"  -T, --threads=NUM   use at maximum of NUM (de)compression threads\n"
+msgstr ""
+
+#: src/lzma/help.c:128
+msgid ""
+" Other options:\n"
+"\n"
+"  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
+"  -v, --verbose       be verbose; specify twice for even more verbose\n"
+"\n"
+"  -h, --help          display this help and exit\n"
+"  -V, --version       display version and license information and exit\n"
+msgstr ""
+
+#: src/lzma/help.c:136
+msgid "With no FILE, or when FILE is -, read standard input.\n"
+msgstr "Jos TIEDOSTOa ei ole annettu, tai se on \"-\", luetaan vakiosyötettä.\n"
+
+#: src/lzma/help.c:142
+msgid "On this system and configuration, the tool will use"
+msgstr "Tässä järjestelmässä näillä asetuksilla, tämä työkalu käyttää"
+
+#: src/lzma/help.c:143
+#, c-format
+msgid "  * roughly %zu MiB of memory at maximum; and\n"
+msgstr "  * korkeintaan %zu MiB keskusmuistia (suurpiirteinen rajoitus); ja\n"
+
+#: src/lzma/help.c:146
+msgid ""
+"  * at maximum of one thread for (de)compression.\n"
+"\n"
+msgstr ""
+"  * korkeintaan yhtä säiettä pakkaukseen tai purkuun.\n"
+"\n"
+
+#: src/lzma/help.c:150
+#, c-format
+msgid "Report bugs to <%s> (in English or Finnish).\n"
+msgstr ""
+"Lähetä raportit ohjelmistovioista (englanniksi tai suomeksi)\n"
+"osoitteeseen <%s>.\n"
+
+#: src/lzma/args.c:126
+msgid "Maximum number of filters is seven"
+msgstr "Suotimia voi olla korkeintaan seitsemän"
+
+#: src/lzma/args.c:189
+#, c-format
+msgid "%s: Invalid filename suffix"
+msgstr "%s: Virheellinen tiedostonimen pääte"
+
+#: src/lzma/args.c:323
+#, c-format
+msgid "%s: Unknown file format type"
+msgstr "%s: Tuntematon tiedostomuodon tyyppi"
+
+#: src/lzma/args.c:349
+#, c-format
+msgid "%s: Unknown integrity check type"
+msgstr "%s: Tuntematon eheystarkisteen tyyppi"
+
+#: src/lzma/args.c:367
+msgid "Only one file can be specified with `--files'or `--files0'."
+msgstr ""
+
+#: src/lzma/args.c:417
+msgid "The environment variable LZMA_OPT contains too many arguments"
+msgstr "Ympäristömuuttuja LZMA_OPT sisältää liian monta argumenttia"
+
+#: src/lzma/args.c:483
+msgid "Memory usage limit is too small for any internal filter preset"
+msgstr ""
+
+#: src/lzma/args.c:498
+msgid "Memory usage limit is too small for the given filter setup"
+msgstr "Muistinkäyttörajoitus on liian pieni annetuille suodinasetusille"
+
+#: src/lzma/error.c:35
+msgid "Operation successful"
+msgstr ""
+
+#: src/lzma/error.c:38
+msgid "Operation finished successfully"
+msgstr ""
+
+#: src/lzma/error.c:41 src/lzma/error.c:153
+msgid "Internal error (bug)"
+msgstr "Sisäinen virhe (bugi)"
+
+#: src/lzma/error.c:44
+msgid "Compressed data is corrupt"
+msgstr "Pakattu data on korruptoitunut"
+
+#: src/lzma/error.c:50
+msgid "Unexpected end of input"
+msgstr ""
+
+#: src/lzma/error.c:53
+msgid "Unsupported options"
+msgstr ""
+
+#: src/lzma/error.c:56
+msgid "Unsupported integrity check type"
+msgstr ""
+
+#: src/lzma/error.c:87 src/lzma/error.c:93
+#, c-format
+msgid "Writing to standard output failed: %s"
+msgstr ""
+
+#: src/lzma/io.c:81
+#, c-format
+msgid "Cannot get file descriptor of the current directory: %s"
+msgstr ""
+
+#: src/lzma/io.c:123 src/lzma/util.c:127
+#, c-format
+msgid "%s: Invalid filename"
+msgstr "%s: Virheellinen tiedostonimi"
+
+#: src/lzma/io.c:130 src/lzma/io.c:233
+#, c-format
+msgid "Cannot change directory: %s"
+msgstr "Hakemiston vaihtaminen epäonnistui: %s"
+
+#: src/lzma/io.c:135
+#, c-format
+msgid "%s: File seems to be moved, not removing"
+msgstr "%s: Tiedosto näyttää olevan siirretty, ei poisteta"
+
+#: src/lzma/io.c:141
+#, c-format
+msgid "%s: Cannot remove: %s"
+msgstr ""
+
+#: src/lzma/io.c:164
+#, c-format
+msgid "%s: Cannot set the file owner: %s"
+msgstr "%s: Tiedoston omistajuuden asetus epäonnistui: %s"
+
+#: src/lzma/io.c:170
+#, c-format
+msgid "%s: Cannot set the file group: %s"
+msgstr "%s: Tiedoston ryhmän asetus epäonnistui: %s"
+
+#: src/lzma/io.c:189
+#, c-format
+msgid "%s: Cannot set the file permissions: %s"
+msgstr "%s: Tiedoston oikeuksien asetus epäonnistui: %s"
+
+#: src/lzma/io.c:252
+#, c-format
+msgid "%s: Cannot open the directory containing the file: %s"
+msgstr ""
+
+#: src/lzma/io.c:313
+#, c-format
+msgid "%s: Is a symbolic link, skipping"
+msgstr "%s: Symbolinen linkki, ohitetaan"
+
+#: src/lzma/io.c:330
+#, c-format
+msgid "%s: Is a directory, skipping"
+msgstr "%s: Hakemisto, ohitetaan"
+
+#: src/lzma/io.c:337 src/lzma/list.c:445
+#, c-format
+msgid "%s: Not a regular file, skipping"
+msgstr "%s: Ei ole tavallinen tiedosto, ohitetaan"
+
+#: src/lzma/io.c:348
+#, c-format
+msgid "%s: File has setuid or setgid bit set, skipping"
+msgstr "%s: Tiedostolla on setuid- tai setgid-bitti asetettuna, ohitetaan"
+
+#: src/lzma/io.c:355
+#, c-format
+msgid "%s: File has sticky bit set, skipping"
+msgstr "%s: Tiedostolla on sticky-bitti asetettuna, ohitetaan"
+
+#: src/lzma/io.c:362
+#, c-format
+msgid "%s: Input file has more than one hard link, skipping"
+msgstr "%s: Tiedostoon viittaa useampi kuin yksi linkki, ohitetaan"
+
+#: src/lzma/io.c:390 src/lzma/io.c:467
+#, c-format
+msgid "%s: Closing the file failed: %s"
+msgstr "%s: Tiedoston sulkeminen epäonnistui: %s"
+
+#: src/lzma/io.c:610
+#, c-format
+msgid "%s: Read error: %s"
+msgstr "%s: Lukeminen epäonnistui: %s"
+
+#: src/lzma/io.c:653
+#, c-format
+msgid "%s: Write error: %s"
+msgstr "%s: Kirjoitus epäonnistui: %s"
+
+#: src/lzma/list.c:451
+#, c-format
+msgid "%s: File is empty"
+msgstr ""
+
+#: src/lzma/main.c:57
+msgid "Cannot establish signal handlers"
+msgstr "Signaalikäsittelijöiden asetus epäonnistui"
+
+#: src/lzma/main.c:75
+msgid "Compressed data not read from a terminal."
+msgstr "Pakattua dataa ei lueta päätteeltä."
+
+#: src/lzma/main.c:77 src/lzma/main.c:92
+msgid "Use `--force' to force decompression."
+msgstr "Käytä valitsinta \"--force\" pakottaaksesi purun."
+
+#: src/lzma/main.c:90
+msgid "Compressed data not written to a terminal."
+msgstr "Pakattua dataa ei kirjoiteta päätteelle."
+
+#: src/lzma/main.c:117
+#, fuzzy, c-format
+msgid "%s: Error reading filenames: %s"
+msgstr "%s: Tiedoston sulkeminen epäonnistui: %s"
+
+#: src/lzma/main.c:122
+#, c-format
+msgid "%s: Unexpected end of input when reading filenames"
+msgstr ""
+
+#: src/lzma/main.c:212
+msgid "Cannot read data from standard input when reading filenames from standard input"
+msgstr "Dataa ei voida lukea oletussyötteestä, kun tiedostonimiä luetaan oletussyötteestä"
+
+#: src/lzma/options.c:83
+#, c-format
+msgid "%s: Options must be `name=value' pairs separated with commas"
+msgstr "%s: Asetusten tulee olla \"nimi=arvo\"-pareja, jotka on eroteltu pilkuilla"
+
+#: src/lzma/options.c:111
+#, c-format
+msgid "%s: Invalid option value"
+msgstr "%s: Virheellinen asetuksen arvo"
+
+#: src/lzma/options.c:124
+#, c-format
+msgid "%s: Invalid option name"
+msgstr "%s: Virheellinen asetuksen nimi"
+
+#: src/lzma/process.c:142
+#, c-format
+msgid "Cannot create a thread: %s"
+msgstr "Säikeen luonti epäonnistui: %s"
+
+#: src/lzma/suffix.c:85
+#, c-format
+msgid "%s: Filename has an unknown suffix, skipping"
+msgstr "%s: Tiedostonimellä on tuntematon pääte, ohitetaan"
+
+#: src/lzma/suffix.c:114
+#, c-format
+msgid "%s: File already has `%s' suffix, skipping"
+msgstr "%s: Tiedostolla on jo \"%s\"-pääte, ohitetaan"
+
+#: src/lzma/util.c:44
+#, c-format
+msgid "%s: Value is not a non-negative decimal integer"
+msgstr ""
+
+#: src/lzma/util.c:84
+#, c-format
+msgid "%s: Invalid multiplier suffix. Valid suffixes:"
+msgstr ""
+
+#: src/lzma/util.c:105
+#, c-format
+msgid "Value of the option `%s' must be in the range [%llu, %llu]"
+msgstr "Asetuksen \"%s\" arvon tulee olla välillä [%llu, %llu]"
+
+#: src/lzma/util.c:175
+msgid "Empty filename, skipping"
+msgstr "Tyhjä tiedostonimi, ohitetaan"
+
+#: lib/getopt.c:531 lib/getopt.c:547
+#, c-format
+msgid "%s: option `%s' is ambiguous\n"
+msgstr ""
+
+#: lib/getopt.c:580 lib/getopt.c:584
+#, c-format
+msgid "%s: option `--%s' doesn't allow an argument\n"
+msgstr ""
+
+#: lib/getopt.c:593 lib/getopt.c:598
+#, c-format
+msgid "%s: option `%c%s' doesn't allow an argument\n"
+msgstr ""
+
+#: lib/getopt.c:641 lib/getopt.c:660 lib/getopt.c:976 lib/getopt.c:995
+#, c-format
+msgid "%s: option `%s' requires an argument\n"
+msgstr ""
+
+#: lib/getopt.c:698 lib/getopt.c:701
+#, c-format
+msgid "%s: unrecognized option `--%s'\n"
+msgstr ""
+
+#: lib/getopt.c:709 lib/getopt.c:712
+#, c-format
+msgid "%s: unrecognized option `%c%s'\n"
+msgstr ""
+
+#: lib/getopt.c:764 lib/getopt.c:767
+#, c-format
+msgid "%s: illegal option -- %c\n"
+msgstr ""
+
+#: lib/getopt.c:773 lib/getopt.c:776
+#, c-format
+msgid "%s: invalid option -- %c\n"
+msgstr "%s: virheellinen valitsin -- %c\n"
+
+#: lib/getopt.c:828 lib/getopt.c:844 lib/getopt.c:1048 lib/getopt.c:1066
+#, c-format
+msgid "%s: option requires an argument -- %c\n"
+msgstr ""
+
+#: lib/getopt.c:897 lib/getopt.c:913
+#, c-format
+msgid "%s: option `-W %s' is ambiguous\n"
+msgstr ""
+
+#: lib/getopt.c:937 lib/getopt.c:955
+#, c-format
+msgid "%s: option `-W %s' doesn't allow an argument\n"
+msgstr ""

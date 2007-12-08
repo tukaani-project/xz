@@ -1,0 +1,188 @@
+
+Introduction to liblzma
+-----------------------
+
+Writing applications to work with liblzma
+
+    liblzma API is split in several subheaders to improve readability and
+    maintainance. The subheaders must not be #included directly; simply
+    use `#include <lzma.h>' instead.
+
+    Those who have used zlib should find liblzma's API easy to use.
+    To developers who haven't used zlib before, I recommend learning
+    zlib first, because zlib has excellent documentation.
+
+    While the API is similar to that of zlib, there are some major
+    differences, which are summarized below.
+
+    For basic stream encoding, zlib has three functions (deflateInit(),
+    deflate(), and deflateEnd()). Similarly, there are three functions
+    for stream decoding (inflateInit(), inflate(), and inflateEnd()).
+    liblzma has only single coding and ending function. Thus, to
+    encode one may use, for example, lzma_stream_encoder_single(),
+    lzma_code(), and lzma_end(). Simlarly for decoding, one may
+    use lzma_auto_decoder(), lzma_code(), and lzma_end().
+
+    zlib has deflateReset() and inflateReset() to reset the stream
+    structure without reallocating all the memory. In liblzma, all
+    coder initialization functions are like zlib's reset functions:
+    the first-time initializations are done with the same functions
+    as the reinitializations (resetting).
+
+    To make all this work, liblzma needs to know when lzma_stream
+    doesn't already point to an allocated and initialized coder.
+    This is achieved by initializing lzma_stream structure with
+    LZMA_STREAM_INIT (static initialization) or LZMA_STREAM_INIT_VAR
+    (for exampple when new lzma_stream has been allocated with malloc()).
+    This initialization should be done exactly once per lzma_stream
+    structure to avoid leaking memory. Calling lzma_end() will leave
+    lzma_stream into a state comparable to the state achieved with
+    LZMA_STREAM_INIT and LZMA_STREAM_INIT_VAR.
+
+    Example probably clarifies a lot. With zlib, compression goes
+    roughly like this:
+
+        z_stream strm;
+        deflateInit(&strm, level);
+        deflate(&strm, Z_RUN);
+        deflate(&strm, Z_RUN);
+        ...
+        deflate(&strm, Z_FINISH);
+        deflateEnd(&strm) or deflateReset(&strm)
+
+    With liblzma, it's slightly different:
+
+        lzma_stream strm = LZMA_STREAM_INIT;
+        lzma_stream_encoder_single(&strm, &options);
+        lzma_code(&strm, LZMA_RUN);
+        lzma_code(&strm, LZMA_RUN);
+        ...
+        lzma_code(&strm, LZMA_FINISH);
+        lzma_end(&strm) or reinitialize for new coding work
+
+     Reinitialization in the last step can be any function that can
+     initialize lzma_stream; it doesn't need to be the same function
+     that was used for the previous initialization. If it is the same
+     function, liblzma will usually be able to re-use most of the
+     existing memory allocations (depends on how much the initialization
+     options change). If you reinitialize with different function,
+     liblzma will automatically free the memory of the previous coder.
+
+
+File formats
+
+    liblzma supports multiple container formats for the compressed data.
+    Different initialization functions initialize the lzma_stream to
+    process different container formats. See the details from the public
+    header files.
+
+    The following functions are the most commonly used:
+
+      - lzma_stream_encoder_single(): Encodes Single-Block Stream; this
+        the recommended format for most purporses.
+
+      - lzma_alone_encoder(): Useful if you need to encode into the
+        legacy LZMA_Alone format.
+
+      - lzma_auto_decoder(): Decoder that automatically detects the
+        file format; recommended when you decode compressed files on
+        disk, because this way compatibility with the legacy LZMA_Alone
+        format is transparent.
+
+      - lzma_stream_decoder(): Decoder for Single- and Multi-Block
+        Streams; this is good if you want to accept only .lzma Streams.
+
+
+Filters
+
+    liblzma supports multiple filters (algorithm implementations). The new
+    .lzma format supports filter-chain having up to seven filters. In the
+    filter chain, the output of one filter is input of the next filter in
+    the chain. The legacy LZMA_Alone format supports only one filter, and
+    that must always be LZMA.
+
+        General-purporse compression:
+
+            LZMA        The main algorithm of liblzma (surprise!)
+
+        Branch/Call/Jump filters for executables:
+
+            x86         This filter is known as BCJ in 7-Zip
+            IA64        IA-64 (Itanium)
+            PowerPC     Big endian PowerPC
+            ARM
+            ARM-Thumb
+            SPARC
+
+        Other filters:
+
+            Copy        Dummy filter that simply copies all the data
+                        from input to output.
+
+            Subblock    Multi-purporse filter, that can
+                          - embed End of Payload Marker if the previous
+                            filter in the chain doesn't support it; and
+                          - apply Subfilters, which filter only part
+                            of the same compressed Block in the Stream.
+
+    Branch/Call/Jump filters never change the size of the data. They
+    should usually be used as a pre-filter for some compression filter
+    like LZMA.
+
+
+Integrity checks
+
+    The .lzma Stream format uses CRC32 as the integrity check for
+    different file format headers. It is possible to omit CRC32 from
+    the Block Headers, but not from Stream Header. This is the reason
+    why CRC32 code cannot be disabled when building liblzma (in addition,
+    the LZMA encoder uses CRC32 for hashing, so that's another reason).
+
+    The integrity check of the actual data is calculated from the
+    uncompressed data. This check can be CRC32, CRC64, or SHA256.
+    It can also be omitted completely, although that usually is not
+    a good thing to do. There are free IDs left, so support for new
+    checks algorithms can be added later.
+
+
+API and ABI stability
+
+    The API and ABI of liblzma isn't stable yet, although no huge
+    changes should happen. One potential place for change is the
+    lzma_options_subblock structure.
+
+    In the 4.42.0alpha phase, the shared library version number won't
+    be updated even if ABI breaks. I don't want to track the ABI changes
+    yet. Just rebuild everything when you upgrade liblzma until we get
+    to the beta stage.
+
+
+Size of the library
+
+    While liblzma isn't huge, it is quite far from the smallest possible
+    LZMA implementation: full liblzma binary (with support for all
+    filters and other features) is way over 100 KiB, but the plain raw
+    LZMA decoder is only 5-10 KiB.
+
+    To decrease the size of the library, you can omit parts of the library
+    by passing certain options to the `configure' script. Disabling
+    everything but the decoders of the require filters will usually give
+    you a small enough library, but if you need a decoder for example
+    embedded in the operating system kernel, the code from liblzma probably
+    isn't suitable as is.
+
+    If you need a minimal implementation supporting .lzma Streams, you
+    may need to do partial rewrite. liblzma uses stateful API like zlib.
+    That increases the size of the library. Using callback API or even
+    simpler buffer-to-buffer API would allow smaller implementation.
+
+    LZMA SDK contains smaller LZMA decoder written in ANSI-C than
+    liblzma, so you may want to take a look at that code. However,
+    it doesn't (at least not yet) support the new .lzma Stream format.
+
+
+Documentation
+
+    There's no other documentation than the public headers and this
+    text yet. Real docs will be written some day, I hope.
+

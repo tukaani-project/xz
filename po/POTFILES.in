@@ -1,0 +1,13 @@
+# List of source files which contain translatable strings.
+src/lzma/help.c
+src/lzma/alloc.c
+src/lzma/args.c
+src/lzma/error.c
+src/lzma/io.c
+src/lzma/list.c
+src/lzma/main.c
+src/lzma/options.c
+src/lzma/process.c
+src/lzma/suffix.c
+src/lzma/util.c
+lib/getopt.c

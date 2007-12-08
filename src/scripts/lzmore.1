@@ -1,0 +1,55 @@
+.TH LZMORE 1 "30 Jun 2005" "LZMA utils"
+.SH NAME
+lzmore, lzless \- view LZMA compressed (text) files
+.SH SYNOPSIS
+.B lzmore
+.RI [ "filename ..."  ]
+.br
+.B lzless
+.RI [ "filename ..."  ]
+.SH DESCRIPTION
+.B  lzmore
+is a filter which allows examination of LZMA compressed text files
+one screenful at a time on a soft-copy terminal.
+.PP
+To use a pager other than the default
+.B more,
+set environment variable
+.B PAGER
+to the name of the desired program, such as
+.BR less .
+If
+.B lzmore
+is called as
+.B lzless
+then
+.B less
+is used as the
+.BR PAGER .
+.TP
+.BR e " or " q
+When the prompt --More--(Next file: 
+.IR file )
+is printed, this command causes lzmore to exit.
+.TP
+.B s
+When the prompt --More--(Next file: 
+.IR file )
+is printed, this command causes zmore to skip the next file and continue.
+.PP
+For list of keyboard commands supported while actually viewing the
+content of a file, refer to manual of the pager you use, usually
+.BR more (1)
+or
+.BR less (1). 
+.SH AUTHORS
+This manual page was ripped from
+.BR zmore (1)
+shipped in gzip package.
+.SH "SEE ALSO"
+.BR more (1),
+.BR zmore (1),
+.BR lzdiff (1),
+.BR lzgrep (1),
+.BR lzma (1),
+.BR lzmash (1)

@@ -1,0 +1,109 @@
+
+LZMA Utils TODO List
+--------------------
+
+Major missing features
+
+    Memory limits in the command line tool apply only to compression.
+
+    Threading support in the lzma command line tool is still primitive.
+    It cannot split a file in pieces yet.
+
+    The --list mode isn't implemented in the command line tool.
+
+    Handling of Multi-Block Stream information should be separated
+    from Stream encoder and decoder. Those would be useful to implement
+    multi-threaded coding in applications.
+
+    Buffer to buffer coding is not implemented in liblzma. Probably
+    a naive version should be written first, which would simply wrap
+    things around lzma_stream. Later, there should be separate buffer
+    coding functions, that are slightly faster (less memcpy()) and
+    have smaller memory usage than the functions using lzma_stream.
+
+    libzfile is not implemented.
+
+    LZMA filter doesn't support predefined history buffer.
+
+
+Security
+
+    Search for bugs, especially security related issues. Security is
+    important in every piece of code in LZMA Utils, but it is extremely
+    important in the decoder part of liblzma.
+
+    Subblock: If there is LZMA as a Subfilter but without EOPM, can it
+    trigger infinite loop when Subblock's "Unset Subfilter" flag is hit?
+
+    Similarly, can LZ decoder get stuck in infinite loop if the next
+    filter in the chain returns LZMA_STREAM_END but the decoded data
+    doesn't allow finishing the LZ decoding?
+
+
+Reliability
+
+    Create a test suite to be run with "make check".
+
+    Should we use strlimit() and getrlimit() for memory usage limitting?
+
+
+Performance
+
+    Benchmark the CRC code on non-x86 CPUs. Won't have huge effect on
+    overall speed, but it would still be nice to know what algorithm
+    variant is the best on different CPUs.
+
+
+Third party support
+
+    Add support for LZMA to various applications. This naturally requires
+    cooperating with the authors of the specific applications.
+      * GNU grep and GNU diffutils: BSD grep already uses zlib directly
+        instead of ugly shell scripts. It would be nice to get similar
+        feature into relevant GNU tools. With libzfile, multiple
+        compression formats would be easy to support.
+      * kioslave for KDE
+      * Magic for the `file' command
+      * GNU Midnight Commander
+      * GNU Texinfo
+      * The `man' command
+      * Package managers
+
+    Test the patches already written. The patches should be sent to
+    upstream developers _once_ LZMA Utils APIs are stable enough (so
+    people don't need to fix those patches all the time).
+
+    Mandriva has quite a few patches. Some of them are OK, some need
+    adapting for new LZMA Utils.
+
+
+Documentation
+
+    Revise the man page of lzma command line tool.
+
+    If the Doxygen docs aren't enough, write good Texinfo manual for
+    liblzma. It's been a long time I've even tried to build the Doxygen
+    docs, so they may look quite bad at the moment.
+
+    Document LZMA as an algorithm. It would be great to have detailed
+    description of the algorithm in English. Many people think, that
+    reading the source code is not the optimal way to learn how LZMA
+    works.
+
+
+Other
+
+    Some things return LZMA_PROG_ERROR with invalid options, some
+    LZMA_HEADER_ERROR. These must be checked carefully and made so
+    that LZMA_HEADER_ERROR is used only when the given option could
+    make sense in future version of libzma.
+
+    lzma_restrict vs. restrict
+
+    Usage of LZMA_RUN vs. LZMA_FINISH with Metadata coders.
+
+    Port the Deflate implementation from 7-Zip into liblzma. 7-Zip's
+    Deflate compresses better than zlib, gzip or Info-ZIP. I don't
+    know if Deflate will be included in .lzma format (probably not),
+    but it's still useful once we also add support for .gz file format.
+

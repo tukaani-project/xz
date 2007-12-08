@@ -1,0 +1,1861 @@
+
+The .lzma File Format
+---------------------
+
+        0. Preface
+          0.1. Copyright Notices
+          0.2. Changes
+        1. Conventions
+          1.1. Byte and Its Representation
+          1.2. Multibyte Integers
+        2. Stream
+          2.1. Stream Types
+            2.1.1. Single-Block Stream
+            2.1.2. Multi-Block Stream
+          2.2. Stream Header
+            2.2.1. Header Magic Bytes
+            2.2.2. Stream Flags
+            2.2.3. CRC32
+        3. Block
+          3.1. Block Header
+            3.1.1. Block Flags
+            3.1.2. Compressed Size
+            3.1.3. Uncompressed Size
+            3.1.4. List of Filter Flags
+              3.1.4.1. Misc
+              3.1.4.2. External ID
+              3.1.4.3. External Size of Properties
+              3.1.4.4. Filter Properties
+            3.1.5. CRC32
+            3.1.6. Header Padding
+          3.2. Compressed Data
+          3.3. Block Footer
+            3.3.1. Check
+            3.3.2. Stream Footer
+              3.3.2.1. Uncompressed Size
+              3.3.2.2. Backward Size
+              3.3.2.3. Stream Flags
+              3.3.2.4. Footer Magic Bytes
+            3.3.3. Footer Padding
+        4. Filters
+          4.1. Detecting when All Data Has Been Decoded
+            4.1.1. With Uncompressed Size
+            4.1.2. With End of Input
+            4.1.3. With End of Payload Marker
+          4.2. Alignment
+          4.3. Filters
+            4.3.1. Copy
+            4.3.2. Subblock
+              4.3.2.1. Format of the Encoded Output
+            4.3.3. Delta
+              4.3.3.1. Format of the Encoded Output
+            4.3.4. LZMA
+              4.3.4.1. LZMA Properties
+              4.3.4.2. Dictionary Flags
+            4.3.5. Branch/Call/Jump Filters for Executables
+        5. Metadata
+          5.1. Metadata Flags
+          5.2. Size of Header Metadata Block
+          5.3. Total Size
+          5.4. Uncompressed Size
+          5.5. Index
+            5.5.1. Number of Data Blocks
+            5.5.2. Total Sizes
+            5.5.3. Uncompressed Sizes
+          5.6. Extra
+            5.6.1. 0x00: Dummy/Padding
+            5.6.2. 0x01: OpenPGP Signature
+            5.6.3. 0x02: Filter Information
+            5.6.4. 0x03: Comment
+            5.6.5. 0x04: List of Checks
+            5.6.6. 0x05: Original Filename
+            5.6.7. 0x07: Modification Time
+            5.6.8. 0x09: High-Resolution Modification Time
+            5.6.9. 0x0B: MIME Type
+            5.6.10. 0x0D: Homepage URL
+        6. Custom Filter and Extra Record IDs
+          6.1. Reserved Custom Filter ID Ranges
+        7. Cyclic Redundancy Checks
+        8. References
+          8.1. Normative References
+          8.2. Informative References
+
+
+0. Preface
+
+        This document describes the .lzma file format (filename suffix
+        `.lzma', MIME type `application/x-lzma'). It is intended that
+        this format replace the format used by the LZMA_Alone tool
+        included in LZMA SDK up to and including version 4.43.
+
+        IMPORTANT:  The version described in this document is a
+                    draft, NOT a final, official version. Changes
+                    are possible.
+
+
+0.1. Copyright Notices
+
+        Copyright (C) 2006, 2007 Lasse Collin <lasse.collin@tukaani.org>
+        Copyright (C) 2006 Ville Koskinen <w-ber@iki.fi>
+
+        Copying and distribution of this file, with or without
+        modification, are permitted in any medium without royalty
+        provided the copyright notice and this notice are preserved.
+        Modified versions must be marked as such.
+
+        All source code examples given in this document are put into
+        the public domain by the authors of this document.
+
+        Thanks for helping with this document goes to Igor Pavlov,
+        Mark Adler and Mikko Pouru.
+
+
+0.2. Changes
+
+        Last modified: 2007-12-02 22:40+0200
+
+        (A changelog will be kept once the first official version
+        is made.)
+
+
+1. Conventions
+
+        The keywords `must', `must not', `required', `should',
+        `should not', `recommended', `may', and `optional' in this
+        document are to be interpreted as described in [RFC-2119].
+        These words are not capitalized in this document.
+
+        Indicating a warning means displaying a message, returning
+        appropriate exit status, or something else to let the user
+        know that something worth warning occurred. The operation
+        should still finish if a warning is indicated.
+
+        Indicating an error means displaying a message, returning
+        appropriate exit status, or something else to let the user
+        know that something prevented successfully finishing the
+        operation. The operation must be aborted once an error has
+        been indicated.
+
+
+1.1. Byte and Its Representation
+
+        In this document, byte is always 8 bits.
+
+        A `nul byte' has all bits unset. That is, the value of a nul
+        byte is 0x00.
+
+        To represent byte blocks, this document uses notation that
+        is similar to the notation used in [RFC-1952]:
+
+            +-------+
+            |  Foo  |   One byte.
+            +-------+
+
+            +---+---+
+            |  Foo  |   Two bytes; that is, some of the vertical bars
+            +---+---+   can be missing.
+
+            +=======+
+            |  Foo  |   Zero or more bytes.
+            +=======+
+
+        In this document, a boxed byte or a byte sequence declared
+        using this notation is called `a field'. The example field
+        above would be called called `the Foo field' or plain `Foo'.
+
+
+1.2. Multibyte Integers
+
+        Multibyte integers of static length, such as CRC values,
+        are stored in little endian byte order (least significant
+        byte first).
+
+        When smaller values are more likely than bigger values (e.g.
+        file sizes), multibyte integers are encoded in a simple
+        variable-length representation:
+          - Numbers in the range [0, 127] are copied as is, and take
+            one byte of space.
+          - Bigger numbers will occupy two or more bytes. The lowest
+            seven bits of every byte are used for data; the highest
+            (eighth) bit indicates either that
+              0) the byte is in the middle of the byte sequence, or
+              1) the byte is the first or the last byte.
+
+        For now, the value of the variable-length integers is limited
+        to 63 bits, which limits the encoded size of the integer to
+        nine bytes. These limits may be increased in future if needed.
+
+        Note that the encoding is not as optimal as it could be. For
+        example, it is possible to encode the number 42 using any
+        number of bytes between one and nine. This is convenient
+        for non-streamed encoders, that write Compressed Size or
+        Uncompressed Size fields to the Block Header (see Section 3.1)
+        after the Compressed Data field is written to the disk.
+
+        In several situations, the decoder needs to compare that two
+        fields contain identical information. When comparing fields
+        using the encoding described in this Section, the decoder must
+        consider two fields identical if their decoded values are
+        identical; it does not matter if the encoded variable-length
+        representations differ.
+
+        The following C code illustrates encoding and decoding 63-bit
+        variables; the highest bit of uint64_t must be unset. The
+        functions return the number of bytes occupied by the integer
+        (1-9), or zero on error.
+
+            #include <sys/types.h>
+            #include <inttypes.h>
+
+            size_t
+            encode(uint8_t buf[static 9], uint64_t num)
+            {
+                if (num >= (UINT64_C(1) << (9 * 7)))
+                    return 0;
+                if (num <= 0x7F) {
+                    buf[0] = num;
+                    return 1;
+                }
+                buf[0] = (num & 0x7F) | 0x80;
+                num >>= 7;
+                size_t i = 1;
+                while (num >= 0x80) {
+                    buf[i++] = num & 0x7F;
+                    num >>= 7;
+                }
+                buf[i++] = num | 0x80;
+                return i;
+            }
+
+            size_t
+            decode(const uint8_t buf[], size_t size_max, uint64_t *num)
+            {
+                if (size_max == 0)
+                    return 0;
+                if (size_max > 9)
+                    size_max = 9;
+                *num = buf[0] & 0x7F;
+                if (!(buf[0] & 0x80))
+                    return 1;
+                size_t i = 1;
+                do {
+                    if (i == size_max)
+                        return 0;
+                    *num |= (uint64_t)(buf[i] & 0x7F) << (7 * i);
+                } while (!(buf[i++] & 0x80));
+                return i;
+            }
+
+            size_t
+            decode_reverse(const uint8_t buf[], size_t size_max,
+                    uint64_t *num)
+            {
+                if (size_max == 0)
+                    return 0;
+                const size_t end = size_max > 9 ? size_max - 9 : 0;
+                size_t i = size_max - 1;
+                *num = buf[i] & 0x7F;
+                if (!(buf[i] & 0x80))
+                    return 1;
+                do {
+                    if (i-- == end)
+                        return 0;
+                    *num <<= 7;
+                    *num |= buf[i] & 0x7F;
+                } while (!(buf[i] & 0x80));
+                return size_max - i;
+            }
+
+
+2. Stream
+
+        +========+========+========+
+        | Stream | Stream | Stream | ...
+        +========+========+========+
+
+        A file contains usually only one Stream. However, it is
+        possible to concatenate multiple Streams together with no
+        additional processing. It is up to the implementation to
+        decide if the decoder will continue decoding from the next
+        Stream once the end of the first Stream has been reached.
+
+
+2.1. Stream Types
+
+        There are two types of Streams: Single-Block Streams and
+        Multi-Block Streams. Decoders conforming to this specification
+        must support at least Single-Block Streams. Supporting
+        Multi-Block Streams is optional. If the decoder supports only
+        Single-Block Streams, the documentation of the decoder should
+        mention this fact clearly.
+
+
+2.1.1. Single-Block Stream
+
+        +===============+============+
+        | Stream Header | Data Block |
+        +===============+============+
+
+        As the name says, a Single-Block Stream has exactly one Block.
+        The Block must be a Data Block; Metadata Blocks are not allowed
+        in Single-Block Streams.
+
+
+2.1.2. Multi-Block Stream
+
+        +===============+=======================+
+        | Stream Header | Header Metadata Block |
+        +===============+=======================+
+
+             +============+     +============+=======================+
+        ---> | Data Block | ... | Data Block | Footer Metadata Block |
+             +============+     +============+=======================+
+
+        Notes:
+          - Stream Header is mandatory.
+          - Header Metadata Block is optional.
+          - Each Multi-Block Stream has at least one Data Block. The
+            maximum number of Data Blocks is not limited.
+          - Footer Metadata Block is mandatory.
+
+
+2.2. Stream Header
+
+        +---+---+---+---+---+---+--------------+--+--+--+--+
+        |  Header Magic Bytes   | Stream Flags |   CRC32   |
+        +---+---+---+---+---+---+--------------+--+--+--+--+
+
+
+2.2.1. Header Magic Bytes
+
+        The first six (6) bytes of the Stream are so called Header
+        Magic Bytes. They can be used to identify the file type.
+
+            Using a C array and ASCII:
+            const uint8_t HEADER_MAGIC[6]
+                    = { 0xFF, 'L', 'Z', 'M', 'A', 0x00 };
+
+            In plain hexadecimal:
+            FF 4C 5A 4D 41 00
+
+        Notes:
+          - The first byte (0xFF) was chosen so that the files cannot
+            be erroneously detected as being in LZMA_Alone format, in
+            which the first byte is in the the range [0x00, 0xE0].
+          - The sixth byte (0x00) was chosen to prevent applications
+            from misdetecting the file as a text file.
+
+
+2.2.2. Stream Flags
+
+        Bit(s)  Mask  Description
+         0-2    0x07  Type of Check (see Section 3.3.1):
+                          ID    Size      Check name
+                          0x00   0 bytes  None
+                          0x01   4 bytes  CRC32
+                          0x02   4 bytes  (Reserved)
+                          0x03   8 bytes  CRC64
+                          0x04  16 bytes  (Reserved)
+                          0x05  32 bytes  SHA-256
+                          0x06  32 bytes  (Reserved)
+                          0x07  64 bytes  (Reserved)
+          3     0x08  The CRC32 field is present in Block Headers.
+          4     0x10  If unset, this is a Single-Block Stream; if set,
+                      this is a Multi-Block Stream.
+         5-7    0xE0  Reserved for future use; must be zero for now.
+
+        Implementations must support at least the Check IDs 0x00 (None)
+        and 0x01 (CRC32). Supporting other Check IDs is optional. If an
+        unsupported Check is used, the decoder must indicate a warning
+        or error.
+
+        If any reserved bit is set, the decoder must indicate an error.
+        It is possible that there is a new field present which the
+        decoder is not aware of, and can thus parse the Stream Header
+        incorrectly.
+
+
+2.2.3. CRC32
+
+        The CRC32 is calculated from the Stream Flags field. It is
+        stored as an unsigned 32-bit little endian integer. If the
+        calculated value does not match the stored one, the decoder
+        must indicate an error.
+
+        Note that this field is always present; the bit in Stream Flags
+        controls only presence of CRC32 in Block Headers.
+
+
+3. Block
+
+        +==============+=================+==============+
+        | Block Header | Compressed Data | Block Footer |
+        +==============+=================+==============+
+
+        There are two types of Blocks:
+          - Data Blocks hold the actual compressed data.
+          - Metadata Blocks hold the Index, Extra, and a few other
+            non-data fields (see Section 5).
+
+        The type of the Block is indicated by the corresponding bit
+        in the Block Flags field (see Section 3.1.1).
+
+
+3.1. Block Header
+
+        +------+------+=================+===================+
+        | Block Flags | Compressed Size | Uncompressed Size |
+        +------+------+=================+===================+
+
+             +======================+--+--+--+--+================+
+        ---> | List of Filter Flags |   CRC32   | Header Padding |
+             +======================+--+--+--+--+================+
+
+
+3.1.1. Block Flags
+
+        The first byte of the Block Flags field is a bit field:
+
+            Bit(s)  Mask  Description
+             0-2    0x07  Number of filters (0-7)
+              3     0x08  Use End of Payload Marker (even if
+                          Uncompressed Size is stored to Block Header).
+              4     0x10  The Compressed Size field is present.
+              5     0x20  The Uncompressed Size field is present.
+              6     0x40  Reserved for future use; must be zero for now.
+              7     0x80  This is a Metadata Block.
+
+        The second byte of the Block Flags field is also a bit field:
+
+            Bit(s)  Mask  Description
+             0-4    0x1F  Size of the Header Padding field (0-31 bytes)
+             5-7    0xE0  Reserved for future use; must be zero for now.
+
+        The decoder must indicate an error if End of Payload Marker
+        is not used and Uncompressed Size is not stored to the Block
+        Header. Because of this, the first byte of Block Flags can
+        never be a nul byte. This is useful when detecting beginning
+        of the Block after Footer Padding (see Section 3.3.3).
+
+        If any reserved bit is set, the decoder must indicate an error.
+        It is possible that there is a new field present which the
+        decoder is not aware of, and can thus parse the Block Header
+        incorrectly.
+
+
+3.1.2. Compressed Size
+
+        This field is present only if the appropriate bit is set in
+        the Block Flags field (see Section 3.1.1).
+
+        This field contains the size of the Compressed Data field.
+        The size is stored using the encoding described in Section 1.2.
+        If the Compressed Size does not match the real size of the
+        Compressed Data field, the decoder must indicate an error.
+
+        Having the Compressed Size field in the Block Header can be
+        useful for multithreaded decoding when seeking is not possible.
+        If the Blocks are small enough, the decoder can read multiple
+        Blocks into its internal buffer, and decode the Blocks in
+        parallel.
+
+        Compressed Size can also be useful when seeking forwards to
+        a specific location in streamed mode: the decoder can quickly
+        skip over irrelevant Blocks, without decoding them.
+
+
+3.1.3. Uncompressed Size
+
+        This field is present only if the appropriate bit is set in
+        the Block Flags field (see Section 3.1.1).
+
+        The Uncompressed Size field contains the size of the Block
+        after uncompressing.
+
+        Storing Uncompressed Size serves several purposes:
+          - The decoder will know when all of the data has been
+            decoded without an explicit End of Payload Marker.
+          - The decoder knows how much memory it needs to allocate
+            for a temporary buffer in multithreaded mode.
+          - Simple error detection: wrong size indicates a broken file.
+          - Sometimes it is useful to know the file size without
+            uncompressing the file.
+
+        It should be noted that the only reliable way to find out what
+        the real uncompressed size is is to uncompress the Block,
+        because the Block Header and Metadata Block fields may contain
+        (intentionally or unintentionally) invalid information.
+
+        Uncompressed Size is stored using the encoding described in
+        Section 1.2. If the Uncompressed Size does not match the
+        real uncompressed size, the decoder must indicate an error.
+
+
+3.1.4. List of Filter Flags
+
+        +================+================+     +================+
+        | Filter 0 Flags | Filter 1 Flags | ... | Filter n Flags |
+        +================+================+     +================+
+
+        The number of Filter Flags fields is stored in the Block Flags
+        field (see Section 3.1.1). As a special case, if the number of
+        Filter Flags fields is zero, it is equivalent to having the
+        Copy filter as the only filter.
+
+        The format of each Filter Flags field is as follows:
+
+            +------+=============+=============================+
+            | Misc | External ID | External Size of Properties |
+            +------+=============+=============================+
+
+                 +===================+
+            ---> | Filter Properties |
+                 +===================+
+
+        The list of officially defined Filter IDs and the formats of
+        their Filter Properties are described in Section 4.3.
+
+
+3.1.4.1. Misc
+
+        To save space, the most commonly used Filter IDs and the
+        Size of Filter Properties are encoded in a single byte.
+        Depending on the contents of the Misc field, Filter ID is
+        the value of the Misc or External ID field.
+
+            Value          Filter ID        Size of Filter Properties
+            0x00 - 0x1F    Misc             0 bytes
+            0x20 - 0x3F    Misc             1 byte
+            0x40 - 0x5F    Misc             2 bytes
+            0x60 - 0x7F    Misc             3 bytes
+            0x80 - 0x9F    Misc             4 bytes
+            0xA0 - 0xBF    Misc             5 bytes
+            0xC0 - 0xDF    Misc             6 bytes
+            0xE0 - 0xFE    External ID      0-30 bytes
+            0xFF           External ID      External Size of Properties
+
+        The following code demonstrates parsing the Misc field and,
+        when needed, the External ID and External Size of Properties
+        fields.
+
+            uint64_t id;
+            uint64_t properties_size;
+            uint8_t misc = read_byte();
+
+            if (misc >= 0xE0) {
+                id = read_variable_length_integer();
+
+                if (misc == 0xFF)
+                    properties_size = read_variable_length_integer();
+                else
+                    properties_size = misc - 0xE0;
+
+            } else {
+                id = misc;
+                properties_size = misc / 0x20;
+            }
+
+
+3.1.4.2. External ID
+
+        This field is present only if the Misc field contains a value
+        that indicates usage of External ID. The External ID is stored
+        using the encoding described in Section 1.2.
+
+
+3.1.4.3. External Size of Properties
+
+        This field is present only if the Misc field contains a value
+        that indicates usage of External Size of Properties. The size
+        of Filter Properties is stored using the encoding described in
+        Section 1.2.
+
+
+3.1.4.4. Filter Properties
+
+        Size of this field depends on the Misc field (Section 3.1.4.1)
+        and, if present, External Size of Properties field (Section
+        3.1.4.3). The format of this field is depends on the selected
+        filter; see Section 4.3 for details.
+
+
+3.1.5. CRC32
+
+        This field is present only if the appropriate bit is set in
+        the Stream Flags field (see Section 2.2.2).
+
+        The CRC32 is calculated over everything in the Block Header
+        field except the Header Padding field and the CRC32 field
+        itself. It is stored as an unsigned 32-bit little endian
+        integer. If the calculated value does not match the stored
+        one, the decoder must indicate an error.
+
+
+3.1.6. Header Padding
+
+        This field contains as many nul bytes as indicated by the value
+        stored in the Header Flags field. If the Header Padding field
+        contains any non-nul bytes, the decoder must indicate an error.
+
+        The intent of the Header Padding field is to allow alignment
+        of Compressed Data. The usefulness of alignment is described
+        in Section 4.3.
+
+
+3.2. Compressed Data
+
+        The format of Compressed Data depends on Block Flags and List
+        of Filter Flags. Excluding the descriptions of the simplest
+        filters in Section 4, the format of the filter-specific encoded
+        data is out of scope of this document.
+
+        Note a special case: if End of Payload Marker (see Section
+        3.1.1) is not used and Uncompressed Size is zero, the size
+        of the Compressed Data field is always zero.
+
+
+3.3. Block Footer
+
+        +=======+===============+================+
+        | Check | Stream Footer | Footer Padding |
+        +=======+===============+================+
+
+
+3.3.1. Check
+
+        The type and size of the Check field depends on which bits
+        are set in the Stream Flags field (see Section 2.2.2).
+
+        The Check, when used, is calculated from the original
+        uncompressed data. If the calculated Check does not match the
+        stored one, the decoder must indicate an error. If the selected
+        type of Check is not supported by the decoder, it must indicate
+        a warning or error.
+
+
+3.3.2. Stream Footer
+
+        +===================+===============+--------------+
+        | Uncompressed Size | Backward Size | Stream Flags |
+        +===================+===============+--------------+
+
+             +----------+---------+
+        ---> | Footer Magic Bytes |
+             +----------+---------+
+
+        Stream Footer is present only in
+          - Data Block of a Single-Block Stream; and
+          - Footer Metadata Block of a Multi-Block Stream.
+
+        The Stream Footer field is placed inside Block Footer, because
+        no padding is allowed between Check and Stream Footer.
+
+
+3.3.2.1. Uncompressed Size
+
+        This field is present only in the Data Block of a Single-Block
+        Stream if Uncompressed Size is not stored to the Block Header
+        (see Section 3.1.1). Without the Uncompressed Size field in
+        Stream Footer it would not be possible to quickly find out
+        the Uncompressed Size of the Stream in all cases.
+
+        Uncompressed Size is stored using the encoding described in
+        Section 1.2. If the stored value does not match the real
+        uncompressed size of the Single-Block Stream, the decoder must
+        indicate an error.
+
+
+3.3.2.2. Backward Size
+
+        This field contains the total size of the Block Header,
+        Compressed Data, Check, and Uncompressed Size fields. The
+        value is stored using the encoding described in Section 1.2.
+        If the Backward Size does not match the real total size of
+        the appropriate fields, the decoder must indicate an error.
+
+        Implementations reading the Stream backwards should notice
+        that the value in this field can never be zero.
+
+
+3.3.2.3. Stream Flags
+
+        This is a copy of the Stream Flags field from the Stream
+        Header. The information stored to Stream Flags is needed
+        when parsing the Stream backwards.
+
+
+3.3.2.4. Footer Magic Bytes
+
+        As the last step of the decoding process, the decoder must
+        verify the existence of Footer Magic Bytes. If they are not
+        found, an error must be indicated.
+
+            Using a C array and ASCII:
+            const uint8_t FOOTER_MAGIC[2] = { 'Y', 'Z' };
+
+            In hexadecimal:
+            59 5A
+
+        The primary reason to have Footer Magic Bytes is to make
+        it easier to detect incomplete files quickly, without
+        uncompressing. If the file does not end with Footer Magic Bytes
+        (excluding Footer Padding described in Section 3.3.3), it
+        cannot be undamaged, unless someone has intentionally appended
+        garbage after the end of the Stream. (Appending garbage at the
+        end of the file does not prevent uncompressing the file, but
+        may give a warning or error depending on the decoder
+        implementation.)
+
+
+3.3.3. Footer Padding
+
+        In certain situations it is convenient to be able to pad
+        Blocks or Streams to be multiples of, for example, 512 bytes.
+        Footer Padding makes this possible. Note that this is in no
+        way required to enforce alignment in the way described in
+        Section 4.3; the Header Padding field is enough for that.
+
+        When Footer Padding is used, it must contain only nul bytes.
+        Any non-nul byte should be considered as the beginning of
+        a new Block or Stream.
+
+        The possibility of Padding should be taken into account when
+        designing an application that wants to find out information
+        about a Stream by parsing Footer Metadata Block.
+
+        Support for Padding was inspired by a related note in
+        [GNU-tar].
+
+
+4. Filters
+
+        The Block Flags field defines how many filters are used. When
+        more than one filter is used, the filters are chained; that is,
+        the output of one filter is the input of another filter. The
+        following figure illustrates the direction of data flow.
+
+                    v   Uncompressed Data   ^
+                    |       Filter 0        |
+            Encoder |       Filter 1        | Decoder
+                    |         ...           |
+                    |       Filter n        |
+                    v    Compressed Data    ^
+
+        The filters are independent from each other, except that they
+        must cooperate a little to make it possible, in all cases, to
+        detect when all of the data has been decoded. In addition, the
+        filters should cooperate in the encoder to keep the alignment
+        optimal.
+
+
+4.1. Detecting when All Data Has Been Decoded
+
+        There must be a way for the decoder to detect when all of the
+        Compressed Data has been decoded. This is simple when only
+        one filter is used, but a bit more complex when multiple
+        filters are chained.
+
+        This file format supports three methods to detect when all of
+        the data has been decoded:
+          - Uncompressed size
+          - End of Input
+          - End of Payload Marker
+
+        In both encoder and decoder, filters are initialized starting
+        from the first filter in the chain. For each filter, one of
+        these three methods is used.
+
+
+4.1.1. With Uncompressed Size
+
+        This method is the only method supported by all filters.
+        It must be used when uncompressed size is known by the
+        filter-specific encoder or decoder. In practice this means
+        that Uncompressed Size has been stored to the Block Header.
+
+        In case of the first filter in the chain, the uncompressed size
+        given to the filter-specific encoder or decoder equals the
+        Uncompressed Size stored in the Block Header. For the rest of
+        the filters in the chain, uncompressed size is the size of the
+        output data of the previous filter in the chain.
+
+        Note that when Use End of Payload Marker bit is set in Block
+        Flags, Uncompressed Size is considered to be unknown even if
+        it was present in the Block Header. Thus, if End of Payload
+        Marker is used, uncompressed size of all of the filters in
+        the chain is unknown, and can never be used to detect when
+        all of the data has been decoded.
+
+        Once the correct number of bytes has been written out, the
+        filter-specific decoder indicates to its caller that all of
+        the data has been decoded. If the filter-specific decoder
+        detects End of Input or End of Payload Marker before the
+        correct number of bytes is decoded, the decoder must indicate
+        an error.
+
+
+4.1.2. With End of Input
+
+        Most filters will know that all of the data has been decoded
+        when the End of Input data has been reached. Once the filter
+        knows that it has received the input data in its entirety,
+        it finishes its job, and indicates to its caller that all of
+        the data has been decoded. The filter-specific decoder must
+        indicate an error if it detects End of Payload Marker.
+
+        Note that this method can work only when the filter is not
+        the last filter in the chain, because only another filter
+        can indicate the End of Input data. In practice this means,
+        that a filter later in the chain must support embedding
+        End of Payload Marker.
+
+        When a filter that cannot embed End of Payload Marker is the
+        last filter in the chain, Subblock filter is appended to the
+        chain as an implicit filter. In the simplest case, this occurs
+        when no filters are specified, and Uncompressed Size is unknown
+        or the End of Payload Marker bit is set in Block Flags.
+
+
+4.1.3. With End of Payload Marker
+
+        End of Payload Marker is a filter-specific bit sequence that
+        indicates the end of data. It is supported by only a few
+        filters. It is used when uncompressed size is unknown, and
+        the filter
+          - doesn't support End of Input; or
+          - is the last filter in the chain.
+
+        End of Payload Marker is embedded at the end of the encoded
+        data by the filter-specific encoder. When the filter-specific
+        decoder detects the embedded End of Payload Marker, the decoder
+        knows that all of the data has been decoded. Then it finishes
+        its job, and indicates to its caller that all of the data has
+        been decoded. If the filter-specific decoder detects End of
+        Input before End of Payload Marker, the decoder must indicate
+        an error.
+
+        If the filter supports both End of Input and End of Payload
+        Marker, the former is used, unless the filter is the last
+        filter in the chain.
+
+
+4.2. Alignment
+
+        Some filters give better compression ratio or are faster
+        when the input or output data is aligned. For optimal results,
+        the encoder should try to enforce proper alignment when
+        possible. Not enforcing alignment in the encoder is not
+        an error. Thus, the decoder must be able to handle files with
+        suboptimal alignment.
+
+        Alignment of uncompressed input data is usually the job of
+        the application producing the data. For example, to get the
+        best results, an archiver tool should make sure that all
+        PowerPC executable files in the archive stream start at
+        offsets that are multiples of four bytes.
+
+        Some filters, for example LZMA, can be configured to take
+        advantage of specified alignment of input data. Note that
+        taking advantage of aligned input can be benefical also when
+        a filter is not the first filter in the chain. For example,
+        if you compress PowerPC executables, you may want to use the
+        PowerPC filter and chain that with the LZMA filter. Because not
+        only the input but also the output alignment of the PowerPC
+        filter is four bytes, it is now benefical to set LZMA settings
+        so that the LZMA encoder can take advantage of its
+        four-byte-aligned input data.
+
+        The output of the last filter in the chain is stored to the
+        Compressed Data field. Aligning Compressed Data appropriately
+        can increase
+          - speed, if the filtered data is handled multiple bytes at
+            a time by the filter-specific encoder and decoder,
+            because accessing aligned data in computer memory is
+            usually faster; and
+          - compression ratio, if the output data is later compressed
+            with an external compression tool.
+
+        Compressed Data in a Stream can be aligned by using the Header
+        Padding field in the Block Header.
+
+
+4.3. Filters
+
+4.3.1. Copy
+
+        This is a dummy filter that simply copies all data from input
+        to output unmodified.
+
+            Filter ID:                  0x00
+            Size of Filter Properties:  0 bytes
+            Changes size of data:       No
+
+            Detecting when all of the data has been decoded:
+                Uncompressed size:      Yes
+                End of Payload Marker:  No
+                End of Input:           Yes
+
+            Preferred alignment:
+                Input data:             1 byte
+                Output data:            1 byte
+
+
+4.3.2. Subblock
+
+        The Subblock filter can be used to
+          - embed End of Payload Marker when the otherwise last
+            filter in the chain does not support embedding it; and
+          - apply additional filters in the middle of a Block.
+
+            Filter ID:                  0x01
+            Size of Filter Properties:  0 bytes
+            Changes size of data:       Yes, unpredictably
+
+            Detecting when all of the data has been decoded:
+                Uncompressed size:      Yes
+                End of Payload Marker:  Yes
+                End of Input:           Yes
+
+            Preferred alignment:
+                Input data:             1 byte
+                Output data:            Freely adjustable
+
+
+4.3.2.1. Format of the Encoded Output
+
+        The encoded data from the Subblock filter consist of zero or
+        more Subblocks:
+
+            +==========+==========+
+            | Subblock | Subblock | ...
+            +==========+==========+
+
+        Each Subblock contains two fields:
+
+            +----------------+===============+
+            | Subblock Flags | Subblock Data |
+            +----------------+===============+
+
+        Subblock Flags is a bitfield:
+
+            Bits   Mask   Description
+            0-3    0x0F   The interpretation of these bits depend on
+                          the Subblock Type:
+                            - 0x20    Bits 0-3 for Size
+                            - 0x30    Bits 0-3 for Repeat Count
+                            - Other   These bits must be zero.
+            4-7    0xF0   Subblock Type:
+                            - 0x00: Padding
+                            - 0x10: End of Payload Marker
+                            - 0x20: Data
+                            - 0x30: Repeating Data
+                            - 0x40: Set Subfilter
+                            - 0x50: Unset Subfilter
+                          If some other value is detected, the decoder
+                          must indicate an error.
+
+        The format of the Subblock Data field depends on Subblock Type.
+
+        Subblocks with the Subblock Type 0x00 (Padding) don't have a
+        Subblock Data field. These Subblocks can be useful for fixing
+        alignment. There can be at maximum of 31 consecutive Subblocks
+        with this Subblock Type; if there are more, the decoder must
+        indicate an error.
+
+        Subblock with the Subblock Type 0x10 (End of Payload Marker)
+        doesn't have a Subblock Data field. The decoder must indicate
+        an error if this Subblock Type is detected when Subfilter is
+        enabled, or when the Subblock filter is not supposed to embed
+        the End of Payload Marker.
+
+        Subblocks with the Subblock Type 0x20 (Data) contain the rest
+        of the Size, which is followed by Size + 1 bytes in the Data
+        field (that is, Data can never be empty):
+
+            +------+------+------+======+
+            | Bits 4-27 for Size | Data |
+            +------+------+------+======+
+
+        Subblocks with the Subblock Type 0x30 (Repeating Data) contain
+        the rest of the Repeat Count, the Size of the Data, and finally
+        the actual Data to be repeated:
+
+            +---------+---------+--------+------+======+
+            | Bits 4-27 for Repeat Count | Size | Data |
+            +---------+---------+--------+------+======+
+
+        The size of the Data field is Size + 1. It is repeated Repeat
+        Count + 1 times. That is, the minimum size of Data is one byte;
+        the maximum size of Data is 256 bytes. The minimum number of
+        repeats is one; the maximum number of repeats is 2^28.
+
+        If Subfilter is not used, the Data field of Subblock Types 0x20
+        and 0x30 is the output of the decoded Subblock filter. If
+        Subfilter is used, Data is the input of the Subfilter, and the
+        decoded output of the Subfilter is the decoded output of the
+        Subblock filter.
+
+        Subblocks with the Subblock Type 0x40 (Set Subfilter) contain
+        a Filter Flags field in Subblock Data:
+
+            +==============+
+            | Filter Flags |
+            +==============+
+
+        It is an error to set the Subfilter to Filter ID 0x00 (Copy)
+        or 0x01 (Subblock). All the other Filter IDs are allowed.
+        The decoder must indicate an error if this Subblock Type is
+        detected when a Subfilter is already enabled.
+
+        Subblocks with the Subblock Type 0x50 (Unset Subfilter) don't
+        have a Subblock Data field. There must be at least one Subblock
+        with Subblock Type 0x20 or 0x30 between Subblocks with Subblock
+        Type 0x40 and 0x50; if there isn't, the decoder must indicate
+        an error.
+
+        Subblock Types 0x40 and 0x50 are always used as a pair: If the
+        Subblock filter has been enabled with Subblock Type 0x40, it
+        must always be disabled later with Subblock Type 0x50.
+        Disabling must be done even if the Subfilter used End of
+        Payload Marker; after the Subfilter has detected End of Payload
+        Marker, the next Subblock that is not Padding must unset the
+        Subfilter.
+
+        When the Subblock filter is used as an implicit filter to embed
+        End of Payload marker, the Subblock Types 0x40 and 0x50 (Set or
+        Unset Subfilter) must not be used. The decoder must indicate an
+        error if it detects any of these Subblock Types in an implicit
+        Subblock filter.
+
+        The following code illustrates the basic structure of a
+        Subblock decoder.
+
+            uint32_t consecutive_padding = 0;
+            bool got_output_with_subfilter = false;
+
+            while (true) {
+                uint32_t size;
+                uint32_t repeat;
+                uint8_t flags = read_byte();
+
+                if (flags != 0)
+                    consecutive_padding = 0;
+
+                switch (flags >> 4) {
+                    case 0:
+                        // Padding
+                        if (flags & 0x0F)
+                            return DATA_ERROR;
+                        if (++consecutive_padding == 32)
+                            return DATA_ERROR;
+                        break;
+
+                    case 1:
+                        // End of Payload Marker
+                        if (flags & 0x0F)
+                            return DATA_ERROR;
+                        if (subfilter_enabled || !allow_eopm)
+                            return DATA_ERROR;
+                        break;
+
+                    case 2:
+                        // Data
+                        size = flags & 0x0F;
+                        for (size_t i = 4; i < 28; i += 8)
+                            size |= (uint32_t)(read_byte()) << i;
+
+                        // If any output is produced, this will
+                        // set got_output_with_subfilter to true.
+                        copy_data(size);
+                        break;
+
+                    case 3:
+                        // Repeating Data
+                        repeat = flags & 0x0F;
+                        for (size_t i = 4; i < 28; i += 8)
+                            repeat |= (uint32_t)(read_byte()) << i;
+                        size = read_byte();
+
+                        // If any output is produced, this will
+                        // set got_output_with_subfilter to true.
+                        copy_repeating_data(size, repeat);
+                        break;
+
+                    case 4:
+                        // Set Subfilter
+                        if (flags & 0x0F)
+                            return DATA_ERROR;
+                        if (subfilter_enabled)
+                            return DATA_ERROR;
+                        got_output_with_subfilter = false;
+                        set_subfilter();
+                        break;
+
+                    case 5:
+                        // Unset Subfilter
+                        if (flags & 0x0F)
+                            return DATA_ERROR;
+                        if (!subfilter_enabled)
+                            return DATA_ERROR;
+                        if (!got_output_with_subfilter)
+                            return DATA_ERROR;
+                        unset_subfilter();
+                        break;
+
+                    default:
+                        return DATA_ERROR;
+                }
+            }
+
+
+4.3.3. Delta
+
+        The Delta filter may increase compression ratio when the value
+        of the next byte correlates with the value of an earlier byte
+        at specified distance.
+
+            Filter ID:                  0x20
+            Size of Filter Properties:  1 byte
+            Changes size of data:       No
+
+            Detecting when all of the data has been decoded:
+                Uncompressed size:      Yes
+                End of Payload Marker:  No
+                End of Input:           Yes
+
+            Preferred alignment:
+                Input data:             1 byte
+                Output data:            Same as the original input data
+
+        The Properties byte indicates the delta distance, which can be
+        1-256 bytes backwards from the current byte: 0x00 indicates
+        distance of 1 byte and 0xFF distance of 256 bytes.
+
+
+4.3.3.1. Format of the Encoded Output
+
+        The code below illustrates both encoding and decoding with
+        the Delta filter.
+
+            // Distance is in the range [1, 256].
+            const unsigned int distance = get_properties_byte() + 1;
+            uint8_t pos = 0;
+            uint8_t delta[256];
+
+            memset(delta, 0, sizeof(delta));
+
+            while (1) {
+                const int byte = read_byte();
+                if (byte == EOF)
+                    break;
+
+                uint8_t tmp = delta[(uint8_t)(distance + pos)];
+                if (is_encoder) {
+                    tmp = (uint8_t)(byte) - tmp;
+                    delta[pos] = (uint8_t)(byte);
+                } else {
+                    tmp = (uint8_t)(byte) + tmp;
+                    delta[pos] = tmp;
+                }
+
+                write_byte(tmp);
+                --pos;
+            }
+
+
+4.3.4. LZMA
+
+        LZMA (Lempel-Ziv-Markov chain-Algorithm) is a general-purporse
+        compression algorithm with high compression ratio and fast
+        decompression. LZMA based on LZ77 and range coding algorithms.
+
+            Filter ID:                  0x40
+            Size of Filter Properties:  2 bytes
+            Changes size of data:       Yes, unpredictably
+
+            Detecting when all of the data has been decoded:
+                Uncompressed size:      Yes
+                End of Payload Marker:  Yes
+                End of Input:           No
+
+            Preferred alignment:
+                Input data:             Adjustable to 1/2/4/8/16 byte(s)
+                Output data:            1 byte
+
+        At the time of writing, there is no other documentation about
+        how LZMA works than the source code in LZMA SDK. Once such
+        documentation gets written, it will probably be published as
+        a separate document, because including the documentation here
+        would lengthen this document considerably.
+
+        The format of the Filter Properties field is as follows:
+
+            +-----------------+------------------+
+            | LZMA Properties | Dictionary Flags |
+            +-----------------+------------------+
+
+
+4.3.4.1. LZMA Properties
+
+        The LZMA Properties bits contain three properties. An
+        abbreviation is given in parentheses, followed by the value
+        range of the property. The field consists of
+
+            1) the number of literal context bits (lc, [0, 8]);
+            2) the number of literal position bits (lp, [0, 4]); and
+            3) the number of position bits (pb, [0, 4]).
+
+        They are encoded using the following formula:
+
+            LZMA Properties = (pb * 5 + lp) * 9 + lc
+
+        The following C code illustrates a straightforward way to
+        decode the properties:
+
+            uint8_t lc, lp, pb;
+            uint8_t prop = get_lzma_properties() & 0xFF;
+            if (prop > (4 * 5 + 4) * 9 + 8)
+                return LZMA_PROPERTIES_ERROR;
+
+            pb = prop / (9 * 5);
+            prop -= pb * 9 * 5;
+            lp = prop / 9;
+            lc = prop - lp * 9;
+
+
+4.3.4.2. Dictionary Flags
+
+        Currently the lowest six bits of the Dictionary Flags field
+        are in use:
+
+            Bits   Mask   Description
+            0-5    0x3F   Dictionary Size
+            6-7    0xC0   Reserved for future use; must be zero for now.
+
+        Dictionary Size is encoded with one-bit mantissa and five-bit
+        exponent. To avoid wasting space, one-byte dictionary has its
+        own special value.
+
+            Raw value   Mantissa   Exponent   Dictionary size
+                0           1          0      1 byte
+                1           2          0      2 bytes
+                2           3          0      3 bytes
+                3           2          1      4 bytes
+                4           3          1      6 bytes
+                5           2          2      8 bytes
+                6           3          2      12 bytes
+                7           2          3      16 bytes
+                8           3          3      24 bytes
+                9           2          4      32 bytes
+              ...         ...        ...      ...
+               61           2         30      2 GiB
+               62           3         30      3 GiB
+               63           2         31      4 GiB (*)
+
+            (*) The real maximum size of the dictionary is one byte
+                less than 4 GiB, because the distance of 4 GiB is
+                reserved for End of Payload Marker.
+
+        Instead of having a table in the decoder, the dictionary size
+        can be decoded using the following C code:
+
+            uint64_t dictionary_size;
+            const uint8_t bits = get_dictionary_flags() & 0x3F;
+            if (bits == 0) {
+                dictionary_size = 1;
+            } else {
+                dictionary_size = 2 | ((bits + 1) & 1);
+                dictionary_size = dictionary_size << ((bits - 1)  / 2);
+            }
+
+
+4.3.5. Branch/Call/Jump Filters for Executables
+
+        These filters convert relative branch, call, and jump
+        instructions to their absolute counterparts in executable
+        files. This conversion increases redundancy and thus
+        compression ratio.
+
+            Size of Filter Properties:  0 or 4 bytes
+            Changes size of data:       No
+
+            Detecting when all of the data has been decoded:
+                Uncompressed size:      Yes
+                End of Payload Marker:  No
+                End of Input:           Yes
+
+        Below is the list of filters in this category. The alignment
+        is the same for both input and output data.
+
+            Filter ID   Alignment   Description
+              0x04       1 byte     x86 filter (BCJ)
+              0x05       4 bytes    PowerPC (big endian) filter
+              0x06      16 bytes    IA64 filter
+              0x07       4 bytes    ARM (little endian) filter
+              0x08       2 bytes    ARM Thumb (little endian) filter
+              0x09       4 bytes    SPARC filter
+
+        If the size of Filter Properties is four bytes, the Filter
+        Properties field contains the start offset used for address
+        conversions. It is stored as an unsigned 32-bit little endian
+        integer. If the size of Filter Properties is zero, the start
+        offset is zero.
+
+        Setting the start offset may be useful if an executable has
+        multiple sections, and there are many cross-section calls.
+        Taking advantage of this feature usually requires usage of
+        the Subblock filter.
+
+
+5. Metadata
+
+        Metadata is stored in Metadata Blocks, which can be in the
+        beginning or at the end of a Multi-Block Stream. Because of
+        Blocks, it is possible to compress Metadata in the same way
+        as the actual data is compressed. This Section describes the
+        format of the data stored in Metadata Blocks.
+
+            +----------------+===============================+
+            | Metadata Flags | Size of Header Metadata Block |
+            +----------------+===============================+
+
+                 +============+===================+=======+=======+
+            ---> | Total Size | Uncompressed Size | Index | Extra |
+                 +============+===================+=======+=======+
+
+        Stream must be parseable backwards. That is, there must be
+        a way to locate the beginning of the Stream by starting from
+        the end of the Stream. Thus, the Footer Metadata Block must
+        contain the Total Size field or the Index field. If the Stream
+        has Header Metadata Block, also the Size of Header Metadata
+        Block field must be present in Footer Metadata Block.
+
+        It must be possible to quickly locate the Blocks in
+        non-streamed mode. Thus, the Index field must be present
+        at least in one Metadata Block.
+
+        If the above conditions are not met, the decoder must indicate
+        an error.
+
+        There should be no additional data after the last field. If
+        there is, the the decoder should indicate an error.
+
+
+5.1. Metadata Flags
+
+        This field describes which fields are present in a Metadata
+        Block:
+
+            Bit(s)  Mask   Desription
+              0     0x01   Size of Header Metadata Block is present.
+              1     0x02   Total Size is present.
+              2     0x04   Uncompressed Size is present.
+              3     0x08   Index is present.
+             4-6    0x70   Reserve for future use; must be zero for now.
+              7     0x80   Extra is present.
+
+        If any reserved bit is set, the decoder must indicate an error.
+        It is possible that there is a new field present which the
+        decoder is not aware of, and can thus parse the Metadata
+        incorrectly.
+
+
+5.2. Size of Header Metadata Block
+
+        This field is present only if the appropriate bit is set in
+        the Metadata Flags field (see Section 5.1).
+
+        Size of Header Metadata Block is needed to make it possible to
+        parse the Stream backwards. The size is stored using the
+        encoding described in Section 1.2. The decoder must verify that
+        that the value stored in this field is non-zero. In Footer
+        Metadata Block, the decoder must also verify that the stored
+        size matches the real size of Header Metadata Block. In the
+        Header Meatadata Block, the value of this field is ignored as
+        long as it is not zero.
+
+
+5.3. Total Size
+
+        This field is present only if the appropriate bit is set in the
+        Metadata Flags field (see Section 5.1).
+
+        This field contains the total size of the Data Blocks in the
+        Stream. Total Size is stored using the encoding described in
+        Section 1.2. If the stored value does not match the real total
+        size of the Data Blocks, the decoder must indicate an error.
+        The value of this field must be non-zero.
+
+        Total Size can be used to quickly locate the beginning or end
+        of the Stream. This can be useful for example when doing
+        random-access reading, and the Index field is not in the
+        Metadata Block currently being read.
+
+        It is useless to have both Total Size and Index in the same
+        Metadata Block, because Total Size can be calculated from the
+        Index field.
+
+
+5.4. Uncompressed Size
+
+        This field is present only if the appropriate bit is set in the
+        Metadata Flags field (see Section 5.1).
+
+        This field contains the total uncompressed size of the Data
+        Blocks in the Stream. Uncompresssed Size is stored using the
+        encoding described in Section 1.2. If the stored value does not
+        match the real uncompressed size of the Data Blocks, the
+        decoder must indicate an error.
+
+        It is useless to have both Uncompressed Size and Index in
+        the same Metadata Block, because Uncompressed Size can be
+        calculated from the Index field.
+
+
+5.5. Index
+
+        +=======================+=============+====================+
+        | Number of Data Blocks | Total Sizes | Uncompressed Sizes |
+        +=======================+=============+====================+
+
+        Index serves several purporses. Using it, one can
+          - verify that all Blocks in a Stream have been processed;
+          - find out the Uncompressed Size of a Stream; and
+          - quickly access the beginning of any Block (random access).
+
+
+5.5.1. Number of Data Blocks
+
+        This field contains the number of Data Blocks in the Stream.
+        The value is stored using the encoding described in Section
+        1.2. If the decoder has decoded all the Data Blocks of the
+        Stream, and then notices that the Number of Records doesn't
+        match the real number of Data Blocks, the decoder must
+        indicate an error. The value of this field must be non-zero.
+
+
+5.5.2. Total Sizes
+
+        +============+============+
+        | Total Size | Total Size | ...
+        +============+============+
+
+        This field lists the Total Sizes of every Data Block in the
+        Stream. There are as many Total Size fields as indicated by
+        the Number of Data Blocks field.
+
+        Total Size is the size of Block Header, Compressed Data, and
+        Block Footer. It is stored using the encoding described in
+        Section 1.2. If the Total Sizes do not match the real sizes
+        of respective Blocks, the decoder should indicate an error.
+        All the Total Size fields must have a non-zero value.
+
+
+5.5.3. Uncompressed Sizes
+
+        +===================+===================+
+        | Uncompressed Size | Uncompressed Size | ...
+        +===================+===================+
+
+        This field lists the Uncompressed Sizes of every Data Block
+        in the Stream. There are as many Uncompressed Size fields as
+        indicated by the Number of Records field.
+
+        Uncompressed Sizes are stored using the encoding described
+        in Section 1.2. If the Uncompressed Sizes do not match the
+        real sizes of respective Blocks, the decoder shoud indicate
+        an error.
+
+
+5.6. Extra
+
+        This field is present only if the appropriate bit is set in the
+        Metadata Flags field (see Section 5.1). Note that the bit does
+        not indicate that there is any data in the Extra field; it only
+        indicates that Extra may be non-empty.
+
+        The Extra field contains only information that is not required
+        to properly uncompress the Stream or to do random-access
+        reading. Supporting the Extra field is optional. In case the
+        decoder doesn't support the Extra field, it should silently
+        ignore it.
+
+        Extra consists of zero or more Records:
+
+            +========+========+
+            | Record | Record | ...
+            +========+========+
+
+        Excluding Records with Record ID 0x00, each Record contains
+        three fields:
+
+            +==========+==============+======+
+            | Reord ID | Size of Data | Data |
+            +==========+==============+======+
+
+        The Record ID and Size of Data are stored using the encoding
+        described in Section 1.2. Data can be binary or UTF-8
+        [RFC-3629] strings. Non-UTF-8 strings should be avoided.
+        Because the Size of Data is known, there is no need to
+        terminate strings with a nul byte, although doing so should
+        not be considered an error.
+
+        The Record IDs are divided in two categories:
+          - Safe-to-Copy Records may be preserved as is when the
+            Stream is modified in ways that don't change the actual
+            uncompressed data. Examples of such operatings include
+            recompressing and adding, modifying, or deleting unrelated
+            Extra Records.
+          - Unsafe-to-Copy Records should be removed (and possibly
+            recreated) when any kind of changes are made to the Stream.
+
+        When the actual uncompressed data is modified, all Records
+        should be removed (and possibly recreated), unless the
+        application knows that the Data stored to the Record(s) is
+        still valid.
+
+        The following subsections describe the standard Record IDs and
+        the format of their Data fields. Safe-to-Copy Records have an
+        odd ID, while Unsafe-to-Copy Records have an even ID.
+
+
+5.6.1. 0x00: Dummy/Padding
+
+        This Record is special, because it doesn't have the Size of
+        Data or Data fields.
+
+        Dummy Records can be used, for example, to fill Metadata Block
+        when a few bytes of extra space has been reserved for it. There
+        can be any number of Dummy Records.
+
+
+5.6.2. 0x01: OpenPGP Signature
+
+        OpenPGP signature is computed from uncompressed data. The
+        signature can be used to verify that the contents of a Stream
+        has been created by a trustworthy source.
+
+        If the decoder supports decoding concatenated Streams, it
+        must indicate an error when verifying OpenPGP signatures if
+        there is more than one Stream.
+
+        OpenPGP format is documented in [RFC-2440].
+
+
+5.6.3. 0x02: Filter Information
+
+        The Filter Information Record contains information about the
+        filters used in the Stream. This field can be used to quickly
+          - display which filters are used in each Block;
+          - check if all the required filters are supported by the
+            current decoder version; and
+          - check how much memory is required to decode each Block.
+
+        The format of the Filter Information field is as follows:
+
+            +=================+=================+
+            | Block 0 Filters | Block 1 Filters | ...
+            +=================+=================+
+
+        There can be at maximum of as many Block Filters fields as
+        there are Data Blocks in the Stream. The format of the Block
+        Filters field is as follows:
+
+            +------------------+======================+============+
+            | Block Properties | List of Filter Flags | Subfilters |
+            +------------------+======================+============+
+
+        Block Properties is a bitfield:
+
+            Bit(s)  Mask  Description
+             0-2    0x07  Number of filters (0-7)
+              3     0x08  End of Payload Marker is used.
+              4     0x10  The Subfilters field is present.
+             5-7    0xE0  Reserved for future use; must be zero for now.
+
+        The contents of the List of Filter Flags field must match the
+        List of Filter Flags field in the respective Block Header.
+
+        The Subfilters field may be present only if the List of Filter
+        Flags contains a Filter Flags field for a Subblock filter. The
+        format of the Subfilters field is as follows:
+
+            +======================+=========================+
+            | Number of Subfilters | List of Subfilter Flags |
+            +======================+=========================+
+
+        The value stored in the Number of Subfilters field is stored
+        using the encoding described in Section 1.2. The List of
+        Subfilter Flags field contains as many Filter Flags fields
+        as indicated by the Number of Subfilters field. These Filter
+        Flags fields list some or all the Subfilters used via the
+        Subblock filter. The order of the listed Subfilters is not
+        significant.
+
+        Decoders supporting this Record should indicate a warning or
+        error if this Record contains Filter Flags that are not
+        actually used by the respective Blocks.
+
+
+5.6.4. 0x03: Comment
+
+        Free-form comment is stored in UTF-8 [RFC-3629] encoding.
+
+        The beginning of a new line should be indicated using the
+        ASCII Line Feed character (0x0A). When the Line Feed character
+        is not the native way to indicate new line in the underlying
+        operating system, the encoder and decoder should convert the
+        newline characters to and from Line Feeds.
+
+
+5.6.5. 0x04: List of Checks
+
+        +=======+=======+
+        | Check | Check | ...
+        +=======+=======+
+
+        There are as many Check fields as there are Blocks in the
+        Stream. The size of Check fields depend on Stream Flags
+        (see Section 2.2.2).
+
+        Decoders supporting this Record should indicate a warning or
+        error if the Checks don't match the respective Blocks.
+
+
+5.6.6. 0x05: Original Filename
+
+        Original filename is stored in UTF-8 [RFC-3629] encoding.
+
+        The filename must not include any path, only the filename
+        itself. Special care must be taken to prevent directory
+        traversal vulnerabilities.
+
+        When files are moved between different operating systems, it
+        is possible that filename valid in the source system is not
+        valid in the target system. It is implementation defined how
+        the decoder handles this kind of situations.
+
+
+5.6.7. 0x07: Modification Time
+
+        Modification time is stored as POSIX time, as an unsigned
+        little endian integer. The number of bits depends on the
+        Size of Data field. Note that the usage of unsigned integer
+        limits the earliest representable time to 1970-01-01T00:00:00.
+
+
+5.6.8. 0x09: High-Resolution Modification Time
+
+        This Record extends the `0x04: Modification time' Record with
+        a subsecond time information. There are two supported formats
+        of this field, which can be distinguished by looking at the
+        Size of Data field.
+
+        Size  Data
+          3   [0; 9,999,999] times 100 nanoseconds
+          4   [0; 999,999,999] nanoseconds
+
+        The value is stored as an unsigned 24-bit or 32-bit little
+        endian integer.
+
+
+5.6.9. 0x0B: MIME Type
+
+        MIME type of the uncompressed Stream. This can be used to
+        detect the content type. [IANA-MIME]
+
+
+5.6.10. 0x0D: Homepage URL
+
+        This field can be used, for example, when distributing software
+        packages (sources or binaries). The field would indicate the
+        homepage of the program.
+
+        For details on how to encode URLs, see [RFC-1738].
+
+
+6. Custom Filter and Extra Record IDs
+
+        If a developer wants to use custom Filter or Extra Record IDs,
+        he has two choices. The first choice is to contact Lasse Collin
+        and ask him to allocate a range of IDs for the developer.
+
+        The second choice is to generate a 40-bit random integer,
+        which the developer can use as his personal Developer ID.
+        To minimalize the risk of collisions, Developer ID has to be
+        a randomly generated integer, not manually selected "hex word".
+        The following command, which works on many free operating
+        systems, can be used to generate Developer ID:
+
+            dd if=/dev/urandom bs=5 count=1 | hexdump
+
+        The developer can then use his Developer ID to create unique
+        (well, hopefully unique) Filter and Extra Record IDs.
+
+            Bits    Mask                    Description
+             0-15   0x0000_0000_0000_FFFF   Filter or Extra Record ID
+            16-55   0x00FF_FFFF_FFFF_0000   Developer ID
+            56-62   0x7F00_0000_0000_0000   Static prefix: 0x7F
+
+        The resulting 63-bit integer will use 9 bytes of space when
+        stored using the encoding described in Section 1.2. To get
+        a shorter ID, see the beginning of this Section how to
+        request a custom ID range.
+
+        Note that Filter and Metadata Record IDs are in their own
+        namespaces. That is, you can use the same ID value as Filter ID
+        and Metadata Record ID, and the meanings of the IDs do not need
+        to be related to each other.
+
+
+6.1. Reserved Custom Filter ID Ranges
+
+        Range                       Description
+        0x0000_0000 - 0x0000_00DF   IDs fitting into the Misc field
+        0x0002_0000 - 0x0007_FFFF   Reserved to ease .7z compatibility
+        0x0200_0000 - 0x07FF_FFFF   Reserved to ease .7z compatibility
+
+
+7. Cyclic Redundancy Checks
+
+        There are several incompatible variations to calculate CRC32
+        and CRC64. For simplicity and clarity, complete examples are
+        provided to calculate the checks as they are used in this file
+        format. Implementations may use different code as long as it
+        gives identical results.
+
+        The program below reads data from standard input, calculates
+        the CRC32 and CRC64 values, and prints the calculated values
+        as big endian hexadecimal strings to standard output.
+
+            #include <sys/types.h>
+            #include <inttypes.h>
+            #include <stdio.h>
+
+            uint32_t crc32_table[256];
+            uint64_t crc64_table[256];
+
+            void
+            init(void)
+            {
+                static const uint32_t poly32 = UINT32_C(0xEDB88320);
+                static const uint64_t poly64
+                        = UINT64_C(0xC96C5795D7870F42);
+
+                for (size_t i = 0; i < 256; ++i) {
+                    uint32_t crc32 = i;
+                    uint64_t crc64 = i;
+
+                    for (size_t j = 0; j < 8; ++j) {
+                        if (crc32 & 1)
+                            crc32 = (crc32 >> 1) ^ poly32;
+                        else
+                            crc32 >>= 1;
+
+                        if (crc64 & 1)
+                            crc64 = (crc64 >> 1) ^ poly64;
+                        else
+                            crc64 >>= 1;
+                    }
+
+                    crc32_table[i] = crc32;
+                    crc64_table[i] = crc64;
+                }
+            }
+
+            uint32_t
+            crc32(const uint8_t *buf, size_t size, uint32_t crc)
+            {
+                crc = ~crc;
+                for (size_t i = 0; i < size; ++i)
+                    crc = crc32_table[buf[i] ^ (crc & 0xFF)]
+                            ^ (crc >> 8);
+                return ~crc;
+            }
+
+            uint64_t
+            crc64(const uint8_t *buf, size_t size, uint64_t crc)
+            {
+                crc = ~crc;
+                for (size_t i = 0; i < size; ++i)
+                    crc = crc64_table[buf[i] ^ (crc & 0xFF)]
+                            ^ (crc >> 8);
+                return ~crc;
+            }
+
+            int
+            main()
+            {
+                init();
+
+                uint32_t value32 = 0;
+                uint64_t value64 = 0;
+                uint64_t total_size = 0;
+                uint8_t buf[8192];
+
+                while (1) {
+                    const size_t buf_size = fread(buf, 1, 8192, stdin);
+                    if (buf_size == 0)
+                        break;
+
+                    total_size += buf_size;
+                    value32 = crc32(buf, buf_size, value32);
+                    value64 = crc64(buf, buf_size, value64);
+                }
+
+                printf("Bytes:  %" PRIu64 "\n", total_size);
+                printf("CRC-32: 0x%08" PRIX32 "\n", value32);
+                printf("CRC-64: 0x%016" PRIX64 "\n", value64);
+
+                return 0;
+            }
+
+
+8. References
+
+8.1. Normative References
+
+        [RFC-1738]
+        Uniform Resource Locators (URL)
+        http://www.ietf.org/rfc/rfc1738.txt
+
+        [RFC-2119]
+        Key words for use in RFCs to Indicate Requirement Levels
+        http://www.ietf.org/rfc/rfc2119.txt
+
+        [RFC-2440]
+        OpenPGP Message Format
+        http://www.ietf.org/rfc/rfc2440.txt
+
+        [RFC-3629]
+        UTF-8, a transformation format of ISO 10646
+        http://www.ietf.org/rfc/rfc3629.txt
+
+        [IANA-MIME]
+        MIME Media Types
+        http://www.iana.org/assignments/media-types/
+
+
+8.2. Informative References
+
+        LZMA SDK - The original LZMA implementation
+        http://7-zip.org/sdk.html
+
+        LZMA Utils - LZMA adapted to POSIX-like systems
+        http://tukaani.org/lzma/
+
+        [RFC-1952]
+        GZIP file format specification version 4.3
+        http://www.ietf.org/rfc/rfc1952.txt
+          - Notation of byte boxes in section `2.1. Overall conventions'
+
+        [GNU-tar]
+        GNU tar 1.16.1 manual
+        http://www.gnu.org/software/tar/manual/html_node/Blocking-Factor.html
+          - Node 9.4.2 `Blocking Factor', paragraph that begins
+            `gzip will complain about trailing garbage'
+          - Note that this URL points to the latest version of the
+            manual, and may some day not contain the note which is in
+            1.16.1. For the exact version of the manual, download GNU
+            tar 1.16.1: ftp://ftp.gnu.org/pub/gnu/tar/tar-1.16.1.tar.gz
+

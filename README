@@ -1,0 +1,151 @@
+
+LZMA Utils
+----------
+
+Warning
+
+    This is an early alpha version. Don't trust the files produced by
+    this version of the software - not even if the software can
+    uncompress the files properly! This is because the file format
+    isn't completely frozen yet.
+
+    So please test a lot, but don't use for anything serious yet.
+
+
+Overview
+
+    LZMA is a general purporse compression algorithm designed by
+    Igor Pavlov as part of 7-Zip. It provides high compression ratio
+    while keeping the decompression speed fast.
+
+    LZMA Utils are an attempt to make LZMA compression easy to use
+    on free (as in freedom) operating systems. This is achieved by
+    providing tools and libraries which are similar to use than the
+    equivalents of the most popular existing compression algorithms.
+
+    LZMA Utils consist of a few relatively separate parts:
+      * liblzma is an encoder/decoder library with support for several
+        filters (algorithm implementations). The primary filter is LZMA.
+      * libzfile enables reading from and writing to gzip, bzip2 and
+        LZMA compressed and uncompressed files with an API similar to
+        the standard ANSI-C file I/O.
+        [ NOTE: libzfile is not implemented yet. ]
+      * lzma command line tool has almost identical syntax than gzip
+        and bzip2. It makes LZMA easy for average users, but also
+        provides advanced options to finetune the compression settings.
+      * A few shell scripts make diffing and grepping LZMA compressed
+        files easy. The scripts were adapted from gzip and bzip2.
+
+
+Supported platforms
+
+    LZMA Utils are developed on GNU+Linux, but they should work at
+    least on *BSDs and Solaris. They probably work on some other
+    POSIX-like operating systems too.
+
+    If you use GCC to compile LZMA Utils, you need at least version
+    3.x.x. GCC version 2.xx.x doesn't support some C99 features used
+    in LZMA Utils source code, thus GCC 2 won't compile LZMA Utils.
+
+    If you have written patches to make LZMA Utils to work on previously
+    unsupported platform, please send the patches to me! I will consider
+    including them to the official version. It's nice to minimize the
+    need of third-party patching.
+
+    One exception: Don't request or send patches to change the whole
+    source package to C89. I find C99 substantially nicer to write and
+    maintain. However, the public library headers must be in C89 to
+    avoid frustrating those who maintain programs, which are strictly
+    in C89 or C++.
+
+
+configure options
+
+    If you are not familiar with `configure' scripts, read the file
+    INSTALL first.
+
+    In most cases, the default --enable/--disable/--with/--without options
+    are what you want. Don't touch them if you are unsure.
+
+    --disable-encoder
+                Do not compile the encoder component of liblzma. This
+                implies --disable-match-finders. If you need only
+                the decoder, you can decrease the library size
+                dramatically with this option.
+
+                The default is to build the encoder.
+
+    --disable-decoder
+                Do not compile the decoder component of liblzma.
+
+                The default is to build the decoder.
+
+    --enable-filters=
+                liblzma supports several filters. See liblzma-intro.txt
+                for a little more information about these.
+
+                The default is to build all the filters.
+
+    --enable-match-finders=
+                liblzma includes two categories of match finders:
+                hash chains and binary trees. Hash chains (hc3 and hc4)
+                are quite fast but they don't provide the best compression
+                ratio. Binary trees (bt2, bt3 and bt4) give excellent
+                compression ratio, but they are slower and need more
+                memory than hash chains.
+
+                You need to enable at least one match finder to build the
+                LZMA filter encoder. Usually hash chains are used only in
+                the fast mode, while binary trees are used to when the best
+                compression ratio is wanted.
+
+                The default is to build all the match finders.
+
+    --enable-checks=
+                liblzma support multiple integrity checks. CRC32 is
+                mandatory, and cannot be omitted. See liblzma-intro.txt
+                for more information about usage of the integrity checks.
+
+    --disable-assembler
+                liblzma includes some assembler optimizations. Currently
+                there is only assembler code for CRC32 and CRC64 for
+                32-bit x86.
+
+                All the assembler code in liblzma is position-independent
+                code, which is suitable for use in shared libraries and
+                position-independent executables.
+
+    --enable-small
+                Omits precomputed tables. This makes liblzma a few KiB
+                smaller. Startup time increases, because the tables need
+                to be computed first.
+
+    --enable-debug
+                This enables the assert() macro and possibly some other
+                run-time consistency checks. It slows down things somewhat,
+                so you normally don't want to have this enabled.
+
+    --enable-werror
+                Makes all compiler warnings an error, that abort the
+                compilation. This may help catching bugs, and should work
+                on most systems. This has no effect on the resulting
+                binaries.
+
+
+Static vs. dynamic linking of the command line tools
+
+    By default, the command line tools are linked statically against
+    liblzma. There a are a few reasons:
+
+      - The executable(s) can be in /bin while the shared liblzma can still
+        be in /usr/lib (if the distro uses such file system hierachy).
+
+      - It's easier to copy the executables to other systems, since they
+        depend only on libc.
+
+      - It's slightly faster on some architectures like x86.
+
+    If you don't like this, you can get the command line tools linked
+    against the shared liblzma by specifying --disable-static to configure.
+    This disables building static liblzma completely.
+

@@ -1,0 +1,61 @@
+.TH LZGREP 1 "24 Jun 2005" "LZMA utils"
+.SH NAME
+lzgrep \- search LZMA compressed files for a regular expression
+.SH SYNOPSIS
+.B lzgrep
+.RI [ grep_options ]
+.RB  [ \-e ]
+.I pattern
+.IR filename ".\|.\|."
+.br
+.B lzegrep
+.RB ...
+.br
+.B lzfgrep
+.RB ...
+.SH DESCRIPTION
+.B  lzgrep
+is used to invoke the
+.BR grep (1)
+on LZMA compressed files. All options specified are passed directly to
+.BR grep .
+If no file is specified, then the standard input is decompressed
+if necessary and fed to grep.
+Otherwise the given files are uncompressed if necessary and fed to
+.BR grep .
+.PP
+If
+.B lzgrep
+is invoked as
+.B lzegrep
+or
+.B lzfgrep
+then
+.B egrep
+or
+.B fgrep
+is used instead of
+.B grep.
+If the GREP environment variable is set,
+.B lzgrep
+uses it as the
+.B grep
+program to be invoked. For example:
+
+    for sh:  GREP=fgrep  lzgrep string files
+    for csh: (setenv GREP fgrep; lzgrep string files)
+.SH AUTHORS
+Original
+.BR zgrep (1)
+manual page by Charles Levert <charles@comm.polymtl.ca>.
+.PP
+Minor modifications for LZMA utils by Lasse Collin
+<lasse.collin@tukaani.org>.
+.SH "SEE ALSO"
+.BR grep (1),
+.BR egrep (1),
+.BR fgrep (1),
+.BR lzdiff (1),
+.BR lzmore (1),
+.BR lzma (1),
+.BR lzmash (1)

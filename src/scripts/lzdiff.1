@@ -1,0 +1,51 @@
+.TH LZDIFF 1 "24 Jun 2005" "LZMA utils"
+.SH NAME
+lzcmp, lzdiff \- compare LZMA compressed files
+.SH SYNOPSIS
+.B lzcmp
+.RI [ cmp_options "] " file1 " [" file2 ]
+.br
+.B zdiff
+.RI [ diff_options "] " file1 " [" file2 ]
+.SH DESCRIPTION
+.B  lzcmp
+and 
+.B zdiff
+are used to invoke the
+.BR cmp (1)
+or the
+.BR diff (1)
+program on compressed files.  All options specified are passed directly to
+.B cmp
+or
+.BR diff "."
+If only 1 file is specified, then the files compared are
+.I file1
+and an uncompressed
+.IB file1 ".gz\fR."
+If two files are specified, then they are uncompressed if necessary and fed to
+.B cmp
+or
+.BR diff "."
+The exit status from 
+.B cmp
+or
+.B diff
+is preserved.
+.SH AUTHORS
+This manual page was ripped from
+.BR zdiff (1)
+shipped in gzip package.
+.SH "SEE ALSO"
+.BR cmp (1),
+.BR diff (1),
+.BR lzmore(1),
+.BR lzgrep(1),
+.BR lzma (1),
+.BR lzmash (1)
+.SH BUGS
+Messages from the
+.B cmp
+or
+.B diff
+programs refer to temporary filenames instead of those specified.

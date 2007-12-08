@@ -1,0 +1,46 @@
+
+Reporting bugs
+--------------
+
+    Naturally it is easiest for me if you already know what causes the
+    unexpected behavior. Even better if you have a patch to propose.
+    However, quite often the reason for unexpected behavior is unknown,
+    so below are a few things what to do before sending a bug report.
+
+    In case of a crash (usually segmentation violation):
+
+      1. Try to create a small example how to reprocude the issue.
+
+      2. If you are writing an application using liblzma or libzfile,
+         double check that you are using the libraries correctly (for
+         example, that you didn't forget to call lzma_init()). If it is
+         the command line tool included in LZMA Utils that is crashing,
+         ignore this step.
+
+      3. Compile LZMA Utils with debugging code using configure switch
+         `--enable-debug'. If you are using GCC as the compiler, use
+         CFLAGS='-O0 -ggdb'. Don't strip the resulting binaries.
+
+      4. Turn on core dumps. The exact command depends on your shell;
+         for example in GNU bash it is done with `ulimit -c unlimited',
+         and in tcsh with `limit coredumpsize unlimited'.
+
+      5. Try to reproduce the suspected bug. If you get `assertion failed'
+         message, be sure to include the complete message in your bug
+         report. If the application leaves a coredump, get a backtrace
+         using gdb:
+           $ gdb /path/to/app-binary   # Loads the app to the debugger.
+           (gdb) core core   # Opens the coredump.
+           (gdb) bt   # Prints the backtrace. Copy & paste to bug report.
+           (gdb) quit   # Quits gdb.
+
+    Send your bug report to Lasse Collin <lasse.collin@tukaani.org>. Don't
+    send the core dump file or the actual executables. If you have a small
+    example file(s) (total size less than 100 KiB), please include it/them
+    as an attachment.
+
+    Do NOT complain about problems with LZMA Utils to Igor Pavlov.
+    Although the code of LZMA Utils is derived from his code, there are
+    a lot of changes, which may have introduced bugs not present in
+    the original version.
+

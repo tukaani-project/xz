@@ -1,0 +1,107 @@
+
+Introduction to the lzma command line tool
+------------------------------------------
+
+Overview
+
+    The lzma command line tool is similar to gzip and bzip2, but for
+    compressing and uncompressing .lzma files.
+
+
+Supported file formats
+
+    By default, the tool creates files in the new .lzma format. This can
+    be overriden with --format=FMT command line option. Use --format=alone
+    to create files in the old LZMA_Alone format.
+
+    By default, the tool uncompresses both the new .lzma format and
+    LZMA_Alone format. This is to make it transparent to switch from
+    the old LZMA_Alone format to the new .lzma format. Since both
+    formats use the same filename suffix, average user should never
+    notice which format was used.
+
+
+Differences to gzip and bzip2
+
+  Standard input and output
+
+    Both gzip and bzip2 refuse to write compressed data to a terminal and
+    read compressed data from a terminal. With gzip (but not with bzip2),
+    this can be overriden with the `--force' option. lzma follows the
+    behavior of gzip here.
+
+  Usage of LZMA_OPT environment variable
+
+    gzip and bzip2 read GZIP and BZIP2 environment variables at startup.
+    These variables may contain extra command line options.
+
+    gzip and bzip2 allow passing not only options, but also end-of-options
+    indicator (`--') and filenames via the environment variable. No quoting
+    is supported with the filenames.
+
+    Here are examples with gzip. bzip2 behaves identically.
+
+        bash$ echo asdf > 'foo bar'
+        bash$ GZIP='"foo bar"' gzip
+        gzip: "foo: No such file or directory
+        gzip: bar": No such file or directory
+
+        bash$ GZIP=-- gzip --help
+        gzip: --help: No such file or directory
+
+    lzma silently ignores all non-option arguments given via the
+    environment variable LZMA_OPT. Like on the command line, everything
+    after `--' is taken as non-options, and thus ignored in LZMA_OPT.
+
+        bash$ LZMA_OPT='--help' lzma --version     # Displays help
+        bash$ LZMA_OPT='-- --help' lzma --version  # Displays version
+
+
+Filter chain presets
+
+    Like in gzip and bzip2, lzma supports numbered presets from 1 to 9
+    where 1 is the fastest and 9 the best compression. 1 and 2 are for
+    fast compressing with small memory usage, 3 to 6 for good compression
+    ratio with medium memory usage, and 7 to 9 for excellent compression
+    ratio with higher memory requirements. The default is 7 if memory
+    usage limit allows.
+
+    In future, there will probably be an option like --preset=NAME, which
+    will contain more special presets for specific file types.
+
+    It's also possible that there will be some heuristics to select good
+    filters. For example, the tool could detect when a .tar archive is
+    being compressed, and enable x86 filter only for those files in the
+    .tar archive that are ELF or PE executables for x86.
+
+
+Specifying custom filter chains
+
+    Custom filter chains are specified by using long options with the name
+    of the filters in correct order. For example, to pass the input data to
+    the x86 filter and the output of that to the LZMA filter, the following
+    command will do:
+
+        lzma --x86 --lzma filename
+
+    Some filters accept options, which are specified as a comma-separated
+    list of key=value pairs:
+
+        lzma --delta=distance=4 --lzma=dict=4Mi,lc=8,lp=2 filename
+
+
+Memory usage control
+
+    By default, the command line tool limits memory usage to 1/3 of the
+    available physical RAM. If no preset or custom filter chain has been
+    given, the default preset will be used. If the memory limit is too
+    low for the default preset, the tool will silently switch to lower
+    preset.
+
+    When a preset or a custom filter chain has been specified and the
+    memory limit is too low, an error message is displayed and no files
+    are processed.
+
+    If the decoder hits the memory usage limit, an error is displayed and
+    no more files are processed.
+

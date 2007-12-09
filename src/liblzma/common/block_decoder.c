@@ -343,12 +343,7 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 					|| options->has_backward_size)))
 		return LZMA_PROG_ERROR;
 
-	{
-		const lzma_ret ret = lzma_check_init(
-				&next->coder->check, options->check);
-		if (ret != LZMA_OK)
-			return ret;
-	}
+	return_if_error(lzma_check_init(&next->coder->check, options->check));
 
 	if (!options->has_eopm && options->uncompressed_size == 0) {
 		if (!is_size_valid(0, options->compressed_size))
@@ -366,16 +361,11 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->sequence = SEQ_CODE;
 	}
 
-	{
-		const lzma_ret ret = lzma_raw_decoder_init(
-				&next->coder->next, allocator,
-				options->filters, options->has_eopm
-					? LZMA_VLI_VALUE_UNKNOWN
-					: options->uncompressed_size,
-				true);
-		if (ret != LZMA_OK)
-			return ret;
-	}
+	return_if_error(lzma_raw_decoder_init(&next->coder->next, allocator,
+			options->filters, options->has_eopm
+				? LZMA_VLI_VALUE_UNKNOWN
+				: options->uncompressed_size,
+			true));
 
 	next->coder->options = options;
 	next->coder->pos = 0;

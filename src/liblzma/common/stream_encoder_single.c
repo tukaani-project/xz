@@ -71,7 +71,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 		break;
 
 	case SEQ_DATA: {
-		lzma_ret ret = coder->block_encoder.code(
+		const lzma_ret ret = coder->block_encoder.code(
 				coder->block_encoder.coder, allocator,
 				in, in_pos, in_size,
 				out, out_pos, out_size, action);
@@ -83,10 +83,8 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 		assert(coder->header_size >= LZMA_STREAM_TAIL_SIZE);
 		coder->header_size = LZMA_STREAM_TAIL_SIZE;
 
-		ret = lzma_stream_tail_encode(
-				coder->header, &coder->stream_flags);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(lzma_stream_tail_encode(
+				coder->header, &coder->stream_flags));
 
 		coder->sequence = SEQ_FOOTER;
 		break;

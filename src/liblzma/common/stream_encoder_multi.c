@@ -108,18 +108,15 @@ block_header_encode(lzma_coder *coder, lzma_allocator *allocator,
 				coder->info, type == BLOCK_HEADER_METADATA);
 	}
 
-	lzma_ret ret = lzma_block_header_size(&coder->block_options);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(lzma_block_header_size(&coder->block_options));
 
 	coder->header_size = coder->block_options.header_size;
 	coder->header = lzma_alloc(coder->header_size, allocator);
 	if (coder->header == NULL)
 		return LZMA_MEM_ERROR;
 
-	ret = lzma_block_header_encode(coder->header, &coder->block_options);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(lzma_block_header_encode(
+			coder->header, &coder->block_options));
 
 	coder->header_pos = 0;
 	return LZMA_OK;
@@ -130,18 +127,15 @@ static lzma_ret
 metadata_encoder_init(lzma_coder *coder, lzma_allocator *allocator,
 		lzma_metadata *metadata, block_type type)
 {
-	lzma_ret ret = lzma_info_metadata_set(coder->info, allocator,
-			metadata, type == BLOCK_HEADER_METADATA, false);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(lzma_info_metadata_set(coder->info, allocator,
+			metadata, type == BLOCK_HEADER_METADATA, false));
 
 	const lzma_vli metadata_size = lzma_metadata_size(metadata);
 	if (metadata_size == 0)
 		return LZMA_PROG_ERROR;
 
-	ret = block_header_encode(coder, allocator, metadata_size, type);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(block_header_encode(
+			coder, allocator, metadata_size, type));
 
 	return lzma_metadata_encoder_init(&coder->next, allocator,
 			&coder->block_options, metadata);
@@ -151,14 +145,10 @@ metadata_encoder_init(lzma_coder *coder, lzma_allocator *allocator,
 static lzma_ret
 data_encoder_init(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_ret ret = lzma_info_iter_next(&coder->iter, allocator);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(lzma_info_iter_next(&coder->iter, allocator));
 
-	ret = block_header_encode(coder, allocator,
-			LZMA_VLI_VALUE_UNKNOWN, BLOCK_DATA);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(block_header_encode(coder, allocator,
+			LZMA_VLI_VALUE_UNKNOWN, BLOCK_DATA));
 
 	return lzma_block_encoder_init(&coder->next, allocator,
 			&coder->block_options);
@@ -233,10 +223,8 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			.extra = coder->stream_options->header,
 		};
 
-		const lzma_ret ret = metadata_encoder_init(coder, allocator,
-				&metadata, BLOCK_HEADER_METADATA);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(metadata_encoder_init(coder, allocator,
+				&metadata, BLOCK_HEADER_METADATA));
 
 		coder->sequence = SEQ_HEADER_METADATA_COPY;
 		break;
@@ -253,10 +241,8 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			.extra = coder->stream_options->footer,
 		};
 
-		const lzma_ret ret = metadata_encoder_init(coder, allocator,
-				&metadata, BLOCK_FOOTER_METADATA);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(metadata_encoder_init(coder, allocator,
+				&metadata, BLOCK_FOOTER_METADATA));
 
 		coder->sequence = SEQ_FOOTER_METADATA_COPY;
 		break;
@@ -265,19 +251,17 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 	case SEQ_HEADER_METADATA_CODE:
 	case SEQ_FOOTER_METADATA_CODE: {
 		size_t dummy = 0;
-		lzma_ret ret = coder->next.code(coder->next.coder,
+		const lzma_ret ret = coder->next.code(coder->next.coder,
 				allocator, NULL, &dummy, 0,
 				out, out_pos, out_size, LZMA_RUN);
 		if (ret != LZMA_STREAM_END)
 			return ret;
 
-		ret = lzma_info_size_set(coder->info,
+		return_if_error(lzma_info_size_set(coder->info,
 				coder->sequence == SEQ_HEADER_METADATA_CODE
 					? LZMA_INFO_HEADER_METADATA
 					: LZMA_INFO_FOOTER_METADATA,
-				coder->block_options.total_size);
-		if (ret != LZMA_OK)
-			return ret;
+				coder->block_options.total_size));
 
 		++coder->sequence;
 		break;
@@ -299,9 +283,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			}
 		}
 
-		const lzma_ret ret = data_encoder_init(coder, allocator);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(data_encoder_init(coder, allocator));
 
 		coder->sequence = SEQ_DATA_COPY;
 		break;
@@ -315,17 +297,15 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			LZMA_FINISH,
 		};
 
-		lzma_ret ret = coder->next.code(coder->next.coder,
+		const lzma_ret ret = coder->next.code(coder->next.coder,
 				allocator, in, in_pos, in_size,
 				out, out_pos, out_size, convert[action]);
 		if (ret != LZMA_STREAM_END || action == LZMA_SYNC_FLUSH)
 			return ret;
 
-		ret = lzma_info_iter_set(&coder->iter,
+		return_if_error(lzma_info_iter_set(&coder->iter,
 				coder->block_options.total_size,
-				coder->block_options.uncompressed_size);
-		if (ret != LZMA_OK)
-			return ret;
+				coder->block_options.uncompressed_size));
 
 		coder->sequence = SEQ_DATA_INIT;
 		break;
@@ -344,10 +324,8 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 		if (coder->header == NULL)
 			return LZMA_MEM_ERROR;
 
-		const lzma_ret ret = lzma_stream_tail_encode(
-				coder->header, &flags);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(lzma_stream_tail_encode(
+				coder->header, &flags));
 
 		coder->header_size = LZMA_STREAM_TAIL_SIZE;
 		coder->header_pos = 0;

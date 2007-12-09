@@ -141,14 +141,11 @@ metadata_init(lzma_coder *coder, lzma_allocator *allocator)
 static lzma_ret
 data_init(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_ret ret = lzma_info_iter_next(&coder->iter, allocator);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(lzma_info_iter_next(&coder->iter, allocator));
 
-	ret = lzma_info_iter_set(&coder->iter, LZMA_VLI_VALUE_UNKNOWN,
-			coder->block_options.uncompressed_size);
-	if (ret != LZMA_OK)
-		return ret;
+	return_if_error(lzma_info_iter_set(
+			&coder->iter, LZMA_VLI_VALUE_UNKNOWN,
+			coder->block_options.uncompressed_size));
 
 	coder->block_options.total_size = coder->iter.total_size;
 	coder->block_options.uncompressed_size = coder->iter.uncompressed_size;
@@ -207,11 +204,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		coder->block_options.check = coder->header_flags.check;
 		coder->block_options.has_crc32 = coder->header_flags.has_crc32;
 
-		const lzma_ret ret = lzma_block_header_decoder_init(
+		return_if_error(lzma_block_header_decoder_init(
 				&coder->block_header_decoder, allocator,
-				&coder->block_options);
-		if (ret != LZMA_OK)
-			return ret;
+				&coder->block_options));
 
 		coder->sequence = SEQ_BLOCK_HEADER_CODE;
 	}

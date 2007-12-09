@@ -179,14 +179,8 @@ delta_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	memzero(next->coder->history, LZMA_DELTA_DISTANCE_MAX);
 
 	// Initialize the next decoder in the chain, if any.
-	{
-		const lzma_ret ret = lzma_next_filter_init(&next->coder->next,
+	return lzma_next_filter_init(&next->coder->next,
 				allocator, filters + 1);
-		if (ret != LZMA_OK)
-			return ret;
-	}
-
-	return LZMA_OK;
 }
 
 

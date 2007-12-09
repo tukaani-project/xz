@@ -295,13 +295,10 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		// Grab the new Subblock Data Size and reallocate the buffer.
 		if (coder->subblock.size == 0 && coder->options != NULL
 				&& coder->options->subblock_data_size
-					!= coder->subblock.limit) {
-			const lzma_ret ret = subblock_data_size(coder,
+					!= coder->subblock.limit)
+			return_if_error(subblock_data_size(coder,
 					allocator, coder->options
-						->subblock_data_size);
-			if (ret != LZMA_OK)
-				return ret;
-		}
+						->subblock_data_size));
 
 		if (coder->subfilter.mode == SUB_NONE) {
 			assert(coder->subfilter.subcoder.code == NULL);
@@ -638,17 +635,15 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		options[0] = coder->options->subfilter_options;
 		options[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
-		lzma_ret ret = lzma_raw_encoder_init(
+		return_if_error(lzma_raw_encoder_init(
 				&coder->subfilter.subcoder, allocator,
-				options, LZMA_VLI_VALUE_UNKNOWN, false);
-		if (ret != LZMA_OK)
-			return ret;
+				options, LZMA_VLI_VALUE_UNKNOWN, false));
 
 		// Encode the Filter Flags field into a buffer. This should
 		// never fail since we have already successfully initialized
 		// the Subfilter itself. Check it still, and return
 		// LZMA_PROG_ERROR instead of whatever the ret would say.
-		ret = lzma_filter_flags_size(
+		lzma_ret ret = lzma_filter_flags_size(
 				&coder->subfilter.flags_size, options);
 		assert(ret == LZMA_OK);
 		if (ret != LZMA_OK)
@@ -769,6 +764,9 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		if (next->coder == NULL)
 			return LZMA_MEM_ERROR;
 
+		next->code = &subblock_encode;
+		next->end = &subblock_encoder_end;
+
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 		next->coder->subblock.data = NULL;
 		next->coder->subblock.limit = 0;
@@ -816,26 +814,9 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		subblock_size_limit = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT;
 	}
 
-	{
-		const lzma_ret ret = subblock_data_size(next->coder, allocator,
-				subblock_size_limit);
-		if (ret != LZMA_OK) {
-			subblock_encoder_end(next->coder, allocator);
-			return ret;
-		}
-	}
+	return_if_error(subblock_data_size(next->coder, allocator,
+				subblock_size_limit));
 
-	{
-		const lzma_ret ret = lzma_next_filter_init(&next->coder->next,
-				allocator, filters + 1);
-		if (ret != LZMA_OK) {
-			subblock_encoder_end(next->coder, allocator);
-			return ret;
-		}
-	}
-
-	next->code = &subblock_encode;
-	next->end = &subblock_encoder_end;
-
-	return LZMA_OK;
+	return lzma_next_filter_init(
+			&next->coder->next, allocator, filters + 1);
 }

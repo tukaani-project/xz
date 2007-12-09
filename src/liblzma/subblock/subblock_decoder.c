@@ -224,11 +224,9 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				return LZMA_DATA_ERROR;
 
 			assert(coder->filter_flags.options == NULL);
-			const lzma_ret ret = lzma_filter_flags_decoder_init(
+			return_if_error(lzma_filter_flags_decoder_init(
 					&coder->filter_flags_decoder,
-					allocator, &coder->filter_flags);
-			if (ret != LZMA_OK)
-				return ret;
+					allocator, &coder->filter_flags));
 
 			coder->got_output_with_subfilter = false;
 
@@ -491,7 +489,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 	}
 
 	case SEQ_FILTER_FLAGS: {
-		lzma_ret ret = coder->filter_flags_decoder.code(
+		const lzma_ret ret = coder->filter_flags_decoder.code(
 				coder->filter_flags_decoder.coder, allocator,
 				in, in_pos, in_size, NULL, NULL, 0, LZMA_RUN);
 		if (ret != LZMA_STREAM_END)
@@ -528,10 +526,9 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		if (filters[0].id == LZMA_FILTER_LZMA)
 			filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
-		ret = lzma_raw_decoder_init(&coder->subfilter, allocator,
-				filters, LZMA_VLI_VALUE_UNKNOWN, false);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(lzma_raw_decoder_init(
+				&coder->subfilter, allocator,
+				filters, LZMA_VLI_VALUE_UNKNOWN, false));
 
 		coder->sequence = SEQ_FLAGS;
 		break;
@@ -640,6 +637,9 @@ lzma_subblock_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		if (next->coder == NULL)
 			return LZMA_MEM_ERROR;
 
+		next->code = &subblock_decode;
+		next->end = &subblock_decoder_end;
+
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 		next->coder->subfilter = LZMA_NEXT_CODER_INIT;
 		next->coder->filter_flags_decoder = LZMA_NEXT_CODER_INIT;
@@ -665,17 +665,6 @@ lzma_subblock_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	else
 		next->coder->allow_subfilters = false;
 
-	{
-		const lzma_ret ret = lzma_next_filter_init(&next->coder->next,
-				allocator, filters + 1);
-		if (ret != LZMA_OK) {
-			subblock_decoder_end(next->coder, allocator);
-			return ret;
-		}
-	}
-
-	next->code = &subblock_decode;
-	next->end = &subblock_decoder_end;
-
-	return LZMA_OK;
+	return lzma_next_filter_init(
+			&next->coder->next, allocator, filters + 1);
 }

@@ -693,7 +693,7 @@ test9(void)
 
 
 int
-main()
+main(void)
 {
 	lzma_init();
 

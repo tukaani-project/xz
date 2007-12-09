@@ -79,7 +79,7 @@ test_crc64(void)
 
 
 int
-main()
+main(void)
 {
 	bool error = false;
 

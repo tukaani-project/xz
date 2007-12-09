@@ -21,21 +21,21 @@
 
 
 int
-main()
+main(void)
 {
-	lzma_index index[3] = {
-		{ 22, 33, index + 1 },
-		{ 44, 55, index + 2 },
+	lzma_index my_index[3] = {
+		{ 22, 33, my_index + 1 },
+		{ 44, 55, my_index + 2 },
 		{ 66, 77, NULL },
 	};
 
-	lzma_index *i = lzma_index_dup(index, NULL);
+	lzma_index *i = lzma_index_dup(my_index, NULL);
 	expect(i != NULL);
 
-	expect(lzma_index_is_equal(index, i));
+	expect(lzma_index_is_equal(my_index, i));
 
 	i->next->next->uncompressed_size = 99;
-	expect(!lzma_index_is_equal(index, i));
+	expect(!lzma_index_is_equal(my_index, i));
 
 	lzma_index_free(i, NULL);
 

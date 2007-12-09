@@ -310,7 +310,7 @@ test_lzma(void)
 
 
 int
-main()
+main(void)
 {
 	lzma_init();
 

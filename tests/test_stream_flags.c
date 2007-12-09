@@ -162,7 +162,7 @@ test_decode_invalid(void)
 
 
 int
-main()
+main(void)
 {
 	lzma_init();
 

@@ -177,9 +177,9 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		switch (in[*in_pos] >> 4) {
 		case FLAG_PADDING:
 			// Only check that reserved bits are zero.
-// 			if (++coder->padding > PADDING_MAX
-// 					|| in[*in_pos] & 0x0F)
-// 				return LZMA_DATA_ERROR;
+			if (++coder->padding > PADDING_MAX
+					|| in[*in_pos] & 0x0F)
+				return LZMA_DATA_ERROR;
 			++*in_pos;
 			break;
 

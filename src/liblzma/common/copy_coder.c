@@ -23,12 +23,12 @@
 struct lzma_coder_s {
 	lzma_next_coder next;
 	lzma_vli uncompressed_size;
-	bool is_encoder;
 };
 
 
+#ifdef HAVE_ENCODER
 static lzma_ret
-copy_code(lzma_coder *coder, lzma_allocator *allocator,
+copy_encode(lzma_coder *coder, lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
@@ -43,48 +43,71 @@ copy_code(lzma_coder *coder, lzma_allocator *allocator,
 				action);
 
 	// If we get here, we are the last filter in the chain.
+	assert(coder->uncompressed_size <= LZMA_VLI_VALUE_MAX);
 
 	const size_t in_avail = in_size - *in_pos;
 
-	if (coder->is_encoder) {
-		// Check that we don't have too much input.
-		if ((lzma_vli)(in_avail) > coder->uncompressed_size)
-			return LZMA_DATA_ERROR;
+	// Check that we don't have too much input.
+	if ((lzma_vli)(in_avail) > coder->uncompressed_size)
+		return LZMA_DATA_ERROR;
 
-		// Check that once LZMA_FINISH has been given, the
-		// amount of input matches uncompressed_size if it
-		// is known.
-		if (action == LZMA_FINISH && coder->uncompressed_size
-					!= LZMA_VLI_VALUE_UNKNOWN
-				&& coder->uncompressed_size
-					!= (lzma_vli)(in_avail))
-			return LZMA_DATA_ERROR;
-
-	} else {
-		// Limit in_size so that we don't copy too much.
-		if ((lzma_vli)(in_avail) > coder->uncompressed_size)
-			in_size = *in_pos + (size_t)(coder->uncompressed_size);
-	}
-
-	// Store the old input position, which is needed to update
-	// coder->uncompressed_size.
-	const size_t in_start = *in_pos;
+	// Check that once LZMA_FINISH has been given, the amount of input
+	// matches uncompressed_size, which is always known.
+	if (action == LZMA_FINISH
+			&& coder->uncompressed_size != (lzma_vli)(in_avail))
+		return LZMA_DATA_ERROR;
 
 	// We are the last coder in the chain.
 	// Just copy as much data as possible.
-	bufcpy(in, in_pos, in_size, out, out_pos, out_size);
+	const size_t in_used = bufcpy(
+			in, in_pos, in_size, out, out_pos, out_size);
 
 	// Update uncompressed_size if it is known.
 	if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
-		coder->uncompressed_size -= *in_pos - in_start;
+		coder->uncompressed_size -= in_used;
 
-	// action can be LZMA_FINISH only in the encoder.
-	if ((action == LZMA_FINISH && *in_pos == in_size)
+	// LZMA_SYNC_FLUSH and LZMA_FINISH are the same thing for us.
+	if ((action != LZMA_RUN && *in_pos == in_size)
 			|| coder->uncompressed_size == 0)
 		return LZMA_STREAM_END;
 
 	return LZMA_OK;
 }
+#endif
+
+
+#ifdef HAVE_DECODER
+static lzma_ret
+copy_decode(lzma_coder *coder, lzma_allocator *allocator,
+		const uint8_t *restrict in, size_t *restrict in_pos,
+		size_t in_size, uint8_t *restrict out,
+		size_t *restrict out_pos, size_t out_size, lzma_action action)
+{
+	if (coder->next.code != NULL)
+		return coder->next.code(coder->next.coder, allocator,
+				in, in_pos, in_size, out, out_pos, out_size,
+				action);
+
+	assert(coder->uncompressed_size <= LZMA_VLI_VALUE_MAX);
+
+	const size_t in_avail = in_size - *in_pos;
+
+	// Limit in_size so that we don't copy too much.
+	if ((lzma_vli)(in_avail) > coder->uncompressed_size)
+		in_size = *in_pos + (size_t)(coder->uncompressed_size);
+
+	// We are the last coder in the chain.
+	// Just copy as much data as possible.
+	const size_t in_used = bufcpy(
+			in, in_pos, in_size, out, out_pos, out_size);
+
+	// Update uncompressed_size if it is known.
+	if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
+		coder->uncompressed_size -= in_used;
+
+	return coder->uncompressed_size == 0 ? LZMA_STREAM_END : LZMA_OK;
+}
+#endif
 
 
 static void
@@ -98,7 +121,7 @@ copy_coder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 static lzma_ret
 copy_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		const lzma_filter_info *filters, bool is_encoder)
+		const lzma_filter_info *filters, lzma_code_function encode)
 {
 	// Allocate memory for the decoder if needed.
 	if (next->coder == NULL) {
@@ -106,16 +129,13 @@ copy_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		if (next->coder == NULL)
 			return LZMA_MEM_ERROR;
 
-		next->code = &copy_code;
+		next->code = encode;
 		next->end = &copy_coder_end;
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
 	// Copy Uncompressed Size which is used to limit the output size.
 	next->coder->uncompressed_size = filters[0].uncompressed_size;
-
-	// The coder acts slightly differently as encoder and decoder.
-	next->coder->is_encoder = is_encoder;
 
 	// Initialize the next decoder in the chain, if any.
 	return lzma_next_filter_init(
@@ -128,7 +148,8 @@ extern lzma_ret
 lzma_copy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
-	lzma_next_coder_init(copy_coder_init, next, allocator, filters, true);
+	lzma_next_coder_init(copy_coder_init, next, allocator, filters,
+			&copy_encode);
 }
 #endif
 
@@ -138,6 +159,7 @@ extern lzma_ret
 lzma_copy_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
-	lzma_next_coder_init(copy_coder_init, next, allocator, filters, false);
+	lzma_next_coder_init(copy_coder_init, next, allocator, filters,
+			&copy_decode);
 }
 #endif

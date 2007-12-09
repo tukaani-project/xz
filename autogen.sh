@@ -31,8 +31,8 @@ rm -f \
 	wint_t.m4 \
 	xsize.m4
 
-aclocal -I m4
 libtoolize -c -f || glibtoolize -c -f
+aclocal -I m4
 autoconf
 autoheader
 automake -acf --foreign

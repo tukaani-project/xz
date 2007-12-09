@@ -278,7 +278,6 @@ test3(void)
 		.has_crc32 = false,
 		.has_eopm = true,
 		.is_metadata = false,
-		.is_metadata = false,
 		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
 		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
 		.compressed_reserve = 1,

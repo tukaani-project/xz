@@ -31,7 +31,7 @@
  *    is incremented)
  *  - s indicates stability: 0 = alpha, 1 = beta, 2 = stable
  */
-#define LZMA_VERSION UINT32_C(40420010)
+#define LZMA_VERSION UINT32_C(40420030)
 
 
 /**

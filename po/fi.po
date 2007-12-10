@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fi\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2007-12-01 18:36+0200\n"
+"POT-Creation-Date: 2007-12-10 14:34+0200\n"
 "PO-Revision-Date: 2007-08-09 22:14+0300\n"
 "Last-Translator: Lasse Collin <lasse.collin@tukaani.org>\n"
 "Language-Team: Finnish\n"
@@ -64,14 +64,15 @@ msgid ""
 " Compression presets and basic compression options:\n"
 "\n"
 "  -1 .. -2            fast compression\n"
-"  -3 .. -6            good compression; default is -6 if memory limit allows\n"
-"  -7 .. -9            excellent compression, but needs a lot of memory\n"
+"  -3 .. -6            good compression\n"
+"  -7 .. -9            excellent compression, but needs a lot of memory;\n"
+"                      default is -7 if memory limit allows\n"
 "\n"
 "  -C, --check=CHECK   integrity check type: `crc32', `crc64' (default),\n"
 "                      or `sha256'\n"
 msgstr ""
 
-#: src/lzma/help.c:79
+#: src/lzma/help.c:80
 msgid ""
 " Custom filter chain for compression (alternative for using presets):\n"
 "\n"
@@ -100,7 +101,7 @@ msgid ""
 "                        rle=NUM     run-length encoder chunk size (0-256; 0)\n"
 msgstr ""
 
-#: src/lzma/help.c:119
+#: src/lzma/help.c:120
 msgid ""
 " Resource usage options:\n"
 "\n"
@@ -108,7 +109,7 @@ msgid ""
 "  -T, --threads=NUM   use at maximum of NUM (de)compression threads\n"
 msgstr ""
 
-#: src/lzma/help.c:128
+#: src/lzma/help.c:129
 msgid ""
 " Other options:\n"
 "\n"
@@ -119,20 +120,20 @@ msgid ""
 "  -V, --version       display version and license information and exit\n"
 msgstr ""
 
-#: src/lzma/help.c:136
+#: src/lzma/help.c:137
 msgid "With no FILE, or when FILE is -, read standard input.\n"
 msgstr "Jos TIEDOSTOa ei ole annettu, tai se on \"-\", luetaan vakiosyötettä.\n"
 
-#: src/lzma/help.c:142
+#: src/lzma/help.c:143
 msgid "On this system and configuration, the tool will use"
 msgstr "Tässä järjestelmässä näillä asetuksilla, tämä työkalu käyttää"
 
-#: src/lzma/help.c:143
+#: src/lzma/help.c:144
 #, c-format
 msgid "  * roughly %zu MiB of memory at maximum; and\n"
 msgstr "  * korkeintaan %zu MiB keskusmuistia (suurpiirteinen rajoitus); ja\n"
 
-#: src/lzma/help.c:146
+#: src/lzma/help.c:147
 msgid ""
 "  * at maximum of one thread for (de)compression.\n"
 "\n"
@@ -140,45 +141,45 @@ msgstr ""
 "  * korkeintaan yhtä säiettä pakkaukseen tai purkuun.\n"
 "\n"
 
-#: src/lzma/help.c:150
+#: src/lzma/help.c:151
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr ""
 "Lähetä raportit ohjelmistovioista (englanniksi tai suomeksi)\n"
 "osoitteeseen <%s>.\n"
 
-#: src/lzma/args.c:126
+#: src/lzma/args.c:128
 msgid "Maximum number of filters is seven"
 msgstr "Suotimia voi olla korkeintaan seitsemän"
 
-#: src/lzma/args.c:189
+#: src/lzma/args.c:193
 #, c-format
 msgid "%s: Invalid filename suffix"
 msgstr "%s: Virheellinen tiedostonimen pääte"
 
-#: src/lzma/args.c:323
+#: src/lzma/args.c:327
 #, c-format
 msgid "%s: Unknown file format type"
 msgstr "%s: Tuntematon tiedostomuodon tyyppi"
 
-#: src/lzma/args.c:349
+#: src/lzma/args.c:353
 #, c-format
 msgid "%s: Unknown integrity check type"
 msgstr "%s: Tuntematon eheystarkisteen tyyppi"
 
-#: src/lzma/args.c:367
+#: src/lzma/args.c:371
 msgid "Only one file can be specified with `--files'or `--files0'."
 msgstr ""
 
-#: src/lzma/args.c:417
+#: src/lzma/args.c:421
 msgid "The environment variable LZMA_OPT contains too many arguments"
 msgstr "Ympäristömuuttuja LZMA_OPT sisältää liian monta argumenttia"
 
-#: src/lzma/args.c:483
+#: src/lzma/args.c:485
 msgid "Memory usage limit is too small for any internal filter preset"
 msgstr ""
 
-#: src/lzma/args.c:498
+#: src/lzma/args.c:500
 msgid "Memory usage limit is too small for the given filter setup"
 msgstr "Muistinkäyttörajoitus on liian pieni annetuille suodinasetusille"
 
@@ -290,17 +291,17 @@ msgstr "%s: Tiedostolla on sticky-bitti asetettuna, ohitetaan"
 msgid "%s: Input file has more than one hard link, skipping"
 msgstr "%s: Tiedostoon viittaa useampi kuin yksi linkki, ohitetaan"
 
-#: src/lzma/io.c:390 src/lzma/io.c:467
+#: src/lzma/io.c:390 src/lzma/io.c:468
 #, c-format
 msgid "%s: Closing the file failed: %s"
 msgstr "%s: Tiedoston sulkeminen epäonnistui: %s"
 
-#: src/lzma/io.c:610
+#: src/lzma/io.c:611
 #, c-format
 msgid "%s: Read error: %s"
 msgstr "%s: Lukeminen epäonnistui: %s"
 
-#: src/lzma/io.c:653
+#: src/lzma/io.c:654
 #, c-format
 msgid "%s: Write error: %s"
 msgstr "%s: Kirjoitus epäonnistui: %s"
@@ -385,7 +386,7 @@ msgstr ""
 msgid "Value of the option `%s' must be in the range [%llu, %llu]"
 msgstr "Asetuksen \"%s\" arvon tulee olla välillä [%llu, %llu]"
 
-#: src/lzma/util.c:175
+#: src/lzma/util.c:177
 msgid "Empty filename, skipping"
 msgstr "Tyhjä tiedostonimi, ohitetaan"
 

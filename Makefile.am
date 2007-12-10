@@ -23,16 +23,13 @@ SUBDIRS += src po tests
 
 EXTRA_DIST = \
 	m4 \
-	extra \
 	config.rpath  \
 	Doxyfile.in \
-	FAQ \
-	INSTALL.generic \
+	extra \
+	doc \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
-	COPYING.LGPLv2.1 \
-	README-liblzma \
-	README-lzma
+	COPYING.LGPLv2.1
 
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign

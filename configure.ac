@@ -542,13 +542,16 @@ if test -n "$GCC" ; then
 	#   * -Wcast-align breaks optimized CRC32 and CRC64 implementation
 	#     on some architectures (not on x86), where this warning is bogus,
 	#     because we take care of correct alignment.
+	#   * -Winline, -Wdisabled-optimization, -Wunsafe-loop-optimizations
+	#     don't seem so useful here; at least the last one gives some
+	#     warnings which are not bugs.
 	for NEW_FLAG in -Wextra -Wformat=2 -Winit-self -Wstrict-aliasing=2 \
-			-Wfloat-equal -Wshadow -Wunsafe-loop-optimizations \
-			-Wpointer-arith -Wbad-function-cast -Wwrite-strings \
+			-Wfloat-equal -Wshadow 	-Wpointer-arith \
+			-Wbad-function-cast -Wwrite-strings \
 			-Waggregate-return -Wstrict-prototypes \
 			-Wold-style-definition -Wmissing-prototypes \
 			-Wmissing-declarations -Wmissing-noreturn \
-			-Wredundant-decls -Winline -Wdisabled-optimization
+			-Wredundant-decls
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"

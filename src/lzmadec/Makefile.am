@@ -20,7 +20,9 @@ lzmadec_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_builddir@/lib
 lzmadec_LDFLAGS = -static
-lzmadec_LDADD = @top_builddir@/src/liblzma/liblzma.la
+lzmadec_LDADD = \
+	@top_builddir@/src/liblzma/liblzma.la \
+	@LTLIBINTL@
 
 if COND_GNULIB
 lzmadec_LDADD += @top_builddir@/lib/libgnu.a

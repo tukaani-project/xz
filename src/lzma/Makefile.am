@@ -59,5 +59,5 @@ lzma_LDADD = \
 	@PTHREAD_LIBS@
 
 if COND_GNULIB
-lzma_LDADD += @top_builddir@/lib/libgnu_nls.a
+lzma_LDADD += @top_builddir@/lib/libgnu.a
 endif

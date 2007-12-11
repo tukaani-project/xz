@@ -15,19 +15,11 @@
 
 ## Not using gnulib-tool, at least for now. Less mess this way.
 
-## We need two builds of libgnu: one with NLS and one without.
-## This is because lzma uses NLS but lzmadec doesn't, while
-## both need GNU getopt_long().
-noinst_LIBRARIES = libgnu.a libgnu_nls.a
+noinst_LIBRARIES = libgnu.a
 
 libgnu_a_SOURCES =
 libgnu_a_DEPENDENCIES = $(LIBOBJS)
 libgnu_a_LIBADD = $(LIBOBJS)
-libgnu_a_CPPFLAGS = -DDISABLE_NLS=1
-
-libgnu_nls_a_SOURCES =
-libgnu_nls_a_DEPENDENCIES = $(LIBOBJS)
-libgnu_nls_a_LIBADD = $(LIBOBJS)
 
 EXTRA_DIST = gettext.h getopt_.h getopt.c getopt1.c getopt_int.h
 BUILT_SOURCES = $(GETOPT_H)

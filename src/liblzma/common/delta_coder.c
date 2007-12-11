@@ -83,25 +83,10 @@ delta_code(lzma_coder *coder, lzma_allocator *allocator,
 	lzma_ret ret;
 
 	if (coder->next.code == NULL) {
-		const size_t in_avail = in_size - *in_pos;
-
-		if (coder->is_encoder) {
-			// Check that we don't have too much input.
-			if ((lzma_vli)(in_avail) > coder->uncompressed_size)
-				return LZMA_DATA_ERROR;
-
-			// Check that once LZMA_FINISH has been given, the
-			// amount of input matches uncompressed_size if it
-			// is known.
-			if (action == LZMA_FINISH && coder->uncompressed_size
-						!= LZMA_VLI_VALUE_UNKNOWN
-					&& coder->uncompressed_size
-						!= (lzma_vli)(in_avail))
-				return LZMA_DATA_ERROR;
-
-		} else {
+		if (!coder->is_encoder) {
 			// Limit in_size so that we don't copy too much.
-			if ((lzma_vli)(in_avail) > coder->uncompressed_size)
+			if ((lzma_vli)(in_size - *in_pos)
+					> coder->uncompressed_size)
 				in_size = *in_pos + (size_t)(
 						coder->uncompressed_size);
 		}

@@ -22,7 +22,7 @@ AM_CPPFLAGS = \
 LDADD = @top_builddir@/src/liblzma/liblzma.la
 
 if COND_GNULIB
-LDADD += @top_builddir/lib/libgnu.a
+LDADD += @top_builddir@/lib/libgnu.a
 endif
 
 check_PROGRAMS = \

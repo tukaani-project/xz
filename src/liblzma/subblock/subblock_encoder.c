@@ -98,7 +98,7 @@ struct lzma_coder_s {
 		bool got_input;
 
 		uint8_t *flags;
-		size_t flags_size;
+		uint32_t flags_size;
 
 		lzma_next_coder subcoder;
 

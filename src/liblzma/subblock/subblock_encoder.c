@@ -41,6 +41,7 @@ do { \
 struct lzma_coder_s {
 	lzma_next_coder next;
 	bool next_finished;
+	bool use_eopm;
 
 	enum {
 		SEQ_FILL,
@@ -61,8 +62,6 @@ struct lzma_coder_s {
 	} sequence;
 
 	lzma_options_subblock *options;
-
-	lzma_vli uncompressed_size;
 
 	size_t pos;
 	uint32_t tmp;
@@ -235,18 +234,6 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	// Verify that there is a sane amount of input.
-	if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN) {
-		const lzma_vli in_avail = in_size - *in_pos;
-		if (action == LZMA_FINISH) {
-			if (in_avail != coder->uncompressed_size)
-				return LZMA_DATA_ERROR;
-		} else {
-			if (in_avail > coder->uncompressed_size)
-				return LZMA_DATA_ERROR;
-		}
-	}
-
 	// Check if we need to do something special with the Subfilter.
 	if (coder->options != NULL && coder->options->allow_subfilters) {
 		switch (coder->options->subfilter_mode) {
@@ -304,17 +291,11 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			assert(coder->subfilter.subcoder.code == NULL);
 
 			// No Subfilter is enabled, just copy the data as is.
-			// NOTE: uncompressed_size cannot overflow because we
-			// have checked/ it in the beginning of this function.
-			const size_t in_used = bufcpy(in, in_pos, in_size,
+			coder->alignment.in_pending += bufcpy(
+					in, in_pos, in_size,
 					coder->subblock.data,
 					&coder->subblock.size,
 					coder->subblock.limit);
-
-			if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
-				coder->uncompressed_size -= in_used;
-
-			coder->alignment.in_pending += in_used;
 
 		} else {
 			const size_t in_start = *in_pos;
@@ -350,11 +331,6 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 			if (in_used > 0)
 				coder->subfilter.got_input = true;
-
-			// NOTE: uncompressed_size cannot overflow because we
-			// have checked it in the beginning of this function.
-			if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
-				coder->uncompressed_size -= *in_pos - in_start;
 
 			coder->alignment.in_pending += in_used;
 
@@ -509,14 +485,11 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				break;
 			}
 
-			if (coder->uncompressed_size
-					== LZMA_VLI_VALUE_UNKNOWN) {
+			if (coder->use_eopm) {
 				// NOTE: No need to use write_byte() here
 				// since we are finishing.
 				out[*out_pos] = 0x10;
 				++*out_pos;
-			} else if (coder->uncompressed_size != 0) {
-				return LZMA_DATA_ERROR;
 			}
 
 			return LZMA_STREAM_END;
@@ -782,7 +755,8 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->next_finished = false;
 	next->coder->sequence = SEQ_FILL;
 	next->coder->options = filters[0].options;
-	next->coder->uncompressed_size = filters[0].uncompressed_size;
+	next->coder->use_eopm = filters[0].uncompressed_size
+			== LZMA_VLI_VALUE_UNKNOWN;
 	next->coder->pos = 0;
 
 	next->coder->alignment.in_pending = 0;

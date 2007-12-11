@@ -39,44 +39,23 @@ copy_or_code(lzma_coder *coder, lzma_allocator *allocator,
 	if (coder->next.code == NULL) {
 		const size_t in_avail = in_size - *in_pos;
 
-		if (coder->is_encoder) {
-			if (action == LZMA_FINISH) {
-				// If uncompressed size is known and the
-				// amount of available input doesn't match
-				// the uncompressed size, return an error.
-				if (coder->uncompressed_size
-						!= LZMA_VLI_VALUE_UNKNOWN
-						&& coder->uncompressed_size
-							!= in_avail)
-					return LZMA_DATA_ERROR;
-
-			} else if (coder->uncompressed_size
-					< (lzma_vli)(in_avail)) {
-				// There is too much input available.
-				return LZMA_DATA_ERROR;
-			}
-		} else {
+		if (!coder->is_encoder) {
 			// Limit in_size so that we don't copy too much.
 			if ((lzma_vli)(in_avail) > coder->uncompressed_size)
 				in_size = *in_pos + (size_t)(
 						coder->uncompressed_size);
 		}
 
-		// Store the old position so we can update uncompressed_size.
 		const size_t out_start = *out_pos;
-
-		// Copy the data
 		bufcpy(in, in_pos, in_size, out, out_pos, out_size);
-
-		// Update uncompressed_size.
-		if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
-			coder->uncompressed_size -= *out_pos - out_start;
 
 		// Check if end of stream was reached.
 		if (coder->is_encoder) {
 			if (action == LZMA_FINISH && *in_pos == in_size)
 				coder->end_was_reached = true;
-		} else {
+		} else if (coder->uncompressed_size
+				!= LZMA_VLI_VALUE_UNKNOWN) {
+			coder->uncompressed_size -= *out_pos - out_start;
 			if (coder->uncompressed_size == 0)
 				coder->end_was_reached = true;
 		}

@@ -42,33 +42,12 @@ copy_encode(lzma_coder *coder, lzma_allocator *allocator,
 				in, in_pos, in_size, out, out_pos, out_size,
 				action);
 
-	// If we get here, we are the last filter in the chain.
-	assert(coder->uncompressed_size <= LZMA_VLI_VALUE_MAX);
-
-	const size_t in_avail = in_size - *in_pos;
-
-	// Check that we don't have too much input.
-	if ((lzma_vli)(in_avail) > coder->uncompressed_size)
-		return LZMA_DATA_ERROR;
-
-	// Check that once LZMA_FINISH has been given, the amount of input
-	// matches uncompressed_size, which is always known.
-	if (action == LZMA_FINISH
-			&& coder->uncompressed_size != (lzma_vli)(in_avail))
-		return LZMA_DATA_ERROR;
-
 	// We are the last coder in the chain.
 	// Just copy as much data as possible.
-	const size_t in_used = bufcpy(
-			in, in_pos, in_size, out, out_pos, out_size);
-
-	// Update uncompressed_size if it is known.
-	if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
-		coder->uncompressed_size -= in_used;
+	bufcpy(in, in_pos, in_size, out, out_pos, out_size);
 
 	// LZMA_SYNC_FLUSH and LZMA_FINISH are the same thing for us.
-	if ((action != LZMA_RUN && *in_pos == in_size)
-			|| coder->uncompressed_size == 0)
+	if (action != LZMA_RUN && *in_pos == in_size)
 		return LZMA_STREAM_END;
 
 	return LZMA_OK;

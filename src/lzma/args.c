@@ -68,7 +68,7 @@ enum {
 };
 
 
-static const char short_opts[] = "cC:dfFhlLkqrStT:vVz123456789";
+static const char short_opts[] = "cC:dfF:hlLkM:qrS:tT:vVz123456789";
 
 
 static const struct option long_opts[] = {

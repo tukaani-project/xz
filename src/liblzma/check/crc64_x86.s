@@ -200,4 +200,4 @@ lzma_crc64:
 	popl	%ebx
 	ret
 
-	.size	lzma_crc32, .-lzma_crc32
+	.size	lzma_crc64, .-lzma_crc64

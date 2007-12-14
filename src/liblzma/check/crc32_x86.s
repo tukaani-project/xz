@@ -45,7 +45,7 @@ init_table(void)
  */
 
 	.text
-	.global	lzma_crc32
+	.globl	lzma_crc32
 	.type	lzma_crc32, @function
 
 	.align	16

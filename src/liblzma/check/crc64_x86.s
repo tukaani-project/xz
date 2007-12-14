@@ -38,7 +38,7 @@ init_table(void)
  */
 
 	.text
-	.global	lzma_crc64
+	.globl	lzma_crc64
 	.type	lzma_crc64, @function
 
 	.align	16

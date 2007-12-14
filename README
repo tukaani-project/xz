@@ -115,6 +115,10 @@ configure options
                 code, which is suitable for use in shared libraries and
                 position-independent executables.
 
+                At the moment the assembler code is not compatible with
+                Darwin, so --disable-assembler must be specified when
+                building on Darwin.
+
     --enable-small
                 Omits precomputed tables. This makes liblzma a few KiB
                 smaller. Startup time increases, because the tables need

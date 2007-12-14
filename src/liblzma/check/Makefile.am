@@ -23,7 +23,7 @@ libcheck_la_CPPFLAGS = \
 if COND_CHECK_CRC32
 
 if COND_ASM_X86
-libcheck_la_SOURCES += crc32_x86.s
+libcheck_la_SOURCES += crc32_x86.S
 else
 libcheck_la_SOURCES += crc32.c
 endif
@@ -40,7 +40,7 @@ endif
 if COND_CHECK_CRC64
 
 if COND_ASM_X86
-libcheck_la_SOURCES += crc64_x86.s
+libcheck_la_SOURCES += crc64_x86.S
 else
 libcheck_la_SOURCES += crc64.c
 endif

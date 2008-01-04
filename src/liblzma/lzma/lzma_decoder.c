@@ -151,10 +151,6 @@ struct lzma_coder_s {
 
 	/// Length of a repeated match.
 	lzma_length_decoder rep_match_len_decoder;
-
-	/// The first five bytes of LZMA compressed data are treated
-	/// specially. Once they are read, this stays at zero.
-	size_t init_bytes_left;
 };
 
 
@@ -166,7 +162,7 @@ struct lzma_coder_s {
 static bool lzma_attribute((pure))
 decode_dummy(const lzma_coder *restrict coder,
 		const uint8_t *restrict in, size_t in_pos_local,
-		const size_t in_size, uint32_t rc_range, uint32_t rc_code,
+		const size_t in_size, lzma_range_decoder rc,
 		uint32_t state, uint32_t rep0, const uint32_t now_pos)
 {
 	uint32_t rc_bound;
@@ -268,20 +264,11 @@ decode_dummy(const lzma_coder *restrict coder,
 						coder->pos_decoders + offset,
 						direct_bits);
 				} else {
-					// Decode direct bits
 					assert(pos_slot >= 14);
 					assert(direct_bits >= 6);
 					direct_bits -= ALIGN_BITS;
 					assert(direct_bits >= 2);
-					do {
-						rc_normalize();
-						rc_range >>= 1;
-						const uint32_t t
-							= (rc_code - rc_range)
-							>> 31;
-						rc_code -= rc_range & (t - 1);
-					} while (--direct_bits > 0);
-					rep0 <<= ALIGN_BITS;
+					rc_decode_direct_dummy(direct_bits);
 
 					bittree_reverse_decode_dummy(
 						coder->pos_align_decoder,
@@ -342,15 +329,8 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 	// Initialization //
 	////////////////////
 
-	while (coder->init_bytes_left > 0) {
-		if (*in_pos == in_size)
-			return false;
-
-		coder->rc.code = (coder->rc.code << 8) | in[*in_pos];
-		++*in_pos;
-		--coder->init_bytes_left;
-	}
-
+	if (!rc_read_init(&coder->rc, in, in_pos, in_size))
+		return false;
 
 	///////////////
 	// Variables //
@@ -386,7 +366,7 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 	while (coder->lz.pos < coder->lz.limit && (in_pos_local < in_limit
 			|| (has_safe_buffer && decode_dummy(
 				coder, in, in_pos_local, in_size,
-				rc_range, rc_code, state, rep0, now_pos)))) {
+				rc, state, rep0, now_pos)))) {
 
 		/////////////////////
 		// Actual decoding //
@@ -513,20 +493,11 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 						coder->pos_decoders + offset,
 						direct_bits);
 				} else {
-					// Decode direct bits
 					assert(pos_slot >= 14);
 					assert(direct_bits >= 6);
 					direct_bits -= ALIGN_BITS;
 					assert(direct_bits >= 2);
-					do {
-						rc_normalize();
-						rc_range >>= 1;
-						const uint32_t t
-							= (rc_code - rc_range)
-							>> 31;
-						rc_code -= rc_range & (t - 1);
-						rep0 = (rep0 << 1) | (1 - t);
-					} while (--direct_bits > 0);
+					rc_decode_direct(rep0, direct_bits);
 					rep0 <<= ALIGN_BITS;
 
 					bittree_reverse_decode(rep0,
@@ -762,7 +733,6 @@ lzma_lzma_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->pos_bits = options->pos_bits;
 	next->coder->pos_mask = (1 << next->coder->pos_bits) - 1;
 	next->coder->now_pos = 0;
-	next->coder->init_bytes_left = 5;
 
 	// Range decoder
 	rc_reset(next->coder->rc);

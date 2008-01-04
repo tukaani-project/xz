@@ -27,36 +27,50 @@
 typedef struct {
 	uint32_t range;
 	uint32_t code;
+	uint32_t init_bytes_left;
 } lzma_range_decoder;
 
 
+static inline bool
+rc_read_init(lzma_range_decoder *rc, const uint8_t *restrict in,
+		size_t *restrict in_pos, size_t in_size)
+{
+	while (rc->init_bytes_left > 0) {
+		if (*in_pos == in_size)
+			return false;
+
+		rc->code = (rc->code << 8) | in[*in_pos];
+		++*in_pos;
+		--rc->init_bytes_left;
+	}
+
+	return true;
+}
+
+
 /// Makes local copies of range decoder variables.
-#define rc_to_local(rc) \
-	uint32_t rc_range = (rc).range; \
-	uint32_t rc_code = (rc).code; \
+#define rc_to_local(range_decoder) \
+	lzma_range_decoder rc = range_decoder; \
 	uint32_t rc_bound
 
 /// Stores the local copes back to the range decoder structure.
-#define rc_from_local(rc) \
-do {\
-	(rc).range = rc_range; \
-	(rc).code = rc_code; \
-} while (0)
+#define rc_from_local(range_decoder) \
+	range_decoder = rc
 
 /// Resets the range decoder structure.
-#define rc_reset(rc) \
+#define rc_reset(range_decoder) \
 do { \
-	(rc).range = UINT32_MAX; \
-	(rc).code = 0; \
+	(range_decoder).range = UINT32_MAX; \
+	(range_decoder).code = 0; \
+	(range_decoder).init_bytes_left = 5; \
 } while (0)
 
 
 // All of the macros in this file expect the following variables being defined:
-//  - uint32_t rc_range;
-//  - uint32_t rc_code;
+//  - lzma_range_decoder range_decoder;
 //  - uint32_t rc_bound;   // Temporary variable
-//  - uint8_t  *in;
-//  - size_t   in_pos_local; // Local alias for *in_pos
+//  - uint8_t *in;
+//  - size_t in_pos_local; // Local alias for *in_pos
 
 
 //////////////////
@@ -66,9 +80,9 @@ do { \
 // Read the next byte of compressed data from buffer_in, if needed.
 #define rc_normalize() \
 do { \
-	if (rc_range < TOP_VALUE) { \
-		rc_range <<= SHIFT_BITS; \
-		rc_code = (rc_code << SHIFT_BITS) | in[in_pos_local++]; \
+	if (rc.range < TOP_VALUE) { \
+		rc.range <<= SHIFT_BITS; \
+		rc.code = (rc.code << SHIFT_BITS) | in[in_pos_local++]; \
 	} \
 } while (0)
 
@@ -88,35 +102,54 @@ do { \
 
 #define if_bit_0(prob) \
 	rc_normalize(); \
-	rc_bound = (rc_range >> BIT_MODEL_TOTAL_BITS) * (prob); \
-	if (rc_code < rc_bound)
+	rc_bound = (rc.range >> BIT_MODEL_TOTAL_BITS) * (prob); \
+	if (rc.code < rc_bound)
 
 
 #define update_bit_0(prob) \
 do { \
-	rc_range = rc_bound; \
+	rc.range = rc_bound; \
 	prob += (BIT_MODEL_TOTAL - (prob)) >> MOVE_BITS; \
 } while (0)
 
 
 #define update_bit_1(prob) \
 do { \
-	rc_range -= rc_bound; \
-	rc_code -= rc_bound; \
+	rc.range -= rc_bound; \
+	rc.code -= rc_bound; \
 	prob -= (prob) >> MOVE_BITS; \
 } while (0)
 
 
-// Dummy versions don't update prob.
+#define rc_decode_direct(dest, count) \
+do { \
+	rc_normalize(); \
+	rc.range >>= 1; \
+	rc_bound = (rc.code - rc.range) >> 31; \
+	rc.code -= rc.range & (rc_bound - 1); \
+	dest = ((dest) << 1) | (1 - rc_bound);\
+} while (--count > 0)
+
+
+// Dummy versions don't update prob or dest.
 #define update_bit_0_dummy() \
-	rc_range = rc_bound
+	rc.range = rc_bound
 
 
 #define update_bit_1_dummy() \
 do { \
-	rc_range -= rc_bound; \
-	rc_code -= rc_bound; \
+	rc.range -= rc_bound; \
+	rc.code -= rc_bound; \
 } while (0)
+
+
+#define rc_decode_direct_dummy(count) \
+do { \
+	rc_normalize(); \
+	rc.range >>= 1; \
+	rc_bound = (rc.code - rc.range) >> 31; \
+	rc.code -= rc.range & (rc_bound - 1); \
+} while (--count > 0)
 
 
 ///////////////////////

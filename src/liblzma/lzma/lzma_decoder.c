@@ -493,9 +493,17 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 
 							has_produced_output = false;
 
+							// We know that we have enough input to call
+							// this macro, because it is tested at the
+							// end of decode_dummy().
+							rc_normalize();
+
 							rc_reset(rc);
+
+							// If we don't have enough input here, we jump
+							// out of the loop without calling rc_normalize().
 							if (!rc_read_init(&rc, in, &in_pos_local, in_size))
-								goto out; // Avoiding rc_normalize()
+								goto out;
 
 						} else {
 							return true;

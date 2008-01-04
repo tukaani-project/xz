@@ -488,14 +488,14 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 							// flush marker or the beginning of the stream.
 							// This is to prevent hanging the decoder with
 							// malicious input files.
-							if (!coder->has_produced_output)
+							if (!has_produced_output)
 								return true;
 
-							coder->has_produced_output = false;
+							has_produced_output = false;
 
 							rc_reset(rc);
 							if (!rc_read_init(&rc, in, &in_pos_local, in_size))
-								break;
+								goto out; // Avoiding rc_normalize()
 
 						} else {
 							return true;
@@ -622,6 +622,7 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 	// Update the *data structure. //
 	/////////////////////////////////
 
+out:
 	// Range decoder
 	rc_from_local(coder->rc);
 

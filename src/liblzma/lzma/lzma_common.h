@@ -81,6 +81,10 @@
 // Price table size of Len Encoder
 #define LEN_PRICES (LEN_SYMBOLS << POS_STATES_BITS_MAX)
 
+// Special lengths used together with distance == UINT32_MAX
+#define LEN_SPECIAL_EOPM MATCH_MIN_LEN
+#define LEN_SPECIAL_FLUSH (LEN_SPECIAL_EOPM + 1)
+
 
 // Optimal - Number of entries in the optimum array.
 #define OPTS (1 << 12)

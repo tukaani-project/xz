@@ -545,13 +545,29 @@ if test -n "$GCC" ; then
 	#   * -Winline, -Wdisabled-optimization, -Wunsafe-loop-optimizations
 	#     don't seem so useful here; at least the last one gives some
 	#     warnings which are not bugs.
-	for NEW_FLAG in -Wextra -Wformat=2 -Winit-self -Wstrict-aliasing=2 \
-			-Wfloat-equal -Wshadow 	-Wpointer-arith \
-			-Wbad-function-cast -Wwrite-strings \
-			-Waggregate-return -Wstrict-prototypes \
-			-Wold-style-definition -Wmissing-prototypes \
-			-Wmissing-declarations -Wmissing-noreturn \
-			-Wredundant-decls
+	#
+	# The flags are in reverse order below so they end up in "beautiful"
+	# order on the actual command line.
+	for NEW_FLAG in \
+			-Wredundant-decls \
+			-Wmissing-noreturn \
+			-Wmissing-declarations \
+			-Wmissing-prototypes \
+			-Wold-style-definition \
+			-Wstrict-prototypes \
+			-Waggregate-return \
+			-Wwrite-strings \
+			-Wbad-function-cast \
+			-Wpointer-arith \
+			-Wshadow \
+			-Wfloat-equal \
+			-Wstrict-aliasing=2 \
+			-Winit-self \
+			-Wformat=2 \
+			-Wextra \
+			-Wall \
+			-pedantic \
+			-std=c99
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"
@@ -571,9 +587,6 @@ if test -n "$GCC" ; then
 	if test "x$enable_werror" = "xyes"; then
 		CFLAGS="-Werror $CFLAGS"
 	fi
-
-	# IIRC these work with all GCC versions that support -std=c99:
-	CFLAGS="-std=c99 -pedantic -Wall $CFLAGS"
 fi
 
 AM_CONDITIONAL([COND_WNO_UNINITIALIZED], test "x$Wno_uninitialized" = "xyes")

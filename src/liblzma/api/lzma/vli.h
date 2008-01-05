@@ -154,7 +154,7 @@ typedef uint64_t lzma_vli;
  * The encoding scheme encodes seven bits to every byte, using minimum
  * number of bytes required to represent the given value. In other words,
  * it puts 7-63 bits into 1-9 bytes. This implementation limits the number
- * of bits used to 63, thus num must be at maximum of INT64_MAX / 2. You
+ * of bits used to 63, thus num must be at maximum of UINT64_MAX / 2. You
  * may use LZMA_VLI_VALUE_MAX for clarity.
  *
  * \param       vli       Integer to be encoded

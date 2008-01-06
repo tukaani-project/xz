@@ -298,8 +298,21 @@ AC_ARG_ENABLE(assembler, AC_HELP_STRING([--disable-assembler],
 		[], [enable_assembler=yes])
 if test "x$enable_assembler" = xyes; then
 	case $host_cpu in
-		i?86)   enable_assembler=x86 ;;
-		*)      enable_assembler=no ;;
+		i?86)
+			# Darwin has different ABI than GNU+Linux and Solaris,
+			# and the x86 assembler code doesn't assemble.
+			case $host_os in
+				darwin*)
+					enable_assembler=no
+					;;
+				*)
+					enable_assembler=x86
+					;;
+			esac
+			;;
+		*)
+			enable_assembler=no
+			;;
 	esac
 fi
 case $enable_assembler in

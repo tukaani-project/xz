@@ -108,10 +108,12 @@ help(void)
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
 "\n"
-"On this configuration, the tool will use about %zu MiB of memory at maximum.\n"
+"On this configuration, the tool will use about %" PRIu64
+		" MiB of memory at maximum.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n",
-		argv0, (mem_limit + 512 * 1024) / (1024 * 1024));
+		argv0, (uint64_t)((mem_limit + 512 * 1024) / (1024 * 1024)));
+		// Using PRIu64 above instead of %zu to support pre-C99 libc.
 	exit(0);
 }
 

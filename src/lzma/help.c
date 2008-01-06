@@ -140,13 +140,14 @@ These aren't implemented yet.
 	if (mem_limit == 0)
 		mem_limit = 1;
 
+	// We use PRIu64 instead of %zu to support pre-C99 libc.
 	puts(_("On this system and configuration, the tool will use"));
-	printf(_("  * roughly %zu MiB of memory at maximum; and\n"),
-			mem_limit);
-	printf(N_(
-		"  * at maximum of one thread for (de)compression.\n\n",
-		"  * at maximum of %zu threads for (de)compression.\n\n",
-		opt_threads), opt_threads);
+	printf(_("  * roughly %" PRIu64 " MiB of memory at maximum; and\n"),
+			(uint64_t)(mem_limit));
+	printf(N_("  * at maximum of one thread for (de)compression.\n\n",
+		"  * at maximum of %" PRIu64
+		" threads for (de)compression.\n\n",
+		(uint64_t)(opt_threads)), (uint64_t)(opt_threads));
 
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
 			PACKAGE_BUGREPORT);

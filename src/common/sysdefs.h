@@ -31,7 +31,62 @@
 #	include <config.h>
 #endif
 
-#include "lzma.h"
+#include <sys/types.h>
+
+#ifdef HAVE_INTTYPES_H
+#	include <inttypes.h>
+#endif
+
+#ifdef HAVE_LIMITS_H
+#	include <limits.h>
+#endif
+
+// Be more compatible with systems that have non-conforming inttypes.h.
+// We assume that int is 32-bit and that long is either 32-bit or 64-bit.
+// Full Autoconf test could be more correct, but this should work well enough.
+#ifndef UINT32_C
+#	define UINT32_C(n) n ## U
+#endif
+#ifndef UINT32_MAX
+#	define UINT32_MAX UINT32_C(4294967295)
+#endif
+#ifndef PRIu32
+#	define PRIu32 "u"
+#endif
+#ifndef PRIX32
+#	define PRIX32 "X"
+#endif
+#if SIZEOF_UNSIGNED_LONG == 4
+#	ifndef UINT64_C
+#		define UINT64_C(n) n ## ULL
+#	endif
+#	ifndef PRIu64
+#		define PRIu64 "llu"
+#	endif
+#	ifndef PRIX64
+#		define PRIX64 "llX"
+#	endif
+#else
+#	ifndef UINT64_C
+#		define UINT64_C(n) n ## UL
+#	endif
+#	ifndef PRIu64
+#		define PRIu64 "lu"
+#	endif
+#	ifndef PRIX64
+#		define PRIX64 "lX"
+#	endif
+#endif
+#ifndef UINT64_MAX
+#	define UINT64_MAX UINT64_C(18446744073709551615)
+#endif
+#ifndef SIZE_MAX
+#	if SIZEOF_SIZE_T == 4
+#		define SIZE_MAX UINT32_MAX
+#	else
+#		define SIZE_MAX UINT64_MAX
+#	endif
+#endif
 
 #include <stdlib.h>
 
@@ -69,6 +124,8 @@ typedef unsigned char _Bool;
 #ifdef HAVE_MEMORY_H
 #	include <memory.h>
 #endif
+
+#include "lzma.h"
 
 
 ////////////

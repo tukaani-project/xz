@@ -5,8 +5,14 @@ Introduction to liblzma
 Writing applications to work with liblzma
 
     liblzma API is split in several subheaders to improve readability and
-    maintainance. The subheaders must not be #included directly; simply
-    use `#include <lzma.h>' instead.
+    maintainance. The subheaders must not be #included directly. lzma.h
+    requires that certain integer types and macros are available when
+    the header is #included. On systems that have inttypes.h that conforms
+    to C99, the following will work:
+
+        #include <sys/types.h>
+        #include <inttypes.h>
+        #include <lzma.h>
 
     Those who have used zlib should find liblzma's API easy to use.
     To developers who haven't used zlib before, I recommend learning

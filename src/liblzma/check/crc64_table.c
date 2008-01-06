@@ -11,9 +11,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef HAVE_CONFIG_H
-#	include <config.h>
-#endif
+#include "sysdefs.h"
 
 #ifdef WORDS_BIGENDIAN
 #	include "crc64_table_be.h"

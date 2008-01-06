@@ -17,24 +17,36 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * Before #including this file, you must make the following types available:
+ *  - size_t
+ *  - uint8_t
+ *  - int32_t
+ *  - uint32_t
+ *  - int64_t
+ *  - uint64_t
+ *
+ * Before #including this file, you must make the following macros available:
+ *  - UINT32_C(n)
+ *  - UINT64_C(n)
+ *  - UINT32_MAX
+ *  - UINT64_MAX
+ *
+ * Easiest way to achieve the above is to #include sys/types.h and inttypes.h
+ * before #including lzma.h. However, some pre-C99 libc headers don't provide
+ * all the required types in inttypes.h (that file may even be missing).
+ * Portable applications need to provide these types themselves. This way
+ * liblzma API can use the standard types instead of defining its own
+ * (e.g. lzma_uint32).
+ *
+ * Note that the API still has lzma_bool, because using stdbool.h would
+ * break C89 and C++ programs on many systems.
  */
 
 #ifndef LZMA_H
 #define LZMA_H
-
-/********************
- * External headers *
- ********************/
-
-/* size_t */
-#include <sys/types.h>
-
-/* NULL */
-#include <stddef.h>
-
-/* uint8_t, uint32_t, uint64_t, UINT32_C, UINT64_C, UINT64_MAX. */
-#include <inttypes.h>
-
 
 /******************
  * GCC extensions *

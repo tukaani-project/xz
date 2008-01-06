@@ -29,7 +29,6 @@ extern int errno;
 #endif
 
 #include <sys/stat.h>
-#include <limits.h>
 #include <signal.h>
 #include <pthread.h>
 #include <locale.h>

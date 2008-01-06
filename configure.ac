@@ -392,9 +392,20 @@ AC_CHECK_HEADERS([assert.h errno.h byteswap.h sys/param.h sys/sysctl.h],
 # Checks for typedefs, structures, and compiler characteristics.
 ###############################################################################
 
-AC_HEADER_STDBOOL
 AC_C_INLINE
 AC_C_RESTRICT
+
+AC_HEADER_STDBOOL
+
+AC_TYPE_UINT8_T
+AC_TYPE_INT32_T
+AC_TYPE_UINT32_T
+AC_TYPE_INT64_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINTPTR_T
+
+AC_CHECK_SIZEOF([unsigned long])
+AC_CHECK_SIZEOF([size_t])
 
 # The command line tool can copy high resolution timestamps if such
 # information is availabe in struct stat. Otherwise one second accuracy

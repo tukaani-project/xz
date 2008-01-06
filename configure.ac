@@ -341,6 +341,10 @@ fi
 AC_MSG_RESULT([$enable_small])
 AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
 
+###############################################################################
+# Checks for programs.
+###############################################################################
+
 echo
 echo "Initializing Automake:"
 
@@ -349,16 +353,10 @@ CXX=no
 F77=no
 
 AM_INIT_AUTOMAKE
-
-AC_USE_SYSTEM_EXTENSIONS
-
-###############################################################################
-# Checks for programs.
-###############################################################################
-
+AC_PROG_LN_S
 AM_PROG_CC_C_O
 AM_PROG_AS
-AC_PROG_LN_S
+AC_USE_SYSTEM_EXTENSIONS
 
 echo
 echo "Threading support:"

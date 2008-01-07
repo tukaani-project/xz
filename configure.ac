@@ -538,7 +538,7 @@ main()
 
 Wno_uninitialized=no
 
-if test -n "$GCC" ; then
+if test "x$GCC" = xyes ; then
 	echo
 	echo "GCC extensions:"
 	gl_VISIBILITY

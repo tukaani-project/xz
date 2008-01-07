@@ -16,7 +16,7 @@
 #
 ###############################################################################
 
-for I in "$srcdir/files/"good-*
+for I in "$srcdir"/files/good-*.lzma
 do
 	if ! ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
 		echo "Good file failed: $I"
@@ -25,7 +25,7 @@ do
 	fi
 done
 
-for I in "$srcdir/files/"bad-*
+for I in "$srcdir"/files/bad-*.lzma
 do
 	if ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
 		echo "Bad file succeeded: $I"

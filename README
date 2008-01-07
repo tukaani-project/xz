@@ -113,11 +113,11 @@ configure options
 
                 All the assembler code in liblzma is position-independent
                 code, which is suitable for use in shared libraries and
-                position-independent executables.
-
-                At the moment the assembler code is not compatible with
-                Darwin, so --disable-assembler must be specified when
-                building on Darwin.
+                position-independent executables. So far only i386
+                instructions are used, but the code is optimized for i686
+                class CPUs. If you are compiling liblzma exclusively for
+                pre-i686 systems, you may want to disable the assembler
+                code.
 
     --enable-small
                 Omits precomputed tables. This makes liblzma a few KiB

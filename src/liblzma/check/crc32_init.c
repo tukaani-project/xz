@@ -13,11 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef HAVE_CONFIG_H
-#	include <config.h>
+#	include "sysdefs.h"
 #endif
-
-#include <sys/types.h>
-#include <inttypes.h>
 
 #ifdef WORDS_BIGENDIAN
 #	include "check_byteswap.h"

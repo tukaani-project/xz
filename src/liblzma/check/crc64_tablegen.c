@@ -3,7 +3,7 @@
 /// \file       crc64_tablegen.c
 /// \brief      Generates CRC64 crc64_table.c
 ///
-/// Compiling: gcc -std=c99 -o crc64_tablegen crc64_tablegen.c crc64_init.c
+/// Compiling: gcc -std=c99 -o crc64_tablegen crc64_tablegen.c
 /// Add -DWORDS_BIGENDIAN to generate big endian table.
 //
 //  This code has been put into the public domain.
@@ -18,10 +18,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-
-extern void lzma_crc64_init(void);
-
-extern uint64_t lzma_crc64_table[4][256];
+#include "crc64_init.c"
 
 
 int

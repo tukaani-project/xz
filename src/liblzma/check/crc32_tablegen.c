@@ -3,7 +3,7 @@
 /// \file       crc32_tablegen.c
 /// \brief      Generates CRC32 crc32_table.c
 ///
-/// Compiling: gcc -std=c99 -o crc32_tablegen crc32_tablegen.c crc32_init.c
+/// Compiling: gcc -std=c99 -o crc32_tablegen crc32_tablegen.c
 /// Add -DWORDS_BIGENDIAN to generate big endian table.
 //
 //  This code has been put into the public domain.
@@ -18,10 +18,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-
-extern void lzma_crc32_init(void);
-
-extern uint32_t lzma_crc32_table[8][256];
+#include "crc32_init.c"
 
 
 int

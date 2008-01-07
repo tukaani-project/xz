@@ -14,17 +14,6 @@
 #ifndef PHYSMEM_H
 #define PHYSMEM_H
 
-#ifdef HAVE_CONFIG_H
-#	include <config.h>
-#endif
-
-#include <sys/types.h>
-#include <inttypes.h>
-
-#ifdef HAVE_LIMITS_H
-#	include <limits.h>
-#endif
-
 #if defined(HAVE_PHYSMEM_SYSCTL) || defined(HAVE_NCPU_SYSCTL)
 #	ifdef HAVE_SYS_PARAM_H
 #		include <sys/param.h>

@@ -40,4 +40,6 @@ test_block_header_SOURCES = test_block_header.c
 test_index_SOURCES = test_index.c
 test_info_SOURCES = test_info.c
 
-TESTS = $(check_PROGRAMS)
+TESTS = \
+	$(check_PROGRAMS) \
+	test_files.sh

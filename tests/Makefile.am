@@ -12,7 +12,7 @@
 ##  Lesser General Public License for more details.
 ##
 
-EXTRA_DIST = files tests.h
+EXTRA_DIST = files tests.h test_files.sh
 
 AM_CPPFLAGS = \
 	-I@top_srcdir@/src/common \

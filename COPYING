@@ -5,7 +5,8 @@ LZMA Utils Licenses
     Different licenses apply to different files in this package. Here
     is a rough summary of which license apply to which parts of this
     package (but check the individual files to be sure!):
-      - Everything under src/liblzma/check is public domain.
+      - Everything under src/liblzma/check and tests/files is public
+        domain.
       - Everything else under the src directory is under the GNU LGPL
         2.1 or (at your opinion) any later version.
       - Outside the src directory, there are some files that are under

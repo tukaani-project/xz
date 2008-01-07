@@ -1,0 +1,108 @@
+
+.lzma Test Files
+----------------
+
+0. Introduction
+
+    This directory contains bunch of files to test handling of .lzma files
+    in .lzma decoder implementations. Many of the files have been created
+    by hand with a hex editor, thus there is no better "source code" than
+    the files themselves. All the test files (*.lzma) and this README have
+    been put into the public domain.
+
+
+1. File Types
+
+    Good files (good-*.lzma) must decode successfully without requiring
+    a lot of CPU time or RAM. If the decoder supports only Single-Block
+    Streams, then good-multi-*.lzma won't decode, of course.
+
+    Bad files (bad-*.lzma) must cause the decoder to give an error. Like
+    with the good files, these files must not require a lot of CPU time
+    or RAM before they get detected to be broken.
+
+    Malicious files (malicious-*.lzma) are good in terms of the file format
+    specification, but try to trigger excessive CPU, RAM or disk usage in
+    the decoder. To prevent malicious files from putting the decoder in
+    inifinite loop (*), eating all available RAM or disk space, decoders
+    should have internal limitters that catch these situations.
+
+    (*) Strictly speaking not infinite, but if decoding of a small file
+        would take a few weeks or even years, it's an infinite loop in
+        practice.
+
+
+2. Descriptions of Individual Files
+
+2.1. Good Files
+
+    good-single-none.lzma uses implicit Copy filter with known Uncompressed
+    Size.
+
+    good-single-none-pad.lzma is good-single-none.lzma with Footer Padding.
+
+    good-cat-single-none-pad.lzma is two good-single-none-pad.lzma files
+    concatenated as is. Fully decoding this file requires that the decoder
+    supports decoding concatenated files.
+
+    good-single-lzma.lzma is LZMA compressed file with EOPM.
+
+    good-single-subblock-lzma.lzma has basic combination of Subblock and
+    LZMA filters.
+
+    good-single-subblock_rle.lzma takes advantage of Subblock filter's
+    run-length encoding.
+
+    good-single-delta-lzma.tiff.lzma is an image file that compresses
+    better with Delta+LZMA than with plain LZMA.
+
+
+2.2. Bad Files
+
+    bad-single-data_after_eopm.lzma has LZMA+Subblock, where the Subblock
+    filter gives one byte of data to LZMA after LZMA has detected EOPM.
+
+    bad-single-data_after_eopm_2.lzma is like
+    bad-single-data_after_eopm.lzma but Subblock gives 256 MiB of data to
+    LZMA after LZMA has detected EOPM.
+
+    bad-single-subblock_subblock.lzma has Subblock+Subblock, where the
+    Subblock decoder is given End of Input in the middle of a Subblock.
+
+    bad-single-subblock-padding_loop.lzma contains huge amount of
+    consecutive Padding bytes, which isn't allowed by the Subblock filter
+    format. If it were allowed, this file would hang the decoder for very
+    long time (weeks to years).
+
+    bad-single-subblock1023-slow.lzma is similar to
+    malicious-single-subblock31-slow.lzma except that this uses 1023 bytes
+    of Padding in every place instead of 31 bytes. The Subblock filter
+    format specification allows only 31-byte Padings, thus this file must
+    get detected as bad without producing any output. Allowing larger
+    Padding than 31 bytes was considered (so this test file was created),
+    but it seemed to be a bad idea since it would increase worst-case CPU
+    usage.
+
+
+2.3. Malicious Files
+
+    malicious-single-subblock31-slow.lzma requires quite a bit of CPU time
+    per decoded byte. It contains LZMA compressed Subblock filter data that
+    has as much Padding as the specification allows. LZMA is also used as
+    a Subfilter, to further slowdown the decoder. Every Subfilter instance
+    produces only one byte of output. If you can create a file that wastes
+    notably more CPU cycles than this file, please contact Lasse Collin.
+
+    malicious-single-subblock-256MiB.lzma is a tiny file that produces
+    256 MiB of output. It uses Subblock filter's run-length encoding
+    to achieve this.
+
+    malicious-single-subblock-64PiB.lzma is a tiny file that produces
+    64 PiB of output (if you have patience to wait). This is done by
+    chaining two Subblock filters and using their run-length encoders.
+
+    malicious-multi-metadata-64PiB.lzma is like
+    malicious-single-subblock-64PiB.lzma but the huge amount of output
+    is in a Metadata Block. Trying to decode this file may take years
+    unless the decoder catches that the Metadata has unreasonable size.
+

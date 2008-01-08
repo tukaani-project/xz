@@ -327,7 +327,7 @@ block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	if (!options->has_eopm && options->uncompressed_size == 0) {
 		// Also Compressed Size must also be zero if it has been
 		// given to us.
-		if (!is_size_valid(options->compressed_size, 0))
+		if (!is_size_valid(0, options->compressed_size))
 			return LZMA_PROG_ERROR;
 
 		next->coder->sequence = SEQ_CHECK_FINISH;

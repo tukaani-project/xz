@@ -175,7 +175,7 @@ single_init(thread_data *t)
 		} else {
 			lzma_options_stream stream = {
 				.check = opt_check,
-				.has_crc32 = true,
+				.has_crc32 = opt_check != LZMA_CHECK_NONE,
 				.uncompressed_size = uncompressed_size,
 				.alignment = 0,
 			};

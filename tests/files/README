@@ -45,6 +45,8 @@
     concatenated as is. Fully decoding this file requires that the decoder
     supports decoding concatenated files.
 
+    good-single-subblock_implicit.lzma uses implicit Subblock filter.
+
     good-single-lzma.lzma is LZMA compressed file with EOPM.
 
     good-single-subblock-lzma.lzma has basic combination of Subblock and

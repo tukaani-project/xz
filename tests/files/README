@@ -45,6 +45,12 @@
     concatenated as is. Fully decoding this file requires that the decoder
     supports decoding concatenated files.
 
+    good-single-none-empty_1.lzma is an empty file with implicit Copy
+    filter and no integrity Check.
+
+    good-single-none-empty_2.lzma is an empty file with implicit Copy
+    filter and CRC32 as Check.
+
     good-single-subblock_implicit.lzma uses implicit Subblock filter.
 
     good-single-lzma.lzma is LZMA compressed file with EOPM.

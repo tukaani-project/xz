@@ -18,7 +18,9 @@
 
 for I in "$srcdir"/files/good-*.lzma
 do
-	if ! ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
+	if ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
+		:
+	else
 		echo "Good file failed: $I"
 		(exit 1)
 		exit 1

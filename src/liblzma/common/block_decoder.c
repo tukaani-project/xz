@@ -152,7 +152,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		const size_t in_start = *in_pos;
 		const size_t out_start = *out_pos;
 
-		lzma_ret ret = coder->next.code(coder->next.coder,
+		const lzma_ret ret = coder->next.code(coder->next.coder,
 				allocator, in, in_pos, in_size,
 				out, out_pos, out_size, action);
 
@@ -174,9 +174,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		if (ret != LZMA_STREAM_END)
 			return ret;
 
-		ret = update_sequence(coder);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(update_sequence(coder));
 
 		break;
 	}
@@ -213,10 +211,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		++*in_pos;
 
 		if (++coder->pos == lzma_check_sizes[coder->options->check]) {
-			const lzma_ret ret = update_sequence(coder);
-			if (ret != LZMA_OK)
-				return ret;
-
+			return_if_error(update_sequence(coder));
 			coder->pos = 0;
 		}
 
@@ -225,7 +220,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 	case SEQ_UNCOMPRESSED_SIZE: {
 		const size_t in_start = *in_pos;
 
-		lzma_ret ret = lzma_vli_decode(&coder->tmp,
+		const lzma_ret ret = lzma_vli_decode(&coder->tmp,
 				&coder->pos, in, in_pos, in_size);
 
 		if (update_size(&coder->total_size, *in_pos - in_start,
@@ -241,9 +236,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		coder->pos = 0;
 		coder->tmp = 0;
 
-		ret = update_sequence(coder);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(update_sequence(coder));
 
 		break;
 	}
@@ -251,7 +244,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 	case SEQ_BACKWARD_SIZE: {
 		const size_t in_start = *in_pos;
 
-		lzma_ret ret = lzma_vli_decode(&coder->tmp,
+		const lzma_ret ret = lzma_vli_decode(&coder->tmp,
 				&coder->pos, in, in_pos, in_size);
 
 		const size_t in_used = *in_pos - in_start;
@@ -269,9 +262,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 				- coder->size_of_backward_size)
 			return LZMA_DATA_ERROR;
 
-		ret = update_sequence(coder);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(update_sequence(coder));
 
 		break;
 	}

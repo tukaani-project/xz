@@ -345,28 +345,7 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	return_if_error(lzma_check_init(&next->coder->check, options->check));
 
-	if (!options->has_eopm && options->uncompressed_size == 0) {
-		if (!is_size_valid(0, options->compressed_size))
-			return LZMA_PROG_ERROR;
-
-		if (options->check != LZMA_CHECK_NONE) {
-			lzma_check_finish(&next->coder->check, options->check);
-			next->coder->sequence = SEQ_CHECK;
-		} else if (options->handle_padding) {
-			next->coder->sequence = SEQ_PADDING;
-		} else {
-			next->coder->sequence = SEQ_END;
-		}
-	} else {
-		next->coder->sequence = SEQ_CODE;
-	}
-
-	return_if_error(lzma_raw_decoder_init(&next->coder->next, allocator,
-			options->filters, options->has_eopm
-				? LZMA_VLI_VALUE_UNKNOWN
-				: options->uncompressed_size,
-			true));
-
+	next->coder->sequence = SEQ_CODE;
 	next->coder->options = options;
 	next->coder->pos = 0;
 	next->coder->total_size = options->header_size;
@@ -379,7 +358,19 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->tmp = 0;
 	next->coder->size_of_backward_size = 0;
 
-	return LZMA_OK;
+	if (!options->has_eopm && options->uncompressed_size == 0) {
+		// The Compressed Data field is empty, thus we skip SEQ_CODE
+		// phase completely.
+		const lzma_ret ret = update_sequence(next->coder);
+		if (ret != LZMA_OK && ret != LZMA_STREAM_END)
+			return LZMA_PROG_ERROR;
+	}
+
+	return lzma_raw_decoder_init(&next->coder->next, allocator,
+			options->filters, options->has_eopm
+				? LZMA_VLI_VALUE_UNKNOWN
+				: options->uncompressed_size,
+			true);
 }
 
 

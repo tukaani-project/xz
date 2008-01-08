@@ -59,12 +59,27 @@
 
 2.2. Bad Files
 
-    bad-single-data_after_eopm.lzma has LZMA+Subblock, where the Subblock
+    bad-single-none-truncated.lzma is good-single-none.lzma without the
+    last byte of the file.
+
+    bad-cat-single-none-pad_garbage_1.lzma is good-cat-single-none-pad.lzma
+    with 0xFE appended to the end of the file. 0xFE doesn't begin .lzma
+    or LZMA_Alone format file.
+
+    bad-cat-single-none-pad_garbage_2.lzma is good-cat-single-none-pad.lzma
+    with 0xFF appended to the end of the file. 0xFF begins .lzma format
+    file, thus the decoder has to detect that the file is incomplete.
+
+    bad-cat-single-none-pad_garbage_3.lzma is good-cat-single-none-pad.lzma
+    with 0x5D appended to the end of the file. 0x5D is the most common
+    first byte of LZMA_Alone format file.
+
+    bad-single-data_after_eopm_1.lzma has LZMA+Subblock, where the Subblock
     filter gives one byte of data to LZMA after LZMA has detected EOPM.
 
     bad-single-data_after_eopm_2.lzma is like
-    bad-single-data_after_eopm.lzma but Subblock gives 256 MiB of data to
-    LZMA after LZMA has detected EOPM.
+    bad-single-data_after_eopm_1.lzma but Subblock gives 256 MiB of data
+    to LZMA after LZMA has detected EOPM.
 
     bad-single-subblock_subblock.lzma has Subblock+Subblock, where the
     Subblock decoder is given End of Input in the middle of a Subblock.

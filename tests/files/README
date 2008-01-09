@@ -58,6 +58,9 @@
     good-single-none-empty_2.lzma is an empty file with implicit Copy
     filter and CRC32 as Check.
 
+    good-single-none-empty_3.lzma is an empty file with implicit Copy
+    filter, known Compressed Size, and no integrity Check.
+
     good-single-lzma-empty.lzma is an empty file with LZMA filter and no
     integrity Check.
 
@@ -84,6 +87,9 @@
     bad-cat-single-none-pad_garbage_3.lzma is good-cat-single-none-pad.lzma
     with 0x5D appended to the end of the file. 0x5D is the most common
     first byte of LZMA_Alone format file.
+
+    bad-single-none-empty.lzma is like good-single-none-empty_3.lzma but
+    with non-zero value in the Compressed Size field.
 
     bad-single-data_after_eopm_1.lzma has LZMA+Subblock, where the Subblock
     filter gives one byte of data to LZMA after LZMA has detected EOPM.

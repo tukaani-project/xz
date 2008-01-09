@@ -316,7 +316,10 @@ if test "x$enable_assembler" = xyes; then
 	esac
 fi
 case $enable_assembler in
-	x86|no) ;;
+	x86|no)
+		AC_DEFINE([HAVE_ASM_X86], 1,
+			[Define to 1 if using x86 assembler optimizations.])
+		;;
 	*)
 		AC_MSG_RESULT([])
 		AC_MSG_ERROR([--enable-assembler accepts only \`yes', \`no', or \`x86'.])

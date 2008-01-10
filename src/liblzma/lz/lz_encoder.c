@@ -179,10 +179,8 @@ lzma_lz_encoder_reset(lzma_lz_encoder *lz, lzma_allocator *allocator,
 		}
 	}
 
-	// Allocation successful. Store the new size and calculate
-	// must_move_pos.
+	// Allocation successful. Store the new size.
 	lz->size = buffer_size;
-	lz->must_move_pos = lz->size - lz->keep_size_after;
 
 	// Reset in window variables.
 	lz->offset = 0;
@@ -373,7 +371,7 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 	lzma_ret ret;
 
 	// Move the sliding window if needed.
-	if (coder->lz.read_pos >= coder->lz.must_move_pos)
+	if (coder->lz.read_pos >= coder->lz.size - coder->lz.keep_size_after)
 		move_window(&coder->lz);
 
 	if (coder->next.code == NULL) {

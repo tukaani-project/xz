@@ -72,10 +72,6 @@ struct lzma_lz_encoder_s {
 	/// to buffer[write_pos].
 	size_t write_pos;
 
-	/// When read_pos >= must_move_pos, move_window() must be called
-	/// to make more space for the input data.
-	size_t must_move_pos;
-
 	/// Number of bytes that must be kept available in our input history.
 	/// That is, once keep_size_before bytes have been processed,
 	/// buffer[read_pos - keep_size_before] is the oldest byte that

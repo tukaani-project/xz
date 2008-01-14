@@ -24,13 +24,15 @@
 #include "lzma_encoder.h"
 #include "lzma_common.h"
 #include "lz_encoder.h"
+#include "range_encoder.h"
 
 // We need space for about two encoding loops, because there is no check
 // for available buffer space before end of payload marker gets written.
 // 2*26 bytes should be enough for this... but Lasse isn't very sure about
 // the exact value. 64 bytes certainly is enough. :-)
-#define RC_BUFFER_SIZE 64
-#include "range_encoder.h"
+#if LZMA_LZ_TEMP_SIZE < 64
+#	error LZMA_LZ_TEMP_SIZE is too small.
+#endif
 
 
 #define move_pos(num) \

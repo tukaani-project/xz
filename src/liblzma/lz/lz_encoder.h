@@ -24,11 +24,15 @@
 #include "common.h"
 
 
+#define LZMA_LZ_TEMP_SIZE 64
+
+
 typedef struct lzma_lz_encoder_s lzma_lz_encoder;
 struct lzma_lz_encoder_s {
 	enum {
-		SEQ_INIT,
 		SEQ_RUN,
+		SEQ_FLUSH,
+		SEQ_FLUSH_END,
 		SEQ_FINISH,
 		SEQ_END
 	} sequence;
@@ -36,7 +40,14 @@ struct lzma_lz_encoder_s {
 	bool (*process)(lzma_coder *coder, uint8_t *restrict out,
 			size_t *restrict out_pos, size_t out_size);
 
+	/// Uncompressed Size or LZMA_VLI_VALUE_UNKNOWN if using EOPM. We need
+	/// to track Uncompressed Size to prevent writing flush marker to the
+	/// very end of stream that doesn't use EOPM.
 	lzma_vli uncompressed_size;
+
+	/// Temporary buffer for range encoder.
+	uint8_t temp[LZMA_LZ_TEMP_SIZE];
+	size_t temp_size;
 
 	///////////////
 	// In Window //
@@ -83,10 +94,6 @@ struct lzma_lz_encoder_s {
 	/// stream_end_was_reached is false (once it is true, read_pos
 	/// is allowed to reach write_pos).
 	size_t keep_size_after;
-
-	/// This is set to true once the last byte of the input data has
-	/// been copied to buffer.
-	bool stream_end_was_reached;
 
 	//////////////////
 	// Match Finder //

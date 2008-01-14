@@ -149,20 +149,11 @@ extern bool
 lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size)
 {
-	// Flush the range encoder's temporary buffer to out[].
-	// Return immediatelly if not everything could be flushed.
-	if (rc_flush_buffer(&coder->rc, out, out_pos, out_size))
-		return false;
-
-	// Return immediatelly if we have already finished our work.
-	if (coder->lz.stream_end_was_reached
-			&& coder->is_initialized
-			&& coder->lz.read_pos == coder->lz.write_pos
-			&& coder->additional_offset == 0)
-		return true;
+#define rc_buffer coder->lz.temp
+#define rc_buffer_size coder->lz.temp_size
 
 	// Local copies
-	rc_to_local(coder->rc);
+	lzma_range_encoder rc = coder->rc;
 	size_t out_pos_local = *out_pos;
 	const uint32_t pos_mask = coder->pos_mask;
 	const bool best_compression = coder->best_compression;
@@ -170,13 +161,30 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 	// Initialize the stream if no data has been encoded yet.
 	if (!coder->is_initialized) {
 		if (coder->lz.read_pos == coder->lz.read_limit) {
-			// Cannot initialize, because there is no input data.
-			if (!coder->lz.stream_end_was_reached)
+			switch (coder->lz.sequence) {
+			case SEQ_RUN:
+				// Cannot initialize, because there is
+				// no input data.
 				return false;
 
-			// If we get here, we are encoding an empty file.
-			// Initialization is skipped completely.
-			assert(coder->lz.write_pos == coder->lz.read_pos);
+			case SEQ_FLUSH:
+				// Nothing to flush. There cannot be a flush
+				// marker when no data has been processed
+				// yet (file format doesn't allow it, and
+				// it would be just waste of space).
+				return true;
+
+			case SEQ_FINISH:
+				// We are encoding an empty file. No need
+				// to initialize the encoder.
+				assert(coder->lz.write_pos == coder->lz.read_pos);
+				break;
+
+			default:
+				// We never get here.
+				assert(0);
+				return true;
+			}
 
 		} else {
 			// Do the actual initialization.
@@ -214,9 +222,10 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 
 		// Check that there is some input to process.
 		if (coder->lz.read_pos >= coder->lz.read_limit) {
-			// If end of input has been reached, we must keep
-			// encoding until additional_offset becomes zero.
-			if (!coder->lz.stream_end_was_reached
+			// If flushing or finishing, we must keep encoding
+			// until additional_offset becomes zero to make
+			// all the input available at output.
+			if (coder->lz.sequence == SEQ_RUN
 					|| coder->additional_offset == 0)
 				break;
 		}
@@ -224,7 +233,7 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 		assert(coder->lz.read_pos <= coder->lz.write_pos);
 
 #ifndef NDEBUG
-		if (coder->lz.stream_end_was_reached) {
+		if (coder->lz.sequence != SEQ_RUN) {
 			assert(coder->lz.read_limit == coder->lz.write_pos);
 		} else {
 			assert(coder->lz.read_limit + coder->lz.keep_size_after
@@ -363,19 +372,21 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 
 	// Check if everything is done.
 	bool all_done = false;
-	if (coder->lz.stream_end_was_reached
+	if (coder->lz.sequence != SEQ_RUN
 			&& coder->lz.read_pos == coder->lz.write_pos
 			&& coder->additional_offset == 0) {
-		// Write end of stream marker. It is encoded as a match with
-		// distance of UINT32_MAX. Match length is needed but it is
-		// ignored by the decoder.
-		if (coder->lz.uncompressed_size == LZMA_VLI_VALUE_UNKNOWN) {
+		if (coder->lz.uncompressed_size == LZMA_VLI_VALUE_UNKNOWN
+				|| coder->lz.sequence == SEQ_FLUSH) {
+			// Write special marker: flush marker or end of payload
+			// marker. Both are encoded as a match with distance of
+			// UINT32_MAX. The match length codes the type of the marker.
 			const uint32_t pos_state = coder->now_pos & pos_mask;
 			bit_encode_1(coder->is_match[coder->state][pos_state]);
 			bit_encode_0(coder->is_rep[coder->state]);
 			update_match(coder->state);
 
-			const uint32_t len = MATCH_MIN_LEN; // MATCH_MAX_LEN;
+			const uint32_t len = coder->lz.sequence == SEQ_FLUSH
+					? LEN_SPECIAL_FLUSH : LEN_SPECIAL_EOPM;
 			length_encode(coder->len_encoder, len - MATCH_MIN_LEN,
 					pos_state, best_compression);
 
@@ -398,15 +409,16 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 		// the range coder to the output buffer.
 		rc_flush();
 
+		rc_reset(rc);
+
 		// All done. Note that some output bytes might be
-		// pending in coder->buffer. lzma_encode() will
+		// pending in coder->lz.temp. lzma_lz_encode() will
 		// take care of those bytes.
-		if (rc_buffer_size == 0)
-			all_done = true;
+		all_done = true;
 	}
 
 	// Store local variables back to *coder.
-	rc_from_local(coder->rc);
+	coder->rc = rc;
 	*out_pos = out_pos_local;
 
 	return all_done;

@@ -24,46 +24,21 @@
 #include "range_common.h"
 
 
-// Allow #including this file even if RC_TEMP_BUFFER_SIZE isn't defined.
-#ifdef RC_BUFFER_SIZE
 typedef struct {
 	uint64_t low;
 	uint32_t range;
 	uint32_t cache_size;
 	uint8_t cache;
-	uint8_t buffer[RC_BUFFER_SIZE];
-	size_t buffer_size;
 } lzma_range_encoder;
-#endif
 
-
-/// Makes local copies of range encoder variables.
-#define rc_to_local(rc) \
-	uint64_t rc_low = (rc).low; \
-	uint32_t rc_range = (rc).range; \
-	uint32_t rc_cache_size = (rc).cache_size; \
-	uint8_t rc_cache = (rc).cache; \
-	uint8_t *rc_buffer = (rc).buffer; \
-	size_t rc_buffer_size = (rc).buffer_size
-
-/// Stores the local copes back to the range encoder structure.
-#define rc_from_local(rc) \
-do { \
-	(rc).low = rc_low; \
-	(rc).range = rc_range; \
-	(rc).cache_size = rc_cache_size; \
-	(rc).cache = rc_cache; \
-	(rc).buffer_size = rc_buffer_size; \
-} while (0)
 
 /// Resets the range encoder structure.
 #define rc_reset(rc) \
 do { \
 	(rc).low = 0; \
-	(rc).range = 0xFFFFFFFF; \
+	(rc).range = UINT32_MAX; \
 	(rc).cache_size = 1; \
 	(rc).cache = 0; \
-	(rc).buffer_size = 0; \
 } while (0)
 
 
@@ -72,13 +47,14 @@ do { \
 //////////////////
 
 // These macros expect that the following variables are defined:
-//  - uint64_t  rc_low;
-//  - uint32_t  rc_range;
-//  - uint8_t   rc_cache;
-//  - uint32_t  rc_cache_size;
-//  - uint8_t   *out;
-//  - size_t    out_pos_local;  // Local copy of *out_pos
-//  - size_t    size_out;
+//  - lzma_range_encoder rc;
+//  - uint8_t *out;
+//  - size_t out_pos_local;  // Local copy of *out_pos
+//  - size_t size_out;
+//
+// Macros pointing to these variables are also needed:
+//  - uint8_t rc_buffer[]; // Don't use a pointer, must be real array!
+//  - size_t rc_buffer_size;
 
 
 // Combined from NRangeCoder::CEncoder::Encode()
@@ -87,13 +63,13 @@ do { \
 do { \
 	probability rc_prob = prob; \
 	const uint32_t rc_bound \
-			= (rc_range >> BIT_MODEL_TOTAL_BITS) * rc_prob; \
+			= (rc.range >> BIT_MODEL_TOTAL_BITS) * rc_prob; \
 	if ((symbol) == 0) { \
-		rc_range = rc_bound; \
+		rc.range = rc_bound; \
 		rc_prob += (BIT_MODEL_TOTAL - rc_prob) >> MOVE_BITS; \
 	} else { \
-		rc_low += rc_bound; \
-		rc_range -= rc_bound; \
+		rc.low += rc_bound; \
+		rc.range -= rc_bound; \
 		rc_prob -= rc_prob >> MOVE_BITS; \
 	} \
 	prob = rc_prob; \
@@ -105,7 +81,7 @@ do { \
 #define bit_encode_0(prob) \
 do { \
 	probability rc_prob = prob; \
-	rc_range = (rc_range >> BIT_MODEL_TOTAL_BITS) * rc_prob; \
+	rc.range = (rc.range >> BIT_MODEL_TOTAL_BITS) * rc_prob; \
 	rc_prob += (BIT_MODEL_TOTAL - rc_prob) >> MOVE_BITS; \
 	prob = rc_prob; \
 	rc_normalize(); \
@@ -116,10 +92,10 @@ do { \
 #define bit_encode_1(prob) \
 do { \
 	probability rc_prob = prob; \
-	const uint32_t rc_bound = (rc_range >> BIT_MODEL_TOTAL_BITS) \
+	const uint32_t rc_bound = (rc.range >> BIT_MODEL_TOTAL_BITS) \
 			* rc_prob; \
-	rc_low += rc_bound; \
-	rc_range -= rc_bound; \
+	rc.low += rc_bound; \
+	rc.range -= rc_bound; \
 	rc_prob -= rc_prob >> MOVE_BITS; \
 	prob = rc_prob; \
 	rc_normalize(); \
@@ -160,9 +136,9 @@ do { \
 #define rc_encode_direct_bits(value, num_total_bits) \
 do { \
 	for (int32_t rc_i = (num_total_bits) - 1; rc_i >= 0; --rc_i) { \
-		rc_range >>= 1; \
+		rc.range >>= 1; \
 		if ((((value) >> rc_i) & 1) == 1) \
-			rc_low += rc_range; \
+			rc.low += rc.range; \
 		rc_normalize(); \
 	} \
 } while (0)
@@ -175,8 +151,8 @@ do { \
 // Calls rc_shift_low() to write out a byte if needed.
 #define rc_normalize() \
 do { \
-	if (rc_range < TOP_VALUE) { \
-		rc_range <<= SHIFT_BITS; \
+	if (rc.range < TOP_VALUE) { \
+		rc.range <<= SHIFT_BITS; \
 		rc_shift_low(); \
 	} \
 } while (0)
@@ -192,23 +168,23 @@ do { \
 // TODO: Notation change?
 //       (uint32_t)(0xFF000000)  =>  ((uint32_t)(0xFF) << TOP_BITS)
 // TODO: Another notation change?
-//       rc_low = (uint32_t)(rc_low) << SHIFT_BITS;
+//       rc.low = (uint32_t)(rc.low) << SHIFT_BITS;
 //       =>
-//       rc_low &= TOP_VALUE - 1;
-//       rc_low <<= SHIFT_BITS;
+//       rc.low &= TOP_VALUE - 1;
+//       rc.low <<= SHIFT_BITS;
 #define rc_shift_low() \
 do { \
-	if ((uint32_t)(rc_low) < (uint32_t)(0xFF000000) \
-			|| (uint32_t)(rc_low >> 32) != 0) { \
-		uint8_t rc_temp = rc_cache; \
+	if ((uint32_t)(rc.low) < (uint32_t)(0xFF000000) \
+			|| (uint32_t)(rc.low >> 32) != 0) { \
+		uint8_t rc_temp = rc.cache; \
 		do { \
-			rc_write_byte(rc_temp + (uint8_t)(rc_low >> 32)); \
+			rc_write_byte(rc_temp + (uint8_t)(rc.low >> 32)); \
 			rc_temp = 0xFF; \
-		} while(--rc_cache_size != 0); \
-		rc_cache = (uint8_t)((uint32_t)(rc_low) >> 24); \
+		} while(--rc.cache_size != 0); \
+		rc.cache = (uint8_t)((uint32_t)(rc.low) >> 24); \
 	} \
-	++rc_cache_size; \
-	rc_low = (uint32_t)(rc_low) << SHIFT_BITS; \
+	++rc.cache_size; \
+	rc.low = (uint32_t)(rc.low) << SHIFT_BITS; \
 } while (0)
 
 
@@ -218,7 +194,7 @@ do { \
 do { \
 	if (out_pos_local == out_size) { \
 		rc_buffer[rc_buffer_size++] = (uint8_t)(b); \
-		assert(rc_buffer_size < RC_BUFFER_SIZE); \
+		assert(rc_buffer_size < sizeof(rc_buffer)); \
 	} else { \
 		assert(rc_buffer_size == 0); \
 		out[out_pos_local++] = (uint8_t)(b); \
@@ -286,32 +262,5 @@ extern uint32_t lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
 /// Initializes lzma_rc_prob_prices[]. This needs to be called only once.
 extern void lzma_rc_init(void);
 
-
-#ifdef RC_BUFFER_SIZE
-/// Flushes data from rc->temp[] to out[] as much as possible. If everything
-/// cannot be flushed, returns true; false otherwise.
-static inline bool
-rc_flush_buffer(lzma_range_encoder *rc,
-		uint8_t *out, size_t *out_pos, size_t out_size)
-{
-	if (rc->buffer_size > 0) {
-		const size_t out_avail = out_size - *out_pos;
-		if (rc->buffer_size > out_avail) {
-			memcpy(out + *out_pos, rc->buffer, out_avail);
-			*out_pos += out_avail;
-			rc->buffer_size -= out_avail;
-			memmove(rc->buffer, rc->buffer + out_avail,
-					rc->buffer_size);
-			return true;
-		}
-
-		memcpy(out + *out_pos, rc->buffer, rc->buffer_size);
-		*out_pos += rc->buffer_size;
-		rc->buffer_size = 0;
-	}
-
-	return false;
-}
-#endif
 
 #endif

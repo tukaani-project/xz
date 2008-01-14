@@ -273,6 +273,7 @@ single(thread_data *t)
 		if (ret != LZMA_OK) {
 			if (ret == LZMA_STREAM_END) {
 				if (opt_mode == MODE_COMPRESS) {
+					assert(t->pair->src_eof);
 					success = true;
 					break;
 				}

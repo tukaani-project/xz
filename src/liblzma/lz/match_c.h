@@ -122,7 +122,6 @@ LZMA_GET_MATCHES(LZMA_MATCH_FINDER_NAME_LOWER)
 	if (lz->read_pos + lz->match_max_len <= lz->write_pos) {
 		len_limit = lz->match_max_len;
 	} else {
-		assert(lz->stream_end_was_reached);
 		len_limit = lz->write_pos - lz->read_pos;
 		if (len_limit < MIN_MATCH_CHECK) {
 			distances[0] = 0;
@@ -300,7 +299,6 @@ LZMA_SKIP(LZMA_MATCH_FINDER_NAME_LOWER)
 		if (lz->read_pos + lz->match_max_len <= lz->write_pos) {
 			len_limit = lz->match_max_len;
 		} else {
-			assert(lz->stream_end_was_reached == true);
 			len_limit = lz->write_pos - lz->read_pos;
 			if (len_limit < MIN_MATCH_CHECK) {
 				move_pos();

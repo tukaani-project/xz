@@ -212,6 +212,7 @@ lzma_stream_encoder_single(
 	lzma_next_strm_init(strm, stream_encoder_init, options);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
+	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;

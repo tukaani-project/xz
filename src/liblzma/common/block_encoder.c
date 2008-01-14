@@ -94,7 +94,7 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 	// Main loop
 	while (*out_pos < out_size
-			&& (*in_pos < in_size || action == LZMA_FINISH))
+			&& (*in_pos < in_size || action != LZMA_RUN))
 	switch (coder->sequence) {
 	case SEQ_CODE: {
 		const size_t in_start = *in_pos;
@@ -121,7 +121,7 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 		lzma_check_update(&coder->check, coder->options->check,
 				in + in_start, in_used);
 
-		if (ret != LZMA_STREAM_END)
+		if (ret != LZMA_STREAM_END || action == LZMA_SYNC_FLUSH)
 			return ret;
 
 		assert(*in_pos == in_size);

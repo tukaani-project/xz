@@ -197,12 +197,12 @@ lzma_read_match_distances(lzma_coder *coder,
 			uint32_t limit = MATCH_MAX_LEN - *len_res;
 
 			assert(offset + limit < coder->lz.keep_size_after);
+			assert(coder->lz.read_pos <= coder->lz.write_pos);
 
 			// If we are close to end of the stream, we may need
 			// to limit the length of the match.
-			if (coder->lz.stream_end_was_reached
-					&& coder->lz.write_pos
-					< coder->lz.read_pos + offset + limit)
+			if (coder->lz.write_pos - coder->lz.read_pos
+					< offset + limit)
 				limit = coder->lz.write_pos
 					- (coder->lz.read_pos + offset);
 

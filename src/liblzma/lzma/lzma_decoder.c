@@ -425,13 +425,7 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 			// Not a repeated match
 			//
 			// We will decode a new distance and store
-			// the value to rep0.
-
-			// The latest three match distances are kept in
-			// memory in case there are repeated matches.
-			rep3 = rep2;
-			rep2 = rep1;
-			rep1 = rep0;
+			// the value to distance.
 
 			// Decode the length of the match.
 			length_decode(len, coder->len_decoder, pos_state);
@@ -447,36 +441,36 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 			if (pos_slot >= START_POS_MODEL_INDEX) {
 				uint32_t direct_bits = (pos_slot >> 1) - 1;
 				assert(direct_bits >= 1 && direct_bits <= 30);
-				rep0 = 2 | (pos_slot & 1);
+				uint32_t distance = 2 | (pos_slot & 1);
 
 				if (pos_slot < END_POS_MODEL_INDEX) {
 					assert(direct_bits <= 5);
-					rep0 <<= direct_bits;
-					assert(rep0 <= 96);
+					distance <<= direct_bits;
+					assert(distance <= 96);
 					// -1 is fine, because
 					// bittree_reverse_decode()
 					// starts from table index [1]
 					// (not [0]).
-					assert((int32_t)(rep0 - pos_slot - 1) >= -1);
-					assert((int32_t)(rep0 - pos_slot - 1) <= 82);
-					// We add the result to rep0, so rep0
+					assert((int32_t)(distance - pos_slot - 1) >= -1);
+					assert((int32_t)(distance - pos_slot - 1) <= 82);
+					// We add the result to distance, so distance
 					// must not be part of second argument
 					// of the macro.
-					const int32_t offset = rep0 - pos_slot - 1;
-					bittree_reverse_decode(rep0, coder->pos_decoders + offset,
+					const int32_t offset = distance - pos_slot - 1;
+					bittree_reverse_decode(distance, coder->pos_decoders + offset,
 							direct_bits);
 				} else {
 					assert(pos_slot >= 14);
 					assert(direct_bits >= 6);
 					direct_bits -= ALIGN_BITS;
 					assert(direct_bits >= 2);
-					rc_decode_direct(rep0, direct_bits);
-					rep0 <<= ALIGN_BITS;
+					rc_decode_direct(distance, direct_bits);
+					distance <<= ALIGN_BITS;
 
-					bittree_reverse_decode(rep0, coder->pos_align_decoder,
+					bittree_reverse_decode(distance, coder->pos_align_decoder,
 							ALIGN_BITS);
 
-					if (rep0 == UINT32_MAX) {
+					if (distance == UINT32_MAX) {
 						if (len == LEN_SPECIAL_EOPM) {
 							// End of Payload Marker found.
 							coder->lz.eopm_detected = true;
@@ -501,16 +495,31 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 							rc_reset(rc);
 
 							// If we don't have enough input here, we jump
-							// out of the loop without calling rc_normalize().
+							// out of the loop. Note that while there is a
+							// useless call to rc_normalize(), it does nothing
+							// since we have just reset the range decoder.
 							if (!rc_read_init(&rc, in, &in_pos_local, in_size))
-								goto out;
+								break;
+
+							continue;
 
 						} else {
 							return true;
 						}
 					}
 				}
+
+				// The latest three match distances are kept in
+				// memory in case there are repeated matches.
+				rep3 = rep2;
+				rep2 = rep1;
+				rep1 = rep0;
+				rep0 = distance;
+
 			} else {
+				rep3 = rep2;
+				rep2 = rep1;
+				rep1 = rep0;
 				rep0 = pos_slot;
 			}
 
@@ -630,7 +639,6 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 	// Update the *data structure. //
 	/////////////////////////////////
 
-out:
 	// Range decoder
 	rc_from_local(coder->rc);
 

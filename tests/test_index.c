@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       test_inndex.c
+/// \file       test_index.c
 /// \brief      Tests functions handling the lzma_index structure
 //
 //  Copyright (C) 2007 Lasse Collin

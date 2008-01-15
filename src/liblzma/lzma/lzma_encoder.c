@@ -101,7 +101,7 @@ do { \
 
 /// \brief      Updates price table of the length encoder
 ///
-/// All all the other prices in LZMA, these are used by lzma_get_optimum().
+/// Like all the other prices in LZMA, these are used by lzma_get_optimum().
 ///
 extern void
 lzma_length_encoder_update_table(lzma_length_encoder *lencoder,

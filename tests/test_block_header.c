@@ -62,6 +62,17 @@ static const lzma_options_filter filters_delta[3] = {
 };
 
 
+static void
+free_decoded_options(void)
+{
+	for (size_t i = 0; i < sizeof(decoded_options.filters)
+			/ sizeof(decoded_options.filters[0]); ++i) {
+		free(decoded_options.filters[i].options);
+		decoded_options.filters[i].options = NULL;
+	}
+}
+
+
 static bool
 encode(uint32_t header_size)
 {
@@ -88,7 +99,9 @@ decode_ret(uint32_t header_size, lzma_ret ret_ok)
 
 	expect(lzma_block_header_decoder(&strm, &decoded_options) == LZMA_OK);
 
-	return decoder_loop_ret(&strm, buffer, header_size, ret_ok);
+	const bool ret = decoder_loop_ret(&strm, buffer, header_size, ret_ok);
+	free_decoded_options();
+	return ret;
 }
 
 
@@ -100,7 +113,9 @@ decode(uint32_t header_size)
 
 	expect(lzma_block_header_decoder(&strm, &decoded_options) == LZMA_OK);
 
-	if (decoder_loop(&strm, buffer, header_size))
+	const bool ret = decoder_loop(&strm, buffer, header_size);
+	free_decoded_options();
+	if (ret)
 		return true;
 
 	if (known_options.has_eopm != decoded_options.has_eopm)

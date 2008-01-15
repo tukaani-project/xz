@@ -34,9 +34,6 @@ lzma_init_encoder(void)
 #if defined(HAVE_SMALL) && defined(HAVE_ENCODER) && defined(HAVE_FILTER_LZMA)
 	lzma_rc_init();
 #endif
-#if defined(HAVE_ENCODER) && defined(HAVE_FILTER_LZMA)
-	lzma_fastpos_init();
-#endif
 
 	already_initialized = true;
 	return;

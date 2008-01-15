@@ -27,6 +27,7 @@
 
 
 #include "lzma_encoder_private.h"
+#include "fastpos.h"
 
 
 #define length_get_price(length_encoder, symbol, pos_state) \

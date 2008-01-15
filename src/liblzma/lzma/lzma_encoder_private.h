@@ -45,27 +45,6 @@ do { \
 } while (0)
 
 
-#define get_pos_slot(pos) \
-	((pos) < (1 << 11) \
-		? lzma_fastpos[pos] \
-		: ((pos) < (1 << 21) \
-			? lzma_fastpos[(pos) >> 10] + 20 \
-			: lzma_fastpos[(pos) >> 20] + 40))
-
-
-#define get_pos_slot_2(pos) \
-	((pos) < (1 << 17) \
-		? lzma_fastpos[(pos) >> 6] + 12 \
-		: ((pos) < (1 << 27) \
-			? lzma_fastpos[(pos) >> 16] + 32 \
-			: lzma_fastpos[(pos) >> 26] + 52))
-
-
-/// This isn't modified once its contents have been
-/// initialized by lzma_fastpos_init().
-extern uint8_t lzma_fastpos[1 << 11];
-
-
 typedef struct {
 	probability choice;
 	probability choice2;

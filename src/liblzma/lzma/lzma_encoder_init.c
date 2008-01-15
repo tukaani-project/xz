@@ -21,28 +21,6 @@
 #include "lzma_encoder_private.h"
 
 
-uint8_t lzma_fastpos[1 << 11];
-
-extern void
-lzma_fastpos_init(void)
-{
-	static const uint8_t fast_slots = 22;
-
-	int c = 2;
-	lzma_fastpos[0] = 0;
-	lzma_fastpos[1] = 1;
-
-	for (uint8_t slot_fast = 2; slot_fast < fast_slots; ++slot_fast) {
-		const uint32_t k = (1 << ((slot_fast >> 1) - 1));
-
-		for (uint32_t j = 0; j < k; ++j, ++c)
-			lzma_fastpos[c] = slot_fast;
-	}
-
-	return;
-}
-
-
 /// \brief      Initializes the length encoder
 static void
 length_encoder_reset(lzma_length_encoder *lencoder,

@@ -12,6 +12,8 @@
 ##  Lesser General Public License for more details.
 ##
 
+EXTRA_DIST = fastpos_tablegen.c
+
 noinst_LTLIBRARIES = liblzma4.la
 liblzma4_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/api \
@@ -26,6 +28,8 @@ liblzma4_la_SOURCES = \
 
 if COND_MAIN_ENCODER
 liblzma4_la_SOURCES += \
+	fastpos.h \
+	fastpos_table.c \
 	lzma_encoder.h \
 	lzma_encoder.c \
 	lzma_encoder_presets.c \

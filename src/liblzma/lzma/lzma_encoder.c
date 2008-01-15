@@ -23,6 +23,7 @@
 
 
 #include "lzma_encoder_private.h"
+#include "fastpos.h"
 
 
 ////////////

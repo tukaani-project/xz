@@ -24,6 +24,7 @@ libcommon_la_CPPFLAGS = \
 libcommon_la_SOURCES = \
 	common.h \
 	sysdefs.h \
+	bsr.h \
 	allocator.c \
 	block_private.h \
 	extra.c \

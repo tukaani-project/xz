@@ -19,6 +19,7 @@
 
 #include "common.h"
 #include "lzma_encoder.h"
+#include "fastpos.h"
 
 
 /// \brief      Calculates the size of the Filter Properties field
@@ -204,35 +205,32 @@ properties_lzma(uint8_t *out, size_t *out_pos, size_t out_size,
 
 	// Dictionary flags
 	//
-	// Dictionary size is encoded using six bits of
-	// which one is mantissa and five are exponent.
+	// Dictionary size is encoded using similar encoding that is used
+	// internally by LZMA.
 	//
-	// There are some limits that must hold to keep
-	// this coding working.
-#	if LZMA_DICTIONARY_SIZE_MAX > UINT32_MAX / 2
-#		error LZMA_DICTIONARY_SIZE_MAX is too big.
-#	endif
+	// This won't work if dictionary size can be zero:
 #	if LZMA_DICTIONARY_SIZE_MIN < 1
 #		error LZMA_DICTIONARY_SIZE_MIN cannot be zero.
 #	endif
 
+	uint32_t d = options->dictionary_size;
+
 	// Validate it:
-	if (options->dictionary_size < LZMA_DICTIONARY_SIZE_MIN
-			|| options->dictionary_size > LZMA_DICTIONARY_SIZE_MAX)
+	if (d < LZMA_DICTIONARY_SIZE_MIN || d > LZMA_DICTIONARY_SIZE_MAX)
 		return LZMA_HEADER_ERROR;
 
-	if (options->dictionary_size == 1) {
-		// Special case
-		out[*out_pos] = 0x00;
-	} else {
-		// TODO This could be more elegant.
-		uint32_t i = 1;
-		while (((2 | ((i + 1) & 1)) << ((i - 1) / 2))
-				< options->dictionary_size)
-			++i;
-		out[*out_pos] = i;
-	}
+	// Round up to to the next 2^n or 2^n + 2^(n - 1) depending on which
+	// one is the next:
+	--d;
+	d |= d >> 2;
+	d |= d >> 3;
+	d |= d >> 4;
+	d |= d >> 8;
+	d |= d >> 16;
+	++d;
 
+	// Get the highest two bits using the proper encoding:
+	out[*out_pos] = get_pos_slot(d) - 1;
 	++*out_pos;
 
 	return LZMA_OK;

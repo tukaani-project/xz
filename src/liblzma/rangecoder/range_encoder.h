@@ -246,21 +246,20 @@ do { \
 } while (0)
 
 
-//////////////////////
-// Global variables //
-//////////////////////
-
-// Probability prices used by *_get_price() macros. This is initialized
-// by lzma_rc_init() and is not modified later.
+#ifdef HAVE_SMALL
+/// Probability prices used by *_get_price() macros. This is initialized
+/// by lzma_rc_init() and is not modified later.
 extern uint32_t lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
-
-
-///////////////
-// Functions //
-///////////////
 
 /// Initializes lzma_rc_prob_prices[]. This needs to be called only once.
 extern void lzma_rc_init(void);
 
+#else
+// Not building a size optimized version, so we use a precomputed
+// constant table.
+extern const uint32_t
+lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
+
+#endif
 
 #endif

@@ -33,9 +33,10 @@ lzma_init_encoder(void)
 	lzma_init_check();
 #endif
 
-// FIXME TODO Create precalculated tables.
-#if defined(HAVE_ENCODER) && defined(HAVE_FILTER_LZMA)
+#if defined(HAVE_SMALL) && defined(HAVE_ENCODER) && defined(HAVE_FILTER_LZMA)
 	lzma_rc_init();
+#endif
+#if defined(HAVE_ENCODER) && defined(HAVE_FILTER_LZMA)
 	lzma_fastpos_init();
 #endif
 

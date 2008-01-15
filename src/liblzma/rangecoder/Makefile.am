@@ -12,6 +12,8 @@
 ##  Lesser General Public License for more details.
 ##
 
+EXTRA_DIST = price_table_gen.c
+
 noinst_LTLIBRARIES = librangecoder.la
 
 librangecoder_la_SOURCES = range_common.h
@@ -20,7 +22,12 @@ librangecoder_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/common
 
 if COND_MAIN_ENCODER
-librangecoder_la_SOURCES += range_encoder.c range_encoder.h
+librangecoder_la_SOURCES += range_encoder.h
+if COND_SMALL
+librangecoder_la_SOURCES += price_table_init.c
+else
+librangecoder_la_SOURCES += price_table.c
+endif
 endif
 
 if COND_MAIN_DECODER

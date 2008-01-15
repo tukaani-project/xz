@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       range_encoder.c
+/// \file       price_table_init.c
 /// \brief      Static initializations for the range encoder's prices array
 //
 //  Copyright (C) 1999-2006 Igor Pavlov
@@ -18,7 +18,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "range_encoder.h"
+#ifdef HAVE_CONFIG_H
+#	include "range_encoder.h"
+#endif
 
 
 #define NUM_BITS (BIT_MODEL_TOTAL_BITS - MOVE_REDUCING_BITS)

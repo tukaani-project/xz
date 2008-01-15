@@ -111,8 +111,7 @@ fill_distances_prices(lzma_coder *coder)
 		const uint32_t pos_slot = get_pos_slot(i);
 		const uint32_t footer_bits = ((pos_slot >> 1) - 1);
 		const uint32_t base = (2 | (pos_slot & 1)) << footer_bits;
-		temp_prices[i] = 0;
-		bittree_reverse_get_price(temp_prices[i],
+		temp_prices[i] = bittree_reverse_get_price(
 				coder->pos_encoders + base - pos_slot - 1,
 				footer_bits, i - base);
 	}
@@ -129,8 +128,7 @@ fill_distances_prices(lzma_coder *coder)
 		for (uint32_t pos_slot = 0;
 				pos_slot < dist_table_size;
 				++pos_slot) {
-			pos_slot_prices[pos_slot] = 0;
-			bittree_get_price(pos_slot_prices[pos_slot], encoder,
+			pos_slot_prices[pos_slot] = bittree_get_price(encoder,
 					POS_SLOT_BITS, pos_slot);
 		}
 
@@ -162,14 +160,12 @@ fill_distances_prices(lzma_coder *coder)
 static void
 fill_align_prices(lzma_coder *coder)
 {
-	for (uint32_t i = 0; i < ALIGN_TABLE_SIZE; ++i) {
-		uint32_t tmp = 0;
-		bittree_reverse_get_price(tmp, coder->pos_align_encoder,
-				ALIGN_BITS, i);
-		coder->align_prices[i] = tmp;
-	}
+	for (uint32_t i = 0; i < ALIGN_TABLE_SIZE; ++i)
+		coder->align_prices[i] = bittree_reverse_get_price(
+				coder->pos_align_encoder, ALIGN_BITS, i);
 
 	coder->align_price_count = 0;
+	return;
 }
 
 

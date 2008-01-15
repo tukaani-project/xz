@@ -32,6 +32,23 @@ typedef struct {
 } lzma_range_encoder;
 
 
+#ifdef HAVE_SMALL
+/// Probability prices used by *_get_price() macros. This is initialized
+/// by lzma_rc_init() and is not modified later.
+extern uint32_t lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
+
+/// Initializes lzma_rc_prob_prices[]. This needs to be called only once.
+extern void lzma_rc_init(void);
+
+#else
+// Not building a size optimized version, so we use a precomputed
+// constant table.
+extern const uint32_t
+lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
+
+#endif
+
+
 /// Resets the range encoder structure.
 #define rc_reset(rc) \
 do { \
@@ -222,44 +239,37 @@ do { \
 	lzma_rc_prob_prices[(BIT_MODEL_TOTAL - (prob)) >> MOVE_REDUCING_BITS]
 
 
-// Adds price to price_target. TODO Optimize/Cleanup?
-#define bittree_get_price(price_target, probs, bit_levels, symbol) \
-do { \
-	uint32_t bittree_symbol = (symbol) | (UINT32_C(1) << bit_levels); \
-	while (bittree_symbol != 1) { \
-		price_target += bit_get_price((probs)[bittree_symbol >> 1], \
-				bittree_symbol & 1); \
-		bittree_symbol >>= 1; \
-	} \
-} while (0)
+static inline uint32_t
+bittree_get_price(const probability *probs,
+		uint32_t bit_levels, uint32_t symbol)
+{
+	uint32_t price = 0;
+	symbol |= UINT32_C(1) << bit_levels;
+
+	do {
+		price += bit_get_price(probs[symbol >> 1], symbol & 1);
+		symbol >>= 1;
+	} while (symbol != 1);
+
+	return price;
+}
 
 
-// Adds price to price_target.
-#define bittree_reverse_get_price(price_target, probs, bit_levels, symbol) \
-do { \
-	uint32_t model_index = 1; \
-	for (uint32_t bit_index = 0; bit_index < bit_levels; ++bit_index) { \
-		const uint32_t bit = ((symbol) >> bit_index) & 1; \
-		price_target += bit_get_price((probs)[model_index], bit); \
-		model_index = (model_index << 1) | bit; \
-	} \
-} while (0)
+static inline uint32_t
+bittree_reverse_get_price(const probability *probs,
+		uint32_t bit_levels, uint32_t symbol)
+{
+	uint32_t price = 0;
+	uint32_t model_index = 1;
 
+	do {
+		const uint32_t bit = symbol & 1;
+		symbol >>= 1;
+		price += bit_get_price(probs[model_index], bit);
+		model_index = (model_index << 1) | bit;
+	} while (--bit_levels != 0);
 
-#ifdef HAVE_SMALL
-/// Probability prices used by *_get_price() macros. This is initialized
-/// by lzma_rc_init() and is not modified later.
-extern uint32_t lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
-
-/// Initializes lzma_rc_prob_prices[]. This needs to be called only once.
-extern void lzma_rc_init(void);
-
-#else
-// Not building a size optimized version, so we use a precomputed
-// constant table.
-extern const uint32_t
-lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
-
-#endif
+	return price;
+}
 
 #endif

@@ -116,23 +116,18 @@ lzma_length_encoder_update_table(lzma_length_encoder *lencoder,
 	uint32_t *prices = lencoder->prices[pos_state];
 	uint32_t i = 0;
 
-	for (i = 0; i < num_symbols && i < LEN_LOW_SYMBOLS; ++i) {
-		prices[i] = a0;
-		bittree_get_price(prices[i], lencoder->low[pos_state],
+	for (i = 0; i < num_symbols && i < LEN_LOW_SYMBOLS; ++i)
+		prices[i] = a0 + bittree_get_price(lencoder->low[pos_state],
 				LEN_LOW_BITS, i);
-	}
 
-	for (; i < num_symbols && i < LEN_LOW_SYMBOLS + LEN_MID_SYMBOLS; ++i) {
-		prices[i] = b0;
-		bittree_get_price(prices[i], lencoder->mid[pos_state],
+	for (; i < num_symbols && i < LEN_LOW_SYMBOLS + LEN_MID_SYMBOLS; ++i)
+		prices[i] = b0 + bittree_get_price(lencoder->mid[pos_state],
 				LEN_MID_BITS, i - LEN_LOW_SYMBOLS);
-	}
 
-	for (; i < num_symbols; ++i) {
-		prices[i] = b1;
-		bittree_get_price(prices[i], lencoder->high, LEN_HIGH_BITS,
+	for (; i < num_symbols; ++i)
+		prices[i] = b1 + bittree_get_price(
+				lencoder->high, LEN_HIGH_BITS,
 				i - LEN_LOW_SYMBOLS - LEN_MID_SYMBOLS);
-	}
 
 	lencoder->counters[pos_state] = num_symbols;
 

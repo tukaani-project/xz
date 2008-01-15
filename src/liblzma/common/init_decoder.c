@@ -25,9 +25,7 @@ lzma_init_decoder(void)
 {
 	// So far there's no decoder-specific stuff to initialize.
 
-#ifdef HAVE_CHECK
 	lzma_init_check();
-#endif
 
 	return;
 }

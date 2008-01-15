@@ -29,9 +29,7 @@ lzma_init_encoder(void)
 	if (already_initialized)
 		return;
 
-#ifdef HAVE_CHECK
 	lzma_init_check();
-#endif
 
 #if defined(HAVE_SMALL) && defined(HAVE_ENCODER) && defined(HAVE_FILTER_LZMA)
 	lzma_rc_init();

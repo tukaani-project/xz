@@ -81,6 +81,8 @@ test_crc64(void)
 int
 main(void)
 {
+	lzma_init_check();
+
 	bool error = false;
 
 	error |= test_crc32();

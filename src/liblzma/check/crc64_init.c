@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef HAVE_CONFIG_H
-#	include "sysdefs.h"
+#	include "check.h"
 #endif
 
 #ifdef WORDS_BIGENDIAN

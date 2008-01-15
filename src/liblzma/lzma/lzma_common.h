@@ -57,11 +57,7 @@
 
 #define FULL_DISTANCES (1 << (END_POS_MODEL_INDEX / 2))
 
-#define LIT_POS_STATES_BITS_MAX LZMA_LITERAL_POS_BITS_MAX
-#define LIT_CONTEXT_BITS_MAX LZMA_LITERAL_CONTEXT_BITS_MAX
-
-#define POS_STATES_BITS_MAX LZMA_POS_BITS_MAX
-#define POS_STATES_MAX (1 << POS_STATES_BITS_MAX)
+#define POS_STATES_MAX (1 << LZMA_POS_BITS_MAX)
 
 
 // Length coder & Length price table encoder
@@ -79,7 +75,7 @@
 #define LEN_CODER_TOTAL_PROBS (LEN_HIGH_CODER + LEN_HIGH_SYMBOLS)
 
 // Price table size of Len Encoder
-#define LEN_PRICES (LEN_SYMBOLS << POS_STATES_BITS_MAX)
+#define LEN_PRICES (LEN_SYMBOLS << LZMA_POS_BITS_MAX)
 
 // Special lengths used together with distance == UINT32_MAX
 #define LEN_SPECIAL_EOPM MATCH_MIN_LEN

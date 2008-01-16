@@ -204,6 +204,14 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		coder->block_options.check = coder->header_flags.check;
 		coder->block_options.has_crc32 = coder->header_flags.has_crc32;
 
+		for (size_t i = 0;
+				i < ARRAY_SIZE(coder->block_options.filters);
+				++i) {
+			lzma_free(coder->block_options.filters[i].options,
+					allocator);
+			coder->block_options.filters[i].options = NULL;
+		}
+
 		return_if_error(lzma_block_header_decoder_init(
 				&coder->block_header_decoder, allocator,
 				&coder->block_options));
@@ -359,6 +367,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 stream_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
+	for (size_t i = 0; i < ARRAY_SIZE(coder->block_options.filters); ++i)
+		lzma_free(coder->block_options.filters[i].options, allocator);
+
 	lzma_next_coder_end(&coder->block_decoder, allocator);
 	lzma_next_coder_end(&coder->block_header_decoder, allocator);
 	lzma_next_coder_end(&coder->flags_decoder, allocator);
@@ -389,12 +400,21 @@ stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->metadata.index = NULL;
 		next->coder->metadata.extra = NULL;
 	} else {
+		for (size_t i = 0; i < ARRAY_SIZE(
+				next->coder->block_options.filters); ++i)
+			lzma_free(next->coder->block_options
+					.filters[i].options, allocator);
+
 		lzma_index_free(next->coder->metadata.index, allocator);
 		next->coder->metadata.index = NULL;
 
 		lzma_extra_free(next->coder->metadata.extra, allocator);
 		next->coder->metadata.extra = NULL;
 	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(next->coder->block_options.filters);
+			++i)
+		next->coder->block_options.filters[i].options = NULL;
 
 	next->coder->info = lzma_info_init(next->coder->info, allocator);
 	if (next->coder->info == NULL)

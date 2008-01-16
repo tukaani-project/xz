@@ -484,6 +484,8 @@ main(int argc, char **argv)
 		exit(ERROR);
 	}
 
+	assert(lzma_memlimit_count(mem_limitter) == 0);
+
 	allocator.opaque = mem_limitter;
 	strm.allocator = &allocator;
 
@@ -517,6 +519,7 @@ main(int argc, char **argv)
 	// Free the memory only when debugging. Freeing wastes some time,
 	// but allows detecting possible memory leaks with Valgrind.
 	lzma_end(&strm);
+	assert(lzma_memlimit_count(mem_limitter) == 0);
 	lzma_memlimit_end(mem_limitter, false);
 #endif
 

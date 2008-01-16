@@ -86,7 +86,7 @@ The .lzma File Format
         This document describes the .lzma file format (filename suffix
         `.lzma', MIME type `application/x-lzma'). It is intended that
         this format replace the format used by the LZMA_Alone tool
-        included in LZMA SDK up to and including version 4.43.
+        included in LZMA SDK up to and including version 4.57.
 
         IMPORTANT:  The version described in this document is a
                     draft, NOT a final, official version. Changes
@@ -112,7 +112,7 @@ The .lzma File Format
 
 0.2. Changes
 
-        Last modified: 2007-12-02 22:40+0200
+        Last modified: 2008-01-16 12:05+0200
 
         (A changelog will be kept once the first official version
         is made.)
@@ -1197,7 +1197,7 @@ The .lzma File Format
 
 4.3.4.1. LZMA Properties
 
-        The LZMA Properties bits contain three properties. An
+        The LZMA Properties field contains three properties. An
         abbreviation is given in parentheses, followed by the value
         range of the property. The field consists of
 

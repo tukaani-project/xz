@@ -75,7 +75,8 @@ alone_decode(lzma_coder *coder,
 						& (UINT32_C(1) << i))
 					++count;
 
-			if (count > 1)
+			if (count != 1 || coder->options.lzma.dictionary_size
+					> LZMA_DICTIONARY_SIZE_MAX)
 				return LZMA_DATA_ERROR;
 
 			coder->pos = 0;

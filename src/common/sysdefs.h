@@ -154,4 +154,8 @@ typedef unsigned char _Bool;
 #	define MAX(x, y) ((x) > (y) ? (x) : (y))
 #endif
 
+#ifndef ARRAY_SIZE
+#	define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
+#endif
+
 #endif

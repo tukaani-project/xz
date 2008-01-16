@@ -93,6 +93,16 @@ extern size_t lzma_memlimit_used(const lzma_memlimit *mem);
 
 
 /**
+ * \brief       Gets the number of allocations owned by the memory limitter
+ *
+ * The count does not include the helper structures; if no memory has
+ * been allocated with lzma_memlimit_alloc() or all memory allocated
+ * has been freed or detached, this will return zero.
+ */
+extern size_t lzma_memlimit_count(const lzma_memlimit *mem);
+
+
+/**
  * \brief       Allocates memory with malloc() if memory limit allows
  *
  * \param       mem     Pointer to a lzma_memlimit structure returned

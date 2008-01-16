@@ -85,6 +85,25 @@ lzma_memlimit_used(const lzma_memlimit *mem)
 }
 
 
+extern LZMA_API size_t
+lzma_memlimit_count(const lzma_memlimit *mem)
+{
+	// This is slow; we could have a counter in lzma_memlimit
+	// for fast version. I expect the primary use of this
+	// function to be limited to easy checking of memory leaks,
+	// in which this implementation is just fine.
+	size_t count = 0;
+	const lzma_memlimit_list *record = mem->list;
+	
+	while (record != NULL) {
+		++count;
+		record = record->next;
+	}
+	
+	return count;
+}
+
+
 extern LZMA_API void
 lzma_memlimit_end(lzma_memlimit *mem, lzma_bool free_allocated)
 {

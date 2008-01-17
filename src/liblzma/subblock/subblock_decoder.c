@@ -30,20 +30,24 @@ struct lzma_coder_s {
 	lzma_next_coder next;
 
 	enum {
+		// These require that there is at least one input
+		// byte available.
 		SEQ_FLAGS,
-		SEQ_SIZE_1,
-		SEQ_SIZE_2,
-		SEQ_SIZE_3,
-		SEQ_DATA,
+		SEQ_FILTER_FLAGS,
+		SEQ_FILTER_END,
 		SEQ_REPEAT_COUNT_1,
 		SEQ_REPEAT_COUNT_2,
 		SEQ_REPEAT_COUNT_3,
 		SEQ_REPEAT_SIZE,
 		SEQ_REPEAT_READ_DATA,
+		SEQ_SIZE_1,
+		SEQ_SIZE_2,
+		SEQ_SIZE_3, // This must be right before SEQ_DATA.
+
+		// These don't require any input to be available.
+		SEQ_DATA,
 		SEQ_REPEAT_FAST,
 		SEQ_REPEAT_NORMAL,
-		SEQ_FILTER_FLAGS,
-		SEQ_FILTER_END,
 	} sequence;
 
 	/// Number of bytes left in the current Subblock Data field.
@@ -167,7 +171,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
 	while (*out_pos < out_size && (*in_pos < in_size
-			|| coder->sequence == SEQ_DATA))
+			|| coder->sequence >= SEQ_DATA))
 	switch (coder->sequence) {
 	case SEQ_FLAGS: {
 		if ((in[*in_pos] >> 4) != FLAG_PADDING)
@@ -284,8 +288,68 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		break;
 	}
 
-	case SEQ_SIZE_1:
+	case SEQ_FILTER_FLAGS: {
+		const lzma_ret ret = coder->filter_flags_decoder.code(
+				coder->filter_flags_decoder.coder, allocator,
+				in, in_pos, in_size, NULL, NULL, 0, LZMA_RUN);
+		if (ret != LZMA_STREAM_END)
+			return ret == LZMA_HEADER_ERROR
+					? LZMA_DATA_ERROR : ret;
+
+		// Don't free the filter_flags_decoder. It doesn't take much
+		// memory and we may need it again.
+
+		// Initialize the Subfilter. Subblock and Copy filters are
+		// not allowed.
+		if (coder->filter_flags.id == LZMA_FILTER_COPY
+				|| coder->filter_flags.id
+					== LZMA_FILTER_SUBBLOCK)
+			return LZMA_DATA_ERROR;
+
+		coder->helper.end_was_reached = false;
+
+		lzma_options_filter filters[3] = {
+			{
+				.id = coder->filter_flags.id,
+				.options = coder->filter_flags.options,
+			}, {
+				.id = LZMA_FILTER_SUBBLOCK_HELPER,
+				.options = &coder->helper,
+			}, {
+				.id = LZMA_VLI_VALUE_UNKNOWN,
+				.options = NULL,
+			}
+		};
+
+		// Optimization: We know that LZMA uses End of Payload Marker
+		// (not End of Input), so we can omit the helper filter.
+		if (filters[0].id == LZMA_FILTER_LZMA)
+			filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
+
+		return_if_error(lzma_raw_decoder_init(
+				&coder->subfilter, allocator,
+				filters, LZMA_VLI_VALUE_UNKNOWN, false));
+
+		coder->sequence = SEQ_FLAGS;
+		break;
+	}
+
+	case SEQ_FILTER_END:
+		// We are in the beginning of a Subblock. The next Subblock
+		// whose type is not Padding, must indicate end of Subfilter.
+		if (in[*in_pos] == (FLAG_PADDING << 4)) {
+			++*in_pos;
+			break;
+		}
+
+		if (in[*in_pos] != (FLAG_END_SUBFILTER << 4))
+			return LZMA_DATA_ERROR;
+
+		coder->sequence = SEQ_FLAGS;
+		break;
+
 	case SEQ_REPEAT_COUNT_1:
+	case SEQ_SIZE_1:
 		// We use the same code to parse
 		//  - the Size (28 bits) in Subblocks of type Data; and
 		//  - the Repeat count (28 bits) in Subblocks of type
@@ -295,21 +359,23 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		++coder->sequence;
 		break;
 
-	case SEQ_SIZE_2:
 	case SEQ_REPEAT_COUNT_2:
+	case SEQ_SIZE_2:
 		coder->size |= (size_t)(in[*in_pos]) << 12;
 		++*in_pos;
 		++coder->sequence;
 		break;
 
-	case SEQ_SIZE_3:
 	case SEQ_REPEAT_COUNT_3:
+	case SEQ_SIZE_3:
 		coder->size |= (size_t)(in[*in_pos]) << 20;
+		++*in_pos;
 
 		// The real value is the stored value plus one.
 		++coder->size;
 
-		++*in_pos;
+		// This moves to SEQ_REPEAT_SIZE or SEQ_DATA. That's why
+		// SEQ_DATA must be right after SEQ_SIZE_3 in coder->sequence.
 		++coder->sequence;
 		break;
 
@@ -345,6 +411,68 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				coder->sequence = SEQ_REPEAT_NORMAL;
 		}
 
+		break;
+	}
+
+	case SEQ_DATA: {
+		// Limit the amount of input to match the available
+		// Subblock Data size.
+		size_t in_limit;
+		if (in_size - *in_pos > coder->size)
+			in_limit = *in_pos + coder->size;
+		else
+			in_limit = in_size;
+
+		if (coder->subfilter.code == NULL) {
+			const size_t copy_size = bufcpy(
+					in, in_pos, in_limit,
+					out, out_pos, out_size);
+
+			coder->size -= copy_size;
+
+			if (update_uncompressed_size(coder, copy_size))
+				return LZMA_DATA_ERROR;
+
+		} else {
+			const size_t in_start = *in_pos;
+			const lzma_ret ret = subfilter_decode(
+					coder, allocator,
+					in, in_pos, in_limit,
+					out, out_pos, out_size,
+					action);
+
+			// Update the number of unprocessed bytes left in
+			// this Subblock. This assert() is true because
+			// in_limit prevents *in_pos getting too big.
+			assert(*in_pos - in_start <= coder->size);
+			coder->size -= *in_pos - in_start;
+
+			if (ret == LZMA_STREAM_END) {
+				// End of Subfilter can occur only at
+				// a Subblock boundary.
+				if (coder->size != 0)
+					return LZMA_DATA_ERROR;
+
+				// We need a Subblock with Unset
+				// Subfilter before more data.
+				coder->sequence = SEQ_FILTER_END;
+				break;
+			}
+
+			if (ret != LZMA_OK)
+				return ret;
+		}
+
+		// If we couldn't process the whole Subblock Data yet, return.
+		if (coder->size > 0)
+			return LZMA_OK;
+
+		// Check if we have decoded all the data.
+		if (coder->uncompressed_size == 0
+				&& coder->subfilter.code == NULL)
+			return LZMA_STREAM_END;
+
+		coder->sequence = SEQ_FLAGS;
 		break;
 	}
 
@@ -430,128 +558,6 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				&& coder->subfilter.code == NULL)
 			return LZMA_STREAM_END;
 
-		break;
-
-	case SEQ_DATA: {
-		// Limit the amount of input to match the available
-		// Subblock Data size.
-		size_t in_limit;
-		if (in_size - *in_pos > coder->size)
-			in_limit = *in_pos + coder->size;
-		else
-			in_limit = in_size;
-
-		if (coder->subfilter.code == NULL) {
-			const size_t copy_size = bufcpy(
-					in, in_pos, in_limit,
-					out, out_pos, out_size);
-
-			coder->size -= copy_size;
-
-			if (update_uncompressed_size(coder, copy_size))
-				return LZMA_DATA_ERROR;
-
-		} else {
-			const size_t in_start = *in_pos;
-			const lzma_ret ret = subfilter_decode(
-					coder, allocator,
-					in, in_pos, in_limit,
-					out, out_pos, out_size,
-					action);
-
-			// Update the number of unprocessed bytes left in
-			// this Subblock. This assert() is true because
-			// in_limit prevents *in_pos getting too big.
-			assert(*in_pos - in_start <= coder->size);
-			coder->size -= *in_pos - in_start;
-
-			if (ret == LZMA_STREAM_END) {
-				// End of Subfilter can occur only at
-				// a Subblock boundary.
-				if (coder->size != 0)
-					return LZMA_DATA_ERROR;
-
-				// We need a Subblock with Unset
-				// Subfilter before more data.
-				coder->sequence = SEQ_FILTER_END;
-				break;
-			}
-
-			if (ret != LZMA_OK)
-				return ret;
-		}
-
-		// If we couldn't process the whole Subblock Data yet, return.
-		if (coder->size > 0)
-			return LZMA_OK;
-
-		// Check if we have decoded all the data.
-		if (coder->uncompressed_size == 0
-				&& coder->subfilter.code == NULL)
-			return LZMA_STREAM_END;
-
-		coder->sequence = SEQ_FLAGS;
-		break;
-	}
-
-	case SEQ_FILTER_FLAGS: {
-		const lzma_ret ret = coder->filter_flags_decoder.code(
-				coder->filter_flags_decoder.coder, allocator,
-				in, in_pos, in_size, NULL, NULL, 0, LZMA_RUN);
-		if (ret != LZMA_STREAM_END)
-			return ret == LZMA_HEADER_ERROR
-					? LZMA_DATA_ERROR : ret;
-
-		// Don't free the filter_flags_decoder. It doesn't take much
-		// memory and we may need it again.
-
-		// Initialize the Subfilter. Subblock and Copy filters are
-		// not allowed.
-		if (coder->filter_flags.id == LZMA_FILTER_COPY
-				|| coder->filter_flags.id
-					== LZMA_FILTER_SUBBLOCK)
-			return LZMA_DATA_ERROR;
-
-		coder->helper.end_was_reached = false;
-
-		lzma_options_filter filters[3] = {
-			{
-				.id = coder->filter_flags.id,
-				.options = coder->filter_flags.options,
-			}, {
-				.id = LZMA_FILTER_SUBBLOCK_HELPER,
-				.options = &coder->helper,
-			}, {
-				.id = LZMA_VLI_VALUE_UNKNOWN,
-				.options = NULL,
-			}
-		};
-
-		// Optimization: We know that LZMA uses End of Payload Marker
-		// (not End of Input), so we can omit the helper filter.
-		if (filters[0].id == LZMA_FILTER_LZMA)
-			filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
-
-		return_if_error(lzma_raw_decoder_init(
-				&coder->subfilter, allocator,
-				filters, LZMA_VLI_VALUE_UNKNOWN, false));
-
-		coder->sequence = SEQ_FLAGS;
-		break;
-	}
-
-	case SEQ_FILTER_END:
-		// We are in the beginning of a Subblock. The next Subblock
-		// whose type is not Padding, must indicate end of Subfilter.
-		if (in[*in_pos] == (FLAG_PADDING << 4)) {
-			++*in_pos;
-			break;
-		}
-
-		if (in[*in_pos] != (FLAG_END_SUBFILTER << 4))
-			return LZMA_DATA_ERROR;
-
-		coder->sequence = SEQ_FLAGS;
 		break;
 
 	default:

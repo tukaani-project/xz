@@ -12,7 +12,14 @@
 ##  Lesser General Public License for more details.
 ##
 
-EXTRA_DIST = files tests.h test_files.sh
+EXTRA_DIST = \
+	files \
+	tests.h \
+	test_files.sh \
+	test_compress.sh \
+	bcj_test.c \
+	compress_prepared_bcj_sparc \
+	compress_prepared_bcj_x86
 
 AM_CPPFLAGS = \
 	-I@top_srcdir@/src/common \
@@ -26,6 +33,7 @@ LDADD += @top_builddir@/lib/libgnu.a
 endif
 
 check_PROGRAMS = \
+	create_compress_files \
 	test_check \
 	test_stream_flags \
 	test_filter_flags \
@@ -33,13 +41,15 @@ check_PROGRAMS = \
 	test_index \
 	test_info
 
-test_check_SOURCES = test_check.c
-test_stream_flags_SOURCES = test_stream_flags.c
-test_filter_flags_SOURCES = test_filter_flags.c
-test_block_header_SOURCES = test_block_header.c
-test_index_SOURCES = test_index.c
-test_info_SOURCES = test_info.c
-
 TESTS = \
-	$(check_PROGRAMS) \
-	test_files.sh
+	test_check \
+	test_stream_flags \
+	test_filter_flags \
+	test_block_header \
+	test_index \
+	test_info \
+	test_files.sh \
+	test_compress.sh
+
+clean-local:
+	-rm -f compress_generated_*

@@ -363,6 +363,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			return LZMA_DATA_ERROR;
 
 		if (coder->repeat.count == 0) {
+			assert(coder->subfilter.code == NULL);
 			if (coder->uncompressed_size == 0)
 				return LZMA_STREAM_END;
 		} else {
@@ -423,6 +424,11 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				}
 			}
 		} while (*out_pos < out_size);
+
+		// Check if we have decoded all the data.
+		if (coder->uncompressed_size == 0
+				&& coder->subfilter.code == NULL)
+			return LZMA_STREAM_END;
 
 		break;
 

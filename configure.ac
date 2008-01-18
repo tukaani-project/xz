@@ -47,7 +47,6 @@ AC_MSG_CHECKING([if debugging code should be compiled])
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Enable debugging code.]),
 	[], enable_debug=no)
 if test "x$enable_debug" = xyes; then
-	CFLAGS="-g $CFLAGS"
 	AC_MSG_RESULT([yes])
 else
 	AC_DEFINE(NDEBUG, 1, [Define to disable debugging code.])

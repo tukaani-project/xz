@@ -28,6 +28,10 @@ extern int errno;
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef WIN32
+#	include <fcntl.h>
+#endif
+
 #include "getopt.h"
 #include "physmem.h"
 
@@ -488,6 +492,11 @@ main(int argc, char **argv)
 
 	allocator.opaque = mem_limitter;
 	strm.allocator = &allocator;
+
+#ifdef WIN32
+	setmode(fileno(stdin), O_BINARY);
+	setmode(fileno(stdout), O_BINARY);
+#endif
 
 	if (optind == argc) {
 		file = stdin;

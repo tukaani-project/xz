@@ -1,5 +1,5 @@
 ##
-##  Copyright (C) 2007 Lasse Collin
+##  Copyright (C) 2008 Lasse Collin
 ##
 ##  This library is free software; you can redistribute it and/or
 ##  modify it under the terms of the GNU Lesser General Public
@@ -12,25 +12,19 @@
 ##  Lesser General Public License for more details.
 ##
 
-DIST_SUBDIRS = lib src po tests debug
-SUBDIRS =
+noinst_PROGRAMS = \
+	sync_flush
+
+AM_CPPFLAGS = \
+	-I@top_srcdir@/src/common \
+	-I@top_srcdir@/src/liblzma/api
+
+AM_LDFLAGS = -static
+
+LDADD = \
+	@top_builddir@/src/liblzma/liblzma.la \
+	@LTLIBINTL@
 
 if COND_GNULIB
-SUBDIRS += lib
+LDADD += @top_builddir@/lib/libgnu.a
 endif
-
-SUBDIRS += src po tests
-
-
-EXTRA_DIST = \
-	m4 \
-	config.rpath  \
-	Doxyfile.in \
-	extra \
-	doc \
-	COPYING.GPLv2 \
-	COPYING.GPLv3 \
-	COPYING.LGPLv2.1
-
-ACLOCAL_AMFLAGS = -I m4
-AUTOMAKE_OPTIONS = foreign

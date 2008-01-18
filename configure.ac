@@ -646,6 +646,7 @@ AC_CONFIG_FILES([
 	src/lzmadec/Makefile
 	src/scripts/Makefile
 	tests/Makefile
+	debug/Makefile
 ])
 
 AC_OUTPUT

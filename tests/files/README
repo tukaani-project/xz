@@ -70,6 +70,12 @@
     good-single-delta-lzma.tiff.lzma is an image file that compresses
     better with Delta+LZMA than with plain LZMA.
 
+    good-single-lzma-flush_1.lzma has a flush marker in the middle of
+    the file, and no EOPM.
+
+    good-single-lzma-flush_2.lzma has a flush marker in the middle of
+    the file and just before EOPM.
+
 
 2.2. Bad Files
 
@@ -114,6 +120,12 @@
     Padding than 31 bytes was considered (so this test file was created),
     but it seemed to be a bad idea since it would increase worst-case CPU
     usage.
+
+    bad-single-lzma-flush_beginning.lzma has flush marker in the beginning
+    of the LZMA data.
+
+    bad-single-lzma-flush_twice.lzma has two flush markers with no data
+    between them.
 
 
 2.3. Malicious Files

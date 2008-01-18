@@ -30,6 +30,7 @@
 typedef struct lzma_lz_encoder_s lzma_lz_encoder;
 struct lzma_lz_encoder_s {
 	enum {
+		SEQ_START,
 		SEQ_RUN,
 		SEQ_FLUSH,
 		SEQ_FLUSH_END,

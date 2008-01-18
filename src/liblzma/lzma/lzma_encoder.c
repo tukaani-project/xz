@@ -157,31 +157,8 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 	// Initialize the stream if no data has been encoded yet.
 	if (!coder->is_initialized) {
 		if (coder->lz.read_pos == coder->lz.read_limit) {
-			switch (coder->lz.sequence) {
-			case SEQ_RUN:
-				// Cannot initialize, because there is
-				// no input data.
-				return false;
-
-			case SEQ_FLUSH:
-				// Nothing to flush. There cannot be a flush
-				// marker when no data has been processed
-				// yet (file format doesn't allow it, and
-				// it would be just waste of space).
-				return true;
-
-			case SEQ_FINISH:
-				// We are encoding an empty file. No need
-				// to initialize the encoder.
-				assert(coder->lz.write_pos == coder->lz.read_pos);
-				break;
-
-			default:
-				// We never get here.
-				assert(0);
-				return true;
-			}
-
+			assert(coder->lz.write_pos == coder->lz.read_pos);
+			assert(coder->lz.sequence == SEQ_FINISH);
 		} else {
 			// Do the actual initialization.
 			uint32_t len;

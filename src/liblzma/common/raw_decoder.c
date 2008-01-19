@@ -22,7 +22,7 @@
 #include "simple_coder.h"
 #include "subblock_decoder.h"
 #include "subblock_decoder_helper.h"
-#include "delta_coder.h"
+#include "delta_decoder.h"
 #include "lzma_decoder.h"
 #include "metadata_decoder.h"
 

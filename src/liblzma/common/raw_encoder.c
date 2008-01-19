@@ -21,7 +21,7 @@
 #include "copy_coder.h"
 #include "simple_coder.h"
 #include "subblock_encoder.h"
-#include "delta_coder.h"
+#include "delta_encoder.h"
 #include "lzma_encoder.h"
 
 

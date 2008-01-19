@@ -48,8 +48,18 @@ endif
 
 if COND_FILTER_DELTA
 libcommon_la_SOURCES += \
-	delta_coder.c \
-	delta_coder.h
+	delta_common.c \
+	delta_common.h
+if COND_MAIN_ENCODER
+libcommon_la_SOURCES += \
+	delta_encoder.c \
+	delta_encoder.h
+endif
+if COND_MAIN_DECODER
+libcommon_la_SOURCES += \
+	delta_decoder.c \
+	delta_decoder.h
+endif
 endif
 
 if COND_MAIN_ENCODER

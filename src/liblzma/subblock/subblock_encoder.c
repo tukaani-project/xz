@@ -3,7 +3,7 @@
 /// \file       subblock_encoder.c
 /// \brief      Encoder of the Subblock filter
 //
-//  Copyright (C) 2007 Lasse Collin
+//  Copyright (C) 2007, 2008 Lasse Collin
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -61,27 +61,57 @@ struct lzma_coder_s {
 		SEQ_SUBFILTER_FLAGS,
 	} sequence;
 
+	/// Pointer to the options given by the application. This is used
+	/// for two-way communication with the application.
 	lzma_options_subblock *options;
 
+	/// Position in various arrays.
 	size_t pos;
+
+	/// Holds subblock.size - 1 or rle.size - 1 when encoding size
+	/// of Data or Repeat Count.
 	uint32_t tmp;
 
 	struct {
+		/// This is a copy of options->alignment, or
+		/// LZMA_SUBBLOCK_ALIGNMENT_DEFAULT if options is NULL.
 		uint32_t multiple;
+
+		/// Number of input bytes that we have already read but
+		/// not yet started writing out.
 		uint32_t in_pending;
+
+		/// Number of input bytes which we have processed and started
+		/// writing out. 32-bit integer is enough since we care only
+		/// about the lowest bits when fixing alignment.
 		uint32_t in_pos;
+
+		/// Number of bytes written out.
 		uint32_t out_pos;
 	} alignment;
 
 	struct {
+		/// Pointer to allocated buffer holding the Data field
+		/// of Subblock Type "Data".
 		uint8_t *data;
+
+		/// Number of bytes in the buffer.
 		size_t size;
+
+		/// Allocated size of the buffer.
 		size_t limit;
 	} subblock;
 
 	struct {
+		/// Buffer to hold the data that may be coded with
+		/// Subblock Type `Repeating Data'.
 		uint8_t buffer[LZMA_SUBBLOCK_RLE_MAX];
+
+		/// Number of bytes in buffer[].
 		size_t size;
+
+		/// Number of times the first `size' bytes of buffer[]
+		/// will be repeated.
 		lzma_vli count;
 	} rle;
 
@@ -90,15 +120,38 @@ struct lzma_coder_s {
 			SUB_NONE,
 			SUB_SET,
 			SUB_RUN,
+			SUB_FLUSH,
 			SUB_FINISH,
 			SUB_END_MARKER,
 		} mode;
 
+		/// This is a copy of options->allow_subfilters. We use
+		/// this to verify that the application doesn't change
+		/// the value of allow_subfilters.
+		bool allow;
+
+		/// When this is true, application is not allowed to modify
+		/// options->subblock_mode. We may still modify it here.
+		bool mode_locked;
+
+		/// True if we have encoded at least one byte of data with
+		/// the Subfilter.
 		bool got_input;
 
+		/// Track the amount of input available once
+		/// LZMA_SUBFILTER_FINISH has been enabled.
+		/// This is needed for sanity checking (kind
+		/// of duplicating what common/code.c does).
+		size_t in_avail;
+
+		/// Buffer for the Filter Flags field written after
+		/// the `Set Subfilter' indicator.
 		uint8_t *flags;
+
+		/// Size of Filter Flags field.
 		uint32_t flags_size;
 
+		/// Pointers to Subfilter.
 		lzma_next_coder subcoder;
 
 	} subfilter;
@@ -234,8 +287,16 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
+	// Changing allow_subfilter is not allowed.
+	if (coder->options != NULL && coder->subfilter.allow
+			!= coder->options->allow_subfilters)
+		return LZMA_PROG_ERROR;
+
 	// Check if we need to do something special with the Subfilter.
-	if (coder->options != NULL && coder->options->allow_subfilters) {
+	if (coder->subfilter.allow) {
+		assert(coder->options != NULL);
+
+		// See if subfilter_mode has been changed.
 		switch (coder->options->subfilter_mode) {
 		case LZMA_SUBFILTER_NONE:
 			if (coder->subfilter.mode != SUB_NONE)
@@ -243,8 +304,9 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			break;
 
 		case LZMA_SUBFILTER_SET:
-			if (coder->subfilter.mode != SUB_NONE)
-				return LZMA_HEADER_ERROR;
+			if (coder->subfilter.mode_locked
+					|| coder->subfilter.mode != SUB_NONE)
+				return LZMA_PROG_ERROR;
 
 			coder->subfilter.mode = SUB_SET;
 			coder->subfilter.got_input = false;
@@ -257,28 +319,47 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		case LZMA_SUBFILTER_RUN:
 			if (coder->subfilter.mode != SUB_RUN)
 				return LZMA_PROG_ERROR;
+
 			break;
 
-		case LZMA_SUBFILTER_FINISH:
-			if (coder->subfilter.mode == SUB_RUN)
+		case LZMA_SUBFILTER_FINISH: {
+			const size_t in_avail = in_size - *in_pos;
+
+			if (coder->subfilter.mode == SUB_RUN) {
+				if (coder->subfilter.mode_locked)
+					return LZMA_PROG_ERROR;
+
 				coder->subfilter.mode = SUB_FINISH;
-			else if (coder->subfilter.mode != SUB_FINISH)
-				return LZMA_PROG_ERROR;
+				coder->subfilter.in_avail = in_avail;
 
-			if (!coder->subfilter.got_input)
+			} else if (coder->subfilter.mode != SUB_FINISH
+					|| coder->subfilter.in_avail
+						!= in_avail) {
 				return LZMA_PROG_ERROR;
+			}
 
 			break;
+		}
 
 		default:
 			return LZMA_HEADER_ERROR;
 		}
+
+		// If we are sync-flushing or finishing, the application may
+		// no longer change subfilter_mode. Note that this check is
+		// done after checking the new subfilter_mode above; this
+		// way the application may e.g. set LZMA_SUBFILTER_SET and
+		// LZMA_SYNC_FLUSH at the same time, but it cannot modify
+		// subfilter_mode on the later lzma_code() calls before
+		// we have returned LZMA_STREAM_END.
+		if (action != LZMA_RUN)
+			coder->subfilter.mode_locked = true;
 	}
 
 	// Main loop
 	while (*out_pos < out_size)
 	switch (coder->sequence) {
-	case SEQ_FILL: {
+	case SEQ_FILL:
 		// Grab the new Subblock Data Size and reallocate the buffer.
 		if (coder->subblock.size == 0 && coder->options != NULL
 				&& coder->options->subblock_data_size
@@ -297,44 +378,77 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 					&coder->subblock.size,
 					coder->subblock.limit);
 
-		} else {
-			const size_t in_start = *in_pos;
-			lzma_ret ret;
+			// If we ran out of input before the whole buffer
+			// was filled, return to application.
+			if (coder->subblock.size < coder->subblock.limit
+					&& action == LZMA_RUN)
+				return LZMA_OK;
 
-			if (coder->subfilter.mode == SUB_FINISH) {
-				// Let the Subfilter write out pending data,
-				// but don't give it any new input anymore.
-				size_t dummy = 0;
-				ret = coder->subfilter.subcoder.code(coder
-						->subfilter.subcoder.coder,
-						allocator, NULL, &dummy, 0,
-						coder->subblock.data,
-						&coder->subblock.size,
-						coder->subblock.limit,
-						LZMA_FINISH);
-			} else {
-				// Give our input data to the Subfilter. Note
-				// that action can be LZMA_FINISH. In that
-				// case, we filter everything until the end
-				// of the input. The application isn't required
-				// to separately set LZMA_SUBBLOCK_FINISH.
-				ret = coder->subfilter.subcoder.code(coder
-						->subfilter.subcoder.coder,
-						allocator, in, in_pos, in_size,
-						coder->subblock.data,
-						&coder->subblock.size,
-						coder->subblock.limit,
-						action);
+		} else {
+			assert(coder->options->subfilter_mode
+					!= LZMA_SUBFILTER_SET);
+
+			// Using LZMA_FINISH automatically toggles
+			// LZMA_SUBFILTER_FINISH.
+			//
+			// NOTE: It is possible that application had set
+			// LZMA_SUBFILTER_SET and LZMA_FINISH at the same
+			// time. In that case it is possible that we will
+			// cycle to LZMA_SUBFILTER_RUN, LZMA_SUBFILTER_FINISH,
+			// and back to LZMA_SUBFILTER_NONE in a single
+			// Subblock encoder function call.
+			if (action == LZMA_FINISH) {
+				coder->options->subfilter_mode
+						= LZMA_SUBFILTER_FINISH;
+				coder->subfilter.mode = SUB_FINISH;
 			}
 
-			const size_t in_used = *in_pos - in_start;
+			const size_t in_start = *in_pos;
 
+			const lzma_ret ret = coder->subfilter.subcoder.code(
+					coder->subfilter.subcoder.coder,
+					allocator, in, in_pos, in_size,
+					coder->subblock.data,
+					&coder->subblock.size,
+					coder->subblock.limit,
+					coder->subfilter.mode == SUB_FINISH
+						? LZMA_FINISH : action);
+
+			const size_t in_used = *in_pos - in_start;
+			coder->alignment.in_pending += in_used;
 			if (in_used > 0)
 				coder->subfilter.got_input = true;
 
-			coder->alignment.in_pending += in_used;
+			coder->subfilter.in_avail = in_size - *in_pos;
 
 			if (ret == LZMA_STREAM_END) {
+				// All currently available input must have
+				// been processed.
+				assert(*in_pos == in_size);
+
+				// Flush now. Even if coder->subblock.size
+				// happened to be zero, we still need to go
+				// to SEQ_FLUSH to possibly finish RLE or
+				// write the Subfilter Unset indicator.
+				coder->sequence = SEQ_FLUSH;
+
+				if (coder->subfilter.mode == SUB_RUN) {
+					// Flushing with Subfilter enabled.
+					assert(action == LZMA_SYNC_FLUSH);
+					coder->subfilter.mode = SUB_FLUSH;
+					break;
+				}
+
+				// Subfilter finished its job.
+				assert(coder->subfilter.mode == SUB_FINISH
+						|| action == LZMA_FINISH);
+
+				// At least one byte of input must have been
+				// encoded with the Subfilter. This is
+				// required by the file format specification.
+				if (!coder->subfilter.got_input)
+					return LZMA_PROG_ERROR;
+
 				// We don't strictly need to do this, but
 				// doing it sounds like a good idea, because
 				// otherwise the Subfilter's memory could be
@@ -343,35 +457,30 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				lzma_next_coder_end(&coder->subfilter.subcoder,
 						allocator);
 
-				assert(coder->options != NULL);
-				coder->options->subfilter_mode
-						= LZMA_SUBFILTER_NONE;
-
-				assert(coder->subfilter.mode == SUB_FINISH
-						|| action == LZMA_FINISH);
+				// We need to flush the currently buffered
+				// data and write Unset Subfilter marker.
+				// Note that we cannot set
+				// coder->options->subfilter_mode to
+				// LZMA_SUBFILTER_NONE yet, because we
+				// haven't written the Unset Subfilter
+				// marker yet.
 				coder->subfilter.mode = SUB_END_MARKER;
-
-				// Flush now. Even if coder->subblock.size
-				// happens to be zero, we still need to go
-				// to SEQ_FLUSH to write the Subfilter Unset
-				// indicator.
 				coder->sequence = SEQ_FLUSH;
 				break;
 			}
 
-			// Return if an error occurred.
-			if (ret != LZMA_OK)
+			// Return if we couldn't fill the buffer or
+			// if an error occurred.
+			if (coder->subblock.size < coder->subblock.limit
+					|| ret != LZMA_OK)
 				return ret;
 		}
 
-		// If we ran out of input before the whole buffer
-		// was filled, return to application.
-		if (coder->subblock.size < coder->subblock.limit
-				&& action != LZMA_FINISH)
-			return LZMA_OK;
-
 		coder->sequence = SEQ_FLUSH;
-	}
+
+		// SEQ_FILL doesn't produce any output so falling through
+		// to SEQ_FLUSH is safe.
+		assert(*out_pos < out_size);
 
 	// Fall through
 
@@ -471,21 +580,33 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				break;
 			}
 
-			write_byte(0x50);
+			coder->options->subfilter_mode = LZMA_SUBFILTER_NONE;
 			coder->subfilter.mode = SUB_NONE;
+
+			write_byte(0x50);
 			if (*out_pos == out_size)
 				return LZMA_OK;
 		}
 
 		// Check if we have already written everything.
-		if (action == LZMA_FINISH && *in_pos == in_size
-				&& coder->subfilter.mode == SUB_NONE) {
+		if (action != LZMA_RUN && *in_pos == in_size
+				&& (coder->subfilter.mode == SUB_NONE
+				|| coder->subfilter.mode == SUB_FLUSH)) {
 			if (coder->rle.count > 0) {
 				subblock_rle_flush(coder);
 				break;
 			}
 
-			if (coder->use_eopm) {
+			if (action == LZMA_SYNC_FLUSH) {
+				if (coder->subfilter.mode == SUB_FLUSH)
+					coder->subfilter.mode = SUB_RUN;
+
+				coder->subfilter.mode_locked = false;
+				coder->sequence = SEQ_FILL;
+
+			} else if (coder->use_eopm) {
+				assert(action == LZMA_FINISH);
+
 				// NOTE: No need to use write_byte() here
 				// since we are finishing.
 				out[*out_pos] = 0x10;
@@ -586,7 +707,6 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			return LZMA_OK;
 
 		coder->alignment.out_pos += coder->subblock.size;
-
 		coder->subblock.size = 0;
 		coder->pos = 0;
 		coder->sequence = SEQ_FLUSH;
@@ -642,7 +762,12 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 		coder->options->subfilter_mode = LZMA_SUBFILTER_RUN;
 		coder->subfilter.mode = SUB_RUN;
+		coder->alignment.out_pos += coder->subfilter.flags_size;
 		coder->sequence = SEQ_SUBFILTER_FLAGS;
+
+		// It is safe to fall through because SEQ_SUBFILTER_FLAGS
+		// uses bufcpy() which doesn't write unless there is output
+		// space.
 	}
 
 	// Fall through
@@ -681,7 +806,7 @@ subblock_encode(lzma_coder *coder, lzma_allocator *allocator,
 				out, out_pos, out_size, action);
 
 	while (*out_pos < out_size
-			&& (*in_pos < in_size || action == LZMA_FINISH)) {
+			&& (*in_pos < in_size || action != LZMA_RUN)) {
 		if (!coder->next_finished
 				&& coder->temp.pos == coder->temp.size) {
 			coder->temp.pos = 0;
@@ -692,7 +817,7 @@ subblock_encode(lzma_coder *coder, lzma_allocator *allocator,
 					coder->temp.buffer, &coder->temp.size,
 					LZMA_BUFFER_SIZE, action);
 			if (ret == LZMA_STREAM_END) {
-				assert(action == LZMA_FINISH);
+				assert(action != LZMA_RUN);
 				coder->next_finished = true;
 			} else if (coder->temp.size == 0 || ret != LZMA_OK) {
 				return ret;
@@ -704,7 +829,7 @@ subblock_encode(lzma_coder *coder, lzma_allocator *allocator,
 				coder->temp.size, out, out_pos, out_size,
 				coder->next_finished ? LZMA_FINISH : LZMA_RUN);
 		if (ret == LZMA_STREAM_END) {
-			assert(action == LZMA_FINISH);
+			assert(action != LZMA_RUN);
 			assert(coder->next_finished);
 			return LZMA_STREAM_END;
 		}
@@ -765,6 +890,7 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->subblock.size = 0;
 	next->coder->rle.count = 0;
 	next->coder->subfilter.mode = SUB_NONE;
+	next->coder->subfilter.mode_locked = false;
 
 	next->coder->temp.pos = 0;
 	next->coder->temp.size = 0;
@@ -781,10 +907,13 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		}
 		next->coder->alignment.multiple
 				= next->coder->options->alignment;
+		next->coder->subfilter.allow
+				= next->coder->options->allow_subfilters;
 		subblock_size_limit = next->coder->options->subblock_data_size;
 	} else {
 		next->coder->alignment.multiple
 				= LZMA_SUBBLOCK_ALIGNMENT_DEFAULT;
+		next->coder->subfilter.allow = false;
 		subblock_size_limit = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT;
 	}
 

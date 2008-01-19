@@ -95,9 +95,10 @@ typedef struct {
 	 * input_offset % alignment == output_offset % alignment
 	 *
 	 * The Subblock filter assumes that the first output byte will be
-	 * written to a position in the output stream that is properly aligned.
-	 *
-	 * FIXME desc
+	 * written to a position in the output stream that is properly
+	 * aligned. This requirement is automatically met when the start
+	 * offset of the Stream or Block is correctly told to Block or
+	 * Stream encoder.
 	 */
 	uint32_t alignment;
 #	define LZMA_SUBBLOCK_ALIGNMENT_MIN 1
@@ -161,22 +162,28 @@ typedef struct {
 	 *
 	 * When subfilter_mode is LZMA_SUBFILTER_NONE, the application may
 	 * put Subfilter options to subfilter_options structure, and then
-	 * set subfilter_mode to LZMA_SUBFILTER_SET. This implies setting
-	 * flush to true. No new input data will be read until the Subfilter
-	 * has been enabled. Once the Subfilter has been enabled, liblzma
-	 * will set subfilter_mode to LZMA_SUBFILTER_RUN.
+	 * set subfilter_mode to LZMA_SUBFILTER_SET. No new input data will
+	 * be read until the Subfilter has been enabled. Once the Subfilter
+	 * has been enabled, liblzma will set subfilter_mode to
+	 * LZMA_SUBFILTER_RUN.
 	 *
 	 * When subfilter_mode is LZMA_SUBFILTER_RUN, the application may
-	 * set subfilter_mode to LZMA_SUBFILTER_FINISH. No new input data
-	 * will be read until the Subfilter has been finished. Once the
-	 * Subfilter has been finished, liblzma will set subfilter_mode
-	 * to LZMA_SUBFILTER_NONE.
+	 * set subfilter_mode to LZMA_SUBFILTER_FINISH. All the input
+	 * currently available will be encoded before unsetting the
+	 * Subfilter. Application must not change the amount of available
+	 * input until the Subfilter has finished. Once the Subfilter has
+	 * finished, liblzma will set subfilter_mode to LZMA_SUBFILTER_NONE.
 	 *
 	 * If the intent is to have Subfilter enabled to the very end of
 	 * the data, it is not needed to separately disable Subfilter with
 	 * LZMA_SUBFILTER_FINISH. Using LZMA_FINISH as the second argument
 	 * of lzma_code() will make the Subblock encoder to disable the
 	 * Subfilter once all the data has been ran through the Subfilter.
+	 *
+	 * After the first call with LZMA_SYNC_FLUSH or LZMA_FINISH, the
+	 * application must not change subfilter_mode until LZMA_STREAM_END.
+	 * Setting LZMA_SUBFILTER_SET/LZMA_SUBFILTER_FINISH and
+	 * LZMA_SYNC_FLUSH/LZMA_FINISH _at the same time_ is fine.
 	 *
 	 * \note        This variable is ignored if allow_subfilters is false.
 	 */

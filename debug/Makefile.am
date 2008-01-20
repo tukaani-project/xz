@@ -13,6 +13,7 @@
 ##
 
 noinst_PROGRAMS = \
+	repeat \
 	sync_flush
 
 AM_CPPFLAGS = \

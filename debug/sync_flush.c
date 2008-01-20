@@ -85,14 +85,30 @@ main(int argc, char **argv)
 		.match_finder_cycles = 0,
 	};
 
+	lzma_options_delta opt_delta = {
+		.distance = 16
+	};
+
+	lzma_options_subblock opt_subblock = {
+		.allow_subfilters = true,
+		.alignment = 8, // LZMA_SUBBLOCK_ALIGNMENT_DEFAULT,
+		.subblock_data_size = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT,
+		.rle = 1, // LZMA_SUBBLOCK_RLE_OFF,
+		.subfilter_mode = LZMA_SUBFILTER_SET,
+	};
+	opt_subblock.subfilter_options.id = LZMA_FILTER_LZMA;
+	opt_subblock.subfilter_options.options = &opt_lzma;
+	opt_subblock.subfilter_options.id = LZMA_FILTER_DELTA;
+	opt_subblock.subfilter_options.options = &opt_delta;
+
 	lzma_options_stream opt_stream = {
 		.check = LZMA_CHECK_NONE,
 		.has_crc32 = false,
 		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
 		.alignment = 0,
 	};
-	opt_stream.filters[0].id = LZMA_FILTER_LZMA;
-	opt_stream.filters[0].options = &opt_lzma;
+	opt_stream.filters[0].id = LZMA_FILTER_SUBBLOCK;
+	opt_stream.filters[0].options = &opt_subblock;
 	opt_stream.filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
 	// Init
@@ -113,4 +129,10 @@ main(int argc, char **argv)
 	lzma_end(&strm);
 
 	return 0;
+
+	// Prevent useless warnings so we don't need to have special CFLAGS
+	// to disable -Werror.
+	(void)opt_lzma;
+	(void)opt_subblock;
+	(void)opt_delta;
 }

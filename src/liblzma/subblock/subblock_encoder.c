@@ -21,17 +21,27 @@
 #include "raw_encoder.h"
 
 
+/// Maximum number of repeats that a single Repeating Data can indicate.
+/// This is directly from the file format specification.
 #define REPEAT_COUNT_MAX (1U << 28)
 
-/// Number of bytes the data chunk being repeated must be before we care
-/// about alignment. This is somewhat arbitrary. It just doesn't make sense
-/// to waste bytes for alignment when the data chunk is very small.
-///
-/// TODO Rename and use this also for Subblock Data?
-#define RLE_MIN_SIZE_FOR_ALIGN 3
+/// Number of bytes the data chunk (not including the header part) must be
+/// before we care about alignment. This is somewhat arbitrary. It just
+/// doesn't make sense to waste bytes for alignment when the data chunk
+/// is very small.
+#define MIN_CHUNK_SIZE_FOR_ALIGN 4
 
+/// Number of bytes of the header part of Subblock Type `Data'. This is
+/// used as the `skew' argument for subblock_align().
+#define ALIGN_SKEW_DATA 4
+
+/// Like above but for Repeating Data.
+#define ALIGN_SKEW_REPEATING_DATA 5
+
+/// Writes one byte to output buffer and updates the alignment counter.
 #define write_byte(b) \
 do { \
+	assert(*out_pos < out_size); \
 	out[*out_pos] = b; \
 	++*out_pos; \
 	++coder->alignment.out_pos; \
@@ -77,10 +87,6 @@ struct lzma_coder_s {
 		/// LZMA_SUBBLOCK_ALIGNMENT_DEFAULT if options is NULL.
 		uint32_t multiple;
 
-		/// Number of input bytes that we have already read but
-		/// not yet started writing out.
-		uint32_t in_pending;
-
 		/// Number of input bytes which we have processed and started
 		/// writing out. 32-bit integer is enough since we care only
 		/// about the lowest bits when fixing alignment.
@@ -100,6 +106,12 @@ struct lzma_coder_s {
 
 		/// Allocated size of the buffer.
 		size_t limit;
+
+		/// Number of input bytes that we have already read but
+		/// not yet started writing out. This can be different
+		/// to `size' when using Subfilter. That's why we track
+		/// in_pending separately for RLE (see below).
+		uint32_t in_pending;
 	} subblock;
 
 	struct {
@@ -112,7 +124,10 @@ struct lzma_coder_s {
 
 		/// Number of times the first `size' bytes of buffer[]
 		/// will be repeated.
-		lzma_vli count;
+		uint64_t count;
+
+		/// Like subblock.in_pending above, but for RLE.
+		uint32_t in_pending;
 	} rle;
 
 	struct {
@@ -156,6 +171,7 @@ struct lzma_coder_s {
 
 	} subfilter;
 
+	/// Temporary buffer used when we are not the last filter in the chain.
 	struct {
 		size_t pos;
 		size_t size;
@@ -170,26 +186,27 @@ struct lzma_coder_s {
 /// a multiple of coder->alignment.multiple.
 static bool
 subblock_align(lzma_coder *coder, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size, uint32_t skew)
+		size_t *restrict out_pos, size_t out_size,
+		size_t chunk_size, uint32_t skew)
 {
 	assert(*out_pos < out_size);
 
-	const uint32_t target = coder->alignment.in_pos
-			% coder->alignment.multiple;
+	// Fix the alignment only if it makes sense at least a little.
+	if (chunk_size >= MIN_CHUNK_SIZE_FOR_ALIGN) {
+		const uint32_t target = coder->alignment.in_pos
+				% coder->alignment.multiple;
 
-	while ((coder->alignment.out_pos + skew)
-			% coder->alignment.multiple != target) {
-		// Zero indicates padding.
-		write_byte(0x00);
+		while ((coder->alignment.out_pos + skew)
+				% coder->alignment.multiple != target) {
+			// Zero indicates padding.
+			write_byte(0x00);
 
-		// Check if output buffer got full and indicate it to
-		// the caller.
-		if (*out_pos == out_size)
-			return true;
+			// Check if output buffer got full and indicate it to
+			// the caller.
+			if (*out_pos == out_size)
+				return true;
+		}
 	}
-
-	coder->alignment.in_pos += coder->alignment.in_pending;
-	coder->alignment.in_pending = 0;
 
 	// Output buffer is not full.
 	return false;
@@ -245,10 +262,20 @@ subblock_rle_flush(lzma_coder *coder)
 		}
 	}
 
-	if (coder->rle.count > REPEAT_COUNT_MAX)
+	if (coder->rle.count == 1) {
+		// The buffer should be repeated only once. It is
+		// waste of space to use Repeating Data. Instead,
+		// write a regular Data Subblock. See SEQ_RLE_COUNT_0
+		// in subblock_buffer() for more info.
+		coder->tmp = coder->rle.size - 1;
+	} else if (coder->rle.count > REPEAT_COUNT_MAX) {
+		// There's so much to repeat that it doesn't fit into
+		// 28-bit integer. We will write two or more Subblocks
+		// of type Repeating Data.
 		coder->tmp = REPEAT_COUNT_MAX - 1;
-	else
+	} else {
 		coder->tmp = coder->rle.count - 1;
+	}
 
 	coder->sequence = SEQ_RLE_COUNT_0;
 
@@ -372,7 +399,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			assert(coder->subfilter.subcoder.code == NULL);
 
 			// No Subfilter is enabled, just copy the data as is.
-			coder->alignment.in_pending += bufcpy(
+			coder->subblock.in_pending += bufcpy(
 					in, in_pos, in_size,
 					coder->subblock.data,
 					&coder->subblock.size,
@@ -415,7 +442,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 						? LZMA_FINISH : action);
 
 			const size_t in_used = *in_pos - in_start;
-			coder->alignment.in_pending += in_used;
+			coder->subblock.in_pending += in_used;
 			if (in_used > 0)
 				coder->subfilter.got_input = true;
 
@@ -527,16 +554,21 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 							coder->rle.size);
 
 				// Test if coder->subblock.data is repeating.
+				// If coder->rle.count would overflow, we
+				// force flushing. Forced flushing shouldn't
+				// really happen in real-world situations.
 				const size_t count = coder->subblock.size
 						/ coder->rle.size;
-				if (is_repeating(coder->rle.buffer,
-						coder->rle.size,
-						coder->subblock.data, count)) {
-					if (LZMA_VLI_VALUE_MAX - count
-							< coder->rle.count)
-						return LZMA_PROG_ERROR;
-
+				if (UINT64_MAX - count > coder->rle.count
+						&& is_repeating(
+							coder->rle.buffer,
+							coder->rle.size,
+							coder->subblock.data,
+							count)) {
 					coder->rle.count += count;
+					coder->rle.in_pending += coder
+							->subblock.in_pending;
+					coder->subblock.in_pending = 0;
 					coder->subblock.size = 0;
 
 				} else if (coder->rle.count > 0) {
@@ -621,17 +653,42 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		break;
 
 	case SEQ_RLE_COUNT_0:
-		// Make the Data field properly aligned, but only if the data
-		// chunk to be repeated isn't extremely small. We have four
-		// bytes for Count and one byte for Size, thus the number five.
-		if (coder->rle.size >= RLE_MIN_SIZE_FOR_ALIGN
-				&& subblock_align(
-					coder, out, out_pos, out_size, 5))
-			return LZMA_OK;
-
 		assert(coder->rle.count > 0);
 
-		write_byte(0x30 | (coder->tmp & 0x0F));
+		if (coder->rle.count == 1) {
+			// The buffer should be repeated only once. Fix
+			// the alignment and write the first byte of
+			// Subblock Type `Data'.
+			if (subblock_align(coder, out, out_pos, out_size,
+					coder->rle.size, ALIGN_SKEW_DATA))
+				return LZMA_OK;
+
+			write_byte(0x20 | (coder->tmp & 0x0F));
+
+		} else {
+			// We have something to actually repeat, which should
+			// mean that it takes less space with run-length
+			// encoding.
+			if (subblock_align(coder, out, out_pos, out_size,
+						coder->rle.size,
+						ALIGN_SKEW_REPEATING_DATA))
+				return LZMA_OK;
+
+			write_byte(0x30 | (coder->tmp & 0x0F));
+		}
+
+		// NOTE: If we have to write more than one Repeating Data
+		// due to rle.count > REPEAT_COUNT_MAX, the subsequent
+		// Repeating Data Subblocks may get wrong alignment, because
+		// we add rle.in_pending to alignment.in_pos at once instead
+		// of adding only as much as this particular Repeating Data
+		// consumed input data. Correct alignment is always restored
+		// after all the required Repeating Data Subblocks have been
+		// written. This problem occurs in such a weird cases that
+		// it's not worth fixing.
+		coder->alignment.out_pos += coder->rle.size;
+		coder->alignment.in_pos += coder->rle.in_pending;
+		coder->rle.in_pending = 0;
 
 		coder->sequence = SEQ_RLE_COUNT_1;
 		break;
@@ -649,12 +706,18 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 	case SEQ_RLE_COUNT_3:
 		write_byte(coder->tmp >> 20);
 
+		// Again, see if we are writing regular Data or Repeating Data.
+		// In the former case, we skip SEQ_RLE_SIZE.
+		if (coder->rle.count == 1)
+			coder->sequence = SEQ_RLE_DATA;
+		else
+			coder->sequence = SEQ_RLE_SIZE;
+
 		if (coder->rle.count > REPEAT_COUNT_MAX)
 			coder->rle.count -= REPEAT_COUNT_MAX;
 		else
 			coder->rle.count = 0;
 
-		coder->sequence = SEQ_RLE_SIZE;
 		break;
 
 	case SEQ_RLE_SIZE:
@@ -670,16 +733,19 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		if (coder->pos < coder->rle.size)
 			return LZMA_OK;
 
-		coder->alignment.out_pos += coder->rle.size;
-
 		coder->pos = 0;
 		coder->sequence = SEQ_FLUSH;
 		break;
 
 	case SEQ_DATA_SIZE_0:
 		// We need four bytes for the Size field.
-		if (subblock_align(coder, out, out_pos, out_size, 4))
+		if (subblock_align(coder, out, out_pos, out_size,
+				coder->subblock.size, ALIGN_SKEW_DATA))
 			return LZMA_OK;
+
+		coder->alignment.out_pos += coder->subblock.size;
+		coder->alignment.in_pos += coder->subblock.in_pending;
+		coder->subblock.in_pending = 0;
 
 		write_byte(0x20 | (coder->tmp & 0x0F));
 		coder->sequence = SEQ_DATA_SIZE_1;
@@ -706,7 +772,6 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		if (coder->pos < coder->subblock.size)
 			return LZMA_OK;
 
-		coder->alignment.out_pos += coder->subblock.size;
 		coder->subblock.size = 0;
 		coder->pos = 0;
 		coder->sequence = SEQ_FLUSH;
@@ -714,7 +779,9 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 	case SEQ_SUBFILTER_INIT: {
 		assert(coder->subblock.size == 0);
+		assert(coder->subblock.in_pending == 0);
 		assert(coder->rle.count == 0);
+		assert(coder->rle.in_pending == 0);
 		assert(coder->subfilter.mode == SUB_SET);
 		assert(coder->options != NULL);
 
@@ -884,11 +951,12 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			== LZMA_VLI_VALUE_UNKNOWN;
 	next->coder->pos = 0;
 
-	next->coder->alignment.in_pending = 0;
 	next->coder->alignment.in_pos = 0;
 	next->coder->alignment.out_pos = 0;
 	next->coder->subblock.size = 0;
+	next->coder->subblock.in_pending = 0;
 	next->coder->rle.count = 0;
+	next->coder->rle.in_pending = 0;
 	next->coder->subfilter.mode = SUB_NONE;
 	next->coder->subfilter.mode_locked = false;
 

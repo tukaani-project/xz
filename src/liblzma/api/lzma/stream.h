@@ -111,7 +111,7 @@ typedef struct {
 	/**
 	 * \brief       Extra information in the Header Metadata Block
 	 */
-	lzma_extra *header;
+	const lzma_extra *header;
 
 	/**
 	 * \brief       Extra information in the Footer Metadata Block
@@ -119,7 +119,7 @@ typedef struct {
 	 * It is enough to set this pointer any time before calling
 	 * lzma_code() with LZMA_FINISH as the second argument.
 	 */
-	lzma_extra *footer;
+	const lzma_extra *footer;
 
 } lzma_options_stream;
 

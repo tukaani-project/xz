@@ -220,7 +220,11 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			.uncompressed_size = coder->stream_options
 					->uncompressed_size,
 			.index = NULL,
-			.extra = coder->stream_options->header,
+			// Metadata encoder doesn't modify this, but since
+			// the lzma_extra structure is used also when decoding
+			// Metadata, the pointer is not const, and we need
+			// to cast the constness away in the encoder.
+			.extra = (lzma_extra *)(coder->stream_options->header),
 		};
 
 		return_if_error(metadata_encoder_init(coder, allocator,
@@ -238,7 +242,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			.total_size = LZMA_VLI_VALUE_UNKNOWN,
 			.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
 			.index = lzma_info_index_get(coder->info, false),
-			.extra = coder->stream_options->footer,
+			.extra = (lzma_extra *)(coder->stream_options->footer),
 		};
 
 		return_if_error(metadata_encoder_init(coder, allocator,

@@ -79,7 +79,7 @@ block_header_encode(lzma_coder *coder, lzma_allocator *allocator,
 	coder->block_options = (lzma_options_block){
 		.check = coder->stream_options->check,
 		.has_crc32 = coder->stream_options->has_crc32,
-		.has_eopm = true,
+		.has_eopm = uncompressed_size == LZMA_VLI_VALUE_UNKNOWN,
 		.is_metadata = type != BLOCK_DATA,
 		.has_uncompressed_size_in_footer = false,
 		.has_backward_size = type == BLOCK_FOOTER_METADATA,

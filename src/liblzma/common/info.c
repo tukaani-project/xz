@@ -406,28 +406,20 @@ lzma_info_metadata_set(lzma_info *info, lzma_allocator *allocator,
 		const lzma_vli size = metadata->header_metadata_size
 					!= LZMA_VLI_VALUE_UNKNOWN
 				? metadata->header_metadata_size : 0;
-		const lzma_ret ret = lzma_info_size_set(
-				info, LZMA_INFO_HEADER_METADATA, size);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(lzma_info_size_set(
+				info, LZMA_INFO_HEADER_METADATA, size));
 	}
 
 	// Total Size
-	if (metadata->total_size != LZMA_VLI_VALUE_UNKNOWN) {
-		const lzma_ret ret = lzma_info_size_set(info,
-				LZMA_INFO_TOTAL, metadata->total_size);
-		if (ret != LZMA_OK)
-			return ret;
-	}
+	if (metadata->total_size != LZMA_VLI_VALUE_UNKNOWN)
+		return_if_error(lzma_info_size_set(info,
+				LZMA_INFO_TOTAL, metadata->total_size));
 
 	// Uncompressed Size
-	if (metadata->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN) {
-		const lzma_ret ret = lzma_info_size_set(info,
+	if (metadata->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
+		return_if_error(lzma_info_size_set(info,
 				LZMA_INFO_UNCOMPRESSED,
-				metadata->uncompressed_size);
-		if (ret != LZMA_OK)
-			return ret;
-	}
+				metadata->uncompressed_size));
 
 	return LZMA_OK;
 }

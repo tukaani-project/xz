@@ -70,6 +70,10 @@ libcommon_la_SOURCES += \
 	block_encoder.c \
 	block_encoder.h \
 	block_header_encoder.c \
+	easy_common.c \
+	easy_common.h \
+	easy_single.c \
+	easy_multi.c \
 	filter_flags_encoder.c \
 	init_encoder.c \
 	metadata_encoder.c \
@@ -80,6 +84,7 @@ libcommon_la_SOURCES += \
 	stream_common.h \
 	stream_encoder_single.c \
 	stream_encoder_multi.c \
+	stream_encoder_multi.h \
 	stream_flags_encoder.c \
 	vli_encoder.c
 endif

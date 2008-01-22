@@ -22,6 +22,7 @@ nobase_include_HEADERS = \
 	lzma/check.h \
 	lzma/copy.h \
 	lzma/delta.h \
+	lzma/easy.h \
 	lzma/extra.h \
 	lzma/filter.h \
 	lzma/index.h \

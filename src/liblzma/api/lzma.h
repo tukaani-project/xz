@@ -111,6 +111,7 @@ extern "C" {
 #include "lzma/alone.h"
 #include "lzma/raw.h"
 #include "lzma/auto.h"
+#include "lzma/easy.h"
 
 /* Advanced features */
 #include "lzma/info.h"

@@ -18,6 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stream_common.h"
+#include "stream_encoder_multi.h"
 #include "block_encoder.h"
 #include "metadata_encoder.h"
 
@@ -417,14 +418,12 @@ stream_encoder_init(lzma_next_coder *next,
 }
 
 
-/*
 extern lzma_ret
 lzma_stream_encoder_multi_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_options_stream *options)
 {
 	lzma_next_coder_init(stream_encoder_init, next, allocator, options);
 }
-*/
 
 
 extern LZMA_API lzma_ret

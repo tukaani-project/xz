@@ -385,6 +385,7 @@ lzma_info_metadata_set(lzma_info *info, lzma_allocator *allocator,
 
 		const lzma_ret ret = lzma_info_index_set(
 				info, allocator, metadata->index, eat_index);
+		metadata->index = NULL;
 		if (ret != LZMA_OK)
 			return ret;
 

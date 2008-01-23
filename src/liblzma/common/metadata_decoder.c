@@ -366,7 +366,8 @@ process(lzma_coder *coder, lzma_allocator *allocator)
 		coder->extra_tail->size = (size_t)(coder->tmp);
 		coder->tmp = 0;
 
-		uint8_t *d = lzma_alloc((size_t)(coder->extra_tail->size),
+		// We reserve space for the trailing '\0' too.
+		uint8_t *d = lzma_alloc((size_t)(coder->extra_tail->size) + 1,
 				allocator);
 		if (d == NULL)
 			return LZMA_MEM_ERROR;
@@ -383,6 +384,7 @@ process(lzma_coder *coder, lzma_allocator *allocator)
 				(size_t)(coder->extra_tail->size));
 
 		if ((size_t)(coder->extra_tail->size) == coder->pos) {
+			coder->extra_tail->data[coder->pos] = '\0';
 			coder->pos = 0;
 			coder->todo_count = 0;
 			coder->sequence = SEQ_EXTRA_ALLOC;

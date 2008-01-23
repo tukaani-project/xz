@@ -276,8 +276,12 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 		// Don't create an empty Block unless it would be
 		// the only Data Block.
 		if (*in_pos == in_size) {
+			// If we are LZMA_SYNC_FLUSHing or LZMA_FULL_FLUSHing,
+			// return LZMA_STREAM_END since there's nothing to
+			// flush.
 			if (action != LZMA_FINISH)
-				return LZMA_OK;
+				return action == LZMA_RUN
+					? LZMA_OK : LZMA_STREAM_END;
 
 			if (lzma_info_index_count_get(coder->info) != 0) {
 				if (lzma_info_index_finish(coder->info))

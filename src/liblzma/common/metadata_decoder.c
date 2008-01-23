@@ -127,6 +127,8 @@ process(lzma_coder *coder, lzma_allocator *allocator)
 		if (coder->buffer[coder->buffer_pos] & 0x70)
 			return LZMA_HEADER_ERROR;
 
+		coder->todo_count = 0;
+
 		// If Size of Header Metadata is present, prepare the
 		// variable for variable-length integer decoding. Otherwise
 		// set it to LZMA_VLI_VALUE_UNKNOWN to indicate that the
@@ -535,7 +537,7 @@ metadata_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	metadata->extra = NULL;
 
 	next->coder->sequence = SEQ_FLAGS;
-	next->coder->todo_count = 0;
+	next->coder->todo_count = 1;
 	next->coder->pos = 0;
 	next->coder->tmp = 0;
 	next->coder->metadata = metadata;

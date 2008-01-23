@@ -356,7 +356,18 @@ process(lzma_coder *coder, lzma_allocator *allocator)
 	case SEQ_EXTRA_SIZE:
 	case SEQ_EXTRA_DUMMY_SIZE:
 		read_vli(coder->tmp);
-		++coder->sequence;
+
+		if (coder->tmp == 0) {
+			// We have no Data in the Extra Record. Don't
+			// allocate any memory for it. Go back to
+			// SEQ_EXTRA_ALLOC or SEQ_EXTRA_DUMMY_ALLOC.
+			coder->tmp = 0;
+			coder->sequence -= 2;
+			coder->todo_count = 0;
+		} else {
+			++coder->sequence;
+		}
+
 		break;
 
 	case SEQ_EXTRA_DATA_ALLOC: {

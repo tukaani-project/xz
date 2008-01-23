@@ -484,6 +484,7 @@ metadata_decode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 metadata_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
+	lzma_next_coder_end(&coder->block_decoder, allocator);
 	lzma_free(coder, allocator);
 	return;
 }

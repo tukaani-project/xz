@@ -367,7 +367,7 @@ lzma_info_metadata_set(lzma_info *info, lzma_allocator *allocator,
 		lzma_bool eat_index)
 {
 	// Validate *metadata.
-	if (!lzma_vli_is_valid(metadata->header_metadata_size)
+	if (metadata->header_metadata_size > LZMA_VLI_VALUE_MAX
 			|| !lzma_vli_is_valid(metadata->total_size)
 			|| !lzma_vli_is_valid(metadata->uncompressed_size)) {
 		if (eat_index) {
@@ -403,15 +403,10 @@ lzma_info_metadata_set(lzma_info *info, lzma_allocator *allocator,
 	}
 
 	// Size of Header Metadata
-	if (!is_header_metadata) {
-		// If it is marked unknown in Metadata, it means that
-		// it's not present.
-		const lzma_vli size = metadata->header_metadata_size
-					!= LZMA_VLI_VALUE_UNKNOWN
-				? metadata->header_metadata_size : 0;
+	if (!is_header_metadata)
 		return_if_error(lzma_info_size_set(
-				info, LZMA_INFO_HEADER_METADATA, size));
-	}
+				info, LZMA_INFO_HEADER_METADATA,
+				metadata->header_metadata_size));
 
 	// Total Size
 	if (metadata->total_size != LZMA_VLI_VALUE_UNKNOWN)

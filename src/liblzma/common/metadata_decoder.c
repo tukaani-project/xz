@@ -169,6 +169,12 @@ process(lzma_coder *coder, lzma_allocator *allocator)
 				return LZMA_DATA_ERROR;
 
 			--coder->todo_count;
+		} else {
+			// Zero indicates that Size of Header Metadata Block
+			// is not present. That is, after successful Metadata
+			// decoding, metadata->header_metadata_size is
+			// never LZMA_VLI_VALUE_UNKNOWN.
+			coder->metadata->header_metadata_size = 0;
 		}
 
 		coder->sequence = SEQ_TOTAL_SIZE;

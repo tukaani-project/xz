@@ -527,7 +527,7 @@ test6(void)
 	// still present in Footer.
 	reset();
 	metadata = my_metadata;
-	metadata.header_metadata_size = LZMA_VLI_VALUE_UNKNOWN;
+	metadata.header_metadata_size = 0;
 	expect(lzma_info_size_set(info, LZMA_INFO_HEADER_METADATA, 0)
 			== LZMA_OK);
 	expect(lzma_info_metadata_set(info, NULL, &metadata, true, false)
@@ -539,7 +539,7 @@ test6(void)
 	// from Footer.
 	reset();
 	metadata = my_metadata;
-	metadata.header_metadata_size = LZMA_VLI_VALUE_UNKNOWN;
+	metadata.header_metadata_size = 0;
 	expect(lzma_info_metadata_set(info, NULL, &my_metadata, true, false)
 			== LZMA_OK);
 	expect(lzma_info_size_set(info, LZMA_INFO_HEADER_METADATA,

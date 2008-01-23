@@ -87,8 +87,7 @@ process(lzma_coder *coder)
 	case SEQ_FLAGS:
 		coder->buffer[coder->buffer_size] = 0;
 
-		if (coder->metadata.header_metadata_size
-				!= LZMA_VLI_VALUE_UNKNOWN)
+		if (coder->metadata.header_metadata_size != 0)
 			coder->buffer[coder->buffer_size] |= 0x01;
 
 		if (coder->metadata.total_size != LZMA_VLI_VALUE_UNKNOWN)
@@ -109,8 +108,7 @@ process(lzma_coder *coder)
 		break;
 
 	case SEQ_HEADER_METADATA_SIZE:
-		if (coder->metadata.header_metadata_size
-				!= LZMA_VLI_VALUE_UNKNOWN)
+		if (coder->metadata.header_metadata_size != 0)
 			write_vli(coder->metadata.header_metadata_size);
 
 		coder->sequence = SEQ_TOTAL_SIZE;
@@ -373,13 +371,14 @@ lzma_metadata_size(const lzma_metadata *metadata)
 	lzma_vli size = 1; // Metadata Flags
 
 	// Validate header_metadata_size, total_size, and uncompressed_size.
-	if (!lzma_vli_is_valid(metadata->header_metadata_size)
+	if (metadata->header_metadata_size > LZMA_VLI_VALUE_MAX
 			|| !lzma_vli_is_valid(metadata->total_size)
+			|| metadata->total_size == 0
 			|| !lzma_vli_is_valid(metadata->uncompressed_size))
 		return 0;
 
 	// Add the sizes of these three fields.
-	if (metadata->header_metadata_size != LZMA_VLI_VALUE_UNKNOWN)
+	if (metadata->header_metadata_size != 0)
 		size += lzma_vli_size(metadata->header_metadata_size);
 
 	if (metadata->total_size != LZMA_VLI_VALUE_UNKNOWN)

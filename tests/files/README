@@ -76,6 +76,27 @@
     good-single-lzma-flush_2.lzma has a flush marker in the middle of
     the file and just before EOPM.
 
+    good-multi-none-1.lzma is a basic Multi-Block Stream with two Data
+    Blocks and Footer Metadata Block.
+
+    good-multi-none-2.lzma is good-multi-none-1.lzma with Total Size and
+    Uncompressed Size added to the Footer Metadata Block.
+
+    good-multi-none-extra_1.lzma has the `Extra is present' flag set but
+    no actual Extra Records.
+
+    good-multi-none-extra_2.lzma has two non-empty Extra Records.
+
+    good-multi-none-extra_3.lzma has an Extra Record that has empty Data.
+
+    good-multi-none-header_1.lzma has very minimal Header Metadata Block
+    with only the Metadata Flags field.
+
+    good-multi-none-header_2.lzma has all information in both Header and
+    Footer Metadata Blocks. The Size of Header Metadata Block has wrong
+    value in Header Metadata Block, but this value must be ignored by
+    the decoder in case of Header Metadata Block.
+
 
 2.2. Bad Files
 
@@ -131,6 +152,38 @@
 
     bad-single-lzma-flush_twice.lzma has two flush markers with no data
     between them.
+
+    bad-multi-none-1.lzma has data after the last field in the Metadata
+    Block and the `Extra is present' flag is not set.
+
+    bad-multi-none-2.lzma has wrong Total Size in Footer Metadata Block.
+
+    bad-multi-none-3.lzma has wrong Uncompressed Size in Footer Metadata
+    Block.
+
+    bad-multi-none-index_1.lzma has wrong value in the Number of Data
+    Blocks field.
+
+    bad-multi-none-index_2.lzma has too short Metadata to contain all
+    the Index Records.
+
+    bad-multi-none-index_3.lzma has wrong value in Total Size field in
+    the Index.
+
+    bad-multi-none-index_4.lzma has wrong value in Uncompressed Size field
+    in the Index.
+
+    bad-multi-none-extra_1.lzma has incomplete Extra Record at the end of
+    the Metadata Block.
+
+    bad-multi-none-extra_2.lzma has incomplete variable-length integer as
+    Extra Record ID.
+
+    bad-multi-none-extra_3.lzma has incomplete Extra Record at the end of
+    the Metadata Block.
+
+    bad-multi-none-header_1.lzma has empty Header Metadata Block (even
+    the Metadata Flags field is not present).
 
 
 2.3. Malicious Files

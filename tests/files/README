@@ -94,6 +94,11 @@
     with 0x5D appended to the end of the file. 0x5D is the most common
     first byte of LZMA_Alone format file.
 
+    bad-single-none-footer_filter_flags.lzma has different Stream Flags
+    in Stream Footer than in Stream Header.
+
+    bad-single-none-too_long_vli.lzma has 10-byte variable-length integer.
+
     bad-single-none-empty.lzma is like good-single-none-empty_3.lzma but
     with non-zero value in the Compressed Size field.
 

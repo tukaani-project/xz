@@ -916,6 +916,7 @@ subblock_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 	lzma_next_coder_end(&coder->subfilter.subcoder, allocator);
 	lzma_free(coder->subblock.data, allocator);
 	lzma_free(coder->subfilter.flags, allocator);
+	lzma_free(coder, allocator);
 	return;
 }
 

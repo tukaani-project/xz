@@ -71,7 +71,7 @@ lzma_subblock_decoder_helper_init(lzma_next_coder *next,
 			return LZMA_MEM_ERROR;
 		
 		next->code = &helper_decode;
-		next->end = helper_end;
+		next->end = &helper_end;
 	}
 
 	next->coder->options = filters[0].options;

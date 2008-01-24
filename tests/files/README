@@ -97,6 +97,10 @@
     value in Header Metadata Block, but this value must be ignored by
     the decoder in case of Header Metadata Block.
 
+    good-multi-none-header_3.lzma has Index only in the Header Metadata
+    Block. Footer Metadata Block contains only Size of Header Metadata
+    Block and Total Size.
+
 
 2.2. Bad Files
 
@@ -184,6 +188,25 @@
 
     bad-multi-none-header_1.lzma has empty Header Metadata Block (even
     the Metadata Flags field is not present).
+
+    bad-multi-none-header_2.lzma has Index in the Header Metadata Block,
+    which describes only one Data Block, while the Stream actually has
+    two Data Blocks. A decoder should give an error when it detects the
+    second Data Block.
+
+    bad-multi-none-header_3.lzma contains too small Total Size in Header
+    Metadata Block. A decoder should abort decoding before the second
+    Data Block, preferably before the first Data Block has been finished.
+
+    bad-multi-none-header_4.lzma is like bad-multi-none-header_3.lzma but
+    with too small Uncompressed Size.
+
+    bad-multi-none-header_5.lzma has Index in the Header Metadata Block,
+    but the Total Size field is missing from the Footer Metadata Block.
+
+    bad-multi-none-header_6.lzma has both Index and Total Size in Header
+    Metadata Block, but Total Size doesn't match the Index. A decoder
+    should abort before decoding any Data Blocks.
 
 
 2.3. Malicious Files

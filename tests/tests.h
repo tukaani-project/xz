@@ -29,7 +29,7 @@
 #define expect(test) ((test) ? 0 : (fprintf(stderr, "%s:%u: %s\n", \
 	__FILE__, __LINE__, #test), exit(1), 0))
 
-#define succeed(test) expect(!test)
+#define succeed(test) expect(!(test))
 
 #define fail(test) expect(test)
 

@@ -101,6 +101,14 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
+	// TODO: Add partial support for LZMA_SYNC_FLUSH. We can support it
+	// in cases when the filter is able to filter everything. With most
+	// simple filters it can be done at offset that is a multiple of 2,
+	// 4, or 16. With x86 filter, it needs good luck, and thus cannot
+	// be made to work predictably.
+	if (action == LZMA_SYNC_FLUSH)
+		return LZMA_HEADER_ERROR;
+
 	// Flush already filtered data from coder->buffer[] to out[].
 	if (coder->pos < coder->filtered) {
 		bufcpy(coder->buffer, &coder->pos, coder->filtered,

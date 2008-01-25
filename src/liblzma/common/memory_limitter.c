@@ -25,9 +25,16 @@
 	((num) + (((multiple) - ((num) % (multiple))) % (multiple)))
 
 
-/// Rounds upwards to the next multiple of 2 * sizeof(void*).
-/// malloc() tends to align allocations this way.
-#define malloc_ceil(num) my_ceil(num, 2 * sizeof(void *))
+/// Add approximated overhead of malloc() to size and round upwards to the
+/// next multiple of 2 * sizeof(size_t). I suppose that most malloc()
+/// implementations align small allocations this way, but the overhead
+/// varies due to several reasons (free lists, mmap() usage etc.).
+///
+/// This doesn't need to be exact at all. It's enough to take into account
+/// that there is some overhead. That way our memory usage count won't be
+/// horribly wrong if we are used to allocate lots of small memory chunks.
+#define malloc_ceil(size) \
+	my_ceil((size) + 2 * sizeof(void *), 2 * sizeof(size_t))
 
 
 typedef struct lzma_memlimit_list_s lzma_memlimit_list;
@@ -39,24 +46,44 @@ struct lzma_memlimit_list_s {
 
 
 struct lzma_memlimit_s {
-	size_t used;
-	size_t limit;
+	/// List of allocated memory chunks
 	lzma_memlimit_list *list;
+
+	/// Number of bytes currently allocated; this includes the memory
+	/// needed for the helper structures.
+	size_t used;
+
+	/// Memory usage limit
+	size_t limit;
+
+	/// Maximum amount of memory that have been or would have been needed.
+	/// That is, this is updated also if memory allocation fails, letting
+	/// the application check how much memory was tried to be allocated
+	/// in total.
+	size_t max;
+
+	/// True if lzma_memlimit_alloc() has returned NULL due to memory
+	/// usage limit.
+	bool limit_reached;
 };
 
 
 extern LZMA_API lzma_memlimit *
 lzma_memlimit_create(size_t limit)
 {
-	if (limit < sizeof(lzma_memlimit))
+	const size_t base_size = malloc_ceil(sizeof(lzma_memlimit));
+
+	if (limit < base_size)
 		return NULL;
 
 	lzma_memlimit *mem = malloc(sizeof(lzma_memlimit));
 
 	if (mem != NULL) {
-		mem->used = sizeof(lzma_memlimit);
-		mem->limit = limit;
 		mem->list = NULL;
+		mem->used = base_size;
+		mem->limit = limit;
+		mem->max = base_size;
+		mem->limit_reached = false;
 	}
 
 	return mem;
@@ -86,6 +113,30 @@ lzma_memlimit_used(const lzma_memlimit *mem)
 
 
 extern LZMA_API size_t
+lzma_memlimit_max(lzma_memlimit *mem, lzma_bool clear)
+{
+	const size_t ret = mem->max;
+
+	if (clear)
+		mem->max = mem->used;
+
+	return ret;
+}
+
+
+extern LZMA_API lzma_bool
+lzma_memlimit_reached(lzma_memlimit *mem, lzma_bool clear)
+{
+	const bool ret = mem->limit_reached;
+
+	if (clear)
+		mem->limit_reached = false;
+
+	return ret;
+}
+
+
+extern LZMA_API size_t
 lzma_memlimit_count(const lzma_memlimit *mem)
 {
 	// This is slow; we could have a counter in lzma_memlimit
@@ -94,12 +145,12 @@ lzma_memlimit_count(const lzma_memlimit *mem)
 	// in which this implementation is just fine.
 	size_t count = 0;
 	const lzma_memlimit_list *record = mem->list;
-	
+
 	while (record != NULL) {
 		++count;
 		record = record->next;
 	}
-	
+
 	return count;
 }
 
@@ -140,18 +191,36 @@ lzma_memlimit_alloc(lzma_memlimit *mem, size_t nmemb, size_t size)
 		size = 1;
 
 	// Calculate how much memory we are going to allocate in reality.
-	// TODO: We should add some rough estimate how much malloc() needs
-	// for its internal structures.
 	const size_t total_size = malloc_ceil(size)
 			+ malloc_ceil(sizeof(lzma_memlimit_list));
 
-	// Integer overflow protection
-	if (SIZE_MAX - size <= total_size)
+	// Integer overflow protection for total_size and mem->used.
+	if (total_size <= size || SIZE_MAX - total_size < mem->used) {
+		mem->max = SIZE_MAX;
+		mem->limit_reached = true;
 		return NULL;
+	}
 
-	if (mem->limit < mem->used || mem->limit - mem->used < total_size)
+	// Update the maximum memory requirement counter if needed. This
+	// is updated even if memory allocation would fail or limit would
+	// be reached.
+	if (mem->used + total_size > mem->max)
+		mem->max = mem->used + total_size;
+
+	// Check if we would stay in the memory usage limits. We need to
+	// check also that the current usage is in the limits, because
+	// the application could have decreased the limit between calls
+	// to this function.
+	if (mem->limit < mem->used || mem->limit - mem->used < total_size) {
+		mem->limit_reached = true;
 		return NULL;
+	}
 
+	// Allocate separate memory chunks for lzma_memlimit_list and the
+	// actual requested memory. Optimizing this to use only one
+	// allocation is not a good idea, because applications may want to
+	// detach lzma_extra structures that have been allocated with
+	// lzma_memlimit_alloc().
 	lzma_memlimit_list *record = malloc(sizeof(lzma_memlimit_list));
 	void *ptr = malloc(size);
 

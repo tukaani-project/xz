@@ -93,6 +93,41 @@ extern size_t lzma_memlimit_used(const lzma_memlimit *mem);
 
 
 /**
+ * \brief       Gets the maximum amount of memory required in total
+ *
+ * Returns how much memory was or would have been allocated at the same time.
+ * If lzma_memlimit_alloc() was requested so much memory that the limit
+ * would have been exceeded or malloc() simply ran out of memory, the
+ * requested amount is still included to the value returned by
+ * lzma_memlimit_max(). This may be used as a hint how much bigger memory
+ * limit would have been needed.
+ *
+ * If the clear flag is set, the internal variable holding the maximum
+ * value is set to the current memory usage (the same value as returned
+ * by lzma_memlimit_used()).
+ *
+ * \note        Usually liblzma needs to allocate many chunks of memory, and
+ *              displaying a message like "memory usage limit reached, at
+ *              least 1024 bytes would have been needed" may be confusing,
+ *              because the next allocation could have been e.g. 8 MiB.
+ *
+ * \todo        The description of this function is unclear.
+ */
+extern size_t lzma_memlimit_max(lzma_memlimit *mem, lzma_bool clear);
+
+
+/**
+ * \brief       Checks if memory limit was reached at some point
+ *
+ * This function is useful to find out if the reason for LZMA_MEM_ERROR
+ * was running out of memory or hitting the memory usage limit imposed
+ * by lzma_memlimit_alloc(). If the clear argument is true, the internal
+ * flag, that indicates that limit was reached, is cleared.
+ */
+extern lzma_bool lzma_memlimit_reached(lzma_memlimit *mem, lzma_bool clear);
+
+
+/**
  * \brief       Gets the number of allocations owned by the memory limitter
  *
  * The count does not include the helper structures; if no memory has

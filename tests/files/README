@@ -101,6 +101,10 @@
     Block. Footer Metadata Block contains only Size of Header Metadata
     Block and Total Size.
 
+    good-multi-none-block_1.lzma has Index in Header Metadata Block. The
+    Compressed Size and Uncompressed Size fields are present in the Data
+    Blocks. There is some Footer Padding between the Blocks.
+
 
 2.2. Bad Files
 
@@ -191,12 +195,15 @@
 
     bad-multi-none-header_2.lzma has Index in the Header Metadata Block,
     which describes only one Data Block, while the Stream actually has
-    two Data Blocks. A decoder should give an error when it detects the
-    second Data Block.
+    two Data Blocks. A sophisticated decoder should give an error when
+    it detects the second Data Block; all Multi-Block decoders must
+    detect the file as corrupt at some point.
 
     bad-multi-none-header_3.lzma contains too small Total Size in Header
-    Metadata Block. A decoder should abort decoding before the second
-    Data Block, preferably before the first Data Block has been finished.
+    Metadata Block. A sophisticated decoder should abort decoding before
+    the second Data Block, preferably before the first Data Block has
+    been finished; all Multi-Block decoders must detect the file as
+    corrupt at some point.
 
     bad-multi-none-header_4.lzma is like bad-multi-none-header_3.lzma but
     with too small Uncompressed Size.
@@ -205,8 +212,23 @@
     but the Total Size field is missing from the Footer Metadata Block.
 
     bad-multi-none-header_6.lzma has both Index and Total Size in Header
-    Metadata Block, but Total Size doesn't match the Index. A decoder
-    should abort before decoding any Data Blocks.
+    Metadata Block, but Total Size doesn't match the Index. A sophisticated
+    decoder should abort before decoding any Data Blocks; all Multi-Block
+    decoders must detect the file as corrupt at some point.
+
+    bad-multi-none-block_1.lzma has wrong Uncompressed Size in the first
+    Data Block. A sophisticated decoder should detect this error before
+    producing any output, because it can see that the Uncompressed Size
+    doesn't match with the Index in Header Metadata Block; all Multi-Block
+    decoders must detect the file as corrupt at some point.
+
+    bad-multi-none-block_2.lzma has too big Compressed Size in the first
+    Data Block. A sophisticated decoder may be able to detect the file as
+    corrupt before producing any output, because Comrpessed Size + size
+    of Block Header exceed the Total Size stored in Index in Header
+    Metadata Block. A sophisticated decoder should be able to detect the
+    error before the end of the first Data Block; all Multi-Block decoders
+    must detect the file as corrupt at some point.
 
 
 2.3. Malicious Files

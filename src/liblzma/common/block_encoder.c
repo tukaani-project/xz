@@ -232,10 +232,8 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 	case SEQ_PADDING:
 		if (coder->options->handle_padding) {
-			assert(!coder->options
-					->has_uncompressed_size_in_footer);
-			assert(!coder->options->has_backward_size);
-			assert(coder->options->total_size != LZMA_VLI_VALUE_UNKNOWN);
+			assert(coder->options->total_size
+					!= LZMA_VLI_VALUE_UNKNOWN);
 
 			if (coder->total_size < coder->options->total_size) {
 				out[*out_pos] = 0x00;
@@ -284,27 +282,9 @@ block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_options_block *options)
 {
 	// Validate some options.
-	if (options == NULL
-			|| !lzma_vli_is_valid(options->total_size)
-			|| !lzma_vli_is_valid(options->compressed_size)
-			|| !lzma_vli_is_valid(options->uncompressed_size)
-			|| !lzma_vli_is_valid(options->total_size)
-			|| !lzma_vli_is_valid(options->total_limit)
-			|| !lzma_vli_is_valid(options->uncompressed_limit)
-			|| (options->uncompressed_size
-					!= LZMA_VLI_VALUE_UNKNOWN
-				&& options->uncompressed_size
-					> options->uncompressed_limit)
-			|| (options->total_size != LZMA_VLI_VALUE_UNKNOWN
-				&& options->total_size
-					> options->total_limit)
-			|| (!options->has_eopm && options->uncompressed_size
-				== LZMA_VLI_VALUE_UNKNOWN)
-			|| (options->handle_padding && (options->total_size
-					== LZMA_VLI_VALUE_UNKNOWN
-				|| options->has_uncompressed_size_in_footer
-				|| options->has_backward_size))
-			|| options->header_size > options->total_size)
+	if (validate_options_1(options) || validate_options_2(options)
+			|| (options->handle_padding && options->total_size
+				== LZMA_VLI_VALUE_UNKNOWN))
 		return LZMA_PROG_ERROR;
 
 	// Allocate and initialize *next->coder if needed.
@@ -325,7 +305,7 @@ block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Compressed Data is empty. That is, we don't call the encoder at all.
 	// We initialize it though; it allows detecting invalid options.
 	if (!options->has_eopm && options->uncompressed_size == 0) {
-		// Also Compressed Size must also be zero if it has been
+		// Also Compressed Size must be zero if it has been
 		// given to us.
 		if (!is_size_valid(0, options->compressed_size))
 			return LZMA_PROG_ERROR;

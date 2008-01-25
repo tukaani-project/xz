@@ -296,8 +296,8 @@ block_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 }
 
 
-extern lzma_ret
-lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+static lzma_ret
+block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_options_block *options)
 {
 	// This is pretty similar to lzma_block_encoder_init().
@@ -313,26 +313,11 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
-	if (!lzma_vli_is_valid(options->total_size)
-			|| !lzma_vli_is_valid(options->compressed_size)
-			|| !lzma_vli_is_valid(options->uncompressed_size)
-			|| !lzma_vli_is_valid(options->total_size)
-			|| !lzma_vli_is_valid(options->total_limit)
-			|| !lzma_vli_is_valid(options->uncompressed_limit)
-			|| (options->uncompressed_size
-					!= LZMA_VLI_VALUE_UNKNOWN
-				&& options->uncompressed_size
-					> options->uncompressed_limit)
-			|| (options->total_size != LZMA_VLI_VALUE_UNKNOWN
-				&& options->total_size
-					> options->total_limit)
-			|| (!options->has_eopm && options->uncompressed_size
-				== LZMA_VLI_VALUE_UNKNOWN)
-			|| options->header_size > options->total_size
-			|| (options->handle_padding
-				&& (options->has_uncompressed_size_in_footer
-					|| options->has_backward_size)))
+	if (validate_options_1(options))
 		return LZMA_PROG_ERROR;
+
+	if (validate_options_2(options))
+		return LZMA_DATA_ERROR;
 
 	return_if_error(lzma_check_init(&next->coder->check, options->check));
 
@@ -365,10 +350,18 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
+extern lzma_ret
+lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+		lzma_options_block *options)
+{
+	lzma_next_coder_init(block_decoder_init, next, allocator, options);
+}
+
+
 extern LZMA_API lzma_ret
 lzma_block_decoder(lzma_stream *strm, lzma_options_block *options)
 {
-	lzma_next_strm_init(strm, lzma_block_decoder_init, options);
+	lzma_next_strm_init(strm, block_decoder_init, options);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;

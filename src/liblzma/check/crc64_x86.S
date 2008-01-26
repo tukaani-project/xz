@@ -201,3 +201,12 @@ lzma_crc64:
 	ret
 
 	.size	lzma_crc64, .-lzma_crc64
+
+/*
+ * This is needed to support non-executable stack. It's ugly to
+ * use __linux__ here, but I don't know a way to detect when
+ * we are using GNU assembler.
+ */
+#if defined(__ELF__) && defined(__linux__)
+	.section	.note.GNU-stack,"",@progbits
+#endif

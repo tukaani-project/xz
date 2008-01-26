@@ -70,6 +70,14 @@
     good-single-delta-lzma.tiff.lzma is an image file that compresses
     better with Delta+LZMA than with plain LZMA.
 
+    good-single-x86-lzma.lzma uses the x86 filter (BCJ) and LZMA. The
+    uncompressed file is compress_prepared_bcj_x86 found from the tests
+    directory.
+
+    good-single-sparc-lzma.lzma uses the SPARC filter and LZMA. The
+    uncompressed file is compress_prepared_bcj_sparc found from the tests
+    directory.
+
     good-single-lzma-flush_1.lzma has a flush marker in the middle of
     the file, and no EOPM.
 
@@ -218,6 +226,9 @@
     Metadata Block, but Total Size doesn't match the Index. A sophisticated
     decoder should abort before decoding any Data Blocks; all Multi-Block
     decoders must detect the file as corrupt at some point.
+
+    bad-multi-none-header_7.lzma has zero as the Size of Header Metadata
+    Block in the Header Metadata Block.
 
     bad-multi-none-block_1.lzma has wrong Uncompressed Size in the first
     Data Block. A sophisticated decoder should detect this error before

@@ -105,6 +105,9 @@
     Compressed Size and Uncompressed Size fields are present in the Data
     Blocks. There is some Footer Padding between the Blocks.
 
+    good-multi-none-block_2.lzma has Index in Header Metadata Block. The
+    Uncompressed Size field is present in Data Blocks and no EOPM is used.
+
 
 2.2. Bad Files
 
@@ -229,6 +232,9 @@
     Metadata Block. A sophisticated decoder should be able to detect the
     error before the end of the first Data Block; all Multi-Block decoders
     must detect the file as corrupt at some point.
+
+    bad-multi-none-block_3.lzma has only the Compressed Size field in the
+    Block Header of the second Data Block and EOPM isn't used.
 
 
 2.3. Malicious Files

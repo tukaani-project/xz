@@ -28,7 +28,7 @@
 /// \return     true if error occurred, false on success.
 ///
 static bool
-prepare(lzma_vli *id, lzma_vli *uncompressed_size, bool implicit)
+prepare(lzma_vli *id, lzma_vli *uncompressed_size, bool allow_implicit)
 {
 	bool needs_end_of_input = false;
 
@@ -62,17 +62,19 @@ prepare(lzma_vli *id, lzma_vli *uncompressed_size, bool implicit)
 
 	// Is this the last filter in the chain?
 	if (id[1] == LZMA_VLI_VALUE_UNKNOWN) {
-		if (!needs_end_of_input || !implicit || uncompressed_size[0]
-				!= LZMA_VLI_VALUE_UNKNOWN)
-			return false;
+		if (needs_end_of_input && allow_implicit
+				&& uncompressed_size[0]
+					== LZMA_VLI_VALUE_UNKNOWN) {
+			// Add implicit Subblock filter.
+			id[1] = LZMA_FILTER_SUBBLOCK;
+			uncompressed_size[1] = LZMA_VLI_VALUE_UNKNOWN;
+			id[2] = LZMA_VLI_VALUE_UNKNOWN;
+		}
 
-		// Add implicit Subblock filter.
-		id[1] = LZMA_FILTER_SUBBLOCK;
-		uncompressed_size[1] = LZMA_VLI_VALUE_UNKNOWN;
-		id[2] = LZMA_VLI_VALUE_UNKNOWN;
+		return false;
 	}
 
-	return prepare(id + 1, uncompressed_size + 1, implicit);
+	return prepare(id + 1, uncompressed_size + 1, allow_implicit);
 }
 
 

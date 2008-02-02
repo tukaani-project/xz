@@ -429,10 +429,9 @@ lzma_lz_decoder_reset(lzma_lz_decoder *lz, lzma_allocator *allocator,
 			return LZMA_MEM_ERROR;
 	}
 
-	// Clean up the buffers to make it very sure that there are
-	// no information leaks when multiple steams are decoded
-	// with the same decoder structures.
-	memzero(lz->dict, dict_real_size);
+	// Clean up the temporary buffer to make it very sure that there are
+	// no information leaks when multiple steams are decoded with the
+	// same decoder structures.
 	memzero(lz->temp, LZMA_BUFFER_SIZE);
 
 	// Reset the variables so that lz_get_byte(lz, 0) will return '\0'.

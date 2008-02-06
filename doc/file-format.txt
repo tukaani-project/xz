@@ -112,7 +112,7 @@ The .lzma File Format
 
 0.2. Changes
 
-        Last modified: 2008-01-16 12:05+0200
+        Last modified: 2008-02-01 19:25+0200
 
         (A changelog will be kept once the first official version
         is made.)
@@ -812,8 +812,8 @@ The .lzma File Format
         When a filter that cannot embed End of Payload Marker is the
         last filter in the chain, Subblock filter is appended to the
         chain as an implicit filter. In the simplest case, this occurs
-        when no filters are specified, and Uncompressed Size is unknown
-        or the End of Payload Marker bit is set in Block Flags.
+        when no filters are specified, and the End of Payload Marker
+        bit is set in Block Flags.
 
 
 4.1.3. With End of Payload Marker

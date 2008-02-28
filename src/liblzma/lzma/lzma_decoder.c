@@ -541,22 +541,12 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 				if_bit_0(coder->is_rep0_long[state][pos_state]) {
 					update_bit_0(coder->is_rep0_long[state][pos_state]);
 
-					// Repeating exactly one byte. For
-					// simplicity, it is done here inline
-					// instead of at the end of the main
-					// loop.
-
 					update_short_rep(state);
 
-					// Security/sanity checks. See the end
-					// of the main loop for explanation
-					// of these.
-					if ((rep0 >= coder->lz.pos && !coder->lz.is_full)
-							|| in_pos_local > in_size)
-						return true;
-
-					// Repeat one byte and start a new
-					// decoding loop.
+					// Repeat exactly one byte and start a new decoding loop.
+					// Note that rep0 is known to have a safe value, thus we
+					// don't need to check if we are wrapping the dictionary
+					// when it isn't full yet.
 					coder->lz.dict[coder->lz.pos]
 							= lz_get_byte(coder->lz, rep0);
 					++coder->lz.pos;
@@ -621,11 +611,6 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 
 		now_pos += len;
 		has_produced_output = true;
-
-		// Validate the buffer position to avoid buffer overflows
-		// on corrupted input data.
-		if (in_pos_local > in_size)
-			return true;
 
 		// Repeat len bytes from distance of rep0.
 		if (!lzma_lz_out_repeat(&coder->lz, rep0, len))

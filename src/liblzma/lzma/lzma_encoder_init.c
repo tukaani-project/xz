@@ -136,6 +136,8 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	}
 
 	// Misc FIXME desc
+	next->coder->align_price_count = 0;
+	next->coder->match_price_count = 0;
 	next->coder->dictionary_size = options->dictionary_size;
 	next->coder->pos_mask = (1U << options->pos_bits) - 1;
 	next->coder->fast_bytes = options->fast_bytes;

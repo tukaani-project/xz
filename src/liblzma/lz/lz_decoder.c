@@ -429,11 +429,6 @@ lzma_lz_decoder_reset(lzma_lz_decoder *lz, lzma_allocator *allocator,
 			return LZMA_MEM_ERROR;
 	}
 
-	// Clean up the temporary buffer to make it very sure that there are
-	// no information leaks when multiple steams are decoded with the
-	// same decoder structures.
-	memzero(lz->temp, LZMA_BUFFER_SIZE);
-
 	// Reset the variables so that lz_get_byte(lz, 0) will return '\0'.
 	lz->pos = 0;
 	lz->start = 0;
@@ -442,6 +437,12 @@ lzma_lz_decoder_reset(lzma_lz_decoder *lz, lzma_allocator *allocator,
 	lz->eopm_detected = false;
 	lz->next_finished = false;
 	lz->this_finished = false;
+	lz->temp_size = 0;
+
+	// Clean up the temporary buffer to make it very sure that there are
+	// no information leaks when multiple steams are decoded with the
+	// same decoder structures.
+	memzero(lz->temp, LZMA_BUFFER_SIZE);
 
 	// Set the process function pointer.
 	lz->process = process;

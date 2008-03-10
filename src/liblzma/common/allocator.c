@@ -36,9 +36,10 @@ lzma_alloc(size_t size, lzma_allocator *allocator)
 		ptr = malloc(size);
 
 #if !defined(NDEBUG) && defined(HAVE_MEMSET)
-	// This helps to catch some stupid mistakes.
-	if (ptr != NULL)
-		memset(ptr, 0xFD, size);
+	// This helps to catch some stupid mistakes, but also hides them from
+	// Valgrind. Uncomment when useful.
+// 	if (ptr != NULL)
+// 		memset(ptr, 0xFD, size);
 #endif
 
 	return ptr;

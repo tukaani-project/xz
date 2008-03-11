@@ -179,41 +179,39 @@ decode_dummy(const lzma_coder *restrict coder,
 					coder->literal_coder, now_pos, lz_get_byte(coder->lz, 0));
 			uint32_t symbol = 1;
 
-			if (!is_char_state(state)) {
-				// Decode literal with match byte.
+			if (is_char_state(state)) {
+				// Decode literal without match byte.
+				do {
+					if_bit_0(subcoder[symbol]) {
+						update_bit_0_dummy();
+						symbol <<= 1;
+					} else {
+						update_bit_1_dummy();
+						symbol = (symbol << 1) | 1;
+					}
+				} while (symbol < 0x100);
 
-				assert(rep0 != UINT32_MAX);
+			} else {
+				// Decode literal with match byte.
 				uint32_t match_byte = lz_get_byte(coder->lz, rep0);
+				uint32_t subcoder_offset = 0x100;
 
 				do {
 					match_byte <<= 1;
-					const uint32_t match_bit = match_byte & 0x100;
-					const uint32_t subcoder_index = 0x100 + match_bit + symbol;
+					const uint32_t match_bit = match_byte & subcoder_offset;
+					const uint32_t subcoder_index
+							= subcoder_offset + match_bit + symbol;
 
 					if_bit_0(subcoder[subcoder_index]) {
 						update_bit_0_dummy();
 						symbol <<= 1;
-						if (match_bit != 0)
-							break;
+						subcoder_offset &= ~match_bit;
 					} else {
 						update_bit_1_dummy();
 						symbol = (symbol << 1) | 1;
-						if (match_bit == 0)
-							break;
+						subcoder_offset &= match_bit;
 					}
 				} while (symbol < 0x100);
-			}
-
-			// Decode literal without match byte. This is also
-			// the tail of the with-match-byte function.
-			while (symbol < 0x100) {
-				if_bit_0(subcoder[symbol]) {
-					update_bit_0_dummy();
-					symbol <<= 1;
-				} else {
-					update_bit_1_dummy();
-					symbol = (symbol << 1) | 1;
-				}
 			}
 
 			break;
@@ -366,41 +364,44 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 					now_pos, lz_get_byte(coder->lz, 0));
 			uint32_t symbol = 1;
 
-			if (!is_char_state(state)) {
-				// Decode literal with match byte.
+			if (is_char_state(state)) {
+				// Decode literal without match byte.
+				do {
+					if_bit_0(subcoder[symbol]) {
+						update_bit_0(subcoder[symbol]);
+						symbol <<= 1;
+					} else {
+						update_bit_1(subcoder[symbol]);
+						symbol = (symbol << 1) | 1;
+					}
+				} while (symbol < 0x100);
 
-				assert(rep0 != UINT32_MAX);
+			} else {
+				// Decode literal with match byte.
+				//
+				// The usage of subcoder_offset allows omitting some
+				// branches, which should give tiny speed improvement on
+				// some CPUs. subcoder_offset gets set to zero if match_bit
+				// didn't match.
 				uint32_t match_byte = lz_get_byte(coder->lz, rep0);
+				uint32_t subcoder_offset = 0x100;
 
 				do {
 					match_byte <<= 1;
-					const uint32_t match_bit = match_byte & 0x100;
-					const uint32_t subcoder_index = 0x100 + match_bit + symbol;
+					const uint32_t match_bit = match_byte & subcoder_offset;
+					const uint32_t subcoder_index
+							= subcoder_offset + match_bit + symbol;
 
 					if_bit_0(subcoder[subcoder_index]) {
 						update_bit_0(subcoder[subcoder_index]);
 						symbol <<= 1;
-						if (match_bit != 0)
-							break;
+						subcoder_offset &= ~match_bit;
 					} else {
 						update_bit_1(subcoder[subcoder_index]);
 						symbol = (symbol << 1) | 1;
-						if (match_bit == 0)
-							break;
+						subcoder_offset &= match_bit;
 					}
 				} while (symbol < 0x100);
-			}
-
-			// Decode literal without match byte. This is also
-			// the tail of the with-match-byte function.
-			while (symbol < 0x100) {
-				if_bit_0(subcoder[symbol]) {
-					update_bit_0(subcoder[symbol]);
-					symbol <<= 1;
-				} else {
-					update_bit_1(subcoder[symbol]);
-					symbol = (symbol << 1) | 1;
-				}
 			}
 
 			// Put the decoded byte to the dictionary, update the

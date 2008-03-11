@@ -433,6 +433,7 @@ lzma_lz_decoder_reset(lzma_lz_decoder *lz, lzma_allocator *allocator,
 	lz->pos = 0;
 	lz->start = 0;
 	lz->end = dict_real_size;
+	lz->dict[dict_real_size - 1] = 0;
 	lz->is_full = false;
 	lz->eopm_detected = false;
 	lz->next_finished = false;

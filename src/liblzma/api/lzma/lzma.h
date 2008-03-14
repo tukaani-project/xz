@@ -302,7 +302,7 @@ extern const lzma_match_finder *const lzma_available_match_finders;
 /**
  * \brief       Table of presets for the LZMA filter
  *
- * lzma_presets[0] is the fastest and lzma_preset_lzma[8] is the slowest.
+ * lzma_preset_lzma[0] is the fastest and lzma_preset_lzma[8] is the slowest.
  * These presets match the switches -1 .. -9 of the lzma command line tool
  *
  * The preset values are subject to changes between liblzma versions.

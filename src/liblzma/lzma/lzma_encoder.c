@@ -157,6 +157,10 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 	// Initialize the stream if no data has been encoded yet.
 	if (!coder->is_initialized) {
 		if (coder->lz.read_pos == coder->lz.read_limit) {
+			if (coder->lz.sequence == SEQ_RUN)
+				return false; // We cannot do anything.
+
+			// We are finishing (we cannot get here when flushing).
 			assert(coder->lz.write_pos == coder->lz.read_pos);
 			assert(coder->lz.sequence == SEQ_FINISH);
 		} else {

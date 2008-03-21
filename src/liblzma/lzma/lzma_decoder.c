@@ -106,7 +106,7 @@ struct lzma_coder_s {
 	lzma_range_decoder rc;
 
 	// State
-	uint32_t state;
+	lzma_lzma_state state;
 	uint32_t rep0;      ///< Distance of the latest match
 	uint32_t rep1;      ///< Distance of second latest match
 	uint32_t rep2;      ///< Distance of third latest match
@@ -143,10 +143,10 @@ struct lzma_coder_s {
 	probability pos_align_decoder[1 << ALIGN_BITS];
 
 	/// Length of a match
-	lzma_length_decoder len_decoder;
+	lzma_length_decoder match_len_decoder;
 
 	/// Length of a repeated match.
-	lzma_length_decoder rep_match_len_decoder;
+	lzma_length_decoder rep_len_decoder;
 
 	/// True when we have produced at least one byte of output since the
 	/// beginning of the stream or the latest flush marker.
@@ -179,7 +179,7 @@ decode_dummy(const lzma_coder *restrict coder,
 					coder->literal_coder, now_pos, lz_get_byte(coder->lz, 0));
 			uint32_t symbol = 1;
 
-			if (is_char_state(state)) {
+			if (is_literal_state(state)) {
 				// Decode literal without match byte.
 				do {
 					if_bit_0(subcoder[symbol]) {
@@ -222,8 +222,7 @@ decode_dummy(const lzma_coder *restrict coder,
 
 		if_bit_0(coder->is_rep[state]) {
 			update_bit_0_dummy();
-			length_decode_dummy(len, coder->len_decoder, pos_state);
-			update_match(state);
+			length_decode_dummy(len, coder->match_len_decoder, pos_state);
 
 			const uint32_t len_to_pos_state = get_len_to_pos_state(len);
 			uint32_t pos_slot = 0;
@@ -291,7 +290,7 @@ decode_dummy(const lzma_coder *restrict coder,
 				}
 			}
 
-			length_decode_dummy(len, coder->rep_match_len_decoder, pos_state);
+			length_decode_dummy(len, coder->rep_len_decoder, pos_state);
 		}
 	} while (0);
 
@@ -364,7 +363,7 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 					now_pos, lz_get_byte(coder->lz, 0));
 			uint32_t symbol = 1;
 
-			if (is_char_state(state)) {
+			if (is_literal_state(state)) {
 				// Decode literal without match byte.
 				do {
 					if_bit_0(subcoder[symbol]) {
@@ -408,7 +407,7 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 			// decoder state, and start a new decoding loop.
 			coder->lz.dict[coder->lz.pos++] = (uint8_t)(symbol);
 			++now_pos;
-			update_char(state);
+			update_literal(state);
 			has_produced_output = true;
 			continue;
 		}
@@ -429,7 +428,7 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 			// the value to distance.
 
 			// Decode the length of the match.
-			length_decode(len, coder->len_decoder, pos_state);
+			length_decode(len, coder->match_len_decoder, pos_state);
 
 			update_match(state);
 
@@ -594,10 +593,10 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 				rep0 = distance;
 			}
 
-			// Decode the length of the repeated match.
-			length_decode(len, coder->rep_match_len_decoder, pos_state);
+			update_long_rep(state);
 
-			update_rep(state);
+			// Decode the length of the repeated match.
+			length_decode(len, coder->rep_len_decoder, pos_state);
 		}
 
 
@@ -746,23 +745,25 @@ lzma_lzma_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Len decoders (also bit/bittree)
 	const uint32_t num_pos_states = 1 << next->coder->pos_bits;
-	bit_reset(next->coder->len_decoder.choice);
-	bit_reset(next->coder->len_decoder.choice2);
-	bit_reset(next->coder->rep_match_len_decoder.choice);
-	bit_reset(next->coder->rep_match_len_decoder.choice2);
+	bit_reset(next->coder->match_len_decoder.choice);
+	bit_reset(next->coder->match_len_decoder.choice2);
+	bit_reset(next->coder->rep_len_decoder.choice);
+	bit_reset(next->coder->rep_len_decoder.choice2);
 
 	for (uint32_t pos_state = 0; pos_state < num_pos_states; ++pos_state) {
-		bittree_reset(next->coder->len_decoder.low[pos_state], LEN_LOW_BITS);
-		bittree_reset(next->coder->len_decoder.mid[pos_state], LEN_MID_BITS);
-
-		bittree_reset(next->coder->rep_match_len_decoder.low[pos_state],
+		bittree_reset(next->coder->match_len_decoder.low[pos_state],
 				LEN_LOW_BITS);
-		bittree_reset(next->coder->rep_match_len_decoder.mid[pos_state],
+		bittree_reset(next->coder->match_len_decoder.mid[pos_state],
+				LEN_MID_BITS);
+
+		bittree_reset(next->coder->rep_len_decoder.low[pos_state],
+				LEN_LOW_BITS);
+		bittree_reset(next->coder->rep_len_decoder.mid[pos_state],
 				LEN_MID_BITS);
 	}
 
-	bittree_reset(next->coder->len_decoder.high, LEN_HIGH_BITS);
-	bittree_reset(next->coder->rep_match_len_decoder.high, LEN_HIGH_BITS);
+	bittree_reset(next->coder->match_len_decoder.high, LEN_HIGH_BITS);
+	bittree_reset(next->coder->rep_len_decoder.high, LEN_HIGH_BITS);
 
 	next->coder->has_produced_output = false;
 

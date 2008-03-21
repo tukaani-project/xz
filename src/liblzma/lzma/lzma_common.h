@@ -31,8 +31,6 @@
 ///////////////
 
 #define REP_DISTANCES 4
-#define STATES 12
-#define LIT_STATES 7
 
 #define POS_SLOT_BITS 6
 #define DICT_LOG_SIZE_MAX 30
@@ -105,25 +103,62 @@
 // State //
 ///////////
 
-// Used for updating strm->data->state in both encoder and decoder.
+/// This enum is used to track which events have occurred most recently and
+/// in which order. This information is used to predict the next event.
+///
+/// Events:
+///  - Literal: One 8-bit byte
+///  - Match: Repeat a chunk of data at some distance
+///  - Long repeat: Multi-byte match at a recently seen distance
+///  - Short repeat: One-byte repeat at a recently seen distance
+///
+/// The event names are in from STATE_oldest_older_previous. REP means
+/// either short or long repeated match, and NONLIT means any non-literal.
+typedef enum {
+	STATE_LIT_LIT,
+	STATE_MATCH_LIT_LIT,
+	STATE_REP_LIT_LIT,
+	STATE_SHORTREP_LIT_LIT,
+	STATE_MATCH_LIT,
+	STATE_REP_LIT,
+	STATE_SHORTREP_LIT,
+	STATE_LIT_MATCH,
+	STATE_LIT_LONGREP,
+	STATE_LIT_SHORTREP,
+	STATE_NONLIT_MATCH,
+	STATE_NONLIT_REP,
+} lzma_lzma_state;
 
-#define update_char(index) \
-	index = ((index) < 4 \
-			? 0 \
-			: ((index) < 10 \
-				? (index) - 3 \
-				: (index) - 6))
 
-#define update_match(index) \
-	index = ((index) < LIT_STATES ? 7 : 10)
+/// Total number of states
+#define STATES 12
 
-#define update_rep(index) \
-	index = ((index) < LIT_STATES ? 8 : 11)
+/// The lowest 7 states indicate that the previous state was a literal.
+#define LIT_STATES 7
 
-#define update_short_rep(index) \
-	index = ((index) < LIT_STATES ? 9 : 11)
 
-#define is_char_state(index) \
-	((index) < LIT_STATES)
+/// Indicate that the latest state was a literal.
+#define update_literal(state) \
+	state = ((state) <= STATE_SHORTREP_LIT_LIT \
+			? STATE_LIT_LIT \
+			: ((state) <= STATE_LIT_SHORTREP \
+				? (state) - 3 \
+				: (state) - 6))
+
+/// Indicate that the latest state was a match.
+#define update_match(state) \
+	state = ((state) < LIT_STATES ? STATE_LIT_MATCH : STATE_NONLIT_MATCH)
+
+/// Indicate that the latest state was a long repeated match.
+#define update_long_rep(state) \
+	state = ((state) < LIT_STATES ? STATE_LIT_LONGREP : STATE_NONLIT_REP)
+
+/// Indicate that the latest state was a short match.
+#define update_short_rep(state) \
+	state = ((state) < LIT_STATES ? STATE_LIT_SHORTREP : STATE_NONLIT_REP)
+
+/// Test if the previous state was a literal.
+#define is_literal_state(state) \
+	((state) < LIT_STATES)
 
 #endif

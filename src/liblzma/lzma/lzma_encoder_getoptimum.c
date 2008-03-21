@@ -63,7 +63,7 @@ do { \
 #define get_rep_price(price_target, rep_index, len, state, pos_state) \
 do { \
 	get_pure_rep_price(price_target, rep_index, state, pos_state); \
-	price_target += length_get_price(coder->rep_match_len_encoder, \
+	price_target += length_get_price(coder->rep_len_encoder, \
 			(len) - MATCH_MIN_LEN, pos_state); \
 } while (0)
 
@@ -80,7 +80,7 @@ do { \
 				+ align_prices[(pos) & ALIGN_MASK]; \
 	} \
 	price_target += length_get_price( \
-			coder->len_encoder, (len) - MATCH_MIN_LEN, pos_state); \
+			coder->match_len_encoder, (len) - MATCH_MIN_LEN, pos_state); \
 } while (0)
 
 
@@ -368,7 +368,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 			+ literal_get_price(
 				literal_get_subcoder(coder->literal_coder,
 					position, coder->previous_byte),
-				!is_char_state(coder->state), match_byte, current_byte);
+				!is_literal_state(coder->state), match_byte, current_byte);
 
 	make_as_char(coder->optimum[1]);
 
@@ -424,7 +424,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 		do {
 			const uint32_t cur_and_len_price = price
 					+ length_get_price(
-					coder->rep_match_len_encoder,
+					coder->rep_len_encoder,
 					rep_len - 2, pos_state);
 
 			if (cur_and_len_price < coder->optimum[rep_len].price) {
@@ -513,7 +513,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 			state = coder->optimum[coder->optimum[cur].pos_prev_2].state;
 
 			if (coder->optimum[cur].back_prev_2 < REP_DISTANCES)
-				update_rep(state);
+				update_long_rep(state);
 			else
 				update_match(state);
 
@@ -521,7 +521,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 			state = coder->optimum[pos_prev].state;
 		}
 
-		update_char(state);
+		update_literal(state);
 
 	} else {
 		state = coder->optimum[pos_prev].state;
@@ -531,17 +531,17 @@ lzma_get_optimum(lzma_coder *restrict coder,
 		if (is_short_rep(coder->optimum[cur]))
 			update_short_rep(state);
 		else
-			update_char(state);
+			update_literal(state);
 	} else {
 		uint32_t pos;
 		if (coder->optimum[cur].prev_1_is_char && coder->optimum[cur].prev_2) {
 			pos_prev = coder->optimum[cur].pos_prev_2;
 			pos = coder->optimum[cur].back_prev_2;
-			update_rep(state);
+			update_long_rep(state);
 		} else {
 			pos = coder->optimum[cur].back_prev;
 			if (pos < REP_DISTANCES)
-				update_rep(state);
+				update_long_rep(state);
 			else
 				update_match(state);
 		}
@@ -582,7 +582,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 			+ literal_get_price(
 				literal_get_subcoder(coder->literal_coder,
 					position, buf[-1]),
-        		!is_char_state(state), match_byte, current_byte);
+        		!is_literal_state(state), match_byte, current_byte);
 
 	bool next_is_char = false;
 
@@ -638,7 +638,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 
 		if (len_test_2 >= 2) {
 			uint32_t state_2 = state;
-			update_char(state_2);
+			update_literal(state_2);
 
 			const uint32_t pos_state_next = (position + 1) & pos_mask;
 			const uint32_t next_rep_match_price = cur_and_1_price
@@ -689,7 +689,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 
 		do {
 			const uint32_t cur_and_len_price = price
-					+ length_get_price(coder->rep_match_len_encoder,
+					+ length_get_price(coder->rep_len_encoder,
 							len_test - 2, pos_state);
 
 			if (cur_and_len_price < coder->optimum[cur + len_test].price) {
@@ -717,12 +717,12 @@ lzma_get_optimum(lzma_coder *restrict coder,
 
 		if (len_test_2 >= 2) {
 			uint32_t state_2 = state;
-			update_rep(state_2);
+			update_long_rep(state_2);
 
 			uint32_t pos_state_next = (position + len_test) & pos_mask;
 
 			const uint32_t cur_and_len_char_price = price
-					+ length_get_price(coder->rep_match_len_encoder,
+					+ length_get_price(coder->rep_len_encoder,
 						len_test - 2, pos_state)
 					+ bit_get_price_0(coder->is_match[state_2][pos_state_next])
 					+ literal_get_price(
@@ -730,7 +730,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 							position + len_test, buf[len_test - 1]),
 						true, *(buf + len_test - back_offset), buf[len_test]);
 
-			update_char(state_2);
+			update_literal(state_2);
 
 			pos_state_next = (position + len_test + 1) & pos_mask;
 
@@ -801,7 +801,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 						len_to_pos_state][pos_slot]
 						+ align_prices[cur_back & ALIGN_MASK];
 
-			cur_and_len_price += length_get_price(coder->len_encoder,
+			cur_and_len_price += length_get_price(coder->match_len_encoder,
 					len_test - MATCH_MIN_LEN, pos_state);
 
 			if (cur_and_len_price < coder->optimum[cur + len_test].price) {
@@ -843,7 +843,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 								*(buf + len_test - back_offset),
 								buf[len_test]);
 
-					update_char(state_2);
+					update_literal(state_2);
 					pos_state_next = (pos_state_next + 1) & pos_mask;
 
 					const uint32_t next_rep_match_price

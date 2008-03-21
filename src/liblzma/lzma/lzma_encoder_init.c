@@ -174,10 +174,11 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	bittree_reset(next->coder->pos_align_encoder, ALIGN_BITS);
 
 	// Length encoders
-	length_encoder_reset(&next->coder->len_encoder, 1U << options->pos_bits,
+	length_encoder_reset(&next->coder->match_len_encoder,
+			1U << options->pos_bits,
 			options->fast_bytes + 1 - MATCH_MIN_LEN);
 
-	length_encoder_reset(&next->coder->rep_match_len_encoder,
+	length_encoder_reset(&next->coder->rep_len_encoder,
 			1U << options->pos_bits,
 			next->coder->fast_bytes + 1 - MATCH_MIN_LEN);
 

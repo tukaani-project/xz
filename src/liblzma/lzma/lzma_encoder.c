@@ -170,7 +170,7 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 			lzma_read_match_distances(coder, &len, &num_distance_pairs);
 
 			bit_encode_0(coder->is_match[coder->state][0]);
-			update_char(coder->state);
+			update_literal(coder->state);
 
 			const uint8_t cur_byte = coder->lz.buffer[
 					coder->lz.read_pos - coder->additional_offset];
@@ -244,7 +244,7 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 			probability *subcoder = literal_get_subcoder(coder->literal_coder,
 					coder->now_pos, coder->previous_byte);
 
-			if (is_char_state(coder->state)) {
+			if (is_literal_state(coder->state)) {
 				literal_encode(subcoder, cur_byte);
 			} else {
 				const uint8_t match_byte = coder->lz.buffer[
@@ -254,7 +254,7 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 				literal_encode_matched(subcoder, match_byte, cur_byte);
 			}
 
-			update_char(coder->state);
+			update_literal(coder->state);
 			coder->previous_byte = cur_byte;
 
 		} else {
@@ -294,16 +294,16 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 				if (len == 1) {
 					update_short_rep(coder->state);
 				} else {
-					length_encode(coder->rep_match_len_encoder,
+					length_encode(coder->rep_len_encoder,
 							len - MATCH_MIN_LEN, pos_state,
 							best_compression);
-					update_rep(coder->state);
+					update_long_rep(coder->state);
 				}
 
 			} else {
 				bit_encode_0(coder->is_rep[coder->state]);
 				update_match(coder->state);
-				length_encode(coder->len_encoder, len - MATCH_MIN_LEN,
+				length_encode(coder->match_len_encoder, len - MATCH_MIN_LEN,
 						pos_state, best_compression);
 				pos -= REP_DISTANCES;
 
@@ -364,7 +364,7 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 
 			const uint32_t len = coder->lz.sequence == SEQ_FLUSH
 					? LEN_SPECIAL_FLUSH : LEN_SPECIAL_EOPM;
-			length_encode(coder->len_encoder, len - MATCH_MIN_LEN,
+			length_encode(coder->match_len_encoder, len - MATCH_MIN_LEN,
 					pos_state, best_compression);
 
 			const uint32_t pos_slot = (1 << POS_SLOT_BITS) - 1;

@@ -60,7 +60,7 @@ typedef struct {
 
 
 typedef struct {
-	uint32_t state;
+	lzma_lzma_state state;
 
 	bool prev_1_is_char;
 	bool prev_2;
@@ -88,7 +88,7 @@ struct lzma_coder_s {
 	lzma_range_encoder rc;
 
 	// State
-	uint32_t state;
+	lzma_lzma_state state;
 	uint8_t previous_byte;
 	uint32_t rep_distances[REP_DISTANCES];
 
@@ -117,8 +117,8 @@ struct lzma_coder_s {
 	probability pos_align_encoder[1 << ALIGN_BITS];
 
 	// Length encoders
-	lzma_length_encoder len_encoder;
-	lzma_length_encoder rep_match_len_encoder;
+	lzma_length_encoder match_len_encoder;
+	lzma_length_encoder rep_len_encoder;
 
 	// Optimal
 	lzma_optimal optimum[OPTS];

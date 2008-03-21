@@ -135,7 +135,7 @@ struct lzma_coder_s {
 	probability is_rep2[STATES];
 
 	/// If 1, the repeated match has length of one byte. Otherwise
-	/// the length is decoded from rep_match_len_decoder.
+	/// the length is decoded from rep_len_decoder.
 	probability is_rep0_long[STATES][POS_STATES_MAX];
 
 	probability pos_slot_decoder[LEN_TO_POS_STATES][1 << POS_SLOT_BITS];

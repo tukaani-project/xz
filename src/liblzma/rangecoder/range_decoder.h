@@ -121,14 +121,26 @@ do { \
 } while (0)
 
 
-#define rc_decode_direct(dest, count) \
-do { \
-	rc_normalize(); \
-	rc.range >>= 1; \
-	rc_bound = (rc.code - rc.range) >> 31; \
-	rc.code -= rc.range & (rc_bound - 1); \
-	dest = ((dest) << 1) | (1 - rc_bound);\
-} while (--count > 0)
+#ifdef HAVE_ARITHMETIC_RSHIFT
+#	define rc_decode_direct(dest, count) \
+	do { \
+		rc_normalize(); \
+		rc.range >>= 1; \
+		rc.code -= rc.range; \
+		rc_bound = (uint32_t)((int32_t)(rc.code) >> 31); \
+		dest = (dest << 1) + (rc_bound + 1); \
+		rc.code += rc.range & rc_bound; \
+	} while (--count > 0)
+#else
+#	define rc_decode_direct(dest, count) \
+	do { \
+		rc_normalize(); \
+		rc.range >>= 1; \
+		rc_bound = (rc.code - rc.range) >> 31; \
+		rc.code -= rc.range & (rc_bound - 1); \
+		dest = ((dest) << 1) | (1 - rc_bound);\
+	} while (--count > 0)
+#endif
 
 
 // Dummy versions don't update prob or dest.
@@ -143,13 +155,23 @@ do { \
 } while (0)
 
 
-#define rc_decode_direct_dummy(count) \
-do { \
-	rc_normalize(); \
-	rc.range >>= 1; \
-	rc_bound = (rc.code - rc.range) >> 31; \
-	rc.code -= rc.range & (rc_bound - 1); \
-} while (--count > 0)
+#ifdef HAVE_ARITHMETIC_RSHIFT
+#	define rc_decode_direct_dummy(count) \
+	do { \
+		rc_normalize(); \
+		rc.range >>= 1; \
+		rc.code -= rc.range; \
+		rc.code += rc.range & ((uint32_t)((int32_t)(rc.code) >> 31)); \
+	} while (--count > 0)
+#else
+#	define rc_decode_direct_dummy(count) \
+	do { \
+		rc_normalize(); \
+		rc.range >>= 1; \
+		rc_bound = (rc.code - rc.range) >> 31; \
+		rc.code -= rc.range & (rc_bound - 1); \
+	} while (--count > 0)
+#endif
 
 
 ///////////////////////

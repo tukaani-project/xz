@@ -407,7 +407,6 @@ AC_CHECK_HEADERS([assert.h errno.h byteswap.h sys/param.h sys/sysctl.h],
 
 AC_C_INLINE
 AC_C_RESTRICT
-AX_C_ARITHMETIC_RSHIFT
 
 AC_HEADER_STDBOOL
 

@@ -113,7 +113,7 @@ parse_options(const char *str, const option_map *opts,
 					my_exit(ERROR);
 				}
 
-				set(filter_options, i, j);
+				set(filter_options, i, opts[i].map[j].id);
 			}
 
 			found = true;

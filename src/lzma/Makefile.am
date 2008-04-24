@@ -61,3 +61,15 @@ lzma_LDADD = \
 if COND_GNULIB
 lzma_LDADD += @top_builddir@/lib/libgnu.a
 endif
+
+
+## Create symlinks for unlzma and lzcat:
+install-exec-hook:
+	cd $(DESTDIR)$(bindir) && \
+	rm -f unlzma lzcat && \
+	$(LN_S) lzma unlzma && \
+	$(LN_S) lzma lzcat
+
+uninstall-hook:
+	cd $(DESTDIR)$(bindir) && \
+	rm -f unlzma lzcat

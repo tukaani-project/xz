@@ -25,6 +25,7 @@ lzma_extra_free(lzma_extra *extra, lzma_allocator *allocator)
 {
 	while (extra != NULL) {
 		lzma_extra *tmp = extra->next;
+		lzma_free(extra->data, allocator);
 		lzma_free(extra, allocator);
 		extra = tmp;
 	}

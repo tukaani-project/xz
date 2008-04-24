@@ -60,11 +60,24 @@
 // Type definitions //
 //////////////////////
 
-// Bit coder speed optimization
-// uint16_t is enough for probability, but usually uint32_t is faster and it
-// doesn't waste too much memory. If uint64_t is fastest on 64-bit CPU, you
-// probably want to use that instead of uint32_t. With uint64_t you will
-// waste RAM _at maximum_ of 4.5 MiB (same for both encoding and decoding).
-typedef uint32_t probability;
+/// \brief      Type of probabilities used with range coder
+///
+/// This needs to be at least 12-bit integer, so uint16_t is a logical choice.
+/// However, on some architecture and compiler combinations, a bigger type
+/// may give better speed, because the probability variables are accessed
+/// a lot. On the other hand, bigger probability type increases cache
+/// footprint, since there are 2 to 14 thousand probability variables in
+/// LZMA (assuming the limit of lc + lp <= 4; with lc + lp <= 12 there
+/// would be about 1.5 million variables).
+///
+/// With malicious files, the initialization speed of the LZMA decoder can
+/// become important. In that case, smaller probability variables mean that
+/// there is less bytes to write to RAM, which makes initialization faster.
+/// With big probability type, the initialization can become so slow that it
+/// can be a problem e.g. for email servers doing virus scanning.
+///
+/// I will be sticking to uint16_t unless some specific architectures
+/// are *much* faster (20-50 %) with uint32_t.
+typedef uint16_t probability;
 
 #endif

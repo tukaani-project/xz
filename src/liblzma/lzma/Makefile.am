@@ -29,7 +29,6 @@ liblzma4_la_SOURCES = \
 if COND_MAIN_ENCODER
 liblzma4_la_SOURCES += \
 	fastpos.h \
-	fastpos_table.c \
 	lzma_encoder.h \
 	lzma_encoder.c \
 	lzma_encoder_presets.c \
@@ -38,6 +37,10 @@ liblzma4_la_SOURCES += \
 	lzma_encoder_features.c \
 	lzma_encoder_getoptimum.c \
 	lzma_encoder_getoptimumfast.c
+
+if !COND_SMALL
+liblzma4_la_SOURCES += fastpos_table.c
+endif
 endif
 
 if COND_MAIN_DECODER

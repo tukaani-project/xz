@@ -71,7 +71,7 @@ do { \
 
 #define length_encode(length_encoder, symbol, pos_state, update_price) \
 do { \
-	\
+	assert((symbol) <= MATCH_MAX_LEN); \
 	if ((symbol) < LEN_LOW_SYMBOLS) { \
 		bit_encode_0((length_encoder).choice); \
 		bittree_encode((length_encoder).low[pos_state], \
@@ -352,6 +352,8 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 	if (coder->lz.sequence != SEQ_RUN
 			&& coder->lz.read_pos == coder->lz.write_pos
 			&& coder->additional_offset == 0) {
+		assert(coder->longest_match_was_found == false);
+
 		if (coder->lz.uncompressed_size == LZMA_VLI_VALUE_UNKNOWN
 				|| coder->lz.sequence == SEQ_FLUSH) {
 			// Write special marker: flush marker or end of payload

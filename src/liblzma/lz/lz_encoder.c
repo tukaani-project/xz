@@ -47,7 +47,7 @@
 /// Calculate certain match finder properties and validate the calculated
 /// values. This is as its own function, because *num_items is needed to
 /// calculate memory requirements in common/memory.c.
-extern uint32_t
+extern bool
 lzma_lz_encoder_hash_properties(lzma_match_finder match_finder,
 		uint32_t history_size, uint32_t *restrict hash_mask,
 		uint32_t *restrict hash_size_sum, uint32_t *restrict num_items)

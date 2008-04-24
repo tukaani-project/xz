@@ -132,7 +132,7 @@ struct lzma_lz_encoder_s {
 
 
 /// Calculates
-extern uint32_t lzma_lz_encoder_hash_properties(lzma_match_finder match_finder,
+extern bool lzma_lz_encoder_hash_properties(lzma_match_finder match_finder,
 		uint32_t history_size, uint32_t *restrict hash_mask,
 		uint32_t *restrict hash_size_sum,
 		uint32_t *restrict num_items);

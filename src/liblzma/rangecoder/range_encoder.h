@@ -26,8 +26,8 @@
 
 typedef struct {
 	uint64_t low;
+	uint64_t cache_size;
 	uint32_t range;
-	uint32_t cache_size;
 	uint8_t cache;
 } lzma_range_encoder;
 

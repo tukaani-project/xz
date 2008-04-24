@@ -104,6 +104,14 @@ do { \
 } while (0)
 
 
+#define move_pending() \
+do { \
+	++lz->read_pos; \
+	assert(lz->read_pos <= lz->write_pos); \
+	++lz->pending; \
+} while (0)
+
+
 //////////////////////
 // Global constants //
 //////////////////////
@@ -123,12 +131,14 @@ LZMA_GET_MATCHES(LZMA_MATCH_FINDER_NAME_LOWER)
 		len_limit = lz->match_max_len;
 	} else {
 		len_limit = lz->write_pos - lz->read_pos;
-		if (len_limit < MIN_MATCH_CHECK) {
+		if (len_limit < MIN_MATCH_CHECK || lz->sequence == SEQ_FLUSH) {
 			distances[0] = 0;
-			move_pos();
+			move_pending();
 			return;
 		}
 	}
+
+	assert(lz->pending == 0);
 
 	int32_t offset = 1;
 	const uint32_t match_min_pos
@@ -291,7 +301,7 @@ LZMA_SKIP(LZMA_MATCH_FINDER_NAME_LOWER)
 	do {
 #ifdef IS_HASH_CHAIN
 		if (lz->write_pos - lz->read_pos < NUM_HASH_BYTES) {
-			move_pos();
+			move_pending();
 			continue;
 		}
 #else
@@ -300,8 +310,9 @@ LZMA_SKIP(LZMA_MATCH_FINDER_NAME_LOWER)
 			len_limit = lz->match_max_len;
 		} else {
 			len_limit = lz->write_pos - lz->read_pos;
-			if (len_limit < MIN_MATCH_CHECK) {
-				move_pos();
+			if (len_limit < MIN_MATCH_CHECK
+					|| lz->sequence == SEQ_FLUSH) {
+				move_pending();
 				continue;
 			}
 		}
@@ -310,6 +321,8 @@ LZMA_SKIP(LZMA_MATCH_FINDER_NAME_LOWER)
 			? lz->read_pos + lz->offset - lz->cyclic_buffer_size
 			: 0;
 #endif
+
+		assert(lz->pending == 0);
 
 		const uint8_t *cur = lz->buffer + lz->read_pos;
 

@@ -188,6 +188,7 @@ lzma_lz_encoder_reset(lzma_lz_encoder *lz, lzma_allocator *allocator,
 	lz->read_pos = 0;
 	lz->read_limit = 0;
 	lz->write_pos = 0;
+	lz->pending = 0;
 
 
 	//////////////////
@@ -442,6 +443,21 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 	// Size would be invalid, which would mean that we have a bad bug.
 	if (ret == LZMA_OK && coder->lz.uncompressed_size == 0)
 		coder->lz.sequence = SEQ_FINISH;
+
+	// Restart the match finder after finished LZMA_SYNC_FLUSH.
+	if (coder->lz.pending > 0
+			&& coder->lz.read_pos < coder->lz.read_limit) {
+		// Match finder may update coder->pending and expects it to
+		// start from zero, so use a temporary variable.
+		const size_t pending = coder->lz.pending;
+		coder->lz.pending = 0;
+
+		// Rewind read_pos so that the match finder can hash
+		// the pending bytes.
+		assert(coder->lz.read_pos >= pending);
+		coder->lz.read_pos -= pending;
+		coder->lz.skip(&coder->lz, pending);
+	}
 
 	return ret;
 }

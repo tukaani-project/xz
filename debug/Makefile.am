@@ -15,7 +15,8 @@
 noinst_PROGRAMS = \
 	repeat \
 	sync_flush \
-	full_flush
+	full_flush \
+	memusage
 
 AM_CPPFLAGS = \
 	-I@top_srcdir@/src/common \

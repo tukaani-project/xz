@@ -26,7 +26,7 @@ AC_PREREQ(2.61)
 
 # [LZMA] instead of [LZMA utils] since I prefer to have lzma-version.tar.gz
 # instead of lzma-utils-version.tar.gz.
-AC_INIT([LZMA], [4.42.3alpha], [lasse.collin@tukaani.org])
+AC_INIT([LZMA], [4.999.3alpha], [lasse.collin@tukaani.org])
 
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])
@@ -354,7 +354,7 @@ echo "Initializing Automake:"
 CXX=no
 F77=no
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.10 foreign tar-v7 filename-length-max=99])
 AC_PROG_LN_S
 AM_PROG_CC_C_O
 AM_PROG_AS

@@ -59,6 +59,35 @@ Supported platforms
     in C89 or C++.
 
 
+Version numbering
+
+    Starting from LZMA Utils 5, the version number of LZMA Utils has
+    absolutely nothing to do with the version number of LZMA SDK or
+    7-Zip. The new version number format of LZMA Utils is X.Y.ZS:
+
+      - X is the major version. When this is incremented, the library
+        API and ABI break.
+
+      - Y is the minor version. It is incremented when new features are
+        added without breaking existing API or ABI. Even Y indicates
+        stable release and odd Y indicates unstable (alpha or beta
+        version).
+
+      - Z is the revision. This has different meaning for stable and
+        unstable releases:
+          * Stable: Z is incremented when bugs get fixed without adding
+            any new features.
+          * Unstable: Z is just a counter. API or ABI of features added
+            in earlier unstable releases having the same X.Y may break.
+
+      - S indicates stability of the release. It is missing from the
+        stable releases where Y is an even number. When Y is odd, S
+        is either "alpha" or "beta" to make it very clear that such
+        versions are not stable releases. The same X.Y.Z combination is
+        not used for more than one stability level i.e. after X.Y.Zalpha,
+        the next version can be X.Y.(Z+1)beta but not X.Y.Zbeta.
+
+
 configure options
 
     If you are not familiar with `configure' scripts, read the file

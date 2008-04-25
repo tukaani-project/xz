@@ -24,14 +24,18 @@
 /**
  * \brief       Compile-time version number
  *
- * The version number is of format xyyyuuus where
- *  - x is the major LZMA SDK version
- *  - yyy is the minor LZMA SDK version
- *  - uuu is LZMA Utils version (reset to zero every time SDK version
- *    is incremented)
+ * The version number is of format xyyyzzzs where
+ *  - x = major
+ *  - yyy = minor
+ *  - zzz = revision
  *  - s indicates stability: 0 = alpha, 1 = beta, 2 = stable
+ *
+ * See the README file for details about the version numbering.
+ *
+ * \note        The version number of LZMA Utils (and thus liblzma)
+ *              has nothing to with the version number of LZMA SDK.
  */
-#define LZMA_VERSION UINT32_C(40420030)
+#define LZMA_VERSION UINT32_C(49990030)
 
 
 /**
@@ -49,11 +53,5 @@ extern const uint32_t lzma_version_number;
  *
  * This function may be useful if you want to display which version of
  * libilzma your application is currently using.
- *
- * \return      Returns a pointer to a statically allocated string constant,
- *              which contains the version number of liblzma. The format of
- *              the version string is usually (but not necessarily) x.y.z
- *              e.g. "4.42.1". Alpha and beta versions contain a suffix
- *              ("4.42.0alpha").
  */
 extern const char *const lzma_version_string;

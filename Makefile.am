@@ -21,7 +21,6 @@ endif
 
 SUBDIRS += src po tests
 
-
 EXTRA_DIST = \
 	m4 \
 	config.rpath  \
@@ -33,4 +32,8 @@ EXTRA_DIST = \
 	COPYING.LGPLv2.1
 
 ACLOCAL_AMFLAGS = -I m4
-AUTOMAKE_OPTIONS = foreign
+
+# This works with GNU tar and gives cleaner package than normal 'make dist'.
+mydist:
+	TAR_OPTIONS='--owner=0 --group=0 --numeric-owner --mode=u+rw,go+r-w' \
+		$(MAKE) dist-gzip

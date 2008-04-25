@@ -441,8 +441,13 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 	// works correctly, because the next encoder cannot have any more
 	// output left to be produced. If it had, then our known Uncompressed
 	// Size would be invalid, which would mean that we have a bad bug.
-	if (ret == LZMA_OK && coder->lz.uncompressed_size == 0)
-		coder->lz.sequence = SEQ_FINISH;
+// 	if (ret == LZMA_OK && coder->lz.uncompressed_size == 0)
+// 		coder->lz.sequence = SEQ_FINISH;
+	// The above breaks normal encoding with known uncompressed size
+	// if input chunk size is a multiple of uncompressed size. Commenting
+	// the above out breaks LZMA_SYNC_FLUSH at end of stream whose
+	// uncompressed size is known. Support for encoding with known
+	// uncompressed may get dropped completely so I won't fix this now.
 
 	// Restart the match finder after finished LZMA_SYNC_FLUSH.
 	if (coder->lz.pending > 0

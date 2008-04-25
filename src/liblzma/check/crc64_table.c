@@ -11,7 +11,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "sysdefs.h"
+#include "common.h"
 
 #ifdef WORDS_BIGENDIAN
 #	include "crc64_table_be.h"

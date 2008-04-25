@@ -23,7 +23,6 @@ libcommon_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/rangecoder
 libcommon_la_SOURCES = \
 	common.h \
-	sysdefs.h \
 	bsr.h \
 	allocator.c \
 	block_private.h \

@@ -20,7 +20,7 @@
 #ifndef LZMA_COMMON_H
 #define LZMA_COMMON_H
 
-#include "sysdefs.h"
+#include "../../common/sysdefs.h"
 
 // Don't use ifdef...
 #if HAVE_VISIBILITY

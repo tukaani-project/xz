@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       memory_limitter.c
+/// \file       memory_limiter.c
 /// \brief      Limitting memory usage
 //
 //  Copyright (C) 2007 Lasse Collin

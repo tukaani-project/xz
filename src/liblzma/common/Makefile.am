@@ -31,7 +31,7 @@ libcommon_la_SOURCES = \
 	index.c \
 	info.c \
 	init.c \
-	memory_limitter.c \
+	memory_limiter.c \
 	memory_usage.c \
 	next_coder.c \
 	raw_common.c \

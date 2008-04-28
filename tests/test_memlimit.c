@@ -1,10 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       test_memlimit.c
-/// \brief      Tests the memory usage limitter
+/// \brief      Tests the memory usage limiter
 ///
 /// \note       These tests cannot be done at exact byte count accuracy,
-///             because memory limitter takes into account the memory wasted
+///             because memory limiter takes into account the memory wasted
 ///             by bookkeeping structures and alignment (padding).
 //
 //  Copyright (C) 2008 Lasse Collin

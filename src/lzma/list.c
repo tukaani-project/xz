@@ -328,9 +328,9 @@ parse_stream_tail(listing_handle *handle)
 static void
 list_native(listing_handle *handle)
 {
-	lzma_memory_limitter *limitter
-			= lzma_memory_limitter_create(opt_memory);
-	if (limitter == NULL) {
+	lzma_memory_limiter *limiter
+			= lzma_memory_limiter_create(opt_memory);
+	if (limiter == NULL) {
 		errmsg(V_ERROR,
 	}
 	lzma_info *info =

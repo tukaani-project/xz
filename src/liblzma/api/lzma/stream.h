@@ -169,8 +169,8 @@ extern lzma_ret lzma_stream_encoder_multi(
  * completely when lzma_code() returns LZMA_STREAM_END. If *footer is still
  * NULL, there was no Extra field in the Footer Metadata Block.
  *
- * \note        If you use lzma_memory_limitter, the Extra Records will be
- *              allocated with it, and thus remain in the lzma_memory_limitter
+ * \note        If you use lzma_memory_limiter, the Extra Records will be
+ *              allocated with it, and thus remain in the lzma_memory_limiter
  *              even after they get exported to the application via *header
  *              and *footer pointers.
  */

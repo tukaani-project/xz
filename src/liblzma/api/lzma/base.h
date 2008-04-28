@@ -265,8 +265,8 @@ typedef struct {
 	 * custom memory allocation functions for use with liblzma.
 	 *
 	 * When using lzma_memory_alloc() and lzma_memory_free(), opaque
-	 * must point to lzma_memory_limitter structure allocated and
-	 * initialized with lzma_memory_limitter_create().
+	 * must point to lzma_memory_limiter structure allocated and
+	 * initialized with lzma_memory_limiter_create().
 	 *
 	 * If you don't need this, you should set it to NULL.
 	 */

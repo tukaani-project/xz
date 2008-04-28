@@ -482,15 +482,15 @@ main(int argc, char **argv)
 
 	lzma_init_decoder();
 
-	lzma_memlimit *mem_limitter = lzma_memlimit_create(mem_limit);
-	if (mem_limitter == NULL) {
+	lzma_memlimit *mem_limiter = lzma_memlimit_create(mem_limit);
+	if (mem_limiter == NULL) {
 		fprintf(stderr, "%s: %s\n", argv0, strerror(ENOMEM));
 		exit(ERROR);
 	}
 
-	assert(lzma_memlimit_count(mem_limitter) == 0);
+	assert(lzma_memlimit_count(mem_limiter) == 0);
 
-	allocator.opaque = mem_limitter;
+	allocator.opaque = mem_limiter;
 	strm.allocator = &allocator;
 
 #ifdef WIN32
@@ -528,8 +528,8 @@ main(int argc, char **argv)
 	// Free the memory only when debugging. Freeing wastes some time,
 	// but allows detecting possible memory leaks with Valgrind.
 	lzma_end(&strm);
-	assert(lzma_memlimit_count(mem_limitter) == 0);
-	lzma_memlimit_end(mem_limitter, false);
+	assert(lzma_memlimit_count(mem_limiter) == 0);
+	lzma_memlimit_end(mem_limiter, false);
 #endif
 
 	return exit_status;

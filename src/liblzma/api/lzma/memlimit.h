@@ -1,6 +1,6 @@
 /**
  * \file        lzma/memlimit.h
- * \brief       Memory usage limitter
+ * \brief       Memory usage limiter
  *
  * \author      Copyright (C) 1999-2006 Igor Pavlov
  * \author      Copyright (C) 2007 Lasse Collin
@@ -39,7 +39,7 @@ typedef struct lzma_memlimit_s lzma_memlimit;
  * to these functions can be used in lzma_allocator structure, which makes
  * it easy to limit memory usage with liblzma.
  *
- * The memory limitter functions are not tied to limitting memory usage
+ * The memory limiter functions are not tied to limitting memory usage
  * with liblzma itself. You can use them with anything you like.
  *
  * In multi-threaded applications, only one thread at once may use the same
@@ -128,7 +128,7 @@ extern lzma_bool lzma_memlimit_reached(lzma_memlimit *mem, lzma_bool clear);
 
 
 /**
- * \brief       Gets the number of allocations owned by the memory limitter
+ * \brief       Gets the number of allocations owned by the memory limiter
  *
  * The count does not include the helper structures; if no memory has
  * been allocated with lzma_memlimit_alloc() or all memory allocated
@@ -189,9 +189,9 @@ extern void lzma_memlimit_free(lzma_memlimit *mem, void *ptr);
 
 
 /**
- * \brief       Frees the memory allocated for and by the memory usage limitter
+ * \brief       Frees the memory allocated for and by the memory usage limiter
  *
- * \param       mem             Pointer to memory limitter
+ * \param       mem             Pointer to memory limiter
  * \param       free_allocated  If this is non-zero, all the memory allocated
  *                              by lzma_memlimit_alloc() using *mem is also
  *                              freed if it hasn't already been freed with

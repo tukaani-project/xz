@@ -462,6 +462,15 @@ set_compression_settings(void)
 	// Terminate the filter options array.
 	opt_filters[filter_count].id = LZMA_VLI_VALUE_UNKNOWN;
 
+	// If we are using the LZMA_Alone format, allow exactly one filter
+	// which has to be LZMA.
+	if (opt_header == HEADER_ALONE && (filter_count != 1
+			|| opt_filters[0].id != LZMA_FILTER_LZMA)) {
+		errmsg(V_ERROR, _("With --format=alone only the LZMA filter "
+				"is supported"));
+		my_exit(ERROR);
+	}
+
 	// Optimize the filter chain a little by removing all
 	// Copy filters.
 	for (size_t i = 0; opt_filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {

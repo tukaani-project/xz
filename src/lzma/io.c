@@ -651,7 +651,20 @@ io_write(const file_pair *pair, const uint8_t *buf, size_t size)
 				continue;
 			}
 
-			errmsg(V_ERROR, _("%s: Write error: %s"),
+			// Handle broken pipe specially. gzip and bzip2
+			// don't print anything on SIGPIPE. In addition,
+			// gzip --quiet uses exit status 2 (warning) on
+			// broken pipe instead of whatever raise(SIGPIPE)
+			// would make it return. It is there to hide "Broken
+			// pipe" message on some old shells (probably old
+			// GNU bash).
+			//
+			// We don't do anything special with --quiet, which
+			// is what bzip2 does too. However, we print a
+			// message if --verbose was used (or should that
+			// only be with double --verbose i.e. debugging?).
+			errmsg(errno == EPIPE ? V_VERBOSE : V_ERROR,
+					_("%s: Write error: %s"),
 					pair->dest_name, strerror(errno));
 			return -1;
 		}

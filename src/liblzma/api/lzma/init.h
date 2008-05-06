@@ -38,7 +38,7 @@
  * still shouldn't be done when there are multiple threads running.
  *
  * lzma_init() initializes all internal static variables by calling
- * lzma_lzma_init_encoder() and lzma_init_decoder().
+ * lzma_init_encoder() and lzma_init_decoder().
  *
  * If you need only encoder, decoder, or neither-encoder-nor-decoder
  * functions, you may use other initialization functions, which initialize

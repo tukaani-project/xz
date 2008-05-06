@@ -86,7 +86,7 @@ Using liblzma securely
 
     The simplest solution is to use setrlimit() if the kernel supports
     RLIMIT_AS, which limits the memory usage of the whole process.
-    For more portable and fine-grained limitting, you can use
+    For more portable and fine-grained limiting, you can use
     memory limiter functions found from <lzma/memlimit.h>.
 
 
@@ -121,7 +121,7 @@ Using liblzma securely
     A single-threaded decoder should simply use a memory limiter and
     indicate an error if it runs out of memory.
 
-    Memory-limitting with multi-threaded decoding is tricky. The simple
+    Memory-limiting with multi-threaded decoding is tricky. The simple
     solution is to divide the maximum allowed memory usage with the
     maximum allowed threads, and give each Block decoder their own
     independent lzma_memory_limiter. The drawback is that if one Block
@@ -132,7 +132,7 @@ Using liblzma securely
     Depending on the application and the expected type of input, this may
     either be the best solution or a source of hard-to-repeat problems.
     Consider the following requirements:
-      - You use at maximum of n threads.
+      - You use a maximum of n threads.
       - x(i) is the decoder memory requirements of the Block number i
         in an expected input Stream.
       - The memory limiter is set to higher value than the sum of n
@@ -150,7 +150,7 @@ Using liblzma securely
     Most .lzma files have all the Blocks encoded with identical settings,
     or at least the memory usage won't vary dramatically. That's why most
     multi-threaded decoders probably want to use the simple "separate
-    lzma_memory_limiter for each thread" solution, possibly fallbacking
+    lzma_memory_limiter for each thread" solution, possibly falling back
     to single-threaded mode in case the per-thread memory limits aren't
     enough in multi-threaded mode.
 

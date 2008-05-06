@@ -25,7 +25,7 @@
     specification, but try to trigger excessive CPU, RAM or disk usage in
     the decoder. To prevent malicious files from putting the decoder in
     inifinite loop (*), eating all available RAM or disk space, decoders
-    should have internal limitters that catch these situations.
+    should have internal limiters that catch these situations.
 
     (*) Strictly speaking not infinite, but if decoding of a small file
         would take a few weeks or even years, it's an infinite loop in

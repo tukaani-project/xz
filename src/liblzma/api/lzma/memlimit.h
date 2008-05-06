@@ -22,7 +22,7 @@
 
 
 /**
- * \brief       Opaque data type used with the memory usage limitting functions
+ * \brief       Opaque data type used with the memory usage limiting functions
  */
 typedef struct lzma_memlimit_s lzma_memlimit;
 
@@ -39,7 +39,7 @@ typedef struct lzma_memlimit_s lzma_memlimit;
  * to these functions can be used in lzma_allocator structure, which makes
  * it easy to limit memory usage with liblzma.
  *
- * The memory limiter functions are not tied to limitting memory usage
+ * The memory limiter functions are not tied to limiting memory usage
  * with liblzma itself. You can use them with anything you like.
  *
  * In multi-threaded applications, only one thread at once may use the same
@@ -161,7 +161,7 @@ extern void *lzma_memlimit_alloc(
 
 
 /**
- * \brief       Removes the pointer from memory limitting list
+ * \brief       Removes the pointer from memory limiting list
  *
  * \param       mem     Pointer to a lzma_memlimit structure returned
  *                      earlier by lzma_memry_limit_create().

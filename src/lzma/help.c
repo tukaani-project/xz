@@ -124,7 +124,7 @@ These aren't implemented yet.
 " Resource usage options:\n"
 "\n"
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum\n"
-"  -T, --threads=NUM   use at maximum of NUM (de)compression threads\n"
+"  -T, --threads=NUM   use a maximum of NUM (de)compression threads\n"
 // "      --threading=STR threading style; possible values are `auto' (default),\n"
 // "                      `files', and `stream'
 ));

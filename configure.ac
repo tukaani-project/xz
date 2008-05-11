@@ -350,12 +350,14 @@ AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
 echo
 echo "Initializing Automake:"
 
-# There's no C++ or Fortran in LZMA Utils:
-CXX=no
-F77=no
-
 AM_INIT_AUTOMAKE([1.10 foreign tar-v7 filename-length-max=99])
 AC_PROG_LN_S
+
+AC_PROG_CC_C99
+if test x$ac_cv_prog_cc_c99 = xno ; then
+	AC_MSG_ERROR([No C99 compiler was found.])
+fi
+
 AM_PROG_CC_C_O
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
@@ -367,6 +369,8 @@ CC="$PTHREAD_CC"
 
 echo
 echo "Initializing Libtool:"
+CXX=no
+F77=no
 AC_PROG_LIBTOOL
 
 
@@ -405,8 +409,9 @@ AC_CHECK_HEADERS([assert.h errno.h byteswap.h sys/param.h sys/sysctl.h],
 # Checks for typedefs, structures, and compiler characteristics.
 ###############################################################################
 
-AC_C_INLINE
-AC_C_RESTRICT
+dnl We don't need these as long as we need a C99 compiler anyway.
+dnl AC_C_INLINE
+dnl AC_C_RESTRICT
 
 AC_HEADER_STDBOOL
 
@@ -426,11 +431,7 @@ AC_CHECK_SIZEOF([size_t])
 AC_CHECK_MEMBERS([struct stat.st_atim.tv_nsec, struct stat.st_mtim.tv_nsec,
 	struct stat.st_atimespec.tv_nsec, struct stat.st_mtimespec.tv_nsec])
 
-# It is very unlikely that you want to build liblzma without
-# large file support.
 AC_SYS_LARGEFILE
-
-# At the moment, the only endian-dependent part should be the integrity checks.
 AC_C_BIGENDIAN
 
 
@@ -590,8 +591,7 @@ if test "x$GCC" = xyes ; then
 			-Wformat=2 \
 			-Wextra \
 			-Wall \
-			-pedantic \
-			-std=c99
+			-pedantic
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"

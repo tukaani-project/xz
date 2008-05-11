@@ -132,19 +132,8 @@ typedef unsigned char _Bool;
 // Macros //
 ////////////
 
-#ifndef HAVE_MEMCPY
-#	define memcpy(dest, src, n) bcopy(src, dest, n)
-#endif
-
-#ifndef HAVE_MEMMOVE
-#	define memmove(dest, src, n) bcopy(src, dest, n)
-#endif
-
-#ifdef HAVE_MEMSET
-#	define memzero(s, n) memset(s, 0, n)
-#else
-#	define memzero(s, n) bzero(s, n)
-#endif
+#undef memzero
+#define memzero(s, n) memset(s, 0, n)
 
 #ifndef MIN
 #	define MIN(x, y) ((x) < (y) ? (x) : (y))

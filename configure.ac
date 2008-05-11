@@ -444,7 +444,7 @@ gl_GETOPT
 
 # Functions that are not mandatory i.e. we have alternatives for them
 # or we can just drop some functionality:
-AC_CHECK_FUNCS([memcpy memmove memset futimes futimesat])
+AC_CHECK_FUNCS([futimes futimesat])
 
 # Check how to find out the amount of physical memory in the system. The
 # lzma command line tool uses this to automatically limits its memory usage.

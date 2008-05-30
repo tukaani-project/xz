@@ -247,7 +247,7 @@ y.x.1. Single-Block Stream
     this prevents it from producing too much output in case of (possibly
     intentionally) corrupt file.
 
-    Calculate the the start offset of the Stream:
+    Calculate the start offset of the Stream:
 
         backward_offset - backward_size - LZMA_STREAM_HEADER_SIZE
 

@@ -80,8 +80,8 @@ Q:  Which file formats are supported by LZMA Utils?
 A:  Even when the raw LZMA stream is always the same, it can be wrapped
     in different container formats. The preferred format is the new .lzma
     format. It has magic bytes (the first six bytes: 0xFF 'L' 'Z' 'M'
-    'A' 0x00). The format supports chaining up to seven filters filters,
-    splitting data to multiple blocks for easier multi-threading and rough
+    'A' 0x00). The format supports chaining up to seven filters, splitting
+    data to multiple blocks for easier multi-threading and rough
     random-access reading. The file integrity is verified using CRC32,
     CRC64, or SHA256, and by verifying the uncompressed size of the file.
 

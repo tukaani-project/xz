@@ -134,16 +134,13 @@ extern lzma_ret
 lzma_lz_encoder_reset(lzma_lz_encoder *lz, lzma_allocator *allocator,
 		bool (*process)(lzma_coder *coder, uint8_t *restrict out,
 			size_t *restrict out_pos, size_t out_size),
-		lzma_vli uncompressed_size,
 		size_t history_size, size_t additional_buffer_before,
 		size_t match_max_len, size_t additional_buffer_after,
 		lzma_match_finder match_finder, uint32_t match_finder_cycles,
 		const uint8_t *preset_dictionary,
 		size_t preset_dictionary_size)
 {
-	lz->sequence = SEQ_START;
-	lz->uncompressed_size = uncompressed_size;
-	lz->temp_size = 0;
+	lz->sequence = SEQ_RUN;
 
 	///////////////
 	// In Window //
@@ -395,10 +392,6 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 		in_used = *in_pos - in_start;
 	}
 
-	assert(coder->lz.uncompressed_size >= in_used);
-	if (coder->lz.uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
-		coder->lz.uncompressed_size -= in_used;
-
 	// If end of stream has been reached or flushing completed, we allow
 	// the encoder to process all the input (that is, read_pos is allowed
 	// to reach write_pos). Otherwise we keep keep_size_after bytes
@@ -431,24 +424,6 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 				- coder->lz.keep_size_after;
 	}
 
-	// Switch to finishing mode if we have got all the input data.
-	// lzma_lz_encode() won't return LZMA_STREAM_END until LZMA_FINISH
-	// is used.
-	//
-	// NOTE: When LZMA is used together with other filters, it is possible
-	// that coder->lz.sequence gets set to SEQ_FINISH before the next
-	// encoder has returned LZMA_STREAM_END. This is somewhat ugly, but
-	// works correctly, because the next encoder cannot have any more
-	// output left to be produced. If it had, then our known Uncompressed
-	// Size would be invalid, which would mean that we have a bad bug.
-// 	if (ret == LZMA_OK && coder->lz.uncompressed_size == 0)
-// 		coder->lz.sequence = SEQ_FINISH;
-	// The above breaks normal encoding with known uncompressed size
-	// if input chunk size is a multiple of uncompressed size. Commenting
-	// the above out breaks LZMA_SYNC_FLUSH at end of stream whose
-	// uncompressed size is known. Support for encoding with known
-	// uncompressed may get dropped completely so I won't fix this now.
-
 	// Restart the match finder after finished LZMA_SYNC_FLUSH.
 	if (coder->lz.pending > 0
 			&& coder->lz.read_pos < coder->lz.read_limit) {
@@ -475,67 +450,6 @@ lzma_lz_encode(lzma_coder *coder, lzma_allocator *allocator,
 		uint8_t *restrict out, size_t *restrict out_pos,
 		size_t out_size, lzma_action action)
 {
-	// Flush the temporary output buffer, which may be used when the
-	// encoder runs of out of space in primary output buffer (the out,
-	// *out_pos, and out_size variables).
-	if (coder->lz.temp_size > 0) {
-		const size_t out_avail = out_size - *out_pos;
-		if (out_avail < coder->lz.temp_size) {
-			// Cannot copy everything. Copy as much as possible
-			// and move the data in lz.temp to the beginning of
-			// that buffer.
-			memcpy(out + *out_pos, coder->lz.temp, out_avail);
-			*out_pos += out_avail;
-			memmove(coder->lz.temp, coder->lz.temp + out_avail,
-					coder->lz.temp_size - out_avail);
-			coder->lz.temp_size -= out_avail;
-			return LZMA_OK;
-		}
-
-		// We can copy everything from coder->lz.temp to out.
-		memcpy(out + *out_pos, coder->lz.temp, coder->lz.temp_size);
-		*out_pos += coder->lz.temp_size;
-		coder->lz.temp_size = 0;
-	}
-
-	switch (coder->lz.sequence) {
-	case SEQ_START:
-		assert(coder->lz.read_pos == coder->lz.write_pos);
-
-		// If there is no new input data and LZMA_SYNC_FLUSH is used
-		// immediatelly after previous LZMA_SYNC_FLUSH finished or
-		// at the very beginning of the input stream, we return
-		// LZMA_STREAM_END immediatelly. Writing a flush marker
-		// to the very beginning of the stream or right after previous
-		// flush marker is not allowed by the LZMA stream format.
-		if (*in_pos == in_size && action == LZMA_SYNC_FLUSH)
-			return LZMA_STREAM_END;
-
-		coder->lz.sequence = SEQ_RUN;
-		break;
-
-	case SEQ_FLUSH_END:
-		// During an earlier call to this function, flushing was
-		// otherwise finished except some data was left pending
-		// in coder->lz.buffer. Now we have copied all that data
-		// to the output buffer and can return LZMA_STREAM_END.
-		coder->lz.sequence = SEQ_START;
-		assert(action == LZMA_SYNC_FLUSH);
-		return LZMA_STREAM_END;
-
-	case SEQ_END:
-		// This is like the above flushing case, but for finishing
-		// the encoding.
-		//
-		// NOTE: action is not necesarily LZMA_FINISH; it can
-		// be LZMA_RUN or LZMA_SYNC_FLUSH too in case it is used
-		// at the end of the stream with known Uncompressed Size.
-		return action != LZMA_RUN ? LZMA_STREAM_END : LZMA_OK;
-
-	default:
-		break;
-	}
-
 	while (*out_pos < out_size
 			&& (*in_pos < in_size || action != LZMA_RUN)) {
 		// Read more data to coder->lz.buffer if needed.
@@ -546,27 +460,10 @@ lzma_lz_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Encode
 		if (coder->lz.process(coder, out, out_pos, out_size)) {
-			if (coder->lz.sequence == SEQ_FLUSH) {
-				assert(action == LZMA_SYNC_FLUSH);
-				if (coder->lz.temp_size == 0) {
-					// Flushing was finished successfully.
-					coder->lz.sequence = SEQ_START;
-				} else {
-					// Flushing was otherwise finished,
-					// except that some data was left
-					// into coder->lz.buffer.
-					coder->lz.sequence = SEQ_FLUSH_END;
-				}
-			} else {
-				// NOTE: action may be LZMA_RUN here in case
-				// Uncompressed Size is known and we have
-				// processed all the data already.
-				assert(coder->lz.sequence == SEQ_FINISH);
-				coder->lz.sequence = SEQ_END;
-			}
-
-			return action != LZMA_RUN && coder->lz.temp_size == 0
-					? LZMA_STREAM_END : LZMA_OK;
+			// Setting this to SEQ_RUN for cases when we are
+			// flushing. It doesn't matter when finishing.
+			coder->lz.sequence = SEQ_RUN;
+			return action != LZMA_RUN ? LZMA_STREAM_END : LZMA_OK;
 		}
 	}
 

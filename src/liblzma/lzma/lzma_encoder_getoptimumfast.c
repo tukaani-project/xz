@@ -65,7 +65,7 @@ lzma_get_optimum_fast(lzma_coder *restrict coder,
 	uint32_t rep_max_index = 0;
 
 	for (uint32_t i = 0; i < REP_DISTANCES; ++i) {
-		const uint32_t back_offset = coder->rep_distances[i] + 1;
+		const uint32_t back_offset = coder->reps[i] + 1;
 
 		// If the first two bytes (2 == MATCH_MIN_LEN) do not match,
 		// this rep_distance[i] is not useful. This is indicated
@@ -168,7 +168,7 @@ lzma_get_optimum_fast(lzma_coder *restrict coder,
 		--num_available_bytes;
 
 		for (uint32_t i = 0; i < REP_DISTANCES; ++i) {
-			const uint32_t back_offset = coder->rep_distances[i] + 1;
+			const uint32_t back_offset = coder->reps[i] + 1;
 
 			if (buf[1] != *(buf + 1 - back_offset)
 					|| buf[2] != *(buf + 2 - back_offset)) {

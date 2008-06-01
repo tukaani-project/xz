@@ -104,6 +104,36 @@ do { \
 
 
 static void
+fill_length_prices(lzma_length_encoder *lc, uint32_t pos_state)
+{
+	const uint32_t num_symbols = lc->table_size;
+	const uint32_t a0 = bit_get_price_0(lc->choice);
+	const uint32_t a1 = bit_get_price_1(lc->choice);
+	const uint32_t b0 = a1 + bit_get_price_0(lc->choice2);
+	const uint32_t b1 = a1 + bit_get_price_1(lc->choice2);
+
+	uint32_t *prices = lc->prices[pos_state];
+	uint32_t i = 0;
+
+	for (i = 0; i < num_symbols && i < LEN_LOW_SYMBOLS; ++i)
+		prices[i] = a0 + bittree_get_price(lc->low[pos_state],
+				LEN_LOW_BITS, i);
+
+	for (; i < num_symbols && i < LEN_LOW_SYMBOLS + LEN_MID_SYMBOLS; ++i)
+		prices[i] = b0 + bittree_get_price(lc->mid[pos_state],
+				LEN_MID_BITS, i - LEN_LOW_SYMBOLS);
+
+	for (; i < num_symbols; ++i)
+		prices[i] = b1 + bittree_get_price(lc->high, LEN_HIGH_BITS,
+				i - LEN_LOW_SYMBOLS - LEN_MID_SYMBOLS);
+
+	lc->counters[pos_state] = num_symbols;
+
+	return;
+}
+
+
+static void
 fill_distances_prices(lzma_coder *coder)
 {
 	uint32_t temp_prices[FULL_DISTANCES];
@@ -254,6 +284,9 @@ extern void
 lzma_get_optimum(lzma_coder *restrict coder,
 		uint32_t *restrict back_res, uint32_t *restrict len_res)
 {
+	uint32_t position = coder->now_pos;
+	uint32_t pos_state = position & coder->pos_mask;
+
 	// Update the price tables. In the C++ LZMA SDK 4.42 this was done in both
 	// initialization function and in the main loop. In liblzma they were
 	// moved into this single place.
@@ -263,6 +296,13 @@ lzma_get_optimum(lzma_coder *restrict coder,
 
 		if (coder->align_price_count >= ALIGN_TABLE_SIZE)
 			fill_align_prices(coder);
+	}
+
+	if (coder->prev_len_encoder != NULL) {
+		if (--coder->prev_len_encoder->counters[pos_state] == 0)
+			fill_length_prices(coder->prev_len_encoder, pos_state);
+
+		coder->prev_len_encoder = NULL;
 	}
 
 
@@ -312,7 +352,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 	uint32_t rep_max_index = 0;
 
 	for (uint32_t i = 0; i < REP_DISTANCES; ++i) {
-		reps[i] = coder->rep_distances[i];
+		reps[i] = coder->reps[i];
 		const uint32_t back_offset = reps[i] + 1;
 
 		if (buf[0] != *(buf - back_offset)
@@ -356,12 +396,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 		return;
 	}
 
-	const uint32_t pos_mask = coder->pos_mask;
-
 	coder->optimum[0].state = coder->state;
-
-	uint32_t position = coder->now_pos;
-	uint32_t pos_state = (position & pos_mask);
 
 	coder->optimum[1].price = bit_get_price_0(
 				coder->is_match[coder->state][pos_state])
@@ -575,7 +610,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 	current_byte = *buf;
 	match_byte = *(buf - reps[0] - 1);
 
-	pos_state = position & pos_mask;
+	pos_state = position & coder->pos_mask;
 
 	const uint32_t cur_and_1_price = cur_price
 			+ bit_get_price_0(coder->is_match[state][pos_state])
@@ -640,7 +675,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 			uint32_t state_2 = state;
 			update_literal(state_2);
 
-			const uint32_t pos_state_next = (position + 1) & pos_mask;
+			const uint32_t pos_state_next = (position + 1) & coder->pos_mask;
 			const uint32_t next_rep_match_price = cur_and_1_price
 					+ bit_get_price_1(coder->is_match[state_2][pos_state_next])
 					+ bit_get_price_1(coder->is_rep[state_2]);
@@ -719,7 +754,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 			uint32_t state_2 = state;
 			update_long_rep(state_2);
 
-			uint32_t pos_state_next = (position + len_test) & pos_mask;
+			uint32_t pos_state_next = (position + len_test) & coder->pos_mask;
 
 			const uint32_t cur_and_len_char_price = price
 					+ length_get_price(coder->rep_len_encoder,
@@ -732,7 +767,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 
 			update_literal(state_2);
 
-			pos_state_next = (position + len_test + 1) & pos_mask;
+			pos_state_next = (position + len_test + 1) & coder->pos_mask;
 
 			const uint32_t next_rep_match_price = cur_and_len_char_price
 					+ bit_get_price_1(coder->is_match[state_2][pos_state_next])
@@ -829,7 +864,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 					uint32_t state_2 = state;
 					update_match(state_2);
 					uint32_t pos_state_next
-							= (position + len_test) & pos_mask;
+							= (position + len_test) & coder->pos_mask;
 
 					const uint32_t cur_and_len_char_price = cur_and_len_price
 							+ bit_get_price_0(
@@ -844,7 +879,7 @@ lzma_get_optimum(lzma_coder *restrict coder,
 								buf[len_test]);
 
 					update_literal(state_2);
-					pos_state_next = (pos_state_next + 1) & pos_mask;
+					pos_state_next = (pos_state_next + 1) & coder->pos_mask;
 
 					const uint32_t next_rep_match_price
 							= cur_and_len_char_price

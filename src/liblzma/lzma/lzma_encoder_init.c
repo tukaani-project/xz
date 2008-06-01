@@ -42,7 +42,7 @@ length_encoder_reset(lzma_length_encoder *lencoder,
 
 	// NLength::CPriceTableEncoder::UpdateTables()
 	for (size_t pos_state = 0; pos_state < num_pos_states; ++pos_state)
-		lzma_length_encoder_update_table(lencoder, pos_state);
+		lencoder->counters[pos_state] = 1;
 
 	return;
 }
@@ -112,7 +112,6 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	{
 		const lzma_ret ret = lzma_lz_encoder_reset(
 				&next->coder->lz, allocator, &lzma_lzma_encode,
-				filters[0].uncompressed_size,
 				options->dictionary_size, OPTS,
 				options->fast_bytes, MATCH_MAX_LEN + 1 + OPTS,
 				options->match_finder,
@@ -143,13 +142,13 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->fast_bytes = options->fast_bytes;
 
 	// Range coder
-	rc_reset(next->coder->rc);
+	rc_reset(&next->coder->rc);
 
 	// State
 	next->coder->state = 0;
 	next->coder->previous_byte = 0;
 	for (size_t i = 0; i < REP_DISTANCES; ++i)
-		next->coder->rep_distances[i] = 0;
+		next->coder->reps[i] = 0;
 
 	// Bit encoders
 	for (size_t i = 0; i < STATES; ++i) {
@@ -190,6 +189,8 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	next->coder->now_pos = 0;
 	next->coder->is_initialized = false;
+	next->coder->is_flushed = false,
+	next->coder->write_eopm = true;
 
 	// Initialize the next decoder in the chain, if any.
 	{

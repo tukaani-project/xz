@@ -26,14 +26,6 @@
 #include "lz_encoder.h"
 #include "range_encoder.h"
 
-// We need space for about two encoding loops, because there is no check
-// for available buffer space before end of payload marker gets written.
-// 2*26 bytes should be enough for this... but Lasse isn't very sure about
-// the exact value. 64 bytes certainly is enough. :-)
-#if LZMA_LZ_TEMP_SIZE < 64
-#	error LZMA_LZ_TEMP_SIZE is too small.
-#endif
-
 
 #define move_pos(num) \
 do { \
@@ -72,7 +64,7 @@ typedef struct {
 	uint32_t pos_prev;  // pos_next;
 	uint32_t back_prev;
 
-	uint32_t backs[4];
+	uint32_t backs[REP_DISTANCES];
 
 } lzma_optimal;
 
@@ -90,7 +82,7 @@ struct lzma_coder_s {
 	// State
 	lzma_lzma_state state;
 	uint8_t previous_byte;
-	uint32_t rep_distances[REP_DISTANCES];
+	uint32_t reps[REP_DISTANCES];
 
 	// Misc
 	uint32_t match_distances[MATCH_MAX_LEN * 2 + 2 + 1];
@@ -99,6 +91,8 @@ struct lzma_coder_s {
 	uint32_t now_pos; // Lowest 32 bits are enough here.
 	bool best_compression;           ///< True when LZMA_MODE_BEST is used
 	bool is_initialized;
+	bool is_flushed;
+	bool write_eopm;
 
 	// Literal encoder
 	lzma_literal_coder *literal_coder;
@@ -119,6 +113,7 @@ struct lzma_coder_s {
 	// Length encoders
 	lzma_length_encoder match_len_encoder;
 	lzma_length_encoder rep_len_encoder;
+	lzma_length_encoder *prev_len_encoder;
 
 	// Optimal
 	lzma_optimal optimum[OPTS];

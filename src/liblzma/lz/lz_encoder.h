@@ -24,31 +24,18 @@
 #include "common.h"
 
 
-#define LZMA_LZ_TEMP_SIZE 64
-
-
 typedef struct lzma_lz_encoder_s lzma_lz_encoder;
 struct lzma_lz_encoder_s {
 	enum {
-		SEQ_START,
 		SEQ_RUN,
 		SEQ_FLUSH,
-		SEQ_FLUSH_END,
 		SEQ_FINISH,
-		SEQ_END
 	} sequence;
 
+	/// Function to do the actual encoding from the sliding input window
+	/// to the output stream.
 	bool (*process)(lzma_coder *coder, uint8_t *restrict out,
 			size_t *restrict out_pos, size_t out_size);
-
-	/// Uncompressed Size or LZMA_VLI_VALUE_UNKNOWN if using EOPM. We need
-	/// to track Uncompressed Size to prevent writing flush marker to the
-	/// very end of stream that doesn't use EOPM.
-	lzma_vli uncompressed_size;
-
-	/// Temporary buffer for range encoder.
-	uint8_t temp[LZMA_LZ_TEMP_SIZE];
-	size_t temp_size;
 
 	///////////////
 	// In Window //
@@ -145,7 +132,6 @@ extern lzma_ret lzma_lz_encoder_reset(lzma_lz_encoder *lz,
 		lzma_allocator *allocator,
 		bool (*process)(lzma_coder *coder, uint8_t *restrict out,
 			size_t *restrict out_pos, size_t out_size),
-		lzma_vli uncompressed_size,
 		size_t history_size, size_t additional_buffer_before,
 		size_t match_max_len, size_t additional_buffer_after,
 		lzma_match_finder match_finder, uint32_t match_finder_cycles,

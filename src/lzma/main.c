@@ -89,7 +89,7 @@ is_tty_stdout(void)
 	if (ret) {
 		errmsg(V_ERROR, _("Compressed data not written to "
 				"a terminal."));
-		errmsg(V_ERROR, _("Use `--force' to force decompression."));
+		errmsg(V_ERROR, _("Use `--force' to force compression."));
 		show_try_help();
 	}
 

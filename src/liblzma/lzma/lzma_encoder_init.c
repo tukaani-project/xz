@@ -181,6 +181,8 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			1U << options->pos_bits,
 			next->coder->fast_bytes + 1 - MATCH_MIN_LEN);
 
+	next->coder->prev_len_encoder = NULL;
+
 	// Misc
 	next->coder->longest_match_was_found = false;
 	next->coder->optimum_end_index = 0;

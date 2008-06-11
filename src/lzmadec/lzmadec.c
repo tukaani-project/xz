@@ -116,7 +116,7 @@ help(void)
 		" MiB of memory at maximum.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n",
-		argv0, (uint64_t)((mem_limit + 512 * 1024) / (1024 * 1024)));
+		argv0, ((uint64_t)(mem_limit) + 512 * 1024) / (1024 * 1024));
 		// Using PRIu64 above instead of %zu to support pre-C99 libc.
 	exit(0);
 }
@@ -196,20 +196,25 @@ str_to_size(const char *value)
 	if (*value != '\0') {
 		// Look for suffix.
 		static const struct {
-			const char *name;
+			const char name[4];
 			size_t multiplier;
 		} suffixes[] = {
-			{ "k",  1000 },
-			{ "M",  1000000 },
-			{ "G",  1000000000 },
-			{ "Ki", 1024 },
-			{ "Mi", 1048576 },
-			{ "Gi", 1073741824 },
-			{ NULL, 0 }
+			{ "k",   1000 },
+			{ "kB",  1000 },
+			{ "M",   1000000 },
+			{ "MB",  1000000 },
+			{ "G",   1000000000 },
+			{ "GB",  1000000000 },
+			{ "Ki",  1024 },
+			{ "KiB", 1024 },
+			{ "Mi",  1048576 },
+			{ "MiB", 1048576 },
+			{ "Gi",  1073741824 },
+			{ "GiB", 1073741824 }
 		};
 
 		size_t multiplier = 0;
-		for (size_t i = 0; suffixes[i].name != NULL; ++i) {
+		for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
 			if (strcmp(value, suffixes[i].name) == 0) {
 				multiplier = suffixes[i].multiplier;
 				break;
@@ -224,9 +229,9 @@ str_to_size(const char *value)
 
 		// Don't overflow here either.
 		if (result > SIZE_MAX / multiplier)
-			return SIZE_MAX;
-
-		result *= multiplier;
+			result = SIZE_MAX;
+		else
+			result *= multiplier;
 	}
 
 	return result;

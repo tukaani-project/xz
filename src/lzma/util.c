@@ -60,20 +60,25 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 	if (*value != '\0') {
 		// Look for suffix.
 		static const struct {
-			const char *name;
+			const char name[4];
 			uint64_t multiplier;
 		} suffixes[] = {
-			{ "k",  UINT64_C(1000) },
-			{ "M",  UINT64_C(1000000) },
-			{ "G",  UINT64_C(1000000000) },
-			{ "Ki", UINT64_C(1024) },
-			{ "Mi", UINT64_C(1048576) },
-			{ "Gi", UINT64_C(1073741824) },
-			{ NULL, 0 }
+			{ "k",   UINT64_C(1000) },
+			{ "kB",  UINT64_C(1000) },
+			{ "M",   UINT64_C(1000000) },
+			{ "MB",  UINT64_C(1000000) },
+			{ "G",   UINT64_C(1000000000) },
+			{ "GB",  UINT64_C(1000000000) },
+			{ "Ki",  UINT64_C(1024) },
+			{ "KiB", UINT64_C(1024) },
+			{ "Mi",  UINT64_C(1048576) },
+			{ "MiB", UINT64_C(1048576) },
+			{ "Gi",  UINT64_C(1073741824) },
+			{ "GiB", UINT64_C(1073741824) }
 		};
 
 		uint64_t multiplier = 0;
-		for (size_t i = 0; suffixes[i].name != NULL; ++i) {
+		for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
 			if (strcmp(value, suffixes[i].name) == 0) {
 				multiplier = suffixes[i].multiplier;
 				break;

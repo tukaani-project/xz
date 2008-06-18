@@ -53,9 +53,6 @@ struct lzma_coder_s {
 	/// Number of bytes left in the current Subblock Data field.
 	size_t size;
 
-	/// Uncompressed Size, or LZMA_VLI_VALUE_UNKNOWN if unknown.
-	lzma_vli uncompressed_size;
-
 	/// Number of consecutive Subblocks with Subblock Type Padding
 	uint32_t padding;
 
@@ -124,22 +121,6 @@ enum {
 };
 
 
-/// Substracts size from coder->uncompressed_size uncompressed size is known
-/// and size isn't bigger than coder->uncompressed_size.
-static inline bool
-update_uncompressed_size(lzma_coder *coder, size_t size)
-{
-	if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN) {
-		if ((lzma_vli)(size) > coder->uncompressed_size)
-			return true;
-
-		coder->uncompressed_size -= size;
-	}
-
-	return false;
-}
-
-
 /// Calls the subfilter and updates coder->uncompressed_size.
 static lzma_ret
 subfilter_decode(lzma_coder *coder, lzma_allocator *allocator,
@@ -149,16 +130,10 @@ subfilter_decode(lzma_coder *coder, lzma_allocator *allocator,
 {
 	assert(coder->subfilter.code != NULL);
 
-	const size_t out_start = *out_pos;
-
 	// Call the subfilter.
 	const lzma_ret ret = coder->subfilter.code(
 			coder->subfilter.coder, allocator,
 			in, in_pos, in_size, out, out_pos, out_size, action);
-
-	// Update uncompressed_size.
-	if (update_uncompressed_size(coder, *out_pos - out_start))
-		return LZMA_DATA_ERROR;
 
 	return ret;
 }
@@ -174,9 +149,6 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			|| coder->sequence >= SEQ_DATA))
 	switch (coder->sequence) {
 	case SEQ_FLAGS: {
-		if ((in[*in_pos] >> 4) != FLAG_PADDING)
-			coder->padding = 0;
-
 		// Do the correct action depending on the Subblock Type.
 		switch (in[*in_pos] >> 4) {
 		case FLAG_PADDING:
@@ -188,17 +160,16 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			break;
 
 		case FLAG_EOPM:
+			// There must be no Padding before EOPM.
+			if (coder->padding != 0)
+				return LZMA_DATA_ERROR;
+
 			// Check that reserved bits are zero.
 			if (in[*in_pos] & 0x0F)
 				return LZMA_DATA_ERROR;
 
 			// There must be no Subfilter enabled.
 			if (coder->subfilter.code != NULL)
-				return LZMA_DATA_ERROR;
-
-			// End of Payload Marker must not be used if
-			// uncompressed size is known.
-			if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
 				return LZMA_DATA_ERROR;
 
 			++*in_pos;
@@ -222,15 +193,16 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			break;
 
 		case FLAG_SET_SUBFILTER: {
-			if ((in[*in_pos] & 0x0F)
+			if (coder->padding != 0 || (in[*in_pos] & 0x0F)
 					|| coder->subfilter.code != NULL
 					|| !coder->allow_subfilters)
 				return LZMA_DATA_ERROR;
 
 			assert(coder->filter_flags.options == NULL);
-			return_if_error(lzma_filter_flags_decoder_init(
-					&coder->filter_flags_decoder,
-					allocator, &coder->filter_flags));
+			abort();
+// 			return_if_error(lzma_filter_flags_decoder_init(
+// 					&coder->filter_flags_decoder,
+// 					allocator, &coder->filter_flags));
 
 			coder->got_output_with_subfilter = false;
 
@@ -240,7 +212,8 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		}
 
 		case FLAG_END_SUBFILTER:
-			if (coder->subfilter.code == NULL
+			if (coder->padding != 0 || (in[*in_pos] & 0x0F)
+					|| coder->subfilter.code == NULL
 					|| !coder->got_output_with_subfilter)
 				return LZMA_DATA_ERROR;
 
@@ -276,9 +249,6 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 			++*in_pos;
 
-			if (coder->uncompressed_size == 0)
-				return LZMA_STREAM_END;
-
 			break;
 
 		default:
@@ -301,9 +271,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Initialize the Subfilter. Subblock and Copy filters are
 		// not allowed.
-		if (coder->filter_flags.id == LZMA_FILTER_COPY
-				|| coder->filter_flags.id
-					== LZMA_FILTER_SUBBLOCK)
+		if (coder->filter_flags.id == LZMA_FILTER_SUBBLOCK)
 			return LZMA_DATA_ERROR;
 
 		coder->helper.end_was_reached = false;
@@ -327,8 +295,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
 		return_if_error(lzma_raw_decoder_init(
-				&coder->subfilter, allocator,
-				filters, LZMA_VLI_VALUE_UNKNOWN, false));
+				&coder->subfilter, allocator, filters));
 
 		coder->sequence = SEQ_FLAGS;
 		break;
@@ -385,7 +352,14 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		coder->repeat.count = coder->size;
 		coder->repeat.size = (size_t)(in[*in_pos]) + 1;
 		coder->repeat.pos = 0;
+
+		// The size of the Data field must be bigger than the number
+		// of Padding bytes before this Subblock.
+		if (coder->repeat.size <= coder->padding)
+			return LZMA_DATA_ERROR;
+
 		++*in_pos;
+		coder->padding = 0;
 		coder->sequence = SEQ_REPEAT_READ_DATA;
 		break;
 
@@ -415,6 +389,14 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 	}
 
 	case SEQ_DATA: {
+		// The size of the Data field must be bigger than the number
+		// of Padding bytes before this Subblock.
+		assert(coder->size > 0);
+		if (coder->size <= coder->padding)
+			return LZMA_DATA_ERROR;
+
+		coder->padding = 0;
+
 		// Limit the amount of input to match the available
 		// Subblock Data size.
 		size_t in_limit;
@@ -429,10 +411,6 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 					out, out_pos, out_size);
 
 			coder->size -= copy_size;
-
-			if (update_uncompressed_size(coder, copy_size))
-				return LZMA_DATA_ERROR;
-
 		} else {
 			const size_t in_start = *in_pos;
 			const lzma_ret ret = subfilter_decode(
@@ -467,11 +445,6 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		if (coder->size > 0)
 			return LZMA_OK;
 
-		// Check if we have decoded all the data.
-		if (coder->uncompressed_size == 0
-				&& coder->subfilter.code == NULL)
-			return LZMA_STREAM_END;
-
 		coder->sequence = SEQ_FLAGS;
 		break;
 	}
@@ -487,16 +460,8 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		*out_pos += copy_size;
 		coder->repeat.count -= copy_size;
 
-		if (update_uncompressed_size(coder, copy_size))
-			return LZMA_DATA_ERROR;
-
-		if (coder->repeat.count == 0) {
-			assert(coder->subfilter.code == NULL);
-			if (coder->uncompressed_size == 0)
-				return LZMA_STREAM_END;
-		} else {
+		if (coder->repeat.count != 0)
 			return LZMA_OK;
-		}
 
 		coder->sequence = SEQ_FLAGS;
 		break;
@@ -515,15 +480,10 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			}
 
 			if (coder->subfilter.code == NULL) {
-				const size_t copy_size = bufcpy(
-						coder->repeat.buffer,
+				bufcpy(coder->repeat.buffer,
 						&coder->repeat.pos,
 						coder->repeat.size,
 						out, out_pos, out_size);
-
-				if (update_uncompressed_size(coder, copy_size))
-					return LZMA_DATA_ERROR;
-
 			} else {
 				const lzma_ret ret = subfilter_decode(
 						coder, allocator,
@@ -552,11 +512,6 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				}
 			}
 		} while (*out_pos < out_size);
-
-		// Check if we have decoded all the data.
-		if (coder->uncompressed_size == 0
-				&& coder->subfilter.code == NULL)
-			return LZMA_STREAM_END;
 
 		break;
 
@@ -664,7 +619,6 @@ lzma_subblock_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->filter_flags.options = NULL;
 
 	next->coder->sequence = SEQ_FLAGS;
-	next->coder->uncompressed_size = filters[0].uncompressed_size;
 	next->coder->padding = 0;
 	next->coder->next_finished = false;
 	next->coder->this_finished = false;

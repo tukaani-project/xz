@@ -33,8 +33,6 @@ enum tool_mode {
 enum header_type {
 	HEADER_AUTO,
 	HEADER_NATIVE,
-	HEADER_SINGLE,
-	HEADER_MULTI,
 	HEADER_ALONE,
 	// HEADER_GZIP,
 };

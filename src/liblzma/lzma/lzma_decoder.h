@@ -24,9 +24,14 @@
 #include "common.h"
 
 
-/// \brief      Allocates and initializes LZMA decoder
+/// Allocates and initializes LZMA decoder
 extern lzma_ret lzma_lzma_decoder_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters);
+
+/// Set known uncompressed size. This is a hack needed to support
+/// LZMA_Alone files that don't have EOPM.
+extern void lzma_lzma_decoder_uncompressed_size(
+		lzma_next_coder *next, lzma_vli uncompressed_size);
 
 /// \brief      Decodes the LZMA Properties byte (lc/lp/pb)
 ///
@@ -34,8 +39,5 @@ extern lzma_ret lzma_lzma_decoder_init(lzma_next_coder *next,
 ///
 extern bool lzma_lzma_decode_properties(
 		lzma_options_lzma *options, uint8_t byte);
-
-// There is no public lzma_lzma_encode() because lzma_lz_encode() works
-// as a wrapper for it.
 
 #endif

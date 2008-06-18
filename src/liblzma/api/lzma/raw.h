@@ -30,20 +30,10 @@
  * \param       options Array of lzma_options_filter structures.
  *                      The end of the array must be marked with
  *                      .id = LZMA_VLI_VALUE_UNKNOWN. The minimum
- *                      number of filters is zero; the maximum is
- *                      determined by available memory.
- * \param       uncompressed_size
- *                      Size of the uncompressed data. If it is unknown,
- *                      use LZMA_VLI_VALUE_UNKNOWN. You need to give the
- *                      same value to the raw decoder to decode the data.
- * \param       allow_implicit
- *                      If true, an implicit Copy or Subblock filter should be
- *                      automatically added when needed. If this is false and
- *                      an implicit filter would be needed, LZMA_PROG_ERROR is
- *                      returned.
+ *                      number of filters is one and the maximum is four.
  *
  * The `action' with lzma_code() can be LZMA_RUN, LZMA_SYNC_FLUSH (if the
- * filter chain support it), or LZMA_FINISH.
+ * filter chain supports it), or LZMA_FINISH.
  *
  * \return      - LZMA_OK
  *              - LZMA_MEM_ERROR
@@ -51,8 +41,7 @@
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_raw_encoder(
-		lzma_stream *strm, const lzma_options_filter *options,
-		lzma_vli uncompressed_size, lzma_bool allow_implicit);
+		lzma_stream *strm, const lzma_options_filter *options);
 
 
 /**
@@ -68,5 +57,4 @@ extern lzma_ret lzma_raw_encoder(
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_raw_decoder(
-		lzma_stream *strm, const lzma_options_filter *options,
-		lzma_vli uncompressed_size, lzma_bool allow_implicit);
+		lzma_stream *strm, const lzma_options_filter *options);

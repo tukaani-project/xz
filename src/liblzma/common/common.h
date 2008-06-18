@@ -21,12 +21,24 @@
 #define LZMA_COMMON_H
 
 #include "../../common/sysdefs.h"
+#include "../../common/integer.h"
 
 // Don't use ifdef...
 #if HAVE_VISIBILITY
 #	define LZMA_API __attribute__((__visibility__("default")))
 #else
 #	define LZMA_API
+#endif
+
+
+// These allow helping the compiler in some often-executed branches, whose
+// result is almost always the same.
+#ifdef __GNUC__
+#	define likely(expr) __builtin_expect(expr, true)
+#	define unlikely(expr) __builtin_expect(expr, false)
+#else
+#	define likely(expr) (expr)
+#	define unlikely(expr) (expr)
 #endif
 
 
@@ -117,10 +129,6 @@ struct lzma_filter_info_s {
 
 	/// Pointer to filter's options structure
 	void *options;
-
-	/// Uncompressed size of the filter, or LZMA_VLI_VALUE_UNKNOWN
-	/// if unknown.
-	lzma_vli uncompressed_size;
 };
 
 
@@ -156,20 +164,6 @@ extern lzma_ret lzma_next_filter_init(lzma_next_coder *next,
 ///
 extern void lzma_next_coder_end(lzma_next_coder *next,
 		lzma_allocator *allocator);
-
-
-extern lzma_ret lzma_filter_flags_decoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, lzma_options_filter *options);
-
-extern lzma_ret lzma_block_header_decoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, lzma_options_block *options);
-
-extern lzma_ret lzma_stream_encoder_single_init(lzma_next_coder *next,
-		lzma_allocator *allocator, const lzma_options_stream *options);
-
-extern lzma_ret lzma_stream_decoder_init(
-		lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_extra **header, lzma_extra **footer);
 
 
 /// \brief      Wrapper for memcpy()
@@ -225,6 +219,13 @@ do { \
 	lzma_next_coder_init2(next, allocator, \
 			func, func, allocator, __VA_ARGS__)
 
+/// \brief      Initializing lzma_next_coder
+///
+/// Call the initialization function, which takes no other arguments than
+/// lzma_next_coder and lzma_allocator.
+#define lzma_next_coder_init0(func, next, allocator) \
+	lzma_next_coder_init2(next, allocator, func, func, allocator)
+
 
 /// \brief      Initializing lzma_stream
 ///
@@ -253,6 +254,13 @@ do { \
 /// argument in addition to lzma_next_coder and lzma_allocator.
 #define lzma_next_strm_init(strm, func, ...) \
 	lzma_next_strm_init2(strm, func, func, (strm)->allocator, __VA_ARGS__)
+
+/// \brief      Initializing lzma_stream
+///
+/// Call the initialization function, which takes no other arguments than
+/// lzma_next_coder and lzma_allocator.
+#define lzma_next_strm_init0(strm, func) \
+	lzma_next_strm_init2(strm, func, func, (strm)->allocator)
 
 
 /// \brief      Return if expression doesn't evaluate to LZMA_OK

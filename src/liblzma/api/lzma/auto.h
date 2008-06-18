@@ -29,13 +29,8 @@
  * the type of the file has been detected.
  *
  * \param       strm        Pointer to propertily prepared lzma_stream
- * \param       header      Pointer to hold a pointer to Extra Records read
- *                          from the Header Metadata Block. Use NULL if
- *                          you don't care about Extra Records.
- * \param       footer      Same as header, but for Footer Metadata Block.
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
  */
-extern lzma_ret lzma_auto_decoder(lzma_stream *strm,
-		lzma_extra **header, lzma_extra **footer);
+extern lzma_ret lzma_auto_decoder(lzma_stream *strm);

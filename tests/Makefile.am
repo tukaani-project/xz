@@ -39,8 +39,7 @@ check_PROGRAMS = \
 	test_stream_flags \
 	test_filter_flags \
 	test_block_header \
-	test_index \
-	test_info
+	test_index
 
 TESTS = \
 	test_memlimit \
@@ -49,8 +48,6 @@ TESTS = \
 	test_filter_flags \
 	test_block_header \
 	test_index \
-	test_info \
-	test_files.sh \
 	test_compress.sh
 
 clean-local:

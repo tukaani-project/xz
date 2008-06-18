@@ -62,14 +62,11 @@ lzma_subblock_decoder_helper_init(lzma_next_coder *next,
 	// This is always the last filter in the chain.
 	assert(filters[1].init == NULL);
 
-	// We never know uncompressed size.
-	assert(filters[0].uncompressed_size == LZMA_VLI_VALUE_UNKNOWN);
-
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (next->coder == NULL)
 			return LZMA_MEM_ERROR;
-		
+
 		next->code = &helper_decode;
 		next->end = &helper_end;
 	}

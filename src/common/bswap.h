@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       check_byteswap.h
-/// \brief      Byteswapping needed by the checks
+/// \file       bswap.h
+/// \brief      Byte swapping
 //
 //  This code has been put into the public domain.
 //
@@ -11,18 +11,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef LZMA_CHECK_BYTESWAP_H
-#define LZMA_CHECK_BYTESWAP_H
+#ifndef LZMA_BSWAP_H
+#define LZMA_BSWAP_H
 
-#ifdef HAVE_CONFIG_H
-#	include <config.h>
-#endif
+// NOTE: We assume that config.h is already #included.
 
 // byteswap.h is a GNU extension. It contains inline assembly versions
 // for byteswapping. When byteswap.h is not available, we use generic code.
 #ifdef HAVE_BYTESWAP_H
 #	include <byteswap.h>
 #else
+#	define bswap_16(num) \
+		(((num) << 8) | ((num) >> 8))
+
 #	define bswap_32(num) \
 		( (((num) << 24)                       ) \
 		| (((num) <<  8) & UINT32_C(0x00FF0000)) \

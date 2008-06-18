@@ -17,7 +17,7 @@
 #endif
 
 #ifdef WORDS_BIGENDIAN
-#	include "check_byteswap.h"
+#	include "../../common/bswap.h"
 #endif
 
 

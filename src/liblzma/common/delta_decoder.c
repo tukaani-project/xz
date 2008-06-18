@@ -21,26 +21,8 @@
 #include "delta_common.h"
 
 
-/// Copies and decodes the data at the same time. This is used when Delta
-/// is the last filter in the chain.
 static void
-copy_and_decode(lzma_coder *coder,
-		const uint8_t *restrict in, uint8_t *restrict out, size_t size)
-{
-	const size_t distance = coder->distance;
-
-	for (size_t i = 0; i < size; ++i) {
-		out[i] = in[i] + coder->history[
-				(distance + coder->pos) & 0xFF];
-		coder->history[coder->pos-- & 0xFF] = out[i];
-	}
-}
-
-
-/// Decodes the data in place. This is used when we are not the last filter
-/// in the chain.
-static void
-decode_in_place(lzma_coder *coder, uint8_t *buffer, size_t size)
+decode_buffer(lzma_coder *coder, uint8_t *buffer, size_t size)
 {
 	const size_t distance = coder->distance;
 
@@ -51,44 +33,21 @@ decode_in_place(lzma_coder *coder, uint8_t *buffer, size_t size)
 }
 
 
-
 static lzma_ret
 delta_decode(lzma_coder *coder, lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	lzma_ret ret;
+	assert(coder->next.code != NULL);
 
-	if (coder->next.code == NULL) {
-		// Limit in_size so that we don't copy too much.
-		if ((lzma_vli)(in_size - *in_pos) > coder->uncompressed_size)
-			in_size = *in_pos + (size_t)(coder->uncompressed_size);
+	const size_t out_start = *out_pos;
 
-		const size_t in_avail = in_size - *in_pos;
-		const size_t out_avail = out_size - *out_pos;
-		const size_t size = MIN(in_avail, out_avail);
+	const lzma_ret ret = coder->next.code(coder->next.coder, allocator,
+			in, in_pos, in_size, out, out_pos, out_size,
+			action);
 
-		copy_and_decode(coder, in + *in_pos, out + *out_pos, size);
-
-		*in_pos += size;
-		*out_pos += size;
-
-		assert(coder->uncompressed_size <= LZMA_VLI_VALUE_MAX);
-		coder->uncompressed_size -= size;
-
-		ret = coder->uncompressed_size == 0
-				? LZMA_STREAM_END : LZMA_OK;
-
-	} else {
-		const size_t out_start = *out_pos;
-
-		ret = coder->next.code(coder->next.coder, allocator,
-				in, in_pos, in_size, out, out_pos, out_size,
-				action);
-
-		decode_in_place(coder, out + out_start, *out_pos - out_start);
-	}
+	decode_buffer(coder, out + out_start, *out_pos - out_start);
 
 	return ret;
 }

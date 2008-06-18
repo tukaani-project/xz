@@ -25,7 +25,6 @@ lzma_alignment_input(const lzma_options_filter *filters, uint32_t guess)
 {
 	for (size_t i = 0; filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {
 		switch (filters[i].id) {
-		case LZMA_FILTER_COPY:
 		case LZMA_FILTER_DELTA:
 			// The same as the input, check the next filter.
 			continue;
@@ -69,9 +68,8 @@ lzma_alignment_input(const lzma_options_filter *filters, uint32_t guess)
 extern LZMA_API uint32_t
 lzma_alignment_output(const lzma_options_filter *filters, uint32_t guess)
 {
-	// Check if there is only an implicit Copy filter.
 	if (filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
-		return guess;
+		return UINT32_MAX;
 
 	// Find the last filter in the chain.
 	size_t i = 0;
@@ -80,7 +78,6 @@ lzma_alignment_output(const lzma_options_filter *filters, uint32_t guess)
 
 	do {
 		switch (filters[i].id) {
-		case LZMA_FILTER_COPY:
 		case LZMA_FILTER_DELTA:
 			// It's the same as the input alignment, so
 			// check the next filter.

@@ -22,36 +22,6 @@
 
 
 /**
- * \brief       Options for files in the LZMA_Alone format
- */
-typedef struct {
-	/**
-	 * \brief       Uncompressed Size and usage of End of Payload Marker
-	 *
-	 * In contrast to .lzma Blocks, LZMA_Alone format cannot have both
-	 * uncompressed size field in the header and end of payload marker.
-	 * If you don't know the uncompressed size beforehand, set it to
-	 * LZMA_VLI_VALUE_UNKNOWN and liblzma will embed end of payload
-	 * marker.
-	 */
-	lzma_vli uncompressed_size;
-
-	/**
-	 * \brief       LZMA options
-	 *
-	 * The LZMA_Alone format supports only one filter: the LZMA filter.
-	 *
-	 * \note        There exists also an undocumented variant of the
-	 *              LZMA_Alone format, which uses the x86 filter in
-	 *              addition to LZMA. This format was never supported
-	 *              by LZMA Utils and is not supported by liblzma either.
-	 */
-	lzma_options_lzma lzma;
-
-} lzma_options_alone;
-
-
-/**
  * \brief       Initializes LZMA_Alone encoder
  *
  * LZMA_Alone files have the suffix .lzma like the .lzma Stream files.
@@ -68,7 +38,7 @@ typedef struct {
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_alone_encoder(
-		lzma_stream *strm, const lzma_options_alone *options);
+		lzma_stream *strm, const lzma_options_lzma *options);
 
 
 /**

@@ -73,19 +73,13 @@ main(int argc, char **argv)
 	file_in = argc > 1 ? fopen(argv[1], "rb") : stdin;
 
 	// Config
-	lzma_options_stream opt_stream = {
-		.check = LZMA_CHECK_CRC32,
-		.has_crc32 = true,
-		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.alignment = 0,
-	};
-	opt_stream.filters[0].id = LZMA_VLI_VALUE_UNKNOWN;
-	opt_stream.metadata_filters[0].id = LZMA_VLI_VALUE_UNKNOWN;
-	opt_stream.header = NULL;
-	opt_stream.footer = NULL;
+	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	filters[0].id = LZMA_FILTER_SUBBLOCK;
+	filters[0].options = NULL;
+	filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
 	// Init
-	if (lzma_stream_encoder_multi(&strm, &opt_stream) != LZMA_OK) {
+	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_CRC32) != LZMA_OK) {
 		fprintf(stderr, "init failed\n");
 		exit(1);
 	}

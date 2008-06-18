@@ -69,7 +69,7 @@ typedef enum {
 
 
 /**
- * \brief       Default compression level for Data Blocks
+ * \brief       Default compression level
  *
  * Data Blocks contain the actual compressed data. It's not straightforward
  * to recommend a default level, because in some cases keeping the resource
@@ -77,16 +77,6 @@ typedef enum {
  * compression ratio.
  */
 #define LZMA_EASY_DEFAULT LZMA_EASY_LZMA_7
-
-
-/**
- * \brief       Default compression level for Metadata Blocks
- *
- * Metadata Blocks are present only in Multi-Block Streams. Metadata Blocks
- * contain the Extra Records (if any) and some book-keeping data that is
- * used by decoders.
- */
-#define LZMA_EASY_METADATA_DEFAULT LZMA_EASY_LZMA_3
 
 
 /**
@@ -104,11 +94,11 @@ extern uint32_t lzma_easy_memory_usage(lzma_easy_level level);
 
 
 /**
- * \brief       Initializes Single-Block .lzma Stream encoder
+ * \brief       Initializes .lzma Stream encoder
  *
  * This function is intended for those who just want to use the basic LZMA
  * features (that is, most developers out there). Lots of assumptions are
- * made, which are correct for most situations or at least good enough.
+ * made, which are correct or at least good enough for most situations.
  *
  * \param       strm    Pointer to lzma_stream that is at least initialized
  *                      with LZMA_STREAM_INIT.
@@ -125,50 +115,7 @@ extern uint32_t lzma_easy_memory_usage(lzma_easy_level level);
  *
  * If initialization succeeds, use lzma_code() to do the actual encoding.
  * Valid values for `action' (the second argument of lzma_code()) are
- * LZMA_RUN, LZMA_SYNC_FLUSH, and LZMA_FINISH. In future, there may be
- * compression levels that don't support LZMA_SYNC_FLUSH.
- */
-extern lzma_ret lzma_easy_encoder_single(
-		lzma_stream *strm, lzma_easy_level level);
-
-
-/**
- * \brief       Initializes Multi-Block .lzma Stream encoder
- *
- * If you want to be able to store Extra Records or want to be able to use
- * LZMA_FULL_FLUSH, you need to create a Multi-Block Stream.
- *
- * \param       strm    Pointer to lzma_stream that is at least initialized
- *                      with LZMA_STREAM_INIT.
- * \param       level   Compression level to use for the data being encoded.
- * \param       metadata_level
- *                      Compression level to use for Metadata Blocks.
- *                      Metadata Blocks contain the Extra Records (if any)
- *                      and some book-keeping data that is used by decoders.
- * \param       header  Pointer to a list of Extra Records to be stored to
- *                      the Header Metadata Block. Set this to NULL to omit
- *                      Header Metadata Block completely. The list must be
- *                      kept available until the encoding has finished.
- * \param       footer  Pointer to a list of Extra Records to be stored to
- *                      the Footer Metadata Block. Set this to NULL if you
- *                      don't want to store any Extra Records (the Footer
- *                      Metadata Block will still be written for other
- *                      reasons.) The list must be kept available until
- *                      the encoding has finished.
- *
- * \return      - LZMA_OK: Initialization succeeded. Use lzma_code() to
- *                encode your data.
- *              - LZMA_MEM_ERROR: Memory allocation failed. All memory
- *                previously allocated for *strm is now freed.
- *              - LZMA_HEADER_ERROR: The given compression level is not
- *                supported by this build of liblzma.
- *
- * If initialization succeeds, use lzma_code() to do the actual encoding.
- * Valid values for `action' (the second argument of lzma_code()) are
  * LZMA_RUN, LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, and LZMA_FINISH. In future,
  * there may be compression levels that don't support LZMA_SYNC_FLUSH.
- * LZMA_FULL_FLUSH will always work with all compression levels.
  */
-extern lzma_ret lzma_easy_encoder_multi(lzma_stream *strm,
-		lzma_easy_level level, lzma_easy_level metadata_level,
-		const lzma_extra *header, const lzma_extra *footer);
+extern lzma_ret lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level);

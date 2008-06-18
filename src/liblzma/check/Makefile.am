@@ -14,7 +14,6 @@ libcheck_la_SOURCES = \
 	check.c \
 	check.h \
 	check_init.c \
-	check_byteswap.h \
 	crc_macros.h
 libcheck_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/api \

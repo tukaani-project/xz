@@ -26,10 +26,6 @@ struct lzma_coder_s {
 	/// Next coder in the chain
 	lzma_next_coder next;
 
-	/// Uncompressed size - This is needed when we are the last
-	/// filter in the chain.
-	lzma_vli uncompressed_size;
-
 	/// Delta distance
 	size_t distance;
 

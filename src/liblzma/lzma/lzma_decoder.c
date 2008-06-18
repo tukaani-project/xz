@@ -547,6 +547,9 @@ decode_real(lzma_coder *restrict coder, const uint8_t *restrict in,
 					// Note that rep0 is known to have a safe value, thus we
 					// don't need to check if we are wrapping the dictionary
 					// when it isn't full yet.
+					if (unlikely(lz_is_empty(coder->lz)))
+						return true;
+
 					coder->lz.dict[coder->lz.pos]
 							= lz_get_byte(coder->lz, rep0);
 					++coder->lz.pos;
@@ -698,7 +701,6 @@ lzma_lzma_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	{
 		const lzma_ret ret = lzma_lz_decoder_reset(
 				&next->coder->lz, allocator, &decode_real,
-				filters[0].uncompressed_size,
 				options->dictionary_size, MATCH_MAX_LEN);
 		if (ret != LZMA_OK) {
 			lzma_literal_end(&next->coder->literal_coder,
@@ -782,6 +784,15 @@ lzma_lzma_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->end = &lzma_decoder_end;
 
 	return LZMA_OK;
+}
+
+
+extern void
+lzma_lzma_decoder_uncompressed_size(
+		lzma_next_coder *next, lzma_vli uncompressed_size)
+{
+	next->coder->lz.uncompressed_size = uncompressed_size;
+	return;
 }
 
 

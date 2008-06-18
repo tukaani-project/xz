@@ -26,7 +26,7 @@ AC_PREREQ(2.61)
 
 # [LZMA] instead of [LZMA utils] since I prefer to have lzma-version.tar.gz
 # instead of lzma-utils-version.tar.gz.
-AC_INIT([LZMA], [4.999.3alpha], [lasse.collin@tukaani.org])
+AC_INIT([LZMA], [4.999.5alpha], [lasse.collin@tukaani.org])
 
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])
@@ -86,12 +86,12 @@ AM_CONDITIONAL(COND_MAIN_DECODER, test "x$enable_decoder" = xyes)
 
 # Filters
 AC_MSG_CHECKING([which filters to build])
-AC_ARG_ENABLE(filters, AC_HELP_STRING([--enable-filters=],
+AC_ARG_ENABLE(filters, AC_HELP_STRING([--enable-filters=LIST],
 		[Comma-separated list of filters to build. Default=all.
 		Filters used in encoding are needed also in decoding.
 		Available filters: copy subblock x86 powerpc ia64
 		arm armthumb sparc delta lzma]),
-		[], [enable_filters=copy,subblock,x86,powerpc,ia64,arm,armthumb,sparc,delta,lzma])
+	[], [enable_filters=copy,subblock,x86,powerpc,ia64,arm,armthumb,sparc,delta,lzma])
 enable_filters=`echo "$enable_filters" | sed 's/,/ /g'`
 enable_filters_copy=no
 enable_filters_subblock=no
@@ -203,7 +203,7 @@ AM_CONDITIONAL(COND_MAIN_SIMPLE, test "x$enable_simple_filters" = xyes)
 
 # Which match finders should be enabled:
 AC_MSG_CHECKING([which match finders to build])
-AC_ARG_ENABLE(match-finders, AC_HELP_STRING([--enable-match-finders=],
+AC_ARG_ENABLE(match-finders, AC_HELP_STRING([--enable-match-finders=LIST],
 		[Comma-separated list of match finders to build. Default=all.
 		At least one match finder is required for encoding with
 		the LZMA filter.
@@ -242,10 +242,10 @@ AM_CONDITIONAL(COND_MF_BT4, test "x$enable_match_finders_bt4" = xyes)
 
 # Which integrity checks to build
 AC_MSG_CHECKING([which integrity checks to build])
-AC_ARG_ENABLE(checks, AC_HELP_STRING([--enable-checks=],
+AC_ARG_ENABLE(checks, AC_HELP_STRING([--enable-checks=LIST],
 		[Comma-separated list of integrity checks to build.
 		Default=all. Available integrity checks: crc32 crc64 sha256]),
-		[], [enable_checks=crc32,crc64,sha256])
+	[], [enable_checks=crc32,crc64,sha256])
 enable_checks=`echo "$enable_checks" | sed 's/,/ /g'`
 enable_checks_crc32=no
 enable_checks_crc64=no
@@ -294,7 +294,7 @@ AC_MSG_CHECKING([if assembler optimizations should be used])
 AC_ARG_ENABLE(assembler, AC_HELP_STRING([--disable-assembler],
 		[Do not use assembler optimizations even if such exist
 		for the architecture.]),
-		[], [enable_assembler=yes])
+	[], [enable_assembler=yes])
 if test "x$enable_assembler" = xyes; then
 	case $host_cpu in
 		i?86)   enable_assembler=x86 ;;
@@ -327,13 +327,38 @@ esac
 AC_MSG_RESULT([$enable_assembler])
 AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
 
+# Fast unaligned memory access
+AC_MSG_CHECKING([if unaligned memory access should be used])
+AC_ARG_ENABLE(unaligned-access, AC_HELP_STRING([--enable-unaligned-access],
+		[Enable if the system supports *fast* unaligned memory access
+		with 16-bit and 32-bit integers. By default, this is enabled
+		only on x86, x86_64, and big endian PowerPC.]),
+	[], [enable_unaligned_access=auto])
+if test "x$enable_unaligned_access" = xauto ; then
+	case $host_cpu in
+		i?86|x86_64|powerpc|powerpc64)
+			enable_unaligned_access=yes
+			;;
+		*)
+			enable_unaligned_access=no
+			;;
+	esac
+fi
+if test "x$enable_unaligned_access" = xyes ; then
+	AC_DEFINE([HAVE_FAST_UNALIGNED_ACCESS], [1], [Define to 1 if
+		the system supports fast unaligned memory access.])
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi
+
 # Size optimization
 AC_MSG_CHECKING([if small size is preferred over speed])
 AC_ARG_ENABLE(small, AC_HELP_STRING([--enable-small],
 		[Omit precomputed tables to make liblzma a few kilobytes
 		smaller. This will increase startup time of applications
 		slightly, because the tables need to be computed first.]),
-		[], [enable_small=no])
+	[], [enable_small=no])
 if test "x$enable_small" = xyes; then
 	AC_DEFINE([HAVE_SMALL], 1, [Define to 1 if optimizing for size.])
 elif test "x$enable_small" != xno; then

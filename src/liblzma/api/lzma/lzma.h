@@ -152,7 +152,7 @@ typedef struct {
 	 * because it uses the target buffer as the dictionary.
 	 */
 	uint32_t dictionary_size;
-#	define LZMA_DICTIONARY_SIZE_MIN            1
+#	define LZMA_DICTIONARY_SIZE_MIN            (UINT32_C(1) << 12)
 #	define LZMA_DICTIONARY_SIZE_MAX            (UINT32_C(1) << 30)
 #	define LZMA_DICTIONARY_SIZE_DEFAULT        (UINT32_C(1) << 23)
 

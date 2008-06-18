@@ -39,10 +39,6 @@ struct lzma_coder_s {
 	/// is very small.
 	bool is_encoder;
 
-	/// Size of the data *left* to be processed, or LZMA_VLI_VALUE_UNKNOWN
-	/// if unknown.
-	lzma_vli uncompressed_size;
-
 	/// Pointer to filter-specific function, which does
 	/// the actual filtering.
 	size_t (*filter)(lzma_simple *simple, uint32_t now_pos,

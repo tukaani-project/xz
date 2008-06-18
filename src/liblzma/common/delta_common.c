@@ -47,10 +47,6 @@ lzma_delta_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Coding function is different for encoder and decoder.
 	next->code = code;
 
-	// Copy Uncompressed Size which is used to limit the output size
-	// in the Delta decoder.
-	next->coder->uncompressed_size = filters[0].uncompressed_size;
-
 	// Set the delta distance.
 	if (filters[0].options == NULL)
 		return LZMA_PROG_ERROR;

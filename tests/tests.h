@@ -21,13 +21,14 @@
 #define LZMA_TESTS_H
 
 #include "sysdefs.h"
+#include "integer.h"
 
 #include <stdio.h>
 
 #define memcrap(buf, size) memset(buf, 0xFD, size)
 
 #define expect(test) ((test) ? 0 : (fprintf(stderr, "%s:%u: %s\n", \
-	__FILE__, __LINE__, #test), exit(1), 0))
+	__FILE__, __LINE__, #test), abort(), 0))
 
 #define succeed(test) expect(!(test))
 
@@ -70,6 +71,14 @@ lzma_ret_sym(lzma_ret ret)
 
 	case LZMA_UNSUPPORTED_CHECK:
 		str = "LZMA_UNSUPPORTED_CHECK";
+		break;
+
+	case LZMA_FORMAT_ERROR:
+		str = "LZMA_FORMAT_ERROR";
+		break;
+
+	case LZMA_MEMLIMIT_ERROR:
+		str = "LZMA_MEMLIMIT_ERROR";
 		break;
 	}
 
@@ -121,8 +130,7 @@ coder_loop(lzma_stream *strm, uint8_t *in, size_t in_size,
 		if (strm->total_in != in_size || strm->total_out != out_size)
 			error = true;
 	} else {
-		if (strm->total_in + 1 != in_size
-				|| strm->total_out != out_size)
+		if (strm->total_in != in_size || strm->total_out != out_size)
 			error = true;
 	}
 

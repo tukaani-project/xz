@@ -96,17 +96,13 @@ extern "C" {
 #include "lzma/check.h"
 
 /* Filters */
-#include "lzma/copy.h"
 #include "lzma/subblock.h"
 #include "lzma/simple.h"
 #include "lzma/delta.h"
 #include "lzma/lzma.h"
 
-/* Container formats and Metadata */
+/* Container formats */
 #include "lzma/block.h"
-#include "lzma/index.h"
-#include "lzma/extra.h"
-#include "lzma/metadata.h"
 #include "lzma/stream.h"
 #include "lzma/alone.h"
 #include "lzma/raw.h"
@@ -114,7 +110,8 @@ extern "C" {
 #include "lzma/easy.h"
 
 /* Advanced features */
-#include "lzma/info.h"
+#include "lzma/index.h"
+#include "lzma/index_hash.h"
 #include "lzma/alignment.h"
 #include "lzma/stream_flags.h"
 #include "lzma/memlimit.h"

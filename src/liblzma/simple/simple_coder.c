@@ -23,11 +23,7 @@
 #include "simple_private.h"
 
 
-/// Copied or encodes/decodes more data to out[]. Checks and updates
-/// uncompressed_size when we are the last coder in the chain.
-/// If we aren't the last filter in the chain, we don't need to care about
-/// uncompressed size, since we don't change it; the next filter in the
-/// chain will check it anyway.
+/// Copied or encodes/decodes more data to out[].
 static lzma_ret
 copy_or_code(lzma_coder *coder, lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
@@ -37,28 +33,12 @@ copy_or_code(lzma_coder *coder, lzma_allocator *allocator,
 	assert(!coder->end_was_reached);
 
 	if (coder->next.code == NULL) {
-		const size_t in_avail = in_size - *in_pos;
-
-		if (!coder->is_encoder) {
-			// Limit in_size so that we don't copy too much.
-			if ((lzma_vli)(in_avail) > coder->uncompressed_size)
-				in_size = *in_pos + (size_t)(
-						coder->uncompressed_size);
-		}
-
-		const size_t out_start = *out_pos;
 		bufcpy(in, in_pos, in_size, out, out_pos, out_size);
 
 		// Check if end of stream was reached.
-		if (coder->is_encoder) {
-			if (action == LZMA_FINISH && *in_pos == in_size)
-				coder->end_was_reached = true;
-		} else if (coder->uncompressed_size
-				!= LZMA_VLI_VALUE_UNKNOWN) {
-			coder->uncompressed_size -= *out_pos - out_start;
-			if (coder->uncompressed_size == 0)
-				coder->end_was_reached = true;
-		}
+		if (coder->is_encoder && action == LZMA_FINISH
+				&& *in_pos == in_size)
+			coder->end_was_reached = true;
 
 	} else {
 		// Call the next coder in the chain to provide us some data.
@@ -283,7 +263,6 @@ lzma_simple_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Reset variables.
 	next->coder->is_encoder = is_encoder;
 	next->coder->end_was_reached = false;
-	next->coder->uncompressed_size = filters[0].uncompressed_size;
 	next->coder->pos = 0;
 	next->coder->filtered = 0;
 	next->coder->size = 0;

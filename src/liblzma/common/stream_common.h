@@ -22,6 +22,9 @@
 
 #include "common.h"
 
+/// Size of the Stream Flags field
+#define LZMA_STREAM_FLAGS_SIZE 2
+
 extern const uint8_t lzma_header_magic[6];
 extern const uint8_t lzma_footer_magic[2];
 

@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       copy_coder.h
-/// \brief      The Copy filter encoder and decoder
+/// \file       stream_decoder.h
+/// \brief      Decodes .lzma Streams
 //
-//  Copyright (C) 2007 Lasse Collin
+//  Copyright (C) 2008 Lasse Collin
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef LZMA_COPY_CODER_H
-#define LZMA_COPY_CODER_H
+#ifndef LZMA_STREAM_DECODER_H
+#define LZMA_STREAM_DECODER_H
 
 #include "common.h"
 
-extern lzma_ret lzma_copy_encoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, const lzma_filter_info *filters);
-
-extern lzma_ret lzma_copy_decoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, const lzma_filter_info *filters);
+extern lzma_ret lzma_stream_decoder_init(
+		lzma_next_coder *next, lzma_allocator *allocator);
 
 #endif

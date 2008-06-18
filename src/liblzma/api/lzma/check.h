@@ -43,14 +43,14 @@ typedef enum {
 		 * Size of the Check field: 4 bytes
 		 */
 
-	LZMA_CHECK_CRC64    = 3,
+	LZMA_CHECK_CRC64    = 4,
 		/**<
 		 * CRC64 using the polynomial from the ECMA-182 standard
 		 *
 		 * Size of the Check field: 8 bytes
 		 */
 
-	LZMA_CHECK_SHA256   = 5
+	LZMA_CHECK_SHA256   = 10
 		/**<
 		 * SHA-256
 		 *
@@ -62,7 +62,7 @@ typedef enum {
 /**
  * \brief       Maximum valid Check ID
  *
- * The .lzma file format specification specifies eight Check IDs (0-7). Some
+ * The .lzma file format specification specifies eight Check IDs (0-15). Some
  * of them are only reserved i.e. no actual Check algorithm has been assigned.
  * Still liblzma accepts any of these eight IDs for future compatibility
  * when decoding files. If a valid but unsupported Check ID is detected,
@@ -70,7 +70,7 @@ typedef enum {
  *
  * FIXME bad desc
  */
-#define LZMA_CHECK_ID_MAX 7
+#define LZMA_CHECK_ID_MAX 15
 
 
 /**
@@ -89,10 +89,16 @@ extern const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1];
  * Although not all Check IDs have a check algorithm associated, the size of
  * every Check is already frozen. This array contains the size (in bytes) of
  * the Check field with specified Check ID. The values are taken from the
- * section 2.2.2 of the .lzma file format specification:
- * { 0, 4, 4, 8, 16, 32, 32, 64 }
+ * section 2.1.1.2 of the .lzma file format specification:
+ * { 0, 4, 4, 4, 8, 8, 8, 16, 16, 16, 32, 32, 32, 64, 64, 64 }
  */
 extern const uint32_t lzma_check_sizes[LZMA_CHECK_ID_MAX + 1];
+
+
+/**
+ * \brief       Maximum size of a Check field
+ */
+#define LZMA_CHECK_SIZE_MAX 64
 
 
 /**

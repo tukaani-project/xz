@@ -18,24 +18,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "raw_decoder.h"
-#include "copy_coder.h"
 #include "simple_coder.h"
 #include "subblock_decoder.h"
 #include "subblock_decoder_helper.h"
 #include "delta_decoder.h"
 #include "lzma_decoder.h"
-#include "metadata_decoder.h"
 
 
 static lzma_init_function
 get_function(lzma_vli id)
 {
 	switch (id) {
-#ifdef HAVE_FILTER_COPY
-	case LZMA_FILTER_COPY:
-		return &lzma_copy_decoder_init;
-#endif
-
 #ifdef HAVE_FILTER_SUBBLOCK
 	case LZMA_FILTER_SUBBLOCK:
 		return &lzma_subblock_decoder_init;
@@ -93,12 +86,10 @@ get_function(lzma_vli id)
 
 extern lzma_ret
 lzma_raw_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		const lzma_options_filter *options,
-		lzma_vli uncompressed_size, bool allow_implicit)
+		const lzma_options_filter *options)
 {
 	const lzma_ret ret = lzma_raw_coder_init(next, allocator,
-			options, uncompressed_size, &get_function,
-			allow_implicit, false);
+			options, &get_function, false);
 
 	if (ret != LZMA_OK)
 		lzma_next_coder_end(next, allocator);
@@ -108,8 +99,7 @@ lzma_raw_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern LZMA_API lzma_ret
-lzma_raw_decoder(lzma_stream *strm, const lzma_options_filter *options,
-		lzma_vli uncompressed_size, lzma_bool allow_implicit)
+lzma_raw_decoder(lzma_stream *strm, const lzma_options_filter *options)
 {
 	return_if_error(lzma_strm_init(strm));
 
@@ -117,8 +107,7 @@ lzma_raw_decoder(lzma_stream *strm, const lzma_options_filter *options,
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
 
 	const lzma_ret ret = lzma_raw_coder_init(&strm->internal->next,
-			strm->allocator, options, uncompressed_size,
-			&get_function, allow_implicit, false);
+			strm->allocator, options, &get_function, false);
 
 	if (ret != LZMA_OK)
 		lzma_end(strm);

@@ -28,7 +28,6 @@ get_usage(const lzma_options_filter *filter, bool is_encoder)
 	uint64_t ret;
 
 	switch (filter->id) {
-	case LZMA_FILTER_COPY:
 	case LZMA_FILTER_X86:
 	case LZMA_FILTER_POWERPC:
 	case LZMA_FILTER_IA64:

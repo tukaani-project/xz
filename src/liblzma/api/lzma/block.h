@@ -33,6 +33,21 @@
  */
 typedef struct {
 	/**
+	 * \brief       Size of the Block Header
+	 *
+	 * Read by:
+	 *  - lzma_block_encoder()
+	 *  - lzma_block_decoder()
+	 *
+	 * Written by:
+	 *  - lzma_block_header_size()
+	 *  - lzma_block_header_decode()
+	 */
+	uint32_t header_size;
+#	define LZMA_BLOCK_HEADER_SIZE_MIN 8
+#	define LZMA_BLOCK_HEADER_SIZE_MAX 1024
+
+	/**
 	 * \brief       Type of integrity Check
 	 *
 	 * The type of the integrity Check is not stored into the Block
@@ -45,85 +60,6 @@ typedef struct {
 	lzma_check_type check;
 
 	/**
-	 * \brief       Precense of CRC32 of the Block Header
-	 *
-	 * Set this to true if CRC32 of the Block Header should be
-	 * calculated and stored in the Block Header.
-	 *
-	 * There is no way to autodetect if CRC32 is present in the Block
-	 * Header, thus this information must be provided also when decoding.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
-	 *  - lzma_block_header_decoder()
-	 */
-	lzma_bool has_crc32;
-
-	/**
-	 * \brief       Usage of End of Payload Marker
-	 *
-	 * If this is true, End of Payload Marker is used even if
-	 * Uncompressed Size is known.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_encoder()
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 *
-	 * Written by:
-	 *  - lzma_block_header_decoder()
-	 */
-	lzma_bool has_eopm;
-
-	/**
-	 * \brief       True if the Block is a Metadata Block
-	 *
-	 * If this is true, the Metadata bit will be set in the Block Header.
-	 * It is up to the application to store correctly formatted data
-	 * into Metadata Block.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_encoder()
-	 *
-	 * Written by:
-	 *  - lzma_block_header_decoder()
-	 */
-	lzma_bool is_metadata;
-
-	/**
-	 * \brief       True if Uncompressed Size is in Block Footer
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 */
-	lzma_bool has_uncompressed_size_in_footer;
-
-	/**
-	 * \brief       True if Backward Size is in Block Footer
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 */
-	lzma_bool has_backward_size;
-
-	/**
-	 * \brief       True if Block coder should take care of Padding
-	 *
-	 * In liblzma, Stream decoder sets this to true when decoding
-	 * Header Metadata Block or Data Blocks from Multi-Block Stream,
-	 * and to false when decoding Single-Block Stream or Footer
-	 * Metadata Block from a Multi-Block Stream.
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 */
-	lzma_bool handle_padding;
-
-	/**
 	 * \brief       Size of the Compressed Data in bytes
 	 *
 	 * Usually you don't know this value when encoding in streamed mode.
@@ -134,12 +70,12 @@ typedef struct {
 	 *
 	 * Read by:
 	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
+	 *  - lzma_block_header_encode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:
-	 *  - lzma_block_header_decoder()
+	 *  - lzma_block_header_decode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 */
@@ -163,167 +99,61 @@ typedef struct {
 	 *
 	 * Read by:
 	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
+	 *  - lzma_block_header_encode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:
-	 *  - lzma_block_header_decoder()
+	 *  - lzma_block_header_decode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 */
 	lzma_vli uncompressed_size;
 
 	/**
-	 * \brief       Number of bytes to reserve for Compressed Size
-	 *
-	 * This is useful if you want to be able to store the Compressed Size
-	 * to the Block Header, but you don't know it when starting to encode.
-	 * Setting this to non-zero value at maximum of LZMA_VLI_BYTES_MAX,
-	 * the Block Header encoder will force the Compressed Size field to
-	 * occupy specified number of bytes. You can later rewrite the Block
-	 * Header to contain correct information by using otherwise identical
-	 * lzma_options_block structure except the correct compressed_size.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
-	 *
-	 * Written by:
-	 *  - lzma_block_header_decoder()
-	 */
-	uint32_t compressed_reserve;
-
-	/**
-	 * \brief       Number of bytes to reserve for Uncompressed Size
-	 *
-	 * See the description of compressed_size above.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
-	 *
-	 * Written by:
-	 *  - lzma_block_header_decoder()
-	 */
-	uint32_t uncompressed_reserve;
-
-	/**
-	 * \brief       Total Size of the Block in bytes
-	 *
-	 * This is useful in the decoder, which can verify the Total Size
-	 * if it is known from Index.
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 *
-	 * Written by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 */
-	lzma_vli total_size;
-
-	/**
-	 * \brief       Upper limit of Total Size
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 */
-	lzma_vli total_limit;
-
-	/**
-	 * \brief       Upper limit of Uncompressed Size
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 */
-	lzma_vli uncompressed_limit;
-
-	/**
 	 * \brief       Array of filters
 	 *
-	 * There can be at maximum of seven filters. The end of the array
-	 * is marked with .id = LZMA_VLI_VALUE_UNKNOWN. Minimum number of
-	 * filters is zero; in that case, an implicit Copy filter is used.
+	 * There can be 1-4 filters. The end of the array is marked with
+	 * .id = LZMA_VLI_VALUE_UNKNOWN.
 	 *
 	 * Read by:
 	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
+	 *  - lzma_block_header_encode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:
-	 *  - lzma_block_header_decoder(): Note that this does NOT free()
-	 *    the old filter options structures. If decoding fails, the
-	 *    caller must take care of freeing the options structures
-	 *    that may have been allocated and decoded before the error
-	 *    occurred.
+	 *  - lzma_block_header_decode(): Note that this does NOT free()
+	 *    the old filter options structures. All unused filters[] will
+	 *    have .id == LZMA_VLI_VALUE_UNKNOWN and .options == NULL. If
+	 *    decoding fails, all filters[] are guaranteed to be
+	 *    LZMA_VLI_VALUE_UNKNOWN and NULL.
+	 *
+	 * \note        Because of the array is terminated with
+	 *              .id = LZMA_VLI_VALUE_UNKNOWN, the actual array must
+	 *              have LZMA_BLOCK_FILTERS_MAX + 1 members or the Block
+	 *              Header decoder will overflow the buffer.
 	 */
-	lzma_options_filter filters[8];
-
-	/**
-	 * \brief       Size of the Padding field
-	 *
-	 * The Padding field exist to allow aligning the Compressed Data field
-	 * optimally in the Block. See lzma_options_stream.alignment in
-	 * stream.h for more information.
-	 *
-	 * If you want the Block Header encoder to automatically calculate
-	 * optimal size for the Padding field by looking at the information
-	 * in filters[], set this to LZMA_BLOCK_HEADER_PADDING_AUTO. In that
-	 * case, you must also set the aligmnet variable to tell the the
-	 * encoder the aligmnet of the beginning of the Block Header.
-	 *
-	 * The decoder never sets this to LZMA_BLOCK_HEADER_PADDING_AUTO.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder(): Note that this doesn't
-	 *    accept LZMA_BLOCK_HEADER_PADDING_AUTO.
-	 *
-	 * Written by (these never set padding to
-	 * LZMA_BLOCK_HEADER_PADDING_AUTO):
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_decoder()
-	 */
-	int32_t padding;
-#	define LZMA_BLOCK_HEADER_PADDING_AUTO (-1)
-#	define LZMA_BLOCK_HEADER_PADDING_MIN 0
-#	define LZMA_BLOCK_HEADER_PADDING_MAX 31
-
-	/**
-	 * \brief       Alignment of the beginning of the Block Header
-	 *
-	 * This variable is read only if padding has been set to
-	 * LZMA_BLOCK_HEADER_PADDING_AUTO.
-	 *
-	 * Read by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encoder()
-	 */
-	uint32_t alignment;
-
-	/**
-	 * \brief       Size of the Block Header
-	 *
-	 * Read by:
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 *
-	 * Written by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_decoder()
-	 */
-	uint32_t header_size;
+	lzma_options_filter *filters;
+#	define LZMA_BLOCK_FILTERS_MAX 4
 
 } lzma_options_block;
 
 
 /**
- * \brief       Calculates the size of Header Padding and Block Header
+ * \brief       Decodes the Block Header Size field
+ *
+ * To decode Block Header using lzma_block_header_decode(), the size of the
+ * Block Header has to be known and stored into lzma_options_block.header_size.
+ * The size can be calculated from the first byte of a Block using this macro.
+ * Note that if the first byte is 0x00, it indicates beginning of Index; use
+ * this macro only when the byte is not 0x00.
+ */
+#define lzma_block_header_size_decode(b) (((uint32_t)(b) + 1) * 4)
+
+
+/**
+ * \brief       Calculates the size of Block Header
  *
  * \return      - LZMA_OK: Size calculated successfully and stored to
  *                options->header_size.
@@ -353,24 +183,62 @@ extern lzma_ret lzma_block_header_size(lzma_options_block *options);
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_block_header_encode(
-		uint8_t *out, const lzma_options_block *options);
+		const lzma_options_block *options, uint8_t *out);
 
 
 /**
- * \brief       Initializes Block Header decoder
+ * \brief       Decodes Block Header
  *
- * Because the results of this decoder are placed into *options,
- * strm->next_in, strm->avail_in, and strm->total_in are not used.
+ * Decoding of the Block options is done with a single call instead of
+ * first initializing and then doing the actual work with lzma_code().
  *
- * The only valid `action' with lzma_code() is LZMA_RUN.
+ * \param       options     Destination for block options
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc().
+ * \param       in          Beginning of the input buffer. This must be
+ *                          at least options->header_size bytes.
  *
- * \return      - LZMA_OK: Encoding was successful. options->header_size
+ * \return      - LZMA_OK: Decoding was successful. options->header_size
  *                bytes were written to output buffer.
  *              - LZMA_HEADER_ERROR: Invalid or unsupported options.
  *              - LZMA_PROG_ERROR
  */
-extern lzma_ret lzma_block_header_decoder(
-		lzma_stream *strm, lzma_options_block *options);
+extern lzma_ret lzma_block_header_decode(lzma_options_block *options,
+		lzma_allocator *allocator, const uint8_t *in);
+
+
+/**
+ * \brief       Sets Compressed Size according to Total Size
+ *
+ * Block Header stores Compressed Size, but Index has Total Size. If the
+ * application has already parsed the Index and is now decoding Blocks,
+ * it can calculate Compressed Size from Total Size. This function does
+ * exactly that with error checking, so application doesn't need to check,
+ * for example, if the value in Index is too small to contain even the
+ * Block Header. Note that you need to call this function after decoding
+ * the Block Header field.
+ *
+ * \return      - LZMA_OK: options->compressed_size was set successfully.
+ *              - LZMA_DATA_ERROR: total_size is too small compared to
+ *                options->header_size and lzma_check_sizes[options->check].
+ *              - LZMA_PROG_ERROR: Some values are invalid. For example,
+ *                total_size and options->header_size must be multiples
+ *                of four, total_size must be at least 12, and
+ *                options->header_size between 8 and 1024 inclusive.
+ */
+extern lzma_ret lzma_block_total_size_set(
+		lzma_options_block *options, lzma_vli total_size);
+
+
+/**
+ * \brief       Calculates Total Size
+ *
+ * This function can be useful after decoding a Block to get Total Size
+ * that is stored in Index.
+ *
+ * \return      Total Size on success, or zero on error.
+ */
+extern lzma_vli lzma_block_total_size_get(const lzma_options_block *options);
 
 
 /**

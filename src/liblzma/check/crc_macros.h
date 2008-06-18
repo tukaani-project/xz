@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef WORDS_BIGENDIAN
-#	include "check_byteswap.h"
+#	include "../../common/bswap.h"
 
 #	define A(x) ((x) >> 24)
 #	define B(x) (((x) >> 16) & 0xFF)

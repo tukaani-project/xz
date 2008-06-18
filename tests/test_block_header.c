@@ -20,306 +20,6 @@
 #include "tests.h"
 
 
-static uint8_t buffer[4096];
-static lzma_stream strm = LZMA_STREAM_INIT;
-static lzma_options_block known_options;
-static lzma_options_block decoded_options;
-
-// We want to test zero, one, and two filters in the chain.
-
-static const lzma_options_filter filters_none[1] = {
-	{
-		.id = LZMA_VLI_VALUE_UNKNOWN,
-		.options = NULL,
-	},
-};
-
-static const lzma_options_filter filters_powerpc[2] = {
-	{
-		.id = LZMA_FILTER_POWERPC,
-		.options = NULL,
-	}, {
-		.id = LZMA_VLI_VALUE_UNKNOWN,
-		.options = NULL,
-	},
-};
-
-static const lzma_options_delta options_delta = {
-	.distance = 4,
-};
-
-static const lzma_options_filter filters_delta[3] = {
-	{
-		.id = LZMA_FILTER_DELTA,
-		.options = (void *)(&options_delta),
-	}, {
-		.id = LZMA_FILTER_COPY,
-		.options = NULL,
-	}, {
-		.id = LZMA_VLI_VALUE_UNKNOWN,
-		.options = NULL,
-	},
-};
-
-
-static void
-free_decoded_options(void)
-{
-	for (size_t i = 0; i < sizeof(decoded_options.filters)
-			/ sizeof(decoded_options.filters[0]); ++i) {
-		free(decoded_options.filters[i].options);
-		decoded_options.filters[i].options = NULL;
-	}
-}
-
-
-static bool
-encode(uint32_t header_size)
-{
-	memcrap(buffer, sizeof(buffer));
-
-	if (lzma_block_header_size(&known_options) != LZMA_OK)
-		return true;
-
-	if (known_options.header_size != header_size)
-		return true;
-
-	if (lzma_block_header_encode(buffer, &known_options) != LZMA_OK)
-		return true;
-
-	return false;
-}
-
-
-static bool
-decode_ret(uint32_t header_size, lzma_ret ret_ok)
-{
-	memcrap(&decoded_options, sizeof(decoded_options));
-	decoded_options.has_crc32 = known_options.has_crc32;
-
-	expect(lzma_block_header_decoder(&strm, &decoded_options) == LZMA_OK);
-
-	const bool ret = decoder_loop_ret(&strm, buffer, header_size, ret_ok);
-	free_decoded_options();
-	return ret;
-}
-
-
-static bool
-decode(uint32_t header_size)
-{
-	memcrap(&decoded_options, sizeof(decoded_options));
-	decoded_options.has_crc32 = known_options.has_crc32;
-
-	expect(lzma_block_header_decoder(&strm, &decoded_options) == LZMA_OK);
-
-	const bool ret = decoder_loop(&strm, buffer, header_size);
-	free_decoded_options();
-	if (ret)
-		return true;
-
-	if (known_options.has_eopm != decoded_options.has_eopm)
-		return true;
-
-	if (known_options.is_metadata != decoded_options.is_metadata)
-		return true;
-
-	if (known_options.compressed_size == LZMA_VLI_VALUE_UNKNOWN
-			&& known_options.compressed_reserve != 0) {
-		if (decoded_options.compressed_size != 0)
-			return true;
-	} else if (known_options.compressed_size
-			!= decoded_options.compressed_size) {
-		return true;
-	}
-
-	if (known_options.uncompressed_size == LZMA_VLI_VALUE_UNKNOWN
-			&& known_options.uncompressed_reserve != 0) {
-		if (decoded_options.uncompressed_size != 0)
-			return true;
-	} else if (known_options.uncompressed_size
-			!= decoded_options.uncompressed_size) {
-		return true;
-	}
-
-	if (known_options.compressed_reserve != 0
-			&& known_options.compressed_reserve
-				!= decoded_options.compressed_reserve)
-		return true;
-
-	if (known_options.uncompressed_reserve != 0
-			&& known_options.uncompressed_reserve
-				!= decoded_options.uncompressed_reserve)
-		return true;
-
-	if (known_options.padding != decoded_options.padding)
-		return true;
-
-	return false;
-}
-
-
-static bool
-code(uint32_t header_size)
-{
-	return encode(header_size) || decode(header_size);
-}
-
-
-static bool
-helper_loop(uint32_t unpadded_size, uint32_t multiple)
-{
-	for (int i = 0; i <= LZMA_BLOCK_HEADER_PADDING_MAX; ++i) {
-		known_options.padding = i;
-		if (code(unpadded_size + i))
-			return true;
-	}
-
-	for (int i = 0 - LZMA_BLOCK_HEADER_PADDING_MAX - 1;
-			i <= LZMA_BLOCK_HEADER_PADDING_MAX + 1; ++i) {
-		known_options.alignment = i;
-
-		uint32_t size = unpadded_size;
-		while ((size + known_options.alignment) % multiple)
-			++size;
-
-		known_options.padding = LZMA_BLOCK_HEADER_PADDING_AUTO;
-		if (code(size))
-			return true;
-
-	} while (++known_options.alignment
-			<= LZMA_BLOCK_HEADER_PADDING_MAX + 1);
-
-	return false;
-}
-
-
-static bool
-helper(uint32_t unpadded_size, uint32_t multiple)
-{
-	known_options.has_crc32 = false;
-	known_options.is_metadata = false;
-	if (helper_loop(unpadded_size, multiple))
-		return true;
-
-	known_options.has_crc32 = false;
-	known_options.is_metadata = true;
-	if (helper_loop(unpadded_size, multiple))
-		return true;
-
-	known_options.has_crc32 = true;
-	known_options.is_metadata = false;
-	if (helper_loop(unpadded_size + 4, multiple))
-		return true;
-
-	known_options.has_crc32 = true;
-	known_options.is_metadata = true;
-	if (helper_loop(unpadded_size + 4, multiple))
-		return true;
-
-	return false;
-}
-
-
-static void
-test1(void)
-{
-	known_options = (lzma_options_block){
-		.has_eopm = true,
-		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.compressed_reserve = 0,
-		.uncompressed_reserve = 0,
-	};
-	memcpy(known_options.filters, filters_none, sizeof(filters_none));
-	expect(!helper(2, 1));
-
-	memcpy(known_options.filters, filters_powerpc,
-			sizeof(filters_powerpc));
-	expect(!helper(3, 4));
-
-	memcpy(known_options.filters, filters_delta, sizeof(filters_delta));
-	expect(!helper(5, 1));
-
-	known_options.padding = LZMA_BLOCK_HEADER_PADDING_MAX + 1;
-	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
-}
-
-
-static void
-test2_helper(uint32_t unpadded_size, uint32_t multiple)
-{
-	known_options.has_eopm = true;
-	known_options.compressed_size = LZMA_VLI_VALUE_UNKNOWN;
-	known_options.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
-	known_options.compressed_reserve = 1;
-	known_options.uncompressed_reserve = 1;
-	expect(!helper(unpadded_size + 2, multiple));
-
-	known_options.compressed_reserve = LZMA_VLI_BYTES_MAX;
-	known_options.uncompressed_reserve = LZMA_VLI_BYTES_MAX;
-	expect(!helper(unpadded_size + 18, multiple));
-
-	known_options.compressed_size = 1234;
-	known_options.uncompressed_size = 2345;
-	expect(!helper(unpadded_size + 18, multiple));
-
-	known_options.compressed_reserve = 1;
-	known_options.uncompressed_reserve = 1;
-	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
-}
-
-
-static void
-test2(void)
-{
-	memcpy(known_options.filters, filters_none, sizeof(filters_none));
-	test2_helper(2, 1);
-
-	memcpy(known_options.filters, filters_powerpc,
-			sizeof(filters_powerpc));
-	test2_helper(3, 4);
-
-	memcpy(known_options.filters, filters_delta,
-			sizeof(filters_delta));
-	test2_helper(5, 1);
-}
-
-
-static void
-test3(void)
-{
-	known_options = (lzma_options_block){
-		.has_crc32 = false,
-		.has_eopm = true,
-		.is_metadata = false,
-		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.compressed_reserve = 1,
-		.uncompressed_reserve = 1,
-	};
-	memcpy(known_options.filters, filters_none, sizeof(filters_none));
-
-	known_options.header_size = 3;
-	expect(lzma_block_header_encode(buffer, &known_options)
-			== LZMA_PROG_ERROR);
-
-	known_options.header_size = 4;
-	expect(lzma_block_header_encode(buffer, &known_options) == LZMA_OK);
-
-	known_options.header_size = 5;
-	expect(lzma_block_header_encode(buffer, &known_options)
-			== LZMA_PROG_ERROR);
-
-	// NOTE: This assumes that Filter ID 0x1F is not supported. Update
-	// this test to use some other ID if 0x1F becomes supported.
-	known_options.filters[0].id = 0x1F;
-	known_options.header_size = 5;
-	expect(lzma_block_header_encode(buffer, &known_options)
-			== LZMA_HEADER_ERROR);
-}
-
-
 static void
 test4(void)
 {
@@ -348,6 +48,212 @@ test4(void)
 
 
 }
+*/
+
+static uint8_t buf[LZMA_BLOCK_HEADER_SIZE_MAX];
+static lzma_options_block known_options;
+static lzma_options_block decoded_options;
+
+static lzma_options_filter filters_none[1] = {
+	{
+		.id = LZMA_VLI_VALUE_UNKNOWN,
+	},
+};
+
+
+static lzma_options_filter filters_one[2] = {
+	{
+		.id = LZMA_FILTER_LZMA,
+		.options = (void *)(&lzma_preset_lzma[0]),
+	}, {
+		.id = LZMA_VLI_VALUE_UNKNOWN,
+	}
+};
+
+
+static lzma_options_filter filters_four[5] = {
+	{
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_LZMA,
+		.options = (void *)(&lzma_preset_lzma[0]),
+	}, {
+		.id = LZMA_VLI_VALUE_UNKNOWN,
+	}
+};
+
+
+static lzma_options_filter filters_five[6] = {
+	{
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_X86,
+		.options = NULL,
+	}, {
+		.id = LZMA_FILTER_LZMA,
+		.options = (void *)(&lzma_preset_lzma[0]),
+	}, {
+		.id = LZMA_VLI_VALUE_UNKNOWN,
+	}
+};
+
+
+static void
+code(void)
+{
+	expect(lzma_block_header_encode(&known_options, buf) == LZMA_OK);
+
+	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	memcrap(filters, sizeof(filters));
+	memcrap(&decoded_options, sizeof(decoded_options));
+
+	decoded_options.header_size = known_options.header_size;
+	decoded_options.check = known_options.check;
+	decoded_options.filters = filters;
+	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
+			== LZMA_OK);
+
+	expect(known_options.compressed_size
+			== decoded_options.compressed_size);
+	expect(known_options.uncompressed_size
+			== decoded_options.uncompressed_size);
+
+	for (size_t i = 0; known_options.filters[i].id
+			!= LZMA_VLI_VALUE_UNKNOWN; ++i)
+		expect(known_options.filters[i].id == filters[i].id);
+
+	for (size_t i = 0; i < LZMA_BLOCK_FILTERS_MAX; ++i)
+		free(decoded_options.filters[i].options);
+}
+
+
+static void
+test1(void)
+{
+	known_options = (lzma_options_block){
+		.check = LZMA_CHECK_NONE,
+		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.filters = NULL,
+	};
+
+	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+
+	known_options.filters = filters_none;
+	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+
+	known_options.filters = filters_five;
+	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+
+	known_options.filters = filters_one;
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
+
+	known_options.check = 999; // Some invalid value, which gets ignored.
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
+
+	known_options.compressed_size = 5; // Not a multiple of four.
+	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+
+	known_options.compressed_size = 0; // Cannot be zero.
+	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+
+	known_options.compressed_size = LZMA_VLI_VALUE_UNKNOWN;
+	known_options.uncompressed_size = 0;
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
+
+	known_options.uncompressed_size = LZMA_VLI_VALUE_MAX + 1;
+	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+}
+
+
+static void
+test2(void)
+{
+	known_options = (lzma_options_block){
+		.check = LZMA_CHECK_CRC32,
+		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.filters = filters_four,
+	};
+
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
+	code();
+
+	known_options.compressed_size = 123456;
+	known_options.uncompressed_size = 234567;
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
+	code();
+
+	// We can make the sizes smaller while keeping the header size
+	// the same.
+	known_options.compressed_size = 12;
+	known_options.uncompressed_size = 23;
+	code();
+}
+
+
+static void
+test3(void)
+{
+	known_options = (lzma_options_block){
+		.check = LZMA_CHECK_CRC32,
+		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.filters = filters_one,
+	};
+
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
+	known_options.header_size += 4;
+	expect(lzma_block_header_encode(&known_options, buf) == LZMA_OK);
+
+	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	decoded_options.header_size = known_options.header_size;
+	decoded_options.check = known_options.check;
+	decoded_options.filters = filters;
+
+	// Wrong size
+	++buf[0];
+	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
+			== LZMA_PROG_ERROR);
+	--buf[0];
+
+	// Wrong CRC32
+	buf[known_options.header_size - 1] ^= 1;
+	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
+			== LZMA_DATA_ERROR);
+	buf[known_options.header_size - 1] ^= 1;
+
+	// Unsupported filter
+	// NOTE: This may need updating when new IDs become supported.
+	buf[2] ^= 0x1F;
+	integer_write_32(buf + known_options.header_size - 4,
+			lzma_crc32(buf, known_options.header_size - 4, 0));
+	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
+			== LZMA_HEADER_ERROR);
+	buf[2] ^= 0x1F;
+
+	// Non-nul Padding
+	buf[known_options.header_size - 4 - 1] ^= 1;
+	integer_write_32(buf + known_options.header_size - 4,
+			lzma_crc32(buf, known_options.header_size - 4, 0));
+	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
+			== LZMA_HEADER_ERROR);
+	buf[known_options.header_size - 4 - 1] ^= 1;
+}
 
 
 int
@@ -358,9 +264,6 @@ main(void)
 	test1();
 	test2();
 	test3();
-	test4();
-
-	lzma_end(&strm);
 
 	return 0;
 }

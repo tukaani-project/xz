@@ -35,7 +35,7 @@
  * \note        The version number of LZMA Utils (and thus liblzma)
  *              has nothing to with the version number of LZMA SDK.
  */
-#define LZMA_VERSION UINT32_C(49990030)
+#define LZMA_VERSION UINT32_C(49990050)
 
 
 /**

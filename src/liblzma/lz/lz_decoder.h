@@ -31,6 +31,11 @@
 		: (lz).dict[(lz).pos - (distance) - 1 + (lz).end])
 
 
+/// Test if dictionary is empty.
+#define lz_is_empty(lz) \
+	((lz).pos == 0 && !(lz).is_full)
+
+
 #define LZMA_LZ_DECODER_INIT \
 	(lzma_lz_decoder){ .dict = NULL, .size = 0, .match_max_len = 0 }
 
@@ -109,7 +114,6 @@ extern lzma_ret lzma_lz_decoder_reset(lzma_lz_decoder *lz,
 			lzma_coder *restrict coder, const uint8_t *restrict in,
 			size_t *restrict in_pos, size_t in_size,
 			bool has_safe_buffer),
-		lzma_vli uncompressed_size,
 		size_t history_size, size_t match_max_len);
 
 extern lzma_ret lzma_lz_decode(lzma_coder *coder, lzma_allocator *allocator,
@@ -155,12 +159,12 @@ lzma_lz_out_repeat(lzma_lz_decoder *lz, size_t distance, size_t length)
 	// in which e.g. the data of the previously decoded file(s)
 	// would be leaked (or whatever happens to be in unused
 	// part of the dictionary buffer).
-	if (distance >= lz->pos && !lz->is_full)
+	if (unlikely(distance >= lz->pos && !lz->is_full))
 		return false;
 
 	// It also doesn't make sense to copy data farer than
 	// the dictionary size.
-	if (distance >= lz->requested_size)
+	if (unlikely(distance >= lz->requested_size))
 		return false;
 
 	// The caller must have checked these!

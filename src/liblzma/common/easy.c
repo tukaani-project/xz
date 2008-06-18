@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       easy_multi.c
-/// \brief      Easy Multi-Block Stream encoder initialization
+/// \file       easy.c
+/// \brief      Easy Stream encoder initialization
 //
 //  Copyright (C) 2008 Lasse Collin
 //
@@ -17,14 +17,40 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "easy_common.h"
-#include "stream_encoder_multi.h"
+#include "stream_encoder.h"
 
 
 struct lzma_coder_s {
-	lzma_next_coder encoder;
-	lzma_options_stream options;
+	lzma_next_coder stream_encoder;
+
+	/// We need to keep the filters array available in case
+	/// LZMA_FULL_FLUSH is used.
+	lzma_options_filter filters[5];
 };
+
+
+static bool
+easy_set_filters(lzma_options_filter *filters, uint32_t level)
+{
+	bool error = false;
+
+	if (level == 0) {
+		// TODO FIXME Use Subblock or LZMA2 with no compression.
+		error = true;
+
+#ifdef HAVE_FILTER_LZMA
+	} else if (level <= 9) {
+		filters[0].id = LZMA_FILTER_LZMA;
+		filters[0].options = (void *)(&lzma_preset_lzma[level - 1]);
+		filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
+#endif
+
+	} else {
+		error = true;
+	}
+
+	return error;
+}
 
 
 static lzma_ret
@@ -33,7 +59,8 @@ easy_encode(lzma_coder *coder, lzma_allocator *allocator,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	return coder->encoder.code(coder->encoder.coder, allocator,
+	return coder->stream_encoder.code(
+			coder->stream_encoder.coder, allocator,
 			in, in_pos, in_size, out, out_pos, out_size, action);
 }
 
@@ -41,7 +68,7 @@ easy_encode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 easy_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->encoder, allocator);
+	lzma_next_coder_end(&coder->stream_encoder, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
@@ -49,8 +76,7 @@ easy_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 static lzma_ret
 easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_easy_level level, lzma_easy_level metadata_level,
-		const lzma_extra *header, const lzma_extra *footer)
+		lzma_easy_level level)
 {
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
@@ -60,39 +86,21 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->code = &easy_encode;
 		next->end = &easy_encoder_end;
 
-		next->coder->encoder = LZMA_NEXT_CODER_INIT;
+		next->coder->stream_encoder = LZMA_NEXT_CODER_INIT;
 	}
 
-	next->coder->options = (lzma_options_stream){
-		.check = LZMA_CHECK_CRC32,
-		.has_crc32 = true,
-		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.alignment = 0,
-		.header = header,
-		.footer = footer,
-	};
-
-	if (lzma_easy_set_filters(next->coder->options.filters, level)
-			|| lzma_easy_set_filters(
-				next->coder->options.metadata_filters,
-				metadata_level))
+	if (easy_set_filters(next->coder->filters, level))
 		return LZMA_HEADER_ERROR;
 
-	return lzma_stream_encoder_multi_init(&next->coder->encoder,
-			allocator, &next->coder->options);
+	return lzma_stream_encoder_init(&next->coder->stream_encoder,
+			allocator, next->coder->filters, LZMA_CHECK_CRC32);
 }
 
 
 extern LZMA_API lzma_ret
-lzma_easy_encoder_multi(lzma_stream *strm,
-		lzma_easy_level level, lzma_easy_level metadata_level,
-		const lzma_extra *header, const lzma_extra *footer)
+lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
 {
-	// This is more complicated than lzma_easy_encoder_single(),
-	// because lzma_stream_encoder_multi() wants that the options
-	// structure is available until the encoding is finished.
-	lzma_next_strm_init(strm, easy_encoder_init,
-			level, metadata_level, header, footer);
+	lzma_next_strm_init(strm, easy_encoder_init, level);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
@@ -100,4 +108,15 @@ lzma_easy_encoder_multi(lzma_stream *strm,
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;
+}
+
+
+extern LZMA_API uint32_t
+lzma_easy_memory_usage(lzma_easy_level level)
+{
+	lzma_options_filter filters[5];
+	if (easy_set_filters(filters, level))
+		return UINT32_MAX;
+
+	return lzma_memory_usage(filters, true);
 }

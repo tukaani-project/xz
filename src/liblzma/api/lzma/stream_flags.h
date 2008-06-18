@@ -1,6 +1,6 @@
 /**
  * \file        lzma/stream_flags.h
- * \brief       .lzma Stream Header and Stream tail encoder and decoder
+ * \brief       .lzma Stream Header and Stream Footer encoder and decoder
  *
  * \author      Copyright (C) 1999-2006 Igor Pavlov
  * \author      Copyright (C) 2007 Lasse Collin
@@ -22,121 +22,113 @@
 
 
 /**
- * \brief       Size of Stream Header
+ * \brief       Size of Stream Header and Stream Footer
  *
- * Magic Bytes (6) + Stream Flags (1) + CRC32 (4)
+ * Stream Header and Stream Footer have the same size and they are not
+ * going to change even if a newer version of the .lzma file format is
+ * developed in future.
  */
-#define LZMA_STREAM_HEADER_SIZE (6 + 1 + 4)
+#define LZMA_STREAM_HEADER_SIZE 12
 
 
 /**
- * \brief       Size of Stream tail
- *
- * Because Stream Footer already has a defined meaning in the file format
- * specification, we use Stream tail to denote these two fields:
- * Stream Flags (1) + Magic Bytes (2)
- */
-#define LZMA_STREAM_TAIL_SIZE (1 + 2)
-
-
-/**
- * Options for encoding and decoding Stream Header and Stream tail
+ * Options for encoding and decoding Stream Header and Stream Footer
  */
 typedef struct {
+	/**
+	 * Backward Size must be a multiple of four bytes. In this Stream
+	 * format version Backward Size is the size of the Index field.
+	 */
+	lzma_vli backward_size;
+#	define LZMA_BACKWARD_SIZE_MIN 4
+#	define LZMA_BACKWARD_SIZE_MAX (LZMA_VLI_C(1) << 34)
+
 	/**
 	 * Type of the Check calculated from uncompressed data
 	 */
 	lzma_check_type check;
 
-	/**
-	 * True if Block Headers have the CRC32 field. Note that the CRC32
-	 * field is always present in the Stream Header.
-	 */
-	lzma_bool has_crc32;
-
-	/**
-	 * True if the Stream is a Multi-Block Stream.
-	 */
-	lzma_bool is_multi;
-
 } lzma_stream_flags;
 
 
-#define lzma_stream_flags_is_equal(a, b) \
-	((a).check == (b).check \
-		&& (a).has_crc32 == (b).has_crc32 \
-		&& (a).is_multi == (b).is_multi)
-
-
 /**
- * \brief       Encodes Stream Header
+ * \brief       Encode Stream Header
  *
- * Encoding of the Stream Header is done with a single call instead of
- * first initializing and then doing the actual work with lzma_code().
- *
- * \param       out         Beginning of the output buffer
- * \param       out_pos     out[*out_pos] is the next write position. This
- *                          is updated by the encoder.
- * \param       out_size    out[out_size] is the first byte to not write.
+ * \param       out         Beginning of the output buffer of
+ *                          LZMA_STREAM_HEADER_SIZE bytes.
  * \param       options     Stream Header options to be encoded.
+ *                          options->index_size is ignored and doesn't
+ *                          need to be initialized.
  *
  * \return      - LZMA_OK: Encoding was successful.
  *              - LZMA_PROG_ERROR: Invalid options.
- *              - LZMA_BUF_ERROR: Not enough output buffer space.
  */
 extern lzma_ret lzma_stream_header_encode(
-		uint8_t *out, const lzma_stream_flags *options);
+		const lzma_stream_flags *options, uint8_t *out);
 
 
 /**
- * \brief       Encodes Stream tail
+ * \brief       Encode Stream Footer
  *
- * \param       footer      Pointer to a pointer that will hold the
- *                          allocated buffer. Caller must free it once
- *                          it isn't needed anymore.
- * \param       footer_size Pointer to a variable that will the final size
- *                          of the footer buffer.
- * \param       allocator   lzma_allocator for custom allocator functions.
- *                          Set to NULL to use malloc().
+ * \param       out         Beginning of the output buffer of
+ *                          LZMA_STREAM_HEADER_SIZE bytes.
+ * \param       options     Stream Footer options to be encoded.
+ *
+ * \return      - LZMA_OK: Encoding was successful.
+ *              - LZMA_PROG_ERROR: Invalid options.
+ */
+extern lzma_ret lzma_stream_footer_encode(
+		const lzma_stream_flags *options, uint8_t *out);
+
+
+/**
+ * \brief       Decode Stream Header
+ *
  * \param       options     Stream Header options to be encoded.
+ * \param       in          Beginning of the input buffer of
+ *                          LZMA_STREAM_HEADER_SIZE bytes.
  *
- * \return      - LZMA_OK: Success; *header and *header_size set.
- *              - LZMA_PROG_ERROR: *options is invalid.
- *              - LZMA_MEM_ERROR: Cannot allocate memory.
+ * options->index_size is always set to LZMA_VLI_VALUE_UNKNOWN. This is to
+ * help comparing Stream Flags from Stream Header and Stream Footer with
+ * lzma_stream_flags_equal().
+ *
+ * \return      - LZMA_OK: Decoding was successful.
+ *              - LZMA_FORMAT_ERROR: Magic bytes don't match, thus the given
+ *                buffer cannot be Stream Header.
+ *              - LZMA_DATA_ERROR: CRC32 doesn't match, thus the header
+ *                is corrupt.
+ *              - LZMA_HEADER_ERROR: Unsupported options are present
+ *                in the header.
  */
-extern lzma_ret lzma_stream_tail_encode(
-		uint8_t *out, const lzma_stream_flags *options);
+extern lzma_ret lzma_stream_header_decode(
+		lzma_stream_flags *options, const uint8_t *in);
 
 
 /**
- * \brief       Initializes Stream Header decoder
+ * \brief       Decode Stream Footer
  *
- * \param       strm        Pointer to lzma_stream used to pass input data
- * \param       options     Target structure for parsed results
+ * \param       options     Stream Header options to be encoded.
+ * \param       in          Beginning of the input buffer of
+ *                          LZMA_STREAM_HEADER_SIZE bytes.
  *
- * \return      - LZMA_OK: Successfully initialized
- *              - LZMA_MEM_ERROR: Cannot allocate memory
- *
- * The actual decoding is done with lzma_code() and freed with lzma_end().
+ * \return      - LZMA_OK: Decoding was successful.
+ *              - LZMA_FORMAT_ERROR: Magic bytes don't match, thus the given
+ *                buffer cannot be Stream Footer.
+ *              - LZMA_DATA_ERROR: CRC32 doesn't match, thus the footer
+ *                is corrupt.
+ *              - LZMA_HEADER_ERROR: Unsupported options are present
+ *                in the footer.
  */
-extern lzma_ret lzma_stream_header_decoder(
-		lzma_stream *strm, lzma_stream_flags *options);
+extern lzma_ret lzma_stream_footer_decode(
+		lzma_stream_flags *options, const uint8_t *in);
 
 
 /**
- * \brief       Initializes Stream tail decoder
+ * \brief       Compare two lzma_stream_flags structures
  *
- * \param       strm        Pointer to lzma_stream used to pass input data
- * \param       options     Target structure for parsed results.
- * \param       decode_uncompressed_size
- *                          Set to true if the first field to decode is
- *                          Uncompressed Size. Set to false if the first
- *                          field to decode is Backward Size.
+ * index_size values are compared only if both are not LZMA_VLI_VALUE_UNKNOWN.
  *
- * \return      - LZMA_OK: Successfully initialized
- *              - LZMA_MEM_ERROR: Cannot allocate memory
- *
- * The actual decoding is done with lzma_code() and freed with lzma_end().
+ * \return      true if both structures are considered equal; false otherwise.
  */
-extern lzma_ret lzma_stream_tail_decoder(
-		lzma_stream *strm, lzma_stream_flags *options);
+extern lzma_bool lzma_stream_flags_equal(
+		const lzma_stream_flags *a, lzma_stream_flags *b);

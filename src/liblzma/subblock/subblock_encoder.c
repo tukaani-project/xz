@@ -51,7 +51,6 @@ do { \
 struct lzma_coder_s {
 	lzma_next_coder next;
 	bool next_finished;
-	bool use_eopm;
 
 	enum {
 		SEQ_FILL,
@@ -636,9 +635,10 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				coder->subfilter.mode_locked = false;
 				coder->sequence = SEQ_FILL;
 
-			} else if (coder->use_eopm) {
+			} else {
 				assert(action == LZMA_FINISH);
 
+				// Write EOPM.
 				// NOTE: No need to use write_byte() here
 				// since we are finishing.
 				out[*out_pos] = 0x10;
@@ -797,7 +797,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 		return_if_error(lzma_raw_encoder_init(
 				&coder->subfilter.subcoder, allocator,
-				options, LZMA_VLI_VALUE_UNKNOWN, false));
+				options));
 
 		// Encode the Filter Flags field into a buffer. This should
 		// never fail since we have already successfully initialized
@@ -948,8 +948,6 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->next_finished = false;
 	next->coder->sequence = SEQ_FILL;
 	next->coder->options = filters[0].options;
-	next->coder->use_eopm = filters[0].uncompressed_size
-			== LZMA_VLI_VALUE_UNKNOWN;
 	next->coder->pos = 0;
 
 	next->coder->alignment.in_pos = 0;

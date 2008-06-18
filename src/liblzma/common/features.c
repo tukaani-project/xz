@@ -21,10 +21,6 @@
 
 
 static const lzma_vli filters[] = {
-#ifdef HAVE_FILTER_COPY
-	LZMA_FILTER_COPY,
-#endif
-
 #ifdef HAVE_FILTER_SUBBLOCK
 	LZMA_FILTER_SUBBLOCK,
 #endif

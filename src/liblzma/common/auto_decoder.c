@@ -17,15 +17,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "common.h"
+#include "stream_decoder.h"
 #include "alone_decoder.h"
 
 
 struct lzma_coder_s {
 	lzma_next_coder next;
-
-	lzma_extra **header;
-	lzma_extra **footer;
 	bool initialized;
 };
 
@@ -43,8 +40,8 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 		lzma_ret ret;
 
 		if (in[*in_pos] == 0xFF)
-			ret = lzma_stream_decoder_init(&coder->next, allocator,
-					coder->header, coder->footer);
+			ret = lzma_stream_decoder_init(
+					&coder->next, allocator);
 		else
 			ret = lzma_alone_decoder_init(&coder->next, allocator);
 
@@ -69,8 +66,7 @@ auto_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_extra **header, lzma_extra **footer)
+auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
 {
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
@@ -82,8 +78,6 @@ auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
-	next->coder->header = header;
-	next->coder->footer = footer;
 	next->coder->initialized = false;
 
 	return LZMA_OK;
@@ -102,9 +96,9 @@ lzma_auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern LZMA_API lzma_ret
-lzma_auto_decoder(lzma_stream *strm, lzma_extra **header, lzma_extra **footer)
+lzma_auto_decoder(lzma_stream *strm)
 {
-	lzma_next_strm_init(strm, auto_decoder_init, header, footer);
+	lzma_next_strm_init0(strm, auto_decoder_init);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;

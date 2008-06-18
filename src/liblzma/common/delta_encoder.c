@@ -22,7 +22,8 @@
 
 
 /// Copies and encodes the data at the same time. This is used when Delta
-/// is the last filter in the chain.
+/// is the first filter in the chain (and thus the last filter in the
+/// encoder's filter stack).
 static void
 copy_and_encode(lzma_coder *coder,
 		const uint8_t *restrict in, uint8_t *restrict out, size_t size)
@@ -38,8 +39,8 @@ copy_and_encode(lzma_coder *coder,
 }
 
 
-/// Encodes the data in place. This is used when we are not the last filter
-/// in the chain.
+/// Encodes the data in place. This is used when we are the last filter
+/// in the chain (and thus non-last filter in the encoder's filter stack).
 static void
 encode_in_place(lzma_coder *coder, uint8_t *buffer, size_t size)
 {

@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       metadata_encoder.h
-/// \brief      Encodes metadata to be stored into Metadata Blocks
+/// \file       stream_encoder.h
+/// \brief      Encodes .lzma Streams
 //
-//  Copyright (C) 2007 Lasse Collin
+//  Copyright (C) 2008 Lasse Collin
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -17,14 +17,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef LZMA_METADATA_ENCODER_H
-#define LZMA_METADATA_ENCODER_H
+#ifndef LZMA_STREAM_ENCODER_H
+#define LZMA_STREAM_ENCODER_H
 
 #include "common.h"
 
 
-extern lzma_ret lzma_metadata_encoder_init(
+extern lzma_ret lzma_stream_encoder_init(
 		lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_options_block *options, const lzma_metadata *metadata);
+		const lzma_options_filter *filters, lzma_check_type check);
 
 #endif

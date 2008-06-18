@@ -26,29 +26,16 @@
 struct lzma_coder_s {
 	enum {
 		SEQ_CODE,
-		SEQ_CHECK,
-		SEQ_UNCOMPRESSED_SIZE,
-		SEQ_BACKWARD_SIZE,
 		SEQ_PADDING,
-		SEQ_END,
+		SEQ_CHECK,
 	} sequence;
 
 	/// The filters in the chain; initialized with lzma_raw_decoder_init().
 	lzma_next_coder next;
 
-	/// Decoding options; we also write Total Size, Compressed Size, and
-	/// Uncompressed Size back to this structure when the encoding has
-	/// been finished.
+	/// Decoding options; we also write Compressed Size and Uncompressed
+	/// Size back to this structure when the encoding has been finished.
 	lzma_options_block *options;
-
-	/// Position in variable-length integers (and in some other places).
-	size_t pos;
-
-	/// Check of the uncompressed data
-	lzma_check check;
-
-	/// Total Size calculated while encoding
-	lzma_vli total_size;
 
 	/// Compressed Size calculated while encoding
 	lzma_vli compressed_size;
@@ -56,82 +43,17 @@ struct lzma_coder_s {
 	/// Uncompressed Size calculated while encoding
 	lzma_vli uncompressed_size;
 
-	/// Maximum allowed total_size
-	lzma_vli total_limit;
+	/// Maximum allowed Compressed Size; this takes into account the
+	/// size of the Block Header and Check fields when Compressed Size
+	/// is unknown.
+	lzma_vli compressed_limit;
 
-	/// Maximum allowed uncompressed_size
-	lzma_vli uncompressed_limit;
+	/// Position when reading the Check field
+	size_t check_pos;
 
-	/// Temporary location for the Uncompressed Size and Backward Size
-	/// fields in Block Footer.
-	lzma_vli tmp;
-
-	/// Size of the Backward Size field - This is needed so that we
-	/// can verify the Backward Size and still keep updating total_size.
-	size_t size_of_backward_size;
+	/// Check of the uncompressed data
+	lzma_check check;
 };
-
-
-static lzma_ret
-update_sequence(lzma_coder *coder)
-{
-	switch (coder->sequence) {
-	case SEQ_CODE:
-		if (coder->options->check != LZMA_CHECK_NONE) {
-			lzma_check_finish(&coder->check,
-					coder->options->check);
-			coder->sequence = SEQ_CHECK;
-			break;
-		}
-
-	// Fall through
-
-	case SEQ_CHECK:
-		if (coder->options->has_uncompressed_size_in_footer) {
-			coder->sequence = SEQ_UNCOMPRESSED_SIZE;
-			break;
-		}
-
-	// Fall through
-
-	case SEQ_UNCOMPRESSED_SIZE:
-		if (coder->options->has_backward_size) {
-			coder->sequence = SEQ_BACKWARD_SIZE;
-			break;
-		}
-
-	// Fall through
-
-	case SEQ_BACKWARD_SIZE:
-		if (coder->options->handle_padding) {
-			coder->sequence = SEQ_PADDING;
-			break;
-		}
-
-	case SEQ_PADDING:
-		if (!is_size_valid(coder->total_size,
-					coder->options->total_size)
-				|| !is_size_valid(coder->compressed_size,
-					coder->options->compressed_size)
-				|| !is_size_valid(coder->uncompressed_size,
-					coder->options->uncompressed_size))
-			return LZMA_DATA_ERROR;
-
-		// Copy the values into coder->options. The caller
-		// may use this information to construct Index.
-		coder->options->total_size = coder->total_size;
-		coder->options->compressed_size = coder->compressed_size;
-		coder->options->uncompressed_size = coder->uncompressed_size;
-
-		return LZMA_STREAM_END;
-
-	default:
-		assert(0);
-		return LZMA_PROG_ERROR;
-	}
-
-	return LZMA_OK;
-}
 
 
 static lzma_ret
@@ -140,15 +62,11 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	// Special case when the Block has only Block Header.
-	if (coder->sequence == SEQ_END)
-		return LZMA_STREAM_END;
-
-	// FIXME: Termination condition should work but could be cleaner.
-	while (*out_pos < out_size && (*in_pos < in_size
-			|| coder->sequence == SEQ_CODE))
 	switch (coder->sequence) {
 	case SEQ_CODE: {
+		if (*out_pos >= out_size)
+			return LZMA_OK;
+
 		const size_t in_start = *in_pos;
 		const size_t out_start = *out_pos;
 
@@ -159,13 +77,13 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		const size_t in_used = *in_pos - in_start;
 		const size_t out_used = *out_pos - out_start;
 
-		if (update_size(&coder->total_size, in_used,
-					coder->total_limit)
-				|| update_size(&coder->compressed_size,
-					in_used,
-					coder->options->compressed_size)
+		// NOTE: We compare to compressed_limit here, which prevents
+		// the total size of the Block growing past LZMA_VLI_VALUE_MAX.
+		if (update_size(&coder->compressed_size, in_used,
+					coder->compressed_limit)
 				|| update_size(&coder->uncompressed_size,
-					out_used, coder->uncompressed_limit))
+					out_used,
+					coder->options->uncompressed_size))
 			return LZMA_DATA_ERROR;
 
 		lzma_check_update(&coder->check, coder->options->check,
@@ -174,116 +92,61 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		if (ret != LZMA_STREAM_END)
 			return ret;
 
-		return_if_error(update_sequence(coder));
-
-		break;
+		coder->sequence = SEQ_PADDING;
 	}
 
-	case SEQ_CHECK:
-		switch (coder->options->check) {
-		case LZMA_CHECK_CRC32:
-			if (((coder->check.crc32 >> (coder->pos * 8))
-					& 0xFF) != in[*in_pos])
-				return LZMA_DATA_ERROR;
-			break;
-
-		case LZMA_CHECK_CRC64:
-			if (((coder->check.crc64 >> (coder->pos * 8))
-					& 0xFF) != in[*in_pos])
-				return LZMA_DATA_ERROR;
-			break;
-
-		case LZMA_CHECK_SHA256:
-			if (coder->check.sha256.buffer[coder->pos]
-					!= in[*in_pos])
-				return LZMA_DATA_ERROR;
-			break;
-
-		default:
-			assert(coder->options->check != LZMA_CHECK_NONE);
-			assert(coder->options->check <= LZMA_CHECK_ID_MAX);
-			break;
-		}
-
-		if (update_size(&coder->total_size, 1, coder->total_limit))
-			return LZMA_DATA_ERROR;
-
-		++*in_pos;
-
-		if (++coder->pos == lzma_check_sizes[coder->options->check]) {
-			return_if_error(update_sequence(coder));
-			coder->pos = 0;
-		}
-
-		break;
-
-	case SEQ_UNCOMPRESSED_SIZE: {
-		const size_t in_start = *in_pos;
-
-		const lzma_ret ret = lzma_vli_decode(&coder->tmp,
-				&coder->pos, in, in_pos, in_size);
-
-		if (update_size(&coder->total_size, *in_pos - in_start,
-				coder->total_limit))
-			return LZMA_DATA_ERROR;
-
-		if (ret != LZMA_STREAM_END)
-			return ret;
-
-		if (coder->tmp != coder->uncompressed_size)
-			return LZMA_DATA_ERROR;
-
-		coder->pos = 0;
-		coder->tmp = 0;
-
-		return_if_error(update_sequence(coder));
-
-		break;
-	}
-
-	case SEQ_BACKWARD_SIZE: {
-		const size_t in_start = *in_pos;
-
-		const lzma_ret ret = lzma_vli_decode(&coder->tmp,
-				&coder->pos, in, in_pos, in_size);
-
-		const size_t in_used = *in_pos - in_start;
-
-		if (update_size(&coder->total_size, in_used,
-				coder->total_limit))
-			return LZMA_DATA_ERROR;
-
-		coder->size_of_backward_size += in_used;
-
-		if (ret != LZMA_STREAM_END)
-			return ret;
-
-		if (coder->tmp != coder->total_size
-				- coder->size_of_backward_size)
-			return LZMA_DATA_ERROR;
-
-		return_if_error(update_sequence(coder));
-
-		break;
-	}
+	// Fall through
 
 	case SEQ_PADDING:
-		if (in[*in_pos] == 0x00) {
-			if (update_size(&coder->total_size, 1,
-					coder->total_limit))
+		// If Compressed Data is padded to a multiple of four bytes.
+		while (coder->compressed_size & 3) {
+			if (*in_pos >= in_size)
+				return LZMA_OK;
+
+			if (in[(*in_pos)++] != 0x00)
 				return LZMA_DATA_ERROR;
 
-			++*in_pos;
-			break;
+			if (update_size(&coder->compressed_size, 1,
+					coder->compressed_limit))
+				return LZMA_DATA_ERROR;
 		}
 
-		return update_sequence(coder);
+		// Compressed and Uncompressed Sizes are now at their final
+		// values. Verify that they match the values given to us.
+		if (!is_size_valid(coder->compressed_size,
+					coder->options->compressed_size)
+				|| !is_size_valid(coder->uncompressed_size,
+					coder->options->uncompressed_size))
+			return LZMA_DATA_ERROR;
 
-	default:
-		return LZMA_PROG_ERROR;
+		// Copy the values into coder->options. The caller
+		// may use this information to construct Index.
+		coder->options->compressed_size = coder->compressed_size;
+		coder->options->uncompressed_size = coder->uncompressed_size;
+
+		if (coder->options->check == LZMA_CHECK_NONE)
+			return LZMA_STREAM_END;
+
+		lzma_check_finish(&coder->check, coder->options->check);
+		coder->sequence = SEQ_CHECK;
+
+	// Fall through
+
+	case SEQ_CHECK:
+		while (*in_pos < in_size) {
+			if (in[(*in_pos)++] != coder->check.buffer[
+					coder->check_pos])
+				return LZMA_DATA_ERROR;
+
+			if (++coder->check_pos == lzma_check_sizes[
+					coder->options->check])
+				return LZMA_STREAM_END;
+		}
+
+		return LZMA_OK;
 	}
 
-	return LZMA_OK;
+	return LZMA_PROG_ERROR;
 }
 
 
@@ -300,9 +163,12 @@ static lzma_ret
 block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_options_block *options)
 {
-	// This is pretty similar to lzma_block_encoder_init().
-	// See comments there.
+	// While lzma_block_total_size_get() is meant to calculate the Total
+	// Size, it also validates the options excluding the filters.
+	if (lzma_block_total_size_get(options) == 0)
+		return LZMA_PROG_ERROR;
 
+	// Allocate and initialize *next->coder if needed.
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (next->coder == NULL)
@@ -313,40 +179,28 @@ block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
-	if (validate_options_1(options))
-		return LZMA_PROG_ERROR;
-
-	if (validate_options_2(options))
-		return LZMA_DATA_ERROR;
-
-	return_if_error(lzma_check_init(&next->coder->check, options->check));
-
+	// Basic initializations
 	next->coder->sequence = SEQ_CODE;
 	next->coder->options = options;
-	next->coder->pos = 0;
-	next->coder->total_size = options->header_size;
 	next->coder->compressed_size = 0;
 	next->coder->uncompressed_size = 0;
-	next->coder->total_limit
-			= MIN(options->total_size, options->total_limit);
-	next->coder->uncompressed_limit = MIN(options->uncompressed_size,
-			options->uncompressed_limit);
-	next->coder->tmp = 0;
-	next->coder->size_of_backward_size = 0;
 
-	if (!options->has_eopm && options->uncompressed_size == 0) {
-		// The Compressed Data field is empty, thus we skip SEQ_CODE
-		// phase completely.
-		const lzma_ret ret = update_sequence(next->coder);
-		if (ret != LZMA_OK && ret != LZMA_STREAM_END)
-			return LZMA_PROG_ERROR;
-	}
+	// If Compressed Size is not known, we calculate the maximum allowed
+	// value so that Total Size of the Block still is a valid VLI and
+	// a multiple of four.
+	next->coder->compressed_limit
+			= options->compressed_size == LZMA_VLI_VALUE_UNKNOWN
+				? (LZMA_VLI_VALUE_MAX & ~LZMA_VLI_C(3))
+					- options->header_size
+					- lzma_check_sizes[options->check]
+				: options->compressed_size;
+
+	// Initialize the check
+	next->coder->check_pos = 0;
+	return_if_error(lzma_check_init(&next->coder->check, options->check));
 
 	return lzma_raw_decoder_init(&next->coder->next, allocator,
-			options->filters, options->has_eopm
-				? LZMA_VLI_VALUE_UNKNOWN
-				: options->uncompressed_size,
-			true);
+			options->filters);
 }
 
 

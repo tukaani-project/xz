@@ -128,6 +128,21 @@ typedef enum {
 		 * In the decoder, this is only a warning and decoding can
 		 * still proceed normally (but the Check is ignored).
 		 */
+
+	LZMA_FORMAT_ERROR        = -8,
+		/**<
+		 * \brief       Unknown file format
+		 */
+
+	LZMA_MEMLIMIT_ERROR     = -9
+		/**
+		 * \brief       Memory usage limit was reached
+		 *
+		 * Decoder would need more memory than allowed by the
+		 * specified memory usage limit. To continue decoding,
+		 * the memory usage limit has to be increased. See functions
+		 * lzma_memlimit_get() and lzma_memlimit_set().
+		 */
 } lzma_ret;
 
 

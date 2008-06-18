@@ -25,14 +25,10 @@ if test $? != 42 ; then
 fi
 
 test_lzma() {
-	################
-	# Non-streamed #
-	################
-
 	if $LZMA -c "$@" "$FILE" > tmp_compressed; then
 		:
 	else
-		echo "Non-streamed compressing failed: $* $FILE"
+		echo "Compressing failed: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
@@ -40,7 +36,7 @@ test_lzma() {
 	if $LZMA -cd tmp_compressed > tmp_uncompressed ; then
 		:
 	else
-		echo "Decoding of non-streamed file failed: $* $FILE"
+		echo "Decoding failed: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
@@ -48,7 +44,7 @@ test_lzma() {
 	if cmp tmp_uncompressed "$FILE" ; then
 		:
 	else
-		echo "Decoded non-streamed file does not match the original: $* $FILE"
+		echo "Decoded file does not match the original: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
@@ -56,7 +52,7 @@ test_lzma() {
 	if $LZMADEC tmp_compressed > tmp_uncompressed ; then
 		:
 	else
-		echo "Decoding of non-streamed file failed: $* $FILE"
+		echo "Decoding failed: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
@@ -64,51 +60,7 @@ test_lzma() {
 	if cmp tmp_uncompressed "$FILE" ; then
 		:
 	else
-		echo "Decoded non-streamed file does not match the original: $* $FILE"
-		(exit 1)
-		exit 1
-	fi
-
-	############
-	# Streamed #
-	############
-
-	if $LZMA -c "$@" < "$FILE" > tmp_compressed; then
-		:
-	else
-		echo "Streamed compressing failed: $* $FILE"
-		(exit 1)
-		exit 1
-	fi
-
-	if $LZMA -cd < tmp_compressed > tmp_uncompressed ; then
-		:
-	else
-		echo "Decoding of streamed file failed: $* $FILE"
-		(exit 1)
-		exit 1
-	fi
-
-	if cmp tmp_uncompressed "$FILE" ; then
-		:
-	else
-		echo "Decoded streamed file does not match the original: $* $FILE"
-		(exit 1)
-		exit 1
-	fi
-
-	if $LZMADEC < tmp_compressed > tmp_uncompressed ; then
-		:
-	else
-		echo "Decoding of streamed file failed: $* $FILE"
-		(exit 1)
-		exit 1
-	fi
-
-	if cmp tmp_uncompressed "$FILE" ; then
-		:
-	else
-		echo "Decoded streamed file does not match the original: $* $FILE"
+		echo "Decoded file does not match the original: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
@@ -151,7 +103,6 @@ do
 	test_lzma -4
 
 	for ARGS in \
-		--copy \
 		--subblock \
 		--subblock=size=1 \
 		--subblock=size=1,rle=1 \
@@ -170,10 +121,8 @@ do
 		--armthumb \
 		--sparc
 	do
-		test_lzma $ARGS
-		test_lzma --subblock $ARGS
-		test_lzma $ARGS --subblock
-		test_lzma --subblock $ARGS --subblock
+		test_lzma $ARGS --lzma=dict=64KiB,fb=32,mode=fast
+		test_lzma --subblock $ARGS --lzma=dict=64KiB,fb=32,mode=fast
 	done
 
 	echo

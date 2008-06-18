@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       stream_flags_encoder.c
-/// \brief      Encodes Stream Header and Footer for .lzma files
+/// \brief      Encodes Stream Header and Stream Footer for .lzma files
 //
 //  Copyright (C) 2007 Lasse Collin
 //
@@ -21,55 +21,69 @@
 
 
 static bool
-stream_flags_encode(uint8_t *flags_byte, const lzma_stream_flags *options)
+stream_flags_encode(const lzma_stream_flags *options, uint8_t *out)
 {
-	// Check type
 	if ((unsigned int)(options->check) > LZMA_CHECK_ID_MAX)
 		return true;
 
-	*flags_byte = options->check;
-
-	// Usage of CRC32 in Block Headers
-	if (options->has_crc32)
-		*flags_byte |= 0x08;
-
-	// Single- or Multi-Block
-	if (options->is_multi)
-		*flags_byte |= 0x10;
+	out[0] = 0x00;
+	out[1] = options->check;
 
 	return false;
 }
 
 
 extern LZMA_API lzma_ret
-lzma_stream_header_encode(uint8_t *out, const lzma_stream_flags *options)
+lzma_stream_header_encode(const lzma_stream_flags *options, uint8_t *out)
 {
+	assert(sizeof(lzma_header_magic) + LZMA_STREAM_FLAGS_SIZE
+			+ 4 == LZMA_STREAM_HEADER_SIZE);
+
 	// Magic
 	memcpy(out, lzma_header_magic, sizeof(lzma_header_magic));
 
 	// Stream Flags
-	if (stream_flags_encode(out + sizeof(lzma_header_magic), options))
-		return LZMA_PROG_ERROR;;
+	if (stream_flags_encode(options, out + sizeof(lzma_header_magic)))
+		return LZMA_PROG_ERROR;
 
 	// CRC32 of the Stream Header
-	const uint32_t crc = lzma_crc32(out + sizeof(lzma_header_magic), 1, 0);
+	const uint32_t crc = lzma_crc32(out + sizeof(lzma_header_magic),
+			LZMA_STREAM_FLAGS_SIZE, 0);
 
-	for (size_t i = 0; i < 4; ++i)
-		out[sizeof(lzma_header_magic) + 1 + i] = crc >> (i * 8);
+	integer_write_32(out + sizeof(lzma_header_magic)
+			+ LZMA_STREAM_FLAGS_SIZE, crc);
 
 	return LZMA_OK;
 }
 
 
 extern LZMA_API lzma_ret
-lzma_stream_tail_encode(uint8_t *out, const lzma_stream_flags *options)
+lzma_stream_footer_encode(const lzma_stream_flags *options, uint8_t *out)
 {
-	// Stream Flags
-	if (stream_flags_encode(out, options))
+	assert(2 * 4 + LZMA_STREAM_FLAGS_SIZE + sizeof(lzma_footer_magic)
+			== LZMA_STREAM_HEADER_SIZE);
+
+	// Backward Size
+	if (options->backward_size < LZMA_BACKWARD_SIZE_MIN
+			|| options->backward_size > LZMA_BACKWARD_SIZE_MAX
+			|| (options->backward_size & 3))
 		return LZMA_PROG_ERROR;
 
+	integer_write_32(out + 4, options->backward_size / 4 - 1);
+
+	// Stream Flags
+	if (stream_flags_encode(options, out + 2 * 4))
+		return LZMA_PROG_ERROR;
+
+	// CRC32
+	const uint32_t crc = lzma_crc32(
+			out + 4, 4 + LZMA_STREAM_FLAGS_SIZE, 0);
+
+	integer_write_32(out, crc);
+
 	// Magic
-	memcpy(out + 1, lzma_footer_magic, sizeof(lzma_footer_magic));
+	memcpy(out + 2 * 4 + LZMA_STREAM_FLAGS_SIZE,
+			lzma_footer_magic, sizeof(lzma_footer_magic));
 
 	return LZMA_OK;
 }

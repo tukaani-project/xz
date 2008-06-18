@@ -23,9 +23,8 @@
 #include "common.h"
 
 extern lzma_ret lzma_raw_coder_init(lzma_next_coder *next,
-		lzma_allocator *allocator,
-		const lzma_options_filter *options, lzma_vli uncompressed_size,
+		lzma_allocator *allocator, const lzma_options_filter *options,
 		lzma_init_function (*get_function)(lzma_vli id),
-		bool allow_implicit, bool is_encoder);
+		bool is_encoder);
 
 #endif

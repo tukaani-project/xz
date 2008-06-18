@@ -387,11 +387,11 @@ lzma_lz_decoder_reset(lzma_lz_decoder *lz, lzma_allocator *allocator,
 		bool (*process)(lzma_coder *restrict coder,
 			const uint8_t *restrict in, size_t *restrict in_pos,
 			size_t in_size, bool has_safe_buffer),
-		lzma_vli uncompressed_size,
 		size_t history_size, size_t match_max_len)
 {
-	// Set uncompressed size.
-	lz->uncompressed_size = uncompressed_size;
+	// Known uncompressed size is used only with LZMA_Alone files so we
+	// set it always to unknown by default.
+	lz->uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
 
 	// Limit the history size to roughly sane values. This is primarily
 	// to prevent integer overflows.

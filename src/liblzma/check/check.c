@@ -13,8 +13,15 @@
 
 #include "check.h"
 
-// See the .lzma header format specification section 2.2.2.
-LZMA_API const uint32_t lzma_check_sizes[8] = { 0, 4, 4, 8, 16, 32, 32, 64 };
+// See the .lzma header format specification section 2.1.1.2.
+LZMA_API const uint32_t lzma_check_sizes[LZMA_CHECK_ID_MAX + 1] = {
+	0,
+	4, 4, 4,
+	8, 8, 8,
+	16, 16, 16,
+	32, 32, 32,
+	64, 64, 64
+};
 
 
 LZMA_API const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1] = {
@@ -27,6 +34,7 @@ LZMA_API const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1] = {
 #endif
 
 	false,  // Reserved
+	false,  // Reserved
 
 #ifdef HAVE_CHECK_CRC64
 	true,
@@ -35,6 +43,10 @@ LZMA_API const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1] = {
 #endif
 
 	false,  // Reserved
+	false,  // Reserved
+	false,  // Reserved
+	false,  // Reserved
+	false,  // Reserved
 
 #ifdef HAVE_CHECK_SHA256
 	true,
@@ -42,6 +54,9 @@ LZMA_API const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1] = {
 	false,
 #endif
 
+	false,  // Reserved
+	false,  // Reserved
+	false,  // Reserved
 	false,  // Reserved
 	false,  // Reserved
 };
@@ -58,24 +73,24 @@ lzma_check_init(lzma_check *check, lzma_check_type type)
 
 #ifdef HAVE_CHECK_CRC32
 	case LZMA_CHECK_CRC32:
-		check->crc32 = 0;
+		check->state.crc32 = 0;
 		break;
 #endif
 
 #ifdef HAVE_CHECK_CRC64
 	case LZMA_CHECK_CRC64:
-		check->crc64 = 0;
+		check->state.crc64 = 0;
 		break;
 #endif
 
 #ifdef HAVE_CHECK_SHA256
 	case LZMA_CHECK_SHA256:
-		lzma_sha256_init(&check->sha256);
+		lzma_sha256_init(check);
 		break;
 #endif
 
 	default:
-		if (type <= LZMA_CHECK_ID_MAX)
+		if ((unsigned)(type) <= LZMA_CHECK_ID_MAX)
 			ret = LZMA_UNSUPPORTED_CHECK;
 		else
 			ret = LZMA_PROG_ERROR;
@@ -93,19 +108,19 @@ lzma_check_update(lzma_check *check, lzma_check_type type,
 	switch (type) {
 #ifdef HAVE_CHECK_CRC32
 	case LZMA_CHECK_CRC32:
-		check->crc32 = lzma_crc32(buf, size, check->crc32);
+		check->state.crc32 = lzma_crc32(buf, size, check->state.crc32);
 		break;
 #endif
 
 #ifdef HAVE_CHECK_CRC64
 	case LZMA_CHECK_CRC64:
-		check->crc64 = lzma_crc64(buf, size, check->crc64);
+		check->state.crc64 = lzma_crc64(buf, size, check->state.crc64);
 		break;
 #endif
 
 #ifdef HAVE_CHECK_SHA256
 	case LZMA_CHECK_SHA256:
-		lzma_sha256_update(buf, size, &check->sha256);
+		lzma_sha256_update(buf, size, check);
 		break;
 #endif
 
@@ -120,10 +135,28 @@ lzma_check_update(lzma_check *check, lzma_check_type type,
 extern void
 lzma_check_finish(lzma_check *check, lzma_check_type type)
 {
-#ifdef HAVE_CHECK_SHA256
-	if (type == LZMA_CHECK_SHA256)
-		lzma_sha256_finish(&check->sha256);
+	switch (type) {
+#ifdef HAVE_CHECK_CRC32
+	case LZMA_CHECK_CRC32:
+		*(uint32_t *)(check->buffer) = check->state.crc32;
+		break;
 #endif
+
+#ifdef HAVE_CHECK_CRC64
+	case LZMA_CHECK_CRC64:
+		*(uint64_t *)(check->buffer) = check->state.crc64;
+		break;
+#endif
+
+#ifdef HAVE_CHECK_SHA256
+	case LZMA_CHECK_SHA256:
+		lzma_sha256_finish(check);
+		break;
+#endif
+
+	default:
+		break;
+	}
 
 	return;
 }

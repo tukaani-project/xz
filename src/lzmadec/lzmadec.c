@@ -284,9 +284,7 @@ parse_options(int argc, char **argv)
 		case OPTION_FORMAT: {
 			if (strcmp("auto", optarg) == 0) {
 				format_type = FORMAT_AUTO;
-			} else if (strcmp("native", optarg) == 0
-					|| strcmp("single", optarg) == 0
-					|| strcmp("multi", optarg) == 0) {
+			} else if (strcmp("native", optarg) == 0) {
 				format_type = FORMAT_NATIVE;
 			} else if (strcmp("alone", optarg) == 0) {
 				format_type = FORMAT_ALONE;
@@ -315,11 +313,11 @@ init(void)
 
 	switch (format_type) {
 	case FORMAT_AUTO:
-		ret = lzma_auto_decoder(&strm, NULL, NULL);
+		ret = lzma_auto_decoder(&strm);
 		break;
 
 	case FORMAT_NATIVE:
-		ret = lzma_stream_decoder(&strm, NULL, NULL);
+		ret = lzma_stream_decoder(&strm);
 		break;
 
 	case FORMAT_ALONE:

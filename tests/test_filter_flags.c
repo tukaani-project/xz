@@ -51,14 +51,14 @@ encode(uint32_t known_size)
 
 
 static bool
-decode_ret(uint32_t known_size, lzma_ret ret_ok)
+decode_ret(uint32_t known_size, lzma_ret expected_ret)
 {
 	memcrap(&decoded_flags, sizeof(decoded_flags));
 
-	if (lzma_filter_flags_decoder(&strm, &decoded_flags) != LZMA_OK)
-		return true;
-
-	if (decoder_loop_ret(&strm, buffer, known_size, ret_ok))
+	size_t pos = 0;
+	if (lzma_filter_flags_decode(&decoded_flags, NULL,
+				buffer, &pos, known_size) != expected_ret
+			|| pos != known_size)
 		return true;
 
 	return false;
@@ -68,7 +68,7 @@ decode_ret(uint32_t known_size, lzma_ret ret_ok)
 static bool
 decode(uint32_t known_size)
 {
-	if (decode_ret(known_size, LZMA_STREAM_END))
+	if (decode_ret(known_size, LZMA_OK))
 		return true;
 
 	if (known_flags.id != decoded_flags.id)
@@ -78,49 +78,7 @@ decode(uint32_t known_size)
 }
 
 
-static void
-test_copy(void)
-{
-	// Test 1 (good)
-	known_flags.id = LZMA_FILTER_COPY;
-	known_flags.options = NULL;
-
-	expect(!encode(1));
-	expect(!decode(1));
-	expect(decoded_flags.options == NULL);
-
-	// Test 2 (invalid encoder options)
-	known_flags.options = &known_flags;
-	expect(encode(99));
-
-	// Test 3 (good but unusual Filter Flags field)
-	buffer[0] = 0xE0;
-	buffer[1] = LZMA_FILTER_COPY;
-	expect(!decode(2));
-	expect(decoded_flags.options == NULL);
-
-	// Test 4 (invalid Filter Flags field)
-	buffer[0] = 0xE1;
-	buffer[1] = LZMA_FILTER_COPY;
-	buffer[2] = 0;
-	expect(!decode_ret(3, LZMA_HEADER_ERROR));
-
-	// Test 5 (good but weird Filter Flags field)
-	buffer[0] = 0xFF;
-	buffer[1] = LZMA_FILTER_COPY;
-	buffer[2] = 0;
-	expect(!decode(3));
-	expect(decoded_flags.options == NULL);
-
-	// Test 6 (invalid Filter Flags field)
-	buffer[0] = 0xFF;
-	buffer[1] = LZMA_FILTER_COPY;
-	buffer[2] = 1;
-	buffer[3] = 0;
-	expect(!decode_ret(4, LZMA_HEADER_ERROR));
-}
-
-
+#ifdef HAVE_FILTER_SUBBLOCK
 static void
 test_subblock(void)
 {
@@ -128,16 +86,16 @@ test_subblock(void)
 	known_flags.id = LZMA_FILTER_SUBBLOCK;
 	known_flags.options = NULL;
 
-	expect(!encode(1));
-	expect(!decode(1));
+	expect(!encode(2));
+	expect(!decode(2));
 	expect(decoded_flags.options != NULL);
 	expect(((lzma_options_subblock *)(decoded_flags.options))
 			->allow_subfilters);
 
 	// Test 2
 	known_flags.options = decoded_flags.options;
-	expect(!encode(1));
-	expect(!decode(1));
+	expect(!encode(2));
+	expect(!decode(2));
 	expect(decoded_flags.options != NULL);
 	expect(((lzma_options_subblock *)(decoded_flags.options))
 			->allow_subfilters);
@@ -146,14 +104,15 @@ test_subblock(void)
 	free(known_flags.options);
 
 	// Test 3
-	buffer[0] = 0xFF;
-	buffer[1] = LZMA_FILTER_SUBBLOCK;
-	buffer[2] = 1;
-	buffer[3] = 0;
-	expect(!decode_ret(4, LZMA_HEADER_ERROR));
+	buffer[0] = LZMA_FILTER_SUBBLOCK;
+	buffer[1] = 1;
+	buffer[2] = 0;
+	expect(!decode_ret(3, LZMA_HEADER_ERROR));
 }
+#endif
 
 
+#ifdef HAVE_FILTER_SIMPLE
 static void
 test_simple(void)
 {
@@ -161,16 +120,16 @@ test_simple(void)
 	known_flags.id = LZMA_FILTER_X86;
 	known_flags.options = NULL;
 
-	expect(!encode(1));
-	expect(!decode(1));
+	expect(!encode(2));
+	expect(!decode(2));
 	expect(decoded_flags.options == NULL);
 
 	// Test 2
 	lzma_options_simple options;
 	options.start_offset = 0;
 	known_flags.options = &options;
-	expect(!encode(1));
-	expect(!decode(1));
+	expect(!encode(2));
+	expect(!decode(2));
 	expect(decoded_flags.options == NULL);
 
 	// Test 3
@@ -185,8 +144,10 @@ test_simple(void)
 
 	free(decoded);
 }
+#endif
 
 
+#ifdef HAVE_FILTER_DELTA
 static void
 test_delta(void)
 {
@@ -202,8 +163,8 @@ test_delta(void)
 
 	// Test 3
 	options.distance = LZMA_DELTA_DISTANCE_MIN;
-	expect(!encode(2));
-	expect(!decode(2));
+	expect(!encode(3));
+	expect(!decode(3));
 	expect(((lzma_options_delta *)(decoded_flags.options))
 				->distance == options.distance);
 
@@ -211,8 +172,8 @@ test_delta(void)
 
 	// Test 4
 	options.distance = LZMA_DELTA_DISTANCE_MAX;
-	expect(!encode(2));
-	expect(!decode(2));
+	expect(!encode(3));
+	expect(!decode(3));
 	expect(((lzma_options_delta *)(decoded_flags.options))
 				->distance == options.distance);
 
@@ -222,8 +183,10 @@ test_delta(void)
 	options.distance = LZMA_DELTA_DISTANCE_MAX + 1;
 	expect(encode(99));
 }
+#endif
 
 
+#ifdef HAVE_FILTER_LZMA
 static void
 validate_lzma(void)
 {
@@ -271,12 +234,13 @@ test_lzma(void)
 	expect(encode(99));
 
 	// Test 4 (brute-force test some valid dictionary sizes)
+	options.dictionary_size = LZMA_DICTIONARY_SIZE_MIN;
 	while (options.dictionary_size != LZMA_DICTIONARY_SIZE_MAX) {
 		if (++options.dictionary_size == 5000)
 			options.dictionary_size = LZMA_DICTIONARY_SIZE_MAX - 5;
 
-		expect(!encode(3));
-		expect(!decode(3));
+		expect(!encode(4));
+		expect(!decode(4));
 		validate_lzma();
 
 		free(decoded_flags.options);
@@ -287,7 +251,7 @@ test_lzma(void)
 	expect(encode(99));
 
 	// Test 6 (brute-force test lc/lp/pb)
-	options.dictionary_size = 1;
+	options.dictionary_size = LZMA_DICTIONARY_SIZE_MIN;
 	for (uint32_t lc = LZMA_LITERAL_CONTEXT_BITS_MIN;
 			lc <= LZMA_LITERAL_CONTEXT_BITS_MAX; ++lc) {
 		for (uint32_t lp = LZMA_LITERAL_POS_BITS_MIN;
@@ -298,8 +262,8 @@ test_lzma(void)
 				options.literal_pos_bits = lp;
 				options.pos_bits = pb;
 
-				expect(!encode(3));
-				expect(!decode(3));
+				expect(!encode(4));
+				expect(!decode(4));
 				validate_lzma();
 
 				free(decoded_flags.options);
@@ -307,6 +271,7 @@ test_lzma(void)
 		}
 	}
 }
+#endif
 
 
 int
@@ -314,11 +279,18 @@ main(void)
 {
 	lzma_init();
 
-	test_copy();
+#ifdef HAVE_FILTER_SUBBLOCK
 	test_subblock();
+#endif
+#ifdef HAVE_FILTER_SIMPLE
 	test_simple();
+#endif
+#ifdef HAVE_FILTER_DELTA
 	test_delta();
+#endif
+#ifdef HAVE_FILTER_LZMA
 	test_lzma();
+#endif
 
 	lzma_end(&strm);
 

@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       vli_reverse_decoder.c
-/// \brief      Decodes variable-length integers starting at end of the buffer
+/// \file       stream_flags_equal.c
+/// \brief      Compare Stream Header and Stream Footer
 //
-//  Copyright (C) 2007 Lasse Collin
+//  Copyright (C) 2008 Lasse Collin
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -20,36 +20,17 @@
 #include "common.h"
 
 
-extern LZMA_API lzma_ret
-lzma_vli_reverse_decode(lzma_vli *vli, const uint8_t *in, size_t *in_size)
+extern LZMA_API lzma_bool
+lzma_stream_flags_equal(const lzma_stream_flags *a, lzma_stream_flags *b)
 {
-	if (*in_size == 0)
-		return LZMA_BUF_ERROR;
+	if (a->check != b->check)
+		return false;
 
-	size_t i = *in_size - 1;
-	*vli = in[i] & 0x7F;
+	// Backward Sizes are compared only if they are known in both.
+	if (a->backward_size != LZMA_VLI_VALUE_UNKNOWN
+			&& b->backward_size != LZMA_VLI_VALUE_UNKNOWN
+			&& a->backward_size != b->backward_size)
+		return false;
 
-	if (!(in[i] & 0x80)) {
-		*in_size = i;
-		return LZMA_OK;
-	}
-
-	const size_t end = *in_size > LZMA_VLI_BYTES_MAX
-			? *in_size - LZMA_VLI_BYTES_MAX : 0;
-
-	do {
-		if (i-- == end) {
-			if (*in_size < LZMA_VLI_BYTES_MAX)
-				return LZMA_BUF_ERROR;
-
-			return LZMA_DATA_ERROR;
-		}
-
-		*vli <<= 7;
-		*vli = in[i] & 0x7F;
-
-	} while (!(in[i] & 0x80));
-
-	*in_size = i;
-	return LZMA_OK;
+	return true;
 }

@@ -25,25 +25,19 @@ libcommon_la_SOURCES = \
 	common.h \
 	bsr.h \
 	allocator.c \
+	block_util.c \
 	block_private.h \
-	extra.c \
 	features.c \
 	index.c \
-	info.c \
 	init.c \
 	memory_limiter.c \
 	memory_usage.c \
 	next_coder.c \
 	raw_common.c \
 	raw_common.h \
+	stream_flags_equal.c \
 	code.c \
 	version.c
-
-if COND_FILTER_COPY
-libcommon_la_SOURCES += \
-	copy_coder.c \
-	copy_coder.h
-endif
 
 if COND_FILTER_DELTA
 libcommon_la_SOURCES += \
@@ -69,21 +63,17 @@ libcommon_la_SOURCES += \
 	block_encoder.c \
 	block_encoder.h \
 	block_header_encoder.c \
-	easy_common.c \
-	easy_common.h \
-	easy_single.c \
-	easy_multi.c \
+	easy.c \
 	filter_flags_encoder.c \
+	index_encoder.c \
+	index_encoder.h \
 	init_encoder.c \
-	metadata_encoder.c \
-	metadata_encoder.h \
 	raw_encoder.c \
 	raw_encoder.h \
 	stream_common.c \
 	stream_common.h \
-	stream_encoder_single.c \
-	stream_encoder_multi.c \
-	stream_encoder_multi.h \
+	stream_encoder.c \
+	stream_encoder.h \
 	stream_flags_encoder.c \
 	vli_encoder.c
 endif
@@ -96,14 +86,13 @@ libcommon_la_SOURCES += \
 	block_decoder.h \
 	block_header_decoder.c \
 	filter_flags_decoder.c \
+	index_decoder.c \
+	index_hash.c \
 	init_decoder.c \
-	metadata_decoder.c \
-	metadata_decoder.h \
 	raw_decoder.c \
 	raw_decoder.h \
 	stream_decoder.c \
 	stream_flags_decoder.c \
 	stream_flags_decoder.h \
-	vli_decoder.c \
-	vli_reverse_decoder.c
+	vli_decoder.c
 endif

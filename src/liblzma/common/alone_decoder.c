@@ -32,9 +32,15 @@ struct lzma_coder_s {
 		SEQ_CODE,
 	} sequence;
 
+	/// Position in the header fields
 	size_t pos;
 
-	lzma_options_alone options;
+	/// Uncompressed size decoded from the header
+	lzma_vli uncompressed_size;
+
+	/// Options decoded from the header needed to initialize
+	/// the LZMA decoder
+	lzma_options_lzma options;
 };
 
 
@@ -50,34 +56,39 @@ alone_decode(lzma_coder *coder,
 			&& (coder->sequence == SEQ_CODE || *in_pos < in_size))
 	switch (coder->sequence) {
 	case SEQ_PROPERTIES:
-		if (lzma_lzma_decode_properties(
-				&coder->options.lzma, in[*in_pos]))
-			return LZMA_DATA_ERROR;
+		if (lzma_lzma_decode_properties(&coder->options, in[*in_pos]))
+			return LZMA_FORMAT_ERROR;
 
 		coder->sequence = SEQ_DICTIONARY_SIZE;
 		++*in_pos;
 		break;
 
 	case SEQ_DICTIONARY_SIZE:
-		coder->options.lzma.dictionary_size
+		coder->options.dictionary_size
 				|= (size_t)(in[*in_pos]) << (coder->pos * 8);
 
 		if (++coder->pos == 4) {
-			// A hack to ditch tons of false positives: We allow
-			// only dictionary sizes that are a power of two.
-			// LZMA_Alone didn't create other kinds of files,
-			// although it's not impossible that files with
-			// other dictionary sizes exist. Well, if someone
-			// complains, this will be reconsidered.
-			size_t count = 0;
-			for (size_t i = 0; i < 32; ++i)
-				if (coder->options.lzma.dictionary_size
-						& (UINT32_C(1) << i))
-					++count;
-
-			if (count != 1 || coder->options.lzma.dictionary_size
+			if (coder->options.dictionary_size
+					< LZMA_DICTIONARY_SIZE_MIN
+					|| coder->options.dictionary_size
 					> LZMA_DICTIONARY_SIZE_MAX)
-				return LZMA_DATA_ERROR;
+				return LZMA_FORMAT_ERROR;
+
+			// A hack to ditch tons of false positives: We allow
+			// only dictionary sizes that are 2^n or 2^n + 2^(n-1).
+			// LZMA_Alone created only files with 2^n, but accepts
+			// any dictionary size. If someone complains, this
+			// will be reconsidered.
+			uint32_t d = coder->options.dictionary_size - 1;
+			d |= d >> 2;
+			d |= d >> 3;
+			d |= d >> 4;
+			d |= d >> 8;
+			d |= d >> 16;
+			++d;
+
+			if (d != coder->options.dictionary_size)
+				return LZMA_FORMAT_ERROR;
 
 			coder->pos = 0;
 			coder->sequence = SEQ_UNCOMPRESSED_SIZE;
@@ -87,7 +98,7 @@ alone_decode(lzma_coder *coder,
 		break;
 
 	case SEQ_UNCOMPRESSED_SIZE:
-		coder->options.uncompressed_size
+		coder->uncompressed_size
 				|= (lzma_vli)(in[*in_pos]) << (coder->pos * 8);
 
 		if (++coder->pos == 8) {
@@ -95,11 +106,10 @@ alone_decode(lzma_coder *coder,
 			// if the uncompressed size is known, it must be less
 			// than 256 GiB. Again, if someone complains, this
 			// will be reconsidered.
-			if (coder->options.uncompressed_size
-						!= LZMA_VLI_VALUE_UNKNOWN
-					&& coder->options.uncompressed_size
+			if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN
+					&& coder->uncompressed_size
 						>= (LZMA_VLI_C(1) << 38))
-				return LZMA_DATA_ERROR;
+				return LZMA_FORMAT_ERROR;
 
 			coder->pos = 0;
 			coder->sequence = SEQ_CODER_INIT;
@@ -113,9 +123,7 @@ alone_decode(lzma_coder *coder,
 		lzma_filter_info filters[2] = {
 			{
 				.init = &lzma_lzma_decoder_init,
-				.options = &coder->options.lzma,
-				.uncompressed_size = coder->options
-						.uncompressed_size,
+				.options = &coder->options,
 			}, {
 				.init = NULL,
 			}
@@ -125,6 +133,10 @@ alone_decode(lzma_coder *coder,
 				allocator, filters);
 		if (ret != LZMA_OK)
 			return ret;
+
+		// Use a hack to set the uncompressed size.
+		lzma_lzma_decoder_uncompressed_size(&coder->next,
+				coder->uncompressed_size);
 
 		coder->sequence = SEQ_CODE;
 	}
@@ -169,8 +181,8 @@ alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
 
 	next->coder->sequence = SEQ_PROPERTIES;
 	next->coder->pos = 0;
-	next->coder->options.lzma.dictionary_size = 0;
-	next->coder->options.uncompressed_size = 0;
+	next->coder->options.dictionary_size = 0;
+	next->coder->uncompressed_size = 0;
 
 	return LZMA_OK;
 }
@@ -179,17 +191,14 @@ alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
 extern lzma_ret
 lzma_alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
 {
-	// We need to use _init2 because we don't pass any varadic args.
-	lzma_next_coder_init2(next, allocator, alone_decoder_init,
-			alone_decoder_init, allocator);
+	lzma_next_coder_init0(alone_decoder_init, next, allocator);
 }
 
 
 extern LZMA_API lzma_ret
 lzma_alone_decoder(lzma_stream *strm)
 {
-	lzma_next_strm_init2(strm, alone_decoder_init,
-			alone_decoder_init, strm->allocator);
+	lzma_next_strm_init0(strm, alone_decoder_init);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;

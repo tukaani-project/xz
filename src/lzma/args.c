@@ -52,8 +52,7 @@ static size_t filter_count = 0;
 
 
 enum {
-	OPT_COPY = INT_MIN,
-	OPT_SUBBLOCK,
+	OPT_SUBBLOCK = INT_MIN,
 	OPT_X86,
 	OPT_POWERPC,
 	OPT_IA64,
@@ -97,7 +96,6 @@ static const struct option long_opts[] = {
 	{ "compress",           no_argument,       NULL,  'z' },
 
 	// Filters
-	{ "copy",               no_argument,       NULL,   OPT_COPY },
 	{ "subblock",           optional_argument, NULL,   OPT_SUBBLOCK },
 	{ "x86",                no_argument,       NULL,   OPT_X86 },
 	{ "bcj",                no_argument,       NULL,   OPT_X86 },
@@ -267,10 +265,6 @@ parse_real(int argc, char **argv)
 
 		// Filter setup
 
-		case OPT_COPY:
-			add_filter(LZMA_FILTER_COPY, NULL);
-			break;
-
 		case OPT_SUBBLOCK:
 			add_filter(LZMA_FILTER_SUBBLOCK, optarg);
 			break;
@@ -314,8 +308,6 @@ parse_real(int argc, char **argv)
 			static const char *types[] = {
 				"auto",
 				"native",
-				"single",
-				"multi",
 				"alone",
 // 				"gzip",
 				NULL
@@ -469,18 +461,6 @@ set_compression_settings(void)
 		errmsg(V_ERROR, _("With --format=alone only the LZMA filter "
 				"is supported"));
 		my_exit(ERROR);
-	}
-
-	// Optimize the filter chain a little by removing all
-	// Copy filters.
-	for (size_t i = 0; opt_filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {
-		while (opt_filters[i].id == LZMA_FILTER_COPY) {
-			size_t j = i;
-			do {
-				opt_filters[j] = opt_filters[j + 1];
-			} while (opt_filters[++j].id
-					!= LZMA_VLI_VALUE_UNKNOWN);
-		}
 	}
 
 	const uint32_t memory_limit = opt_memory / (1024 * 1024) + 1;

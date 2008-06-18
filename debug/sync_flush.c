@@ -101,18 +101,13 @@ main(int argc, char **argv)
 	opt_subblock.subfilter_options.id = LZMA_FILTER_DELTA;
 	opt_subblock.subfilter_options.options = &opt_delta;
 
-	lzma_options_stream opt_stream = {
-		.check = LZMA_CHECK_NONE,
-		.has_crc32 = false,
-		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.alignment = 0,
-	};
-	opt_stream.filters[0].id = LZMA_FILTER_SUBBLOCK;
-	opt_stream.filters[0].options = &opt_subblock;
-	opt_stream.filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
+	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	filters[0].id = LZMA_FILTER_LZMA;
+	filters[0].options = &opt_lzma;
+	filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
 	// Init
-	if (lzma_stream_encoder_single(&strm, &opt_stream) != LZMA_OK) {
+	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_NONE) != LZMA_OK) {
 		fprintf(stderr, "init failed\n");
 		exit(1);
 	}

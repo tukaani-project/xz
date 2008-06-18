@@ -55,6 +55,12 @@ str_strm_error(lzma_ret code)
 	case LZMA_UNSUPPORTED_CHECK:
 		return _("Unsupported integrity check type");
 
+	case LZMA_MEMLIMIT_ERROR:
+		return _("Memory usage limit reached");
+
+	case LZMA_FORMAT_ERROR:
+		return _("File format not recognized");
+
 	default:
 		return NULL;
 	}

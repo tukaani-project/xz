@@ -160,32 +160,16 @@ single_init(thread_data *t)
 	lzma_ret ret;
 
 	if (opt_mode == MODE_COMPRESS) {
-		const lzma_vli uncompressed_size
-				= t->pair->src_fd != STDIN_FILENO
-				? (lzma_vli)(t->pair->src_st.st_size)
-				: LZMA_VLI_VALUE_UNKNOWN;
-
-		// TODO Support Multi-Block Streams to store Extra.
 		if (opt_header == HEADER_ALONE) {
-			lzma_options_alone alone;
-			alone.uncompressed_size = uncompressed_size;
-			memcpy(&alone.lzma, opt_filters[0].options,
-					sizeof(alone.lzma));
-			ret = lzma_alone_encoder(&t->strm, &alone);
+			ret = lzma_alone_encoder(&t->strm,
+					opt_filters[0].options);
 		} else {
-			lzma_options_stream stream = {
-				.check = opt_check,
-				.has_crc32 = opt_check != LZMA_CHECK_NONE,
-				.uncompressed_size = uncompressed_size,
-				.alignment = 0,
-			};
-			memcpy(stream.filters, opt_filters,
-					sizeof(stream.filters));
-			ret = lzma_stream_encoder_single(&t->strm, &stream);
+			ret = lzma_stream_encoder(&t->strm,
+					opt_filters, opt_check);
 		}
 	} else {
 		// TODO Restrict file format if requested on the command line.
-		ret = lzma_auto_decoder(&t->strm, NULL, NULL);
+		ret = lzma_auto_decoder(&t->strm);
 	}
 
 	if (ret != LZMA_OK) {

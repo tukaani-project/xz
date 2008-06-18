@@ -162,5 +162,6 @@ extern lzma_ret lzma_filter_flags_encode(uint8_t *out, size_t *out_pos,
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
  */
-extern lzma_ret lzma_filter_flags_decoder(
-		lzma_stream *strm, lzma_options_filter *options);
+extern lzma_ret lzma_filter_flags_decode(
+		lzma_options_filter *options, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size);

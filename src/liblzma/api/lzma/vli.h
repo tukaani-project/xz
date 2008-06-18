@@ -158,25 +158,34 @@ typedef uint64_t lzma_vli;
  * may use LZMA_VLI_VALUE_MAX for clarity.
  *
  * \param       vli       Integer to be encoded
- * \param       vli_pos   How many bytes have already been written out. This
- *                        must be less than 9 before calling this function.
- * \param       vli_size  Minimum size that the variable-length representation
- *                        must take. This is useful if you want to use
- *                        variable-length integers as padding. Usually you want
- *                        to set this to zero. The maximum allowed value is 9.
+ * \param       vli_pos   How many VLI-encoded bytes have already been written
+ *                        out. When starting to encode a new integer, *vli_pos
+ *                        must be set to zero. To use single-call encoding,
+ *                        set vli_pos to NULL.
  * \param       out       Beginning of the output buffer
  * \param       out_pos   The next byte will be written to out[*out_pos].
  * \param       out_size  Size of the out buffer; the first byte into
  *                        which no data is written to is out[out_size].
  *
- * \return      - LZMA_OK: So far all OK, but the integer is not
+ * \return      Slightly different return values are used in multi-call and
+ *              single-call modes.
+ *
+ *              Multi-call (vli_pos != NULL):
+ *              - LZMA_OK: So far all OK, but the integer is not
  *                completely written out yet.
  *              - LZMA_STREAM_END: Integer successfully encoded.
- *              - LZMA_BUF_ERROR: No output space (*out_pos == out_size)
- *              - LZMA_PROG_ERROR: Arguments are not sane.
+ *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due
+ *                to no *out_pos == out_size; this function doesn't use
+ *                LZMA_BUF_ERROR.
+ *
+ *              Single-call (vli_pos == NULL):
+ *              - LZMA_OK: Integer successfully encoded.
+ *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due
+ *                to too little output space; this function doesn't use
+ *                LZMA_BUF_ERROR.
  */
 extern lzma_ret lzma_vli_encode(
-		lzma_vli vli, size_t *lzma_restrict vli_pos, size_t vli_size,
+		lzma_vli vli, size_t *lzma_restrict vli_pos,
 		uint8_t *lzma_restrict out, size_t *lzma_restrict out_pos,
 		size_t out_size);
 
@@ -189,18 +198,30 @@ extern lzma_ret lzma_vli_encode(
  *                        application isn't required to initialize *vli.
  * \param       vli_pos   How many bytes have already been decoded. When
  *                        starting to decode a new integer, *vli_pos must
- *                        be initialized to zero.
+ *                        be initialized to zero. To use single-call decoding,
+ *                        set this to NULL.
  * \param       in        Beginning of the input buffer
  * \param       in_pos    The next byte will be read from in[*in_pos].
  * \param       in_size   Size of the input buffer; the first byte that
  *                        won't be read is in[in_size].
  *
- * \return      - LZMA_OK: So far all OK, but the integer is not
+ * \return      Slightly different return values are used in multi-call and
+ *              single-call modes.
+ *
+ *              Multi-call (vli_pos != NULL):
+ *              - LZMA_OK: So far all OK, but the integer is not
  *                completely decoded yet.
  *              - LZMA_STREAM_END: Integer successfully decoded.
- *              - LZMA_BUF_ERROR: No input data (*in_pos == in_size)
- *              - LZMA_DATA_ERROR: Integer is longer than nine bytes.
- *              - LZMA_PROG_ERROR: Arguments are not sane.
+ *              - LZMA_DATA_ERROR: Integer is corrupt.
+ *              - LZMA_PROG_ERROR: Arguments are not sane. This can be
+ *                due to *in_pos == in_size; this function doesn't use
+ *                LZMA_BUF_ERROR.
+ *
+ *              Single-call (vli_pos == NULL):
+ *              - LZMA_OK: Integer successfully decoded.
+ *              - LZMA_DATA_ERROR: Integer is corrupt.
+ *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due to
+ *                too little input; this function doesn't use LZMA_BUF_ERROR.
  */
 extern lzma_ret lzma_vli_decode(lzma_vli *lzma_restrict vli,
 		size_t *lzma_restrict vli_pos, const uint8_t *lzma_restrict in,
@@ -208,37 +229,9 @@ extern lzma_ret lzma_vli_decode(lzma_vli *lzma_restrict vli,
 
 
 /**
- * \brief       Decodes variable-length integer reading buffer backwards
- *
- * The variable-length integer encoding is designed so that it can be read
- * either from the beginning to the end, or from the end to the beginning.
- * This feature is needed to make the Stream parseable backwards;
- * specifically, to read the Backward Size field in Stream Footer.
- *
- * \param       vli       Pointer to variable to hold the decoded integer.
- * \param       in        Beginning of the input buffer
- * \param       in_size   Number of bytes available in the in[] buffer.
- *                        On successful decoding, this is updated to match
- *                        the number of bytes used. (in[*in_size - 1] is the
- *                        first byte to process. After successful decoding,
- *                        in[*in_size] will point to the first byte of the
- *                        variable-length integer.)
- *
- * \return      - LZMA_OK: Decoding successful
- *              - LZMA_DATA_ERROR: No valid variable-length integer was found.
- *              - LZMA_BUF_ERROR: Not enough input. Note that in practice,
- *                this tends to be a sign of broken input, because the
- *                applications usually do give as much input to this function
- *                as the applications have available.
- */
-extern lzma_ret lzma_vli_reverse_decode(
-		lzma_vli *vli, const uint8_t *in, size_t *in_size);
-
-
-/**
- * \brief       Gets the minimum number of bytes required to encode vli
+ * \brief       Gets the number of bytes required to encode vli
  *
  * \return      Number of bytes on success (1-9). If vli isn't valid,
  *              zero is returned.
  */
-extern size_t lzma_vli_size(lzma_vli vli);
+extern uint32_t lzma_vli_size(lzma_vli vli);

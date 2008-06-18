@@ -18,10 +18,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// NOTE: If you want to keep the line length in 80 characters, set
-//       tab width to 4 or less in your editor when editing this file.
-
-
 #include "lzma_encoder_private.h"
 #include "fastpos.h"
 
@@ -340,7 +336,8 @@ lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
 		// Get optimal match (repeat position and length).
 		// Value ranges for pos:
 		//   - [0, REP_DISTANCES): repeated match
-		//   - [REP_DISTANCES, UINT32_MAX): match at (pos - REP_DISTANCES)
+		//   - [REP_DISTANCES, UINT32_MAX):
+		//     match at (pos - REP_DISTANCES)
 		//   - UINT32_MAX: not a match but a literal
 		// Value ranges for len:
 		//   - [MATCH_MIN_LEN, MATCH_MAX_LEN]

@@ -20,36 +20,6 @@
 #include "tests.h"
 
 
-static void
-test4(void)
-{
-	known_options = (lzma_options_block){
-		.has_crc32 = false,
-		.has_eopm = true,
-		.is_metadata = false,
-		.compressed_size = 0,
-		.uncompressed_size = 0,
-		.compressed_reserve = LZMA_VLI_BYTES_MAX,
-		.uncompressed_reserve = LZMA_VLI_BYTES_MAX,
-		.padding = 0,
-	};
-	memcpy(known_options.filters, filters_powerpc,
-			sizeof(filters_powerpc));
-	expect(!code(21));
-
-	// Reserved bits
-	buffer[0] ^= 0x40;
-	expect(!decode_ret(1, LZMA_HEADER_ERROR));
-	buffer[0] ^= 0x40;
-
-	buffer[1] ^= 0x40;
-	expect(decode_ret(21, LZMA_HEADER_ERROR));
-	buffer[1] ^= 0x40;
-
-
-}
-*/
-
 static uint8_t buf[LZMA_BLOCK_HEADER_SIZE_MAX];
 static lzma_options_block known_options;
 static lzma_options_block decoded_options;

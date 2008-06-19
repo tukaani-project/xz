@@ -52,7 +52,6 @@ static void
 lzma_lzma_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
 	lzma_lz_encoder_end(&coder->lz, allocator);
-	lzma_literal_end(&coder->literal_coder, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
@@ -69,7 +68,6 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 		next->coder->lz = LZMA_LZ_ENCODER_INIT;
-		next->coder->literal_coder = NULL;
 	}
 
 	// Validate options that aren't validated elsewhere.
@@ -99,13 +97,11 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Initialize literal coder.
 	{
 		const lzma_ret ret = lzma_literal_init(
-				&next->coder->literal_coder, allocator,
+				&next->coder->literal_coder,
 				options->literal_context_bits,
 				options->literal_pos_bits);
-		if (ret != LZMA_OK) {
-			lzma_lzma_encoder_end(next->coder, allocator);
+		if (ret != LZMA_OK)
 			return ret;
-		}
 	}
 
 	// Initialize LZ encoder.
@@ -218,7 +214,10 @@ lzma_lzma_encode_properties(const lzma_options_lzma *options, uint8_t *byte)
 	if (options->literal_context_bits > LZMA_LITERAL_CONTEXT_BITS_MAX
 			|| options->literal_pos_bits
 				> LZMA_LITERAL_POS_BITS_MAX
-			|| options->pos_bits > LZMA_POS_BITS_MAX)
+			|| options->pos_bits > LZMA_POS_BITS_MAX
+			|| options->literal_context_bits
+					+ options->literal_pos_bits
+				> LZMA_LITERAL_BITS_MAX)
 		return true;
 
 	*byte = (options->pos_bits * 5 + options->literal_pos_bits) * 9

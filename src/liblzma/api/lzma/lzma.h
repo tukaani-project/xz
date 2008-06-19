@@ -167,7 +167,7 @@ typedef struct {
 	 */
 	uint32_t literal_context_bits;
 #	define LZMA_LITERAL_CONTEXT_BITS_MIN       0
-#	define LZMA_LITERAL_CONTEXT_BITS_MAX       8
+#	define LZMA_LITERAL_CONTEXT_BITS_MAX       4
 #	define LZMA_LITERAL_CONTEXT_BITS_DEFAULT   3
 
 	/**
@@ -276,6 +276,14 @@ typedef struct {
 	uint32_t match_finder_cycles;
 
 } lzma_options_lzma;
+
+
+/**
+ * \brief       Maximum sum of literal_context_bits and literal_pos_bits
+ *
+ * literal_context_bits + literal_pos_bits <= LZMA_LITERAL_BITS_MAX
+ */
+#define LZMA_LITERAL_BITS_MAX 4
 
 
 /**

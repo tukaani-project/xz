@@ -95,7 +95,7 @@ struct lzma_coder_s {
 	bool write_eopm;
 
 	// Literal encoder
-	lzma_literal_coder *literal_coder;
+	lzma_literal_coder literal_coder;
 
 	// Bit encoders
 	probability is_match[STATES][POS_STATES_MAX];

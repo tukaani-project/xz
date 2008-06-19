@@ -45,9 +45,9 @@
 ///     byte; and
 ///   - the highest literal_context_bits bits of the previous byte.
 #define literal_get_subcoder(literal_coder, pos, prev_byte) \
-	(literal_coder)->coders[(((pos) & (literal_coder)->literal_pos_mask) \
-			<< (literal_coder)->literal_context_bits) \
-		+ ((prev_byte) >> (8 - (literal_coder)->literal_context_bits))]
+	(literal_coder).coders[(((pos) & (literal_coder).literal_pos_mask) \
+			<< (literal_coder).literal_context_bits) \
+		+ ((prev_byte) >> (8 - (literal_coder).literal_context_bits))]
 
 
 typedef struct {
@@ -59,16 +59,13 @@ typedef struct {
 
 	/// There are (1 << (literal_pos_bits + literal_context_bits))
 	/// literal coders.
-	probability coders[][LIT_SIZE];
+	probability coders[1 << LZMA_LITERAL_BITS_MAX][LIT_SIZE];
 
 } lzma_literal_coder;
 
 
 extern lzma_ret lzma_literal_init(
-		lzma_literal_coder **coder, lzma_allocator *allocator,
+		lzma_literal_coder *coder,
 		uint32_t literal_context_bits, uint32_t literal_pos_bits);
-
-extern void lzma_literal_end(
-		lzma_literal_coder **coder, lzma_allocator *allocator);
 
 #endif

@@ -22,7 +22,7 @@
 
 
 extern lzma_ret
-lzma_literal_init(lzma_literal_coder **coder, lzma_allocator *allocator,
+lzma_literal_init(lzma_literal_coder *coder,
 		uint32_t literal_context_bits, uint32_t literal_pos_bits)
 {
 	// Verify that arguments are sane.
@@ -34,41 +34,18 @@ lzma_literal_init(lzma_literal_coder **coder, lzma_allocator *allocator,
 	const uint32_t states = literal_states(
 			literal_pos_bits, literal_context_bits);
 
-	// Allocate a new literal coder, if needed.
-	if (*coder == NULL || (**coder).literal_context_bits
-				!= literal_context_bits
-			|| (**coder).literal_pos_bits != literal_pos_bits) {
-		// Free the old coder, if any.
-		lzma_free(*coder, allocator);
+	// Store the new settings.
+	coder->literal_context_bits = literal_context_bits;
+	coder->literal_pos_bits = literal_pos_bits;
 
-		// Allocate a new one.
-		*coder = lzma_alloc(sizeof(lzma_literal_coder)
-				+ states * LIT_SIZE * sizeof(probability),
-				allocator);
-		if (*coder == NULL)
-			return LZMA_MEM_ERROR;
-
-		// Store the new settings.
-		(**coder).literal_context_bits = literal_context_bits;
-		(**coder).literal_pos_bits = literal_pos_bits;
-
-		// Calculate also the literal_pos_mask. It's not changed
-		// anywhere else than here.
-		(**coder).literal_pos_mask = (1 << literal_pos_bits) - 1;
-	}
+	// Calculate also the literal_pos_mask. It's not changed
+	// anywhere else than here.
+	coder->literal_pos_mask = (1 << literal_pos_bits) - 1;
 
 	// Reset the literal coder.
 	for (uint32_t i = 0; i < states; ++i)
 		for (uint32_t j = 0; j < LIT_SIZE; ++j)
-			bit_reset((**coder).coders[i][j]);
+			bit_reset(coder->coders[i][j]);
 
 	return LZMA_OK;
-}
-
-
-extern void
-lzma_literal_end(lzma_literal_coder **coder, lzma_allocator *allocator)
-{
-	lzma_free(*coder, allocator);
-	*coder = NULL;
 }

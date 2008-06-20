@@ -27,19 +27,6 @@
 /////////////
 
 static inline void
-literal_normal(lzma_range_encoder *rc, probability *subcoder, uint32_t symbol)
-{
-	uint32_t context = 1;
-	uint32_t bit_count = 8; // Bits per byte
-	do {
-		const uint32_t bit = (symbol >> --bit_count) & 1;
-		rc_bit(rc, &subcoder[context], bit);
-		context = (context << 1) | bit;
-	} while (bit_count != 0);
-}
-
-
-static inline void
 literal_matched(lzma_range_encoder *rc, probability *subcoder,
 		uint32_t match_byte, uint32_t symbol)
 {
@@ -81,7 +68,7 @@ literal(lzma_coder *coder)
 	if (is_literal_state(coder->state)) {
 		// Previous LZMA-symbol was a literal. Encode a normal
 		// literal without a match byte.
-		literal_normal(&coder->rc, subcoder, cur_byte);
+		rc_bittree(&coder->rc, subcoder, 8, cur_byte);
 	} else {
 		// Previous LZMA-symbol was a match. Use the last byte of
 		// the match as a "match byte". That is, compare the bits

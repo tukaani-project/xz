@@ -258,6 +258,9 @@ test_lzma(void)
 				lp <= LZMA_LITERAL_POS_BITS_MAX; ++lp) {
 			for (uint32_t pb = LZMA_POS_BITS_MIN;
 					pb <= LZMA_POS_BITS_MAX; ++pb) {
+				if (lc + lp > LZMA_LITERAL_BITS_MAX)
+					continue;
+
 				options.literal_context_bits = lc;
 				options.literal_pos_bits = lp;
 				options.pos_bits = pb;

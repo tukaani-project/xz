@@ -27,17 +27,30 @@ lzma_vli_decode(lzma_vli *restrict vli, size_t *restrict vli_pos,
 {
 	// If we haven't been given vli_pos, work in single-call mode.
 	size_t vli_pos_internal = 0;
-	if (vli_pos == NULL)
+	if (vli_pos == NULL) {
 		vli_pos = &vli_pos_internal;
-
-	// Initialize *vli when starting to decode a new integer.
-	if (*vli_pos == 0)
 		*vli = 0;
 
-	// Validate the arguments.
-	if (*vli_pos >= LZMA_VLI_BYTES_MAX || *in_pos >= in_size
-			|| (*vli >> (*vli_pos * 7)) != 0)
-		return LZMA_PROG_ERROR;;
+		// If there's no input, use LZMA_DATA_ERROR. This way it is
+		// easy to decode VLIs from buffers that have known size,
+		// and get the correct error code in case the buffer is
+		// too short.
+		if (*in_pos >= in_size)
+			return LZMA_DATA_ERROR;
+
+	} else {
+		// Initialize *vli when starting to decode a new integer.
+		if (*vli_pos == 0)
+			*vli = 0;
+
+		// Validate the arguments.
+		if (*vli_pos >= LZMA_VLI_BYTES_MAX
+				|| (*vli >> (*vli_pos * 7)) != 0)
+			return LZMA_PROG_ERROR;;
+
+		if (*in_pos >= in_size)
+			return LZMA_BUF_ERROR;
+	}
 
 	do {
 		// Read the next byte.

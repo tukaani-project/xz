@@ -18,13 +18,13 @@ libsubblock_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_srcdir@/src/liblzma/common
 
-if COND_MAIN_ENCODER
+if COND_ENCODER_SUBBLOCK
 libsubblock_la_SOURCES += \
 	subblock_encoder.c \
 	subblock_encoder.h
 endif
 
-if COND_MAIN_DECODER
+if COND_DECODER_SUBBLOCK
 libsubblock_la_SOURCES += \
 	subblock_decoder.c \
 	subblock_decoder.h \

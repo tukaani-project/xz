@@ -41,17 +41,17 @@
 /**
  * \brief       liblzma version number as an integer
  *
- * This is the value of LZMA_VERSION macro at the compile time of liblzma.
+ * Returns the value of LZMA_VERSION macro at the compile time of liblzma.
  * This allows the application to compare if it was built against the same,
  * older, or newer version of liblzma that is currently running.
  */
-extern const uint32_t lzma_version_number;
+extern uint32_t lzma_version_number(void) lzma_attr_const;
 
 
 /**
- * \brief       Returns versions number of liblzma as a string
+ * \brief       Version number of liblzma as a string
  *
  * This function may be useful if you want to display which version of
- * libilzma your application is currently using.
+ * liblzma your application is currently using.
  */
-extern const char *const lzma_version_string;
+extern const char *lzma_version_string(void) lzma_attr_const;

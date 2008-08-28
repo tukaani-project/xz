@@ -13,60 +13,77 @@
 
 #include "check.h"
 
-// See the .lzma header format specification section 2.1.1.2.
-LZMA_API const uint32_t lzma_check_sizes[LZMA_CHECK_ID_MAX + 1] = {
-	0,
-	4, 4, 4,
-	8, 8, 8,
-	16, 16, 16,
-	32, 32, 32,
-	64, 64, 64
-};
 
+extern LZMA_API lzma_bool
+lzma_check_is_supported(lzma_check type)
+{
+	if ((unsigned)(type) > LZMA_CHECK_ID_MAX)
+		return false;
 
-LZMA_API const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1] = {
-	true,   // LZMA_CHECK_NONE
+	static const lzma_bool available_checks[LZMA_CHECK_ID_MAX + 1] = {
+		true,   // LZMA_CHECK_NONE
 
 #ifdef HAVE_CHECK_CRC32
-	true,
+		true,
 #else
-	false,
+		false,
 #endif
 
-	false,  // Reserved
-	false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
 
 #ifdef HAVE_CHECK_CRC64
-	true,
+		true,
 #else
-	false,
+		false,
 #endif
 
-	false,  // Reserved
-	false,  // Reserved
-	false,  // Reserved
-	false,  // Reserved
-	false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
 
 #ifdef HAVE_CHECK_SHA256
-	true,
+		true,
 #else
-	false,
+		false,
 #endif
 
-	false,  // Reserved
-	false,  // Reserved
-	false,  // Reserved
-	false,  // Reserved
-	false,  // Reserved
-};
+		false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
+		false,  // Reserved
+	};
+
+	return available_checks[(unsigned)(type)];
+}
 
 
-extern lzma_ret
-lzma_check_init(lzma_check *check, lzma_check_type type)
+extern LZMA_API uint32_t
+lzma_check_size(lzma_check type)
 {
-	lzma_ret ret = LZMA_OK;
+	if ((unsigned)(type) > LZMA_CHECK_ID_MAX)
+		return UINT32_MAX;
 
+	// See file-format.txt section 2.1.1.2.
+	static const uint8_t check_sizes[LZMA_CHECK_ID_MAX + 1] = {
+		0,
+		4, 4, 4,
+		8, 8, 8,
+		16, 16, 16,
+		32, 32, 32,
+		64, 64, 64
+	};
+
+	return check_sizes[(unsigned)(type)];
+}
+
+
+extern void
+lzma_check_init(lzma_check_state *check, lzma_check type)
+{
 	switch (type) {
 	case LZMA_CHECK_NONE:
 		break;
@@ -90,19 +107,15 @@ lzma_check_init(lzma_check *check, lzma_check_type type)
 #endif
 
 	default:
-		if ((unsigned)(type) <= LZMA_CHECK_ID_MAX)
-			ret = LZMA_UNSUPPORTED_CHECK;
-		else
-			ret = LZMA_PROG_ERROR;
 		break;
 	}
 
-	return ret;
+	return;
 }
 
 
 extern void
-lzma_check_update(lzma_check *check, lzma_check_type type,
+lzma_check_update(lzma_check_state *check, lzma_check type,
 		const uint8_t *buf, size_t size)
 {
 	switch (type) {
@@ -133,18 +146,18 @@ lzma_check_update(lzma_check *check, lzma_check_type type,
 
 
 extern void
-lzma_check_finish(lzma_check *check, lzma_check_type type)
+lzma_check_finish(lzma_check_state *check, lzma_check type)
 {
 	switch (type) {
 #ifdef HAVE_CHECK_CRC32
 	case LZMA_CHECK_CRC32:
-		*(uint32_t *)(check->buffer) = check->state.crc32;
+		check->buffer.u32[0] = integer_le_32(check->state.crc32);
 		break;
 #endif
 
 #ifdef HAVE_CHECK_CRC64
 	case LZMA_CHECK_CRC64:
-		*(uint64_t *)(check->buffer) = check->state.crc64;
+		check->buffer.u64[0] = integer_le_64(check->state.crc64);
 		break;
 #endif
 
@@ -160,34 +173,3 @@ lzma_check_finish(lzma_check *check, lzma_check_type type)
 
 	return;
 }
-
-
-/*
-extern bool
-lzma_check_compare(
-		lzma_check *check1, lzma_check *check2, lzma_check_type type)
-{
-	bool ret;
-
-	switch (type) {
-	case LZMA_CHECK_NONE:
-		break;
-
-	case LZMA_CHECK_CRC32:
-		ret = check1->crc32 != check2->crc32;
-		break;
-
-	case LZMA_CHECK_CRC64:
-		ret = check1->crc64 != check2->crc64;
-		break;
-
-	default:
-		// Unsupported check
-		assert(type <= 7);
-		ret = false;
-		break;
-	}
-
-	return ret;
-}
-*/

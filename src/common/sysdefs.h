@@ -31,12 +31,21 @@
 #	include <config.h>
 #endif
 
-#include <sys/types.h>
+// size_t and NULL
+#include <stddef.h>
 
 #ifdef HAVE_INTTYPES_H
 #	include <inttypes.h>
 #endif
 
+// C99 says that inttypes.h always includes stdint.h, but some systems
+// don't do that, and require including stdint.h separately.
+#ifdef HAVE_STDINT_H
+#	include <stdint.h>
+#endif
+
+// Some pre-C99 systems have SIZE_MAX in limits.h instead of stdint.h. The
+// limits are also used to figure out some macros missing from pre-C99 systems.
 #ifdef HAVE_LIMITS_H
 #	include <limits.h>
 #endif
@@ -44,7 +53,12 @@
 // Be more compatible with systems that have non-conforming inttypes.h.
 // We assume that int is 32-bit and that long is either 32-bit or 64-bit.
 // Full Autoconf test could be more correct, but this should work well enough.
+// Note that this duplicates some code from lzma.h, but this is better since
+// we can work without inttypes.h thanks to Autoconf tests.
 #ifndef UINT32_C
+#	if UINT_MAX != 4294967295U
+#		error UINT32_C is not defined and unsiged int is not 32-bit.
+#	endif
 #	define UINT32_C(n) n ## U
 #endif
 #ifndef UINT32_MAX
@@ -56,7 +70,8 @@
 #ifndef PRIX32
 #	define PRIX32 "X"
 #endif
-#if SIZEOF_UNSIGNED_LONG == 4
+
+#if ULONG_MAX == 4294967295UL
 #	ifndef UINT64_C
 #		define UINT64_C(n) n ## ULL
 #	endif
@@ -80,16 +95,33 @@
 #ifndef UINT64_MAX
 #	define UINT64_MAX UINT64_C(18446744073709551615)
 #endif
+
+// The code currently assumes that size_t is either 32-bit or 64-bit.
 #ifndef SIZE_MAX
 #	if SIZEOF_SIZE_T == 4
 #		define SIZE_MAX UINT32_MAX
-#	else
+#	elif SIZEOF_SIZE_T == 8
 #		define SIZE_MAX UINT64_MAX
+#	else
+#		error sizeof(size_t) is not 32-bit or 64-bit
 #	endif
+#endif
+#if SIZE_MAX != UINT32_MAX && SIZE_MAX != UINT64_MAX
+#	error sizeof(size_t) is not 32-bit or 64-bit
 #endif
 
 #include <stdlib.h>
 
+// Pre-C99 systems lack stdbool.h. All the code in LZMA Utils must be written
+// so that it works with fake bool type, for example:
+//
+//    bool foo = (flags & 0x100) != 0;
+//    bool bar = !!(flags & 0x100);
+//
+// This works with the real C99 bool but breaks with fake bool:
+//
+//    bool baz = (flags & 0x100);
+//
 #ifdef HAVE_STDBOOL_H
 #	include <stdbool.h>
 #else
@@ -108,11 +140,13 @@ typedef unsigned char _Bool;
 #	ifdef NDEBUG
 #		define assert(x)
 #	else
-		// TODO: Pretty bad assert() macro.
+		// TODO: Pretty bad assert macro.
 #		define assert(x) (!(x) && abort())
 #	endif
 #endif
 
+// string.h should be enough but let's include strings.h and memory.h too if
+// they exists, since that shouldn't do any harm, but may improve portability.
 #ifdef HAVE_STRING_H
 #	include <string.h>
 #endif

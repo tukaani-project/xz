@@ -48,7 +48,7 @@ alone_encode(lzma_coder *coder,
 	while (*out_pos < out_size)
 	switch (coder->sequence) {
 	case SEQ_HEADER:
-		bufcpy(coder->header, &coder->header_pos,
+		lzma_bufcpy(coder->header, &coder->header_pos,
 				ALONE_HEADER_SIZE,
 				out, out_pos, out_size);
 		if (coder->header_pos < ALONE_HEADER_SIZE)
@@ -74,7 +74,7 @@ alone_encode(lzma_coder *coder,
 static void
 alone_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->next, allocator);
+	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
@@ -85,6 +85,8 @@ static lzma_ret
 alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_options_lzma *options)
 {
+	lzma_next_coder_init(alone_encoder_init, next, allocator);
+
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (next->coder == NULL)
@@ -101,7 +103,7 @@ alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Encode the header:
 	// - Properties (1 byte)
-	if (lzma_lzma_encode_properties(options, next->coder->header))
+	if (lzma_lzma_lclppb_encode(options, next->coder->header))
 		return LZMA_PROG_ERROR;
 
 	// - Dictionary size (4 bytes)
@@ -113,6 +115,9 @@ alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// one is the next. While the header would allow any 32-bit integer,
 	// we do this to keep the decoder of liblzma accepting the resulting
 	// files.
+	//
+	// FIXME Maybe LZMA_Alone needs some lower limit for maximum
+	// dictionary size? Must check decoders from old LZMA SDK version.
 	uint32_t d = options->dictionary_size - 1;
 	d |= d >> 2;
 	d |= d >> 3;
@@ -153,7 +158,7 @@ lzma_alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 extern LZMA_API lzma_ret
 lzma_alone_encoder(lzma_stream *strm, const lzma_options_lzma *options)
 {
-	lzma_next_strm_init(strm, alone_encoder_init, options);
+	lzma_next_strm_init(alone_encoder_init, strm, options);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_FINISH] = true;

@@ -33,7 +33,7 @@ copy_or_code(lzma_coder *coder, lzma_allocator *allocator,
 	assert(!coder->end_was_reached);
 
 	if (coder->next.code == NULL) {
-		bufcpy(in, in_pos, in_size, out, out_pos, out_size);
+		lzma_bufcpy(in, in_pos, in_size, out, out_pos, out_size);
 
 		// Check if end of stream was reached.
 		if (coder->is_encoder && action == LZMA_FINISH
@@ -91,7 +91,7 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 
 	// Flush already filtered data from coder->buffer[] to out[].
 	if (coder->pos < coder->filtered) {
-		bufcpy(coder->buffer, &coder->pos, coder->filtered,
+		lzma_bufcpy(coder->buffer, &coder->pos, coder->filtered,
 				out, out_pos, out_size);
 
 		// If we couldn't flush all the filtered data, return to
@@ -195,7 +195,7 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 			coder->filtered = coder->size;
 
 		// Flush as much as possible.
-		bufcpy(coder->buffer, &coder->pos, coder->filtered,
+		lzma_bufcpy(coder->buffer, &coder->pos, coder->filtered,
 				out, out_pos, out_size);
 	}
 
@@ -210,7 +210,7 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 static void
 simple_coder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->next, allocator);
+	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder->simple, allocator);
 	lzma_free(coder, allocator);
 	return;

@@ -42,7 +42,8 @@ typedef struct lzma_index_hash_s lzma_index_hash;
  * pointer than the index_hash given as argument.
  */
 extern lzma_index_hash *lzma_index_hash_init(
-		lzma_index_hash *index_hash, lzma_allocator *allocator);
+		lzma_index_hash *index_hash, lzma_allocator *allocator)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -66,7 +67,8 @@ extern void lzma_index_hash_end(
  *                used when lzma_index_hash_decode() has already been used.
  */
 extern lzma_ret lzma_index_hash_append(lzma_index_hash *index_hash,
-		lzma_vli total_size, lzma_vli uncompressed_size);
+		lzma_vli total_size, lzma_vli uncompressed_size)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -83,7 +85,8 @@ extern lzma_ret lzma_index_hash_append(lzma_index_hash *index_hash,
  *              Records can be added using lzma_index_hash_append().
  */
 extern lzma_ret lzma_index_hash_decode(lzma_index_hash *index_hash,
-		const uint8_t *in, size_t *in_pos, size_t in_size);
+		const uint8_t *in, size_t *in_pos, size_t in_size)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -91,4 +94,5 @@ extern lzma_ret lzma_index_hash_decode(lzma_index_hash *index_hash,
  *
  * This is needed to verify the Index Size field from the Stream Footer.
  */
-extern lzma_vli lzma_index_hash_size(const lzma_index_hash *index_hash);
+extern lzma_vli lzma_index_hash_size(const lzma_index_hash *index_hash)
+		lzma_attr_pure;

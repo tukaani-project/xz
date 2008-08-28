@@ -134,7 +134,7 @@ typedef enum {
 		 * \brief       Unknown file format
 		 */
 
-	LZMA_MEMLIMIT_ERROR     = -9
+	LZMA_MEMLIMIT_ERROR     = -9,
 		/**
 		 * \brief       Memory usage limit was reached
 		 *
@@ -143,6 +143,9 @@ typedef enum {
 		 * the memory usage limit has to be increased. See functions
 		 * lzma_memlimit_get() and lzma_memlimit_set().
 		 */
+
+	LZMA_NO_CHECK = -10,
+	LZMA_SEE_CHECK = -11
 } lzma_ret;
 
 
@@ -229,11 +232,6 @@ typedef struct {
 	/**
 	 * \brief       Pointer to custom memory allocation function
 	 *
-	 * Set this to point to your custom memory allocation function.
-	 * It can be useful for example if you want to limit how much
-	 * memory liblzma is allowed to use: for this, you may use
-	 * a pointer to lzma_memory_alloc().
-	 *
 	 * If you don't want a custom allocator, but still want
 	 * custom free(), set this to NULL and liblzma will use
 	 * the standard malloc().
@@ -250,15 +248,18 @@ typedef struct {
 	 *              size nmemb * size, or NULL if allocation fails
 	 *              for some reason. When allocation fails, functions
 	 *              of liblzma return LZMA_MEM_ERROR.
+	 *
+	 * For performance reasons, the allocator should not waste time
+	 * zeroing the allocated buffers. This is not only about speed, but
+	 * also memory usage, since the operating system kernel doesn't
+	 * necessarily allocate the requested memory until it is actually
+	 * used. With small input files liblzma may actually need only a
+	 * fraction of the memory that it requested for allocation.
 	 */
 	void *(*alloc)(void *opaque, size_t nmemb, size_t size);
 
 	/**
 	 * \brief       Pointer to custom memory freeing function
-	 *
-	 * Set this to point to your custom memory freeing function.
-	 * If lzma_memory_alloc() is used as allocator, this should
-	 * be set to lzma_memory_free().
 	 *
 	 * If you don't want a custom freeing function, but still
 	 * want a custom allocator, set this to NULL and liblzma
@@ -278,10 +279,6 @@ typedef struct {
 	 * opaque is passed as the first argument to lzma_allocator.alloc()
 	 * and lzma_allocator.free(). This intended to ease implementing
 	 * custom memory allocation functions for use with liblzma.
-	 *
-	 * When using lzma_memory_alloc() and lzma_memory_free(), opaque
-	 * must point to lzma_memory_limiter structure allocated and
-	 * initialized with lzma_memory_limiter_create().
 	 *
 	 * If you don't need this, you should set it to NULL.
 	 */
@@ -347,6 +344,17 @@ typedef struct {
 	/** Internal state is not visible to outsiders. */
 	lzma_internal *internal;
 
+	/**
+	 * Reserved space to allow possible future extensions without
+	 * breaking the ABI. Excluding the initialization of this structure,
+	 * you should not touch these, because the names of these variables
+	 * may change.
+	 */
+	void *reserved_ptr1;
+	void *reserved_ptr2;
+	uint64_t reserved_int1;
+	uint64_t reserved_int2;
+
 } lzma_stream;
 
 
@@ -358,22 +366,18 @@ typedef struct {
  * has been allocated yet:
  *
  *     lzma_stream strm = LZMA_STREAM_INIT;
- */
-#define LZMA_STREAM_INIT { NULL, 0, 0, NULL, 0, 0, NULL, NULL }
-
-
-/**
- * \brief       Initialization for lzma_stream
  *
- * This is like LZMA_STREAM_INIT, but this can be used when the lzma_stream
- * has already been allocated:
+ * If you need to initialize a dynamically allocatedlzma_stream, you can use
+ * memset(strm_pointer, 0, sizeof(lzma_stream)). Strictly speaking, this
+ * violates the C standard since NULL may have different internal
+ * representation than zero, but it should be portable enough in practice.
+ * Anyway, for maximum portability, you could use this:
  *
- *     lzma_stream *strm = malloc(sizeof(lzma_stream));
- *     if (strm == NULL)
- *         return LZMA_MEM_ERROR;
- *     *strm = LZMA_STREAM_INIT_VAR;
+ *     lzma_stream tmp = LZMA_STREAM_INIT;
+ *     *strm = tmp;
  */
-extern const lzma_stream LZMA_STREAM_INIT_VAR;
+#define LZMA_STREAM_INIT \
+	{ NULL, 0, 0, NULL, 0, 0, NULL, NULL, NULL, NULL, 0, 0 }
 
 
 /**
@@ -409,7 +413,8 @@ extern const lzma_stream LZMA_STREAM_INIT_VAR;
  *              - LZMA_PROG_ERROR: Invalid arguments or the internal state
  *                of the coder is corrupt.
  */
-extern lzma_ret lzma_code(lzma_stream *strm, lzma_action action);
+extern lzma_ret lzma_code(lzma_stream *strm, lzma_action action)
+		lzma_attr_warn_unused_result;
 
 
 /**

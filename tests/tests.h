@@ -69,8 +69,16 @@ lzma_ret_sym(lzma_ret ret)
 		str = "LZMA_HEADER_ERROR";
 		break;
 
+	case LZMA_NO_CHECK:
+		str = "LZMA_NO_CHECK";
+		break;
+
 	case LZMA_UNSUPPORTED_CHECK:
 		str = "LZMA_UNSUPPORTED_CHECK";
+		break;
+
+	case LZMA_SEE_CHECK:
+		str = "LZMA_SEE_CHECK";
 		break;
 
 	case LZMA_FORMAT_ERROR:

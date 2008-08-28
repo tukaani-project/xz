@@ -24,7 +24,7 @@
 /**
  * \brief       Filter ID
  *
- * Filter ID of the Subblock filter. This is used as lzma_options_filter.id.
+ * Filter ID of the Subblock filter. This is used as lzma_filter.id.
  */
 #define LZMA_FILTER_SUBBLOCK    LZMA_VLI_C(0x01)
 
@@ -199,6 +199,6 @@ typedef struct {
 	 *
 	 * \note        This variable is ignored if allow_subfilters is false.
 	 */
-	lzma_options_filter subfilter_options;
+	lzma_filter subfilter_options;
 
 } lzma_options_subblock;

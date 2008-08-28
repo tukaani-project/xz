@@ -16,62 +16,43 @@ noinst_LTLIBRARIES = libcommon.la
 libcommon_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_srcdir@/src/liblzma/check \
+	-I@top_srcdir@/src/liblzma/rangecoder \
 	-I@top_srcdir@/src/liblzma/lz \
 	-I@top_srcdir@/src/liblzma/lzma \
-	-I@top_srcdir@/src/liblzma/simple \
 	-I@top_srcdir@/src/liblzma/subblock \
-	-I@top_srcdir@/src/liblzma/rangecoder
+	-I@top_srcdir@/src/liblzma/delta \
+	-I@top_srcdir@/src/liblzma/simple
+
 libcommon_la_SOURCES = \
+	common.c \
 	common.h \
 	bsr.h \
-	allocator.c \
 	block_util.c \
 	block_private.h \
-	features.c \
+	filter_common.c \
+	filter_common.h \
 	index.c \
+	index.h \
 	init.c \
 	memory_limiter.c \
-	memory_usage.c \
-	next_coder.c \
-	raw_common.c \
-	raw_common.h \
-	stream_flags_equal.c \
-	code.c \
-	version.c
-
-if COND_FILTER_DELTA
-libcommon_la_SOURCES += \
-	delta_common.c \
-	delta_common.h
-if COND_MAIN_ENCODER
-libcommon_la_SOURCES += \
-	delta_encoder.c \
-	delta_encoder.h
-endif
-if COND_MAIN_DECODER
-libcommon_la_SOURCES += \
-	delta_decoder.c \
-	delta_decoder.h
-endif
-endif
+	stream_flags_common.c \
+	stream_flags_common.h \
+	vli_size.c
 
 if COND_MAIN_ENCODER
 libcommon_la_SOURCES += \
 	alignment.c \
-	auto_decoder.c \
 	alone_encoder.c \
 	block_encoder.c \
 	block_encoder.h \
 	block_header_encoder.c \
 	easy.c \
+	filter_encoder.c \
+	filter_encoder.h \
 	filter_flags_encoder.c \
 	index_encoder.c \
 	index_encoder.h \
 	init_encoder.c \
-	raw_encoder.c \
-	raw_encoder.h \
-	stream_common.c \
-	stream_common.h \
 	stream_encoder.c \
 	stream_encoder.h \
 	stream_flags_encoder.c \
@@ -82,16 +63,18 @@ if COND_MAIN_DECODER
 libcommon_la_SOURCES += \
 	alone_decoder.c \
 	alone_decoder.h \
+	auto_decoder.c \
 	block_decoder.c \
 	block_decoder.h \
 	block_header_decoder.c \
+	filter_decoder.c \
+	filter_decoder.h \
 	filter_flags_decoder.c \
 	index_decoder.c \
 	index_hash.c \
 	init_decoder.c \
-	raw_decoder.c \
-	raw_decoder.h \
 	stream_decoder.c \
+	stream_decoder.h \
 	stream_flags_decoder.c \
 	stream_flags_decoder.h \
 	vli_decoder.c

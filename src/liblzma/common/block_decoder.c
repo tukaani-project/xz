@@ -19,7 +19,7 @@
 
 #include "block_decoder.h"
 #include "block_private.h"
-#include "raw_decoder.h"
+#include "filter_decoder.h"
 #include "check.h"
 
 
@@ -35,7 +35,7 @@ struct lzma_coder_s {
 
 	/// Decoding options; we also write Compressed Size and Uncompressed
 	/// Size back to this structure when the encoding has been finished.
-	lzma_options_block *options;
+	lzma_block *options;
 
 	/// Compressed Size calculated while encoding
 	lzma_vli compressed_size;
@@ -52,7 +52,7 @@ struct lzma_coder_s {
 	size_t check_pos;
 
 	/// Check of the uncompressed data
-	lzma_check check;
+	lzma_check_state check;
 };
 
 
@@ -64,9 +64,6 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 {
 	switch (coder->sequence) {
 	case SEQ_CODE: {
-		if (*out_pos >= out_size)
-			return LZMA_OK;
-
 		const size_t in_start = *in_pos;
 		const size_t out_start = *out_pos;
 
@@ -98,7 +95,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 	// Fall through
 
 	case SEQ_PADDING:
-		// If Compressed Data is padded to a multiple of four bytes.
+		// Compressed Data is padded to a multiple of four bytes.
 		while (coder->compressed_size & 3) {
 			if (*in_pos >= in_size)
 				return LZMA_OK;
@@ -132,18 +129,28 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 	// Fall through
 
-	case SEQ_CHECK:
-		while (*in_pos < in_size) {
-			if (in[(*in_pos)++] != coder->check.buffer[
-					coder->check_pos])
-				return LZMA_DATA_ERROR;
+	case SEQ_CHECK: {
+		const bool chksup = lzma_check_is_supported(
+				coder->options->check);
 
-			if (++coder->check_pos == lzma_check_sizes[
-					coder->options->check])
+		while (*in_pos < in_size) {
+			// coder->check.buffer[] may be uninitialized when
+			// the Check ID is not supported.
+			if (chksup && coder->check.buffer.u8[coder->check_pos]
+					!= in[*in_pos]) {
+				++*in_pos;
+				return LZMA_DATA_ERROR;
+			}
+
+			++*in_pos;
+
+			if (++coder->check_pos == lzma_check_size(
+					coder->options->check))
 				return LZMA_STREAM_END;
 		}
 
 		return LZMA_OK;
+	}
 	}
 
 	return LZMA_PROG_ERROR;
@@ -153,19 +160,26 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 block_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->next, allocator);
+	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
 
 
-static lzma_ret
-block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_options_block *options)
+extern lzma_ret
+lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+		lzma_block *options)
 {
+	lzma_next_coder_init(lzma_block_decoder_init, next, allocator);
+
 	// While lzma_block_total_size_get() is meant to calculate the Total
 	// Size, it also validates the options excluding the filters.
 	if (lzma_block_total_size_get(options) == 0)
+		return LZMA_PROG_ERROR;
+
+	// options->check is used for array indexing so we need to know that
+	// it is in the valid range.
+	if ((unsigned)(options->check) > LZMA_CHECK_ID_MAX)
 		return LZMA_PROG_ERROR;
 
 	// Allocate and initialize *next->coder if needed.
@@ -192,30 +206,25 @@ block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			= options->compressed_size == LZMA_VLI_VALUE_UNKNOWN
 				? (LZMA_VLI_VALUE_MAX & ~LZMA_VLI_C(3))
 					- options->header_size
-					- lzma_check_sizes[options->check]
+					- lzma_check_size(options->check)
 				: options->compressed_size;
 
-	// Initialize the check
+	// Initialize the check. It's caller's problem if the Check ID is not
+	// supported, and the Block decoder cannot verify the Check field.
+	// Caller can test lzma_checks[options->check].
 	next->coder->check_pos = 0;
-	return_if_error(lzma_check_init(&next->coder->check, options->check));
+	lzma_check_init(&next->coder->check, options->check);
 
+	// Initialize the filter chain.
 	return lzma_raw_decoder_init(&next->coder->next, allocator,
 			options->filters);
 }
 
 
-extern lzma_ret
-lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_options_block *options)
-{
-	lzma_next_coder_init(block_decoder_init, next, allocator, options);
-}
-
-
 extern LZMA_API lzma_ret
-lzma_block_decoder(lzma_stream *strm, lzma_options_block *options)
+lzma_block_decoder(lzma_stream *strm, lzma_block *options)
 {
-	lzma_next_strm_init(strm, block_decoder_init, options);
+	lzma_next_strm_init(lzma_block_decoder_init, strm, options);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;

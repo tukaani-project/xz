@@ -299,9 +299,9 @@ extern lzma_options_lzma *
 parse_options_lzma(const char *str)
 {
 	static const name_id_map modes[] = {
-		{ "fast", LZMA_MODE_FAST },
-		{ "best", LZMA_MODE_BEST },
-		{ NULL,   0 }
+		{ "fast",   LZMA_MODE_FAST },
+		{ "normal", LZMA_MODE_NORMAL },
+		{ NULL,     0 }
 	};
 
 	static const name_id_map mfs[] = {
@@ -317,9 +317,9 @@ parse_options_lzma(const char *str)
 		{ "dict", NULL,   LZMA_DICTIONARY_SIZE_MIN,
 				LZMA_DICTIONARY_SIZE_MAX },
 		{ "lc",   NULL,   LZMA_LITERAL_CONTEXT_BITS_MIN,
-				  LZMA_LITERAL_CONTEXT_BITS_MAX },
+				LZMA_LITERAL_CONTEXT_BITS_MAX },
 		{ "lp",   NULL,   LZMA_LITERAL_POS_BITS_MIN,
-				  LZMA_LITERAL_POS_BITS_MAX },
+				LZMA_LITERAL_POS_BITS_MAX },
 		{ "pb",   NULL,   LZMA_POS_BITS_MIN, LZMA_POS_BITS_MAX },
 		{ "mode", modes,  0, 0 },
 		{ "fb",   NULL,   LZMA_FAST_BYTES_MIN, LZMA_FAST_BYTES_MAX },
@@ -334,7 +334,9 @@ parse_options_lzma(const char *str)
 		.literal_context_bits = LZMA_LITERAL_CONTEXT_BITS_DEFAULT,
 		.literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT,
 		.pos_bits = LZMA_POS_BITS_DEFAULT,
-		.mode = LZMA_MODE_BEST,
+		.preset_dictionary =  NULL,
+		.persistent = false,
+		.mode = LZMA_MODE_NORMAL,
 		.fast_bytes = LZMA_FAST_BYTES_DEFAULT,
 		.match_finder = LZMA_MF_BT4,
 		.match_finder_cycles = 0,

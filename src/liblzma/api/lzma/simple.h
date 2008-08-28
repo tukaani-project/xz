@@ -21,7 +21,7 @@
 #endif
 
 
-/* Filter IDs for lzma_options_filter.id */
+/* Filter IDs for lzma_filter.id */
 
 #define LZMA_FILTER_X86         LZMA_VLI_C(0x04)
 	/**<

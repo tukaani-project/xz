@@ -31,9 +31,11 @@ lzma_vli_encode(lzma_vli vli, size_t *restrict vli_pos,
 		vli_pos = &vli_pos_internal;
 
 	// Validate the arguments.
-	if (*vli_pos >= LZMA_VLI_BYTES_MAX || *out_pos >= out_size
-			|| vli > LZMA_VLI_VALUE_MAX)
+	if (*vli_pos >= LZMA_VLI_BYTES_MAX || vli > LZMA_VLI_VALUE_MAX)
 		return LZMA_PROG_ERROR;
+
+	if (*out_pos >= out_size)
+		return LZMA_BUF_ERROR;
 
 	// Write the non-last bytes in a loop.
 	while ((vli >> (*vli_pos * 7)) >= 0x80) {
@@ -54,21 +56,4 @@ lzma_vli_encode(lzma_vli vli, size_t *restrict vli_pos,
 
 	return vli_pos == &vli_pos_internal ? LZMA_OK : LZMA_STREAM_END;
 
-}
-
-
-extern LZMA_API uint32_t
-lzma_vli_size(lzma_vli vli)
-{
-	if (vli > LZMA_VLI_VALUE_MAX)
-		return 0;
-
-	uint32_t i = 0;
-	do {
-		vli >>= 7;
-		++i;
-	} while (vli != 0);
-
-	assert(i <= LZMA_VLI_BYTES_MAX);
-	return i;
 }

@@ -121,8 +121,8 @@ do
 		--armthumb \
 		--sparc
 	do
-		test_lzma $ARGS --lzma=dict=64KiB,fb=32,mode=fast
-		test_lzma --subblock $ARGS --lzma=dict=64KiB,fb=32,mode=fast
+		test_lzma $ARGS --lzma2=dict=64KiB,fb=32,mode=fast
+		test_lzma --subblock $ARGS --lzma2=dict=64KiB,fb=32,mode=fast
 	done
 
 	echo

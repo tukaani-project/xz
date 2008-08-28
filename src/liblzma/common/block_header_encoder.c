@@ -22,7 +22,7 @@
 
 
 extern LZMA_API lzma_ret
-lzma_block_header_size(lzma_options_block *options)
+lzma_block_header_size(lzma_block *options)
 {
 	// Block Header Size + Block Flags + CRC32.
 	size_t size = 1 + 1 + 4;
@@ -77,7 +77,7 @@ lzma_block_header_size(lzma_options_block *options)
 
 
 extern LZMA_API lzma_ret
-lzma_block_header_encode(const lzma_options_block *options, uint8_t *out)
+lzma_block_header_encode(const lzma_block *options, uint8_t *out)
 {
 	if ((options->header_size & 3)
 			|| options->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
@@ -127,8 +127,9 @@ lzma_block_header_encode(const lzma_options_block *options, uint8_t *out)
 		if (filter_count == 4)
 			return LZMA_PROG_ERROR;
 
-		return_if_error(lzma_filter_flags_encode(out, &out_pos,
-				out_size, options->filters + filter_count));
+		return_if_error(lzma_filter_flags_encode(
+				options->filters + filter_count,
+				out, &out_pos, out_size));
 
 	} while (options->filters[++filter_count].id
 			!= LZMA_VLI_VALUE_UNKNOWN);

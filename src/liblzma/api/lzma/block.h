@@ -36,12 +36,13 @@ typedef struct {
 	 * \brief       Size of the Block Header
 	 *
 	 * Read by:
+	 *  - lzma_block_header_encode()
+	 *  - lzma_block_header_decode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_decode()
 	 */
 	uint32_t header_size;
 #	define LZMA_BLOCK_HEADER_SIZE_MIN 8
@@ -54,10 +55,12 @@ typedef struct {
 	 * Header, thus its value must be provided also when decoding.
 	 *
 	 * Read by:
+	 *  - lzma_block_header_encode()
+	 *  - lzma_block_header_decode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 */
-	lzma_check_type check;
+	lzma_check check;
 
 	/**
 	 * \brief       Size of the Compressed Data in bytes
@@ -134,17 +137,17 @@ typedef struct {
 	 *              have LZMA_BLOCK_FILTERS_MAX + 1 members or the Block
 	 *              Header decoder will overflow the buffer.
 	 */
-	lzma_options_filter *filters;
+	lzma_filter *filters;
 #	define LZMA_BLOCK_FILTERS_MAX 4
 
-} lzma_options_block;
+} lzma_block;
 
 
 /**
  * \brief       Decodes the Block Header Size field
  *
  * To decode Block Header using lzma_block_header_decode(), the size of the
- * Block Header has to be known and stored into lzma_options_block.header_size.
+ * Block Header has to be known and stored into lzma_block.header_size.
  * The size can be calculated from the first byte of a Block using this macro.
  * Note that if the first byte is 0x00, it indicates beginning of Index; use
  * this macro only when the byte is not 0x00.
@@ -164,7 +167,8 @@ typedef struct {
  *              may return LZMA_OK even if lzma_block_header_encode() or
  *              lzma_block_encoder() would fail.
  */
-extern lzma_ret lzma_block_header_size(lzma_options_block *options);
+extern lzma_ret lzma_block_header_size(lzma_block *options)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -183,7 +187,8 @@ extern lzma_ret lzma_block_header_size(lzma_options_block *options);
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_block_header_encode(
-		const lzma_options_block *options, uint8_t *out);
+		const lzma_block *options, uint8_t *out)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -203,8 +208,9 @@ extern lzma_ret lzma_block_header_encode(
  *              - LZMA_HEADER_ERROR: Invalid or unsupported options.
  *              - LZMA_PROG_ERROR
  */
-extern lzma_ret lzma_block_header_decode(lzma_options_block *options,
-		lzma_allocator *allocator, const uint8_t *in);
+extern lzma_ret lzma_block_header_decode(lzma_block *options,
+		lzma_allocator *allocator, const uint8_t *in)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -227,7 +233,8 @@ extern lzma_ret lzma_block_header_decode(lzma_options_block *options,
  *                options->header_size between 8 and 1024 inclusive.
  */
 extern lzma_ret lzma_block_total_size_set(
-		lzma_options_block *options, lzma_vli total_size);
+		lzma_block *options, lzma_vli total_size)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -238,7 +245,8 @@ extern lzma_ret lzma_block_total_size_set(
  *
  * \return      Total Size on success, or zero on error.
  */
-extern lzma_vli lzma_block_total_size_get(const lzma_options_block *options);
+extern lzma_vli lzma_block_total_size_get(const lzma_block *options)
+		lzma_attr_pure;
 
 
 /**
@@ -259,8 +267,8 @@ extern lzma_vli lzma_block_total_size_get(const lzma_options_block *options);
  *
  * lzma_code() can return FIXME
  */
-extern lzma_ret lzma_block_encoder(
-		lzma_stream *strm, lzma_options_block *options);
+extern lzma_ret lzma_block_encoder(lzma_stream *strm, lzma_block *options)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -273,5 +281,5 @@ extern lzma_ret lzma_block_encoder(
  *              - LZMA_PROG_ERROR
  *              - LZMA_MEM_ERROR
  */
-extern lzma_ret lzma_block_decoder(
-		lzma_stream *strm, lzma_options_block *options);
+extern lzma_ret lzma_block_decoder(lzma_stream *strm, lzma_block *options)
+		lzma_attr_warn_unused_result;

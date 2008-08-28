@@ -23,6 +23,8 @@
 
 struct lzma_coder_s {
 	lzma_next_coder next;
+	uint64_t memlimit;
+	uint32_t flags;
 	bool initialized;
 };
 
@@ -41,9 +43,11 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		if (in[*in_pos] == 0xFF)
 			ret = lzma_stream_decoder_init(
-					&coder->next, allocator);
+					&coder->next, allocator,
+					coder->memlimit, coder->flags);
 		else
-			ret = lzma_alone_decoder_init(&coder->next, allocator);
+			ret = lzma_alone_decoder_init(&coder->next,
+					allocator, coder->memlimit);
 
 		if (ret != LZMA_OK)
 			return ret;
@@ -59,15 +63,21 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 auto_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->next, allocator);
+	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
 
 
 static lzma_ret
-auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
+auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+		uint64_t memlimit, uint32_t flags)
 {
+	lzma_next_coder_init(auto_decoder_init, next, allocator);
+
+	if (flags & ~LZMA_SUPPORTED_FLAGS)
+		return LZMA_HEADER_ERROR;
+
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (next->coder == NULL)
@@ -78,30 +88,22 @@ auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
+	next->coder->memlimit = memlimit;
+	next->coder->flags = flags;
 	next->coder->initialized = false;
 
 	return LZMA_OK;
 }
 
 
-/*
-extern lzma_ret
-lzma_auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_extra **header, lzma_extra **footer)
-{
-	lzma_next_coder_init(
-			auto_decoder_init, next, allocator, header, footer);
-}
-*/
-
-
 extern LZMA_API lzma_ret
-lzma_auto_decoder(lzma_stream *strm)
+lzma_auto_decoder(lzma_stream *strm, uint64_t memlimit, uint32_t flags)
 {
-	lzma_next_strm_init0(strm, auto_decoder_init);
+	lzma_next_strm_init(auto_decoder_init, strm, memlimit, flags);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
+// 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true; FIXME
+	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;
 }

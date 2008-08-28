@@ -25,12 +25,12 @@ struct lzma_coder_s {
 
 	/// We need to keep the filters array available in case
 	/// LZMA_FULL_FLUSH is used.
-	lzma_options_filter filters[5];
+	lzma_filter filters[5];
 };
 
 
 static bool
-easy_set_filters(lzma_options_filter *filters, uint32_t level)
+easy_set_filters(lzma_filter *filters, uint32_t level)
 {
 	bool error = false;
 
@@ -38,9 +38,9 @@ easy_set_filters(lzma_options_filter *filters, uint32_t level)
 		// TODO FIXME Use Subblock or LZMA2 with no compression.
 		error = true;
 
-#ifdef HAVE_FILTER_LZMA
+#ifdef HAVE_ENCODER_LZMA2
 	} else if (level <= 9) {
-		filters[0].id = LZMA_FILTER_LZMA;
+		filters[0].id = LZMA_FILTER_LZMA2;
 		filters[0].options = (void *)(&lzma_preset_lzma[level - 1]);
 		filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 #endif
@@ -68,7 +68,7 @@ easy_encode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 easy_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->stream_encoder, allocator);
+	lzma_next_end(&coder->stream_encoder, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
@@ -78,6 +78,8 @@ static lzma_ret
 easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_easy_level level)
 {
+	lzma_next_coder_init(easy_encoder_init, next, allocator);
+
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (next->coder == NULL)
@@ -100,7 +102,7 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 extern LZMA_API lzma_ret
 lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
 {
-	lzma_next_strm_init(strm, easy_encoder_init, level);
+	lzma_next_strm_init(easy_encoder_init, strm, level);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
@@ -114,9 +116,9 @@ lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
 extern LZMA_API uint32_t
 lzma_easy_memory_usage(lzma_easy_level level)
 {
-	lzma_options_filter filters[5];
+	lzma_filter filters[5];
 	if (easy_set_filters(filters, level))
 		return UINT32_MAX;
 
-	return lzma_memory_usage(filters, true);
+	return lzma_memusage_encoder(filters);
 }

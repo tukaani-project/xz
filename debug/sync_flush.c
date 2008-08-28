@@ -79,9 +79,10 @@ main(int argc, char **argv)
 		.literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT,
 		.pos_bits = LZMA_POS_BITS_DEFAULT,
 		.preset_dictionary = NULL,
-		.mode = LZMA_MODE_BEST,
+		.persistent = true,
+		.mode = LZMA_MODE_NORMAL,
 		.fast_bytes = 32,
-		.match_finder = LZMA_MF_BT3,
+		.match_finder = LZMA_MF_HC3,
 		.match_finder_cycles = 0,
 	};
 
@@ -101,24 +102,31 @@ main(int argc, char **argv)
 	opt_subblock.subfilter_options.id = LZMA_FILTER_DELTA;
 	opt_subblock.subfilter_options.options = &opt_delta;
 
-	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
-	filters[0].id = LZMA_FILTER_LZMA;
+	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	filters[0].id = LZMA_FILTER_LZMA2;
 	filters[0].options = &opt_lzma;
 	filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
 	// Init
-	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_NONE) != LZMA_OK) {
+	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_CRC32) != LZMA_OK) {
 		fprintf(stderr, "init failed\n");
 		exit(1);
 	}
 
 	// Encoding
+/*
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(6, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_SYNC_FLUSH);
-	encode(6, LZMA_SYNC_FLUSH);
+	encode(7, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_FINISH);
+*/
+	encode(53, LZMA_SYNC_FLUSH);
+// 	opt_lzma.literal_context_bits = 2;
+// 	opt_lzma.literal_pos_bits = 1;
+// 	opt_lzma.pos_bits = 0;
+	encode(404, LZMA_FINISH);
 
 	// Clean up
 	lzma_end(&strm);

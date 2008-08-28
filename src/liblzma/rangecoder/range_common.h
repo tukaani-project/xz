@@ -30,15 +30,12 @@
 // Constants //
 ///////////////
 
-#define SHIFT_BITS 8
-#define TOP_BITS 24
-#define TOP_VALUE (UINT32_C(1) << TOP_BITS)
-#define BIT_MODEL_TOTAL_BITS 11
-#define BIT_MODEL_TOTAL (UINT32_C(1) << BIT_MODEL_TOTAL_BITS)
-#define MOVE_BITS 5
-
-#define MOVE_REDUCING_BITS 2
-#define BIT_PRICE_SHIFT_BITS 6
+#define RC_SHIFT_BITS 8
+#define RC_TOP_BITS 24
+#define RC_TOP_VALUE (UINT32_C(1) << RC_TOP_BITS)
+#define RC_BIT_MODEL_TOTAL_BITS 11
+#define RC_BIT_MODEL_TOTAL (UINT32_C(1) << RC_BIT_MODEL_TOTAL_BITS)
+#define RC_MOVE_BITS 5
 
 
 ////////////
@@ -47,7 +44,7 @@
 
 // Resets the probability so that both 0 and 1 have probability of 50 %
 #define bit_reset(prob) \
-	prob = BIT_MODEL_TOTAL >> 1
+	prob = RC_BIT_MODEL_TOTAL >> 1
 
 // This does the same for a complete bit tree.
 // (A tree represented as an array.)

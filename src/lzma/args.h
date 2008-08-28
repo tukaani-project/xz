@@ -52,8 +52,8 @@ extern bool opt_preserve_name;
 extern enum tool_mode opt_mode;
 extern enum header_type opt_header;
 
-extern lzma_check_type opt_check;
-extern lzma_options_filter opt_filters[8];
+extern lzma_check opt_check;
+extern lzma_filter opt_filters[8];
 
 extern const char *stdin_filename;
 

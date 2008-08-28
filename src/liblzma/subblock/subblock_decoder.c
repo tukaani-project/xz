@@ -19,7 +19,7 @@
 
 #include "subblock_decoder.h"
 #include "subblock_decoder_helper.h"
-#include "raw_decoder.h"
+#include "filter_decoder.h"
 
 
 /// Maximum number of consecutive Subblocks with Subblock Type Padding
@@ -78,7 +78,7 @@ struct lzma_coder_s {
 	lzma_next_coder filter_flags_decoder;
 
 	/// The filter_flags_decoder stores its results here.
-	lzma_options_filter filter_flags;
+	lzma_filter filter_flags;
 
 	/// Options for the Subblock decoder helper. This is used to tell
 	/// the helper when it should return LZMA_STREAM_END to the subfilter.
@@ -239,7 +239,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			// if Subfilter isn't used again, we could leave
 			// a memory-hogging filter dangling until someone
 			// frees Subblock filter itself.
-			lzma_next_coder_end(&coder->subfilter, allocator);
+			lzma_next_end(&coder->subfilter, allocator);
 
 			// Free memory used for subfilter options. This is
 			// safe, because we don't support any Subfilter that
@@ -276,7 +276,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 		coder->helper.end_was_reached = false;
 
-		lzma_options_filter filters[3] = {
+		lzma_filter filters[3] = {
 			{
 				.id = coder->filter_flags.id,
 				.options = coder->filter_flags.options,
@@ -406,7 +406,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			in_limit = in_size;
 
 		if (coder->subfilter.code == NULL) {
-			const size_t copy_size = bufcpy(
+			const size_t copy_size = lzma_bufcpy(
 					in, in_pos, in_limit,
 					out, out_pos, out_size);
 
@@ -480,7 +480,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			}
 
 			if (coder->subfilter.code == NULL) {
-				bufcpy(coder->repeat.buffer,
+				lzma_bufcpy(coder->repeat.buffer,
 						&coder->repeat.pos,
 						coder->repeat.size,
 						out, out_pos, out_size);
@@ -586,9 +586,9 @@ subblock_decode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 subblock_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->next, allocator);
-	lzma_next_coder_end(&coder->subfilter, allocator);
-	lzma_next_coder_end(&coder->filter_flags_decoder, allocator);
+	lzma_next_end(&coder->next, allocator);
+	lzma_next_end(&coder->subfilter, allocator);
+	lzma_next_end(&coder->filter_flags_decoder, allocator);
 	lzma_free(coder->filter_flags.options, allocator);
 	lzma_free(coder, allocator);
 	return;
@@ -612,7 +612,7 @@ lzma_subblock_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->filter_flags_decoder = LZMA_NEXT_CODER_INIT;
 
 	} else {
-		lzma_next_coder_end(&next->coder->subfilter, allocator);
+		lzma_next_end(&next->coder->subfilter, allocator);
 		lzma_free(next->coder->filter_flags.options, allocator);
 	}
 

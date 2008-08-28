@@ -66,7 +66,8 @@ typedef struct {
  * In this case, return value cannot be NULL or a different pointer than
  * the i given as argument.
  */
-extern lzma_index *lzma_index_init(lzma_index *i, lzma_allocator *allocator);
+extern lzma_index *lzma_index_init(lzma_index *i, lzma_allocator *allocator)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -91,13 +92,14 @@ extern void lzma_index_end(lzma_index *i, lzma_allocator *allocator);
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_index_append(lzma_index *i, lzma_allocator *allocator,
-		lzma_vli total_size, lzma_vli uncompressed_size);
+		lzma_vli total_size, lzma_vli uncompressed_size)
+		lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Get the number of Records
  */
-extern lzma_vli lzma_index_count(const lzma_index *i);
+extern lzma_vli lzma_index_count(const lzma_index *i) lzma_attr_pure;
 
 
 /**
@@ -105,7 +107,7 @@ extern lzma_vli lzma_index_count(const lzma_index *i);
  *
  * This is needed to verify the Index Size field from the Stream Footer.
  */
-extern lzma_vli lzma_index_size(const lzma_index *i);
+extern lzma_vli lzma_index_size(const lzma_index *i) lzma_attr_pure;
 
 
 /**
@@ -114,7 +116,7 @@ extern lzma_vli lzma_index_size(const lzma_index *i);
  * This doesn't include the Stream Header, Stream Footer, Stream Padding,
  * or Index fields.
  */
-extern lzma_vli lzma_index_total_size(const lzma_index *i);
+extern lzma_vli lzma_index_total_size(const lzma_index *i) lzma_attr_pure;
 
 
 /**
@@ -123,7 +125,7 @@ extern lzma_vli lzma_index_total_size(const lzma_index *i);
  * If multiple Indexes have been combined, this works as if the Blocks
  * were in a single Stream.
  */
-extern lzma_vli lzma_index_stream_size(const lzma_index *i);
+extern lzma_vli lzma_index_stream_size(const lzma_index *i) lzma_attr_pure;
 
 
 /**
@@ -133,19 +135,21 @@ extern lzma_vli lzma_index_stream_size(const lzma_index *i);
  * identical to lzma_index_stream_size(). If multiple Indexes have been
  * combined, this includes also the possible Stream Padding fields.
  */
-extern lzma_vli lzma_index_file_size(const lzma_index *i);
+extern lzma_vli lzma_index_file_size(const lzma_index *i) lzma_attr_pure;
 
 
 /**
  * \brief       Get the uncompressed size of the Stream
  */
-extern lzma_vli lzma_index_uncompressed_size(const lzma_index *i);
+extern lzma_vli lzma_index_uncompressed_size(const lzma_index *i)
+		lzma_attr_pure;
 
 
 /**
  * \brief       Get the next Record from the Index
  */
-extern lzma_bool lzma_index_read(lzma_index *i, lzma_index_record *record);
+extern lzma_bool lzma_index_read(lzma_index *i, lzma_index_record *record)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -179,7 +183,8 @@ extern void lzma_index_rewind(lzma_index *i);
  * and the read position are not modified, and this function returns true.
  */
 extern lzma_bool lzma_index_locate(
-		lzma_index *i, lzma_index_record *record, lzma_vli target);
+		lzma_index *i, lzma_index_record *record, lzma_vli target)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -202,7 +207,8 @@ extern lzma_bool lzma_index_locate(
  */
 extern lzma_ret lzma_index_cat(lzma_index *lzma_restrict dest,
 		lzma_index *lzma_restrict src,
-		lzma_allocator *allocator, lzma_vli padding);
+		lzma_allocator *allocator, lzma_vli padding)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -211,22 +217,26 @@ extern lzma_ret lzma_index_cat(lzma_index *lzma_restrict dest,
  * \return      A copy of the Index, or NULL if memory allocation failed.
  */
 extern lzma_index *lzma_index_dup(
-		const lzma_index *i, lzma_allocator *allocator);
+		const lzma_index *i, lzma_allocator *allocator)
+		lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Compares if two Index lists are identical
  */
-extern lzma_bool lzma_index_equal(const lzma_index *a, const lzma_index *b);
+extern lzma_bool lzma_index_equal(const lzma_index *a, const lzma_index *b)
+		lzma_attr_pure;
 
 
 /**
  * \brief       Initializes Index encoder
  */
-extern lzma_ret lzma_index_encoder(lzma_stream *strm, lzma_index *i);
+extern lzma_ret lzma_index_encoder(lzma_stream *strm, lzma_index *i)
+		lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Initializes Index decoder
  */
-extern lzma_ret lzma_index_decoder(lzma_stream *strm, lzma_index **i);
+extern lzma_ret lzma_index_decoder(lzma_stream *strm, lzma_index **i)
+		lzma_attr_warn_unused_result;

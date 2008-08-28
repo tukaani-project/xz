@@ -15,22 +15,18 @@
 nobase_include_HEADERS = \
 	lzma.h \
 	lzma/alignment.h \
-	lzma/alone.h \
-	lzma/auto.h \
 	lzma/base.h \
 	lzma/block.h \
 	lzma/check.h \
+	lzma/container.h \
 	lzma/delta.h \
-	lzma/easy.h \
 	lzma/filter.h \
 	lzma/index.h \
 	lzma/index_hash.h \
 	lzma/init.h \
 	lzma/lzma.h \
 	lzma/memlimit.h \
-	lzma/raw.h \
 	lzma/simple.h \
-	lzma/stream.h \
 	lzma/stream_flags.h \
 	lzma/subblock.h \
 	lzma/version.h \

@@ -36,7 +36,7 @@ typedef struct {
 	lzma_vli index_list_size;
 
 	/// Check calculated from Total Sizes and Uncompressed Sizes.
-	lzma_check check;
+	lzma_check_state check;
 
 } lzma_index_hash_info;
 
@@ -300,9 +300,9 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 		// Finish the hashes and compare them.
 		lzma_check_finish(&index_hash->blocks.check, LZMA_CHECK_BEST);
 		lzma_check_finish(&index_hash->records.check, LZMA_CHECK_BEST);
-		if (memcmp(index_hash->blocks.check.buffer,
-				index_hash->records.check.buffer,
-				lzma_check_sizes[LZMA_CHECK_BEST]) != 0)
+		if (memcmp(index_hash->blocks.check.buffer.u8,
+				index_hash->records.check.buffer.u8,
+				lzma_check_size(LZMA_CHECK_BEST)) != 0)
 			return LZMA_DATA_ERROR;
 
 		// Finish the CRC32 calculation.

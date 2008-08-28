@@ -23,25 +23,32 @@
 #endif
 
 
-#define NUM_BITS (BIT_MODEL_TOTAL_BITS - MOVE_REDUCING_BITS)
-
-
-uint32_t lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
+uint32_t lzma_rc_prices[RC_PRICE_TABLE_SIZE];
 
 
 extern void
 lzma_rc_init(void)
 {
-	// Initialize lzma_rc_prob_prices[].
-	for (int i = NUM_BITS - 1; i >= 0; --i) {
-		const uint32_t start = 1 << (NUM_BITS - i - 1);
-		const uint32_t end = 1 << (NUM_BITS - i);
+	for (uint32_t i = (UINT32_C(1) << RC_MOVE_REDUCING_BITS) / 2;
+			i < RC_BIT_MODEL_TOTAL;
+			i += (UINT32_C(1) << RC_MOVE_REDUCING_BITS)) {
+		const uint32_t cycles_bits = RC_BIT_PRICE_SHIFT_BITS;
+		uint32_t w = i;
+		uint32_t bit_count = 0;
 
-		for (uint32_t j = start; j < end; ++j) {
-			lzma_rc_prob_prices[j] = (i << BIT_PRICE_SHIFT_BITS)
-				+ (((end - j) << BIT_PRICE_SHIFT_BITS)
-				>> (NUM_BITS - i - 1));
+		for (uint32_t j = 0; j < cycles_bits; ++j) {
+			w *= w;
+			bit_count <<= 1;
+
+			while (w >= (UINT32_C(1) << 16)) {
+				w >>= 1;
+				++bit_count;
+			}
 		}
+
+		lzma_rc_prices[i >> RC_MOVE_REDUCING_BITS]
+				= (RC_BIT_MODEL_TOTAL_BITS << cycles_bits)
+				- 15 - bit_count;
 	}
 
 	return;

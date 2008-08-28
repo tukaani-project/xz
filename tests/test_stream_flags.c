@@ -95,7 +95,7 @@ test_encode_invalid(void)
 	expect(lzma_stream_footer_encode(&known_flags, buffer)
 			== LZMA_PROG_ERROR);
 
-	known_flags.check = (lzma_check_type)(-1);
+	known_flags.check = (lzma_check)(-1);
 
 	expect(lzma_stream_header_encode(&known_flags, buffer)
 			== LZMA_PROG_ERROR);
@@ -171,7 +171,7 @@ main(void)
 
 	// Valid headers
 	known_flags.backward_size = 1024;
-	for (lzma_check_type check = LZMA_CHECK_NONE;
+	for (lzma_check check = LZMA_CHECK_NONE;
 			check <= LZMA_CHECK_ID_MAX; ++check) {
 		test_header();
 		test_footer();

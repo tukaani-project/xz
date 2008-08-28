@@ -81,8 +81,6 @@
 // I'm making the table version the default, because that has good speed
 // on all systems I have tried. The size optimized version is sometimes
 // slightly faster, but sometimes it is a lot slower.
-//
-// Finally, this code isn't a major bottle neck in LZMA encoding anyway.
 
 #ifdef HAVE_SMALL
 #	include "bsr.h"
@@ -135,11 +133,7 @@ get_pos_slot(uint32_t pos)
 static inline uint32_t
 get_pos_slot_2(uint32_t pos)
 {
-	// FIXME: This assert() cannot be enabled at the moment, because
-	// lzma_getoptimum.c calls this function so that this assertion
-	// fails; however, it ignores the result of this function when
-	// this assert() would have failed.
-	// assert(pos >= FULL_DISTANCES);
+	assert(pos >= FULL_DISTANCES);
 
 	if (pos < fastpos_limit(FULL_DISTANCES_BITS - 1, 0))
 		return fastpos_result(pos, FULL_DISTANCES_BITS - 1, 0);

@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "subblock_encoder.h"
-#include "raw_encoder.h"
+#include "filter_encoder.h"
 
 
 /// Maximum number of repeats that a single Repeating Data can indicate.
@@ -398,7 +398,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			assert(coder->subfilter.subcoder.code == NULL);
 
 			// No Subfilter is enabled, just copy the data as is.
-			coder->subblock.in_pending += bufcpy(
+			coder->subblock.in_pending += lzma_bufcpy(
 					in, in_pos, in_size,
 					coder->subblock.data,
 					&coder->subblock.size,
@@ -480,7 +480,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				// otherwise the Subfilter's memory could be
 				// left allocated for long time, and would
 				// just waste memory.
-				lzma_next_coder_end(&coder->subfilter.subcoder,
+				lzma_next_end(&coder->subfilter.subcoder,
 						allocator);
 
 				// We need to flush the currently buffered
@@ -728,7 +728,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		break;
 
 	case SEQ_RLE_DATA:
-		bufcpy(coder->rle.buffer, &coder->pos, coder->rle.size,
+		lzma_bufcpy(coder->rle.buffer, &coder->pos, coder->rle.size,
 				out, out_pos, out_size);
 		if (coder->pos < coder->rle.size)
 			return LZMA_OK;
@@ -767,7 +767,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		break;
 
 	case SEQ_DATA:
-		bufcpy(coder->subblock.data, &coder->pos,
+		lzma_bufcpy(coder->subblock.data, &coder->pos,
 				coder->subblock.size, out, out_pos, out_size);
 		if (coder->pos < coder->subblock.size)
 			return LZMA_OK;
@@ -791,7 +791,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			return LZMA_HEADER_ERROR;
 
 		// Initialize a raw encoder to work as a Subfilter.
-		lzma_options_filter options[2];
+		lzma_filter options[2];
 		options[0] = coder->options->subfilter_options;
 		options[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
@@ -817,8 +817,8 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		// Now we have a big-enough buffer. Encode the Filter Flags.
 		// Like above, this should never fail.
 		size_t dummy = 0;
-		ret = lzma_filter_flags_encode(coder->subfilter.flags,
-				&dummy, coder->subfilter.flags_size, options);
+		ret = lzma_filter_flags_encode(options, coder->subfilter.flags,
+				&dummy, coder->subfilter.flags_size);
 		assert(ret == LZMA_OK);
 		assert(dummy == coder->subfilter.flags_size);
 		if (ret != LZMA_OK || dummy != coder->subfilter.flags_size)
@@ -833,15 +833,15 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		coder->sequence = SEQ_SUBFILTER_FLAGS;
 
 		// It is safe to fall through because SEQ_SUBFILTER_FLAGS
-		// uses bufcpy() which doesn't write unless there is output
-		// space.
+		// uses lzma_bufcpy() which doesn't write unless there is
+		// output space.
 	}
 
 	// Fall through
 
 	case SEQ_SUBFILTER_FLAGS:
 		// Copy the Filter Flags to the output stream.
-		bufcpy(coder->subfilter.flags, &coder->pos,
+		lzma_bufcpy(coder->subfilter.flags, &coder->pos,
 				coder->subfilter.flags_size,
 				out, out_pos, out_size);
 		if (coder->pos < coder->subfilter.flags_size)
@@ -912,8 +912,8 @@ subblock_encode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 subblock_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->next, allocator);
-	lzma_next_coder_end(&coder->subfilter.subcoder, allocator);
+	lzma_next_end(&coder->next, allocator);
+	lzma_next_end(&coder->subfilter.subcoder, allocator);
 	lzma_free(coder->subblock.data, allocator);
 	lzma_free(coder->subfilter.flags, allocator);
 	lzma_free(coder, allocator);
@@ -938,7 +938,7 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->subblock.limit = 0;
 		next->coder->subfilter.subcoder = LZMA_NEXT_CODER_INIT;
 	} else {
-		lzma_next_coder_end(&next->coder->subfilter.subcoder,
+		lzma_next_end(&next->coder->subfilter.subcoder,
 				allocator);
 		lzma_free(next->coder->subfilter.flags, allocator);
 	}

@@ -58,7 +58,8 @@ typedef struct lzma_memlimit_s lzma_memlimit;
  *              lzma_memlimit_ can be used even if lzma_init() hasn't been
  *              called.
  */
-extern lzma_memlimit *lzma_memlimit_create(size_t limit);
+extern lzma_memlimit *lzma_memlimit_create(size_t limit)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -79,7 +80,8 @@ extern void lzma_memlimit_set(lzma_memlimit *mem, size_t limit);
 /**
  * \brief       Gets the current memory usage limit
  */
-extern size_t lzma_memlimit_get(const lzma_memlimit *mem);
+extern size_t lzma_memlimit_get(const lzma_memlimit *mem)
+		lzma_attr_pure;
 
 
 /**
@@ -89,7 +91,8 @@ extern size_t lzma_memlimit_get(const lzma_memlimit *mem);
  *              thus it will always be larger than the total number of
  *              bytes allocated via lzma_memlimit_alloc().
  */
-extern size_t lzma_memlimit_used(const lzma_memlimit *mem);
+extern size_t lzma_memlimit_used(const lzma_memlimit *mem)
+		lzma_attr_pure;
 
 
 /**
@@ -134,7 +137,8 @@ extern lzma_bool lzma_memlimit_reached(lzma_memlimit *mem, lzma_bool clear);
  * been allocated with lzma_memlimit_alloc() or all memory allocated
  * has been freed or detached, this will return zero.
  */
-extern size_t lzma_memlimit_count(const lzma_memlimit *mem);
+extern size_t lzma_memlimit_count(const lzma_memlimit *mem)
+		lzma_attr_pure;
 
 
 /**
@@ -157,7 +161,8 @@ extern size_t lzma_memlimit_count(const lzma_memlimit *mem);
  *              invalid amount of memory being allocated.
  */
 extern void *lzma_memlimit_alloc(
-		lzma_memlimit *mem, size_t nmemb, size_t size);
+		lzma_memlimit *mem, size_t nmemb, size_t size)
+		lzma_attr_warn_unused_result;
 
 
 /**

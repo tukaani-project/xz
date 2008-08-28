@@ -22,6 +22,7 @@
 #define LZMA_RANGE_ENCODER_H
 
 #include "range_common.h"
+#include "price.h"
 
 
 /// Maximum number of symbols that can be put pending into lzma_range_encoder
@@ -87,7 +88,7 @@ rc_bittree(lzma_range_encoder *rc, probability *probs,
 	do {
 		const uint32_t bit = (symbol >> --bit_count) & 1;
 		rc_bit(rc, &probs[model_index], bit);
-		model_index = (model_index << 1) | bit;
+		model_index = (model_index << 1) + bit;
 	} while (bit_count != 0);
 }
 
@@ -102,7 +103,7 @@ rc_bittree_reverse(lzma_range_encoder *rc, probability *probs,
 		const uint32_t bit = symbol & 1;
 		symbol >>= 1;
 		rc_bit(rc, &probs[model_index], bit);
-		model_index = (model_index << 1) | bit;
+		model_index = (model_index << 1) + bit;
 	} while (--bit_count != 0);
 }
 
@@ -146,7 +147,7 @@ rc_shift_low(lzma_range_encoder *rc,
 	}
 
 	++rc->cache_size;
-	rc->low = (rc->low & 0x00FFFFFF) << SHIFT_BITS;
+	rc->low = (rc->low & 0x00FFFFFF) << RC_SHIFT_BITS;
 
 	return false;
 }
@@ -156,32 +157,35 @@ static inline bool
 rc_encode(lzma_range_encoder *rc,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 {
+	assert(rc->count <= RC_SYMBOLS_MAX);
+
 	while (rc->pos < rc->count) {
 		// Normalize
-		if (rc->range < TOP_VALUE) {
+		if (rc->range < RC_TOP_VALUE) {
 			if (rc_shift_low(rc, out, out_pos, out_size))
 				return true;
 
-			rc->range <<= SHIFT_BITS;
+			rc->range <<= RC_SHIFT_BITS;
 		}
 
 		// Encode a bit
 		switch (rc->symbols[rc->pos]) {
 		case RC_BIT_0: {
 			probability prob = *rc->probs[rc->pos];
-			rc->range = (rc->range >> BIT_MODEL_TOTAL_BITS) * prob;
-			prob += (BIT_MODEL_TOTAL - prob) >> MOVE_BITS;
+			rc->range = (rc->range >> RC_BIT_MODEL_TOTAL_BITS)
+					* prob;
+			prob += (RC_BIT_MODEL_TOTAL - prob) >> RC_MOVE_BITS;
 			*rc->probs[rc->pos] = prob;
 			break;
 		}
 
 		case RC_BIT_1: {
 			probability prob = *rc->probs[rc->pos];
-			const uint32_t bound = prob
-					* (rc->range >> BIT_MODEL_TOTAL_BITS);
+			const uint32_t bound = prob * (rc->range
+					>> RC_BIT_MODEL_TOTAL_BITS);
 			rc->low += bound;
 			rc->range -= bound;
-			prob -= prob >> MOVE_BITS;
+			prob -= prob >> RC_MOVE_BITS;
 			*rc->probs[rc->pos] = prob;
 			break;
 		}
@@ -229,74 +233,6 @@ static inline uint64_t
 rc_pending(const lzma_range_encoder *rc)
 {
 	return rc->cache_size + 5 - 1;
-}
-
-
-////////////
-// Prices //
-////////////
-
-#ifdef HAVE_SMALL
-/// Probability prices used by *_get_price() macros. This is initialized
-/// by lzma_rc_init() and is not modified later.
-extern uint32_t lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
-
-/// Initializes lzma_rc_prob_prices[]. This needs to be called only once.
-extern void lzma_rc_init(void);
-
-#else
-// Not building a size optimized version, so we use a precomputed
-// constant table.
-extern const uint32_t
-lzma_rc_prob_prices[BIT_MODEL_TOTAL >> MOVE_REDUCING_BITS];
-
-#endif
-
-
-#define bit_get_price(prob, symbol) \
-	lzma_rc_prob_prices[((((prob) - (symbol)) ^ (-(symbol))) \
-			& (BIT_MODEL_TOTAL - 1)) >> MOVE_REDUCING_BITS]
-
-
-#define bit_get_price_0(prob) \
-	lzma_rc_prob_prices[(prob) >> MOVE_REDUCING_BITS]
-
-
-#define bit_get_price_1(prob) \
-	lzma_rc_prob_prices[(BIT_MODEL_TOTAL - (prob)) >> MOVE_REDUCING_BITS]
-
-
-static inline uint32_t
-bittree_get_price(const probability *probs,
-		uint32_t bit_levels, uint32_t symbol)
-{
-	uint32_t price = 0;
-	symbol |= UINT32_C(1) << bit_levels;
-
-	do {
-		price += bit_get_price(probs[symbol >> 1], symbol & 1);
-		symbol >>= 1;
-	} while (symbol != 1);
-
-	return price;
-}
-
-
-static inline uint32_t
-bittree_reverse_get_price(const probability *probs,
-		uint32_t bit_levels, uint32_t symbol)
-{
-	uint32_t price = 0;
-	uint32_t model_index = 1;
-
-	do {
-		const uint32_t bit = symbol & 1;
-		symbol >>= 1;
-		price += bit_get_price(probs[model_index], bit);
-		model_index = (model_index << 1) | bit;
-	} while (--bit_levels != 0);
-
-	return price;
 }
 
 #endif

@@ -22,7 +22,7 @@
 
 static lzma_mode modes[] = {
 	LZMA_MODE_FAST,
-	LZMA_MODE_BEST,
+	LZMA_MODE_NORMAL,
 	LZMA_MODE_INVALID
 };
 

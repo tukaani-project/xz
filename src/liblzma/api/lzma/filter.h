@@ -51,7 +51,7 @@ typedef struct {
 	 */
 	void *options;
 
-} lzma_options_filter;
+} lzma_filter;
 
 
 /**
@@ -65,7 +65,7 @@ typedef struct {
  * encoding-specific functions are probably missing from the library
  * API/ABI completely.
  */
-extern const lzma_vli *const lzma_available_filter_encoders;
+extern const lzma_vli *const lzma_filter_encoders;
 
 
 /**
@@ -79,7 +79,7 @@ extern const lzma_vli *const lzma_available_filter_encoders;
  * decoding-specific functions are probably missing from the library
  * API/ABI completely.
  */
-extern const lzma_vli *const lzma_available_filter_decoders;
+extern const lzma_vli *const lzma_filter_decoders;
 
 
 /**
@@ -87,8 +87,6 @@ extern const lzma_vli *const lzma_available_filter_decoders;
  *
  * \param       filters     Array of filters terminated with
  *                          .id == LZMA_VLI_VALUE_UNKNOWN.
- * \param       is_encoder  Set to true when calculating memory requirements
- *                          of an encoder; false for decoder.
  *
  * \return      Number of mebibytes (MiB i.e. 2^20) required for the given
  *              encoder or decoder filter chain.
@@ -98,8 +96,55 @@ extern const lzma_vli *const lzma_available_filter_decoders;
  *              if calculating memory requirements of decoder, lzma_init() or
  *              lzma_init_decoder() must have been called earlier.
  */
-extern uint32_t lzma_memory_usage(
-		const lzma_options_filter *filters, lzma_bool is_encoder);
+// extern uint32_t lzma_memory_usage(
+// 		const lzma_filter *filters, lzma_bool is_encoder);
+
+extern uint64_t lzma_memusage_encoder(const lzma_filter *filters)
+		lzma_attr_pure;
+
+extern uint64_t lzma_memusage_decoder(const lzma_filter *filters)
+		lzma_attr_pure;
+
+
+/**
+ * \brief       Initializes raw encoder
+ *
+ * This function may be useful when implementing custom file formats.
+ *
+ * \param       strm    Pointer to properly prepared lzma_stream
+ * \param       options Array of lzma_filter structures.
+ *                      The end of the array must be marked with
+ *                      .id = LZMA_VLI_VALUE_UNKNOWN. The minimum
+ *                      number of filters is one and the maximum is four.
+ *
+ * The `action' with lzma_code() can be LZMA_RUN, LZMA_SYNC_FLUSH (if the
+ * filter chain supports it), or LZMA_FINISH.
+ *
+ * \return      - LZMA_OK
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_HEADER_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_raw_encoder(
+		lzma_stream *strm, const lzma_filter *options)
+		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Initializes raw decoder
+ *
+ * The initialization of raw decoder goes similarly to raw encoder.
+ *
+ * The `action' with lzma_code() can be LZMA_RUN or LZMA_SYNC_FLUSH.
+ *
+ * \return      - LZMA_OK
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_HEADER_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_raw_decoder(
+		lzma_stream *strm, const lzma_filter *options)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -119,10 +164,11 @@ extern uint32_t lzma_memory_usage(
  *              - LZMA_PROG_ERROR: Invalid options
  *
  * \note        If you need to calculate size of List of Filter Flags,
- *              you need to loop over every lzma_options_filter entry.
+ *              you need to loop over every lzma_filter entry.
  */
 extern lzma_ret lzma_filter_flags_size(
-		uint32_t *size, const lzma_options_filter *options);
+		uint32_t *size, const lzma_filter *options)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -143,8 +189,9 @@ extern lzma_ret lzma_filter_flags_size(
  *                buffer space (you should have checked it with
  *                lzma_filter_flags_size()).
  */
-extern lzma_ret lzma_filter_flags_encode(uint8_t *out, size_t *out_pos,
-		size_t out_size, const lzma_options_filter *options);
+extern lzma_ret lzma_filter_flags_encode(const lzma_filter *options,
+		uint8_t *out, size_t *out_pos, size_t out_size)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -163,5 +210,6 @@ extern lzma_ret lzma_filter_flags_encode(uint8_t *out, size_t *out_pos,
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_filter_flags_decode(
-		lzma_options_filter *options, lzma_allocator *allocator,
-		const uint8_t *in, size_t *in_pos, size_t in_size);
+		lzma_filter *options, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size)
+		lzma_attr_warn_unused_result;

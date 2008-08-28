@@ -22,11 +22,15 @@ liblzma_la_LIBADD = \
 	common/libcommon.la \
 	check/libcheck.la
 
+if COND_FILTER_LZ
+SUBDIRS += lz
+liblzma_la_LIBADD += lz/liblz.la
+endif
+
 if COND_FILTER_LZMA
-SUBDIRS += lz lzma rangecoder
+SUBDIRS += lzma rangecoder
 liblzma_la_LIBADD += \
-	lz/liblz.la \
-	lzma/liblzma4.la \
+	lzma/liblzma2.la \
 	rangecoder/librangecoder.la
 endif
 
@@ -35,7 +39,12 @@ SUBDIRS += subblock
 liblzma_la_LIBADD += subblock/libsubblock.la
 endif
 
-if COND_MAIN_SIMPLE
+if COND_FILTER_DELTA
+SUBDIRS += delta
+liblzma_la_LIBADD += delta/libdelta.la
+endif
+
+if COND_FILTER_SIMPLE
 SUBDIRS += simple
 liblzma_la_LIBADD += simple/libsimple.la
 endif

@@ -56,7 +56,7 @@ typedef enum {
 		 *
 		 * Size of the Check field: 32 bytes
 		 */
-} lzma_check_type;
+} lzma_check;
 
 
 /**
@@ -74,31 +74,34 @@ typedef enum {
 
 
 /**
- * \brief       Check IDs supported by this liblzma build
- *
- * If lzma_available_checks[n] is true, the Check ID n is supported by this
- * liblzma build. You can assume that LZMA_CHECK_NONE and LZMA_CHECK_CRC32
- * are always available.
- */
-extern const lzma_bool lzma_available_checks[LZMA_CHECK_ID_MAX + 1];
-
-
-/**
- * \brief       Size of the Check field with different Check IDs
- *
- * Although not all Check IDs have a check algorithm associated, the size of
- * every Check is already frozen. This array contains the size (in bytes) of
- * the Check field with specified Check ID. The values are taken from the
- * section 2.1.1.2 of the .lzma file format specification:
- * { 0, 4, 4, 4, 8, 8, 8, 16, 16, 16, 32, 32, 32, 64, 64, 64 }
- */
-extern const uint32_t lzma_check_sizes[LZMA_CHECK_ID_MAX + 1];
-
-
-/**
  * \brief       Maximum size of a Check field
  */
 #define LZMA_CHECK_SIZE_MAX 64
+
+
+/**
+ * \brief       Test if the given Check ID is supported
+ *
+ * Returns true if the given Check ID is supported by this liblzma build.
+ * Otherwise false is returned. It is safe to call this with a value that
+ * is not in the range [0, 15]; in that case the return value is always false.
+ */
+extern lzma_bool lzma_check_is_supported(lzma_check check)
+		lzma_attr_const;
+
+
+/**
+ * \brief       Get the size of the Check field with given Check ID
+ *
+ * Although not all Check IDs have a check algorithm associated, the size of
+ * every Check is already frozen. This function returns the size (in bytes) of
+ * the Check field with the specified Check ID. The values are taken from the
+ * section 2.1.1.2 of the .lzma file format specification:
+ * { 0, 4, 4, 4, 8, 8, 8, 16, 16, 16, 32, 32, 32, 64, 64, 64 }
+ *
+ * If the argument is not in the range [0, 15], UINT32_MAX is returned.
+ */
+extern uint32_t lzma_check_size(lzma_check check) lzma_attr_const;
 
 
 /**
@@ -115,7 +118,8 @@ extern const uint32_t lzma_check_sizes[LZMA_CHECK_ID_MAX + 1];
  * \return      Updated CRC value, which can be passed to this function
  *              again to continue CRC calculation.
  */
-extern uint32_t lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc);
+extern uint32_t lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
+		lzma_attr_pure;
 
 
 /**
@@ -125,7 +129,8 @@ extern uint32_t lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc);
  *
  * This function is used similarly to lzma_crc32(). See its documentation.
  */
-extern uint64_t lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc);
+extern uint64_t lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
+		lzma_attr_pure;
 
 
 /*

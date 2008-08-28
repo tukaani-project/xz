@@ -40,7 +40,7 @@ helper_decode(lzma_coder *coder,
 
 	// We can safely copy as much as possible, because we are never
 	// given more data than a single Subblock Data field.
-	bufcpy(in, in_pos, in_size, out, out_pos, out_size);
+	lzma_bufcpy(in, in_pos, in_size, out, out_pos, out_size);
 
 	// Return LZMA_STREAM_END when instructed so by the Subblock decoder.
 	return coder->options->end_was_reached ? LZMA_STREAM_END : LZMA_OK;

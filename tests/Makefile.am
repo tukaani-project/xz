@@ -48,6 +48,7 @@ TESTS = \
 	test_filter_flags \
 	test_block_header \
 	test_index \
+	test_files.sh \
 	test_compress.sh
 
 clean-local:

@@ -28,16 +28,27 @@
 extern lzma_ret lzma_lzma_decoder_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters);
 
-/// Set known uncompressed size. This is a hack needed to support
-/// LZMA_Alone files that don't have EOPM.
-extern void lzma_lzma_decoder_uncompressed_size(
-		lzma_next_coder *next, lzma_vli uncompressed_size);
+extern uint64_t lzma_lzma_decoder_memusage(const void *options);
+
+extern lzma_ret lzma_lzma_props_decode(
+		void **options, lzma_allocator *allocator,
+		const uint8_t *props, size_t props_size);
+
 
 /// \brief      Decodes the LZMA Properties byte (lc/lp/pb)
 ///
 /// \return     true if error occorred, false on success
 ///
-extern bool lzma_lzma_decode_properties(
+extern bool lzma_lzma_lclppb_decode(
 		lzma_options_lzma *options, uint8_t byte);
+
+
+#ifdef LZMA_LZ_DECODER_H
+/// Allocate and setup function pointers only. This is used by LZMA1 and
+/// LZMA2 decoders.
+extern lzma_ret lzma_lzma_decoder_create(
+		lzma_lz_decoder *lz, lzma_allocator *allocator,
+		const void *opt, size_t *dict_size);
+#endif
 
 #endif

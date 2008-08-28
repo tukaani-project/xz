@@ -201,6 +201,8 @@ static lzma_ret
 index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_index **i)
 {
+	lzma_next_coder_init(index_decoder_init, next, allocator);
+
 	if (i == NULL)
 		return LZMA_PROG_ERROR;
 
@@ -231,20 +233,10 @@ index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-/*
-extern lzma_ret
-lzma_index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_index **i)
-{
-	lzma_next_coder_init(index_decoder_init, next, allocator, i);
-}
-*/
-
-
 extern LZMA_API lzma_ret
 lzma_index_decoder(lzma_stream *strm, lzma_index **i)
 {
-	lzma_next_strm_init(strm, index_decoder_init, i);
+	lzma_next_strm_init(index_decoder_init, strm, i);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 

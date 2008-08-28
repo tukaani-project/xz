@@ -104,16 +104,16 @@ transform(uint32_t state[static 8], const uint32_t data[static 16])
 
 
 static void
-process(lzma_check *check)
+process(lzma_check_state *check)
 {
 #ifdef WORDS_BIGENDIAN
-	transform(check->state.sha256.state, (uint32_t *)(check->buffer));
+	transform(check->state.sha256.state, check->buffer.u32);
 
 #else
 	uint32_t data[16];
 
 	for (size_t i = 0; i < 16; ++i)
-		data[i] = bswap_32(*((uint32_t*)(check->buffer) + i));
+		data[i] = bswap_32(check->buffer.u32[i]);
 
 	transform(check->state.sha256.state, data);
 #endif
@@ -123,7 +123,7 @@ process(lzma_check *check)
 
 
 extern void
-lzma_sha256_init(lzma_check *check)
+lzma_sha256_init(lzma_check_state *check)
 {
 	static const uint32_t s[8] = {
 		0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
@@ -138,7 +138,7 @@ lzma_sha256_init(lzma_check *check)
 
 
 extern void
-lzma_sha256_update(const uint8_t *buf, size_t size, lzma_check *check)
+lzma_sha256_update(const uint8_t *buf, size_t size, lzma_check_state *check)
 {
 	// Copy the input data into a properly aligned temporary buffer.
 	// This way we can be called with arbitrarily sized buffers
@@ -150,7 +150,7 @@ lzma_sha256_update(const uint8_t *buf, size_t size, lzma_check *check)
 		if (copy_size > size)
 			copy_size = size;
 
-		memcpy(check->buffer + copy_start, buf, copy_size);
+		memcpy(check->buffer.u8 + copy_start, buf, copy_size);
 
 		buf += copy_size;
 		size -= copy_size;
@@ -165,12 +165,12 @@ lzma_sha256_update(const uint8_t *buf, size_t size, lzma_check *check)
 
 
 extern void
-lzma_sha256_finish(lzma_check *check)
+lzma_sha256_finish(lzma_check_state *check)
 {
 	// Add padding as described in RFC 3174 (it describes SHA-1 but
 	// the same padding style is used for SHA-256 too).
 	size_t pos = check->state.sha256.size & 0x3F;
-	check->buffer[pos++] = 0x80;
+	check->buffer.u8[pos++] = 0x80;
 
 	while (pos != 64 - 8) {
 		if (pos == 64) {
@@ -178,28 +178,25 @@ lzma_sha256_finish(lzma_check *check)
 			pos = 0;
 		}
 
-		check->buffer[pos++] = 0x00;
+		check->buffer.u8[pos++] = 0x00;
 	}
 
 	// Convert the message size from bytes to bits.
 	check->state.sha256.size *= 8;
 
 #ifdef WORDS_BIGENDIAN
-	*(uint64_t *)(check->buffer + 64 - 8) = check->state.sha256.size;
+	check->buffer.u64[(64 - 8) / 8] = check->state.sha256.size;
 #else
-	*(uint64_t *)(check->buffer + 64 - 8)
-			= bswap_64(check->state.sha256.size);
+	check->buffer.u64[(64 - 8) / 8] = bswap_64(check->state.sha256.size);
 #endif
 
 	process(check);
 
 	for (size_t i = 0; i < 8; ++i)
 #ifdef WORDS_BIGENDIAN
-		((uint32_t *)(check->buffer))[i]
-				= check->state.sha256.state[i];
+		check->buffer.u32[i] = check->state.sha256.state[i];
 #else
-		((uint32_t *)(check->buffer))[i]
-				= bswap_32(check->state.sha256.state[i]);
+		check->buffer.u32[i] = bswap_32(check->state.sha256.state[i]);
 #endif
 
 	return;

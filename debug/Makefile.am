@@ -16,7 +16,10 @@ noinst_PROGRAMS = \
 	repeat \
 	sync_flush \
 	full_flush \
-	memusage
+	memusage \
+	crc32 \
+	known_sizes \
+	hex2bin
 
 AM_CPPFLAGS = \
 	-I@top_srcdir@/src/common \

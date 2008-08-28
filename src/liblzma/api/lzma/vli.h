@@ -72,90 +72,24 @@ typedef uint64_t lzma_vli;
 
 
 /**
- * \brief       Sets VLI to given value with error checking
- *
- * \param       dest    Target variable which must have type of lzma_vli.
- * \param       src     New value to be stored to dest.
- * \param       limit   Maximum allowed value for src.
- *
- * \return      False on success, true on error. If an error occurred,
- *              dest is left in undefined state (i.e. it's possible that
- *              it will be different in newer liblzma versions).
- */
-#define lzma_vli_set_lim(dest, src, limit) \
-	((src) > (limit) || ((dest) = (src)) > (limit))
-
-/**
- * \brief
- */
-#define lzma_vli_add_lim(dest, src, limit) \
-	((src) > (limit) || ((dest) += (src)) > (limit))
-
-#define lzma_vli_add2_lim(dest, src1, src2, limit) \
-	(lzma_vli_add_lim(dest, src1, limit) \
-		|| lzma_vli_add_lim(dest, src2, limit))
-
-#define lzma_vli_add3_lim(dest, src1, src2, src3, limit) \
-	(lzma_vli_add_lim(dest, src1, limit) \
-		|| lzma_vli_add_lim(dest, src2, limit) \
-		|| lzma_vli_add_lim(dest, src3, limit))
-
-#define lzma_vli_add4_lim(dest, src1, src2, src3, src4, limit) \
-	(lzma_vli_add_lim(dest, src1, limit) \
-		|| lzma_vli_add_lim(dest, src2, limit) \
-		|| lzma_vli_add_lim(dest, src3, limit) \
-		|| lzma_vli_add_lim(dest, src4, limit))
-
-#define lzma_vli_sum_lim(dest, src1, src2, limit) \
-	(lzma_vli_set_lim(dest, src1, limit) \
-		|| lzma_vli_add_lim(dest, src2, limit))
-
-#define lzma_vli_sum3_lim(dest, src1, src2, src3, limit) \
-	(lzma_vli_set_lim(dest, src1, limit) \
-		|| lzma_vli_add_lim(dest, src2, limit) \
-		|| lzma_vli_add_lim(dest, src3, limit))
-
-#define lzma_vli_sum4_lim(dest, src1, src2, src3, src4, limit) \
-	(lzma_vli_set_lim(dest, src1, limit) \
-		|| lzma_vli_add_lim(dest, src2, limit) \
-		|| lzma_vli_add_lim(dest, src3, limit) \
-		|| lzma_vli_add_lim(dest, src4, limit))
-
-#define lzma_vli_set(dest, src) lzma_vli_set_lim(dest, src, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_add(dest, src) lzma_vli_add_lim(dest, src, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_add2(dest, src1, src2) \
-	lzma_vli_add2_lim(dest, src1, src2, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_add3(dest, src1, src2, src3) \
-	lzma_vli_add3_lim(dest, src1, src2, src3, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_add4(dest, src1, src2, src3, src4) \
-	lzma_vli_add4_lim(dest, src1, src2, src3, src4, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_sum(dest, src1, src2) \
-	lzma_vli_sum_lim(dest, src1, src2, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_sum3(dest, src1, src2, src3) \
-	lzma_vli_sum3_lim(dest, src1, src2, src3, LZMA_VLI_VALUE_MAX)
-
-#define lzma_vli_sum4(dest, src1, src2, src3, src4) \
-	lzma_vli_sum4_lim(dest, src1, src2, src3, src4, LZMA_VLI_VALUE_MAX)
-
-
-/**
  * \brief       Encodes variable-length integer
  *
- * In the new .lzma format, most integers are encoded in variable-length
+ * In the .lzma format, most integers are encoded in variable-length
  * representation. This saves space when smaller values are more likely
  * than bigger values.
  *
  * The encoding scheme encodes seven bits to every byte, using minimum
- * number of bytes required to represent the given value. In other words,
- * it puts 7-63 bits into 1-9 bytes. This implementation limits the number
- * of bits used to 63, thus num must be at maximum of UINT64_MAX / 2. You
- * may use LZMA_VLI_VALUE_MAX for clarity.
+ * number of bytes required to represent the given value. Encodings that use
+ * non-minimum number of bytes are invalid, thus every integer has exactly
+ * one encoded representation. The maximum number of bits in a VLI is 63,
+ * thus the vli argument must be at maximum of UINT64_MAX / 2. You should
+ * use LZMA_VLI_VALUE_MAX for clarity.
+ *
+ * This function has two modes: single-call and multi-call. Single-call mode
+ * encodes the whole integer at once; it is an error if the output buffer is
+ * too small. Multi-call mode saves the position in *vli_pos, and thus it is
+ * possible to continue encoding if the buffer becomes full before the whole
+ * integer has been encoded.
  *
  * \param       vli       Integer to be encoded
  * \param       vli_pos   How many VLI-encoded bytes have already been written
@@ -170,19 +104,19 @@ typedef uint64_t lzma_vli;
  * \return      Slightly different return values are used in multi-call and
  *              single-call modes.
  *
+ *              Single-call (vli_pos == NULL):
+ *              - LZMA_OK: Integer successfully encoded.
+ *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due
+ *                to too little output space; single-call mode doesn't use
+ *                LZMA_BUF_ERROR, since the application should have checked
+ *                the encoded size with lzma_vli_size().
+ *
  *              Multi-call (vli_pos != NULL):
  *              - LZMA_OK: So far all OK, but the integer is not
  *                completely written out yet.
  *              - LZMA_STREAM_END: Integer successfully encoded.
- *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due
- *                to no *out_pos == out_size; this function doesn't use
- *                LZMA_BUF_ERROR.
- *
- *              Single-call (vli_pos == NULL):
- *              - LZMA_OK: Integer successfully encoded.
- *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due
- *                to too little output space; this function doesn't use
- *                LZMA_BUF_ERROR.
+ *              - LZMA_BUF_ERROR: No output space was provided.
+ *              - LZMA_PROG_ERROR: Arguments are not sane.
  */
 extern lzma_ret lzma_vli_encode(
 		lzma_vli vli, size_t *lzma_restrict vli_pos,
@@ -192,6 +126,8 @@ extern lzma_ret lzma_vli_encode(
 
 /**
  * \brief       Decodes variable-length integer
+ *
+ * Like lzma_vli_encode(), this function has single-call and multi-call modes.
  *
  * \param       vli       Pointer to decoded integer. The decoder will
  *                        initialize it to zero when *vli_pos == 0, so
@@ -208,20 +144,20 @@ extern lzma_ret lzma_vli_encode(
  * \return      Slightly different return values are used in multi-call and
  *              single-call modes.
  *
+ *              Single-call (vli_pos == NULL):
+ *              - LZMA_OK: Integer successfully decoded.
+ *              - LZMA_DATA_ERROR: Integer is corrupt. This includes hitting
+ *                the end of the input buffer before the whole integer was
+ *                decoded; providing no input at all will use LZMA_DATA_ERROR.
+ *              - LZMA_PROG_ERROR: Arguments are not sane.
+ *
  *              Multi-call (vli_pos != NULL):
  *              - LZMA_OK: So far all OK, but the integer is not
  *                completely decoded yet.
  *              - LZMA_STREAM_END: Integer successfully decoded.
  *              - LZMA_DATA_ERROR: Integer is corrupt.
- *              - LZMA_PROG_ERROR: Arguments are not sane. This can be
- *                due to *in_pos == in_size; this function doesn't use
- *                LZMA_BUF_ERROR.
- *
- *              Single-call (vli_pos == NULL):
- *              - LZMA_OK: Integer successfully decoded.
- *              - LZMA_DATA_ERROR: Integer is corrupt.
- *              - LZMA_PROG_ERROR: Arguments are not sane. This can be due to
- *                too little input; this function doesn't use LZMA_BUF_ERROR.
+ *              - LZMA_BUF_ERROR: No input was provided.
+ *              - LZMA_PROG_ERROR: Arguments are not sane.
  */
 extern lzma_ret lzma_vli_decode(lzma_vli *lzma_restrict vli,
 		size_t *lzma_restrict vli_pos, const uint8_t *lzma_restrict in,
@@ -234,4 +170,5 @@ extern lzma_ret lzma_vli_decode(lzma_vli *lzma_restrict vli,
  * \return      Number of bytes on success (1-9). If vli isn't valid,
  *              zero is returned.
  */
-extern uint32_t lzma_vli_size(lzma_vli vli);
+extern uint32_t lzma_vli_size(lzma_vli vli)
+		lzma_attr_pure;

@@ -39,10 +39,15 @@ echo "System type:"
 # This is needed to know if assembler optimizations can be used.
 AC_CANONICAL_HOST
 
+
 echo
 echo "Configure options:"
 
-# Enable/disable debugging code:
+
+#############
+# Debugging #
+#############
+
 AC_MSG_CHECKING([if debugging code should be compiled])
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Enable debugging code.]),
 	[], enable_debug=no)
@@ -53,7 +58,11 @@ else
 	AC_MSG_RESULT([no])
 fi
 
-# Enable/disable the encoder components:
+
+###########
+# Encoder #
+###########
+
 AC_MSG_CHECKING([if encoder components should be built])
 AC_ARG_ENABLE(encoder, AC_HELP_STRING([--disable-encoder],
 		[Do not build the encoder components.]),
@@ -67,7 +76,11 @@ else
 fi
 AM_CONDITIONAL(COND_MAIN_ENCODER, test "x$enable_encoder" = xyes)
 
-# Enable/disable the decoder components:
+
+###########
+# Decoder #
+###########
+
 AC_MSG_CHECKING([if decoder components should be built])
 AC_ARG_ENABLE(decoder, AC_HELP_STRING([--disable-decoder],
 		[Do not build the decoder components.]),
@@ -84,146 +97,146 @@ else
 fi
 AM_CONDITIONAL(COND_MAIN_DECODER, test "x$enable_decoder" = xyes)
 
-# Filters
-AC_MSG_CHECKING([which filters to build])
-AC_ARG_ENABLE(filters, AC_HELP_STRING([--enable-filters=LIST],
-		[Comma-separated list of filters to build. Default=all.
-		Filters used in encoding are needed also in decoding.
-		Available filters: copy subblock x86 powerpc ia64
-		arm armthumb sparc delta lzma]),
-	[], [enable_filters=copy,subblock,x86,powerpc,ia64,arm,armthumb,sparc,delta,lzma])
-enable_filters=`echo "$enable_filters" | sed 's/,/ /g'`
-enable_filters_copy=no
-enable_filters_subblock=no
-enable_filters_x86=no
-enable_filters_powerpc=no
-enable_filters_ia64=no
-enable_filters_arm=no
-enable_filters_armthumb=no
-enable_filters_sparc=no
-enable_filters_delta=no
-enable_filters_lzma=no
-enable_simple_filters=no
-if test "x$enable_filters" = xno || test "x$enable_filters" = x; then
-	AC_MSG_RESULT([])
-	AC_MSG_ERROR([Please enable at least one filter.])
+
+###########
+# Filters #
+###########
+
+m4_define([SUPPORTED_FILTERS], [lzma,lzma2,subblock,delta,x86,powerpc,ia64,arm,armthumb,sparc])dnl
+m4_define([SIMPLE_FILTERS], [x86,powerpc,ia64,arm,armthumb,sparc])
+m4_define([LZ_FILTERS], [lzma,lzma2])
+
+m4_foreach([NAME], [SUPPORTED_FILTERS],
+[enable_filter_[]NAME=no
+enable_encoder_[]NAME=no
+enable_decoder_[]NAME=no
+])dnl
+
+AC_MSG_CHECKING([which encoders to build])
+AC_ARG_ENABLE([encoders], AC_HELP_STRING([--enable-encoders=LIST],
+		[Comma-separated list of encoders to build. Default=all.
+		Available encoders:]
+			m4_translit(m4_defn([SUPPORTED_FILTERS]), [,], [ ])),
+	[], [enable_encoders=SUPPORTED_FILTERS])
+enable_encoders=`echo "$enable_encoders" | sed 's/,/ /g'`
+if test "x$enable_encoders" = xno || test "x$enable_encoders" = x; then
+	AC_MSG_RESULT([(none)])
 else
-	for arg in $enable_filters
+	for arg in $enable_encoders
 	do
-		case $arg in
-			copy)
-				enable_filters_copy=yes
-				AC_DEFINE([HAVE_FILTER_COPY], 1,
-					[Define to 1 if support for the
-					Copy filter is enabled.])
-				;;
-			subblock)
-				enable_filters_subblock=yes
-				AC_DEFINE([HAVE_FILTER_SUBBLOCK], 1,
-					[Define to 1 if support for the
-					Subblock filter is enabled.])
-				;;
-			x86)
-				enable_filters_x86=yes
-				enable_simple_filters=yes
-				AC_DEFINE([HAVE_FILTER_X86], 1,
-					[Define to 1 if support for the
-					x86 (BCJ) filter is enabled.])
-				;;
-			powerpc)
-				enable_filters_powerpc=yes
-				enable_simple_filters=yes
-				AC_DEFINE([HAVE_FILTER_POWERPC], 1,
-					[Define to 1 if support for the
-					PowerPC filter is enabled.])
-				;;
-			ia64)
-				enable_filters_ia64=yes
-				enable_simple_filters=yes
-				AC_DEFINE([HAVE_FILTER_IA64], 1,
-					[Define to 1 if support for the
-					IA64 filter is enabled.])
-				;;
-			arm)
-				enable_filters_arm=yes
-				enable_simple_filters=yes
-				AC_DEFINE([HAVE_FILTER_ARM], 1,
-					[Define to 1 if support for the
-					ARM filter is enabled.])
-				;;
-			armthumb)
-				enable_filters_armthumb=yes
-				enable_simple_filters=yes
-				AC_DEFINE([HAVE_FILTER_ARMTHUMB], 1,
-					[Define to 1 if support for the
-					ARMThumb filter is enabled.])
-				;;
-			sparc)
-				enable_filters_sparc=yes
-				enable_simple_filters=yes
-				AC_DEFINE([HAVE_FILTER_SPARC], 1,
-					[Define to 1 if support for the
-					SPARC filter is enabled.])
-				;;
-			delta)
-				enable_filters_delta=yes
-				AC_DEFINE([HAVE_FILTER_DELTA], 1,
-					[Define to 1 if support for the
-					Delta filter is enabled.])
-				;;
-			lzma)
-				enable_filters_lzma=yes
-				AC_DEFINE([HAVE_FILTER_LZMA], 1,
-					[Define to 1 if support for the
-					LZMA filter is enabled.])
-				;;
+		case $arg in m4_foreach([NAME], [SUPPORTED_FILTERS], [
+			NAME)
+				enable_filter_[]NAME=yes
+				enable_encoder_[]NAME=yes
+				AC_DEFINE(HAVE_ENCODER_[]m4_toupper(NAME), [1],
+				[Define to 1 if] NAME [encoder is enabled.])
+				;;])
 			*)
 				AC_MSG_RESULT([])
 				AC_MSG_ERROR([unknown filter: $arg])
 				;;
 		esac
 	done
-	AC_MSG_RESULT([$enable_filters])
+	AC_MSG_RESULT([$enable_encoders])
 fi
-if test "x$enable_simple_filters" = xyes ; then
-	AC_DEFINE([HAVE_FILTER_SIMPLE], 1, [Define to 1 if support for any
-		of the so called simple filters is enabled.])
-fi
-AM_CONDITIONAL(COND_FILTER_COPY, test "x$enable_filters_copy" = xyes)
-AM_CONDITIONAL(COND_FILTER_SUBBLOCK, test "x$enable_filters_subblock" = xyes)
-AM_CONDITIONAL(COND_FILTER_X86, test "x$enable_filters_x86" = xyes)
-AM_CONDITIONAL(COND_FILTER_POWERPC, test "x$enable_filters_powerpc" = xyes)
-AM_CONDITIONAL(COND_FILTER_IA64, test "x$enable_filters_ia64" = xyes)
-AM_CONDITIONAL(COND_FILTER_ARM, test "x$enable_filters_arm" = xyes)
-AM_CONDITIONAL(COND_FILTER_ARMTHUMB, test "x$enable_filters_armthumb" = xyes)
-AM_CONDITIONAL(COND_FILTER_SPARC, test "x$enable_filters_sparc" = xyes)
-AM_CONDITIONAL(COND_FILTER_DELTA, test "x$enable_filters_delta" = xyes)
-AM_CONDITIONAL(COND_FILTER_LZMA, test "x$enable_filters_lzma" = xyes)
-AM_CONDITIONAL(COND_MAIN_SIMPLE, test "x$enable_simple_filters" = xyes)
 
-# Which match finders should be enabled:
+AC_MSG_CHECKING([which decoders to build])
+AC_ARG_ENABLE([decoders], AC_HELP_STRING([--enable-decoders=LIST],
+		[Comma-separated list of decoders to build. Default=all.
+		Available decoders are the same as available encoders.]),
+	[], [enable_decoders=SUPPORTED_FILTERS])
+enable_decoders=`echo "$enable_decoders" | sed 's/,/ /g'`
+if test "x$enable_decoders" = xno || test "x$enable_decoders" = x; then
+	AC_MSG_RESULT([(none)])
+else
+	for arg in $enable_decoders
+	do
+		case $arg in m4_foreach([NAME], [SUPPORTED_FILTERS], [
+			NAME)
+				enable_filter_[]NAME=yes
+				enable_decoder_[]NAME=yes
+				AC_DEFINE(HAVE_DECODER_[]m4_toupper(NAME), [1],
+				[Define to 1 if] NAME [decoder is enabled.])
+				;;])
+			*)
+				AC_MSG_RESULT([])
+				AC_MSG_ERROR([unknown filter: $arg])
+				;;
+		esac
+	done
+
+	# LZMA2 requires that LZMA is enabled.
+	test "x$enable_encoder_lzma2" = xyes && enable_encoder_lzma=yes
+	test "x$enable_decoder_lzma2" = xyes && enable_decoder_lzma=yes
+
+	AC_MSG_RESULT([$enable_decoders])
+fi
+
+if test "x$enable_encoder_lzma2$enable_encoder_lzma" = xyesno \
+		|| test "x$enable_decoder_lzma2$enable_decoder_lzma" = xyesno; then
+	AC_MSG_ERROR([LZMA2 requires that LZMA is also enabled.])
+fi
+
+m4_foreach([NAME], [SUPPORTED_FILTERS],
+[AM_CONDITIONAL(COND_FILTER_[]m4_toupper(NAME), test "x$enable_filter_[]NAME" = xyes)
+AM_CONDITIONAL(COND_ENCODER_[]m4_toupper(NAME), test "x$enable_encoder_[]NAME" = xyes)
+AM_CONDITIONAL(COND_DECODER_[]m4_toupper(NAME), test "x$enable_decoder_[]NAME" = xyes)
+])dnl
+
+# The so called "simple filters" share common code.
+enable_filter_simple=no
+enable_encoder_simple=no
+enable_decoder_simple=no
+m4_foreach([NAME], [SIMPLE_FILTERS],
+[test "x$enable_filter_[]NAME" = xyes && enable_filter_simple=yes
+test "x$enable_encoder_[]NAME" = xyes && enable_encoder_simple=yes
+test "x$enable_decoder_[]NAME" = xyes && enable_decoder_simple=yes
+])dnl
+AM_CONDITIONAL(COND_FILTER_SIMPLE, test "x$enable_filter_simple" = xyes)
+AM_CONDITIONAL(COND_ENCODER_SIMPLE, test "x$enable_encoder_simple" = xyes)
+AM_CONDITIONAL(COND_DECODER_SIMPLE, test "x$enable_decoder_simple" = xyes)
+
+# LZ-based filters share common code.
+enable_filter_lz=no
+enable_encoder_lz=no
+enable_decoder_lz=no
+m4_foreach([NAME], [LZ_FILTERS],
+[test "x$enable_filter_[]NAME" = xyes && enable_filter_lz=yes
+test "x$enable_encoder_[]NAME" = xyes && enable_encoder_lz=yes
+test "x$enable_decoder_[]NAME" = xyes && enable_decoder_lz=yes
+])dnl
+AM_CONDITIONAL(COND_FILTER_LZ, test "x$enable_filter_lz" = xyes)
+AM_CONDITIONAL(COND_ENCODER_LZ, test "x$enable_encoder_lz" = xyes)
+AM_CONDITIONAL(COND_DECODER_LZ, test "x$enable_decoder_lz" = xyes)
+
+
+#################
+# Match finders #
+#################
+
+m4_define([SUPPORTED_MATCH_FINDERS], [hc3,hc4,bt2,bt3,bt4])
+
+m4_foreach([NAME], [SUPPORTED_MATCH_FINDERS],
+[enable_match_finder_[]NAME=no
+])
+
 AC_MSG_CHECKING([which match finders to build])
 AC_ARG_ENABLE(match-finders, AC_HELP_STRING([--enable-match-finders=LIST],
 		[Comma-separated list of match finders to build. Default=all.
 		At least one match finder is required for encoding with
-		the LZMA filter.
-		Available match finders: hc3 hc4 bt2 bt3 bt4]), [],
-	[enable_match_finders=hc3,hc4,bt2,bt3,bt4])
+		the LZMA filter. Available match finders:]
+		m4_translit(m4_defn([SUPPORTED_MATCH_FINDERS]), [,], [ ])), [],
+	[enable_match_finders=SUPPORTED_MATCH_FINDERS])
 enable_match_finders=`echo "$enable_match_finders" | sed 's/,/ /g'`
-enable_match_finders_hc3=no
-enable_match_finders_hc4=no
-enable_match_finders_bt2=no
-enable_match_finders_bt3=no
-enable_match_finders_bt4=no
-if test "x$enable_encoder" = xyes && test "x$enable_filters_lzma" = xyes ; then
+if test "x$enable_encoder" = xyes && test "x$enable_encoder_lz" = xyes ; then
 	for arg in $enable_match_finders
 		do
-		case $arg in
-			hc3) enable_match_finders_hc3=yes ;;
-			hc4) enable_match_finders_hc4=yes ;;
-			bt2) enable_match_finders_bt2=yes ;;
-			bt3) enable_match_finders_bt3=yes ;;
-			bt4) enable_match_finders_bt4=yes ;;
+		case $arg in m4_foreach([NAME], [SUPPORTED_MATCH_FINDERS], [
+			NAME)
+				enable_match_finder_[]NAME=yes
+				AC_DEFINE(HAVE_MF_[]m4_toupper(NAME), [1],
+				[Define to 1 to enable] NAME [match finder.])
+				;;])
 			*)
 				AC_MSG_RESULT([])
 				AC_MSG_ERROR([unknown match finder: $arg])
@@ -232,48 +245,39 @@ if test "x$enable_encoder" = xyes && test "x$enable_filters_lzma" = xyes ; then
 	done
 	AC_MSG_RESULT([$enable_match_finders])
 else
-	AC_MSG_RESULT([(none because not building the LZMA encoder)])
+	AC_MSG_RESULT([(none because not building any LZ-based encoder)])
 fi
-AM_CONDITIONAL(COND_MF_HC3, test "x$enable_match_finders_hc3" = xyes)
-AM_CONDITIONAL(COND_MF_HC4, test "x$enable_match_finders_hc4" = xyes)
-AM_CONDITIONAL(COND_MF_BT2, test "x$enable_match_finders_bt2" = xyes)
-AM_CONDITIONAL(COND_MF_BT3, test "x$enable_match_finders_bt3" = xyes)
-AM_CONDITIONAL(COND_MF_BT4, test "x$enable_match_finders_bt4" = xyes)
 
-# Which integrity checks to build
+
+####################
+# Integrity checks #
+####################
+
+m4_define([SUPPORTED_CHECKS], [crc32,crc64,sha256])
+
+m4_foreach([NAME], [SUPPORTED_FILTERS],
+[enable_check_[]NAME=no
+])dnl
+
 AC_MSG_CHECKING([which integrity checks to build])
 AC_ARG_ENABLE(checks, AC_HELP_STRING([--enable-checks=LIST],
 		[Comma-separated list of integrity checks to build.
-		Default=all. Available integrity checks: crc32 crc64 sha256]),
-	[], [enable_checks=crc32,crc64,sha256])
+		Default=all. Available integrity checks:]
+		m4_translit(m4_defn([SUPPORTED_CHECKS]), [,], [ ])),
+	[], [enable_checks=SUPPORTED_CHECKS])
 enable_checks=`echo "$enable_checks" | sed 's/,/ /g'`
-enable_checks_crc32=no
-enable_checks_crc64=no
-enable_checks_sha256=no
 if test "x$enable_checks" = xno || test "x$enable_checks" = x; then
 	AC_MSG_RESULT([(none)])
 else
 	for arg in $enable_checks
 	do
-		case $arg in
-			crc32)
-				enable_checks_crc32=yes
-				AC_DEFINE([HAVE_CHECK_CRC32], 1,
-					[Define to 1 if CRC32 support
-					is enabled.])
-				;;
-			crc64)
-				enable_checks_crc64=yes
-				AC_DEFINE([HAVE_CHECK_CRC64], 1,
-					[Define to 1 if CRC64 support
-					is enabled.])
-				;;
-			sha256)
-				enable_checks_sha256=yes
-				AC_DEFINE([HAVE_CHECK_SHA256], 1,
-					[Define to 1 if SHA256 support
-					is enabled.])
-				;;
+		case $arg in m4_foreach([NAME], [SUPPORTED_CHECKS], [
+			NAME)
+				enable_check_[]NAME=yes
+				AC_DEFINE(HAVE_CHECK_[]m4_toupper(NAME), [1],
+				[Define to 1 if] NAME
+				[integrity check is enabled.])
+				;;])
 			*)
 				AC_MSG_RESULT([])
 				AC_MSG_ERROR([unknown integrity check: $arg])
@@ -285,11 +289,16 @@ fi
 if test "x$enable_checks_crc32" = xno ; then
 	AC_MSG_ERROR([For now, the CRC32 check must always be enabled.])
 fi
-AM_CONDITIONAL(COND_CHECK_CRC32, test "x$enable_checks_crc32" = xyes)
-AM_CONDITIONAL(COND_CHECK_CRC64, test "x$enable_checks_crc64" = xyes)
-AM_CONDITIONAL(COND_CHECK_SHA256, test "x$enable_checks_sha256" = xyes)
 
-# Assembler optimizations
+m4_foreach([NAME], [SUPPORTED_CHECKS],
+[AM_CONDITIONAL(COND_CHECK_[]m4_toupper(NAME), test "x$enable_check_[]NAME" = xyes)
+])dnl
+
+
+###########################
+# Assembler optimizations #
+###########################
+
 AC_MSG_CHECKING([if assembler optimizations should be used])
 AC_ARG_ENABLE(assembler, AC_HELP_STRING([--disable-assembler],
 		[Do not use assembler optimizations even if such exist
@@ -321,13 +330,18 @@ case $enable_assembler in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-assembler accepts only \`yes', \`no', or \`x86'.])
+		AC_MSG_ERROR([--enable-assembler accepts only \`yes', \`no', \`x86', or \`x86_64'.])
 		;;
 esac
 AC_MSG_RESULT([$enable_assembler])
 AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
+AM_CONDITIONAL(COND_ASM_X86_64, test "x$enable_assembler" = xx86_64)
 
-# Fast unaligned memory access
+
+################################
+# Fast unaligned memory access #
+################################
+
 AC_MSG_CHECKING([if unaligned memory access should be used])
 AC_ARG_ENABLE(unaligned-access, AC_HELP_STRING([--enable-unaligned-access],
 		[Enable if the system supports *fast* unaligned memory access
@@ -352,12 +366,15 @@ else
 	AC_MSG_RESULT([no])
 fi
 
-# Size optimization
+
+#####################
+# Size optimization #
+#####################
+
 AC_MSG_CHECKING([if small size is preferred over speed])
 AC_ARG_ENABLE(small, AC_HELP_STRING([--enable-small],
-		[Omit precomputed tables to make liblzma a few kilobytes
-		smaller. This will increase startup time of applications
-		slightly, because the tables need to be computed first.]),
+		[Make liblzma smaller and a little slower.
+		This is disabled by default to optimize for speed.]),
 	[], [enable_small=no])
 if test "x$enable_small" = xyes; then
 	AC_DEFINE([HAVE_SMALL], 1, [Define to 1 if optimizing for size.])
@@ -367,6 +384,7 @@ elif test "x$enable_small" != xno; then
 fi
 AC_MSG_RESULT([$enable_small])
 AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
+
 
 ###############################################################################
 # Checks for programs.
@@ -447,7 +465,6 @@ AC_TYPE_INT64_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINTPTR_T
 
-AC_CHECK_SIZEOF([unsigned long])
 AC_CHECK_SIZEOF([size_t])
 
 # The command line tool can copy high resolution timestamps if such
@@ -662,11 +679,12 @@ AC_CONFIG_FILES([
 	src/liblzma/api/Makefile
 	src/liblzma/common/Makefile
 	src/liblzma/check/Makefile
+	src/liblzma/rangecoder/Makefile
 	src/liblzma/lz/Makefile
 	src/liblzma/lzma/Makefile
-	src/liblzma/simple/Makefile
 	src/liblzma/subblock/Makefile
-	src/liblzma/rangecoder/Makefile
+	src/liblzma/delta/Makefile
+	src/liblzma/simple/Makefile
 	src/lzma/Makefile
 	src/lzmadec/Makefile
 	src/scripts/Makefile

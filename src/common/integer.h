@@ -15,7 +15,7 @@
 #define LZMA_INTEGER_H
 
 // I'm aware of AC_CHECK_ALIGNED_ACCESS_REQUIRED from Autoconf archive, but
-// it's not useful for us. We don't care if unaligned access is supported,
+// it's not useful here. We don't care if unaligned access is supported,
 // we care if it is fast. Some systems can emulate unaligned access in
 // software, which is horribly slow; we want to use byte-by-byte access on
 // such systems but the Autoconf test would detect such a system as
@@ -32,13 +32,13 @@
 // that also allow unaligned access. Inline assembler could be OK for that.
 #ifdef WORDS_BIGENDIAN
 #	include "bswap.h"
-#	define integer_convert_16(n) bswap_16(n)
-#	define integer_convert_32(n) bswap_32(n)
-#	define integer_convert_64(n) bswap_64(n)
+#	define integer_le_16(n) bswap_16(n)
+#	define integer_le_32(n) bswap_32(n)
+#	define integer_le_64(n) bswap_64(n)
 #else
-#	define integer_convert_16(n) (n)
-#	define integer_convert_32(n) (n)
-#	define integer_convert_64(n) (n)
+#	define integer_le_16(n) (n)
+#	define integer_le_32(n) (n)
+#	define integer_le_64(n) (n)
 #endif
 
 
@@ -46,7 +46,7 @@ static inline uint16_t
 integer_read_16(const uint8_t buf[static 2])
 {
 	uint16_t ret = *(const uint16_t *)(buf);
-	return integer_convert_16(ret);
+	return integer_le_16(ret);
 }
 
 
@@ -54,7 +54,7 @@ static inline uint32_t
 integer_read_32(const uint8_t buf[static 4])
 {
 	uint32_t ret = *(const uint32_t *)(buf);
-	return integer_convert_32(ret);
+	return integer_le_32(ret);
 }
 
 
@@ -63,7 +63,7 @@ static inline uint64_t
 integer_read_64(const uint8_t buf[static 8])
 {
 	uint64_t ret = *(const uint64_t *)(buf);
-	return integer_convert_64(ret);
+	return integer_le_64(ret);
 }
 */
 
@@ -71,14 +71,14 @@ integer_read_64(const uint8_t buf[static 8])
 static inline void
 integer_write_16(uint8_t buf[static 2], uint16_t num)
 {
-	*(uint16_t *)(buf) = integer_convert_16(num);
+	*(uint16_t *)(buf) = integer_le_16(num);
 }
 
 
 static inline void
 integer_write_32(uint8_t buf[static 4], uint32_t num)
 {
-	*(uint32_t *)(buf) = integer_convert_32(num);
+	*(uint32_t *)(buf) = integer_le_32(num);
 }
 
 
@@ -86,7 +86,7 @@ integer_write_32(uint8_t buf[static 4], uint32_t num)
 static inline void
 integer_write_64(uint8_t buf[static 8], uint64_t num)
 {
-	*(uint64_t *)(buf) = integer_convert_64(num);
+	*(uint64_t *)(buf) = integer_le_64(num);
 }
 */
 

@@ -63,12 +63,7 @@ process_init(void)
 	}
 
 	for (size_t i = 0; i < opt_threads; ++i)
-		threads[i] = (thread_data){
-			.strm = LZMA_STREAM_INIT_VAR,
-			.options = NULL,
-			.pair = NULL,
-			.in_use = false,
-		};
+		memzero(&threads[i], sizeof(threads[0]));
 
 	if (pthread_attr_init(&thread_attr)
 			|| pthread_attr_setdetachstate(
@@ -169,7 +164,9 @@ single_init(thread_data *t)
 		}
 	} else {
 		// TODO Restrict file format if requested on the command line.
-		ret = lzma_auto_decoder(&t->strm);
+		ret = lzma_auto_decoder(&t->strm, opt_memory,
+				LZMA_WARN_UNSUPPORTED_CHECK
+					| LZMA_CONCATENATED);
 	}
 
 	if (ret != LZMA_OK) {
@@ -185,36 +182,6 @@ single_init(thread_data *t)
 }
 
 
-static lzma_ret
-single_skip_padding(thread_data *t, uint8_t *in_buf)
-{
-	// Handle decoding of concatenated Streams. There can be arbitrary
-	// number of nul-byte padding between the Streams, which must be
-	// ignored.
-	//
-	// NOTE: Concatenating LZMA_Alone files works only if at least
-	// one of lc, lp, and pb is non-zero. Using the concatenation
-	// on LZMA_Alone files is strongly discouraged.
-	while (true) {
-		while (t->strm.avail_in > 0) {
-			if (*t->strm.next_in != '\0')
-				return LZMA_OK;
-
-			++t->strm.next_in;
-			--t->strm.avail_in;
-		}
-
-		if (t->pair->src_eof)
-			return LZMA_STREAM_END;
-
-		t->strm.next_in = in_buf;
-		t->strm.avail_in = io_read(t->pair, in_buf, BUFSIZ);
-		if (t->strm.avail_in == SIZE_MAX)
-			return LZMA_DATA_ERROR;
-	}
-}
-
-
 static void *
 single(thread_data *t)
 {
@@ -227,10 +194,11 @@ single(thread_data *t)
 	uint8_t in_buf[BUFSIZ];
 	uint8_t out_buf[BUFSIZ];
 	lzma_action action = LZMA_RUN;
-	lzma_ret ret;
 	bool success = false;
 
 	t->strm.avail_in = 0;
+	t->strm.next_out = out_buf;
+	t->strm.avail_out = BUFSIZ;
 
 	while (!user_abort) {
 		if (t->strm.avail_in == 0 && !t->pair->src_eof) {
@@ -239,48 +207,36 @@ single(thread_data *t)
 
 			if (t->strm.avail_in == SIZE_MAX)
 				break;
-			else if (t->pair->src_eof
-					&& opt_mode == MODE_COMPRESS)
+
+			if (t->pair->src_eof)
 				action = LZMA_FINISH;
 		}
 
-		t->strm.next_out = out_buf;
-		t->strm.avail_out = BUFSIZ;
+		const lzma_ret ret = lzma_code(&t->strm, action);
 
-		ret = lzma_code(&t->strm, action);
-
-		if (opt_mode != MODE_TEST)
+		if ((t->strm.avail_out == 0 || ret != LZMA_OK)
+				&& opt_mode != MODE_TEST) {
 			if (io_write(t->pair, out_buf,
 					BUFSIZ - t->strm.avail_out))
 				break;
 
+			t->strm.next_out = out_buf;
+			t->strm.avail_out = BUFSIZ;
+		}
+
 		if (ret != LZMA_OK) {
 			if (ret == LZMA_STREAM_END) {
-				if (opt_mode == MODE_COMPRESS) {
-					assert(t->pair->src_eof);
-					success = true;
-					break;
-				}
-
-				// Support decoding concatenated .lzma files.
-				ret = single_skip_padding(t, in_buf);
-
-				if (ret == LZMA_STREAM_END) {
-					assert(t->pair->src_eof);
-					success = true;
-					break;
-				}
-
-				if (ret == LZMA_OK && !single_init(t))
-					continue;
-
-				break;
-
+				// FIXME !!! This doesn't work when decoding
+				// LZMA_Alone files, because LZMA_Alone decoder
+				// doesn't wait for LZMA_FINISH.
+				assert(t->pair->src_eof);
+				success = true;
 			} else {
 				errmsg(V_ERROR, "%s: %s", t->pair->src_name,
 						str_strm_error(ret));
-				break;
 			}
+
+			break;
 		}
 	}
 

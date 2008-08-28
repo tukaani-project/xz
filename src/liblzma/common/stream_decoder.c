@@ -17,8 +17,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "stream_common.h"
 #include "stream_decoder.h"
+#include "stream_flags_common.h"
 #include "check.h"
 #include "stream_flags_decoder.h"
 #include "block_decoder.h"
@@ -31,6 +31,7 @@ struct lzma_coder_s {
 		SEQ_BLOCK,
 		SEQ_INDEX,
 		SEQ_STREAM_FOOTER,
+		SEQ_STREAM_PADDING,
 	} sequence;
 
 	/// Block or Metadata decoder. This takes little memory and the same
@@ -40,7 +41,7 @@ struct lzma_coder_s {
 
 	/// Block options decoded by the Block Header decoder and used by
 	/// the Block decoder.
-	lzma_options_block block_options;
+	lzma_block block_options;
 
 	/// Stream Flags from Stream Header
 	lzma_stream_flags stream_flags;
@@ -49,13 +50,57 @@ struct lzma_coder_s {
 	/// with O(1) memory usage.
 	lzma_index_hash *index_hash;
 
-	/// Write position in buffer[]
-	size_t buffer_pos;
+	/// Memory usage limit
+	uint64_t memlimit;
+
+	/// If true, LZMA_NO_CHECK is returned if the Stream has
+	/// no integrity check.
+	bool warn_no_check;
+
+	/// If true, LZMA_UNSUPPORTED_CHECK is returned if the Stream has
+	/// an integrity check that isn't supported by this liblzma build.
+	bool warn_unsupported_check;
+
+	/// If true, LZMA_SEE_CHECK is returned after decoding Stream Header.
+	bool tell_check;
+
+	/// If true, we will decode concatenated Streams that possibly have
+	/// Stream Padding between or after them. LZMA_STREAM_END is returned
+	/// once the application isn't giving us any new input and we aren't
+	/// in the middle of a Stream and possible Stream Padding is a
+	/// multiple of four bytes. FIXME
+	bool concatenated;
+
+	/// When decoding concatenated Streams, this is true as long as we
+	/// are decoding the first Stream. This is needed to avoid misleading
+	/// LZMA_FORMAT_ERROR in case the later Streams don't have valid magic
+	/// bytes.
+	bool first_stream;
+
+	/// Write position in buffer[] and position in Stream Padding
+	size_t pos;
 
 	/// Buffer to hold Stream Header, Block Header, and Stream Footer.
 	/// Block Header has biggest maximum size.
 	uint8_t buffer[LZMA_BLOCK_HEADER_SIZE_MAX];
 };
+
+
+static lzma_ret
+stream_decoder_reset(lzma_coder *coder, lzma_allocator *allocator)
+{
+	// Initialize the Index hash used to verify the Index.
+	coder->index_hash = lzma_index_hash_init(coder->index_hash, allocator);
+	if (coder->index_hash == NULL)
+		return LZMA_MEM_ERROR;
+
+	// Reset the rest of the variables.
+	coder->sequence = SEQ_STREAM_HEADER;
+	coder->block_options.filters = NULL;
+	coder->pos = 0;
+
+	return LZMA_OK;
+}
 
 
 static lzma_ret
@@ -66,43 +111,56 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 {
 	// When decoding the actual Block, it may be able to produce more
 	// output even if we don't give it any new input.
-	while (*out_pos < out_size && (*in_pos < in_size
-			|| coder->sequence == SEQ_BLOCK))
+	while (true)
 	switch (coder->sequence) {
 	case SEQ_STREAM_HEADER: {
 		// Copy the Stream Header to the internal buffer.
-		bufcpy(in, in_pos, in_size, coder->buffer, &coder->buffer_pos,
+		lzma_bufcpy(in, in_pos, in_size, coder->buffer, &coder->pos,
 				LZMA_STREAM_HEADER_SIZE);
 
 		// Return if we didn't get the whole Stream Header yet.
-		if (coder->buffer_pos < LZMA_STREAM_HEADER_SIZE)
+		if (coder->pos < LZMA_STREAM_HEADER_SIZE)
 			return LZMA_OK;
 
-		coder->buffer_pos = 0;
+		coder->pos = 0;
 
 		// Decode the Stream Header.
-		return_if_error(lzma_stream_header_decode(
-				&coder->stream_flags, coder->buffer));
+		const lzma_ret ret = lzma_stream_header_decode(
+				&coder->stream_flags, coder->buffer);
+		if (ret != LZMA_OK)
+			return ret == LZMA_FORMAT_ERROR && !coder->first_stream
+					? LZMA_DATA_ERROR : ret;
 
 		// Copy the type of the Check so that Block Header and Block
 		// decoders see it.
 		coder->block_options.check = coder->stream_flags.check;
 
-		// Even if we return LZMA_UNSUPPORTED_CHECK below, we want
+		// Even if we return LZMA_*_CHECK below, we want
 		// to continue from Block Header decoding.
 		coder->sequence = SEQ_BLOCK_HEADER;
 
-		// Detect if the Check type is supported and give appropriate
-		// warning if it isn't. We don't warn every time a new Block
-		// is started.
-		if (!lzma_available_checks[coder->block_options.check])
+		// Detect if there's no integrity check or if it is
+		// unsupported if those were requested by the application.
+		if (coder->warn_no_check && coder->stream_flags.check
+				== LZMA_CHECK_NONE)
+			return LZMA_NO_CHECK;
+
+		if (coder->warn_unsupported_check
+				&& !lzma_check_is_supported(
+					coder->stream_flags.check))
 			return LZMA_UNSUPPORTED_CHECK;
+
+		if (coder->tell_check)
+			return LZMA_SEE_CHECK;
 
 		break;
 	}
 
 	case SEQ_BLOCK_HEADER: {
-		if (coder->buffer_pos == 0) {
+		if (*in_pos >= in_size)
+			return LZMA_OK;
+
+		if (coder->pos == 0) {
 			// Detect if it's Index.
 			if (in[*in_pos] == 0x00) {
 				coder->sequence = SEQ_INDEX;
@@ -118,29 +176,41 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		}
 
 		// Copy the Block Header to the internal buffer.
-		bufcpy(in, in_pos, in_size, coder->buffer, &coder->buffer_pos,
+		lzma_bufcpy(in, in_pos, in_size, coder->buffer, &coder->pos,
 				coder->block_options.header_size);
 
 		// Return if we didn't get the whole Block Header yet.
-		if (coder->buffer_pos < coder->block_options.header_size)
+		if (coder->pos < coder->block_options.header_size)
 			return LZMA_OK;
 
-		coder->buffer_pos = 0;
+		coder->pos = 0;
 
 		// Set up a buffer to hold the filter chain. Block Header
 		// decoder will initialize all members of this array so
 		// we don't need to do it here.
-		lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+		lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
 		coder->block_options.filters = filters;
 
 		// Decode the Block Header.
 		return_if_error(lzma_block_header_decode(&coder->block_options,
 				allocator, coder->buffer));
 
-		// Initialize the Block decoder.
-		const lzma_ret ret = lzma_block_decoder_init(
-				&coder->block_decoder,
-				allocator, &coder->block_options);
+		// Check the memory usage limit.
+		const uint64_t memusage = lzma_memusage_decoder(filters);
+		lzma_ret ret;
+
+		if (memusage == UINT64_MAX) {
+			// One or more unknown Filter IDs.
+			ret = LZMA_HEADER_ERROR;
+		} else if (memusage > coder->memlimit) {
+			// The chain would need too much memory.
+			ret = LZMA_MEMLIMIT_ERROR;
+		} else {
+			// Memory usage is OK. Initialize the Block decoder.
+			ret = lzma_block_decoder_init(
+					&coder->block_decoder,
+					allocator, &coder->block_options);
+		}
 
 		// Free the allocated filter options since they are needed
 		// only to initialize the Block decoder.
@@ -149,10 +219,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		coder->block_options.filters = NULL;
 
-		// Check if Block enocoder initialization succeeded. Don't
-		// warn about unsupported check anymore since we did it
-		// earlier if it was needed.
-		if (ret != LZMA_OK && ret != LZMA_UNSUPPORTED_CHECK)
+		// Check if memory usage calculation and Block enocoder
+		// initialization succeeded.
+		if (ret != LZMA_OK)
 			return ret;
 
 		coder->sequence = SEQ_BLOCK;
@@ -160,7 +229,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 	}
 
 	case SEQ_BLOCK: {
-		lzma_ret ret = coder->block_decoder.code(
+		const lzma_ret ret = coder->block_decoder.code(
 				coder->block_decoder.coder, allocator,
 				in, in_pos, in_size, out, out_pos, out_size,
 				action);
@@ -180,6 +249,12 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 	}
 
 	case SEQ_INDEX: {
+		// If we don't have any input, don't call
+		// lzma_index_hash_decode() since it would return
+		// LZMA_BUF_ERROR, which we must not do here.
+		if (*in_pos >= in_size)
+			return LZMA_OK;
+
 		// Decode the Index and compare it to the hash calculated
 		// from the sizes of the Blocks (if any).
 		const lzma_ret ret = lzma_index_hash_decode(coder->index_hash,
@@ -193,14 +268,17 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 	case SEQ_STREAM_FOOTER:
 		// Copy the Stream Footer to the internal buffer.
-		bufcpy(in, in_pos, in_size, coder->buffer, &coder->buffer_pos,
+		lzma_bufcpy(in, in_pos, in_size, coder->buffer, &coder->pos,
 				LZMA_STREAM_HEADER_SIZE);
 
 		// Return if we didn't get the whole Stream Footer yet.
-		if (coder->buffer_pos < LZMA_STREAM_HEADER_SIZE)
+		if (coder->pos < LZMA_STREAM_HEADER_SIZE)
 			return LZMA_OK;
 
+		coder->pos = 0;
+
 		// Decode the Stream Footer.
+		// FIXME LZMA_FORMAT_ERROR doesn't make sense here.
 		lzma_stream_flags footer_flags;
 		return_if_error(lzma_stream_footer_decode(
 				&footer_flags, coder->buffer));
@@ -217,7 +295,48 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 				&footer_flags))
 			return LZMA_DATA_ERROR;
 
-		return LZMA_STREAM_END;
+		if (!coder->concatenated)
+			return LZMA_STREAM_END;
+
+		coder->sequence = SEQ_STREAM_PADDING;
+		break;
+
+	case SEQ_STREAM_PADDING:
+		assert(coder->concatenated);
+
+		while (true) {
+			if (*in_pos >= in_size) {
+				// Unless LZMA_FINISH was used, we cannot
+				// know if there's more input coming later.
+				if (action != LZMA_FINISH)
+					return LZMA_OK;
+
+				// Stream Padding must be a multiple of
+				// four bytes.
+				return coder->pos == 0
+						? LZMA_STREAM_END
+						: LZMA_DATA_ERROR;
+			}
+
+			if (in[*in_pos] != 0x00) {
+				if (coder->pos != 0) {
+					// Stream Padding is not a multiple of
+					// four bytes.
+					++*in_pos;
+					return LZMA_DATA_ERROR;
+				}
+
+				// Prepare to decode the next Stream.
+				return_if_error(stream_decoder_reset(
+						coder, allocator));
+				break;
+			}
+
+			++*in_pos;
+			coder->pos = (coder->pos + 1) & 3;
+		}
+
+		break;
 
 	default:
 		assert(0);
@@ -231,16 +350,29 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 static void
 stream_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 {
-	lzma_next_coder_end(&coder->block_decoder, allocator);
+	lzma_next_end(&coder->block_decoder, allocator);
 	lzma_index_hash_end(coder->index_hash, allocator);
 	lzma_free(coder, allocator);
 	return;
 }
 
 
-static lzma_ret
-stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
+static lzma_check
+stream_decoder_see_check(const lzma_coder *coder)
 {
+	return coder->stream_flags.check;
+}
+
+
+extern lzma_ret
+lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+		uint64_t memlimit, uint32_t flags)
+{
+	lzma_next_coder_init(lzma_stream_decoder_init, next, allocator);
+
+	if (flags & ~LZMA_SUPPORTED_FLAGS)
+		return LZMA_HEADER_ERROR;
+
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (next->coder == NULL)
@@ -248,40 +380,32 @@ stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
 
 		next->code = &stream_decode;
 		next->end = &stream_decoder_end;
+		next->see_check = &stream_decoder_see_check;
 
 		next->coder->block_decoder = LZMA_NEXT_CODER_INIT;
 		next->coder->index_hash = NULL;
 	}
 
-	// Initialize the Index hash used to verify the Index.
-	next->coder->index_hash = lzma_index_hash_init(
-			next->coder->index_hash, allocator);
-	if (next->coder->index_hash == NULL)
-		return LZMA_MEM_ERROR;
+	next->coder->memlimit = memlimit;
+	next->coder->warn_no_check = (flags & LZMA_WARN_NO_CHECK) != 0;
+	next->coder->warn_unsupported_check
+			= (flags & LZMA_WARN_UNSUPPORTED_CHECK) != 0;
+	next->coder->tell_check = (flags & LZMA_TELL_CHECK) != 0;
+	next->coder->concatenated
+			= (flags & LZMA_CONCATENATED) != 0;
 
-	// Reset the rest of the variables.
-	next->coder->sequence = SEQ_STREAM_HEADER;
-	next->coder->block_options.filters = NULL;
-	next->coder->buffer_pos = 0;
-
-	return LZMA_OK;
-}
-
-
-extern lzma_ret
-lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator)
-{
-	lzma_next_coder_init0(stream_decoder_init, next, allocator);
+	return stream_decoder_reset(next->coder, allocator);
 }
 
 
 extern LZMA_API lzma_ret
-lzma_stream_decoder(lzma_stream *strm)
+lzma_stream_decoder(lzma_stream *strm, uint64_t memlimit, uint32_t flags)
 {
-	lzma_next_strm_init0(strm, stream_decoder_init);
+	lzma_next_strm_init(lzma_stream_decoder_init, strm, memlimit, flags);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
+// 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true; // FIXME
+	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;
 }

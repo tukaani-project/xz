@@ -3,7 +3,7 @@
 /// \file       common.h
 /// \brief      Definitions common to the whole liblzma library
 //
-//  Copyright (C) 2007 Lasse Collin
+//  Copyright (C) 2007-2008 Lasse Collin
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -46,16 +46,32 @@
 #define LZMA_BUFFER_SIZE 4096
 
 
+/// Start of internal Filter ID space. These IDs must never be used
+/// in Streams.
+#define LZMA_FILTER_RESERVED_START (LZMA_VLI_C(1) << 62)
+
+
 /// Internal helper filter used by Subblock decoder. It is mapped to an
 /// otherwise invalid Filter ID, which is impossible to get from any input
 /// file (even if malicious file).
-#define LZMA_FILTER_SUBBLOCK_HELPER (UINT64_MAX - 2)
+#define LZMA_FILTER_SUBBLOCK_HELPER (LZMA_FILTER_RESERVED_START + 1)
+
+
+/// Supported flags that can be passed to lzma_stream_decoder()
+/// or lzma_auto_decoder().
+#define LZMA_SUPPORTED_FLAGS \
+	(LZMA_WARN_NO_CHECK \
+	| LZMA_WARN_UNSUPPORTED_CHECK \
+	| LZMA_TELL_CHECK \
+	| LZMA_CONCATENATED)
 
 
 ///////////
 // Types //
 ///////////
 
+/// Type of encoder/decoder specific data; the actual structure is defined
+/// differently in different coders.
 typedef struct lzma_coder_s lzma_coder;
 
 typedef struct lzma_next_coder_s lzma_next_coder;
@@ -63,10 +79,15 @@ typedef struct lzma_next_coder_s lzma_next_coder;
 typedef struct lzma_filter_info_s lzma_filter_info;
 
 
+/// Type of a function used to initialize a filter encoder or decoder
 typedef lzma_ret (*lzma_init_function)(
 		lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters);
 
+/// Type of a function to do some kind of coding work (filters, Stream,
+/// Block encoders/decoders etc.). Some special coders use don't use both
+/// input and output buffers, but for simplicity they still use this same
+/// function prototype.
 typedef lzma_ret (*lzma_code_function)(
 		lzma_coder *coder, lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
@@ -74,54 +95,14 @@ typedef lzma_ret (*lzma_code_function)(
 		size_t *restrict out_pos, size_t out_size,
 		lzma_action action);
 
+/// Type of a function to free the memory allocated for the coder
 typedef void (*lzma_end_function)(
 		lzma_coder *coder, lzma_allocator *allocator);
 
 
-/// Hold data and function pointers of the next filter in the chain.
-struct lzma_next_coder_s {
-	/// Pointer to coder-specific data
-	lzma_coder *coder;
-
-	/// "Pointer" to init function. This is never called here.
-	/// We need only to detect if we are initializing a coder
-	/// that was allocated earlier. See code.c and next_coder.c.
-	uintptr_t init;
-
-	/// Pointer to function to do the actual coding
-	lzma_code_function code;
-
-	/// Pointer to function to free lzma_next_coder.coder
-	lzma_end_function end;
-};
-
-#define LZMA_NEXT_CODER_INIT \
-	(lzma_next_coder){ \
-		.coder = NULL, \
-		.init = 0, \
-		.code = NULL, \
-		.end = NULL, \
-	}
-
-
-struct lzma_internal_s {
-	lzma_next_coder next;
-
-	enum {
-		ISEQ_RUN,
-		ISEQ_SYNC_FLUSH,
-		ISEQ_FULL_FLUSH,
-		ISEQ_FINISH,
-		ISEQ_END,
-		ISEQ_ERROR,
-	} sequence;
-
-	bool supported_actions[4];
-	bool allow_buf_error;
-	size_t avail_in;
-};
-
-
+/// Raw coder validates and converts an array of lzma_filter structures to
+/// an array of lzma_filter_info structures. This array is used with
+/// lzma_next_filter_init to initialize the filter chain.
 struct lzma_filter_info_s {
 	/// Pointer to function used to initialize the filter.
 	/// This is NULL to indicate end of array.
@@ -132,15 +113,76 @@ struct lzma_filter_info_s {
 };
 
 
-/*
-typedef struct {
-	lzma_init_function init;
-	uint32_t (*input_alignment)(lzma_vli id, const void *options);
-	uint32_t (*output_alignment)(lzma_vli id, const void *options);
-	bool changes_uncompressed_size;
-	bool supports_eopm;
-} lzma_filter_hook;
-*/
+/// Hold data and function pointers of the next filter in the chain.
+struct lzma_next_coder_s {
+	/// Pointer to coder-specific data
+	lzma_coder *coder;
+
+	/// "Pointer" to init function. This is never called here.
+	/// We need only to detect if we are initializing a coder
+	/// that was allocated earlier. See lzma_next_coder_init and
+	/// lzma_next_strm_init macros in this file.
+	uintptr_t init;
+
+	/// Pointer to function to do the actual coding
+	lzma_code_function code;
+
+	/// Pointer to function to free lzma_next_coder.coder. This can
+	/// be NULL; in that case, lzma_free is called to free
+	/// lzma_next_coder.coder.
+	lzma_end_function end;
+
+	/// Pointer to function to return the type of the integrity check.
+	/// Most coders won't support this.
+	lzma_check (*see_check)(const lzma_coder *coder);
+
+// 	uint64_t (*memconfig)(
+// 			lzma_coder *coder, uint64_t memlimit, bool change);
+};
+
+
+/// Macro to initialize lzma_next_coder structure
+#define LZMA_NEXT_CODER_INIT \
+	(lzma_next_coder){ \
+		.coder = NULL, \
+		.init = (uintptr_t)(NULL), \
+		.code = NULL, \
+		.end = NULL, \
+		.see_check = NULL, \
+	}
+
+
+/// Internal data for lzma_strm_init, lzma_code, and lzma_end. A pointer to
+/// this is stored in lzma_stream.
+struct lzma_internal_s {
+	/// The actual coder that should do something useful
+	lzma_next_coder next;
+
+	/// Track the state of the coder. This is used to validate arguments
+	/// so that the actual coders can rely on e.g. that LZMA_SYNC_FLUSH
+	/// is used on every call to lzma_code until next.code has returned
+	/// LZMA_STREAM_END.
+	enum {
+		ISEQ_RUN,
+		ISEQ_SYNC_FLUSH,
+		ISEQ_FULL_FLUSH,
+		ISEQ_FINISH,
+		ISEQ_END,
+		ISEQ_ERROR,
+	} sequence;
+
+	/// A copy of lzma_stream avail_in. This is used to verify that the
+	/// amount of input doesn't change once e.g. LZMA_FINISH has been
+	/// used.
+	size_t avail_in;
+
+	/// Indicates which lzma_action values are allowed by next.code.
+	bool supported_actions[4];
+
+	/// If true, lzma_code will return LZMA_BUF_ERROR if no progress was
+	/// made (no input consumed and no output produced by next.code).
+	bool allow_buf_error;
+};
 
 
 ///////////////
@@ -154,126 +196,69 @@ extern void *lzma_alloc(size_t size, lzma_allocator *allocator)
 /// Frees memory
 extern void lzma_free(void *ptr, lzma_allocator *allocator);
 
-/// Initializes lzma_stream FIXME desc
+
+/// Allocates strm->internal if it is NULL, and initializes *strm and
+/// strm->internal. This function is only called via lzma_next_strm_init macro.
 extern lzma_ret lzma_strm_init(lzma_stream *strm);
 
-///
+/// Initializes the next filter in the chain, if any. This takes care of
+/// freeing the memory of previously initialized filter if it is different
+/// than the filter being initialized now. This way the actual filter
+/// initialization functions don't need to use lzma_next_coder_init macro.
 extern lzma_ret lzma_next_filter_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters);
 
-///
-extern void lzma_next_coder_end(lzma_next_coder *next,
-		lzma_allocator *allocator);
+/// Frees the memory allocated for next->coder either using next->end or,
+/// if next->end is NULL, using lzma_free.
+extern void lzma_next_end(lzma_next_coder *next, lzma_allocator *allocator);
 
 
-/// \brief      Wrapper for memcpy()
-///
-/// This function copies as much data as possible from in[] to out[] and
-/// updates *in_pos and *out_pos accordingly.
-///
-static inline size_t
-bufcpy(const uint8_t *restrict in, size_t *restrict in_pos, size_t in_size,
-		uint8_t *restrict out, size_t *restrict out_pos,
-		size_t out_size)
-{
-	const size_t in_avail = in_size - *in_pos;
-	const size_t out_avail = out_size - *out_pos;
-	const size_t copy_size = MIN(in_avail, out_avail);
-
-	memcpy(out + *out_pos, in + *in_pos, copy_size);
-
-	*in_pos += copy_size;
-	*out_pos += copy_size;
-
-	return copy_size;
-}
-
-
-/// \brief      Initializing the next coder
-///
-/// lzma_next_coder can point to different types of coders. The existing
-/// coder may be different than what we are initializing now. In that case
-/// we must git rid of the old coder first. Otherwise we reuse the existing
-/// coder structure.
-///
-#define lzma_next_coder_init2(next, allocator, cmpfunc, func, ...) \
-do { \
-	if ((uintptr_t)(&cmpfunc) != (next)->init) \
-		lzma_next_coder_end(next, allocator); \
-	const lzma_ret ret = func(next, __VA_ARGS__); \
-	if (ret == LZMA_OK) { \
-		(next)->init = (uintptr_t)(&cmpfunc); \
-		assert((next)->code != NULL); \
-		assert((next)->end != NULL); \
-	} else { \
-		lzma_next_coder_end(next, allocator); \
-	} \
-	return ret; \
-} while (0)
-
-/// \brief      Initializing lzma_next_coder
-///
-/// Call the initialization function, which must take at least one
-/// argument in addition to lzma_next_coder and lzma_allocator.
-#define lzma_next_coder_init(func, next, allocator, ...) \
-	lzma_next_coder_init2(next, allocator, \
-			func, func, allocator, __VA_ARGS__)
-
-/// \brief      Initializing lzma_next_coder
-///
-/// Call the initialization function, which takes no other arguments than
-/// lzma_next_coder and lzma_allocator.
-#define lzma_next_coder_init0(func, next, allocator) \
-	lzma_next_coder_init2(next, allocator, func, func, allocator)
-
-
-/// \brief      Initializing lzma_stream
-///
-/// lzma_strm initialization with more detailed options.
-#define lzma_next_strm_init2(strm, cmpfunc, func, ...) \
-do { \
-	lzma_ret ret = lzma_strm_init(strm); \
-	if (ret != LZMA_OK) \
-		return ret; \
-	if ((uintptr_t)(&cmpfunc) != (strm)->internal->next.init) \
-		lzma_next_coder_end(\
-				&(strm)->internal->next, (strm)->allocator); \
-	ret = func(&(strm)->internal->next, __VA_ARGS__); \
-	if (ret != LZMA_OK) { \
-		lzma_end(strm); \
-		return ret; \
-	} \
-	(strm)->internal->next.init = (uintptr_t)(&cmpfunc); \
-	assert((strm)->internal->next.code != NULL); \
-	assert((strm)->internal->next.end != NULL); \
-} while (0)
-
-/// \brief      Initializing lzma_stream
-///
-/// Call the initialization function, which must take at least one
-/// argument in addition to lzma_next_coder and lzma_allocator.
-#define lzma_next_strm_init(strm, func, ...) \
-	lzma_next_strm_init2(strm, func, func, (strm)->allocator, __VA_ARGS__)
-
-/// \brief      Initializing lzma_stream
-///
-/// Call the initialization function, which takes no other arguments than
-/// lzma_next_coder and lzma_allocator.
-#define lzma_next_strm_init0(strm, func) \
-	lzma_next_strm_init2(strm, func, func, (strm)->allocator)
+/// Copy as much data as possible from in[] to out[] and update *in_pos
+/// and *out_pos accordingly. Returns the number of bytes copied.
+extern size_t lzma_bufcpy(const uint8_t *restrict in, size_t *restrict in_pos,
+		size_t in_size, uint8_t *restrict out,
+		size_t *restrict out_pos, size_t out_size);
 
 
 /// \brief      Return if expression doesn't evaluate to LZMA_OK
 ///
 /// There are several situations where we want to return immediatelly
 /// with the value of expr if it isn't LZMA_OK. This macro shortens
-/// the code a bit.
-///
+/// the code a little.
 #define return_if_error(expr) \
 do { \
-	const lzma_ret ret_ = expr; \
+	const lzma_ret ret_ = (expr); \
 	if (ret_ != LZMA_OK) \
 		return ret_; \
+} while (0)
+
+
+/// If next isn't already initialized, free the previous coder. Then mark
+/// that next is _possibly_ initialized for the coder using this macro.
+/// "Possibly" means that if e.g. allocation of next->coder fails, the
+/// structure isn't actually initialized for this coder, but leaving
+/// next->init to func is still OK.
+#define lzma_next_coder_init(func, next, allocator) \
+do { \
+	if ((uintptr_t)(&func) != (next)->init) \
+		lzma_next_end(next, allocator); \
+	(next)->init = (uintptr_t)(&func); \
+} while (0)
+
+
+/// Initializes lzma_strm and calls func() to initialize strm->internal->next.
+/// (The function being called will use lzma_next_coder_init()). If
+/// initialization fails, memory that wasn't freed by func() is freed
+/// along strm->internal.
+#define lzma_next_strm_init(func, strm, ...) \
+do { \
+	return_if_error(lzma_strm_init(strm)); \
+	const lzma_ret ret_ = func(&(strm)->internal->next, \
+			(strm)->allocator, __VA_ARGS__); \
+	if (ret_ != LZMA_OK) { \
+		lzma_end(strm); \
+		return ret_; \
+	} \
 } while (0)
 
 #endif

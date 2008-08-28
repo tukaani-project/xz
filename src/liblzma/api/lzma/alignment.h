@@ -27,7 +27,7 @@
  * FIXME desc
  */
 extern uint32_t lzma_alignment_input(
-		const lzma_options_filter *filters, uint32_t guess);
+		const lzma_filter *filters, uint32_t guess);
 
 
 /**
@@ -36,7 +36,7 @@ extern uint32_t lzma_alignment_input(
  * Knowing the alignment of the output data is useful e.g. in the Block
  * encoder which tries to align the Compressed Data field optimally.
  *
- * \param       filters   Pointer to lzma_options_filter array, whose last
+ * \param       filters   Pointer to lzma_filter array, whose last
  *                        member must have .id = LZMA_VLI_VALUE_UNKNOWN.
  * \param       guess     The value to return if the alignment of the output
  *                        is the same as the alignment of the input data.
@@ -57,4 +57,4 @@ extern uint32_t lzma_alignment_input(
  *              options), UINT32_MAX is returned.
  */
 extern uint32_t lzma_alignment_output(
-		const lzma_options_filter *filters, uint32_t guess);
+		const lzma_filter *filters, uint32_t guess);

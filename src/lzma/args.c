@@ -39,8 +39,8 @@ bool opt_force = false;
 bool opt_keep_original = false;
 bool opt_preserve_name = false;
 
-lzma_check_type opt_check = LZMA_CHECK_CRC64;
-lzma_options_filter opt_filters[8];
+lzma_check opt_check = LZMA_CHECK_CRC64;
+lzma_filter opt_filters[8];
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
@@ -61,6 +61,7 @@ enum {
 	OPT_SPARC,
 	OPT_DELTA,
 	OPT_LZMA,
+	OPT_LZMA2,
 
 	OPT_FILES,
 	OPT_FILES0,
@@ -108,6 +109,7 @@ static const struct option long_opts[] = {
 	{ "sparc",              no_argument,       NULL,   OPT_SPARC },
 	{ "delta",              optional_argument, NULL,   OPT_DELTA },
 	{ "lzma",               optional_argument, NULL,   OPT_LZMA },
+	{ "lzma2",              optional_argument, NULL,   OPT_LZMA2 },
 
 	// Other
 	{ "format",             required_argument, NULL,   'F' },
@@ -141,6 +143,7 @@ add_filter(lzma_vli id, const char *opt_str)
 		break;
 
 	case LZMA_FILTER_LZMA:
+	case LZMA_FILTER_LZMA2:
 		opt_filters[filter_count].options
 				= parse_options_lzma(opt_str);
 		break;
@@ -301,6 +304,10 @@ parse_real(int argc, char **argv)
 			add_filter(LZMA_FILTER_LZMA, optarg);
 			break;
 
+		case OPT_LZMA2:
+			add_filter(LZMA_FILTER_LZMA2, optarg);
+			break;
+
 		// Other
 
 		// --format
@@ -445,7 +452,8 @@ static void
 set_compression_settings(void)
 {
 	if (filter_count == 0) {
-		opt_filters[0].id = LZMA_FILTER_LZMA;
+		opt_filters[0].id = opt_header == HEADER_ALONE
+				? LZMA_FILTER_LZMA : LZMA_FILTER_LZMA2;
 		opt_filters[0].options = (lzma_options_lzma *)(
 				lzma_preset_lzma + preset_number);
 		filter_count = 1;
@@ -463,13 +471,15 @@ set_compression_settings(void)
 		my_exit(ERROR);
 	}
 
-	const uint32_t memory_limit = opt_memory / (1024 * 1024) + 1;
-	uint32_t memory_usage = lzma_memory_usage(opt_filters, true);
+	uint64_t memory_usage = lzma_memusage_encoder(opt_filters);
+			/* opt_mode == MODE_COMPRESS
+			? lzma_memusage_encoder(opt_filters)
+			: lzma_memusage_decoder(opt_filters); */
 
 	// Don't go over the memory limits when the default
 	// setting is used.
 	if (preset_default) {
-		while (memory_usage > memory_limit) {
+		while (memory_usage > opt_memory) {
 			if (preset_number == 0) {
 				errmsg(V_ERROR, _("Memory usage limit is too "
 						"small for any internal "
@@ -481,11 +491,10 @@ set_compression_settings(void)
 			opt_filters[0].options = (lzma_options_lzma *)(
 					lzma_preset_lzma
 					+ preset_number);
-			memory_usage = lzma_memory_usage(opt_filters,
-					true);
+			memory_usage = lzma_memusage_encoder(opt_filters);
 		}
 	} else {
-		if (memory_usage > memory_limit) {
+		if (memory_usage > opt_memory) {
 			errmsg(V_ERROR, _("Memory usage limit is too small "
 					"for the given filter setup"));
 			my_exit(ERROR);
@@ -494,12 +503,8 @@ set_compression_settings(void)
 
 	// Limit the number of worked threads so that memory usage
 	// limit isn't exceeded.
-	// FIXME: Probably should use bytes instead of mebibytes for
-	// memory_usage and memory_limit.
-	if (memory_usage == 0)
-		memory_usage = 1;
-
-	size_t thread_limit = memory_limit / memory_usage;
+	assert(memory_usage > 0);
+	size_t thread_limit = opt_memory / memory_usage;
 	if (thread_limit == 0)
 		thread_limit = 1;
 

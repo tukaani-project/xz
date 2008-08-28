@@ -72,17 +72,23 @@ main(int argc, char **argv)
 
 	file_in = argc > 1 ? fopen(argv[1], "rb") : stdin;
 
+
 	// Config
-	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
-	filters[0].id = LZMA_FILTER_SUBBLOCK;
-	filters[0].options = NULL;
+	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	filters[0].id = LZMA_FILTER_LZMA2;
+	filters[0].options = (void *)&lzma_preset_lzma[0];
 	filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
 
 	// Init
-	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_CRC32) != LZMA_OK) {
+	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_SHA256) != LZMA_OK) {
 		fprintf(stderr, "init failed\n");
 		exit(1);
 	}
+
+// 	if (lzma_easy_encoder(&strm, 1)) {
+// 		fprintf(stderr, "init failed\n");
+// 		exit(1);
+// 	}
 
 	// Encoding
 	encode(0, LZMA_FULL_FLUSH);

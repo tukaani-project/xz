@@ -14,259 +14,192 @@
 1. File Types
 
     Good files (good-*.lzma) must decode successfully without requiring
-    a lot of CPU time or RAM. If the decoder supports only Single-Block
-    Streams, then good-multi-*.lzma won't decode, of course.
+    a lot of CPU time or RAM.
+
+    Unsupported files (unsupported-*.lzma) are good files, but headers
+    indicate features not supported by the current file format
+    specification.
 
     Bad files (bad-*.lzma) must cause the decoder to give an error. Like
     with the good files, these files must not require a lot of CPU time
     or RAM before they get detected to be broken.
-
-    Malicious files (malicious-*.lzma) are good in terms of the file format
-    specification, but try to trigger excessive CPU, RAM or disk usage in
-    the decoder. To prevent malicious files from putting the decoder in
-    inifinite loop (*), eating all available RAM or disk space, decoders
-    should have internal limiters that catch these situations.
-
-    (*) Strictly speaking not infinite, but if decoding of a small file
-        would take a few weeks or even years, it's an infinite loop in
-        practice.
 
 
 2. Descriptions of Individual Files
 
 2.1. Good Files
 
-    good-single-none.lzma uses implicit Copy filter with known Uncompressed
-    Size.
+    good-0-empty.lzma has one Stream with no Blocks.
 
-    good-single-none-pad.lzma is good-single-none.lzma with Footer Padding.
+    good-0pad-empty.lzma has one Stream with no Blocks followed by
+    four-byte Stream Padding.
 
-    good-cat-single-none-pad.lzma is two good-single-none-pad.lzma files
-    concatenated as is. Fully decoding this file requires that the decoder
-    supports decoding concatenated files.
+    good-0cat-empty.lzma has two zero-Block Streams concatenated without
+    Stream Padding.
 
-    good-single-subblock_implicit.lzma uses implicit Subblock filter.
+    good-0catpad-empty.lzma has two zero-Block Streams concatenated with
+    four-byte Stream Padding between the Streams.
 
-    good-single-lzma.lzma is LZMA compressed file with EOPM.
+    good-1-check-none.lzma has one Stream with one Block with two
+    uncompressed LZMA2 chunks and no integrity check.
 
-    good-single-subblock-lzma.lzma has basic combination of Subblock and
-    LZMA filters.
+    good-1-check-crc32.lzma has one Stream with one Block with two
+    uncompressed LZMA2 chunks and CRC32 check.
 
-    good-single-none-empty_1.lzma is an empty file with implicit Copy
-    filter and no integrity Check.
+    good-1-check-crc64.lzma is like good-1-check-crc32.lzma but with CRC64.
 
-    good-single-none-empty_2.lzma is an empty file with implicit Copy
-    filter and CRC32 as Check.
+    good-1-check-sha256.lzma is like good-1-check-crc32.lzma but with
+    SHA256.
 
-    good-single-none-empty_3.lzma is an empty file with implicit Copy
-    filter, known Compressed Size, and no integrity Check.
+    good-2-lzma2.lzma has one Stream with two Blocks with one uncompressed
+    LZMA2 chunk in each Block.
 
-    good-single-lzma-empty.lzma is an empty file with LZMA filter and no
-    integrity Check.
+    good-1-block_header-1.lzma has both Compressed Size and Uncompressed
+    Size in the Block Header. This has also four extra bytes of Header
+    Padding.
 
-    good-single-subblock_rle.lzma takes advantage of Subblock filter's
-    run-length encoding.
+    good-1-block_header-2.lzma has known Compressed Size.
 
-    good-single-delta-lzma.tiff.lzma is an image file that compresses
-    better with Delta+LZMA than with plain LZMA.
+    good-1-block_header-3.lzma has known Uncompressed Size.
 
-    good-single-x86-lzma.lzma uses the x86 filter (BCJ) and LZMA. The
+    good-1-delta-lzma2.tiff.lzma is an image file that compresses
+    better with Delta+LZMA2 than with plain LZMA2.
+
+    good-1-x86-lzma2.lzma uses the x86 filter (BCJ) and LZMA2. The
     uncompressed file is compress_prepared_bcj_x86 found from the tests
     directory.
 
-    good-single-sparc-lzma.lzma uses the SPARC filter and LZMA. The
+    good-1-sparc-lzma2.lzma uses the SPARC filter and LZMA. The
     uncompressed file is compress_prepared_bcj_sparc found from the tests
     directory.
 
-    good-single-lzma-flush_1.lzma has a flush marker in the middle of
-    the file, and no EOPM.
+    good-1-lzma2-1.lzma has two LZMA2 chunks, of which the second sets
+    new properties.
 
-    good-single-lzma-flush_2.lzma has a flush marker in the middle of
-    the file and just before EOPM.
+    good-1-lzma2-2.lzma has two LZMA2 chunks, of which the second resets
+    the state without specifying new properties.
 
-    good-multi-none-1.lzma is a basic Multi-Block Stream with two Data
-    Blocks and Footer Metadata Block.
+    good-1-lzma2-3.lzma has two LZMA2 chunks, of which the first is
+    uncompressed and the second is LZMA. The first chunk resets dictionary
+    and the second sets new properties.
 
-    good-multi-none-2.lzma is good-multi-none-1.lzma with Total Size and
-    Uncompressed Size added to the Footer Metadata Block.
-
-    good-multi-none-extra_1.lzma has the `Extra is present' flag set but
-    no actual Extra Records.
-
-    good-multi-none-extra_2.lzma has two non-empty Extra Records.
-
-    good-multi-none-extra_3.lzma has an Extra Record that has empty Data.
-
-    good-multi-none-header_1.lzma has very minimal Header Metadata Block
-    with only the Metadata Flags field.
-
-    good-multi-none-header_2.lzma has all information in both Header and
-    Footer Metadata Blocks. The Size of Header Metadata Block has wrong
-    value in Header Metadata Block, but this value must be ignored by
-    the decoder in case of Header Metadata Block.
-
-    good-multi-none-header_3.lzma has Index only in the Header Metadata
-    Block. Footer Metadata Block contains only Size of Header Metadata
-    Block and Total Size.
-
-    good-multi-none-block_1.lzma has Index in Header Metadata Block. The
-    Compressed Size and Uncompressed Size fields are present in the Data
-    Blocks. There is some Footer Padding between the Blocks.
-
-    good-multi-none-block_2.lzma has Index in Header Metadata Block. The
-    Uncompressed Size field is present in Data Blocks and no EOPM is used.
+    good-1-3delta-lzma2.lzma has three Delta filters and LZMA2.
 
 
-2.2. Bad Files
+2.2. Unsupported Files
 
-    bad-single-none-truncated.lzma is good-single-none.lzma without the
-    last byte of the file.
+    unsupported-check.lzma uses Check ID 0x02 which isn't supported by
+    the current version of the file format. It is implementation-defined
+    how this file handled (it may reject it, or decode it possibly with
+    a warning).
 
-    bad-cat-single-none-pad_garbage_1.lzma is good-cat-single-none-pad.lzma
-    with 0xFE appended to the end of the file. 0xFE doesn't begin .lzma
-    or LZMA_Alone format file.
+    unsupported-block_header.lzma has a non-nul byte in Header Padding,
+    which may indicate presence of a new unsupported field.
 
-    bad-cat-single-none-pad_garbage_2.lzma is good-cat-single-none-pad.lzma
-    with 0xFF appended to the end of the file. 0xFF begins .lzma format
-    file, thus the decoder has to detect that the file is incomplete.
+    unsupported-filter_flags-1.lzma has unsupported Filter ID 0x7F.
 
-    bad-cat-single-none-pad_garbage_3.lzma is good-cat-single-none-pad.lzma
-    with 0x5D appended to the end of the file. 0x5D is the most common
-    first byte of LZMA_Alone format file.
+    unsupported-filter_flags-2.lzma specifies only Delta filter in the
+    List of Filter Flags, but Delta isn't allowed as the last filter in
+    the chain. It could be a little more correct to detect this file as
+    corrupt instead of unsupported, but saying it is unsupported is
+    simpler in case of liblzma.
 
-    bad-single-none-footer_filter_flags.lzma has different Stream Flags
-    in Stream Footer than in Stream Header.
-
-    bad-single-none-too_long_vli.lzma has 10-byte variable-length integer.
-
-    bad-single-none-empty.lzma is like good-single-none-empty_3.lzma but
-    with non-zero value in the Compressed Size field.
-
-    bad-single-data_after_eopm_1.lzma has LZMA+Subblock, where the Subblock
-    filter gives one byte of data to LZMA after LZMA has detected EOPM.
-
-    bad-single-data_after_eopm_2.lzma is like
-    bad-single-data_after_eopm_1.lzma but Subblock gives 256 MiB of data
-    to LZMA after LZMA has detected EOPM.
-
-    bad-single-subblock_subblock.lzma has Subblock+Subblock, where the
-    Subblock decoder is given End of Input in the middle of a Subblock.
-
-    bad-single-subblock-padding_loop.lzma contains huge amount of
-    consecutive Padding bytes, which isn't allowed by the Subblock filter
-    format. If it were allowed, this file would hang the decoder for very
-    long time (weeks to years).
-
-    bad-single-subblock1023-slow.lzma is similar to
-    malicious-single-subblock31-slow.lzma except that this uses 1023 bytes
-    of Padding in every place instead of 31 bytes. The Subblock filter
-    format specification allows only 31-byte Padings, thus this file must
-    get detected as bad without producing any output. Allowing larger
-    Padding than 31 bytes was considered (so this test file was created),
-    but it seemed to be a bad idea since it would increase worst-case CPU
-    usage.
-
-    bad-single-lzma-flush_beginning.lzma has flush marker in the beginning
-    of the LZMA data.
-
-    bad-single-lzma-flush_twice.lzma has two flush markers with no data
-    between them.
-
-    bad-multi-none-1.lzma has data after the last field in the Metadata
-    Block and the `Extra is present' flag is not set.
-
-    bad-multi-none-2.lzma has wrong Total Size in Footer Metadata Block.
-
-    bad-multi-none-3.lzma has wrong Uncompressed Size in Footer Metadata
-    Block.
-
-    bad-multi-none-index_1.lzma has wrong value in the Number of Data
-    Blocks field.
-
-    bad-multi-none-index_2.lzma has too short Metadata to contain all
-    the Index Records.
-
-    bad-multi-none-index_3.lzma has wrong value in Total Size field in
-    the Index.
-
-    bad-multi-none-index_4.lzma has wrong value in Uncompressed Size field
-    in the Index.
-
-    bad-multi-none-extra_1.lzma has incomplete Extra Record at the end of
-    the Metadata Block.
-
-    bad-multi-none-extra_2.lzma has incomplete variable-length integer as
-    Extra Record ID.
-
-    bad-multi-none-extra_3.lzma has incomplete Extra Record at the end of
-    the Metadata Block.
-
-    bad-multi-none-header_1.lzma has empty Header Metadata Block (even
-    the Metadata Flags field is not present).
-
-    bad-multi-none-header_2.lzma has Index in the Header Metadata Block,
-    which describes only one Data Block, while the Stream actually has
-    two Data Blocks. A sophisticated decoder should give an error when
-    it detects the second Data Block; all Multi-Block decoders must
-    detect the file as corrupt at some point.
-
-    bad-multi-none-header_3.lzma contains too small Total Size in Header
-    Metadata Block. A sophisticated decoder should abort decoding before
-    the second Data Block, preferably before the first Data Block has
-    been finished; all Multi-Block decoders must detect the file as
-    corrupt at some point.
-
-    bad-multi-none-header_4.lzma is like bad-multi-none-header_3.lzma but
-    with too small Uncompressed Size.
-
-    bad-multi-none-header_5.lzma has Index in the Header Metadata Block,
-    but the Total Size field is missing from the Footer Metadata Block.
-
-    bad-multi-none-header_6.lzma has both Index and Total Size in Header
-    Metadata Block, but Total Size doesn't match the Index. A sophisticated
-    decoder should abort before decoding any Data Blocks; all Multi-Block
-    decoders must detect the file as corrupt at some point.
-
-    bad-multi-none-header_7.lzma has zero as the Size of Header Metadata
-    Block in the Header Metadata Block.
-
-    bad-multi-none-block_1.lzma has wrong Uncompressed Size in the first
-    Data Block. A sophisticated decoder should detect this error before
-    producing any output, because it can see that the Uncompressed Size
-    doesn't match with the Index in Header Metadata Block; all Multi-Block
-    decoders must detect the file as corrupt at some point.
-
-    bad-multi-none-block_2.lzma has too big Compressed Size in the first
-    Data Block. A sophisticated decoder may be able to detect the file as
-    corrupt before producing any output, because Comrpessed Size + size
-    of Block Header exceed the Total Size stored in Index in Header
-    Metadata Block. A sophisticated decoder should be able to detect the
-    error before the end of the first Data Block; all Multi-Block decoders
-    must detect the file as corrupt at some point.
-
-    bad-multi-none-block_3.lzma has only the Compressed Size field in the
-    Block Header of the second Data Block and EOPM isn't used.
+    unsupported-filter_flags-3.lzma specifies two LZMA2 filters in the
+    List of Filter Flags. LZMA2 is allowed only as the last filter in the
+    chain. It could be a little more correct to detect this file as
+    corrupt instead of unsupported, but saying it is unsupported is
+    simpler in case of liblzma.
 
 
-2.3. Malicious Files
+2.3. Bad Files
 
-    malicious-single-subblock31-slow.lzma requires quite a bit of CPU time
-    per decoded byte. It contains LZMA compressed Subblock filter data that
-    has as much Padding as the specification allows. LZMA is also used as
-    a Subfilter, to further slowdown the decoder. Every Subfilter instance
-    produces only one byte of output. If you can create a file that wastes
-    notably more CPU cycles than this file, please contact Lasse Collin.
+    bad-0pad-empty.lzma has one Stream with no Blocks followed by
+    five-byte Stream Padding. Stream Padding must be a multiple of four
+    bytes, thus this file is corrupt.
 
-    malicious-single-subblock-256MiB.lzma is a tiny file that produces
-    256 MiB of output. It uses Subblock filter's run-length encoding
-    to achieve this.
+    bad-0catpad-empty.lzma has two zero-Block Streams concatenated with
+    five-byte Stream Padding between the Streams.
 
-    malicious-single-subblock-64PiB.lzma is a tiny file that produces
-    64 PiB of output (if you have patience to wait). This is done by
-    chaining two Subblock filters and using their run-length encoders.
+    bad-0cat-alone.lzma is good-0-empty.lzma concatenated with an empty
+    LZMA_Alone file.
 
-    malicious-multi-metadata-64PiB.lzma is like
-    malicious-single-subblock-64PiB.lzma but the huge amount of output
-    is in a Metadata Block. Trying to decode this file may take years
-    unless the decoder catches that the Metadata has unreasonable size.
+    bad-0-empty-truncated.lzma is good-0-empty.lzma without the last byte
+    of the file.
+
+    bad-0-nonempty_index.lzma has no Blocks but Index claims that there is
+    one Block.
+
+    bad-0-backward_size.lzma has wrong Backward Size in Stream Footer.
+
+    bad-1-stream_flags-1.lzma has different Stream Flags in Stream Header
+    and Stream Footer.
+
+    bad-1-stream_flags-2.lzma has wrong CRC32 in Stream Header.
+
+    bad-1-stream_flags-3.lzma has wrong CRC32 in Stream Footer.
+
+    bad-1-vli-1.lzma has two-byte variable-length integer in the
+    Uncompressed Size field in Block Header while one-byte would be enough
+    for that value. It's important that the file gets rejected due to too
+    big integer encoding instead of due to Uncompressed Size not matching
+    the value stored in the Block Header. That is, the decoder must not
+    try to decode the Compressed Data field.
+
+    bad-1-vli-2.lzma has ten-byte variable-length integer as Uncompressed
+    Size in Block Header. It's important that the file gets rejected due
+    to too big integer encoding instead of due to Uncompressed Size not
+    matching the value stored in the Block Header. That is, the decoder
+    must not try to decode the Compressed Data field.
+
+    bad-1-block_header-1.lzma has Block Header that ends in the middle of
+    the Filter Flags field.
+
+    bad-1-block_header-2.lzma has Block Header that has Compressed Size and
+    Uncompressed Size but no List of Filter Flags field.
+
+    bad-1-block_header-3.lzma has wrong CRC32 in Block Header.
+
+    bad-1-block_header-4.lzma has too big Compressed Size (2^63 bytes while
+    maximum is 2^63 - 4 bytes) in Block Header. It's important that the
+    file gets rejected due to invalid Compressed Size value; the decoder
+    must not try decoding the Compressed Data field.
+
+    bad-2-index-1.lzma has wrong Total Sizes in Index.
+
+    bad-2-index-2.lzma has wrong Uncompressed Sizes in Index.
+
+    bad-2-index-3.lzma has non-nul byte in Index Padding.
+
+    bad-2-index-4.lzma wrong CRC32 in Index.
+
+    bad-2-compressed_data_padding.lzma has non-nul byte in the padding of
+    the Compressed Data field of the first Block.
+
+    bad-1-check-crc32.lzma has wrong Check (CRC32).
+
+    bad-1-check-crc64.lzma has wrong Check (CRC64).
+
+    bad-1-check-sha256.lzma has wrong Check (SHA-256).
+
+    bad-1-lzma2-1.lzma has LZMA2 stream whose first chunk (uncompressed)
+    doesn't reset the dictionary.
+
+    bad-1-lzma2-2.lzma has two LZMA2 chunks, of which the second chunk
+    indicates dictionary reset, but the LZMA compressed data tries to
+    repeat data from the previous chunk.
+
+    bad-1-lzma2-3.lzma sets new invalid properties (lc=8, lp=0, pb=0) in
+    the middle of Block.
+
+    bad-1-lzma2-4.lzma has two LZMA2 chunks, of which the first is
+    uncompressed and the second is LZMA. The first chunk resets dictionary
+    as it should, but the second chunk tries to reset state without
+    specifying properties for LZMA.
+
+    bad-1-lzma2-5.lzma is like bad-1-lzma2-4.lzma but doesn't try to reset
+    anything in the header of the second chunk.
+
+    bad-1-lzma2-6.lzma has reserved LZMA2 control byte value (0x03).
+
+    bad-1-lzma2-7.lzma has EOPM at LZMA level.
 

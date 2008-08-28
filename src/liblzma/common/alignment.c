@@ -21,7 +21,7 @@
 
 
 extern LZMA_API uint32_t
-lzma_alignment_input(const lzma_options_filter *filters, uint32_t guess)
+lzma_alignment_input(const lzma_filter *filters, uint32_t guess)
 {
 	for (size_t i = 0; filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {
 		switch (filters[i].id) {
@@ -66,7 +66,7 @@ lzma_alignment_input(const lzma_options_filter *filters, uint32_t guess)
 
 
 extern LZMA_API uint32_t
-lzma_alignment_output(const lzma_options_filter *filters, uint32_t guess)
+lzma_alignment_output(const lzma_filter *filters, uint32_t guess)
 {
 	if (filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
 		return UINT32_MAX;

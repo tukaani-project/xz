@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       block_header.c
-/// \brief      Utility functions to handle lzma_options_block
+/// \brief      Utility functions to handle lzma_block
 //
 //  Copyright (C) 2008 Lasse Collin
 //
@@ -21,7 +21,7 @@
 
 
 extern LZMA_API lzma_ret
-lzma_block_total_size_set(lzma_options_block *options, lzma_vli total_size)
+lzma_block_total_size_set(lzma_block *options, lzma_vli total_size)
 {
 	// Validate.
 	if (options->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
@@ -32,7 +32,7 @@ lzma_block_total_size_set(lzma_options_block *options, lzma_vli total_size)
 		return LZMA_PROG_ERROR;
 
 	const uint32_t container_size = options->header_size
-			+ lzma_check_sizes[options->check];
+			+ lzma_check_size(options->check);
 
 	// Validate that Compressed Size will be greater than zero.
 	if (container_size <= total_size)
@@ -45,7 +45,7 @@ lzma_block_total_size_set(lzma_options_block *options, lzma_vli total_size)
 
 
 extern LZMA_API lzma_vli
-lzma_block_total_size_get(const lzma_options_block *options)
+lzma_block_total_size_get(const lzma_block *options)
 {
 	// Validate the values that we are interested in.
 	if (options->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
@@ -61,7 +61,7 @@ lzma_block_total_size_get(const lzma_options_block *options)
 
 	const lzma_vli total_size = options->compressed_size
 			+ options->header_size
-			+ lzma_check_sizes[options->check];
+			+ lzma_check_size(options->check);
 
 	// Validate the calculated Total Size.
 	if (options->compressed_size > LZMA_VLI_VALUE_MAX

@@ -23,6 +23,7 @@
 int
 main(void)
 {
+	lzma_init();
 
 	lzma_options_lzma lzma = {
 		.dictionary_size = (1 << 27) + (1 << 26),
@@ -31,7 +32,7 @@ main(void)
 		.pos_bits = 2,
 		.preset_dictionary = NULL,
 		.preset_dictionary_size = 0,
-		.mode = LZMA_MODE_BEST,
+		.mode = LZMA_MODE_NORMAL,
 		.fast_bytes = 48,
 		.match_finder = LZMA_MF_BT4,
 		.match_finder_cycles = 0,
@@ -44,12 +45,13 @@ main(void)
 		{ UINT64_MAX, NULL }
 	};
 */
-	lzma_options_filter filters[] = {
+	lzma_filter filters[] = {
 		{ LZMA_FILTER_LZMA, &lzma },
 		{ UINT64_MAX, NULL }
 	};
 
-	printf("%u MiB\n", lzma_memory_usage(filters, true));
+	printf("Encoder: %10" PRIu64 " B\n", lzma_memusage_encoder(filters));
+	printf("Decoder: %10" PRIu64 " B\n", lzma_memusage_decoder(filters));
 
 	return 0;
 }

@@ -21,6 +21,18 @@ libsimple_la_SOURCES = \
 	simple_coder.h \
 	simple_private.h
 
+if COND_ENCODER_SIMPLE
+libsimple_la_SOURCES += \
+	simple_encoder.c \
+	simple_encoder.h
+endif
+
+if COND_DECODER_SIMPLE
+libsimple_la_SOURCES += \
+	simple_decoder.c \
+	simple_decoder.h
+endif
+
 if COND_FILTER_X86
 libsimple_la_SOURCES += x86.c
 endif

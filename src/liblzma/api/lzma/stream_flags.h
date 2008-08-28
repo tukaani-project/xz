@@ -46,7 +46,7 @@ typedef struct {
 	/**
 	 * Type of the Check calculated from uncompressed data
 	 */
-	lzma_check_type check;
+	lzma_check check;
 
 } lzma_stream_flags;
 
@@ -64,7 +64,8 @@ typedef struct {
  *              - LZMA_PROG_ERROR: Invalid options.
  */
 extern lzma_ret lzma_stream_header_encode(
-		const lzma_stream_flags *options, uint8_t *out);
+		const lzma_stream_flags *options, uint8_t *out)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -78,7 +79,8 @@ extern lzma_ret lzma_stream_header_encode(
  *              - LZMA_PROG_ERROR: Invalid options.
  */
 extern lzma_ret lzma_stream_footer_encode(
-		const lzma_stream_flags *options, uint8_t *out);
+		const lzma_stream_flags *options, uint8_t *out)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -101,7 +103,8 @@ extern lzma_ret lzma_stream_footer_encode(
  *                in the header.
  */
 extern lzma_ret lzma_stream_header_decode(
-		lzma_stream_flags *options, const uint8_t *in);
+		lzma_stream_flags *options, const uint8_t *in)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -120,7 +123,8 @@ extern lzma_ret lzma_stream_header_decode(
  *                in the footer.
  */
 extern lzma_ret lzma_stream_footer_decode(
-		lzma_stream_flags *options, const uint8_t *in);
+		lzma_stream_flags *options, const uint8_t *in)
+		lzma_attr_warn_unused_result;
 
 
 /**
@@ -131,4 +135,5 @@ extern lzma_ret lzma_stream_footer_decode(
  * \return      true if both structures are considered equal; false otherwise.
  */
 extern lzma_bool lzma_stream_flags_equal(
-		const lzma_stream_flags *a, lzma_stream_flags *b);
+		const lzma_stream_flags *a, const lzma_stream_flags *b)
+		lzma_attr_pure;

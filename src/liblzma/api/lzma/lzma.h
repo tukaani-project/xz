@@ -24,43 +24,11 @@
 /**
  * \brief       Filter ID
  *
- * Filter ID of the LZMA filter. This is used as lzma_options_filter.id.
+ * Filter ID of the LZMA filter. This is used as lzma_filter.id.
  */
 #define LZMA_FILTER_LZMA        LZMA_VLI_C(0x40)
 
-
-/**
- * \brief       LZMA compression modes
- *
- * Currently there are only two modes. Earlier LZMA SDKs had also third
- * mode between fast and best.
- */
-typedef enum {
-	LZMA_MODE_INVALID = -1,
-		/**<
-		 * \brief       Invalid mode
-		 *
-		 * Used as array terminator in lzma_available_modes.
-		 */
-
-
-	LZMA_MODE_FAST = 0,
-		/**<
-		 * \brief       Fast compression
-		 *
-		 * Fast mode is usually at its best when combined with
-		 * a hash chain match finder.
-		 */
-
-	LZMA_MODE_BEST = 2
-		/**<
-		 * \brief       Best compression ratio
-		 *
-		 * This is usually notably slower than fast mode. Use this
-		 * together with binary tree match finders to expose the
-		 * full potential of the LZMA encoder.
-		 */
-} lzma_mode;
+#define LZMA_FILTER_LZMA2       LZMA_VLI_C(0x21)
 
 
 /**
@@ -129,6 +97,72 @@ typedef enum {
 
 
 /**
+ * \brief       Test if given match finder is supported
+ *
+ * Returns true if the given match finder is supported by this liblzma build.
+ * Otherwise false is returned. It is safe to call this with a value that
+ * isn't listed in lzma_match_finder enumeration; the return value will be
+ * false.
+ *
+ * There is no way to list which match finders are available in this
+ * particular liblzma version and build. It would be useless, because
+ * a new match finder, which the application developer wasn't aware,
+ * could require giving additional options to the encoder that the older
+ * match finders don't need.
+ */
+extern lzma_bool lzma_mf_is_supported(lzma_match_finder match_finder)
+		lzma_attr_const;
+
+
+/**
+ * \brief       LZMA compression modes
+ *
+ * This selects the function used to analyze the data produced by the match
+ * finder.
+ */
+typedef enum {
+	LZMA_MODE_INVALID = -1,
+		/**<
+		 * \brief       Invalid mode
+		 *
+		 * Used as array terminator in lzma_available_modes.
+		 */
+
+	LZMA_MODE_FAST = 0,
+		/**<
+		 * \brief       Fast compression
+		 *
+		 * Fast mode is usually at its best when combined with
+		 * a hash chain match finder.
+		 */
+
+	LZMA_MODE_NORMAL = 1
+		/**<
+		 * \brief       Normal compression
+		 *
+		 * This is usually notably slower than fast mode. Use this
+		 * together with binary tree match finders to expose the
+		 * full potential of the LZMA encoder.
+		 */
+} lzma_mode;
+
+
+/**
+ * \brief       Test if given compression mode is supported
+ *
+ * Returns true if the given compression mode is supported by this liblzma
+ * build. Otherwise false is returned. It is safe to call this with a value
+ * that isn't listed in lzma_mode enumeration; the return value will be false.
+ *
+ * There is no way to list which modes are available in this particular
+ * liblzma version and build. It would be useless, because a new compression
+ * mode, which the application developer wasn't aware, could require giving
+ * additional options to the encoder that the older modes don't need.
+ */
+extern lzma_bool lzma_mode_is_available(lzma_mode mode) lzma_attr_const;
+
+
+/**
  * \brief       Options specific to the LZMA method handler
  */
 typedef struct {
@@ -155,6 +189,44 @@ typedef struct {
 #	define LZMA_DICTIONARY_SIZE_MIN            (UINT32_C(1) << 12)
 #	define LZMA_DICTIONARY_SIZE_MAX            (UINT32_C(1) << 30)
 #	define LZMA_DICTIONARY_SIZE_DEFAULT        (UINT32_C(1) << 23)
+
+	/**
+	 * \brief       Pointer to an initial dictionary
+	 *
+	 * It is possible to initialize the LZ77 history window using
+	 * a preset dictionary. Here is a good quote from zlib's
+	 * documentation; this applies to LZMA as is:
+	 *
+	 * "The dictionary should consist of strings (byte sequences) that
+	 * are likely to be encountered later in the data to be compressed,
+	 * with the most commonly used strings preferably put towards the
+	 * end of the dictionary. Using a dictionary is most useful when
+	 * the data to be compressed is short and can be predicted with
+	 * good accuracy; the data can then be compressed better than
+	 * with the default empty dictionary."
+	 * (From deflateSetDictionary() in zlib.h of zlib version 1.2.3)
+	 *
+	 * This feature should be used only in special situations.
+	 * It works correctly only with raw encoding and decoding.
+	 * Currently none of the container formats supported by
+	 * liblzma allow preset dictionary when decoding, thus if
+	 * you create a .lzma file with preset dictionary, it cannot
+	 * be decoded with the regular .lzma decoder functions.
+	 *
+	 * \todo        This feature is not implemented yet.
+	 */
+	const uint8_t *preset_dictionary;
+
+	/**
+	 * \brief       Size of the preset dictionary
+	 *
+	 * Specifies the size of the preset dictionary. If the size is
+	 * bigger than dictionary_size, only the last dictionary_size
+	 * bytes are processed.
+	 *
+	 * This variable is read only when preset_dictionary is not NULL.
+	 */
+	uint32_t preset_dictionary_size;
 
 	/**
 	 * \brief       Number of literal context bits
@@ -203,47 +275,22 @@ typedef struct {
 #	define LZMA_POS_BITS_MAX                   4
 #	define LZMA_POS_BITS_DEFAULT               2
 
-	/**
-	 * \brief       Pointer to an initial dictionary
-	 *
-	 * It is possible to initialize the LZ77 history window using
-	 * a preset dictionary. Here is a good quote from zlib's
-	 * documentation; this applies to LZMA as is:
-	 *
-	 * "The dictionary should consist of strings (byte sequences) that
-	 * are likely to be encountered later in the data to be compressed,
-	 * with the most commonly used strings preferably put towards the
-	 * end of the dictionary. Using a dictionary is most useful when
-	 * the data to be compressed is short and can be predicted with
-	 * good accuracy; the data can then be compressed better than
-	 * with the default empty dictionary."
-	 * (From deflateSetDictionary() in zlib.h of zlib version 1.2.3)
-	 *
-	 * This feature should be used only in special situations.
-	 * It works correctly only with raw encoding and decoding.
-	 * Currently none of the container formats supported by
-	 * liblzma allow preset dictionary when decoding, thus if
-	 * you create a .lzma file with preset dictionary, it cannot
-	 * be decoded with the regular .lzma decoder functions.
-	 *
-	 * \todo        This feature is not implemented yet.
-	 */
-	const uint8_t *preset_dictionary;
-
-	/**
-	 * \brief       Size of the preset dictionary
-	 *
-	 * Specifies the size of the preset dictionary. If the size is
-	 * bigger than dictionary_size, only the last dictionary_size
-	 * bytes are processed.
-	 *
-	 * This variable is read only when preset_dictionary is not NULL.
-	 */
-	uint32_t preset_dictionary_size;
-
 	/******************************************
 	 * LZMA options needed only when encoding *
 	 ******************************************/
+
+	/**
+	 * \brief       Indicate if the options structure is persistent
+	 *
+	 * If this is true, the application must keep this options structure
+	 * available after the LZMA2 encoder has been initialized. With
+	 * persistent structure it is possible to change some encoder options
+	 * in the middle of the encoding process without resetting the encoder.
+	 *
+	 * This option is used only by LZMA2. LZMA1 ignores this and it is
+	 * safeto not initialize this when encoding with LZMA1.
+	 */
+	lzma_bool persistent;
 
 	/** LZMA compression mode */
 	lzma_mode mode;
@@ -275,6 +322,20 @@ typedef struct {
 	 */
 	uint32_t match_finder_cycles;
 
+	/**
+	 * \brief       Reserved space for possible future extensions
+	 *
+	 * You should not touch these, because the names of these variables
+	 * may change. These are and will never be used with the currently
+	 * supported options, so it is safe to leave these uninitialized.
+	 */
+	uint32_t reserved_int1;
+	uint32_t reserved_int2;
+	uint32_t reserved_int3;
+	uint32_t reserved_int4;
+	void *reserved_ptr1;
+	void *reserved_ptr2;
+
 } lzma_options_lzma;
 
 
@@ -284,27 +345,6 @@ typedef struct {
  * literal_context_bits + literal_pos_bits <= LZMA_LITERAL_BITS_MAX
  */
 #define LZMA_LITERAL_BITS_MAX 4
-
-
-/**
- * \brief       Available LZMA encoding modes
- *
- * Pointer to an array containing the list of available encoding modes.
- *
- * This variable is available only if LZMA encoder has been enabled.
- */
-extern const lzma_mode *const lzma_available_modes;
-
-
-/**
- * \brief       Available match finders
- *
- * Pointer to an array containing the list of available match finders.
- * The last element is LZMA_MF_INVALID.
- *
- * This variable is available only if LZMA encoder has been enabled.
- */
-extern const lzma_match_finder *const lzma_available_match_finders;
 
 
 /**

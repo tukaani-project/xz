@@ -21,20 +21,27 @@
 #ifndef LZMA_LZMA_ENCODER_PRIVATE_H
 #define LZMA_LZMA_ENCODER_PRIVATE_H
 
-#include "lzma_encoder.h"
-#include "lzma_common.h"
 #include "lz_encoder.h"
 #include "range_encoder.h"
+#include "lzma_common.h"
+#include "lzma_encoder.h"
 
 
-#define move_pos(num) \
-do { \
-	assert((int32_t)(num) >= 0); \
-	if ((num) != 0) { \
-		coder->additional_offset += num; \
-		coder->lz.skip(&coder->lz, num); \
-	} \
-} while (0)
+// Macro to compare if the first two bytes in two buffers differ. This is
+// needed in lzma_lzma_optimum_*() to test if the match is at least
+// MATCH_LEN_MIN bytes. Unaligned access gives tiny gain so there's no
+// reason to not use it when it is supported.
+#ifdef HAVE_FAST_UNALIGNED_ACCESS
+#	define not_equal_16(a, b) \
+		(*(const uint16_t *)(a) != *(const uint16_t *)(b))
+#else
+#	define not_equal_16(a, b) \
+		((a)[0] != (b)[0] || (a)[1] != (b)[1])
+#endif
+
+
+// Optimal - Number of entries in the optimum array.
+#define OPTS (1 << 12)
 
 
 typedef struct {
@@ -54,7 +61,7 @@ typedef struct {
 typedef struct {
 	lzma_lzma_state state;
 
-	bool prev_1_is_char;
+	bool prev_1_is_literal;
 	bool prev_2;
 
 	uint32_t pos_prev_2;
@@ -70,132 +77,79 @@ typedef struct {
 
 
 struct lzma_coder_s {
-	// Next coder in the chain
-	lzma_next_coder next;
-
-	// In window and match finder
-	lzma_lz_encoder lz;
-
-	// Range encoder
+	/// Range encoder
 	lzma_range_encoder rc;
 
-	// State
+	/// State
 	lzma_lzma_state state;
-	uint8_t previous_byte;
+
+	/// The four most recent match distances
 	uint32_t reps[REP_DISTANCES];
 
-	// Misc
-	uint32_t match_distances[MATCH_MAX_LEN * 2 + 2 + 1];
-	uint32_t num_distance_pairs;
-	uint32_t additional_offset;
-	uint32_t now_pos; // Lowest 32 bits are enough here.
-	bool best_compression;           ///< True when LZMA_MODE_BEST is used
+	/// Array of match candidates
+	lzma_match matches[MATCH_LEN_MAX + 1];
+
+	/// Number of match candidates in matches[]
+	uint32_t matches_count;
+
+	/// Varibale to hold the length of the longest match between calls
+	/// to lzma_lzma_optimum_*().
+	uint32_t longest_match_length;
+
+	/// True if using getoptimumfast
+	bool fast_mode;
+
+	/// True if the encoder has been initialized by encoding the first
+	/// byte as a literal.
 	bool is_initialized;
+
+	/// True if the range encoder has been flushed, but not all bytes
+	/// have been written to the output buffer yet.
 	bool is_flushed;
-	bool write_eopm;
 
-	// Literal encoder
-	lzma_literal_coder literal_coder;
+	uint32_t pos_mask;         ///< (1 << pos_bits) - 1
+	uint32_t literal_context_bits;
+	uint32_t literal_pos_mask;
 
-	// Bit encoders
+	// These are the same as in lzma_decoder.c. See comments there.
+	probability literal[LITERAL_CODERS_MAX][LITERAL_CODER_SIZE];
 	probability is_match[STATES][POS_STATES_MAX];
 	probability is_rep[STATES];
 	probability is_rep0[STATES];
 	probability is_rep1[STATES];
 	probability is_rep2[STATES];
 	probability is_rep0_long[STATES][POS_STATES_MAX];
-	probability pos_encoders[FULL_DISTANCES - END_POS_MODEL_INDEX];
+	probability pos_slot[LEN_TO_POS_STATES][POS_SLOTS];
+	probability pos_special[FULL_DISTANCES - END_POS_MODEL_INDEX];
+	probability pos_align[ALIGN_TABLE_SIZE];
 
-	// Bit Tree Encoders
-	probability pos_slot_encoder[LEN_TO_POS_STATES][1 << POS_SLOT_BITS];
-	probability pos_align_encoder[1 << ALIGN_BITS];
-
-	// Length encoders
+	// These are the same as in lzma_decoder.c except that the encoders
+	// include also price tables.
 	lzma_length_encoder match_len_encoder;
 	lzma_length_encoder rep_len_encoder;
-	lzma_length_encoder *prev_len_encoder;
 
-	// Optimal
-	lzma_optimal optimum[OPTS];
-	uint32_t optimum_end_index;
-	uint32_t optimum_current_index;
-	uint32_t longest_match_length;
-	bool longest_match_was_found;
-
-	// Prices
-	uint32_t pos_slot_prices[LEN_TO_POS_STATES][DIST_TABLE_SIZE_MAX];
+	// Price tables
+	uint32_t pos_slot_prices[LEN_TO_POS_STATES][POS_SLOTS];
 	uint32_t distances_prices[LEN_TO_POS_STATES][FULL_DISTANCES];
-	uint32_t align_prices[ALIGN_TABLE_SIZE];
-	uint32_t align_price_count;
 	uint32_t dist_table_size;
 	uint32_t match_price_count;
 
-	// LZMA specific settings
-	uint32_t dictionary_size;        ///< Size in bytes
-	uint32_t fast_bytes;
-	uint32_t pos_state_bits;
-	uint32_t pos_mask;         ///< (1 << pos_state_bits) - 1
+	uint32_t align_prices[ALIGN_TABLE_SIZE];
+	uint32_t align_price_count;
+
+	// Optimal
+	uint32_t opts_end_index;
+	uint32_t opts_current_index;
+	lzma_optimal opts[OPTS];
 };
 
 
-extern void lzma_length_encoder_update_table(lzma_length_encoder *lencoder,
-		const uint32_t pos_state);
-
-extern bool lzma_lzma_encode(lzma_coder *coder, uint8_t *restrict out,
-		size_t *restrict out_pos, size_t out_size);
-
-extern void lzma_get_optimum(lzma_coder *restrict coder,
+extern void lzma_lzma_optimum_fast(
+		lzma_coder *restrict coder, lzma_mf *restrict mf,
 		uint32_t *restrict back_res, uint32_t *restrict len_res);
 
-extern void lzma_get_optimum_fast(lzma_coder *restrict coder,
-		uint32_t *restrict back_res, uint32_t *restrict len_res);
-
-
-// NOTE: Don't add 'restrict'.
-static inline void
-lzma_read_match_distances(lzma_coder *coder,
-		uint32_t *len_res, uint32_t *num_distance_pairs)
-{
-	*len_res = 0;
-
-	coder->lz.get_matches(&coder->lz, coder->match_distances);
-
-	*num_distance_pairs = coder->match_distances[0];
-
-	if (*num_distance_pairs > 0) {
-		*len_res = coder->match_distances[*num_distance_pairs - 1];
-		assert(*len_res <= MATCH_MAX_LEN);
-
-		if (*len_res == coder->fast_bytes) {
-			uint32_t offset = *len_res - 1;
-			const uint32_t distance = coder->match_distances[
-					*num_distance_pairs] + 1;
-			uint32_t limit = MATCH_MAX_LEN - *len_res;
-
-			assert(offset + limit < coder->lz.keep_size_after);
-			assert(coder->lz.read_pos <= coder->lz.write_pos);
-
-			// If we are close to end of the stream, we may need
-			// to limit the length of the match.
-			if (coder->lz.write_pos - coder->lz.read_pos
-					< offset + limit)
-				limit = coder->lz.write_pos
-					- (coder->lz.read_pos + offset);
-
-			offset += coder->lz.read_pos;
-			uint32_t i = 0;
-			while (i < limit && coder->lz.buffer[offset + i]
-					== coder->lz.buffer[
-						offset + i - distance])
-				++i;
-
-			*len_res += i;
-		}
-	}
-
-	++coder->additional_offset;
-
-	return;
-}
+extern void lzma_lzma_optimum_normal(lzma_coder *restrict coder,
+		lzma_mf *restrict mf, uint32_t *restrict back_res,
+		uint32_t *restrict len_res, uint32_t position);
 
 #endif

@@ -24,6 +24,6 @@
 
 
 extern lzma_ret lzma_block_encoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, lzma_options_block *options);
+		lzma_allocator *allocator, lzma_block *options);
 
 #endif

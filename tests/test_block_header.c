@@ -21,19 +21,19 @@
 
 
 static uint8_t buf[LZMA_BLOCK_HEADER_SIZE_MAX];
-static lzma_options_block known_options;
-static lzma_options_block decoded_options;
+static lzma_block known_options;
+static lzma_block decoded_options;
 
-static lzma_options_filter filters_none[1] = {
+static lzma_filter filters_none[1] = {
 	{
 		.id = LZMA_VLI_VALUE_UNKNOWN,
 	},
 };
 
 
-static lzma_options_filter filters_one[2] = {
+static lzma_filter filters_one[2] = {
 	{
-		.id = LZMA_FILTER_LZMA,
+		.id = LZMA_FILTER_LZMA2,
 		.options = (void *)(&lzma_preset_lzma[0]),
 	}, {
 		.id = LZMA_VLI_VALUE_UNKNOWN,
@@ -41,7 +41,7 @@ static lzma_options_filter filters_one[2] = {
 };
 
 
-static lzma_options_filter filters_four[5] = {
+static lzma_filter filters_four[5] = {
 	{
 		.id = LZMA_FILTER_X86,
 		.options = NULL,
@@ -52,7 +52,7 @@ static lzma_options_filter filters_four[5] = {
 		.id = LZMA_FILTER_X86,
 		.options = NULL,
 	}, {
-		.id = LZMA_FILTER_LZMA,
+		.id = LZMA_FILTER_LZMA2,
 		.options = (void *)(&lzma_preset_lzma[0]),
 	}, {
 		.id = LZMA_VLI_VALUE_UNKNOWN,
@@ -60,7 +60,7 @@ static lzma_options_filter filters_four[5] = {
 };
 
 
-static lzma_options_filter filters_five[6] = {
+static lzma_filter filters_five[6] = {
 	{
 		.id = LZMA_FILTER_X86,
 		.options = NULL,
@@ -74,7 +74,7 @@ static lzma_options_filter filters_five[6] = {
 		.id = LZMA_FILTER_X86,
 		.options = NULL,
 	}, {
-		.id = LZMA_FILTER_LZMA,
+		.id = LZMA_FILTER_LZMA2,
 		.options = (void *)(&lzma_preset_lzma[0]),
 	}, {
 		.id = LZMA_VLI_VALUE_UNKNOWN,
@@ -87,7 +87,7 @@ code(void)
 {
 	expect(lzma_block_header_encode(&known_options, buf) == LZMA_OK);
 
-	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
 	memcrap(filters, sizeof(filters));
 	memcrap(&decoded_options, sizeof(decoded_options));
 
@@ -114,7 +114,7 @@ code(void)
 static void
 test1(void)
 {
-	known_options = (lzma_options_block){
+	known_options = (lzma_block){
 		.check = LZMA_CHECK_NONE,
 		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
 		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
@@ -153,7 +153,7 @@ test1(void)
 static void
 test2(void)
 {
-	known_options = (lzma_options_block){
+	known_options = (lzma_block){
 		.check = LZMA_CHECK_CRC32,
 		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
 		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
@@ -179,7 +179,7 @@ test2(void)
 static void
 test3(void)
 {
-	known_options = (lzma_options_block){
+	known_options = (lzma_block){
 		.check = LZMA_CHECK_CRC32,
 		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
 		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
@@ -190,7 +190,7 @@ test3(void)
 	known_options.header_size += 4;
 	expect(lzma_block_header_encode(&known_options, buf) == LZMA_OK);
 
-	lzma_options_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
 	decoded_options.header_size = known_options.header_size;
 	decoded_options.check = known_options.check;
 	decoded_options.filters = filters;

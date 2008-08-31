@@ -165,8 +165,10 @@ match(lzma_coder *coder, const uint32_t pos_state,
 		const uint32_t pos_reduced = distance - base;
 
 		if (pos_slot < END_POS_MODEL_INDEX) {
+			// Careful here: base - pos_slot - 1 can be -1, but
+			// rc_bittree_reverse starts at probs[1], not probs[0].
 			rc_bittree_reverse(&coder->rc,
-				&coder->pos_special[base - pos_slot - 1],
+				coder->pos_special + base - pos_slot - 1,
 				footer_bits, pos_reduced);
 		} else {
 			rc_direct(&coder->rc, pos_reduced >> ALIGN_BITS,

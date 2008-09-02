@@ -86,12 +86,16 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 	if (coder->mf.read_pos >= coder->mf.size - coder->mf.keep_size_after)
 		move_window(&coder->mf);
 
+	// Maybe this is ugly, but lzma_mf uses uint32_t for most things
+	// (which I find cleanest), but we need size_t here when filling
+	// the history window.
+	size_t write_pos = coder->mf.write_pos;
 	size_t in_used;
 	lzma_ret ret;
 	if (coder->next.code == NULL) {
 		// Not using a filter, simply memcpy() as much as possible.
 		in_used = lzma_bufcpy(in, in_pos, in_size, coder->mf.buffer,
-				&coder->mf.write_pos, coder->mf.size);
+				&write_pos, coder->mf.size);
 
 		ret = action != LZMA_RUN && *in_pos == in_size
 				? LZMA_STREAM_END : LZMA_OK;
@@ -100,10 +104,12 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 		const size_t in_start = *in_pos;
 		ret = coder->next.code(coder->next.coder, allocator,
 				in, in_pos, in_size,
-				coder->mf.buffer, &coder->mf.write_pos,
+				coder->mf.buffer, &write_pos,
 				coder->mf.size, action);
 		in_used = *in_pos - in_start;
 	}
+
+	coder->mf.write_pos = write_pos;
 
 	// If end of stream has been reached or flushing completed, we allow
 	// the encoder to process all the input (that is, read_pos is allowed
@@ -181,9 +187,12 @@ static bool
 lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 		const lzma_lz_options *lz_options)
 {
+	// For now, the dictionary size is limited to 1.5 GiB. This may grow
+	// in the future if needed, but it needs a little more work than just
+	// changing this check.
 	if (lz_options->dictionary_size < LZMA_DICTIONARY_SIZE_MIN
 			|| lz_options->dictionary_size
-				> LZMA_DICTIONARY_SIZE_MAX
+				> (UINT32_C(1) << 30) + (UINT32_C(1) << 29)
 			|| lz_options->find_len_max
 				> lz_options->match_len_max)
 		return true;
@@ -198,6 +207,13 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	// memmove()s become more expensive when the size of the buffer
 	// increases, we reserve more space when a large dictionary is
 	// used to make the memmove() calls rarer.
+	//
+	// This works with dictionaries up to about 3 GiB. If bigger
+	// dictionary is wanted, some extra work is needed:
+	//   - Several variables in lzma_mf have to be changed from uint32_t
+	//     to size_t.
+	//   - Memory usage calculation needs something too, e.g. use uint64_t
+	//     for mf->size.
 	uint32_t reserve = lz_options->dictionary_size / 2;
 	if (reserve > (UINT32_C(1) << 30))
 		reserve /= 2;
@@ -207,8 +223,6 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 
 	const uint32_t old_size = mf->size;
 	mf->size = mf->keep_size_before + reserve + mf->keep_size_after;
-
-	// FIXME Integer overflows
 
 	// Deallocate the old history buffer if it exists but has different
 	// size than what is needed now.
@@ -220,7 +234,23 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	// Match finder options
 	mf->match_len_max = lz_options->match_len_max;
 	mf->find_len_max = lz_options->find_len_max;
-	mf->cyclic_buffer_size = lz_options->dictionary_size + 1;
+
+	// cyclic_size has to stay smaller than 2 Gi. Note that this doesn't
+	// mean limitting dictionary size to less than 2 GiB. With a match
+	// finder that uses multibyte resolution (hashes start at e.g. every
+	// fourth byte), cyclic_size would stay below 2 Gi even when
+	// dictionary size is greater than 2 GiB.
+	//
+	// It would be possible to allow cyclic_size >= 2 Gi, but then we
+	// would need to be careful to use 64-bit types in various places
+	// (size_t could do since we would need bigger than 32-bit address
+	// space anyway). It would also require either zeroing a multigigabyte
+	// buffer at initialization (waste of time and RAM) or allow
+	// normalization in lz_encoder_mf.c to access uninitialized
+	// memory to keep the code simpler. The current way is simple and
+	// still allows pretty big dictionaries, so I don't expect these
+	// limits to change.
+	mf->cyclic_size = lz_options->dictionary_size + 1;
 
 	// Validate the match finder ID and setup the function pointers.
 	switch (lz_options->match_finder) {
@@ -298,9 +328,15 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 		hs += HASH_4_SIZE;
 */
 
+	// If the above code calculating hs is modified, make sure that
+	// this assertion stays valid (UINT32_MAX / 5 is not strictly the
+	// exact limit). If it doesn't, you need to calculate that
+	// hash_size_sum + sons_count cannot overflow.
+	assert(hs < UINT32_MAX / 5);
+
 	const uint32_t old_count = mf->hash_size_sum + mf->sons_count;
 	mf->hash_size_sum = hs;
-	mf->sons_count = mf->cyclic_buffer_size;
+	mf->sons_count = mf->cyclic_size;
 	if (is_bt)
 		mf->sons_count *= 2;
 
@@ -335,11 +371,11 @@ lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator)
 			return true;
 	}
 
-	// Use cyclic_buffer_size as initial mf->offset. This allows
+	// Use cyclic_size as initial mf->offset. This allows
 	// avoiding a few branches in the match finders. The downside is
 	// that match finder needs to be normalized more often, which may
 	// hurt performance with huge dictionaries.
-	mf->offset = mf->cyclic_buffer_size;
+	mf->offset = mf->cyclic_size;
 	mf->read_pos = 0;
 	mf->read_ahead = 0;
 	mf->read_limit = 0;
@@ -364,7 +400,7 @@ lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator)
 	}
 
 	mf->son = mf->hash + mf->hash_size_sum;
-	mf->cyclic_buffer_pos = 0;
+	mf->cyclic_pos = 0;
 
 	// Initialize the hash table. Since EMPTY_HASH_VALUE is zero, we
 	// can use memset().

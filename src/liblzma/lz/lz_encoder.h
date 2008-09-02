@@ -53,18 +53,20 @@ struct lzma_mf_s {
 
 	/// Number of bytes that must be kept in buffer after read_pos.
 	/// That is, read_pos <= write_pos - keep_size_after as long as
-	/// stream_end_was_reached is false (once it is true, read_pos
-	/// is allowed to reach write_pos).
+	/// action is LZMA_RUN; when action != LZMA_RUN, read_pos is allowed
+	/// to reach write_pos so that the last bytes get encoded too.
 	uint32_t keep_size_after;
 
 	/// Match finders store locations of matches using 32-bit integers.
 	/// To avoid adjusting several megabytes of integers every time the
-	/// input window is moved with move_window(), we only adjust the
-	/// offset of the buffer. Thus, buffer[match_finder_pos - offset]
-	/// is the byte pointed by match_finder_pos.
+	/// input window is moved with move_window, we only adjust the
+	/// offset of the buffer. Thus, buffer[value_in_hash_table - offset]
+	/// is the byte pointed by value_in_hash_table.
 	uint32_t offset;
 
-	/// buffer[read_pos] is the current byte.
+	/// buffer[read_pos] is the next byte to run through the match
+	/// finder. This is incremented in the match finder once the byte
+	/// has been processed.
 	uint32_t read_pos;
 
 	/// Number of bytes that have been ran through the match finder, but
@@ -103,8 +105,8 @@ struct lzma_mf_s {
 
 	uint32_t *hash;
 	uint32_t *son;
-	uint32_t cyclic_buffer_pos;
-	uint32_t cyclic_buffer_size; // Must be dictionary_size + 1.
+	uint32_t cyclic_pos;
+	uint32_t cyclic_size; // Must be dictionary size + 1.
 	uint32_t hash_mask;
 
 	/// Maximum number of loops in the match finder

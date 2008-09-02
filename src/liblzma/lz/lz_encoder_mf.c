@@ -121,7 +121,7 @@ normalize(lzma_mf *mf)
 	// In future we may not want to touch the lowest bits, because there
 	// may be match finders that use larger resolution than one byte.
 	const uint32_t subvalue
-			= (MUST_NORMALIZE_POS - mf->cyclic_buffer_size);
+			= (MUST_NORMALIZE_POS - mf->cyclic_size);
 				// & (~(UINT32_C(1) << 10) - 1);
 
 	const uint32_t count = mf->hash_size_sum + mf->sons_count;
@@ -155,8 +155,8 @@ normalize(lzma_mf *mf)
 static void
 move_pos(lzma_mf *mf)
 {
-	if (++mf->cyclic_buffer_pos == mf->cyclic_buffer_size)
-		mf->cyclic_buffer_pos = 0;
+	if (++mf->cyclic_pos == mf->cyclic_size)
+		mf->cyclic_pos = 0;
 
 	++mf->read_pos;
 	assert(mf->read_pos <= mf->write_pos);
@@ -177,7 +177,7 @@ move_pos(lzma_mf *mf)
 /// function (with small amount of input, it may start using mf->pending
 /// again if flushing).
 ///
-/// Due to this rewinding, we don't touch cyclic_buffer_pos or test for
+/// Due to this rewinding, we don't touch cyclic_pos or test for
 /// normalization. It will be done when the match finder's skip function
 /// catches up after a flush.
 static void
@@ -227,8 +227,7 @@ move_pending(lzma_mf *mf)
 #define call_find(func, len_best) \
 do { \
 	matches_count = func(len_limit, pos, cur, cur_match, mf->loops, \
-				mf->son, mf->cyclic_buffer_pos, \
-				mf->cyclic_buffer_size, \
+				mf->son, mf->cyclic_pos, mf->cyclic_size, \
 				matches + matches_count, len_best) \
 			- matches; \
 	move_pos(mf); \
@@ -249,8 +248,8 @@ do { \
 /// \param      cur_match       Start position of the current match candidate
 /// \param      loops           Maximum length of the hash chain
 /// \param      son             lzma_mf.son (contains the hash chain)
-/// \param      cyclic_buffer_pos
-/// \param      cyclic_buffer_size
+/// \param      cyclic_pos
+/// \param      cyclic_size
 /// \param      matches         Array to hold the matches.
 /// \param      len_best        The length of the longest match found so far.
 static lzma_match *
@@ -261,22 +260,21 @@ hc_find_func(
 		uint32_t cur_match,
 		uint32_t loops,
 		uint32_t *const son,
-		const uint32_t cyclic_buffer_pos,
-		const uint32_t cyclic_buffer_size,
+		const uint32_t cyclic_pos,
+		const uint32_t cyclic_size,
 		lzma_match *matches,
 		uint32_t len_best)
 {
-	son[cyclic_buffer_pos] = cur_match;
+	son[cyclic_pos] = cur_match;
 
 	while (true) {
 		const uint32_t delta = pos - cur_match;
-		if (loops-- == 0 || delta >= cyclic_buffer_size)
+		if (loops-- == 0 || delta >= cyclic_size)
 			return matches;
 
 		const uint8_t *const pb = cur - delta;
-		cur_match = son[cyclic_buffer_pos - delta
-				+ (delta > cyclic_buffer_pos
-					? cyclic_buffer_size : 0)];
+		cur_match = son[cyclic_pos - delta
+				+ (delta > cyclic_pos ? cyclic_size : 0)];
 
 		if (pb[len_best] == cur[len_best] && pb[0] == cur[0]) {
 			uint32_t len = 0;
@@ -297,23 +295,6 @@ hc_find_func(
 	}
 }
 
-/*
-#define hc_header_find(len_min, ret_op) \
-	uint32_t len_limit = mf_avail(mf); \
-	if (mf->find_len_max <= len_limit) { \
-		len_limit = mf->find_len_max; \
-	} else if (len_limit < (len_min)) { \
-		move_pending(mf); \
-		ret_op; \
-	} \
-#define header_hc(len_min, ret_op) \
-do { \
-	if (mf_avail(mf) < (len_min)) { \
-		move_pending(mf); \
-		ret_op; \
-	} \
-} while (0)
-*/
 
 #define hc_find(len_best) \
 	call_find(hc_find_func, len_best)
@@ -321,7 +302,7 @@ do { \
 
 #define hc_skip() \
 do { \
-	mf->son[mf->cyclic_buffer_pos] = cur_match; \
+	mf->son[mf->cyclic_pos] = cur_match; \
 	move_pos(mf); \
 } while (0)
 
@@ -344,7 +325,7 @@ lzma_mf_hc3_find(lzma_mf *mf, lzma_match *matches)
 
 	uint32_t len_best = 2;
 
-	if (delta2 < mf->cyclic_buffer_size && *(cur - delta2) == *cur) {
+	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
 		for ( ; len_best != len_limit; ++len_best)
 			if (*(cur + len_best - delta2) != cur[len_best])
 				break;
@@ -409,14 +390,14 @@ lzma_mf_hc4_find(lzma_mf *mf, lzma_match *matches)
 
 	uint32_t len_best = 1;
 
-	if (delta2 < mf->cyclic_buffer_size && *(cur - delta2) == *cur) {
+	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
 		len_best = 2;
 		matches[0].len = 2;
 		matches[0].dist = delta2 - 1;
 		matches_count = 1;
 	}
 
-	if (delta2 != delta3 && delta3 < mf->cyclic_buffer_size
+	if (delta2 != delta3 && delta3 < mf->cyclic_size
 			&& *(cur - delta3) == *cur) {
 		len_best = 3;
 		matches[matches_count++].dist = delta3 - 1;
@@ -484,28 +465,28 @@ bt_find_func(
 		uint32_t cur_match,
 		uint32_t loops,
 		uint32_t *const son,
-		const uint32_t cyclic_buffer_pos,
-		const uint32_t cyclic_buffer_size,
+		const uint32_t cyclic_pos,
+		const uint32_t cyclic_size,
 		lzma_match *matches,
 		uint32_t len_best)
 {
-	uint32_t *ptr0 = son + (cyclic_buffer_pos << 1) + 1;
-	uint32_t *ptr1 = son + (cyclic_buffer_pos << 1);
+	uint32_t *ptr0 = son + (cyclic_pos << 1) + 1;
+	uint32_t *ptr1 = son + (cyclic_pos << 1);
 
 	uint32_t len0 = 0;
 	uint32_t len1 = 0;
 
 	while (true) {
 		const uint32_t delta = pos - cur_match;
-		if (loops-- == 0 || delta >= cyclic_buffer_size) {
+		if (loops-- == 0 || delta >= cyclic_size) {
 			*ptr0 = EMPTY_HASH_VALUE;
 			*ptr1 = EMPTY_HASH_VALUE;
 			return matches;
 		}
 
-		uint32_t *const pair = son + ((cyclic_buffer_pos - delta
-				+ (delta > cyclic_buffer_pos
-					? cyclic_buffer_size : 0)) << 1);
+		uint32_t *const pair = son + ((cyclic_pos - delta
+				+ (delta > cyclic_pos ? cyclic_size : 0))
+				<< 1);
 
 		const uint8_t *const pb = cur - delta;
 		uint32_t len = MIN(len0, len1);
@@ -552,26 +533,26 @@ bt_skip_func(
 		uint32_t cur_match,
 		uint32_t loops,
 		uint32_t *const son,
-		const uint32_t cyclic_buffer_pos,
-		const uint32_t cyclic_buffer_size)
+		const uint32_t cyclic_pos,
+		const uint32_t cyclic_size)
 {
-	uint32_t *ptr0 = son + (cyclic_buffer_pos << 1) + 1;
-	uint32_t *ptr1 = son + (cyclic_buffer_pos << 1);
+	uint32_t *ptr0 = son + (cyclic_pos << 1) + 1;
+	uint32_t *ptr1 = son + (cyclic_pos << 1);
 
 	uint32_t len0 = 0;
 	uint32_t len1 = 0;
 
 	while (true) {
 		const uint32_t delta = pos - cur_match;
-		if (loops-- == 0 || delta >= cyclic_buffer_size) {
+		if (loops-- == 0 || delta >= cyclic_size) {
 			*ptr0 = EMPTY_HASH_VALUE;
 			*ptr1 = EMPTY_HASH_VALUE;
 			return;
 		}
 
-		uint32_t *pair = son + ((cyclic_buffer_pos - delta
-				+ (delta > cyclic_buffer_pos
-					? cyclic_buffer_size : 0)) << 1);
+		uint32_t *pair = son + ((cyclic_pos - delta
+				+ (delta > cyclic_pos ? cyclic_size : 0))
+				<< 1);
 		const uint8_t *pb = cur - delta;
 		uint32_t len = MIN(len0, len1);
 
@@ -608,8 +589,8 @@ bt_skip_func(
 #define bt_skip() \
 do { \
 	bt_skip_func(len_limit, pos, cur, cur_match, mf->loops, \
-			mf->son, mf->cyclic_buffer_pos, \
-			mf->cyclic_buffer_size); \
+			mf->son, mf->cyclic_pos, \
+			mf->cyclic_size); \
 	move_pos(mf); \
 } while (0)
 
@@ -665,7 +646,7 @@ lzma_mf_bt3_find(lzma_mf *mf, lzma_match *matches)
 
 	uint32_t len_best = 2;
 
-	if (delta2 < mf->cyclic_buffer_size && *(cur - delta2) == *cur) {
+	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
 		for ( ; len_best != len_limit; ++len_best)
 			if (*(cur + len_best - delta2) != cur[len_best])
 				break;
@@ -724,14 +705,14 @@ lzma_mf_bt4_find(lzma_mf *mf, lzma_match *matches)
 
 	uint32_t len_best = 1;
 
-	if (delta2 < mf->cyclic_buffer_size && *(cur - delta2) == *cur) {
+	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
 		len_best = 2;
 		matches[0].len = 2;
 		matches[0].dist = delta2 - 1;
 		matches_count = 1;
 	}
 
-	if (delta2 != delta3 && delta3 < mf->cyclic_buffer_size
+	if (delta2 != delta3 && delta3 < mf->cyclic_size
 			&& *(cur - delta3) == *cur) {
 		len_best = 3;
 		matches[matches_count++].dist = delta3 - 1;

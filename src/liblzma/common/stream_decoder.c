@@ -66,9 +66,9 @@ struct lzma_coder_s {
 
 	/// If true, we will decode concatenated Streams that possibly have
 	/// Stream Padding between or after them. LZMA_STREAM_END is returned
-	/// once the application isn't giving us any new input and we aren't
-	/// in the middle of a Stream and possible Stream Padding is a
-	/// multiple of four bytes. FIXME
+	/// once the application isn't giving us any new input, and we aren't
+	/// in the middle of a Stream, and possible Stream Padding is a
+	/// multiple of four bytes.
 	bool concatenated;
 
 	/// When decoding concatenated Streams, this is true as long as we
@@ -152,9 +152,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		if (coder->tell_check)
 			return LZMA_SEE_CHECK;
-
-		break;
 	}
+
+	// Fall through
 
 	case SEQ_BLOCK_HEADER: {
 		if (*in_pos >= in_size)
@@ -225,8 +225,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return ret;
 
 		coder->sequence = SEQ_BLOCK;
-		break;
 	}
+
+	// Fall through
 
 	case SEQ_BLOCK: {
 		const lzma_ret ret = coder->block_decoder.code(
@@ -263,8 +264,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return ret;
 
 		coder->sequence = SEQ_STREAM_FOOTER;
-		break;
 	}
+
+	// Fall through
 
 	case SEQ_STREAM_FOOTER:
 		// Copy the Stream Footer to the internal buffer.
@@ -277,11 +279,15 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		coder->pos = 0;
 
-		// Decode the Stream Footer.
-		// FIXME LZMA_FORMAT_ERROR doesn't make sense here.
+		// Decode the Stream Footer. The decoder gives
+		// LZMA_FORMAT_ERROR if the magic bytes don't match,
+		// so convert that return code to LZMA_DATA_ERROR.
 		lzma_stream_flags footer_flags;
-		return_if_error(lzma_stream_footer_decode(
-				&footer_flags, coder->buffer));
+		const lzma_ret ret = lzma_stream_footer_decode(
+				&footer_flags, coder->buffer);
+		if (ret != LZMA_OK)
+			return ret == LZMA_FORMAT_ERROR
+					? LZMA_DATA_ERROR : ret;
 
 		// Check that Index Size stored in the Stream Footer matches
 		// the real size of the Index field.
@@ -299,11 +305,13 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return LZMA_STREAM_END;
 
 		coder->sequence = SEQ_STREAM_PADDING;
-		break;
+
+	// Fall through
 
 	case SEQ_STREAM_PADDING:
 		assert(coder->concatenated);
 
+		// Skip over possible Stream Padding.
 		while (true) {
 			if (*in_pos >= in_size) {
 				// Unless LZMA_FINISH was used, we cannot
@@ -318,24 +326,24 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 						: LZMA_DATA_ERROR;
 			}
 
-			if (in[*in_pos] != 0x00) {
-				if (coder->pos != 0) {
-					// Stream Padding is not a multiple of
-					// four bytes.
-					++*in_pos;
-					return LZMA_DATA_ERROR;
-				}
-
-				// Prepare to decode the next Stream.
-				return_if_error(stream_decoder_reset(
-						coder, allocator));
+			// If the byte is not zero, it probably indicates
+			// beginning of a new Stream (or the file is corrupt).
+			if (in[*in_pos] != 0x00)
 				break;
-			}
 
 			++*in_pos;
 			coder->pos = (coder->pos + 1) & 3;
 		}
 
+		// Stream Padding must be a multiple of four bytes (empty
+		// Stream Padding is OK).
+		if (coder->pos != 0) {
+			++*in_pos;
+			return LZMA_DATA_ERROR;
+		}
+
+		// Prepare to decode the next Stream.
+		return_if_error(stream_decoder_reset(coder, allocator));
 		break;
 
 	default:
@@ -404,7 +412,6 @@ lzma_stream_decoder(lzma_stream *strm, uint64_t memlimit, uint32_t flags)
 	lzma_next_strm_init(lzma_stream_decoder_init, strm, memlimit, flags);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-// 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true; // FIXME
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;

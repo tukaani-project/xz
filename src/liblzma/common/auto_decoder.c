@@ -22,10 +22,17 @@
 
 
 struct lzma_coder_s {
+	/// Stream decoder or LZMA_Alone decoder
 	lzma_next_coder next;
+
 	uint64_t memlimit;
 	uint32_t flags;
-	bool initialized;
+
+	enum {
+		SEQ_INIT,
+		SEQ_CODE,
+		SEQ_FINISH,
+	} sequence;
 };
 
 
@@ -35,28 +42,67 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	if (!coder->initialized) {
+	switch (coder->sequence) {
+	case SEQ_INIT:
 		if (*in_pos >= in_size)
 			return LZMA_OK;
 
-		lzma_ret ret;
+		// Update the sequence now, because we want to continue from
+		// SEQ_CODE even if we return some LZMA_*_CHECK.
+		coder->sequence = SEQ_CODE;
 
-		if (in[*in_pos] == 0xFF)
-			ret = lzma_stream_decoder_init(
+		// Detect the file format. For now this is simple, since if
+		// it doesn't start with 0xFF (the first magic byte of the
+		// new format), it has to be LZMA_Alone, or something that
+		// we don't support at all.
+		if (in[*in_pos] == 0xFF) {
+			return_if_error(lzma_stream_decoder_init(
 					&coder->next, allocator,
-					coder->memlimit, coder->flags);
-		else
-			ret = lzma_alone_decoder_init(&coder->next,
-					allocator, coder->memlimit);
+					coder->memlimit, coder->flags));
+		} else {
+			return_if_error(lzma_alone_decoder_init(&coder->next,
+					allocator, coder->memlimit));
 
-		if (ret != LZMA_OK)
+			// If the application wants a warning about missing
+			// integrity check or about the check in general, we
+			// need to handle it here, because LZMA_Alone decoder
+			// doesn't accept any flags.
+			if (coder->flags & LZMA_WARN_NO_CHECK)
+				return LZMA_NO_CHECK;
+
+			if (coder->flags & LZMA_TELL_CHECK)
+				return LZMA_SEE_CHECK;
+		}
+
+	// Fall through
+
+	case SEQ_CODE: {
+		const lzma_ret ret = coder->next.code(
+				coder->next.coder, allocator,
+				in, in_pos, in_size,
+				out, out_pos, out_size, action);
+		if (ret != LZMA_STREAM_END
+				|| (coder->flags & LZMA_CONCATENATED) == 0)
 			return ret;
 
-		coder->initialized = true;
+		coder->sequence = SEQ_FINISH;
+
+	// Fall through
+
+	case SEQ_FINISH:
+		// When LZMA_DECODE_CONCATENATED was used and we were decoding
+		// LZMA_Alone file, we need to check check that there is no
+		// trailing garbage and wait for LZMA_FINISH.
+		if (*in_pos < in_size)
+			return LZMA_DATA_ERROR;
+
+		return action == LZMA_FINISH ? LZMA_STREAM_END : LZMA_OK;
 	}
 
-	return coder->next.code(coder->next.coder, allocator,
-			in, in_pos, in_size, out, out_pos, out_size, action);
+	default:
+		assert(0);
+		return LZMA_PROG_ERROR;
+	}
 }
 
 
@@ -66,6 +112,15 @@ auto_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder, allocator);
 	return;
+}
+
+
+static lzma_check
+auto_decoder_see_check(const lzma_coder *coder)
+{
+	// It is LZMA_Alone if see_check is NULL.
+	return coder->next.see_check == NULL ? LZMA_CHECK_NONE
+			: coder->next.see_check(coder->next.coder);
 }
 
 
@@ -85,12 +140,13 @@ auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &auto_decode;
 		next->end = &auto_decoder_end;
+		next->see_check = &auto_decoder_see_check;
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
 	next->coder->memlimit = memlimit;
 	next->coder->flags = flags;
-	next->coder->initialized = false;
+	next->coder->sequence = SEQ_INIT;
 
 	return LZMA_OK;
 }
@@ -102,7 +158,6 @@ lzma_auto_decoder(lzma_stream *strm, uint64_t memlimit, uint32_t flags)
 	lzma_next_strm_init(auto_decoder_init, strm, memlimit, flags);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-// 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true; FIXME
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;

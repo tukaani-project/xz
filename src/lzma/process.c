@@ -194,6 +194,7 @@ single(thread_data *t)
 	uint8_t in_buf[BUFSIZ];
 	uint8_t out_buf[BUFSIZ];
 	lzma_action action = LZMA_RUN;
+	lzma_ret ret;
 	bool success = false;
 
 	t->strm.avail_in = 0;
@@ -212,7 +213,7 @@ single(thread_data *t)
 				action = LZMA_FINISH;
 		}
 
-		const lzma_ret ret = lzma_code(&t->strm, action);
+		ret = lzma_code(&t->strm, action);
 
 		if ((t->strm.avail_out == 0 || ret != LZMA_OK)
 				&& opt_mode != MODE_TEST) {
@@ -225,17 +226,21 @@ single(thread_data *t)
 		}
 
 		if (ret != LZMA_OK) {
-			if (ret == LZMA_STREAM_END) {
-				// FIXME !!! This doesn't work when decoding
-				// LZMA_Alone files, because LZMA_Alone decoder
-				// doesn't wait for LZMA_FINISH.
-				assert(t->pair->src_eof);
-				success = true;
-			} else {
+			// Check that there is no trailing garbage. This is
+			// needed for LZMA_Alone and raw streams.
+			if (ret == LZMA_STREAM_END && (t->strm.avail_in != 0
+					|| (!t->pair->src_eof && io_read(
+						t->pair, in_buf, 1) != 0)))
+				ret = LZMA_DATA_ERROR;
+
+			if (ret != LZMA_STREAM_END) {
 				errmsg(V_ERROR, "%s: %s", t->pair->src_name,
 						str_strm_error(ret));
+				break;
 			}
 
+			assert(t->pair->src_eof);
+			success = true;
 			break;
 		}
 	}

@@ -86,6 +86,7 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return ret;
 
 		coder->sequence = SEQ_FINISH;
+	}
 
 	// Fall through
 
@@ -97,7 +98,6 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return LZMA_DATA_ERROR;
 
 		return action == LZMA_FINISH ? LZMA_STREAM_END : LZMA_OK;
-	}
 
 	default:
 		assert(0);

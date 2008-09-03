@@ -43,10 +43,11 @@ The .lzma File Format
            5.1. Alignment
            5.2. Security
            5.3. Filters
-                5.3.1. LZMA2
-                5.3.2. Branch/Call/Jump Filters for Executables
-                5.3.3. Delta
-                       5.3.3.1. Format of the Encoded Output
+                5.3.1. LZMA
+                5.3.2. LZMA2
+                5.3.3. Branch/Call/Jump Filters for Executables
+                5.3.4. Delta
+                       5.3.4.1. Format of the Encoded Output
            5.4. Custom Filter IDs
                 5.4.1. Reserved Custom Filter ID Ranges
         6. Cyclic Redundancy Checks
@@ -85,7 +86,7 @@ The .lzma File Format
 
 0.2. Changes
 
-        Last modified: 2008-06-17 14:10+0300
+        Last modified: 2008-09-03 14:10+0300
 
         (A changelog will be kept once the first official version
         is made.)
@@ -530,6 +531,10 @@ The .lzma File Format
         officially defined Filter IDs and the formats of their Filter
         Properties are described in Section 5.3.
 
+        Filter IDs greater than or equal to 0x4000_0000_0000_0000
+        (2^62) are reserved for implementation-specific internal use.
+        These Filter IDs must never be used in List of Filter Flags.
+
 
 3.1.6. Header Padding
 
@@ -765,20 +770,15 @@ The .lzma File Format
 
 5.3. Filters
 
-5.3.1. LZMA2
+5.3.1. LZMA
 
         LZMA (Lempel-Ziv-Markov chain-Algorithm) is a general-purporse
         compression algorithm with high compression ratio and fast
         decompression. LZMA is based on LZ77 and range coding
         algorithms.
 
-        LZMA2 uses LZMA internally, but adds support for uncompressed
-        chunks, eases stateful decoder implementations, and improves
-        support for multithreading. Thus, the plain LZMA will not be
-        supported in this file format.
-
-            Filter ID:                  0x21
-            Size of Filter Properties:  1 byte
+            Filter ID:                  0x40
+            Size of Filter Properties:  5 bytes
             Changes size of data:       Yes
             Allow as a non-last filter: No
             Allow as the last filter:   Yes
@@ -792,6 +792,66 @@ The .lzma File Format
         documentation gets written, it will probably be published as
         a separate document, because including the documentation here
         would lengthen this document considerably.
+
+        The format of the Filter Properties field is as follows:
+
+            +-----------------+----+----+----+----+
+            | LZMA Properties |  Dictionary Size  |
+            +-----------------+----+----+----+----+
+
+        The LZMA Properties field contains three properties. An
+        abbreviation is given in parentheses, followed by the value
+        range of the property. The field consists of
+
+            1) the number of literal context bits (lc, [0, 4]);
+            2) the number of literal position bits (lp, [0, 4]); and
+            3) the number of position bits (pb, [0, 4]).
+
+        In addition to above ranges, the sum of lc and lp must not
+        exceed four. Note that this limit didn't exist in the old
+        LZMA_Alone format, which allowed lc to be in the range [0, 8].
+
+        The properties are encoded using the following formula:
+
+            LZMA Properties = (pb * 5 + lp) * 9 + lc
+
+        The following C code illustrates a straightforward way to
+        decode the properties:
+
+            uint8_t lc, lp, pb;
+            uint8_t prop = get_lzma_properties();
+            if (prop > (4 * 5 + 4) * 9 + 8)
+                return LZMA_PROPERTIES_ERROR;
+
+            pb = prop / (9 * 5);
+            prop -= pb * 9 * 5;
+            lp = prop / 9;
+            lc = prop - lp * 9;
+
+            if (lc + lp > 4)
+                return LZMA_PROPERTIES_ERROR;
+
+        Dictionary Size is encoded as unsigned 32-bit little endian
+        integer.
+
+
+5.3.2. LZMA2
+
+        LZMA2 is an extensions on top of the original LZMA. LZMA2 uses
+        LZMA internally, but adds support for flushing the encoder,
+        uncompressed chunks, eases stateful decoder implementations,
+        and improves support for multithreading. For most uses, it is
+        recommended to use LZMA2 instead of LZMA.
+
+            Filter ID:                  0x21
+            Size of Filter Properties:  1 byte
+            Changes size of data:       Yes
+            Allow as a non-last filter: No
+            Allow as the last filter:   Yes
+
+            Preferred alignment:
+                Input data:             Adjustable to 1/2/4/8/16 byte(s)
+                Output data:            1 byte
 
         The format of the one-byte Filter Properties field is as
         follows:
@@ -818,7 +878,7 @@ The .lzma File Format
                37           3         29      1536 MiB
                38           2         30      2048 MiB
                39           3         30      3072 MiB
-               40           2         31      4096 MiB
+               40           2         31      4096 MiB - 1 B
 
         Instead of having a table in the decoder, the dictionary size
         can be decoded using the following C code:
@@ -827,11 +887,16 @@ The .lzma File Format
             if (bits > 40)
                 return DICTIONARY_TOO_BIG; // Bigger than 4 GiB
 
-            uint32_t dictionary_size = 2 | (bits & 1);
-            dictionary_size <<= bits / 2 + 11;
+            uint32_t dictionary_size;
+            if (bits == 40) {
+                dictionary_size = UINT32_MAX;
+            } else {
+                dictionary_size = 2 | (bits & 1);
+                dictionary_size <<= bits / 2 + 11;
+            }
 
 
-5.3.2. Branch/Call/Jump Filters for Executables
+5.3.3. Branch/Call/Jump Filters for Executables
 
         These filters convert relative branch, call, and jump
         instructions to their absolute counterparts in executable
@@ -871,7 +936,7 @@ The .lzma File Format
         the Subblock filter.
 
 
-5.3.3. Delta
+5.3.4. Delta
 
         The Delta filter may increase compression ratio when the value
         of the next byte correlates with the value of an earlier byte
@@ -892,7 +957,7 @@ The .lzma File Format
         distance of 1 byte and 0xFF distance of 256 bytes.
 
 
-5.3.3.1. Format of the Encoded Output
+5.3.4.1. Format of the Encoded Output
 
         The code below illustrates both encoding and decoding with
         the Delta filter.
@@ -944,7 +1009,7 @@ The .lzma File Format
             Bits    Mask                    Description
              0-15   0x0000_0000_0000_FFFF   Filter ID
             16-55   0x00FF_FFFF_FFFF_0000   Developer ID
-            56-62   0x7F00_0000_0000_0000   Static prefix: 0x7F
+            56-62   0x3F00_0000_0000_0000   Static prefix: 0x3F
 
         The resulting 63-bit integer will use 9 bytes of space when
         stored using the encoding described in Section 1.2. To get

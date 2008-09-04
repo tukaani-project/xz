@@ -35,6 +35,7 @@ enum header_type {
 	HEADER_NATIVE,
 	HEADER_ALONE,
 	// HEADER_GZIP,
+	HEADER_RAW,
 };
 
 

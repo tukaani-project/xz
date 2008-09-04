@@ -155,18 +155,44 @@ single_init(thread_data *t)
 	lzma_ret ret;
 
 	if (opt_mode == MODE_COMPRESS) {
-		if (opt_header == HEADER_ALONE) {
-			ret = lzma_alone_encoder(&t->strm,
-					opt_filters[0].options);
-		} else {
+		switch (opt_header) {
+		case HEADER_AUTO:
+		case HEADER_NATIVE:
 			ret = lzma_stream_encoder(&t->strm,
 					opt_filters, opt_check);
+			break;
+
+		case HEADER_ALONE:
+			ret = lzma_alone_encoder(&t->strm,
+					opt_filters[0].options);
+			break;
+
+		case HEADER_RAW:
+			ret = lzma_raw_encoder(&t->strm, opt_filters);
+			break;
 		}
 	} else {
-		// TODO Restrict file format if requested on the command line.
-		ret = lzma_auto_decoder(&t->strm, opt_memory,
-				LZMA_WARN_UNSUPPORTED_CHECK
-					| LZMA_CONCATENATED);
+		const uint32_t flags = LZMA_WARN_UNSUPPORTED_CHECK
+				| LZMA_CONCATENATED;
+
+		switch (opt_header) {
+		case HEADER_AUTO:
+			ret = lzma_auto_decoder(&t->strm, opt_memory, flags);
+			break;
+
+		case HEADER_NATIVE:
+			ret = lzma_stream_decoder(&t->strm, opt_memory, flags);
+			break;
+
+		case HEADER_ALONE:
+			ret = lzma_alone_decoder(&t->strm, opt_memory);
+			break;
+
+		case HEADER_RAW:
+			// Memory usage has already been checked in args.c.
+			ret = lzma_raw_decoder(&t->strm, opt_filters);
+			break;
+		}
 	}
 
 	if (ret != LZMA_OK) {

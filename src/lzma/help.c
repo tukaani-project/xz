@@ -57,7 +57,7 @@ show_help(void)
 "  -c, --stdout        write to standard output and don't delete input files\n"
 "  -S, --suffix=.SUF   use suffix `.SUF' on compressed files instead of `.lzma'\n"
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      `auto', `native', `single', `multi', and `alone'\n"
+"                      `auto' (default), `native', `alone', and `raw'\n"
 "      --files=[FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"
@@ -79,9 +79,9 @@ show_help(void)
 	puts(_(
 " Custom filter chain for compression (alternative for using presets):\n"
 "\n"
-"  --lzma=[OPTS]       LZMA filter; OPTS is a comma-separated list of zero or\n"
-"                      more of the following options (valid values; default):\n"
-"                        dict=NUM   dictionary size in bytes (1 - 1Gi; 8Mi)\n"
+"  --lzma1=[OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
+"  --lzma2=[OPTS]      more of the following options (valid values; default):\n"
+"                        dict=NUM   dictionary size in bytes (1 - 1GiB; 8MiB)\n"
 "                        lc=NUM     number of literal context bits (0-8; 3)\n"
 "                        lp=NUM     number of literal position bits (0-4; 0)\n"
 "                        pb=NUM     number of position bits (0-4; 2)\n"
@@ -107,18 +107,6 @@ show_help(void)
 "                                    (1 - 256Mi; 4Ki)\n"
 "                        rle=NUM     run-length encoder chunk size (0-256; 0)\n"
 ));
-
-/*
-These aren't implemented yet.
-
-	puts(_(
-" Metadata options:\n"
-"\n"
-"  -N, --name          save or restore the original filename and time stamp\n"
-"  -n, --no-name       do not save or restore filename and time stamp (default)\n"
-"  -S, --sign=KEY      sign the data with GnuPG when compressing, or verify\n"
-"                      the signature when decompressing\n"));
-*/
 
 	puts(_(
 " Resource usage options:\n"
@@ -166,8 +154,8 @@ show_version(void)
 	printf(
 "lzma (LZMA Utils) " PACKAGE_VERSION "\n"
 "\n"
-"Copyright (C) 1999-2006 Igor Pavlov\n"
-"Copyright (C) 2007 Lasse Collin\n"
+"Copyright (C) 1999-2008 Igor Pavlov\n"
+"Copyright (C) 2007-2008 Lasse Collin\n"
 "\n"
 "This program is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"

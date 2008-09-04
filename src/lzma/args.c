@@ -60,7 +60,7 @@ enum {
 	OPT_ARMTHUMB,
 	OPT_SPARC,
 	OPT_DELTA,
-	OPT_LZMA,
+	OPT_LZMA1,
 	OPT_LZMA2,
 
 	OPT_FILES,
@@ -108,7 +108,7 @@ static const struct option long_opts[] = {
 	{ "armthumb",           no_argument,       NULL,   OPT_ARMTHUMB },
 	{ "sparc",              no_argument,       NULL,   OPT_SPARC },
 	{ "delta",              optional_argument, NULL,   OPT_DELTA },
-	{ "lzma",               optional_argument, NULL,   OPT_LZMA },
+	{ "lzma1",              optional_argument, NULL,   OPT_LZMA1 },
 	{ "lzma2",              optional_argument, NULL,   OPT_LZMA2 },
 
 	// Other
@@ -300,7 +300,7 @@ parse_real(int argc, char **argv)
 			add_filter(LZMA_FILTER_DELTA, optarg);
 			break;
 
-		case OPT_LZMA:
+		case OPT_LZMA1:
 			add_filter(LZMA_FILTER_LZMA, optarg);
 			break;
 
@@ -316,7 +316,8 @@ parse_real(int argc, char **argv)
 				"auto",
 				"native",
 				"alone",
-// 				"gzip",
+				// "gzip",
+				"raw",
 				NULL
 			};
 
@@ -471,10 +472,10 @@ set_compression_settings(void)
 		my_exit(ERROR);
 	}
 
-	uint64_t memory_usage = lzma_memusage_encoder(opt_filters);
-			/* opt_mode == MODE_COMPRESS
+	// If using --format=raw, we can be decoding.
+	uint64_t memory_usage = opt_mode == MODE_COMPRESS
 			? lzma_memusage_encoder(opt_filters)
-			: lzma_memusage_decoder(opt_filters); */
+			: lzma_memusage_decoder(opt_filters);
 
 	// Don't go over the memory limits when the default
 	// setting is used.
@@ -546,7 +547,7 @@ parse_args(int argc, char **argv)
 		opt_stdout = true;
 	}
 
-	if (opt_mode == MODE_COMPRESS)
+	if (opt_mode == MODE_COMPRESS || opt_header == HEADER_RAW)
 		set_compression_settings();
 
 	// If no filenames are given, use stdin.

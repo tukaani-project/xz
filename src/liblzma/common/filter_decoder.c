@@ -203,7 +203,7 @@ lzma_raw_decoder(lzma_stream *strm, const lzma_filter *options)
 	lzma_next_strm_init(lzma_raw_decoder_init, strm, options);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
+	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;
 }

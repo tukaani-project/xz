@@ -227,7 +227,7 @@ lzma_block_decoder(lzma_stream *strm, lzma_block *options)
 	lzma_next_strm_init(lzma_block_decoder_init, strm, options);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
+	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;
 }

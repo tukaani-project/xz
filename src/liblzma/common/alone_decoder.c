@@ -213,7 +213,6 @@ lzma_alone_decoder(lzma_stream *strm, uint64_t memlimit)
 	lzma_next_strm_init(lzma_alone_decoder_init, strm, memlimit);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
-// 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true; FIXME
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;

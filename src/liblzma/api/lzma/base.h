@@ -34,27 +34,192 @@ typedef unsigned char lzma_bool;
 
 
 /**
+ * \brief       Type of reserved enumeration variable in structures
+ *
+ * To avoid breaking library ABI when new features are added, several
+ * structures contain extra variables that may be used in future. Since
+ * sizeof(enum) can be different than sizeof(int), and sizeof(enum) may
+ * even vary depending on the range of enumeration constants, we specify
+ * a separate type to be used for reserved enumeration variables. All
+ * enumeration constants in liblzma API will be non-negative and less
+ * than 128, which should guarantee that the ABI won't break even when
+ * new constants are added to existing enumerations.
+ */
+typedef enum {
+	LZMA_RESERVED_ENUM      = 0
+} lzma_reserved_enum;
+
+
+/**
  * \brief       Return values used by several functions in liblzma
  *
  * Check the descriptions of specific functions to find out which return
- * values they can return and the exact meanings of the values in every
- * situation. The descriptions given here are only suggestive.
+ * values they can return. With some functions the return values may have
+ * more specific meanings than described here; those differences are
+ * described per-function basis.
  */
 typedef enum {
-	LZMA_OK                 =  0,
+	LZMA_OK                 = 0,
 		/**<
 		 * \brief       Operation completed successfully
 		 */
 
-	LZMA_STREAM_END         =  1,
+	LZMA_STREAM_END         = 1,
 		/**<
 		 * \brief       End of stream was reached
 		 *
-		 * The application should pick the last remaining output
-		 * bytes from strm->next_out.
+		 * In encoder, LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, or
+		 * LZMA_FINISH was finished. In decoder, this indicates
+		 * that all the data was successfully decoded.
+		 *
+		 * In all cases, when LZMA_STREAM_END is returned, the last
+		 * output bytes should be picked from strm->next_out.
 		 */
 
-	LZMA_PROG_ERROR       = -2,
+	LZMA_NO_CHECK           = 2,
+		/**<
+		 * \brief       Input stream has no integrity check
+		 *
+		 * This return value can be returned only if the
+		 * LZMA_TELL_NO_CHECK flag was used when initializing
+		 * the decoder. LZMA_NO_CHECK is just a warning, and
+		 * the decoding can be continued normally.
+		 *
+		 * It is possible to call lzma_get_check() immediatelly after
+		 * lzma_code has returned LZMA_NO_CHECK. The result will
+		 * naturally be LZMA_CHECK_NONE, but the possibility to call
+		 * lzma_get_check() may be convenient in some applications.
+		 */
+
+	LZMA_UNSUPPORTED_CHECK  = 3,
+		/**<
+		 * \brief       Cannot calculate the integrity check
+		 *
+		 * The usage of this return value is slightly different in
+		 * encoders and decoders.
+		 *
+		 * Encoders can return this value only from the initialization
+		 * function. If initialization fails with this value, the
+		 * encoding cannot be done, because there's no way to produce
+		 * output with the correct integrity check.
+		 *
+		 * Decoders can return this value only from the lzma_code
+		 * function and only if the LZMA_TELL_UNSUPPORTED_CHECK flag
+		 * was used when initializing the decoder. The decoding can
+		 * still be continued normally even if the check type is
+		 * unsupported, but naturally the check will not be validated,
+		 * and possible errors may go undetected.
+		 *
+		 * With decoder, it is possible to call lzma_get_check()
+		 * immediatelly after lzma_code has returned
+		 * LZMA_UNSUPPORTED_CHECK. This way it is possible to find
+		 * out what the unsupported Check ID was.
+		 */
+
+	LZMA_GET_CHECK          = 4,
+		/**<
+		 * \brief       Integrity check type is now available
+		 *
+		 * This value can be returned only by the lzma_code() function
+		 * and only if the decoder was initialized with the
+		 * LZMA_TELL_ANY_CHECK flag. LZMA_GET_CHECK tells the
+		 * application that it may now call lzma_get_check() to find
+		 * out the Check ID. This can be used, for example, to
+		 * implement a decoder that accepts only files that have
+		 * strong enough integrity check.
+		 */
+
+	LZMA_MEM_ERROR          = 5,
+		/**<
+		 * \brief       Cannot allocate memory
+		 *
+		 * Memory allocation failed, or the size of the allocation
+		 * would be greater than SIZE_MAX.
+		 *
+		 * Due to lazy coding, the coding cannot be continued even
+		 * if more memory were made available after LZMA_MEM_ERROR.
+		 */
+
+	LZMA_MEMLIMIT_ERROR     = 6,
+		/**
+		 * \brief       Memory usage limit was reached
+		 *
+		 * Decoder would need more memory than allowed by the
+		 * specified memory usage limit. To continue decoding,
+		 * the memory usage limit has to be increased. See functions
+		 * lzma_memlimit_get() and lzma_memlimit_set().
+		 */
+
+	LZMA_FORMAT_ERROR       = 7,
+		/**<
+		 * \brief       Unknown file format
+		 *
+		 * The decoder did not recognize the input as supported file
+		 * format. This error can occur, for example, when trying to
+		 * decode LZMA_Alone format file with lzma_stream_decoder,
+		 * because lzma_stream_decoder accepts only the new .lzma
+		 * format.
+		 */
+
+	LZMA_HEADER_ERROR       = 8,
+		/**<
+		 * \brief       Invalid or unsupported options
+		 *
+		 * Invalid or unsupported options, for example
+		 *  - unsupported filter(s) or filter options; or
+		 *  - reserved bits set in headers (decoder only).
+		 *
+		 * Rebuilding liblzma with more features enabled, or
+		 * upgrading to a newer version of liblzma may help.
+		 */
+
+	LZMA_DATA_ERROR         = 9,
+		/**<
+		 * \brief       Data is corrupt
+		 *
+		 * The usage of this return value is different in encoders
+		 * and decoders. In both encoder and decoder, the coding
+		 * cannot continue after this error.
+		 *
+		 * Encoders return this if size limits of the target file
+		 * format would be exceeded. These limits are huge, thus
+		 * getting this error from an encoder is mostly theoretical.
+		 * For example, the maximum compressed and uncompressed
+		 * size of a Stream created with lzma_stream_encoder is
+		 * 2^63 - 1 bytes (one byte less than 8 EiB).
+		 *
+		 * Decoders return this error if the input data is corrupt.
+		 * This can mean, for example, invalid CRC32 in headers
+		 * or invalid check of uncompressed data.
+		 */
+
+	LZMA_BUF_ERROR          = 10,
+		/**<
+		 * \brief       No progress is possible
+		 *
+		 * This error code is returned when the coder cannot consume
+		 * any new input and produce any new output. The most common
+		 * reason for this error is that the input stream being
+		 * decoded is truncated or corrupt.
+		 *
+		 * This error is not fatal. Coding can be continued normally
+		 * by providing more input and/or more output space, if
+		 * possible.
+		 *
+		 * Typically the first call to lzma_code() that can do no
+		 * progress returns LZMA_OK instead of LZMA_BUF_ERROR. Only
+		 * the second consecutive call doing no progress will return
+		 * LZMA_BUF_ERROR. This is by design.
+		 *
+		 * With zlib, Z_BUF_ERROR may be returned even if the
+		 * application is doing nothing wrong. The above hack
+		 * guarantees that liblzma never returns LZMA_BUF_ERROR
+		 * to properly written applications unless the input file
+		 * is truncated or corrupt. This should simplify the
+		 * applications a little.
+		 */
+
+	LZMA_PROG_ERROR         = 11,
 		/**<
 		 * \brief       Programming error
 		 *
@@ -73,79 +238,6 @@ typedef enum {
 		 * can be a sign of a bug in liblzma. See the documentation
 		 * how to report bugs.
 		 */
-
-	LZMA_DATA_ERROR         = -3,
-		/**<
-		 * \brief       Data is corrupt
-		 *
-		 * - Encoder: The input size doesn't match the uncompressed
-		 *   size given to lzma_*_encoder_init().
-		 * - Decoder: The input is corrupt. This includes corrupted
-		 *   header, corrupted compressed data, and unmatching
-		 *   integrity Check.
-		 *
-		 * \todo        What can be done if encoder returns this?
-		 *              Probably can continue by fixing the input
-		 *              amount, but make sure.
-		 */
-
-	LZMA_MEM_ERROR          = -4,
-		/**<
-		 * \brief       Cannot allocate memory
-		 *
-		 * Memory allocation failed.
-		 */
-
-	LZMA_BUF_ERROR          = -5,
-		/**<
-		 * \brief       No progress is possible
-		 *
-		 * This may happen when avail_in or avail_out is zero.
-		 *
-		 * \note        This error is not fatal. Coding can continue
-		 *              normally once the reason for this error has
-		 *              been fixed.
-		 */
-
-	LZMA_HEADER_ERROR       = -6,
-		/**<
-		 * \brief       Invalid or unsupported header
-		 *
-		 * Invalid or unsupported options, for example
-		 *  - unsupported filter(s) or filter options; or
-		 *  - reserved bits set in headers (decoder only).
-		 *
-		 * Rebuilding liblzma with more features enabled, or
-		 * upgrading to a newer version of liblzma may help.
-		 */
-
-	LZMA_UNSUPPORTED_CHECK  = -7,
-		/**<
-		 * \brief       Check type is unknown
-		 *
-		 * The type of Check is not supported, and thus the Check
-		 * cannot be calculated. In the encoder, this is an error.
-		 * In the decoder, this is only a warning and decoding can
-		 * still proceed normally (but the Check is ignored).
-		 */
-
-	LZMA_FORMAT_ERROR        = -8,
-		/**<
-		 * \brief       Unknown file format
-		 */
-
-	LZMA_MEMLIMIT_ERROR     = -9,
-		/**
-		 * \brief       Memory usage limit was reached
-		 *
-		 * Decoder would need more memory than allowed by the
-		 * specified memory usage limit. To continue decoding,
-		 * the memory usage limit has to be increased. See functions
-		 * lzma_memlimit_get() and lzma_memlimit_set().
-		 */
-
-	LZMA_NO_CHECK = -10,
-	LZMA_SEE_CHECK = -11
 } lzma_ret;
 
 
@@ -176,17 +268,11 @@ typedef enum {
 		 * LZMA_STREAM_END. Then continue encoding normally.
 		 *
 		 * \note        Synchronous flushing is supported only by
-		 *              some filters. Some filters support it only
-		 *              partially.
+		 *              some filters. Using LZMA_SYNC_FLUSH with
+		 *              which such filters will make lzma_code()
+		 *              return LZMA_HEADER_ERROR.
 		 *
-		 * Decoder: Asks the decoder to decode only as much as is
-		 * needed to fill next_out. This decreases latency with some
-		 * filters, but is likely to decrease also throughput. It is
-		 * a good idea to use this flag only when it is likely that
-		 * you don't need more output soon.
-		 *
-		 * \note        With decoder, this is not comparable to
-		 *              zlib's Z_SYNC_FLUSH.
+		 * Decoders don't support LZMA_SYNC_FLUSH.
 		 */
 
 	LZMA_FULL_FLUSH = 2,
@@ -198,19 +284,25 @@ typedef enum {
 		 * it returns LZMA_STREAM_END. Then continue normally with
 		 * LZMA_RUN or finish the Stream with LZMA_FINISH.
 		 *
-		 * This action is supported only by Multi-Block Stream
-		 * encoder. If there is no unfinished Data Block, no empty
-		 * Data Block is created.
+		 * This action is supported only by Stream encoder and easy
+		 * encoder (which uses Stream encoder). If there is no
+		 * unfinished Block, no empty Block is created.
 		 */
 
 	LZMA_FINISH = 3
 		/**<
-		 * Finishes the encoding operation. All the input data must
+		 * Finishes the coding operation. All the input data must
 		 * have been given to the encoder (the last bytes can still
 		 * be pending in next_in). Call lzma_code() with LZMA_FINISH
-		 * until it returns LZMA_STREAM_END.
+		 * until it returns LZMA_STREAM_END. Once LZMA_FINISH has
+		 * been used, the amount of input must no longer be changed
+		 * by the application.
 		 *
-		 * This action is not supported by decoders.
+		 * When decoding, using LZMA_FINISH is optional unless the
+		 * LZMA_CONCATENATED flag was used when the decoder was
+		 * initialized. When LZMA_CONCATENATED was not used, the only
+		 * effect of LZMA_FINISH is that the amount of input must not
+		 * be changed just like in the encoder.
 		 */
 } lzma_action;
 
@@ -219,8 +311,10 @@ typedef enum {
  * \brief       Custom functions for memory handling
  *
  * A pointer to lzma_allocator may be passed via lzma_stream structure
- * to liblzma. The library will use these functions for memory handling
- * instead of the default malloc() and free().
+ * to liblzma, and some advanced function take pointer lzma_allocator as
+ * a separate function argument. The library will use the functions
+ * specified in lzma_allocator for memory handling instead of the default
+ * malloc() and free().
  *
  * liblzma doesn't make an internal copy of lzma_allocator. Thus, it is
  * OK to change these function pointers in the middle of the coding
@@ -255,6 +349,12 @@ typedef struct {
 	 * necessarily allocate the requested memory until it is actually
 	 * used. With small input files liblzma may actually need only a
 	 * fraction of the memory that it requested for allocation.
+	 *
+	 * \note        LZMA_MEM_ERROR is also used when the size of the
+	 *              allocation would be greater than SIZE_MAX. Thus,
+	 *              don't assume that the custom allocator must have
+	 *              returned NULL if some function from liblzma
+	 *              returns LZMA_MEM_ERROR.
 	 */
 	void *(*alloc)(void *opaque, size_t nmemb, size_t size);
 
@@ -266,9 +366,8 @@ typedef struct {
 	 * will use the standard free().
 	 *
 	 * \param       opaque  lzma_allocator.opaque (see below)
-	 * \param       ptr     Pointer returned by
-	 *                      lzma_allocator.alloc(), or when it
-	 *                      is set to NULL, a pointer returned
+	 * \param       ptr     Pointer returned by lzma_allocator.alloc(),
+	 *                      or when it is set to NULL, a pointer returned
 	 *                      by the standard malloc().
 	 */
 	void (*free)(void *opaque, void *ptr);
@@ -280,7 +379,7 @@ typedef struct {
 	 * and lzma_allocator.free(). This intended to ease implementing
 	 * custom memory allocation functions for use with liblzma.
 	 *
-	 * If you don't need this, you should set it to NULL.
+	 * If you don't need this, you should set this to NULL.
 	 */
 	void *opaque;
 
@@ -302,6 +401,13 @@ typedef struct lzma_internal_s lzma_internal;
  *   - passing pointers to input and output buffers to liblzma;
  *   - defining custom memory hander functions; and
  *   - holding a pointer to coder-specific internal data structures.
+ *
+ * When a new lzma_stream structure is allocated (either as automatic variable
+ * on stack or dynamically with malloc()), the new lzma_stream structure must
+ * be initialized to LZMA_STREAM_INIT.
+ *
+ * Before initializing a coder (for example, with lzma_stream_decoder()),
+ *
  *
  * Before calling any of the lzma_*_init() functions the first time,
  * the application must reset lzma_stream to LZMA_STREAM_INIT. The
@@ -341,7 +447,7 @@ typedef struct {
 	 */
 	lzma_allocator *allocator;
 
-	/** Internal state is not visible to outsiders. */
+	/** Internal state is not visible to applications. */
 	lzma_internal *internal;
 
 	/**
@@ -354,6 +460,8 @@ typedef struct {
 	void *reserved_ptr2;
 	uint64_t reserved_int1;
 	uint64_t reserved_int2;
+	lzma_reserved_enum reserved_enum1;
+	lzma_reserved_enum reserved_enum2;
 
 } lzma_stream;
 
@@ -367,51 +475,31 @@ typedef struct {
  *
  *     lzma_stream strm = LZMA_STREAM_INIT;
  *
- * If you need to initialize a dynamically allocatedlzma_stream, you can use
+ * If you need to initialize a dynamically allocated lzma_stream, you can use
  * memset(strm_pointer, 0, sizeof(lzma_stream)). Strictly speaking, this
  * violates the C standard since NULL may have different internal
  * representation than zero, but it should be portable enough in practice.
- * Anyway, for maximum portability, you could use this:
+ * Anyway, for maximum portability, you can use something like this:
  *
  *     lzma_stream tmp = LZMA_STREAM_INIT;
  *     *strm = tmp;
  */
 #define LZMA_STREAM_INIT \
-	{ NULL, 0, 0, NULL, 0, 0, NULL, NULL, NULL, NULL, 0, 0 }
+	{ NULL, 0, 0, NULL, 0, 0, NULL, NULL, NULL, NULL, 0, 0, 0, 0 }
 
 
 /**
  * \brief       Encodes or decodes data
  *
  * Once the lzma_stream has been successfully initialized (e.g. with
- * lzma_stream_encoder_single()), the actual encoding or decoding is
- * done using this function.
+ * lzma_stream_encoder()), the actual encoding or decoding is done
+ * using this function. The application has to update strm->next_in,
+ * strm->avail_in, strm->next_out, and strm->avail_out to pass input
+ * to and get output from liblzma.
  *
- * \return      Some coders may have more exact meaning for different return
- *              values, which are mentioned separately in the description of
- *              the initialization functions. Here are the typical meanings:
- *              - LZMA_OK: So far all good.
- *              - LZMA_STREAM_END:
- *                  - Encoder: LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, or
- *                    LZMA_FINISH completed.
- *                  - Decoder: End of uncompressed data was reached.
- *              - LZMA_BUF_ERROR: Unable to progress. Provide more input or
- *                output space, and call this function again. This cannot
- *                occur if both avail_in and avail_out were non-zero (or
- *                there's a bug in liblzma).
- *              - LZMA_MEM_ERROR: Unable to allocate memory. Due to lazy
- *                programming, the coding cannot continue even if the
- *                application could free more memory. The next call must
- *                be lzma_end() or some initialization function.
- *              - LZMA_DATA_ERROR:
- *                  - Encoder: Filter(s) cannot process the given data.
- *                  - Decoder: Compressed data is corrupt.
- *              - LZMA_HEADER_ERROR: Unsupported options. Rebuilding liblzma
- *                with more features enabled or upgrading to a newer version
- *                may help, although usually this is a sign of invalid options
- *                (encoder) or corrupted input data (decoder).
- *              - LZMA_PROG_ERROR: Invalid arguments or the internal state
- *                of the coder is corrupt.
+ * See the description of the coder-specific initialization function to find
+ * out what `action' values are supported by the coder. See documentation of
+ * lzma_ret for the possible return values.
  */
 extern lzma_ret lzma_code(lzma_stream *strm, lzma_action action)
 		lzma_attr_warn_unused_result;

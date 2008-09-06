@@ -97,9 +97,7 @@ help(void)
 "  -M, --memory=NUM   use NUM bytes of memory at maximum; the suffixes\n"
 "                     k, M, G, Ki, Mi, and Gi are supported.\n"
 "      --format=FMT   accept only files in the given file format;\n"
-"                     possible FMTs are `auto', `native', `single',\n"
-"                     `multi', and `alone', of which `single' and `multi'\n"
-"                     are aliases for `native'\n"
+"                     possible FMTs are `auto', `native', and alone',\n"
 "  -h, --help         display this help and exit\n"
 "  -V, --version      display version and license information and exit\n"
 "\n"
@@ -302,7 +300,7 @@ parse_options(int argc, char **argv)
 static void
 init(void)
 {
-	const uint32_t flags = LZMA_WARN_UNSUPPORTED_CHECK | LZMA_CONCATENATED;
+	const uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK | LZMA_CONCATENATED;
 	lzma_ret ret;
 
 	switch (format_type) {

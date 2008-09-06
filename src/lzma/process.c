@@ -172,7 +172,7 @@ single_init(thread_data *t)
 			break;
 		}
 	} else {
-		const uint32_t flags = LZMA_WARN_UNSUPPORTED_CHECK
+		const uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK
 				| LZMA_CONCATENATED;
 
 		switch (opt_header) {

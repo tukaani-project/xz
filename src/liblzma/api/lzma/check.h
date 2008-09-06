@@ -137,3 +137,13 @@ extern uint64_t lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
  * SHA256 functions are currently not exported to public API.
  * Contact the author if you think it should be.
  */
+
+
+/**
+ * \brief       Get the type of the integrity check
+ *
+ * This function can be called only immediatelly after lzma_code() has
+ * returned LZMA_NO_CHECK, LZMA_UNSUPPORTED_CHECK, or LZMA_GET_CHECK.
+ * Calling this function in any other situation has undefined behavior.
+ */
+extern lzma_check lzma_get_check(const lzma_stream *strm);

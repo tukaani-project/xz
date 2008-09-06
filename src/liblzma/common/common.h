@@ -60,10 +60,10 @@
 /// Supported flags that can be passed to lzma_stream_decoder()
 /// or lzma_auto_decoder().
 #define LZMA_SUPPORTED_FLAGS \
-	(LZMA_WARN_NO_CHECK \
-	| LZMA_WARN_UNSUPPORTED_CHECK \
-	| LZMA_TELL_CHECK \
-	| LZMA_CONCATENATED)
+	( LZMA_TELL_NO_CHECK \
+	| LZMA_TELL_UNSUPPORTED_CHECK \
+	| LZMA_TELL_ANY_CHECK \
+	| LZMA_CONCATENATED )
 
 
 ///////////
@@ -134,10 +134,11 @@ struct lzma_next_coder_s {
 
 	/// Pointer to function to return the type of the integrity check.
 	/// Most coders won't support this.
-	lzma_check (*see_check)(const lzma_coder *coder);
+	lzma_check (*get_check)(const lzma_coder *coder);
 
-// 	uint64_t (*memconfig)(
-// 			lzma_coder *coder, uint64_t memlimit, bool change);
+	/// Pointer to function to get and/or change the memory usage limit.
+	/// If memlimit == 0, the limit is not changed.
+	uint64_t (*memconfig)(lzma_coder *coder, uint64_t memlimit);
 };
 
 
@@ -148,7 +149,8 @@ struct lzma_next_coder_s {
 		.init = (uintptr_t)(NULL), \
 		.code = NULL, \
 		.end = NULL, \
-		.see_check = NULL, \
+		.get_check = NULL, \
+		.memconfig = NULL, \
 	}
 
 

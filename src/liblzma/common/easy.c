@@ -113,7 +113,7 @@ lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
 }
 
 
-extern LZMA_API uint32_t
+extern LZMA_API uint64_t
 lzma_easy_memory_usage(lzma_easy_level level)
 {
 	lzma_filter filters[5];

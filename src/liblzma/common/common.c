@@ -296,3 +296,10 @@ lzma_end(lzma_stream *strm)
 
 	return;
 }
+
+
+extern LZMA_API lzma_check
+lzma_get_check(const lzma_stream *strm)
+{
+	return strm->internal->next.get_check(strm->internal->next.coder);
+}

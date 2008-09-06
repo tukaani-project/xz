@@ -55,14 +55,14 @@ struct lzma_coder_s {
 
 	/// If true, LZMA_NO_CHECK is returned if the Stream has
 	/// no integrity check.
-	bool warn_no_check;
+	bool tell_no_check;
 
 	/// If true, LZMA_UNSUPPORTED_CHECK is returned if the Stream has
 	/// an integrity check that isn't supported by this liblzma build.
-	bool warn_unsupported_check;
+	bool tell_unsupported_check;
 
-	/// If true, LZMA_SEE_CHECK is returned after decoding Stream Header.
-	bool tell_check;
+	/// If true, LZMA_GET_CHECK is returned after decoding Stream Header.
+	bool tell_any_check;
 
 	/// If true, we will decode concatenated Streams that possibly have
 	/// Stream Padding between or after them. LZMA_STREAM_END is returned
@@ -141,17 +141,17 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Detect if there's no integrity check or if it is
 		// unsupported if those were requested by the application.
-		if (coder->warn_no_check && coder->stream_flags.check
+		if (coder->tell_no_check && coder->stream_flags.check
 				== LZMA_CHECK_NONE)
 			return LZMA_NO_CHECK;
 
-		if (coder->warn_unsupported_check
+		if (coder->tell_unsupported_check
 				&& !lzma_check_is_supported(
 					coder->stream_flags.check))
 			return LZMA_UNSUPPORTED_CHECK;
 
-		if (coder->tell_check)
-			return LZMA_SEE_CHECK;
+		if (coder->tell_any_check)
+			return LZMA_GET_CHECK;
 	}
 
 	// Fall through
@@ -366,7 +366,7 @@ stream_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_check
-stream_decoder_see_check(const lzma_coder *coder)
+stream_decoder_get_check(const lzma_coder *coder)
 {
 	return coder->stream_flags.check;
 }
@@ -388,19 +388,18 @@ lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &stream_decode;
 		next->end = &stream_decoder_end;
-		next->see_check = &stream_decoder_see_check;
+		next->get_check = &stream_decoder_get_check;
 
 		next->coder->block_decoder = LZMA_NEXT_CODER_INIT;
 		next->coder->index_hash = NULL;
 	}
 
 	next->coder->memlimit = memlimit;
-	next->coder->warn_no_check = (flags & LZMA_WARN_NO_CHECK) != 0;
-	next->coder->warn_unsupported_check
-			= (flags & LZMA_WARN_UNSUPPORTED_CHECK) != 0;
-	next->coder->tell_check = (flags & LZMA_TELL_CHECK) != 0;
-	next->coder->concatenated
-			= (flags & LZMA_CONCATENATED) != 0;
+	next->coder->tell_no_check = (flags & LZMA_TELL_NO_CHECK) != 0;
+	next->coder->tell_unsupported_check
+			= (flags & LZMA_TELL_UNSUPPORTED_CHECK) != 0;
+	next->coder->tell_any_check = (flags & LZMA_TELL_ANY_CHECK) != 0;
+	next->coder->concatenated = (flags & LZMA_CONCATENATED) != 0;
 
 	return stream_decoder_reset(next->coder, allocator);
 }

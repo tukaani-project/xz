@@ -63,15 +63,15 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return_if_error(lzma_alone_decoder_init(&coder->next,
 					allocator, coder->memlimit));
 
-			// If the application wants a warning about missing
+			// If the application wants to know about missing
 			// integrity check or about the check in general, we
 			// need to handle it here, because LZMA_Alone decoder
 			// doesn't accept any flags.
-			if (coder->flags & LZMA_WARN_NO_CHECK)
+			if (coder->flags & LZMA_TELL_NO_CHECK)
 				return LZMA_NO_CHECK;
 
-			if (coder->flags & LZMA_TELL_CHECK)
-				return LZMA_SEE_CHECK;
+			if (coder->flags & LZMA_TELL_ANY_CHECK)
+				return LZMA_GET_CHECK;
 		}
 
 	// Fall through
@@ -116,11 +116,11 @@ auto_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_check
-auto_decoder_see_check(const lzma_coder *coder)
+auto_decoder_get_check(const lzma_coder *coder)
 {
-	// It is LZMA_Alone if see_check is NULL.
-	return coder->next.see_check == NULL ? LZMA_CHECK_NONE
-			: coder->next.see_check(coder->next.coder);
+	// It is LZMA_Alone if get_check is NULL.
+	return coder->next.get_check == NULL ? LZMA_CHECK_NONE
+			: coder->next.get_check(coder->next.coder);
 }
 
 
@@ -140,7 +140,7 @@ auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &auto_decode;
 		next->end = &auto_decoder_end;
-		next->see_check = &auto_decoder_see_check;
+		next->get_check = &auto_decoder_get_check;
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 

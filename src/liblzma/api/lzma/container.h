@@ -94,7 +94,7 @@ typedef enum {
  *              On error (e.g. compression level is not supported),
  *              UINT32_MAX is returned.
  */
-extern uint32_t lzma_easy_memory_usage(lzma_easy_level level)
+extern uint64_t lzma_easy_memory_usage(lzma_easy_level level)
 		lzma_attr_pure;
 
 
@@ -177,10 +177,10 @@ extern lzma_ret lzma_alone_encoder(
 /**
  * This flag makes lzma_code() return LZMA_NO_CHECK if the input stream
  * being decoded has no integrity check. Note that when used with
- * lzma_auto_decoder(), all LZMA_Alone files will cause trigger LZMA_NO_CHECK
- * if LZMA_WARN_NO_CHECK is used.
+ * lzma_auto_decoder(), all LZMA_Alone files will trigger LZMA_NO_CHECK
+ * if LZMA_TELL_NO_CHECK is used.
  */
-#define LZMA_WARN_NO_CHECK              UINT32_C(0x01)
+#define LZMA_TELL_NO_CHECK              UINT32_C(0x01)
 
 
 /**
@@ -189,20 +189,30 @@ extern lzma_ret lzma_alone_encoder(
  * supported by this liblzma version or build. Such files can still be
  * decoded, but the integrity check cannot be verified.
  */
-#define LZMA_WARN_UNSUPPORTED_CHECK     UINT32_C(0x02)
+#define LZMA_TELL_UNSUPPORTED_CHECK     UINT32_C(0x02)
 
 
 /**
- * This flag makes lzma_code() return LZMA_READ_CHECK as soon as the type
- * of the integrity check is known. The type can then be read with
- * lzma_check_get().
+ * This flag makes lzma_code() return LZMA_GET_CHECK as soon as the type
+ * of the integrity check is known. The type can then be got with
+ * lzma_get_check().
  */
-#define LZMA_TELL_CHECK                 UINT32_C(0x04)
+#define LZMA_TELL_ANY_CHECK             UINT32_C(0x04)
 
 
 /**
- * This flag makes lzma_code() decode concatenated .lzma files.
- * FIXME Explain the changed API.
+ * This flag enables decoding of concatenated files with file formats that
+ * allow concatenating compressed files as is. From the formats currently
+ * supported by liblzma, only the new .lzma format allows concatenated files.
+ * Concatenated files are not allowed with the LZMA_Alone format.
+ *
+ * This flag also affects the usage of the `action' argument for lzma_code().
+ * When LZMA_CONCATENATED is used, lzma_code() won't return LZMA_STREAM_END
+ * unless LZMA_FINISH is used as `action'. Thus, the application has to set
+ * LZMA_FINISH in the same way as it does when encoding.
+ *
+ * If LZMA_CONCATENATED is not used, the decoders still accept LZMA_FINISH
+ * as `action' for lzma_code(), but the usage of LZMA_FINISH isn't required.
  */
 #define LZMA_CONCATENATED               UINT32_C(0x08)
 
@@ -210,11 +220,12 @@ extern lzma_ret lzma_alone_encoder(
 /**
  * \brief       Initializes decoder for .lzma Stream
  *
- * \param       strm        Pointer to propertily prepared lzma_stream
+ * \param       strm        Pointer to properly prepared lzma_stream
  * \param       memlimit    Rough memory usage limit as bytes
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
+ *              - LZMA_HEADER_ERROR: Unsupported flags
  */
 extern lzma_ret lzma_stream_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)
@@ -225,8 +236,8 @@ extern lzma_ret lzma_stream_decoder(
  * \brief       Decode .lzma Streams and LZMA_Alone files with autodetection
  *
  * Autodetects between the .lzma Stream and LZMA_Alone formats, and
- * calls lzma_stream_decoder_init() or lzma_alone_decoder_init() once
- * the type of the file has been detected.
+ * calls lzma_stream_decoder() or lzma_alone_decoder() once the type
+ * of the file has been detected.
  *
  * \param       strm        Pointer to propertily prepared lzma_stream
  * \param       memlimit    Rough memory usage limit as bytes
@@ -234,6 +245,7 @@ extern lzma_ret lzma_stream_decoder(
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
+ *              - LZMA_HEADER_ERROR: Unsupported flags
  */
 extern lzma_ret lzma_auto_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)

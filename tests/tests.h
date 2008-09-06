@@ -38,59 +38,25 @@
 static inline const char *
 lzma_ret_sym(lzma_ret ret)
 {
-	const char *str = "";
+	if ((unsigned)(ret) > LZMA_PROG_ERROR)
+		return "UNKNOWN_ERROR";
 
-	switch (ret) {
-	case LZMA_OK:
-		str = "LZMA_OK";
-		break;
+	static const char *msgs[] = {
+		"LZMA_OK",
+		"LZMA_STREAM_END",
+		"LZMA_NO_CHECK",
+		"LZMA_UNSUPPORTED_CHECK",
+		"LZMA_GET_CHECK",
+		"LZMA_MEM_ERROR",
+		"LZMA_MEMLIMIT_ERROR",
+		"LZMA_FORMAT_ERROR",
+		"LZMA_HEADER_ERROR",
+		"LZMA_DATA_ERROR",
+		"LZMA_BUF_ERROR",
+		"LZMA_PROG_ERROR"
+	};
 
-	case LZMA_STREAM_END:
-		str = "LZMA_STREAM_END";
-		break;
-
-	case LZMA_PROG_ERROR:
-		str = "LZMA_PROG_ERROR";
-		break;
-
-	case LZMA_DATA_ERROR:
-		str = "LZMA_DATA_ERROR";
-		break;
-
-	case LZMA_MEM_ERROR:
-		str = "LZMA_MEM_ERROR";
-		break;
-
-	case LZMA_BUF_ERROR:
-		str = "LZMA_BUF_ERROR";
-		break;
-
-	case LZMA_HEADER_ERROR:
-		str = "LZMA_HEADER_ERROR";
-		break;
-
-	case LZMA_NO_CHECK:
-		str = "LZMA_NO_CHECK";
-		break;
-
-	case LZMA_UNSUPPORTED_CHECK:
-		str = "LZMA_UNSUPPORTED_CHECK";
-		break;
-
-	case LZMA_SEE_CHECK:
-		str = "LZMA_SEE_CHECK";
-		break;
-
-	case LZMA_FORMAT_ERROR:
-		str = "LZMA_FORMAT_ERROR";
-		break;
-
-	case LZMA_MEMLIMIT_ERROR:
-		str = "LZMA_MEMLIMIT_ERROR";
-		break;
-	}
-
-	return str;
+	return msgs[ret];
 }
 
 

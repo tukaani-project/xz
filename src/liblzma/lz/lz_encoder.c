@@ -143,8 +143,7 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 		coder->mf.read_pos -= pending;
 
 		// Call the skip function directly instead of using
-		// lz_dict_skip(), since we don't want to touch
-		// mf->read_ahead.
+		// mf_skip(), since we don't want to touch mf->read_ahead.
 		coder->mf.skip(&coder->mf, pending);
 	}
 

@@ -95,12 +95,12 @@ struct lzma_mf_s {
 	//////////////////
 
 	/// Find matches. Returns the number of distance-length pairs written
-	/// to the matches array. This is called only via lzma_mf_find.
+	/// to the matches array. This is called only via lzma_mf_find().
 	uint32_t (*find)(lzma_mf *mf, lzma_match *matches);
 
 	/// Skips num bytes. This is like find() but doesn't make the
 	/// distance-length pairs available, thus being a little faster.
-	/// This is called only via mf_skip function.
+	/// This is called only via mf_skip().
 	void (*skip)(lzma_mf *mf, uint32_t num);
 
 	uint32_t *hash;
@@ -117,7 +117,7 @@ struct lzma_mf_s {
 
 	/// Maximum length of a match supported by the LZ-based encoder.
 	/// If the longest match found by the match finder is find_len_max,
-	/// lz_dict_find() tries to expand it up to match_len_max bytes.
+	/// mf_find() tries to expand it up to match_len_max bytes.
 	uint32_t match_len_max;
 
 	/// When running out of input, binary tree match finders need to know
@@ -177,10 +177,10 @@ typedef struct {
 // also take longer.
 //
 // A single encoder loop in the LZ-based encoder may call the match finder
-// (lz_dict_find() or lz_dict_skip()) at maximum of after_size times.
-// In other words, a single encoder loop may advance lz_dict.read_pos at
+// (mf_find() or mf_skip()) at maximum of after_size times.
+// In other words, a single encoder loop may advance lzma_mf.read_pos at
 // maximum of after_size times. Since matches are looked up to
-// lz_dict.buffer[lz_dict.read_pos + match_len_max - 1], the total
+// lzma_mf.buffer[lzma_mf.read_pos + match_len_max - 1], the total
 // amount of extra buffer needed after dictionary_size becomes
 // after_size + match_len_max.
 //

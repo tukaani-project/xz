@@ -244,7 +244,7 @@ do { \
 ///
 /// \param      len_limit       Don't look for matches longer than len_limit.
 /// \param      pos             lzma_mf.read_pos + lzma_mf.offset
-/// \param      cur             Pointer to current byte (lzma_dict_ptr(mf))
+/// \param      cur             Pointer to current byte (mf_ptr(mf))
 /// \param      cur_match       Start position of the current match candidate
 /// \param      loops           Maximum length of the hash chain
 /// \param      son             lzma_mf.son (contains the hash chain)

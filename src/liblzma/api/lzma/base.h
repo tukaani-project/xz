@@ -243,10 +243,19 @@ typedef enum {
 
 /**
  * \brief       The `action' argument for lzma_code()
+ *
+ * After the first use of LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, or LZMA_FINISH,
+ * the same `action' must is used until lzma_code() returns LZMA_STREAM_END.
+ * Also, the amount of input (that is, strm->avail_in) must not be modified
+ * by the application until lzma_code() returns LZMA_STREAM_END. Changing the
+ * `action' or modifying the amount of input will make lzma_code() return
+ * LZMA_PROG_ERROR.
  */
 typedef enum {
 	LZMA_RUN = 0,
 		/**<
+		 * \brief       Continue coding
+		 *
 		 * Encoder: Encode as much input as possible. Some internal
 		 * buffering will probably be done (depends on the filter
 		 * chain in use), which causes latency: the input used won't
@@ -262,21 +271,37 @@ typedef enum {
 
 	LZMA_SYNC_FLUSH = 1,
 		/**<
-		 * Encoder: Makes all the data given to liblzma via next_in
-		 * available in next_out without resetting the filters. Call
-		 * lzma_code() with LZMA_SYNC_FLUSH until it returns
-		 * LZMA_STREAM_END. Then continue encoding normally.
+		 * \brief       Make all the input available at output
 		 *
-		 * \note        Synchronous flushing is supported only by
-		 *              some filters. Using LZMA_SYNC_FLUSH with
-		 *              which such filters will make lzma_code()
-		 *              return LZMA_HEADER_ERROR.
+		 * Normally the encoder introduces some latency.
+		 * LZMA_SYNC_FLUSH forces all the buffered data to be
+		 * available at output without resetting the internal
+		 * state of the encoder. This way it is possible to use
+		 * compressed stream for example for communication over
+		 * network.
+		 *
+		 * Only some filters support LZMA_SYNC_FLUSH. Trying to use
+		 * LZMA_SYNC_FLUSH with filters that don't support it will
+		 * make lzma_code() return LZMA_HEADER_ERROR. For example,
+		 * LZMA1 doesn't support LZMA_SYNC_FLUSH but LZMA2 does.
+		 *
+		 * Using LZMA_SYNC_FLUSH very often can dramatically reduce
+		 * the compression ratio. With some filters (for example,
+		 * LZMA2), finetuning the compression options may help
+		 * mitigate this problem significantly.
 		 *
 		 * Decoders don't support LZMA_SYNC_FLUSH.
 		 */
 
 	LZMA_FULL_FLUSH = 2,
 		/**<
+		 * \brief       Make all the input available at output
+		 *
+		 * This is like LZMA_SYNC_FLUSH except that this resets the
+		 * internal encoder state.
+		 *
+		 *
+		 *
 		 * Finishes encoding of the current Data Block. All the input
 		 * data going to the current Data Block must have been given
 		 * to the encoder (the last bytes can still be pending in
@@ -291,6 +316,11 @@ typedef enum {
 
 	LZMA_FINISH = 3
 		/**<
+		 * \brief       Finish the coding operation
+		 *
+		 *
+		 *
+		 *
 		 * Finishes the coding operation. All the input data must
 		 * have been given to the encoder (the last bytes can still
 		 * be pending in next_in). Call lzma_code() with LZMA_FINISH
@@ -402,35 +432,30 @@ typedef struct lzma_internal_s lzma_internal;
  *   - defining custom memory hander functions; and
  *   - holding a pointer to coder-specific internal data structures.
  *
- * When a new lzma_stream structure is allocated (either as automatic variable
- * on stack or dynamically with malloc()), the new lzma_stream structure must
- * be initialized to LZMA_STREAM_INIT.
+ * The typical usage
  *
- * Before initializing a coder (for example, with lzma_stream_decoder()),
+ *  - After allocating lzma_stream (on stack or with malloc()), it must be
+ *    initialized to LZMA_STREAM_INIT (see LZMA_STREAM_INIT for details).
  *
+ *  - Initialize a coder to the lzma_stream, for example by using
+ *    lzma_easy_encoder() or lzma_auto_decoder(). In contrast to zlib,
+ *    strm->next_in and strm->next_out are ignored by all initialization
+ *    functions, thus it is safe to not initialize them yet. The
+ *    initialization functions always set strm->total_in and strm->total_out
+ *    to zero.
  *
- * Before calling any of the lzma_*_init() functions the first time,
- * the application must reset lzma_stream to LZMA_STREAM_INIT. The
- * lzma_*_init() function will verify the options, allocate internal
- * data structures and store pointer to them into `internal'. Finally
- * total_in and total_out are reset to zero. In contrast to zlib,
- * next_in and avail_in are ignored by the initialization functions.
+ *  - Use lzma_code() to do the actual work.
  *
- * The actual coding is done with the lzma_code() function. Application
- * must update next_in, avail_in, next_out, and avail_out between
- * calls to lzma_decode() just like with zlib.
+ *  - Once the coding has been finished, the existing lzma_stream can be
+ *    reused. It is OK to reuse lzma_stream with different initialization
+ *    function without calling lzma_end() first. Old allocations are
+ *    automatically freed.
  *
- * In contrast to zlib, even the decoder requires that there always
- * is at least one byte space in next_out; if avail_out == 0,
- * LZMA_BUF_ERROR is returned immediatelly. This shouldn't be a problem
- * for most applications that already use zlib, but it's still worth
- * checking your application.
+ *  - Finally, use lzma_end() to free the allocated memory.
  *
  * Application may modify values of total_in and total_out as it wants.
  * They are updated by liblzma to match the amount of data read and
  * written, but liblzma doesn't use the values internally.
- *
- * Application must not touch the `internal' pointer.
  */
 typedef struct {
 	const uint8_t *next_in; /**< Pointer to the next input byte. */

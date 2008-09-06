@@ -1,5 +1,5 @@
 /**
- * \file        lzma/FIXME.h
+ * \file        lzma/container.h
  * \brief       File formats
  *
  * \author      Copyright (C) 1999-2008 Igor Pavlov
@@ -255,7 +255,9 @@ extern lzma_ret lzma_auto_decoder(
 /**
  * \brief       Initializes decoder for LZMA_Alone file
  *
- * The LZMA_Alone decoder supports LZMA_SYNC_FLUSH. FIXME
+ * Valid `action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
+ * There is no need to use LZMA_FINISH, but allowing it may simplify
+ * certain types of applications.
  *
  * \return      - LZMA_OK
  *              - LZMA_MEM_ERROR

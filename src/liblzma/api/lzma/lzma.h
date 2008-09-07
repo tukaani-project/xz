@@ -26,7 +26,7 @@
  *
  * Filter ID of the LZMA filter. This is used as lzma_filter.id.
  */
-#define LZMA_FILTER_LZMA        LZMA_VLI_C(0x40)
+#define LZMA_FILTER_LZMA        LZMA_VLI_C(0x20)
 
 #define LZMA_FILTER_LZMA2       LZMA_VLI_C(0x21)
 

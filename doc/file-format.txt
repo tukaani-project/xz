@@ -86,7 +86,7 @@ The .lzma File Format
 
 0.2. Changes
 
-        Last modified: 2008-09-03 14:10+0300
+        Last modified: 2008-09-07 10:20+0300
 
         (A changelog will be kept once the first official version
         is made.)
@@ -777,7 +777,7 @@ The .lzma File Format
         decompression. LZMA is based on LZ77 and range coding
         algorithms.
 
-            Filter ID:                  0x40
+            Filter ID:                  0x20
             Size of Filter Properties:  5 bytes
             Changes size of data:       Yes
             Allow as a non-last filter: No

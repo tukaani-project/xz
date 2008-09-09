@@ -28,7 +28,6 @@ libcommon_la_SOURCES = \
 	common.h \
 	bsr.h \
 	block_util.c \
-	block_private.h \
 	filter_common.c \
 	filter_common.h \
 	index.c \

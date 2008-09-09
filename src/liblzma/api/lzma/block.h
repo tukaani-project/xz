@@ -38,7 +38,6 @@ typedef struct {
 	 * Read by:
 	 *  - lzma_block_header_encode()
 	 *  - lzma_block_header_decode()
-	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:
@@ -74,7 +73,6 @@ typedef struct {
 	 * Read by:
 	 *  - lzma_block_header_size()
 	 *  - lzma_block_header_encode()
-	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:
@@ -103,7 +101,6 @@ typedef struct {
 	 * Read by:
 	 *  - lzma_block_header_size()
 	 *  - lzma_block_header_encode()
-	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *
 	 * Written by:

@@ -18,7 +18,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "block_decoder.h"
-#include "block_private.h"
 #include "filter_decoder.h"
 #include "check.h"
 
@@ -54,6 +53,28 @@ struct lzma_coder_s {
 	/// Check of the uncompressed data
 	lzma_check_state check;
 };
+
+
+static inline bool
+update_size(lzma_vli *size, lzma_vli add, lzma_vli limit)
+{
+	if (limit > LZMA_VLI_VALUE_MAX)
+		limit = LZMA_VLI_VALUE_MAX;
+
+	if (limit < *size || limit - *size < add)
+		return true;
+
+	*size += add;
+
+	return false;
+}
+
+
+static inline bool
+is_size_valid(lzma_vli size, lzma_vli reference)
+{
+	return reference == LZMA_VLI_VALUE_UNKNOWN || reference == size;
+}
 
 
 static lzma_ret

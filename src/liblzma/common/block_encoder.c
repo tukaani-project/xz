@@ -18,9 +18,23 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "block_encoder.h"
-#include "block_private.h"
 #include "filter_encoder.h"
 #include "check.h"
+
+
+/// The maximum size of a single Block is limited by the maximum size of
+/// a Stream, which is 2^63 - 1 bytes (i.e. LZMA_VLI_VALUE_MAX). We could
+/// take into account the headers etc. to determine the exact maximum size
+/// of the Compressed Data field, but the complexity would give us nothing
+/// useful. Instead, limit the size of Compressed Data so that even with
+/// biggest possible Block Header and Check fields the total size of the
+/// Block stays as valid VLI. This way we don't produce incorrect output
+/// if someone will really try creating a Block of 8 EiB.
+///
+/// ~LZMA_VLI_C(3) is to guarantee that if we need padding at the end of
+/// the Compressed Data field, it will still stay in the proper limit.
+#define COMPRESSED_SIZE_MAX ((LZMA_VLI_VALUE_MAX - LZMA_BLOCK_HEADER_SIZE_MAX \
+		- LZMA_CHECK_SIZE_MAX) & ~LZMA_VLI_C(3))
 
 
 struct lzma_coder_s {
@@ -59,26 +73,9 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
 	// Check that our amount of input stays in proper limits.
-	if (coder->options->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN) {
-		if (action == LZMA_FINISH) {
-			if (coder->options->uncompressed_size
-					- coder->uncompressed_size
-					!= (lzma_vli)(in_size - *in_pos))
-				return LZMA_PROG_ERROR;
-		} else {
-			if (coder->options->uncompressed_size
-					- coder->uncompressed_size
-					<  (lzma_vli)(in_size - *in_pos))
-				return LZMA_PROG_ERROR;
-		}
-	} else if (LZMA_VLI_VALUE_MAX - coder->uncompressed_size
-			< (lzma_vli)(in_size - *in_pos)) {
+	if (LZMA_VLI_VALUE_MAX - coder->uncompressed_size < in_size - *in_pos)
 		return LZMA_PROG_ERROR;
-	}
 
-	// Main loop
-	while (*out_pos < out_size
-			&& (*in_pos < in_size || action != LZMA_RUN))
 	switch (coder->sequence) {
 	case SEQ_CODE: {
 		const size_t in_start = *in_pos;
@@ -91,11 +88,10 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 		const size_t in_used = *in_pos - in_start;
 		const size_t out_used = *out_pos - out_start;
 
-		// FIXME We must also check that Total Size doesn't get
-		// too big.
-		if (update_size(&coder->compressed_size, out_used,
-				coder->options->compressed_size))
+		if (COMPRESSED_SIZE_MAX - coder->compressed_size < out_used)
 			return LZMA_DATA_ERROR;
+
+		coder->compressed_size += out_used;
 
 		// No need to check for overflow because we have already
 		// checked it at the beginning of this function.
@@ -108,30 +104,27 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 			return ret;
 
 		assert(*in_pos == in_size);
+		assert(action == LZMA_FINISH);
+
 		coder->sequence = SEQ_PADDING;
-		break;
 	}
+
+	// Fall through
 
 	case SEQ_PADDING:
 		// Pad Compressed Data to a multiple of four bytes.
-		if (coder->compressed_size & 3) {
+		while (coder->compressed_size & 3) {
+			if (*out_pos >= out_size)
+				return LZMA_OK;
+
 			out[*out_pos] = 0x00;
 			++*out_pos;
 
-			if (update_size(&coder->compressed_size, 1,
-					coder->options->compressed_size))
-				return LZMA_DATA_ERROR;
-
-			break;
+			// No need to use check for overflow here since we
+			// have already checked in SEQ_CODE that Compressed
+			// Size will stay in proper limits.
+			++coder->compressed_size;
 		}
-
-		// Compressed and Uncompressed Sizes are now at their final
-		// values. Verify that they match the values given to us.
-		if (!is_size_valid(coder->compressed_size,
-					coder->options->compressed_size)
-				|| !is_size_valid(coder->uncompressed_size,
-					coder->options->uncompressed_size))
-			return LZMA_DATA_ERROR;
 
 		// Copy the values into coder->options. The caller
 		// may use this information to construct Index.
@@ -146,21 +139,24 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 	// Fall through
 
-	case SEQ_CHECK:
-		out[*out_pos] = coder->check.buffer.u8[coder->check_pos];
-		++*out_pos;
+	case SEQ_CHECK: {
+		const uint32_t check_size
+				= lzma_check_size(coder->options->check);
 
-		if (++coder->check_pos
-				== lzma_check_size(coder->options->check))
-			return LZMA_STREAM_END;
+		while (*out_pos < out_size) {
+			out[*out_pos] = coder->check.buffer.u8[
+					coder->check_pos];
+			++*out_pos;
 
-		break;
+			if (++coder->check_pos == check_size)
+				return LZMA_STREAM_END;
+		}
 
-	default:
-		return LZMA_PROG_ERROR;
+		return LZMA_OK;
+	}
 	}
 
-	return LZMA_OK;
+	return LZMA_PROG_ERROR;
 }
 
 

@@ -62,7 +62,11 @@ struct lzma_coder_s {
 static lzma_ret
 block_encoder_init(lzma_coder *coder, lzma_allocator *allocator)
 {
-	// Prepare the Block options.
+	// Prepare the Block options. Even though Block encoder doesn't need
+	// compressed_size, uncompressed_size, and header_size to be
+	// initialized, it is a good idea to do it here, because this way
+	// we catch if someone gave us Filter ID that cannot be used in
+	// Blocks/Streams.
 	coder->block_options.compressed_size = LZMA_VLI_VALUE_UNKNOWN;
 	coder->block_options.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
 

@@ -26,7 +26,7 @@ AC_PREREQ(2.61)
 
 # [LZMA] instead of [LZMA utils] since I prefer to have lzma-version.tar.gz
 # instead of lzma-utils-version.tar.gz.
-AC_INIT([LZMA], [4.999.5alpha], [lasse.collin@tukaani.org])
+AC_INIT([LZMA], [4.999.6alpha], [lasse.collin@tukaani.org])
 
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])

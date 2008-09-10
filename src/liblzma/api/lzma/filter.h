@@ -55,59 +55,55 @@ typedef struct {
 
 
 /**
- * \brief       Filters available for encoding
+ * \brief       Test if the given Filter ID is supported for encoding
  *
- * Pointer to an array containing the list of available Filter IDs that
- * can be used for encoding. The last element is LZMA_VLI_VALUE_UNKNOWN.
+ * Returns true if the give Filter ID  is supported for encoding by this
+ * liblzma build. Otherwise false is returned.
  *
- * If lzma_available_filter_encoders[0] == LZMA_VLI_VALUE_UNKNOWN, the
- * encoder components haven't been built at all. This means that the
- * encoding-specific functions are probably missing from the library
- * API/ABI completely.
+ * There is no way to list which filters are available in this particular
+ * liblzma version and build. It would be useless, because the application
+ * couldn't know what kind of options the filter would need.
  */
-extern const lzma_vli *const lzma_filter_encoders;
+extern lzma_bool lzma_filter_encoder_is_supported(lzma_vli id);
 
 
 /**
- * \brief       Filters available for decoding
+ * \brief       Test if the given Filter ID is supported for decoding
  *
- * Pointer to an array containing the list of available Filter IDs that
- * can be used for decoding. The last element is LZMA_VLI_VALUE_UNKNOWN.
- *
- * If lzma_available_filter_decoders[0] == LZMA_VLI_VALUE_UNKNOWN, the
- * decoder components haven't been built at all. This means that the
- * decoding-specific functions are probably missing from the library
- * API/ABI completely.
+ * Returns true if the give Filter ID  is supported for decoding by this
+ * liblzma build. Otherwise false is returned.
  */
-extern const lzma_vli *const lzma_filter_decoders;
+extern lzma_bool lzma_filter_decoder_is_supported(lzma_vli id);
 
 
 /**
- * \brief       Calculate rough memory requirements for given filter chain
+ * \brief       Calculate rough memory requirements for raw encoder
  *
  * \param       filters     Array of filters terminated with
  *                          .id == LZMA_VLI_VALUE_UNKNOWN.
  *
- * \return      Number of mebibytes (MiB i.e. 2^20) required for the given
- *              encoder or decoder filter chain.
- *
- * \note        If calculating memory requirements of encoder, lzma_init() or
- *              lzma_init_encoder() must have been called earlier. Similarly,
- *              if calculating memory requirements of decoder, lzma_init() or
- *              lzma_init_decoder() must have been called earlier.
+ * \return      Rough number of bytes required for the given filter chain
+ *              when encoding.
  */
-// extern uint32_t lzma_memory_usage(
-// 		const lzma_filter *filters, lzma_bool is_encoder);
-
 extern uint64_t lzma_memusage_encoder(const lzma_filter *filters)
 		lzma_attr_pure;
 
+
+/**
+ * \brief       Calculate rough memory requirements for raw decoder
+ *
+ * \param       filters     Array of filters terminated with
+ *                          .id == LZMA_VLI_VALUE_UNKNOWN.
+ *
+ * \return      Rough number of bytes required for the given filter chain
+ *              when decoding.
+ */
 extern uint64_t lzma_memusage_decoder(const lzma_filter *filters)
 		lzma_attr_pure;
 
 
 /**
- * \brief       Initializes raw encoder
+ * \brief       Initialize raw encoder
  *
  * This function may be useful when implementing custom file formats.
  *
@@ -131,11 +127,12 @@ extern lzma_ret lzma_raw_encoder(
 
 
 /**
- * \brief       Initializes raw decoder
+ * \brief       Initialize raw decoder
  *
  * The initialization of raw decoder goes similarly to raw encoder.
  *
- * The `action' with lzma_code() can be LZMA_RUN or LZMA_SYNC_FLUSH.
+ * The `action' with lzma_code() can be LZMA_RUN or LZMA_FINISH. Using
+ * LZMA_FINISH is not required, it is supported just for convenience.
  *
  * \return      - LZMA_OK
  *              - LZMA_MEM_ERROR
@@ -145,6 +142,80 @@ extern lzma_ret lzma_raw_encoder(
 extern lzma_ret lzma_raw_decoder(
 		lzma_stream *strm, const lzma_filter *options)
 		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Get the size of the Filter Properties field
+ *
+ * This function may be useful when implementing custom file formats
+ * using the raw encoder and decoder.
+ *
+ * \param       size    Pointer to uint32_t to hold the size of the properties
+ * \param       filter  Filter ID and options (the size of the propeties may
+ *                      vary depending on the options)
+ *
+ * \return      - LZMA_OK
+ *              - LZMA_HEADER_ERROR
+ *              - LZMA_PROG_ERROR
+ *
+ * \note        This function validates the Filter ID, but does not
+ *              necessarily validate the options. Thus, it is possible
+ *              that this returns LZMA_OK while the following call to
+ *              lzma_properties_encode() returns LZMA_HEADER_ERROR.
+ */
+extern lzma_ret lzma_properties_size(
+		uint32_t *size, const lzma_filter *filter);
+
+
+/**
+ * \brief       Encode the Filter Properties field
+ *
+ * \param       filter  Filter ID and options
+ * \param       props   Buffer to hold the encoded options. The size of
+ *                      buffer must have been already determined with
+ *                      lzma_properties_size().
+ *
+ * \return      - LZMA_OK
+ *              - LZMA_HEADER_ERROR
+ *              - LZMA_PROG_ERROR
+ *
+ * \note        Even this function won't validate more options than actually
+ *              necessary. Thus, it is possible that encoding the properties
+ *              succeeds but using the same options to initialize the encoder
+ *              will fail.
+ *
+ * \note        It is OK to skip calling this function if
+ *              lzma_properties_size() indicated that the size
+ *              of the Filter Properties field is zero.
+ */
+extern lzma_ret lzma_properties_encode(
+		const lzma_filter *filter, uint8_t *props);
+
+
+/**
+ * \brief       Decode the Filter Properties field
+ *
+ * \param       filter      filter->id must have been set to the correct
+ *                          Filter ID. filter->options doesn't need to be
+ *                          initialized (it's not freed by this function). The
+ *                          decoded options will be stored to filter->options.
+ *                          filter->options is set to NULL if there are no
+ *                          properties or if an error occurs.
+ * \param       allocator   Custom memory allocator used to allocate the
+ *                          options. Set to NULL to use the default malloc(),
+ *                          and in case of an error, also free().
+ * \param       props       Input buffer containing the properties.
+ * \param       props_size  Size of the properties. This must be the exact
+ *                          size; giving too much or too little input will
+ *                          return LZMA_HEADER_ERROR.
+ *
+ * \return      - LZMA_OK
+ *              - LZMA_HEADER_ERROR
+ *              - LZMA_MEM_ERROR
+ */
+extern lzma_ret lzma_properties_decode(
+		lzma_filter *filter, lzma_allocator *allocator,
+		const uint8_t *props, size_t props_size);
 
 
 /**

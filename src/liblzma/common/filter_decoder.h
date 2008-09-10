@@ -22,11 +22,6 @@
 
 #include "common.h"
 
-// FIXME !!! Public API
-extern lzma_ret lzma_properties_decode(
-		lzma_filter *filter, lzma_allocator *allocator,
-		const uint8_t *props, size_t props_size);
-
 
 extern lzma_ret lzma_raw_decoder_init(
 		lzma_next_coder *next, lzma_allocator *allocator,

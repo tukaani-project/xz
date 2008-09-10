@@ -28,6 +28,9 @@
 
 
 typedef struct {
+	/// Filter ID
+	lzma_vli id;
+
 	/// Initializes the filter encoder and calls lzma_next_filter_init()
 	/// for filters + 1.
 	lzma_init_function init;
@@ -47,60 +50,10 @@ typedef struct {
 } lzma_filter_decoder;
 
 
-static const lzma_vli ids[] = {
-#ifdef HAVE_DECODER_LZMA
-	LZMA_FILTER_LZMA,
-#endif
-
-#ifdef HAVE_DECODER_LZMA2
-	LZMA_FILTER_LZMA2,
-#endif
-
-#ifdef HAVE_DECODER_SUBBLOCK
-	LZMA_FILTER_SUBBLOCK,
-	LZMA_FILTER_SUBBLOCK_HELPER,
-#endif
-
-#ifdef HAVE_DECODER_X86
-	LZMA_FILTER_X86,
-#endif
-
-#ifdef HAVE_DECODER_POWERPC
-	LZMA_FILTER_POWERPC,
-#endif
-
-#ifdef HAVE_DECODER_IA64
-	LZMA_FILTER_IA64,
-#endif
-
-#ifdef HAVE_DECODER_ARM
-	LZMA_FILTER_ARM,
-#endif
-
-#ifdef HAVE_DECODER_ARMTHUMB
-	LZMA_FILTER_ARMTHUMB,
-#endif
-
-#ifdef HAVE_DECODER_SPARC
-	LZMA_FILTER_SPARC,
-#endif
-
-#ifdef HAVE_DECODER_DELTA
-	LZMA_FILTER_DELTA,
-#endif
-
-	LZMA_VLI_VALUE_UNKNOWN
-};
-
-
-// Using a pointer to avoid putting the size of the array to API/ABI.
-LZMA_API const lzma_vli *const lzma_filter_decoders = ids;
-
-
-// These must be in the same order as ids[].
-static const lzma_filter_decoder funcs[] = {
+static const lzma_filter_decoder decoders[] = {
 #ifdef HAVE_DECODER_LZMA
 	{
+		.id = LZMA_FILTER_LZMA,
 		.init = &lzma_lzma_decoder_init,
 		.memusage = &lzma_lzma_decoder_memusage,
 		.props_decode = &lzma_lzma_props_decode,
@@ -108,6 +61,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_LZMA2
 	{
+		.id = LZMA_FILTER_LZMA2,
 		.init = &lzma_lzma2_decoder_init,
 		.memusage = &lzma_lzma2_decoder_memusage,
 		.props_decode = &lzma_lzma2_props_decode,
@@ -115,11 +69,13 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_SUBBLOCK
 	{
+		.id = LZMA_FILTER_SUBBLOCK,
 		.init = &lzma_subblock_decoder_init,
 // 		.memusage = &lzma_subblock_decoder_memusage,
 		.props_decode = NULL,
 	},
 	{
+		.id = LZMA_FILTER_SUBBLOCK_HELPER,
 		.init = &lzma_subblock_decoder_helper_init,
 		.memusage = NULL,
 		.props_decode = NULL,
@@ -127,6 +83,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_X86
 	{
+		.id = LZMA_FILTER_X86,
 		.init = &lzma_simple_x86_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_simple_props_decode,
@@ -134,6 +91,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_POWERPC
 	{
+		.id = LZMA_FILTER_POWERPC,
 		.init = &lzma_simple_powerpc_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_simple_props_decode,
@@ -141,6 +99,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_IA64
 	{
+		.id = LZMA_FILTER_IA64,
 		.init = &lzma_simple_ia64_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_simple_props_decode,
@@ -148,6 +107,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_ARM
 	{
+		.id = LZMA_FILTER_ARM,
 		.init = &lzma_simple_arm_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_simple_props_decode,
@@ -155,6 +115,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_ARMTHUMB
 	{
+		.id = LZMA_FILTER_ARMTHUMB,
 		.init = &lzma_simple_armthumb_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_simple_props_decode,
@@ -162,6 +123,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_SPARC
 	{
+		.id = LZMA_FILTER_SPARC,
 		.init = &lzma_simple_sparc_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_simple_props_decode,
@@ -169,6 +131,7 @@ static const lzma_filter_decoder funcs[] = {
 #endif
 #ifdef HAVE_DECODER_DELTA
 	{
+		.id = LZMA_FILTER_DELTA,
 		.init = &lzma_delta_decoder_init,
 		.memusage = NULL,
 		.props_decode = &lzma_delta_props_decode,
@@ -180,11 +143,18 @@ static const lzma_filter_decoder funcs[] = {
 static const lzma_filter_decoder *
 decoder_find(lzma_vli id)
 {
-	for (size_t i = 0; ids[i] != LZMA_VLI_VALUE_UNKNOWN; ++i)
-		if (ids[i] == id)
-			return funcs + i;
+	for (size_t i = 0; i < ARRAY_SIZE(decoders); ++i)
+		if (decoders[i].id == id)
+			return decoders + i;
 
 	return NULL;
+}
+
+
+extern LZMA_API lzma_bool
+lzma_filter_decoder_is_supported(lzma_vli id)
+{
+	return decoder_find(id) != NULL;
 }
 
 

@@ -27,6 +27,9 @@
 
 
 typedef struct {
+	/// Filter ID
+	lzma_vli id;
+
 	/// Initializes the filter encoder and calls lzma_next_filter_init()
 	/// for filters + 1.
 	lzma_init_function init;
@@ -58,59 +61,10 @@ typedef struct {
 } lzma_filter_encoder;
 
 
-static const lzma_vli ids[] = {
-#ifdef HAVE_ENCODER_LZMA
-	LZMA_FILTER_LZMA,
-#endif
-
-#ifdef HAVE_ENCODER_LZMA2
-	LZMA_FILTER_LZMA2,
-#endif
-
-#ifdef HAVE_ENCODER_SUBBLOCK
-	LZMA_FILTER_SUBBLOCK,
-#endif
-
-#ifdef HAVE_ENCODER_X86
-	LZMA_FILTER_X86,
-#endif
-
-#ifdef HAVE_ENCODER_POWERPC
-	LZMA_FILTER_POWERPC,
-#endif
-
-#ifdef HAVE_ENCODER_IA64
-	LZMA_FILTER_IA64,
-#endif
-
-#ifdef HAVE_ENCODER_ARM
-	LZMA_FILTER_ARM,
-#endif
-
-#ifdef HAVE_ENCODER_ARMTHUMB
-	LZMA_FILTER_ARMTHUMB,
-#endif
-
-#ifdef HAVE_ENCODER_SPARC
-	LZMA_FILTER_SPARC,
-#endif
-
-#ifdef HAVE_ENCODER_DELTA
-	LZMA_FILTER_DELTA,
-#endif
-
-	LZMA_VLI_VALUE_UNKNOWN
-};
-
-
-// Using a pointer to avoid putting the size of the array to API/ABI.
-LZMA_API const lzma_vli *const lzma_filter_encoders = ids;
-
-
-// These must be in the same order as ids[].
-static const lzma_filter_encoder funcs[] = {
+static const lzma_filter_encoder encoders[] = {
 #ifdef HAVE_ENCODER_LZMA
 	{
+		.id = LZMA_FILTER_LZMA,
 		.init = &lzma_lzma_encoder_init,
 		.memusage = &lzma_lzma_encoder_memusage,
 		.chunk_size = NULL, // FIXME
@@ -121,6 +75,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_LZMA2
 	{
+		.id = LZMA_FILTER_LZMA2,
 		.init = &lzma_lzma2_encoder_init,
 		.memusage = &lzma_lzma2_encoder_memusage,
 		.chunk_size = NULL, // FIXME
@@ -131,6 +86,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_SUBBLOCK
 	{
+		.id = LZMA_FILTER_SUBBLOCK,
 		.init = &lzma_subblock_encoder_init,
 // 		.memusage = &lzma_subblock_encoder_memusage,
 		.chunk_size = NULL,
@@ -141,6 +97,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_X86
 	{
+		.id = LZMA_FILTER_X86,
 		.init = &lzma_simple_x86_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -150,6 +107,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_POWERPC
 	{
+		.id = LZMA_FILTER_POWERPC,
 		.init = &lzma_simple_powerpc_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -159,6 +117,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_IA64
 	{
+		.id = LZMA_FILTER_IA64,
 		.init = &lzma_simple_ia64_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -168,6 +127,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_ARM
 	{
+		.id = LZMA_FILTER_ARM,
 		.init = &lzma_simple_arm_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -177,6 +137,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_ARMTHUMB
 	{
+		.id = LZMA_FILTER_ARMTHUMB,
 		.init = &lzma_simple_armthumb_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -186,6 +147,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_SPARC
 	{
+		.id = LZMA_FILTER_SPARC,
 		.init = &lzma_simple_sparc_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -195,6 +157,7 @@ static const lzma_filter_encoder funcs[] = {
 #endif
 #ifdef HAVE_ENCODER_DELTA
 	{
+		.id = LZMA_FILTER_DELTA,
 		.init = &lzma_delta_encoder_init,
 		.memusage = NULL,
 		.chunk_size = NULL,
@@ -209,11 +172,18 @@ static const lzma_filter_encoder funcs[] = {
 static const lzma_filter_encoder *
 encoder_find(lzma_vli id)
 {
-	for (size_t i = 0; ids[i] != LZMA_VLI_VALUE_UNKNOWN; ++i)
-		if (ids[i] == id)
-			return funcs + i;
+	for (size_t i = 0; i < ARRAY_SIZE(encoders); ++i)
+		if (encoders[i].id == id)
+			return encoders + i;
 
 	return NULL;
+}
+
+
+extern LZMA_API lzma_bool
+lzma_filter_encoder_is_supported(lzma_vli id)
+{
+	return encoder_find(id) != NULL;
 }
 
 
@@ -251,7 +221,7 @@ lzma_memusage_encoder(const lzma_filter *filters)
 extern LZMA_API lzma_vli
 lzma_chunk_size(const lzma_filter *filters)
 {
-	uint64_t max = 0;
+	lzma_vli max = 0;
 
 	for (size_t i = 0; filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {
 		const lzma_filter_encoder *const fe
@@ -285,7 +255,7 @@ lzma_properties_size(uint32_t *size, const lzma_filter *filter)
 	}
 
 	if (fe->props_size_get == NULL) {
-		// No props_size() function, use props_size_fixed.
+		// No props_size_get() function, use props_size_fixed.
 		*size = fe->props_size_fixed;
 		return LZMA_OK;
 	}

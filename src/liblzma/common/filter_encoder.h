@@ -25,10 +25,6 @@
 
 // FIXME !!! Public API
 extern lzma_vli lzma_chunk_size(const lzma_filter *filters);
-extern lzma_ret lzma_properties_size(
-		uint32_t *size, const lzma_filter *filter);
-extern lzma_ret lzma_properties_encode(
-		const lzma_filter *filter, uint8_t *props);
 
 
 extern lzma_ret lzma_raw_encoder_init(

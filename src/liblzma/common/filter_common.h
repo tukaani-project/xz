@@ -25,6 +25,9 @@
 
 /// Both lzma_filter_encoder and lzma_filter_decoder begin with these members.
 typedef struct {
+	/// Filter ID
+	lzma_vli id;
+
 	/// Initializes the filter encoder and calls lzma_next_filter_init()
 	/// for filters + 1.
 	lzma_init_function init;

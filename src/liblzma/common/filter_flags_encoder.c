@@ -23,10 +23,11 @@
 extern LZMA_API lzma_ret
 lzma_filter_flags_size(uint32_t *size, const lzma_filter *filter)
 {
+	if (filter->id >= LZMA_FILTER_RESERVED_START)
+		return LZMA_PROG_ERROR;
+
 	return_if_error(lzma_properties_size(size, filter));
 
-	// lzma_properties_size() validates the Filter ID as a side-effect,
-	// so we know that it is a valid VLI.
 	*size += lzma_vli_size(filter->id) + lzma_vli_size(*size);
 
 	return LZMA_OK;
@@ -39,7 +40,7 @@ lzma_filter_flags_encode(const lzma_filter *filter,
 {
 	// Filter ID
 	if (filter->id >= LZMA_FILTER_RESERVED_START)
-		return LZMA_HEADER_ERROR;
+		return LZMA_PROG_ERROR;
 
 	return_if_error(lzma_vli_encode(filter->id, NULL,
 			out, out_pos, out_size));

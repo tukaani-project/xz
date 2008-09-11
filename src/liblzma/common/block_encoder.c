@@ -175,11 +175,6 @@ lzma_block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 {
 	lzma_next_coder_init(lzma_block_encoder_init, next, allocator);
 
-	// While lzma_block_total_size_get() is meant to calculate the Total
-	// Size, it also validates the options excluding the filters.
-	if (lzma_block_total_size_get(options) == 0)
-		return LZMA_PROG_ERROR;
-
 	// If the Check ID is not supported, we cannot calculate the check and
 	// thus not create a proper Block.
 	if ((unsigned)(options->check) > LZMA_CHECK_ID_MAX)

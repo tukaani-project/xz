@@ -64,19 +64,15 @@ main(void)
 		.filters = filters,
 	};
 
-	// FIXME Insane paranoia in liblzma.
-	if (lzma_block_header_size(&block) != LZMA_OK)
-		return 1;
-
-	// We don't actually know the compressed size, so don't tell it to
-	// Block encoder.
-	block.compressed_size = LZMA_VLI_VALUE_UNKNOWN;
-
 	lzma_stream strm = LZMA_STREAM_INIT;
 	if (lzma_block_encoder(&strm, &block) != LZMA_OK)
 		return 1;
 
-	// Reserve space for Stream Header and Block Header.
+	// Reserve space for Stream Header and Block Header. We need to
+	// calculate the size of the Block Header first.
+	if (lzma_block_header_size(&block) != LZMA_OK)
+		return 1;
+
 	size_t out_size = LZMA_STREAM_HEADER_SIZE + block.header_size;
 
 	strm.next_in = in;

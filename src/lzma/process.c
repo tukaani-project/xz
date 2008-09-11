@@ -152,7 +152,7 @@ create_thread(void *(*func)(thread_data *t), thread_data *t)
 static int
 single_init(thread_data *t)
 {
-	lzma_ret ret;
+	lzma_ret ret = LZMA_PROG_ERROR;
 
 	if (opt_mode == MODE_COMPRESS) {
 		switch (opt_header) {

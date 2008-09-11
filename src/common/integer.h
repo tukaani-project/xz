@@ -14,22 +14,8 @@
 #ifndef LZMA_INTEGER_H
 #define LZMA_INTEGER_H
 
-// I'm aware of AC_CHECK_ALIGNED_ACCESS_REQUIRED from Autoconf archive, but
-// it's not useful here. We don't care if unaligned access is supported,
-// we care if it is fast. Some systems can emulate unaligned access in
-// software, which is horribly slow; we want to use byte-by-byte access on
-// such systems but the Autoconf test would detect such a system as
-// supporting unaligned access.
-//
-// NOTE: HAVE_FAST_UNALIGNED_ACCESS indicates only support for 16-bit and
-// 32-bit integer loads and stores. 64-bit integers may or may not work.
-// That's why 64-bit functions are commented out.
-#ifdef HAVE_FAST_UNALIGNED_ACCESS
-
-// On big endian, we need byte swapping.
-//
-// TODO: Big endian PowerPC supports byte swapping load and store instructions
-// that also allow unaligned access. Inline assembler could be OK for that.
+// On big endian, we need byte swapping. These macros may be used outside
+// this file, so don't put these inside HAVE_FAST_UNALIGNED_ACCESS.
 #ifdef WORDS_BIGENDIAN
 #	include "bswap.h"
 #	define integer_le_16(n) bswap_16(n)
@@ -41,6 +27,24 @@
 #	define integer_le_64(n) (n)
 #endif
 
+
+// I'm aware of AC_CHECK_ALIGNED_ACCESS_REQUIRED from Autoconf archive, but
+// it's not useful here. We don't care if unaligned access is supported,
+// we care if it is fast. Some systems can emulate unaligned access in
+// software, which is horribly slow; we want to use byte-by-byte access on
+// such systems but the Autoconf test would detect such a system as
+// supporting unaligned access.
+//
+// NOTE: HAVE_FAST_UNALIGNED_ACCESS indicates only support for 16-bit and
+// 32-bit integer loads and stores. 64-bit integers may or may not work.
+// That's why 64-bit functions are commented out.
+//
+// TODO: Big endian PowerPC supports byte swapping load and store instructions
+// that also allow unaligned access. Inline assembler could be OK for that.
+//
+// Performance of these functions isn't that important until LZMA3, but it
+// doesn't hurt to have these ready already.
+#ifdef HAVE_FAST_UNALIGNED_ACCESS
 
 static inline uint16_t
 integer_read_16(const uint8_t buf[static 2])

@@ -75,6 +75,5 @@ libcommon_la_SOURCES += \
 	stream_decoder.c \
 	stream_decoder.h \
 	stream_flags_decoder.c \
-	stream_flags_decoder.h \
 	vli_decoder.c
 endif

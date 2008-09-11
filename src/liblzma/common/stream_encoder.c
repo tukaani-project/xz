@@ -18,7 +18,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stream_encoder.h"
-#include "stream_flags_common.h"
 #include "block_encoder.h"
 #include "index_encoder.h"
 

@@ -180,6 +180,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Encode the Stream Footer into coder->buffer.
 		const lzma_stream_flags stream_flags = {
+			.version = 0,
 			.backward_size = lzma_index_size(coder->index),
 			.check = coder->block_options.check,
 		};
@@ -247,6 +248,7 @@ lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Encode the Stream Header
 	lzma_stream_flags stream_flags = {
+		.version = 0,
 		.check = check,
 	};
 	return_if_error(lzma_stream_header_encode(

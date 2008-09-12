@@ -294,9 +294,8 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Compare that the Stream Flags fields are identical in
 		// both Stream Header and Stream Footer.
-		if (!lzma_stream_flags_equal(&coder->stream_flags,
-				&footer_flags))
-			return LZMA_DATA_ERROR;
+		return_if_error(lzma_stream_flags_compare(
+				&coder->stream_flags, &footer_flags));
 
 		if (!coder->concatenated)
 			return LZMA_STREAM_END;

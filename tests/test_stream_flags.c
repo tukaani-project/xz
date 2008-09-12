@@ -28,7 +28,11 @@ static uint8_t buffer[LZMA_STREAM_HEADER_SIZE];
 static bool
 validate(void)
 {
-	return !lzma_stream_flags_equal(&known_flags, &decoded_flags);
+	// TODO: This could require the specific error type as an argument.
+	// We could also test that lzma_stream_flags_compare() gives
+	// the correct return values in different situations.
+	return lzma_stream_flags_compare(&known_flags, &decoded_flags)
+			!= LZMA_OK;
 }
 
 
@@ -44,7 +48,7 @@ test_header_decoder(lzma_ret expected_ret)
 		return false;
 
 	// Header doesn't have Backward Size, so make
-	// lzma_stream_flags_equal() ignore it.
+	// lzma_stream_flags_compare() ignore it.
 	decoded_flags.backward_size = LZMA_VLI_VALUE_UNKNOWN;
 	return validate();
 }

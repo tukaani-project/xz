@@ -27,6 +27,7 @@ stream_flags_decode(lzma_stream_flags *options, const uint8_t *in)
 	if (in[0] != 0x00 || (in[1] & 0xF0))
 		return true;
 
+	options->version = 0;
 	options->check = in[1] & 0x0F;
 
 	return false;
@@ -53,7 +54,7 @@ lzma_stream_header_decode(lzma_stream_flags *options, const uint8_t *in)
 		return LZMA_HEADER_ERROR;
 
 	// Set Backward Size to indicate unknown value. That way
-	// lzma_stream_flags_equal can be used to compare Stream Header
+	// lzma_stream_flags_compare() can be used to compare Stream Header
 	// and Stream Footer while keeping it useful also for comparing
 	// two Stream Footers.
 	options->backward_size = LZMA_VLI_VALUE_UNKNOWN;

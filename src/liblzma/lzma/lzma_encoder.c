@@ -412,7 +412,7 @@ lzma_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 {
 	// Plain LZMA has no support for sync-flushing.
 	if (unlikely(mf->action == LZMA_SYNC_FLUSH))
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	return lzma_lzma_encode(coder, mf, out, out_pos, out_size, UINT32_MAX);
 }
@@ -544,7 +544,7 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 	if (!is_lclppb_valid(options)
 			|| options->fast_bytes < LZMA_FAST_BYTES_MIN
 			|| options->fast_bytes > LZMA_FAST_BYTES_MAX)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Set compression mode.
 	switch (options->mode) {
@@ -573,7 +573,7 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 		}
 
 		default:
-			return LZMA_HEADER_ERROR;
+			return LZMA_OPTIONS_ERROR;
 	}
 
 	coder->is_initialized = false;
@@ -583,7 +583,7 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 
 	// LZ encoder options FIXME validation
 	if (set_lz_options(lz_options, options))
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	return LZMA_OK;
 }

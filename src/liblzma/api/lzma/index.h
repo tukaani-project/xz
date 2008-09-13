@@ -82,7 +82,7 @@ extern void lzma_index_end(lzma_index *i, lzma_allocator *allocator);
  * \param       index             Pointer to a lzma_index structure
  * \param       total_size        Total Size of a Block
  * \param       uncompressed_size Uncompressed Size of a Block, or
- *                                LZMA_VLI_VALUE_UNKNOWN to indicate padding.
+ *                                LZMA_VLI_UNKNOWN to indicate padding.
  *
  * Appending a new Record does not affect the read position.
  *

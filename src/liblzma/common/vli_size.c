@@ -23,7 +23,7 @@
 extern LZMA_API uint32_t
 lzma_vli_size(lzma_vli vli)
 {
-	if (vli > LZMA_VLI_VALUE_MAX)
+	if (vli > LZMA_VLI_MAX)
 		return 0;
 
 	uint32_t i = 0;

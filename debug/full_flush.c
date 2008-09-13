@@ -77,7 +77,7 @@ main(int argc, char **argv)
 	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
 	filters[0].id = LZMA_FILTER_LZMA2;
 	filters[0].options = (void *)&lzma_preset_lzma[0];
-	filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
+	filters[1].id = LZMA_VLI_UNKNOWN;
 
 	// Init
 	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_SHA256) != LZMA_OK) {

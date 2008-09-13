@@ -100,7 +100,7 @@ test_overflow(void)
 	// Integer overflow tests
 	lzma_index *i = create_empty();
 
-	expect(lzma_index_append(i, NULL, LZMA_VLI_VALUE_MAX - 5, 1234)
+	expect(lzma_index_append(i, NULL, LZMA_VLI_MAX - 5, 1234)
 			== LZMA_DATA_ERROR);
 
 	// TODO

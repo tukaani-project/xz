@@ -37,7 +37,7 @@ extern uint32_t lzma_alignment_input(
  * encoder which tries to align the Compressed Data field optimally.
  *
  * \param       filters   Pointer to lzma_filter array, whose last
- *                        member must have .id = LZMA_VLI_VALUE_UNKNOWN.
+ *                        member must have .id = LZMA_VLI_UNKNOWN.
  * \param       guess     The value to return if the alignment of the output
  *                        is the same as the alignment of the input data.
  *                        If you want to always detect this special case,

@@ -198,7 +198,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		if (memusage == UINT64_MAX) {
 			// One or more unknown Filter IDs.
-			ret = LZMA_HEADER_ERROR;
+			ret = LZMA_OPTIONS_ERROR;
 		} else if (memusage > coder->memlimit) {
 			// The chain would need too much memory.
 			ret = LZMA_MEMLIMIT_ERROR;
@@ -375,7 +375,7 @@ lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	lzma_next_coder_init(lzma_stream_decoder_init, next, allocator);
 
 	if (flags & ~LZMA_SUPPORTED_FLAGS)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);

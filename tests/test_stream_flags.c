@@ -49,7 +49,7 @@ test_header_decoder(lzma_ret expected_ret)
 
 	// Header doesn't have Backward Size, so make
 	// lzma_stream_flags_compare() ignore it.
-	decoded_flags.backward_size = LZMA_VLI_VALUE_UNKNOWN;
+	decoded_flags.backward_size = LZMA_VLI_UNKNOWN;
 	return validate();
 }
 
@@ -116,7 +116,7 @@ test_encode_invalid(void)
 	expect(lzma_stream_footer_encode(&known_flags, buffer)
 			== LZMA_PROG_ERROR);
 
-	known_flags.backward_size = LZMA_VLI_VALUE_MAX;
+	known_flags.backward_size = LZMA_VLI_MAX;
 
 	expect(lzma_stream_header_encode(&known_flags, buffer) == LZMA_OK);
 
@@ -147,7 +147,7 @@ test_decode_invalid(void)
 	buffer[6] ^= 0x20;
 	crc = lzma_crc32(buffer + 6, 2, 0);
 	integer_write_32(buffer + 8, crc);
-	succeed(test_header_decoder(LZMA_HEADER_ERROR));
+	succeed(test_header_decoder(LZMA_OPTIONS_ERROR));
 
 	// Test 3 (invalid CRC32)
 	expect(lzma_stream_header_encode(&known_flags, buffer) == LZMA_OK);
@@ -159,7 +159,7 @@ test_decode_invalid(void)
 	buffer[9] ^= 0x40;
 	crc = lzma_crc32(buffer + 4, 6, 0);
 	integer_write_32(buffer, crc);
-	succeed(test_footer_decoder(LZMA_HEADER_ERROR));
+	succeed(test_footer_decoder(LZMA_OPTIONS_ERROR));
 
 	// Test 5 (invalid Magic Bytes)
 	expect(lzma_stream_footer_encode(&known_flags, buffer) == LZMA_OK);

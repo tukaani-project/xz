@@ -24,12 +24,12 @@
 /**
  * \brief       Maximum supported value of variable-length integer
  */
-#define LZMA_VLI_VALUE_MAX (UINT64_MAX / 2)
+#define LZMA_VLI_MAX (UINT64_MAX / 2)
 
 /**
  * \brief       VLI value to denote that the value is unknown
  */
-#define LZMA_VLI_VALUE_UNKNOWN UINT64_MAX
+#define LZMA_VLI_UNKNOWN UINT64_MAX
 
 /**
  * \brief       Maximum supported length of variable length integers
@@ -47,12 +47,12 @@
  * \brief       Variable-length integer type
  *
  * This will always be unsigned integer. Valid VLI values are in the range
- * [0, LZMA_VLI_VALUE_MAX]. Unknown value is indicated with
- * LZMA_VLI_VALUE_UNKNOWN, which is the maximum value of the underlaying
- * integer type (this feature is useful in several situations).
+ * [0, LZMA_VLI_MAX]. Unknown value is indicated with LZMA_VLI_UNKNOWN,
+ * which is the maximum value of the underlaying integer type (this feature
+ * is useful in several situations).
  *
  * In future, even if lzma_vli is typdefined to something else than uint64_t,
- * it is guaranteed that 2 * LZMA_VLI_VALUE_MAX will not overflow lzma_vli.
+ * it is guaranteed that 2 * LZMA_VLI_MAX will not overflow lzma_vli.
  * This simplifies integer overflow detection.
  */
 typedef uint64_t lzma_vli;
@@ -68,7 +68,7 @@ typedef uint64_t lzma_vli;
  *              indicates unknown value.
  */
 #define lzma_vli_is_valid(vli) \
-	((vli) <= LZMA_VLI_VALUE_MAX || (vli) == LZMA_VLI_VALUE_UNKNOWN)
+	((vli) <= LZMA_VLI_MAX || (vli) == LZMA_VLI_UNKNOWN)
 
 
 /**
@@ -83,7 +83,7 @@ typedef uint64_t lzma_vli;
  * non-minimum number of bytes are invalid, thus every integer has exactly
  * one encoded representation. The maximum number of bits in a VLI is 63,
  * thus the vli argument must be at maximum of UINT64_MAX / 2. You should
- * use LZMA_VLI_VALUE_MAX for clarity.
+ * use LZMA_VLI_MAX for clarity.
  *
  * This function has two modes: single-call and multi-call. Single-call mode
  * encodes the whole integer at once; it is an error if the output buffer is

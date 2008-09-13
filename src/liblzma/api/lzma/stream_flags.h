@@ -43,7 +43,7 @@ typedef struct {
 	 * indicate which fields in this structure are in use. For now,
 	 * version must always be zero. With non-zero version, the
 	 * lzma_stream_header_encode() and lzma_stream_footer_encode()
-	 * will return LZMA_HEADER_ERROR.
+	 * will return LZMA_OPTIONS_ERROR.
 	 *
 	 * lzma_stream_header_decode() and lzma_stream_footer_decode()
 	 * will always set this to the lowest value that supports all the
@@ -64,7 +64,7 @@ typedef struct {
 	 * initialize backward_size when encoding Stream Header.
 	 *
 	 * lzma_stream_header_decode() always sets backward_size to
-	 * LZMA_VLI_VALUE_UNKNOWN so that it is convenient to use
+	 * LZMA_VLI_UNKNOWN so that it is convenient to use
 	 * lzma_stream_flags_compare() when both Stream Header and Stream
 	 * Footer have been decoded.
 	 */
@@ -118,7 +118,7 @@ typedef struct {
  *                          need to be initialized.
  *
  * \return      - LZMA_OK: Encoding was successful.
- *              - LZMA_HEADER_ERROR: options->version is not supported by
+ *              - LZMA_OPTIONS_ERROR: options->version is not supported by
  *                this liblzma version.
  *              - LZMA_PROG_ERROR: Invalid options.
  */
@@ -135,7 +135,7 @@ extern lzma_ret lzma_stream_header_encode(
  * \param       options     Stream Footer options to be encoded.
  *
  * \return      - LZMA_OK: Encoding was successful.
- *              - LZMA_HEADER_ERROR: options->version is not supported by
+ *              - LZMA_OPTIONS_ERROR: options->version is not supported by
  *                this liblzma version.
  *              - LZMA_PROG_ERROR: Invalid options.
  */
@@ -151,7 +151,7 @@ extern lzma_ret lzma_stream_footer_encode(
  * \param       in          Beginning of the input buffer of
  *                          LZMA_STREAM_HEADER_SIZE bytes.
  *
- * options->index_size is always set to LZMA_VLI_VALUE_UNKNOWN. This is to
+ * options->index_size is always set to LZMA_VLI_UNKNOWN. This is to
  * help comparing Stream Flags from Stream Header and Stream Footer with
  * lzma_stream_flags_compare().
  *
@@ -160,7 +160,7 @@ extern lzma_ret lzma_stream_footer_encode(
  *                buffer cannot be Stream Header.
  *              - LZMA_DATA_ERROR: CRC32 doesn't match, thus the header
  *                is corrupt.
- *              - LZMA_HEADER_ERROR: Unsupported options are present
+ *              - LZMA_OPTIONS_ERROR: Unsupported options are present
  *                in the header.
  */
 extern lzma_ret lzma_stream_header_decode(
@@ -180,7 +180,7 @@ extern lzma_ret lzma_stream_header_decode(
  *                buffer cannot be Stream Footer.
  *              - LZMA_DATA_ERROR: CRC32 doesn't match, thus the footer
  *                is corrupt.
- *              - LZMA_HEADER_ERROR: Unsupported options are present
+ *              - LZMA_OPTIONS_ERROR: Unsupported options are present
  *                in the footer.
  *
  * \note        If Stream Header was already decoded successfully, but
@@ -199,13 +199,13 @@ extern lzma_ret lzma_stream_footer_decode(
  * \brief       Compare two lzma_stream_flags structures
  *
  * backward_size values are compared only if both are not
- * LZMA_VLI_VALUE_UNKNOWN.
+ * LZMA_VLI_UNKNOWN.
  *
  * \return      - LZMA_OK: Both are equal. If either had backward_size set
- *                to LZMA_VLI_VALUE_UNKNOWN, backward_size values were not
+ *                to LZMA_VLI_UNKNOWN, backward_size values were not
  *                compared or validated.
  *              - LZMA_DATA_ERROR: The structures differ.
- *              - LZMA_HEADER_ERROR: version in either structure is greater
+ *              - LZMA_OPTIONS_ERROR: version in either structure is greater
  *                than the maximum supported version (currently zero).
  *              - LZMA_PROG_ERROR: Invalid value, e.g. invalid check or
  *                backward_size.

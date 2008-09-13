@@ -56,17 +56,17 @@ lzma_block_total_size_get(const lzma_block *options)
 
 	// If Compressed Size is unknown, return that we cannot know
 	// Total Size either.
-	if (options->compressed_size == LZMA_VLI_VALUE_UNKNOWN)
-		return LZMA_VLI_VALUE_UNKNOWN;
+	if (options->compressed_size == LZMA_VLI_UNKNOWN)
+		return LZMA_VLI_UNKNOWN;
 
 	const lzma_vli total_size = options->compressed_size
 			+ options->header_size
 			+ lzma_check_size(options->check);
 
 	// Validate the calculated Total Size.
-	if (options->compressed_size > LZMA_VLI_VALUE_MAX
+	if (options->compressed_size > LZMA_VLI_MAX
 			|| (options->compressed_size & 3)
-			|| total_size > LZMA_VLI_VALUE_MAX)
+			|| total_size > LZMA_VLI_MAX)
 		return 0;
 
 	return total_size;

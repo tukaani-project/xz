@@ -67,7 +67,7 @@
  *
  * \note        At the moment, none of the simple filters support
  *              LZMA_SYNC_FLUSH. If LZMA_SYNC_FLUSH is specified,
- *              LZMA_HEADER_ERROR will be returned. If there is need,
+ *              LZMA_OPTIONS_ERROR will be returned. If there is need,
  *              partial support for LZMA_SYNC_FLUSH can be added in future.
  *              Partial means that flushing would be possible only at
  *              offsets that are multiple of 2, 4, or 16 depending on

@@ -108,7 +108,7 @@ alone_decode(lzma_coder *coder,
 			// if the uncompressed size is known, it must be less
 			// than 256 GiB. Again, if someone complains, this
 			// will be reconsidered.
-			if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN
+			if (coder->uncompressed_size != LZMA_VLI_UNKNOWN
 					&& coder->uncompressed_size
 						>= (LZMA_VLI_C(1) << 38))
 				return LZMA_FORMAT_ERROR;

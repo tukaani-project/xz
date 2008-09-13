@@ -93,7 +93,7 @@ test_subblock(void)
 	buffer[0] = LZMA_FILTER_SUBBLOCK;
 	buffer[1] = 1;
 	buffer[2] = 0;
-	expect(!decode_ret(3, LZMA_HEADER_ERROR));
+	expect(!decode_ret(3, LZMA_OPTIONS_ERROR));
 }
 #endif
 

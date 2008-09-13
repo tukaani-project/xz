@@ -42,7 +42,7 @@ easy_set_filters(lzma_filter *filters, uint32_t level)
 	} else if (level <= 9) {
 		filters[0].id = LZMA_FILTER_LZMA2;
 		filters[0].options = (void *)(&lzma_preset_lzma[level - 1]);
-		filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
+		filters[1].id = LZMA_VLI_UNKNOWN;
 #endif
 
 	} else {
@@ -92,7 +92,7 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	}
 
 	if (easy_set_filters(next->coder->filters, level))
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	return lzma_stream_encoder_init(&next->coder->stream_encoder,
 			allocator, next->coder->filters, LZMA_CHECK_CRC32);

@@ -497,7 +497,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Setup the size information into next->coder->mf and deallocate
 	// old buffers if they have wrong size.
 	if (lz_encoder_prepare(&next->coder->mf, allocator, &lz_options))
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Allocate new buffers if needed, and do the rest of
 	// the initialization.

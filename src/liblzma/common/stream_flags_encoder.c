@@ -40,7 +40,7 @@ lzma_stream_header_encode(const lzma_stream_flags *options, uint8_t *out)
 			+ 4 == LZMA_STREAM_HEADER_SIZE);
 
 	if (options->version != 0)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Magic
 	memcpy(out, lzma_header_magic, sizeof(lzma_header_magic));
@@ -67,7 +67,7 @@ lzma_stream_footer_encode(const lzma_stream_flags *options, uint8_t *out)
 			== LZMA_STREAM_HEADER_SIZE);
 
 	if (options->version != 0)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Backward Size
 	if (!is_backward_size_valid(options))

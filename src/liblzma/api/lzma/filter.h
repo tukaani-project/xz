@@ -33,7 +33,7 @@ typedef struct {
 	 *
 	 * Use constants whose name begin with `LZMA_FILTER_' to specify
 	 * different filters. In an array of lzma_option_filter structures,
-	 * use LZMA_VLI_VALUE_UNKNOWN to indicate end of filters.
+	 * use LZMA_VLI_UNKNOWN to indicate end of filters.
 	 */
 	lzma_vli id;
 
@@ -41,7 +41,7 @@ typedef struct {
 	 * \brief       Pointer to filter-specific options structure
 	 *
 	 * If the filter doesn't need options, set this to NULL. If id is
-	 * set to LZMA_VLI_VALUE_UNKNOWN, options is ignored, and thus
+	 * set to LZMA_VLI_UNKNOWN, options is ignored, and thus
 	 * doesn't need be initialized.
 	 *
 	 * Some filters support changing the options in the middle of
@@ -80,7 +80,7 @@ extern lzma_bool lzma_filter_decoder_is_supported(lzma_vli id);
  * \brief       Calculate rough memory requirements for raw encoder
  *
  * \param       filters     Array of filters terminated with
- *                          .id == LZMA_VLI_VALUE_UNKNOWN.
+ *                          .id == LZMA_VLI_UNKNOWN.
  *
  * \return      Rough number of bytes required for the given filter chain
  *              when encoding.
@@ -93,7 +93,7 @@ extern uint64_t lzma_memusage_encoder(const lzma_filter *filters)
  * \brief       Calculate rough memory requirements for raw decoder
  *
  * \param       filters     Array of filters terminated with
- *                          .id == LZMA_VLI_VALUE_UNKNOWN.
+ *                          .id == LZMA_VLI_UNKNOWN.
  *
  * \return      Rough number of bytes required for the given filter chain
  *              when decoding.
@@ -110,7 +110,7 @@ extern uint64_t lzma_memusage_decoder(const lzma_filter *filters)
  * \param       strm    Pointer to properly prepared lzma_stream
  * \param       options Array of lzma_filter structures.
  *                      The end of the array must be marked with
- *                      .id = LZMA_VLI_VALUE_UNKNOWN. The minimum
+ *                      .id = LZMA_VLI_UNKNOWN. The minimum
  *                      number of filters is one and the maximum is four.
  *
  * The `action' with lzma_code() can be LZMA_RUN, LZMA_SYNC_FLUSH (if the
@@ -118,7 +118,7 @@ extern uint64_t lzma_memusage_decoder(const lzma_filter *filters)
  *
  * \return      - LZMA_OK
  *              - LZMA_MEM_ERROR
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_raw_encoder(
@@ -136,7 +136,7 @@ extern lzma_ret lzma_raw_encoder(
  *
  * \return      - LZMA_OK
  *              - LZMA_MEM_ERROR
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_raw_decoder(
@@ -155,13 +155,13 @@ extern lzma_ret lzma_raw_decoder(
  *                      vary depending on the options)
  *
  * \return      - LZMA_OK
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  *
  * \note        This function validates the Filter ID, but does not
  *              necessarily validate the options. Thus, it is possible
  *              that this returns LZMA_OK while the following call to
- *              lzma_properties_encode() returns LZMA_HEADER_ERROR.
+ *              lzma_properties_encode() returns LZMA_OPTIONS_ERROR.
  */
 extern lzma_ret lzma_properties_size(
 		uint32_t *size, const lzma_filter *filter);
@@ -176,7 +176,7 @@ extern lzma_ret lzma_properties_size(
  *                      lzma_properties_size().
  *
  * \return      - LZMA_OK
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  *
  * \note        Even this function won't validate more options than actually
@@ -207,10 +207,10 @@ extern lzma_ret lzma_properties_encode(
  * \param       props       Input buffer containing the properties.
  * \param       props_size  Size of the properties. This must be the exact
  *                          size; giving too much or too little input will
- *                          return LZMA_HEADER_ERROR.
+ *                          return LZMA_OPTIONS_ERROR.
  *
  * \return      - LZMA_OK
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_MEM_ERROR
  */
 extern lzma_ret lzma_properties_decode(
@@ -231,7 +231,7 @@ extern lzma_ret lzma_properties_decode(
  * \return      - LZMA_OK: *size set successfully. Note that this doesn't
  *                guarantee that options->options is valid, thus
  *                lzma_filter_flags_encode() may still fail.
- *              - LZMA_HEADER_ERROR: Unknown Filter ID or unsupported options.
+ *              - LZMA_OPTIONS_ERROR: Unknown Filter ID or unsupported options.
  *              - LZMA_PROG_ERROR: Invalid options
  *
  * \note        If you need to calculate size of List of Filter Flags,
@@ -255,7 +255,7 @@ extern lzma_ret lzma_filter_flags_size(
  * \param       options     Filter options to be encoded
  *
  * \return      - LZMA_OK: Encoding was successful.
- *              - LZMA_HEADER_ERROR: Invalid or unsupported options.
+ *              - LZMA_OPTIONS_ERROR: Invalid or unsupported options.
  *              - LZMA_PROG_ERROR: Invalid options or not enough output
  *                buffer space (you should have checked it with
  *                lzma_filter_flags_size()).

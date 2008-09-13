@@ -54,7 +54,7 @@ lzma_delta_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			->distance;
 	if (next->coder->distance < LZMA_DELTA_DISTANCE_MIN
 			|| next->coder->distance > LZMA_DELTA_DISTANCE_MAX)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Initialize the rest of the variables.
 	next->coder->pos = 0;

@@ -150,9 +150,9 @@ lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli total_size,
 		lzma_vli uncompressed_size)
 {
 	// Validate the arguments.
-	if (index_hash->sequence != SEQ_BLOCK || total_size == 0 ||
-			total_size > LZMA_VLI_VALUE_MAX || (total_size & 3)
-			|| uncompressed_size > LZMA_VLI_VALUE_MAX)
+	if (index_hash->sequence != SEQ_BLOCK || total_size == 0
+			|| total_size > LZMA_VLI_MAX || (total_size & 3)
+			|| uncompressed_size > LZMA_VLI_MAX)
 		return LZMA_PROG_ERROR;
 
 	// Update the hash.
@@ -160,16 +160,15 @@ lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli total_size,
 			total_size, uncompressed_size));
 
 	// Validate the properties of *info are still in allowed limits.
-	if (index_hash->blocks.total_size > LZMA_VLI_VALUE_MAX
-			|| index_hash->blocks.uncompressed_size
-				> LZMA_VLI_VALUE_MAX
+	if (index_hash->blocks.total_size > LZMA_VLI_MAX
+			|| index_hash->blocks.uncompressed_size > LZMA_VLI_MAX
 			|| index_size(index_hash->blocks.count,
 					index_hash->blocks.index_list_size)
 				> LZMA_BACKWARD_SIZE_MAX
 			|| index_stream_size(index_hash->blocks.total_size,
 					index_hash->blocks.count,
 					index_hash->blocks.index_list_size)
-				> LZMA_VLI_VALUE_MAX)
+				> LZMA_VLI_MAX)
 		return LZMA_DATA_ERROR;
 
 	return LZMA_OK;

@@ -220,7 +220,7 @@ lzma_lz_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// recommended to give aligned buffers to liblzma.
 	//
 	// Avoid integer overflow. FIXME Should the return value be
-	// LZMA_HEADER_ERROR or LZMA_MEM_ERROR?
+	// LZMA_OPTIONS_ERROR or LZMA_MEM_ERROR?
 	if (dict_size > SIZE_MAX - 15)
 		return LZMA_MEM_ERROR;
 

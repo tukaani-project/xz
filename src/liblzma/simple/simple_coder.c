@@ -87,7 +87,7 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 	// 4, or 16. With x86 filter, it needs good luck, and thus cannot
 	// be made to work predictably.
 	if (action == LZMA_SYNC_FLUSH)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Flush already filtered data from coder->buffer[] to out[].
 	if (coder->pos < coder->filtered) {

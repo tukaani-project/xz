@@ -24,7 +24,7 @@
 
 
 /// Maximum encoded value of Total Size.
-#define TOTAL_SIZE_ENCODED_MAX (LZMA_VLI_VALUE_MAX / 4 - 1)
+#define TOTAL_SIZE_ENCODED_MAX (LZMA_VLI_MAX / 4 - 1)
 
 /// Convert the real Total Size value to a value that is stored to the Index.
 #define total_size_encode(size) ((size) / 4 - 1)

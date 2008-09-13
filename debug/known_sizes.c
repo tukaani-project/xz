@@ -53,7 +53,7 @@ main(void)
 			.options = (void *)(&lzma_preset_lzma[0])
 		},
 		{
-			.id = LZMA_VLI_VALUE_UNKNOWN
+			.id = LZMA_VLI_UNKNOWN
 		}
 	};
 

@@ -270,8 +270,8 @@ static lzma_ret
 index_append(lzma_index *i, lzma_allocator *allocator, lzma_vli total_size,
 		lzma_vli uncompressed_size, bool is_padding)
 {
-	if (total_size > LZMA_VLI_VALUE_MAX
-			|| uncompressed_size > LZMA_VLI_VALUE_MAX)
+	if (total_size > LZMA_VLI_MAX
+			|| uncompressed_size > LZMA_VLI_MAX)
 		return LZMA_DATA_ERROR;
 
 	// This looks a bit ugly. We want to first validate that the Index
@@ -286,9 +286,8 @@ index_append(lzma_index *i, lzma_allocator *allocator, lzma_vli total_size,
 		// First update the info so we can validate it.
 		i->padding_size += total_size;
 
-		if (i->padding_size > LZMA_VLI_VALUE_MAX
-				|| lzma_index_file_size(i)
-					> LZMA_VLI_VALUE_MAX)
+		if (i->padding_size > LZMA_VLI_MAX
+				|| lzma_index_file_size(i) > LZMA_VLI_MAX)
 			ret = LZMA_DATA_ERROR; // Would grow past the limits.
 		else
 			ret = index_append_real(i, allocator,
@@ -309,11 +308,10 @@ index_append(lzma_index *i, lzma_allocator *allocator, lzma_vli total_size,
 		++i->count;
 		i->index_list_size += index_list_size_add;
 
-		if (i->total_size > LZMA_VLI_VALUE_MAX
-				|| i->uncompressed_size > LZMA_VLI_VALUE_MAX
+		if (i->total_size > LZMA_VLI_MAX
+				|| i->uncompressed_size > LZMA_VLI_MAX
 				|| lzma_index_size(i) > LZMA_BACKWARD_SIZE_MAX
-				|| lzma_index_file_size(i)
-					> LZMA_VLI_VALUE_MAX)
+				|| lzma_index_file_size(i) > LZMA_VLI_MAX)
 			ret = LZMA_DATA_ERROR; // Would grow past the limits.
 		else
 			ret = index_append_real(i, allocator,
@@ -545,16 +543,16 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 		lzma_allocator *allocator, lzma_vli padding)
 {
 	if (dest == NULL || src == NULL || dest == src
-			|| padding > LZMA_VLI_VALUE_MAX)
+			|| padding > LZMA_VLI_MAX)
 		return LZMA_PROG_ERROR;
 
 	// Check that the combined size of the Indexes stays within limits.
 	{
 		const lzma_vli dest_size = lzma_index_file_size(dest);
 		const lzma_vli src_size = lzma_index_file_size(src);
-		if (dest_size + src_size > LZMA_VLI_VALUE_UNKNOWN
+		if (dest_size + src_size > LZMA_VLI_UNKNOWN
 				|| dest_size + src_size + padding
-					> LZMA_VLI_VALUE_UNKNOWN)
+					> LZMA_VLI_UNKNOWN)
 			return LZMA_DATA_ERROR;
 	}
 
@@ -562,7 +560,7 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	// Index + Stream Footer + Stream Padding + Stream Header.
 	//
 	// NOTE: This cannot overflow, because Index Size is always
-	// far smaller than LZMA_VLI_VALUE_MAX, and adding two VLIs
+	// far smaller than LZMA_VLI_MAX, and adding two VLIs
 	// (Index Size and padding) doesn't overflow. It may become
 	// an invalid VLI if padding is huge, but that is caught by
 	// index_append().

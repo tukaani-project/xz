@@ -30,7 +30,7 @@ lzma_stream_flags_compare(
 {
 	// We can compare only version 0 structures.
 	if (a->version != 0 || b->version != 0)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Check type
 	if ((unsigned int)(a->check) > LZMA_CHECK_ID_MAX
@@ -41,8 +41,8 @@ lzma_stream_flags_compare(
 		return LZMA_DATA_ERROR;
 
 	// Backward Sizes are compared only if they are known in both.
-	if (a->backward_size != LZMA_VLI_VALUE_UNKNOWN
-			&& b->backward_size != LZMA_VLI_VALUE_UNKNOWN) {
+	if (a->backward_size != LZMA_VLI_UNKNOWN
+			&& b->backward_size != LZMA_VLI_UNKNOWN) {
 		if (!is_backward_size_valid(a) || !is_backward_size_valid(b))
 			return LZMA_PROG_ERROR;
 

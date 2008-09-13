@@ -161,7 +161,7 @@ typedef enum {
 		 * format.
 		 */
 
-	LZMA_HEADER_ERROR       = 8,
+	LZMA_OPTIONS_ERROR      = 8,
 		/**<
 		 * \brief       Invalid or unsupported options
 		 *
@@ -282,7 +282,7 @@ typedef enum {
 		 *
 		 * Only some filters support LZMA_SYNC_FLUSH. Trying to use
 		 * LZMA_SYNC_FLUSH with filters that don't support it will
-		 * make lzma_code() return LZMA_HEADER_ERROR. For example,
+		 * make lzma_code() return LZMA_OPTIONS_ERROR. For example,
 		 * LZMA1 doesn't support LZMA_SYNC_FLUSH but LZMA2 does.
 		 *
 		 * Using LZMA_SYNC_FLUSH very often can dramatically reduce

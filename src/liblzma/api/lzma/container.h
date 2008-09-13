@@ -36,7 +36,7 @@
  * \note        If liblzma is built without encoder support, or with some
  *              filters disabled, some of the compression levels may be
  *              unsupported. In that case, the initialization functions
- *              will return LZMA_HEADER_ERROR.
+ *              will return LZMA_OPTIONS_ERROR.
  */
 typedef enum {
 	LZMA_EASY_COPY      = 0,
@@ -115,7 +115,7 @@ extern uint64_t lzma_easy_memory_usage(lzma_easy_level level)
  *                encode your data.
  *              - LZMA_MEM_ERROR: Memory allocation failed. All memory
  *                previously allocated for *strm is now freed.
- *              - LZMA_HEADER_ERROR: The given compression level is not
+ *              - LZMA_OPTIONS_ERROR: The given compression level is not
  *                supported by this build of liblzma.
  *
  * If initialization succeeds, use lzma_code() to do the actual encoding.
@@ -132,7 +132,7 @@ extern lzma_ret lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
  *
  * \param       strm    Pointer to properly prepared lzma_stream
  * \param       filters Array of filters. This must be terminated with
- *                      filters[n].id = LZMA_VLI_VALUE_UNKNOWN. There must
+ *                      filters[n].id = LZMA_VLI_UNKNOWN. There must
  *                      be 1-4 filters, but there are restrictions on how
  *                      multiple filters can be combined. FIXME Tell where
  *                      to find more information.
@@ -141,7 +141,7 @@ extern lzma_ret lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_stream_encoder(lzma_stream *strm,
@@ -225,7 +225,7 @@ extern lzma_ret lzma_alone_encoder(
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
- *              - LZMA_HEADER_ERROR: Unsupported flags
+ *              - LZMA_OPTIONS_ERROR: Unsupported flags
  */
 extern lzma_ret lzma_stream_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)
@@ -245,7 +245,7 @@ extern lzma_ret lzma_stream_decoder(
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
- *              - LZMA_HEADER_ERROR: Unsupported flags
+ *              - LZMA_OPTIONS_ERROR: Unsupported flags
  */
 extern lzma_ret lzma_auto_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)

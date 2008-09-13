@@ -31,7 +31,7 @@ lzma_vli_encode(lzma_vli vli, size_t *restrict vli_pos,
 		vli_pos = &vli_pos_internal;
 
 	// Validate the arguments.
-	if (*vli_pos >= LZMA_VLI_BYTES_MAX || vli > LZMA_VLI_VALUE_MAX)
+	if (*vli_pos >= LZMA_VLI_BYTES_MAX || vli > LZMA_VLI_MAX)
 		return LZMA_PROG_ERROR;
 
 	if (*out_pos >= out_size)

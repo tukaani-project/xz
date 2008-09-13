@@ -85,18 +85,18 @@ typedef struct {
 	/**
 	 * \brief       Uncompressed Size in bytes
 	 *
-	 * Encoder: If this value is not LZMA_VLI_VALUE_UNKNOWN, it is stored
+	 * Encoder: If this value is not LZMA_VLI_UNKNOWN, it is stored
 	 * to the Uncompressed Size field in the Block Header. The real
 	 * uncompressed size of the data being compressed must match
-	 * the Uncompressed Size or LZMA_HEADER_ERROR is returned.
+	 * the Uncompressed Size or LZMA_OPTIONS_ERROR is returned.
 	 *
 	 * If Uncompressed Size is unknown, End of Payload Marker must
-	 * be used. If uncompressed_size == LZMA_VLI_VALUE_UNKNOWN and
-	 * has_eopm == 0, LZMA_HEADER_ERROR will be returned.
+	 * be used. If uncompressed_size == LZMA_VLI_UNKNOWN and
+	 * has_eopm == 0, LZMA_OPTIONS_ERROR will be returned.
 	 *
-	 * Decoder: If this value is not LZMA_VLI_VALUE_UNKNOWN, it is
+	 * Decoder: If this value is not LZMA_VLI_UNKNOWN, it is
 	 * compared to the real Uncompressed Size. If they do not match,
-	 * LZMA_HEADER_ERROR is returned.
+	 * LZMA_OPTIONS_ERROR is returned.
 	 *
 	 * Read by:
 	 *  - lzma_block_header_size()
@@ -114,7 +114,7 @@ typedef struct {
 	 * \brief       Array of filters
 	 *
 	 * There can be 1-4 filters. The end of the array is marked with
-	 * .id = LZMA_VLI_VALUE_UNKNOWN.
+	 * .id = LZMA_VLI_UNKNOWN.
 	 *
 	 * Read by:
 	 *  - lzma_block_header_size()
@@ -125,12 +125,12 @@ typedef struct {
 	 * Written by:
 	 *  - lzma_block_header_decode(): Note that this does NOT free()
 	 *    the old filter options structures. All unused filters[] will
-	 *    have .id == LZMA_VLI_VALUE_UNKNOWN and .options == NULL. If
+	 *    have .id == LZMA_VLI_UNKNOWN and .options == NULL. If
 	 *    decoding fails, all filters[] are guaranteed to be
-	 *    LZMA_VLI_VALUE_UNKNOWN and NULL.
+	 *    LZMA_VLI_UNKNOWN and NULL.
 	 *
 	 * \note        Because of the array is terminated with
-	 *              .id = LZMA_VLI_VALUE_UNKNOWN, the actual array must
+	 *              .id = LZMA_VLI_UNKNOWN, the actual array must
 	 *              have LZMA_BLOCK_FILTERS_MAX + 1 members or the Block
 	 *              Header decoder will overflow the buffer.
 	 */
@@ -157,7 +157,7 @@ typedef struct {
  *
  * \return      - LZMA_OK: Size calculated successfully and stored to
  *                options->header_size.
- *              - LZMA_HEADER_ERROR: Unsupported filters or filter options.
+ *              - LZMA_OPTIONS_ERROR: Unsupported filters or filter options.
  *              - LZMA_PROG_ERROR: Invalid options
  *
  * \note        This doesn't check that all the options are valid i.e. this
@@ -180,7 +180,7 @@ extern lzma_ret lzma_block_header_size(lzma_block *options)
  *
  * \return      - LZMA_OK: Encoding was successful. options->header_size
  *                bytes were written to output buffer.
- *              - LZMA_HEADER_ERROR: Invalid or unsupported options.
+ *              - LZMA_OPTIONS_ERROR: Invalid or unsupported options.
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_block_header_encode(
@@ -202,7 +202,7 @@ extern lzma_ret lzma_block_header_encode(
  *
  * \return      - LZMA_OK: Decoding was successful. options->header_size
  *                bytes were written to output buffer.
- *              - LZMA_HEADER_ERROR: Invalid or unsupported options.
+ *              - LZMA_OPTIONS_ERROR: Invalid or unsupported options.
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_block_header_decode(lzma_block *options,
@@ -254,7 +254,7 @@ extern lzma_vli lzma_block_total_size_get(const lzma_block *options)
  *
  * \return      - LZMA_OK: All good, continue with lzma_code().
  *              - LZMA_MEM_ERROR
- *              - LZMA_HEADER_ERROR
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_DATA_ERROR: Limits (total_limit and uncompressed_limit)
  *                have been reached already.
  *              - LZMA_UNSUPPORTED_CHECK: options->check specfies a Check

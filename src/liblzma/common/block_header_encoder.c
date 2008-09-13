@@ -28,8 +28,8 @@ lzma_block_header_size(lzma_block *options)
 	size_t size = 1 + 1 + 4;
 
 	// Compressed Size
-	if (options->compressed_size != LZMA_VLI_VALUE_UNKNOWN) {
-		if (options->compressed_size > LZMA_VLI_VALUE_MAX / 4 - 1
+	if (options->compressed_size != LZMA_VLI_UNKNOWN) {
+		if (options->compressed_size > LZMA_VLI_MAX / 4 - 1
 				|| options->compressed_size == 0
 				|| (options->compressed_size & 3))
 			return LZMA_PROG_ERROR;
@@ -38,7 +38,7 @@ lzma_block_header_size(lzma_block *options)
 	}
 
 	// Uncompressed Size
-	if (options->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN) {
+	if (options->uncompressed_size != LZMA_VLI_UNKNOWN) {
 		const size_t add = lzma_vli_size(options->uncompressed_size);
 		if (add == 0)
 			return LZMA_PROG_ERROR;
@@ -48,10 +48,10 @@ lzma_block_header_size(lzma_block *options)
 
 	// List of Filter Flags
 	if (options->filters == NULL
-			|| options->filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
+			|| options->filters[0].id == LZMA_VLI_UNKNOWN)
 		return LZMA_PROG_ERROR;
 
-	for (size_t i = 0; options->filters[i].id != LZMA_VLI_VALUE_UNKNOWN;
+	for (size_t i = 0; options->filters[i].id != LZMA_VLI_UNKNOWN;
 			++i) {
 		// Don't allow too many filters.
 		if (i == 4)
@@ -94,14 +94,14 @@ lzma_block_header_encode(const lzma_block *options, uint8_t *out)
 	size_t out_pos = 2;
 
 	// Compressed Size
-	if (options->compressed_size != LZMA_VLI_VALUE_UNKNOWN) {
+	if (options->compressed_size != LZMA_VLI_UNKNOWN) {
 		// Compressed Size must be non-zero, fit into a 63-bit
 		// integer and be a multiple of four. Also the Total Size
 		// of the Block must fit into 63-bit integer.
 		if (options->compressed_size == 0
 				|| (options->compressed_size & 3)
 				|| options->compressed_size
-					> LZMA_VLI_VALUE_MAX
+					> LZMA_VLI_MAX
 				|| lzma_block_total_size_get(options) == 0)
 			return LZMA_PROG_ERROR;
 
@@ -111,14 +111,14 @@ lzma_block_header_encode(const lzma_block *options, uint8_t *out)
 	}
 
 	// Uncompressed Size
-	if (options->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
+	if (options->uncompressed_size != LZMA_VLI_UNKNOWN)
 		return_if_error(lzma_vli_encode(
 				options->uncompressed_size, NULL,
 				out, &out_pos, out_size));
 
 	// Filter Flags
 	if (options->filters == NULL
-			|| options->filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
+			|| options->filters[0].id == LZMA_VLI_UNKNOWN)
 		return LZMA_PROG_ERROR;
 
 	size_t filter_count = 0;
@@ -132,15 +132,15 @@ lzma_block_header_encode(const lzma_block *options, uint8_t *out)
 				out, &out_pos, out_size));
 
 	} while (options->filters[++filter_count].id
-			!= LZMA_VLI_VALUE_UNKNOWN);
+			!= LZMA_VLI_UNKNOWN);
 
 	// Block Flags
 	out[1] = filter_count - 1;
 
-	if (options->compressed_size != LZMA_VLI_VALUE_UNKNOWN)
+	if (options->compressed_size != LZMA_VLI_UNKNOWN)
 		out[1] |= 0x40;
 
-	if (options->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN)
+	if (options->uncompressed_size != LZMA_VLI_UNKNOWN)
 		out[1] |= 0x80;
 
 	// Padding

@@ -49,7 +49,7 @@ str_strm_error(lzma_ret code)
 	case LZMA_BUF_ERROR:
 		return _("Unexpected end of input");
 
-	case LZMA_HEADER_ERROR:
+	case LZMA_OPTIONS_ERROR:
 		return _("Unsupported options");
 
 	case LZMA_UNSUPPORTED_CHECK:

@@ -39,7 +39,7 @@
 extern LZMA_API size_t
 lzma_chunk_size(const lzma_options_filter *filters)
 {
-	while (filters->id != LZMA_VLI_VALUE_UNKNOWN) {
+	while (filters->id != LZMA_VLI_UNKNOWN) {
 		switch (filters->id) {
 		// TODO LZMA_FILTER_SPARSE
 

@@ -461,7 +461,7 @@ set_compression_settings(void)
 	}
 
 	// Terminate the filter options array.
-	opt_filters[filter_count].id = LZMA_VLI_VALUE_UNKNOWN;
+	opt_filters[filter_count].id = LZMA_VLI_UNKNOWN;
 
 	// If we are using the LZMA_Alone format, allow exactly one filter
 	// which has to be LZMA.

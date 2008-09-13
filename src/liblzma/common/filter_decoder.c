@@ -42,7 +42,7 @@ typedef struct {
 	/// Decodes Filter Properties.
 	///
 	/// \return     - LZMA_OK: Properties decoded successfully.
-	///             - LZMA_HEADER_ERROR: Unsupported properties
+	///             - LZMA_OPTIONS_ERROR: Unsupported properties
 	///             - LZMA_MEM_ERROR: Memory allocation failed.
 	lzma_ret (*props_decode)(void **options, lzma_allocator *allocator,
 			const uint8_t *props, size_t props_size);
@@ -196,10 +196,10 @@ lzma_properties_decode(lzma_filter *filter, lzma_allocator *allocator,
 
 	const lzma_filter_decoder *const fd = decoder_find(filter->id);
 	if (fd == NULL)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	if (fd->props_decode == NULL)
-		return props_size == 0 ? LZMA_OK : LZMA_HEADER_ERROR;
+		return props_size == 0 ? LZMA_OK : LZMA_OPTIONS_ERROR;
 
 	return fd->props_decode(
 			&filter->options, allocator, props, props_size);

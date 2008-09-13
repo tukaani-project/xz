@@ -119,7 +119,7 @@ static const struct {
 	},
 #endif
 	{
-		.id = LZMA_VLI_VALUE_UNKNOWN
+		.id = LZMA_VLI_UNKNOWN
 	}
 };
 
@@ -128,7 +128,7 @@ static lzma_ret
 validate_chain(const lzma_filter *filters, size_t *count)
 {
 	// There must be at least one filter.
-	if (filters == NULL || filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
+	if (filters == NULL || filters[0].id == LZMA_VLI_UNKNOWN)
 		return LZMA_PROG_ERROR;
 
 	// Number of non-last filters that may change the size of the data
@@ -147,25 +147,25 @@ validate_chain(const lzma_filter *filters, size_t *count)
 	do {
 		size_t j;
 		for (j = 0; filters[i].id != features[j].id; ++j)
-			if (features[j].id == LZMA_VLI_VALUE_UNKNOWN)
-				return LZMA_HEADER_ERROR;
+			if (features[j].id == LZMA_VLI_UNKNOWN)
+				return LZMA_OPTIONS_ERROR;
 
 		// If the previous filter in the chain cannot be a non-last
 		// filter, the chain is invalid.
 		if (!non_last_ok)
-			return LZMA_HEADER_ERROR;
+			return LZMA_OPTIONS_ERROR;
 
 		non_last_ok = features[j].non_last_ok;
 		last_ok = features[j].last_ok;
 		changes_size_count += features[j].changes_size;
 
-	} while (filters[++i].id != LZMA_VLI_VALUE_UNKNOWN);
+	} while (filters[++i].id != LZMA_VLI_UNKNOWN);
 
 	// There must be 1-4 filters. The last filter must be usable as
 	// the last filter in the chain. At maximum of three filters are
 	// allowed to change the size of the data.
 	if (i > LZMA_BLOCK_FILTERS_MAX || !last_ok || changes_size_count > 3)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	*count = i;
 	return LZMA_OK;
@@ -193,7 +193,7 @@ lzma_raw_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			const lzma_filter_coder *const fc
 					= coder_find(options[i].id);
 			if (fc == NULL || fc->init == NULL)
-				return LZMA_HEADER_ERROR;
+				return LZMA_OPTIONS_ERROR;
 
 			filters[j].init = fc->init;
 			filters[j].options = options[i].options;
@@ -203,7 +203,7 @@ lzma_raw_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			const lzma_filter_coder *const fc
 					= coder_find(options[i].id);
 			if (fc == NULL || fc->init == NULL)
-				return LZMA_HEADER_ERROR;
+				return LZMA_OPTIONS_ERROR;
 
 			filters[i].init = fc->init;
 			filters[i].options = options[i].options;
@@ -227,7 +227,7 @@ lzma_memusage_coder(lzma_filter_find coder_find,
 		const lzma_filter *filters)
 {
 	// The chain has to have at least one filter.
-	if (filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
+	if (filters[0].id == LZMA_VLI_UNKNOWN)
 		return UINT64_MAX;
 
 	uint64_t total = 0;
@@ -254,7 +254,7 @@ lzma_memusage_coder(lzma_filter_find coder_find,
 
 			total += usage;
 		}
-	} while (filters[++i].id != LZMA_VLI_VALUE_UNKNOWN);
+	} while (filters[++i].id != LZMA_VLI_UNKNOWN);
 
 	// Add some fixed amount of extra. It's to compensate memory usage
 	// of Stream, Block etc. coders, malloc() overhead, stack etc.

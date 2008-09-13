@@ -235,7 +235,7 @@ struct lzma_coder_s {
 	uint32_t literal_context_bits;
 	uint32_t literal_pos_mask;
 
-	/// Uncompressed size as bytes, or LZMA_VLI_VALUE_UNKNOWN if end of
+	/// Uncompressed size as bytes, or LZMA_VLI_UNKNOWN if end of
 	/// payload marker is expected.
 	lzma_vli uncompressed_size;
 
@@ -341,7 +341,7 @@ lzma_decode(lzma_coder *restrict coder, lzma_dict *restrict dictptr,
 	// If uncompressed size is known, there must be no end of payload
 	// marker.
 	const bool no_eopm = coder->uncompressed_size
-			!= LZMA_VLI_VALUE_UNKNOWN;
+			!= LZMA_VLI_UNKNOWN;
 	if (no_eopm && coder->uncompressed_size < dict.limit - dict.pos)
 		dict.limit = dict.pos + (size_t)(coder->uncompressed_size);
 
@@ -657,7 +657,7 @@ lzma_decode(lzma_coder *restrict coder, lzma_dict *restrict dictptr,
 						// present if uncompressed
 						// size is known.
 						if (coder->uncompressed_size
-						!= LZMA_VLI_VALUE_UNKNOWN) {
+						!= LZMA_VLI_UNKNOWN) {
 							ret = LZMA_DATA_ERROR;
 							goto out;
 						}
@@ -813,7 +813,7 @@ out:
 
 	// Update the remaining amount of uncompressed data if uncompressed
 	// size was known.
-	if (coder->uncompressed_size != LZMA_VLI_VALUE_UNKNOWN) {
+	if (coder->uncompressed_size != LZMA_VLI_UNKNOWN) {
 		coder->uncompressed_size -= dict.pos - dict_start;
 
 		// Since there cannot be end of payload marker if the
@@ -977,7 +977,7 @@ lzma_decoder_init(lzma_lz_decoder *lz, lzma_allocator *allocator,
 			lz, allocator, options, dict_size));
 
 	lzma_decoder_reset(lz->coder, options);
-	lzma_decoder_uncompressed(lz->coder, LZMA_VLI_VALUE_UNKNOWN);
+	lzma_decoder_uncompressed(lz->coder, LZMA_VLI_UNKNOWN);
 
 	return LZMA_OK;
 }
@@ -1031,7 +1031,7 @@ lzma_lzma_props_decode(void **options, lzma_allocator *allocator,
 		const uint8_t *props, size_t props_size)
 {
 	if (props_size != 5)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	lzma_options_lzma *opt
 			= lzma_alloc(sizeof(lzma_options_lzma), allocator);
@@ -1055,5 +1055,5 @@ lzma_lzma_props_decode(void **options, lzma_allocator *allocator,
 
 error:
 	lzma_free(opt, allocator);
-	return LZMA_HEADER_ERROR;
+	return LZMA_OPTIONS_ERROR;
 }

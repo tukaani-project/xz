@@ -263,7 +263,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				coder->filter_flags_decoder.coder, allocator,
 				in, in_pos, in_size, NULL, NULL, 0, LZMA_RUN);
 		if (ret != LZMA_STREAM_END)
-			return ret == LZMA_HEADER_ERROR
+			return ret == LZMA_OPTIONS_ERROR
 					? LZMA_DATA_ERROR : ret;
 
 		// Don't free the filter_flags_decoder. It doesn't take much
@@ -284,7 +284,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 				.id = LZMA_FILTER_SUBBLOCK_HELPER,
 				.options = &coder->helper,
 			}, {
-				.id = LZMA_VLI_VALUE_UNKNOWN,
+				.id = LZMA_VLI_UNKNOWN,
 				.options = NULL,
 			}
 		};
@@ -292,7 +292,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		// Optimization: We know that LZMA uses End of Payload Marker
 		// (not End of Input), so we can omit the helper filter.
 		if (filters[0].id == LZMA_FILTER_LZMA)
-			filters[1].id = LZMA_VLI_VALUE_UNKNOWN;
+			filters[1].id = LZMA_VLI_UNKNOWN;
 
 		return_if_error(lzma_raw_decoder_init(
 				&coder->subfilter, allocator, filters));

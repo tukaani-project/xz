@@ -290,7 +290,7 @@ subblock_data_size(lzma_coder *coder, lzma_allocator *allocator,
 	// Verify that the new limit is valid.
 	if (new_limit < LZMA_SUBBLOCK_DATA_SIZE_MIN
 			|| new_limit > LZMA_SUBBLOCK_DATA_SIZE_MAX)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Ff the new limit is different than the previous one, we need
 	// to reallocate the data buffer.
@@ -368,7 +368,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		}
 
 		default:
-			return LZMA_HEADER_ERROR;
+			return LZMA_OPTIONS_ERROR;
 		}
 
 		// If we are sync-flushing or finishing, the application may
@@ -518,7 +518,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 					< LZMA_SUBBLOCK_ALIGNMENT_MIN
 					|| coder->alignment.multiple
 					> LZMA_SUBBLOCK_ALIGNMENT_MAX)
-				return LZMA_HEADER_ERROR;
+				return LZMA_OPTIONS_ERROR;
 
 			// Run-length encoder
 			//
@@ -537,7 +537,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			// validate it.
 			coder->rle.size = coder->options->rle;
 			if (coder->rle.size > LZMA_SUBBLOCK_RLE_MAX)
-				return LZMA_HEADER_ERROR;
+				return LZMA_OPTIONS_ERROR;
 
 			if (coder->subblock.size != 0
 					&& coder->rle.size
@@ -786,14 +786,13 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 		assert(coder->options != NULL);
 
 		// There must be a filter specified.
-		if (coder->options->subfilter_options.id
-				== LZMA_VLI_VALUE_UNKNOWN)
-			return LZMA_HEADER_ERROR;
+		if (coder->options->subfilter_options.id == LZMA_VLI_UNKNOWN)
+			return LZMA_OPTIONS_ERROR;
 
 		// Initialize a raw encoder to work as a Subfilter.
 		lzma_filter options[2];
 		options[0] = coder->options->subfilter_options;
-		options[1].id = LZMA_VLI_VALUE_UNKNOWN;
+		options[1].id = LZMA_VLI_UNKNOWN;
 
 		return_if_error(lzma_raw_encoder_init(
 				&coder->subfilter.subcoder, allocator,
@@ -970,7 +969,7 @@ lzma_subblock_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 				|| next->coder->options->alignment
 					> LZMA_SUBBLOCK_ALIGNMENT_MAX) {
 			subblock_encoder_end(next->coder, allocator);
-			return LZMA_HEADER_ERROR;
+			return LZMA_OPTIONS_ERROR;
 		}
 		next->coder->alignment.multiple
 				= next->coder->options->alignment;

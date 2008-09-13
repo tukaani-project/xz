@@ -54,7 +54,7 @@ typedef enum {
 		 * \note        It's possible that this match finder gets
 		 *              removed in future. The definition will stay
 		 *              in this header, but liblzma may return
-		 *              LZMA_HEADER_ERROR if it is specified (just
+		 *              LZMA_OPTIONS_ERROR if it is specified (just
 		 *              like it would if the match finder had been
 		 *              disabled at compile time).
 		 */
@@ -68,7 +68,7 @@ typedef enum {
 		 * \note        It's possible that this match finder gets
 		 *              removed in future. The definition will stay
 		 *              in this header, but liblzma may return
-		 *              LZMA_HEADER_ERROR if it is specified (just
+		 *              LZMA_OPTIONS_ERROR if it is specified (just
 		 *              like it would if the match finder had been
 		 *              disabled at compile time).
 		 */

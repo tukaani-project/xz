@@ -111,7 +111,7 @@ lzma_delta_props_encode(const void *options, uint8_t *out)
 	if (opt->type != LZMA_DELTA_TYPE_BYTE
 			|| opt->distance < LZMA_DELTA_DISTANCE_MIN
 			|| opt->distance > LZMA_DELTA_DISTANCE_MAX)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	out[0] = opt->distance - LZMA_DELTA_DISTANCE_MIN;
 

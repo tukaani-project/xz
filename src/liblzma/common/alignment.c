@@ -23,7 +23,7 @@
 extern LZMA_API uint32_t
 lzma_alignment_input(const lzma_filter *filters, uint32_t guess)
 {
-	for (size_t i = 0; filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {
+	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
 		switch (filters[i].id) {
 		case LZMA_FILTER_DELTA:
 			// The same as the input, check the next filter.
@@ -68,12 +68,12 @@ lzma_alignment_input(const lzma_filter *filters, uint32_t guess)
 extern LZMA_API uint32_t
 lzma_alignment_output(const lzma_filter *filters, uint32_t guess)
 {
-	if (filters[0].id == LZMA_VLI_VALUE_UNKNOWN)
+	if (filters[0].id == LZMA_VLI_UNKNOWN)
 		return UINT32_MAX;
 
 	// Find the last filter in the chain.
 	size_t i = 0;
-	while (filters[i + 1].id != LZMA_VLI_VALUE_UNKNOWN)
+	while (filters[i + 1].id != LZMA_VLI_UNKNOWN)
 		++i;
 
 	do {

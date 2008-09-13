@@ -53,7 +53,7 @@ typedef struct {
 	/// Encodes Filter Properties.
 	///
 	/// \return     - LZMA_OK: Properties encoded sucessfully.
-	///             - LZMA_HEADER_ERROR: Unsupported options
+	///             - LZMA_OPTIONS_ERROR: Unsupported options
 	///             - LZMA_PROG_ERROR: Invalid options or not enough
 	///               output space
 	lzma_ret (*props_encode)(const void *options, uint8_t *out);
@@ -223,14 +223,14 @@ lzma_chunk_size(const lzma_filter *filters)
 {
 	lzma_vli max = 0;
 
-	for (size_t i = 0; filters[i].id != LZMA_VLI_VALUE_UNKNOWN; ++i) {
+	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
 		const lzma_filter_encoder *const fe
 				= encoder_find(filters[i].id);
 		if (fe->chunk_size != NULL) {
 			const lzma_vli size
 					= fe->chunk_size(filters[i].options);
-			if (size == LZMA_VLI_VALUE_UNKNOWN)
-				return LZMA_VLI_VALUE_UNKNOWN;
+			if (size == LZMA_VLI_UNKNOWN)
+				return LZMA_VLI_UNKNOWN;
 
 			if (size > max)
 				max = size;
@@ -247,11 +247,11 @@ lzma_properties_size(uint32_t *size, const lzma_filter *filter)
 	const lzma_filter_encoder *const fe = encoder_find(filter->id);
 	if (fe == NULL) {
 		// Unknown filter - if the Filter ID is a proper VLI,
-		// return LZMA_HEADER_ERROR instead of LZMA_PROG_ERROR,
+		// return LZMA_OPTIONS_ERROR instead of LZMA_PROG_ERROR,
 		// because it's possible that we just don't have support
 		// compiled in for the requested filter.
-		return filter->id <= LZMA_VLI_VALUE_MAX
-				? LZMA_HEADER_ERROR : LZMA_PROG_ERROR;
+		return filter->id <= LZMA_VLI_MAX
+				? LZMA_OPTIONS_ERROR : LZMA_PROG_ERROR;
 	}
 
 	if (fe->props_size_get == NULL) {

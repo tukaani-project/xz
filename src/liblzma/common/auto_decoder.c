@@ -131,7 +131,7 @@ auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	lzma_next_coder_init(auto_decoder_init, next, allocator);
 
 	if (flags & ~LZMA_SUPPORTED_FLAGS)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);

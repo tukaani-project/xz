@@ -66,8 +66,8 @@ block_encoder_init(lzma_coder *coder, lzma_allocator *allocator)
 	// initialized, it is a good idea to do it here, because this way
 	// we catch if someone gave us Filter ID that cannot be used in
 	// Blocks/Streams.
-	coder->block_options.compressed_size = LZMA_VLI_VALUE_UNKNOWN;
-	coder->block_options.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
+	coder->block_options.compressed_size = LZMA_VLI_UNKNOWN;
+	coder->block_options.uncompressed_size = LZMA_VLI_UNKNOWN;
 
 	return_if_error(lzma_block_header_size(&coder->block_options));
 

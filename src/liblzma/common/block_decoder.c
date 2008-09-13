@@ -58,8 +58,8 @@ struct lzma_coder_s {
 static inline bool
 update_size(lzma_vli *size, lzma_vli add, lzma_vli limit)
 {
-	if (limit > LZMA_VLI_VALUE_MAX)
-		limit = LZMA_VLI_VALUE_MAX;
+	if (limit > LZMA_VLI_MAX)
+		limit = LZMA_VLI_MAX;
 
 	if (limit < *size || limit - *size < add)
 		return true;
@@ -73,7 +73,7 @@ update_size(lzma_vli *size, lzma_vli add, lzma_vli limit)
 static inline bool
 is_size_valid(lzma_vli size, lzma_vli reference)
 {
-	return reference == LZMA_VLI_VALUE_UNKNOWN || reference == size;
+	return reference == LZMA_VLI_UNKNOWN || reference == size;
 }
 
 
@@ -96,7 +96,7 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		const size_t out_used = *out_pos - out_start;
 
 		// NOTE: We compare to compressed_limit here, which prevents
-		// the total size of the Block growing past LZMA_VLI_VALUE_MAX.
+		// the total size of the Block growing past LZMA_VLI_MAX.
 		if (update_size(&coder->compressed_size, in_used,
 					coder->compressed_limit)
 				|| update_size(&coder->uncompressed_size,
@@ -224,8 +224,8 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// value so that Total Size of the Block still is a valid VLI and
 	// a multiple of four.
 	next->coder->compressed_limit
-			= options->compressed_size == LZMA_VLI_VALUE_UNKNOWN
-				? (LZMA_VLI_VALUE_MAX & ~LZMA_VLI_C(3))
+			= options->compressed_size == LZMA_VLI_UNKNOWN
+				? (LZMA_VLI_MAX & ~LZMA_VLI_C(3))
 					- options->header_size
 					- lzma_check_size(options->check)
 				: options->compressed_size;

@@ -23,7 +23,7 @@
 
 
 /// The maximum size of a single Block is limited by the maximum size of
-/// a Stream, which is 2^63 - 1 bytes (i.e. LZMA_VLI_VALUE_MAX). We could
+/// a Stream, which is 2^63 - 1 bytes (i.e. LZMA_VLI_MAX). We could
 /// take into account the headers etc. to determine the exact maximum size
 /// of the Compressed Data field, but the complexity would give us nothing
 /// useful. Instead, limit the size of Compressed Data so that even with
@@ -33,7 +33,7 @@
 ///
 /// ~LZMA_VLI_C(3) is to guarantee that if we need padding at the end of
 /// the Compressed Data field, it will still stay in the proper limit.
-#define COMPRESSED_SIZE_MAX ((LZMA_VLI_VALUE_MAX - LZMA_BLOCK_HEADER_SIZE_MAX \
+#define COMPRESSED_SIZE_MAX ((LZMA_VLI_MAX - LZMA_BLOCK_HEADER_SIZE_MAX \
 		- LZMA_CHECK_SIZE_MAX) & ~LZMA_VLI_C(3))
 
 
@@ -73,7 +73,7 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
 	// Check that our amount of input stays in proper limits.
-	if (LZMA_VLI_VALUE_MAX - coder->uncompressed_size < in_size - *in_pos)
+	if (LZMA_VLI_MAX - coder->uncompressed_size < in_size - *in_pos)
 		return LZMA_PROG_ERROR;
 
 	switch (coder->sequence) {

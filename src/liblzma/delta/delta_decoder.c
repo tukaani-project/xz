@@ -66,7 +66,7 @@ lzma_delta_props_decode(void **options, lzma_allocator *allocator,
 		const uint8_t *props, size_t props_size)
 {
 	if (props_size != 1)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	lzma_options_delta *opt
 			= lzma_alloc(sizeof(lzma_options_delta), allocator);

@@ -29,7 +29,7 @@ free_properties(lzma_block *options, lzma_allocator *allocator)
 	// lzma_block_header_decode(), so we don't need to touch that here.
 	for (size_t i = 0; i < LZMA_BLOCK_FILTERS_MAX; ++i) {
 		lzma_free(options->filters[i].options, allocator);
-		options->filters[i].id = LZMA_VLI_VALUE_UNKNOWN;
+		options->filters[i].id = LZMA_VLI_UNKNOWN;
 		options->filters[i].options = NULL;
 	}
 
@@ -49,7 +49,7 @@ lzma_block_header_decode(lzma_block *options,
 	// Initialize the filter options array. This way the caller can
 	// safely free() the options even if an error occurs in this function.
 	for (size_t i = 0; i <= LZMA_BLOCK_FILTERS_MAX; ++i) {
-		options->filters[i].id = LZMA_VLI_VALUE_UNKNOWN;
+		options->filters[i].id = LZMA_VLI_UNKNOWN;
 		options->filters[i].options = NULL;
 	}
 
@@ -73,7 +73,7 @@ lzma_block_header_decode(lzma_block *options,
 
 	// Check for unsupported flags.
 	if (in[1] & 0x3C)
-		return LZMA_HEADER_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
 	// Start after the Block Header Size and Block Flags fields.
 	size_t in_pos = 2;
@@ -83,7 +83,7 @@ lzma_block_header_decode(lzma_block *options,
 		return_if_error(lzma_vli_decode(&options->compressed_size,
 				NULL, in, &in_pos, in_size));
 
-		if (options->compressed_size > LZMA_VLI_VALUE_MAX / 4 - 1)
+		if (options->compressed_size > LZMA_VLI_MAX / 4 - 1)
 			return LZMA_DATA_ERROR;
 
 		options->compressed_size = (options->compressed_size + 1) * 4;
@@ -94,7 +94,7 @@ lzma_block_header_decode(lzma_block *options,
 		if (lzma_block_total_size_get(options) == 0)
 			return LZMA_DATA_ERROR;
 	} else {
-		options->compressed_size = LZMA_VLI_VALUE_UNKNOWN;
+		options->compressed_size = LZMA_VLI_UNKNOWN;
 	}
 
 	// Uncompressed Size
@@ -102,7 +102,7 @@ lzma_block_header_decode(lzma_block *options,
 		return_if_error(lzma_vli_decode(&options->uncompressed_size,
 				NULL, in, &in_pos, in_size));
 	else
-		options->uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
+		options->uncompressed_size = LZMA_VLI_UNKNOWN;
 
 	// Filter Flags
 	const size_t filter_count = (in[1] & 3) + 1;
@@ -122,8 +122,8 @@ lzma_block_header_decode(lzma_block *options,
 			free_properties(options, allocator);
 
 			// Possibly some new field present so use
-			// LZMA_HEADER_ERROR instead of LZMA_DATA_ERROR.
-			return LZMA_HEADER_ERROR;
+			// LZMA_OPTIONS_ERROR instead of LZMA_DATA_ERROR.
+			return LZMA_OPTIONS_ERROR;
 		}
 	}
 

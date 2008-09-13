@@ -314,7 +314,7 @@ parse_stream_tail(listing_handle *handle)
 		ret = lzma_vli_reverse_decode(&handle->uncompressed_size,
 				handle->buffer, &tmp);
 		if (ret != LZMA_OK)
-			handle->uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
+			handle->uncompressed_size = LZMA_VLI_UNKNOWN;
 	}
 
 	// Calculate the Header Metadata Block start offset.
@@ -376,9 +376,9 @@ list_native(listing_handle *handle)
 		// If Uncompressed Size isn't present in Block Header,
 		// it must be present in Stream Footer.
 		if (handle->block_options.uncompressed_size
-					== LZMA_VLI_VALUE_UNKNOWN
+					== LZMA_VLI_UNKNOWN
 				&& handle->stream_flags.uncompressed_size
-					== LZMA_VLI_VALUE_UNKNOWN) {
+					== LZMA_VLI_UNKNOWN) {
 			FILE_IS_CORRUPT();
 			return;
 		}

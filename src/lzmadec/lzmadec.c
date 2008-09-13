@@ -412,7 +412,7 @@ uncompress(void)
 				fprintf(stderr, "File is corrupt\n");
 				exit(ERROR);
 
-			case LZMA_HEADER_ERROR:
+			case LZMA_OPTIONS_ERROR:
 				fprintf(stderr, "Unsupported file "
 						"format or filters\n");
 				exit(ERROR);

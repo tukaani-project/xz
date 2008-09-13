@@ -44,12 +44,12 @@ main()
 		.has_uncompressed_size_in_footer = false,
 		.has_backward_size = false,
 		.handle_padding = false,
-		.total_size = LZMA_VLI_VALUE_UNKNOWN,
-		.compressed_size = LZMA_VLI_VALUE_UNKNOWN,
-		.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN,
+		.total_size = LZMA_VLI_UNKNOWN,
+		.compressed_size = LZMA_VLI_UNKNOWN,
+		.uncompressed_size = LZMA_VLI_UNKNOWN,
 		.header_size = 5,
 	};
-	block_options.filters[0].id = LZMA_VLI_VALUE_UNKNOWN;
+	block_options.filters[0].id = LZMA_VLI_UNKNOWN;
 	block_options.filters[0].options = NULL;
 
 

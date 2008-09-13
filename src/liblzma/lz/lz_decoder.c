@@ -219,12 +219,11 @@ lzma_lz_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// dictionary to the output buffer, since applications are
 	// recommended to give aligned buffers to liblzma.
 	//
-	// Avoid integer overflow. FIXME Should the return value be
-	// LZMA_OPTIONS_ERROR or LZMA_MEM_ERROR?
+	// Avoid integer overflow.
 	if (dict_size > SIZE_MAX - 15)
 		return LZMA_MEM_ERROR;
 
-	dict_size = (dict_size + 15) & (SIZE_MAX - 15);
+	dict_size = (dict_size + 15) & ~((size_t)(15));
 
 	// Allocate and initialize the dictionary.
 	if (next->coder->dict.size != dict_size) {

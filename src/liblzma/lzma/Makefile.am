@@ -31,7 +31,6 @@ liblzma2_la_SOURCES += \
 	lzma_encoder.c \
 	lzma_encoder_presets.c \
 	lzma_encoder_private.h \
-	lzma_encoder_features.c \
 	lzma_encoder_optimum_fast.c \
 	lzma_encoder_optimum_normal.c
 

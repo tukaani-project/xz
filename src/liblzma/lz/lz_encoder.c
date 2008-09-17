@@ -288,8 +288,12 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 		return true;
 	}
 
-	// Calculate the sizes of mf->hash and mf->son.
+	// Calculate the sizes of mf->hash and mf->son and check that
+	// find_len_max is big enough for the selected match finder.
 	const uint32_t hash_bytes = lz_options->match_finder & 0x0F;
+	if (hash_bytes > mf->find_len_max)
+		return true;
+
 	const bool is_bt = (lz_options->match_finder & 0x10) != 0;
 	uint32_t hs;
 
@@ -351,7 +355,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	// Maximum number of match finder cycles
 	mf->loops = lz_options->match_finder_cycles;
 	if (mf->loops == 0) {
-		mf->loops = 16 + (lz_options->find_len_max / 2);
+		mf->loops = 16 + (mf->find_len_max / 2);
 		if (!is_bt)
 			mf->loops /= 2;
 	}

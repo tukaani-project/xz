@@ -38,13 +38,6 @@
  * Usually hash chains are faster than binary trees.
  */
 typedef enum {
-	LZMA_MF_INVALID = -1,
-		/**<
-		 * \brief       Invalid match finder ID
-		 *
-		 * Used as array terminator in lzma_available_match_finders.
-		 */
-
 	LZMA_MF_HC3     = 0x03,
 		/**<
 		 * \brief       Hash Chain with 3 bytes hashing
@@ -121,13 +114,6 @@ extern lzma_bool lzma_mf_is_supported(lzma_match_finder match_finder)
  * finder.
  */
 typedef enum {
-	LZMA_MODE_INVALID = -1,
-		/**<
-		 * \brief       Invalid mode
-		 *
-		 * Used as array terminator in lzma_available_modes.
-		 */
-
 	LZMA_MODE_FAST = 0,
 		/**<
 		 * \brief       Fast compression

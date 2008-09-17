@@ -422,16 +422,11 @@ lzma_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 // Initialization //
 ////////////////////
 
-static bool
+static void
 set_lz_options(lzma_lz_options *lz_options, const lzma_options_lzma *options)
 {
-	if (!is_lclppb_valid(options)
-			|| options->fast_bytes < LZMA_FAST_BYTES_MIN
-			|| options->fast_bytes > LZMA_FAST_BYTES_MAX)
-		return true;
-
-	// FIXME validation
-
+	// LZ encoder initialization does the validation, also when just
+	// calculating memory usage, so we don't need to validate here.
 	lz_options->before_size = OPTS;
 	lz_options->dictionary_size = options->dictionary_size;
 	lz_options->after_size = LOOP_INPUT_MAX;
@@ -441,8 +436,6 @@ set_lz_options(lzma_lz_options *lz_options, const lzma_options_lzma *options)
 	lz_options->match_finder_cycles = options->match_finder_cycles;
 	lz_options->preset_dictionary = options->preset_dictionary;
 	lz_options->preset_dictionary_size = options->preset_dictionary_size;
-
-	return false;
 }
 
 
@@ -476,8 +469,7 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 
 	coder->pos_mask = (1U << options->pos_bits) - 1;
 	coder->literal_context_bits = options->literal_context_bits;
-	coder->literal_pos_mask = (1 << options->literal_pos_bits) - 1;
-
+	coder->literal_pos_mask = (1U << options->literal_pos_bits) - 1;
 
 	// Range coder
 	rc_reset(&coder->rc);
@@ -519,7 +511,19 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 	length_encoder_reset(&coder->rep_len_encoder,
 			1U << options->pos_bits, coder->fast_mode);
 
-	// FIXME: Too big or too small won't work when resetting in the middle of LZMA2.
+	// Price counts are incremented every time appropriate probabilities
+	// are changed. price counts are set to zero when the price tables
+	// are updated, which is done when the appropriate price counts have
+	// big enough value, and lzma_mf.read_ahead == 0 which happens at
+	// least every OPTS (a few thousand) possible price count increments.
+	//
+	// By resetting price counts to UINT32_MAX / 2, we make sure that the
+	// price tables will be initialized before they will be used (since
+	// the value is definitely big enough), and that it is OK to increment
+	// price counts without risk of integer overflow (since UINT32_MAX / 2
+	// is small enough). The current code doesn't increment price counts
+	// before initializing price tables, but it maybe done in future if
+	// we add support for saving the state between LZMA2 chunks.
 	coder->match_price_count = UINT32_MAX / 2;
 	coder->align_price_count = UINT32_MAX / 2;
 
@@ -540,10 +544,10 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 
 	lzma_coder *coder = *coder_ptr;
 
-	// Validate options that aren't validated elsewhere.
-	if (!is_lclppb_valid(options)
-			|| options->fast_bytes < LZMA_FAST_BYTES_MIN
-			|| options->fast_bytes > LZMA_FAST_BYTES_MAX)
+	// Validate some of the options. LZ encoder validates fast_bytes too
+	// but we need a valid value here earlier.
+	if (!is_lclppb_valid(options) || options->fast_bytes < MATCH_LEN_MIN
+			|| options->fast_bytes > MATCH_LEN_MAX)
 		return LZMA_OPTIONS_ERROR;
 
 	// Set compression mode.
@@ -581,9 +585,7 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 
 	lzma_lzma_encoder_reset(coder, options);
 
-	// LZ encoder options FIXME validation
-	if (set_lz_options(lz_options, options))
-		return LZMA_OPTIONS_ERROR;
+	set_lz_options(lz_options, options);
 
 	return LZMA_OK;
 }
@@ -603,25 +605,6 @@ extern lzma_ret
 lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
-	// Initialization call chain:
-	//
-	//    lzma_lzma_encoder_init()
-	//      `-- lzma_lz_encoder_init()
-	//            `-- lzma_encoder_init()
-	//                  `-- lzma_encoder_init2()
-	//
-	// The above complexity is to let LZ encoder store the pointer to
-	// the LZMA encoder structure. Encoding call tree:
-	//
-	//    lz_encode()
-	//      |-- fill_window()
-	//      |     `-- Next coder in the chain, if any
-	//      `-- lzma_encode()
-	//            |-- lzma_dict_find()
-	//            `-- lzma_dict_skip()
-	//
-	// FIXME ^
-	//
 	return lzma_lz_encoder_init(
 			next, allocator, filters, &lzma_encoder_init);
 }
@@ -631,8 +614,7 @@ extern uint64_t
 lzma_lzma_encoder_memusage(const void *options)
 {
 	lzma_lz_options lz_options;
-	if (set_lz_options(&lz_options, options))
-		return UINT64_MAX;
+	set_lz_options(&lz_options, options);
 
 	const uint64_t lz_memusage = lzma_lz_encoder_memusage(&lz_options);
 	if (lz_memusage == UINT64_MAX)

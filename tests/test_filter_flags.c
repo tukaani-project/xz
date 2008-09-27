@@ -145,31 +145,31 @@ test_delta(void)
 	// Test 2
 	lzma_options_delta options = {
 		.type = LZMA_DELTA_TYPE_BYTE,
-		.distance = 0
+		.dist = 0
 	};
 	known_flags.options = &options;
 	expect(encode(99));
 
 	// Test 3
-	options.distance = LZMA_DELTA_DISTANCE_MIN;
+	options.dist = LZMA_DELTA_DIST_MIN;
 	expect(!encode(3));
 	expect(!decode(3));
-	expect(((lzma_options_delta *)(decoded_flags.options))
-				->distance == options.distance);
+	expect(((lzma_options_delta *)(decoded_flags.options))->dist
+			== options.dist);
 
 	free(decoded_flags.options);
 
 	// Test 4
-	options.distance = LZMA_DELTA_DISTANCE_MAX;
+	options.dist = LZMA_DELTA_DIST_MAX;
 	expect(!encode(3));
 	expect(!decode(3));
-	expect(((lzma_options_delta *)(decoded_flags.options))
-				->distance == options.distance);
+	expect(((lzma_options_delta *)(decoded_flags.options))->dist
+			== options.dist);
 
 	free(decoded_flags.options);
 
 	// Test 5
-	options.distance = LZMA_DELTA_DISTANCE_MAX + 1;
+	options.dist = LZMA_DELTA_DIST_MAX + 1;
 	expect(encode(99));
 }
 #endif

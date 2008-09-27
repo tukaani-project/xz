@@ -52,10 +52,10 @@ auto_decode(lzma_coder *coder, lzma_allocator *allocator,
 		coder->sequence = SEQ_CODE;
 
 		// Detect the file format. For now this is simple, since if
-		// it doesn't start with 0xFF (the first magic byte of the
+		// it doesn't start with 0xFD (the first magic byte of the
 		// new format), it has to be LZMA_Alone, or something that
 		// we don't support at all.
-		if (in[*in_pos] == 0xFF) {
+		if (in[*in_pos] == 0xFD) {
 			return_if_error(lzma_stream_decoder_init(
 					&coder->next, allocator,
 					coder->memlimit, coder->flags));

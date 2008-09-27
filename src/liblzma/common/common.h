@@ -54,7 +54,7 @@
 /// Internal helper filter used by Subblock decoder. It is mapped to an
 /// otherwise invalid Filter ID, which is impossible to get from any input
 /// file (even if malicious file).
-#define LZMA_FILTER_SUBBLOCK_HELPER (LZMA_FILTER_RESERVED_START + 1)
+#define LZMA_FILTER_SUBBLOCK_HELPER LZMA_VLI_C(0x7000000000000001)
 
 
 /// Supported flags that can be passed to lzma_stream_decoder()

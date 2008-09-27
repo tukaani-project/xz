@@ -33,7 +33,7 @@ struct lzma_coder_s {
 	uint8_t pos;
 
 	/// Buffer to hold history of the original data
-	uint8_t history[LZMA_DELTA_DISTANCE_MAX];
+	uint8_t history[LZMA_DELTA_DIST_MAX];
 };
 
 

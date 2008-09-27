@@ -109,11 +109,11 @@ lzma_delta_props_encode(const void *options, uint8_t *out)
 	// It's possible that newer liblzma versions will support larger
 	// distance values.
 	if (opt->type != LZMA_DELTA_TYPE_BYTE
-			|| opt->distance < LZMA_DELTA_DISTANCE_MIN
-			|| opt->distance > LZMA_DELTA_DISTANCE_MAX)
+			|| opt->dist < LZMA_DELTA_DIST_MIN
+			|| opt->dist > LZMA_DELTA_DIST_MAX)
 		return LZMA_OPTIONS_ERROR;
 
-	out[0] = opt->distance - LZMA_DELTA_DISTANCE_MIN;
+	out[0] = opt->dist - LZMA_DELTA_DIST_MIN;
 
 	return LZMA_OK;
 }

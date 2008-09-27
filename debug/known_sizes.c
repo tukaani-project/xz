@@ -47,10 +47,14 @@ main(void)
 	const size_t in_size = fread(in, 1, BUFFER_SIZE, stdin);
 
 	// Filter setup
+	lzma_options_lzma opt_lzma;
+	if (lzma_lzma_preset(&opt_lzma, 0))
+		return 1;
+	
 	lzma_filter filters[] = {
 		{
 			.id = LZMA_FILTER_LZMA2,
-			.options = (void *)(&lzma_preset_lzma[0])
+			.options = &opt_lzma
 		},
 		{
 			.id = LZMA_VLI_UNKNOWN

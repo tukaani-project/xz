@@ -62,9 +62,9 @@ typedef struct {
 
 
 static const lzma_filter_encoder encoders[] = {
-#ifdef HAVE_ENCODER_LZMA
+#ifdef HAVE_ENCODER_LZMA1
 	{
-		.id = LZMA_FILTER_LZMA,
+		.id = LZMA_FILTER_LZMA1,
 		.init = &lzma_lzma_encoder_init,
 		.memusage = &lzma_lzma_encoder_memusage,
 		.chunk_size = NULL, // FIXME

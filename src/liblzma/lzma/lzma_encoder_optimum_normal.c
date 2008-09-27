@@ -281,7 +281,7 @@ helper1(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		uint32_t *restrict back_res, uint32_t *restrict len_res,
 		uint32_t position)
 {
-	const uint32_t fast_bytes = mf->find_len_max;
+	const uint32_t nice_len = mf->nice_len;
 
 	uint32_t len_main;
 	uint32_t matches_count;
@@ -324,7 +324,7 @@ helper1(lzma_coder *restrict coder, lzma_mf *restrict mf,
 			rep_max_index = i;
 	}
 
-	if (rep_lens[rep_max_index] >= fast_bytes) {
+	if (rep_lens[rep_max_index] >= nice_len) {
 		*back_res = rep_max_index;
 		*len_res = rep_lens[rep_max_index];
 		mf_skip(mf, *len_res - 1);
@@ -332,7 +332,7 @@ helper1(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	}
 
 
-	if (len_main >= fast_bytes) {
+	if (len_main >= nice_len) {
 		*back_res = coder->matches[matches_count - 1].dist
 				+ REP_DISTANCES;
 		*len_res = len_main;
@@ -457,7 +457,7 @@ helper1(lzma_coder *restrict coder, lzma_mf *restrict mf,
 static inline uint32_t
 helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 		uint32_t len_end, uint32_t position, const uint32_t cur,
-		const uint32_t fast_bytes, const uint32_t buf_avail_full)
+		const uint32_t nice_len, const uint32_t buf_avail_full)
 {
 	uint32_t matches_count = coder->matches_count;
 	uint32_t new_len = coder->longest_match_length;
@@ -572,12 +572,12 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 	if (buf_avail_full < 2)
 		return len_end;
 
-	const uint32_t buf_avail = MIN(buf_avail_full, fast_bytes);
+	const uint32_t buf_avail = MIN(buf_avail_full, nice_len);
 
 	if (!next_is_literal && match_byte != current_byte) { // speed optimization
 		// try literal + rep0
 		const uint8_t *const buf_back = buf - reps[0] - 1;
-		const uint32_t limit = MIN(buf_avail_full, fast_bytes + 1);
+		const uint32_t limit = MIN(buf_avail_full, nice_len + 1);
 
 		uint32_t len_test = 1;
 		while (len_test < limit && buf[len_test] == buf_back[len_test])
@@ -656,7 +656,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 
 		uint32_t len_test_2 = len_test + 1;
 		const uint32_t limit = MIN(buf_avail_full,
-				len_test_2 + fast_bytes);
+				len_test_2 + nice_len);
 		for (; len_test_2 < limit
 				&& buf[len_test_2] == buf_back[len_test_2];
 				++len_test_2) ;
@@ -751,7 +751,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 				const uint8_t *const buf_back = buf - cur_back - 1;
 				uint32_t len_test_2 = len_test + 1;
 				const uint32_t limit = MIN(buf_avail_full,
-						len_test_2 + fast_bytes);
+						len_test_2 + nice_len);
 
 				for (; len_test_2 < limit &&
 						buf[len_test_2] == buf_back[len_test_2];
@@ -862,11 +862,11 @@ lzma_lzma_optimum_normal(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		coder->longest_match_length = mf_find(
 				mf, &coder->matches_count, coder->matches);
 
-		if (coder->longest_match_length >= mf->find_len_max)
+		if (coder->longest_match_length >= mf->nice_len)
 			break;
 
 		len_end = helper2(coder, reps, mf_ptr(mf) - 1, len_end,
-				position + cur, cur, mf->find_len_max,
+				position + cur, cur, mf->nice_len,
 				MIN(mf_avail(mf) + 1, OPTS - 1 - cur));
 	}
 

@@ -26,27 +26,27 @@ main(void)
 	lzma_init();
 
 	lzma_options_lzma lzma = {
-		.dictionary_size = (1 << 27) + (1 << 26),
-		.literal_context_bits = 3,
-		.literal_pos_bits = 0,
-		.pos_bits = 2,
-		.preset_dictionary = NULL,
-		.preset_dictionary_size = 0,
+		.dict_size = (1U << 27) + (1U << 26),
+		.lc = 3,
+		.lp = 0,
+		.pb = 2,
+		.preset_dict = NULL,
+		.preset_dict_size = 0,
 		.mode = LZMA_MODE_NORMAL,
-		.fast_bytes = 48,
-		.match_finder = LZMA_MF_BT4,
-		.match_finder_cycles = 0,
+		.nice_len = 48,
+		.mf = LZMA_MF_BT4,
+		.depth = 0,
 	};
 
 /*
 	lzma_options_filter filters[] = {
-		{ LZMA_FILTER_LZMA,
+		{ LZMA_FILTER_LZMA1,
 			(lzma_options_lzma *)&lzma_preset_lzma[6 - 1] },
 		{ UINT64_MAX, NULL }
 	};
 */
 	lzma_filter filters[] = {
-		{ LZMA_FILTER_LZMA, &lzma },
+		{ LZMA_FILTER_LZMA1, &lzma },
 		{ UINT64_MAX, NULL }
 	};
 

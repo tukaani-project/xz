@@ -124,7 +124,7 @@ static const struct option long_opts[] = {
 static void
 add_filter(lzma_vli id, const char *opt_str)
 {
-	if (filter_count == 7) {
+	if (filter_count == LZMA_BLOCK_FILTERS_MAX) {
 		errmsg(V_ERROR, _("Maximum number of filters is seven"));
 		my_exit(ERROR);
 	}
@@ -142,7 +142,7 @@ add_filter(lzma_vli id, const char *opt_str)
 				= parse_options_delta(opt_str);
 		break;
 
-	case LZMA_FILTER_LZMA:
+	case LZMA_FILTER_LZMA1:
 	case LZMA_FILTER_LZMA2:
 		opt_filters[filter_count].options
 				= parse_options_lzma(opt_str);
@@ -301,7 +301,7 @@ parse_real(int argc, char **argv)
 			break;
 
 		case OPT_LZMA1:
-			add_filter(LZMA_FILTER_LZMA, optarg);
+			add_filter(LZMA_FILTER_LZMA1, optarg);
 			break;
 
 		case OPT_LZMA2:
@@ -452,11 +452,17 @@ parse_environment(void)
 static void
 set_compression_settings(void)
 {
+	static lzma_options_lzma opt_lzma;
+
 	if (filter_count == 0) {
+		if (lzma_lzma_preset(&opt_lzma, preset_number)) {
+			errmsg(V_ERROR, _("Internal error (bug)"));
+			my_exit(ERROR);
+		}
+
 		opt_filters[0].id = opt_header == HEADER_ALONE
-				? LZMA_FILTER_LZMA : LZMA_FILTER_LZMA2;
-		opt_filters[0].options = (lzma_options_lzma *)(
-				lzma_preset_lzma + preset_number);
+				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
+		opt_filters[0].options = &opt_lzma;
 		filter_count = 1;
 	}
 
@@ -466,11 +472,13 @@ set_compression_settings(void)
 	// If we are using the LZMA_Alone format, allow exactly one filter
 	// which has to be LZMA.
 	if (opt_header == HEADER_ALONE && (filter_count != 1
-			|| opt_filters[0].id != LZMA_FILTER_LZMA)) {
-		errmsg(V_ERROR, _("With --format=alone only the LZMA filter "
+			|| opt_filters[0].id != LZMA_FILTER_LZMA1)) {
+		errmsg(V_ERROR, _("With --format=alone only the LZMA1 filter "
 				"is supported"));
 		my_exit(ERROR);
 	}
+
+	// TODO: liblzma probably needs an API to validate the filter chain.
 
 	// If using --format=raw, we can be decoding.
 	uint64_t memory_usage = opt_mode == MODE_COMPRESS
@@ -488,10 +496,11 @@ set_compression_settings(void)
 				my_exit(ERROR);
 			}
 
-			--preset_number;
-			opt_filters[0].options = (lzma_options_lzma *)(
-					lzma_preset_lzma
-					+ preset_number);
+			if (lzma_lzma_preset(&opt_lzma, --preset_number)) {
+				errmsg(V_ERROR, _("Internal error (bug)"));
+				my_exit(ERROR);
+			}
+
 			memory_usage = lzma_memusage_encoder(opt_filters);
 		}
 	} else {

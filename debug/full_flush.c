@@ -74,9 +74,14 @@ main(int argc, char **argv)
 
 
 	// Config
+	lzma_options_lzma opt_lzma;
+	if (lzma_lzma_preset(&opt_lzma, 0)) {
+		fprintf(stderr, "preset failed\n");
+		exit(1);
+	}
 	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
 	filters[0].id = LZMA_FILTER_LZMA2;
-	filters[0].options = (void *)&lzma_preset_lzma[0];
+	filters[0].options = &opt_lzma;
 	filters[1].id = LZMA_VLI_UNKNOWN;
 
 	// Init

@@ -428,14 +428,14 @@ set_lz_options(lzma_lz_options *lz_options, const lzma_options_lzma *options)
 	// LZ encoder initialization does the validation, also when just
 	// calculating memory usage, so we don't need to validate here.
 	lz_options->before_size = OPTS;
-	lz_options->dictionary_size = options->dictionary_size;
+	lz_options->dict_size = options->dict_size;
 	lz_options->after_size = LOOP_INPUT_MAX;
 	lz_options->match_len_max = MATCH_LEN_MAX;
-	lz_options->find_len_max = options->fast_bytes;
-	lz_options->match_finder = options->match_finder;
-	lz_options->match_finder_cycles = options->match_finder_cycles;
-	lz_options->preset_dictionary = options->preset_dictionary;
-	lz_options->preset_dictionary_size = options->preset_dictionary_size;
+	lz_options->nice_len = options->nice_len;
+	lz_options->match_finder = options->mf;
+	lz_options->depth = options->depth;
+	lz_options->preset_dict = options->preset_dict;
+	lz_options->preset_dict_size = options->preset_dict_size;
 }
 
 
@@ -467,9 +467,9 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 {
 	assert(!coder->is_flushed);
 
-	coder->pos_mask = (1U << options->pos_bits) - 1;
-	coder->literal_context_bits = options->literal_context_bits;
-	coder->literal_pos_mask = (1U << options->literal_pos_bits) - 1;
+	coder->pos_mask = (1U << options->pb) - 1;
+	coder->literal_context_bits = options->lc;
+	coder->literal_pos_mask = (1U << options->lp) - 1;
 
 	// Range coder
 	rc_reset(&coder->rc);
@@ -479,8 +479,7 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 	for (size_t i = 0; i < REP_DISTANCES; ++i)
 		coder->reps[i] = 0;
 
-	literal_init(coder->literal, options->literal_context_bits,
-			options->literal_pos_bits);
+	literal_init(coder->literal, options->lc, options->lp);
 
 	// Bit encoders
 	for (size_t i = 0; i < STATES; ++i) {
@@ -506,10 +505,10 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 
 	// Length encoders
 	length_encoder_reset(&coder->match_len_encoder,
-			1U << options->pos_bits, coder->fast_mode);
+			1U << options->pb, coder->fast_mode);
 
 	length_encoder_reset(&coder->rep_len_encoder,
-			1U << options->pos_bits, coder->fast_mode);
+			1U << options->pb, coder->fast_mode);
 
 	// Price counts are incremented every time appropriate probabilities
 	// are changed. price counts are set to zero when the price tables
@@ -546,8 +545,8 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 
 	// Validate some of the options. LZ encoder validates fast_bytes too
 	// but we need a valid value here earlier.
-	if (!is_lclppb_valid(options) || options->fast_bytes < MATCH_LEN_MIN
-			|| options->fast_bytes > MATCH_LEN_MAX)
+	if (!is_lclppb_valid(options) || options->nice_len < MATCH_LEN_MIN
+			|| options->nice_len > MATCH_LEN_MAX)
 		return LZMA_OPTIONS_ERROR;
 
 	// Set compression mode.
@@ -562,17 +561,16 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 			// Set dist_table_size.
 			// Round the dictionary size up to next 2^n.
 			uint32_t log_size = 0;
-			while ((UINT32_C(1) << log_size)
-					< options->dictionary_size)
+			while ((UINT32_C(1) << log_size) < options->dict_size)
 				++log_size;
 
 			coder->dist_table_size = log_size * 2;
 
 			// Length encoders' price table size
 			coder->match_len_encoder.table_size
-				= options->fast_bytes + 1 - MATCH_LEN_MIN;
+				= options->nice_len + 1 - MATCH_LEN_MIN;
 			coder->rep_len_encoder.table_size
-				= options->fast_bytes + 1 - MATCH_LEN_MIN;
+				= options->nice_len + 1 - MATCH_LEN_MIN;
 			break;
 		}
 
@@ -627,24 +625,17 @@ lzma_lzma_encoder_memusage(const void *options)
 extern bool
 lzma_lzma_lclppb_encode(const lzma_options_lzma *options, uint8_t *byte)
 {
-	if (options->literal_context_bits > LZMA_LITERAL_CONTEXT_BITS_MAX
-			|| options->literal_pos_bits
-				> LZMA_LITERAL_POS_BITS_MAX
-			|| options->pos_bits > LZMA_POS_BITS_MAX
-			|| options->literal_context_bits
-					+ options->literal_pos_bits
-				> LZMA_LITERAL_BITS_MAX)
+	if (!is_lclppb_valid(options))
 		return true;
 
-	*byte = (options->pos_bits * 5 + options->literal_pos_bits) * 9
-			+ options->literal_context_bits;
+	*byte = (options->pb * 5 + options->lp) * 9 + options->lc;
 	assert(*byte <= (4 * 5 + 4) * 9 + 8);
 
 	return false;
 }
 
 
-#ifdef HAVE_ENCODER_LZMA
+#ifdef HAVE_ENCODER_LZMA1
 extern lzma_ret
 lzma_lzma_props_encode(const void *options, uint8_t *out)
 {
@@ -653,7 +644,7 @@ lzma_lzma_props_encode(const void *options, uint8_t *out)
 	if (lzma_lzma_lclppb_encode(opt, out))
 		return LZMA_PROG_ERROR;
 
-	integer_write_32(out + 1, opt->dictionary_size);
+	integer_write_32(out + 1, opt->dict_size);
 
 	return LZMA_OK;
 }

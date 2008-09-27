@@ -32,20 +32,16 @@
 /// Maximum number of position states. A position state is the lowest pos bits
 /// number of bits of the current uncompressed offset. In some places there
 /// are different sets of probabilities for different pos states.
-#define POS_STATES_MAX (1 << LZMA_POS_BITS_MAX)
+#define POS_STATES_MAX (1 << LZMA_PB_MAX)
 
 
-/// Validates literal_context_bits, literal_pos_bits, and pos_bits.
+/// Validates lc, lp, and pb.
 static inline bool
 is_lclppb_valid(const lzma_options_lzma *options)
 {
-	return options->literal_context_bits <= LZMA_LITERAL_CONTEXT_BITS_MAX
-			&& options->literal_pos_bits
-				<= LZMA_LITERAL_POS_BITS_MAX
-			&& options->literal_context_bits
-					+ options->literal_pos_bits
-				<= LZMA_LITERAL_BITS_MAX
-			&& options->pos_bits <= LZMA_POS_BITS_MAX;
+	return options->lc <= LZMA_LCLP_MAX && options->lp <= LZMA_LCLP_MAX
+			&& options->lc + options->lp <= LZMA_LCLP_MAX
+			&& options->pb <= LZMA_PB_MAX;
 }
 
 
@@ -126,7 +122,7 @@ typedef enum {
 #define LITERAL_CODER_SIZE 0x300
 
 /// Maximum number of literal coders
-#define LITERAL_CODERS_MAX (1 << LZMA_LITERAL_BITS_MAX)
+#define LITERAL_CODERS_MAX (1 << LZMA_LCLP_MAX)
 
 /// Locate the literal coder for the next literal byte. The choice depends on
 ///   - the lowest literal_pos_bits bits of the position of the current
@@ -138,13 +134,11 @@ typedef enum {
 
 static inline void
 literal_init(probability (*probs)[LITERAL_CODER_SIZE],
-		uint32_t literal_context_bits, uint32_t literal_pos_bits)
+		uint32_t lc, uint32_t lp)
 {
-	assert(literal_context_bits + literal_pos_bits
-			<= LZMA_LITERAL_BITS_MAX);
+	assert(lc + lp <= LZMA_LCLP_MAX);
 
-	const uint32_t coders
-			= 1U << (literal_context_bits + literal_pos_bits);
+	const uint32_t coders = 1U << (lc + lp);
 
 	for (uint32_t i = 0; i < coders; ++i)
 		for (uint32_t j = 0; j < LITERAL_CODER_SIZE; ++j)
@@ -219,7 +213,7 @@ literal_init(probability (*probs)[LITERAL_CODER_SIZE],
 // fastpos.h to understand why).
 #define END_POS_MODEL_INDEX 14
 
-// Seven-bit distances use the full FIXME
+// Pos slots that indicate a distance <= 127.
 #define FULL_DISTANCES_BITS (END_POS_MODEL_INDEX / 2)
 #define FULL_DISTANCES (1 << FULL_DISTANCES_BITS)
 

@@ -20,10 +20,11 @@
 #include "common.h"
 
 
+/*
 #define pow2(e) (UINT32_C(1) << (e))
 
 
-LZMA_API const lzma_options_lzma lzma_preset_lzma[9] = {
+static const lzma_options_lzma presets[9] = {
 // dict           lc lp pb           mode              fb   mf          mfc
 { pow2(16), NULL, 0, 3, 0, 2, false, LZMA_MODE_FAST,    64, LZMA_MF_HC3, 0, 0, 0, 0, 0, NULL, NULL },
 { pow2(20), NULL, 0, 3, 0, 0, false, LZMA_MODE_FAST,    64, LZMA_MF_HC4, 0, 0, 0, 0, 0, NULL, NULL },
@@ -37,30 +38,43 @@ LZMA_API const lzma_options_lzma lzma_preset_lzma[9] = {
 };
 
 
-/*
 extern LZMA_API lzma_bool
-lzma_preset_lzma(lzma_options_lzma *options, uint32_t level)
+lzma_lzma_preset(lzma_options_lzma *options, uint32_t level)
 {
-	*options = (lzma_options_lzma){
+	if (level >= ARRAY_SIZE(presetes))
+		return true;
 
-	};
-
-	options->literal_context_bits = LZMA_LITERAL_CONTEXT_BITS_DEFAULT
-	options->literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT;
-	options->pos_bits = LZMA_POS_BITS_DEFAULT;
-	options->preset_dictionary = NULL;
-	options->preset_dictionary_size = 0;
-	options->persistent = false;
-
-	options->mode = level <= 2 ? LZMA_MODE_FAST : LZMA_MODE_NORMAL;
-	options->fast_bytes = level <=
-
-	options->match_finder = level == 1 ? LZMA_MF_HC3
-			: (level == 2 ? LZMA_MF_HC4 : LZMA_MF_BT4);
-	options->match_finder_cycles = 0;
-
-
-
-	options->dictionary_size =
+	*options = presets[level];
+	return false;
 }
 */
+
+
+extern LZMA_API lzma_bool
+lzma_lzma_preset(lzma_options_lzma *options, uint32_t level)
+{
+	if (level >= 9)
+		return true;
+
+	memzero(options, sizeof(*options));
+
+	static const uint8_t shift[9] = { 16, 20, 19, 20, 21, 22, 23, 24, 25 };
+	options->dict_size = UINT32_C(1) << shift[level];
+
+	options->preset_dict = NULL;
+	options->preset_dict_size = 0;
+
+	options->lc = LZMA_LC_DEFAULT;
+	options->lp = LZMA_LP_DEFAULT;
+	options->pb = LZMA_PB_DEFAULT;
+
+	options->persistent = false;
+	options->mode = level <= 2 ? LZMA_MODE_FAST : LZMA_MODE_NORMAL;
+
+	options->nice_len = level <= 5 ? 32 : 64;
+	options->mf = level <= 1 ? LZMA_MF_HC3 : level <= 2 ? LZMA_MF_HC4
+			: LZMA_MF_BT4;
+	options->depth = 0;
+
+	return false;
+}

@@ -178,19 +178,13 @@ lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		// Look if there are new options. At least for now,
 		// only lc/lp/pb can be changed.
 		if (coder->opt_new != NULL
-				&& (coder->opt_cur.literal_context_bits
-					!= coder->opt_new->literal_context_bits
-				|| coder->opt_cur.literal_pos_bits
-					!= coder->opt_new->literal_pos_bits
-				|| coder->opt_cur.pos_bits
-					!= coder->opt_new->pos_bits)) {
+				&& (coder->opt_cur.lc != coder->opt_new->lc
+				|| coder->opt_cur.lp != coder->opt_new->lp
+				|| coder->opt_cur.pb != coder->opt_new->pb)) {
 			// Options have been changed, copy them to opt_cur.
-			coder->opt_cur.literal_context_bits
-					= coder->opt_new->literal_context_bits;
-			coder->opt_cur.literal_pos_bits
-					= coder->opt_new->literal_pos_bits;
-			coder->opt_cur.pos_bits
-					= coder->opt_new->pos_bits;
+			coder->opt_cur.lc = coder->opt_new->lc;
+			coder->opt_cur.lp = coder->opt_new->lp;
+			coder->opt_cur.pb = coder->opt_new->pb;
 
 			// We need to write the new options and reset
 			// the encoder state.
@@ -352,10 +346,9 @@ lzma2_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
 	// compressed size of a chunk is not smaller than the uncompressed
 	// size, so we need to have at least LZMA2_COMPRESSED_MAX bytes
 	// history available.
-	if (lz_options->before_size + lz_options->dictionary_size
-			< LZMA2_CHUNK_MAX)
-		lz_options->before_size = LZMA2_CHUNK_MAX
-				- lz_options->dictionary_size;
+	if (lz_options->before_size + lz_options->dict_size < LZMA2_CHUNK_MAX)
+		lz_options->before_size
+				= LZMA2_CHUNK_MAX - lz_options->dict_size;
 
 	return LZMA_OK;
 }
@@ -385,7 +378,7 @@ extern lzma_ret
 lzma_lzma2_props_encode(const void *options, uint8_t *out)
 {
 	const lzma_options_lzma *const opt = options;
-	uint32_t d = MAX(opt->dictionary_size, LZMA_DICTIONARY_SIZE_MIN);
+	uint32_t d = MAX(opt->dict_size, LZMA_DICT_SIZE_MIN);
 
 	// Round up to to the next 2^n - 1 or 2^n + 2^(n - 1) - 1 depending
 	// on which one is the next:

@@ -50,10 +50,9 @@ lzma_alignment_input(const lzma_filter *filters, uint32_t guess)
 		case LZMA_FILTER_IA64:
 			return 16;
 
-		case LZMA_FILTER_LZMA: {
+		case LZMA_FILTER_LZMA1: {
 			const lzma_options_lzma *lzma = filters[i].options;
-			return 1 << MAX(lzma->pos_bits,
-					lzma->literal_pos_bits);
+			return 1 << MAX(lzma->pb, lzma->lp);
 		}
 
 		default:
@@ -91,7 +90,7 @@ lzma_alignment_output(const lzma_filter *filters, uint32_t guess)
 					filters[i].options))->alignment;
 
 		case LZMA_FILTER_X86:
-		case LZMA_FILTER_LZMA:
+		case LZMA_FILTER_LZMA1:
 			return 1;
 
 		case LZMA_FILTER_ARMTHUMB:

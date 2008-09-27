@@ -81,8 +81,7 @@ parse_options(const char *str, const option_map *opts,
 
 		if (value == NULL || value[0] == '\0') {
 			errmsg(V_ERROR, _("%s: Options must be `name=value' "
-					"pairs separated with commas"),
-					str);
+					"pairs separated with commas"), str);
 			my_exit(ERROR);
 		}
 
@@ -201,7 +200,7 @@ parse_options_subblock(const char *str)
 ///////////
 
 enum {
-	OPT_DISTANCE,
+	OPT_DIST,
 };
 
 
@@ -210,8 +209,8 @@ set_delta(void *options, uint32_t key, uint64_t value)
 {
 	lzma_options_delta *opt = options;
 	switch (key) {
-	case OPT_DISTANCE:
-		opt->distance = value;
+	case OPT_DIST:
+		opt->dist = value;
 		break;
 	}
 }
@@ -221,15 +220,16 @@ extern lzma_options_delta *
 parse_options_delta(const char *str)
 {
 	static const option_map opts[] = {
-		{ "distance", NULL,  LZMA_DELTA_DISTANCE_MIN,
-		                     LZMA_DELTA_DISTANCE_MAX },
+		{ "dist",     NULL,  LZMA_DELTA_DIST_MIN,
+		                     LZMA_DELTA_DIST_MAX },
 		{ NULL,       NULL,  0, 0 }
 	};
 
 	lzma_options_delta *options = xmalloc(sizeof(lzma_options_subblock));
 	*options = (lzma_options_delta){
 		// It's hard to give a useful default for this.
-		.distance = LZMA_DELTA_DISTANCE_MIN,
+		.type = LZMA_DELTA_TYPE_BYTE,
+		.dist = LZMA_DELTA_DIST_MIN,
 	};
 
 	parse_options(str, opts, &set_delta, options);
@@ -248,9 +248,9 @@ enum {
 	OPT_LP,
 	OPT_PB,
 	OPT_MODE,
-	OPT_FB,
+	OPT_NICE,
 	OPT_MF,
-	OPT_MC
+	OPT_DEPTH,
 };
 
 
@@ -261,35 +261,35 @@ set_lzma(void *options, uint32_t key, uint64_t value)
 
 	switch (key) {
 	case OPT_DICT:
-		opt->dictionary_size = value;
+		opt->dict_size = value;
 		break;
 
 	case OPT_LC:
-		opt->literal_context_bits = value;
+		opt->lc = value;
 		break;
 
 	case OPT_LP:
-		opt->literal_pos_bits = value;
+		opt->lp = value;
 		break;
 
 	case OPT_PB:
-		opt->pos_bits = value;
+		opt->pb = value;
 		break;
 
 	case OPT_MODE:
 		opt->mode = value;
 		break;
 
-	case OPT_FB:
-		opt->fast_bytes = value;
+	case OPT_NICE:
+		opt->nice_len = value;
 		break;
 
 	case OPT_MF:
-		opt->match_finder = value;
+		opt->mf = value;
 		break;
 
-	case OPT_MC:
-		opt->match_finder_cycles = value;
+	case OPT_DEPTH:
+		opt->depth = value;
 		break;
 	}
 }
@@ -314,35 +314,49 @@ parse_options_lzma(const char *str)
 	};
 
 	static const option_map opts[] = {
-		{ "dict", NULL,   LZMA_DICTIONARY_SIZE_MIN,
-				LZMA_DICTIONARY_SIZE_MAX },
-		{ "lc",   NULL,   LZMA_LITERAL_CONTEXT_BITS_MIN,
-				LZMA_LITERAL_CONTEXT_BITS_MAX },
-		{ "lp",   NULL,   LZMA_LITERAL_POS_BITS_MIN,
-				LZMA_LITERAL_POS_BITS_MAX },
-		{ "pb",   NULL,   LZMA_POS_BITS_MIN, LZMA_POS_BITS_MAX },
-		{ "mode", modes,  0, 0 },
-		{ "fb",   NULL,   LZMA_FAST_BYTES_MIN, LZMA_FAST_BYTES_MAX },
-		{ "mf",   mfs,    0, 0 },
-		{ "mc",   NULL,   0, UINT32_MAX },
-		{ NULL,   NULL,   0, 0 }
+		{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
+				(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
+		{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
+		{ "lp",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
+		{ "pb",     NULL,   LZMA_PB_MIN, LZMA_PB_MAX },
+		{ "mode",   modes,  0, 0 },
+		{ "nice",   NULL,   2, 273 },
+		{ "mf",     mfs,    0, 0 },
+		{ "depth",  NULL,   0, UINT32_MAX },
+		{ NULL,     NULL,   0, 0 }
 	};
 
+	// TODO There should be a way to take some preset as the base for
+	// custom settings.
 	lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
 	*options = (lzma_options_lzma){
-		.dictionary_size = LZMA_DICTIONARY_SIZE_DEFAULT,
-		.literal_context_bits = LZMA_LITERAL_CONTEXT_BITS_DEFAULT,
-		.literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT,
-		.pos_bits = LZMA_POS_BITS_DEFAULT,
-		.preset_dictionary =  NULL,
+		.dict_size = LZMA_DICT_SIZE_DEFAULT,
+		.preset_dict =  NULL,
+		.preset_dict_size = 0,
+		.lc = LZMA_LC_DEFAULT,
+		.lp = LZMA_LP_DEFAULT,
+		.pb = LZMA_PB_DEFAULT,
 		.persistent = false,
 		.mode = LZMA_MODE_NORMAL,
-		.fast_bytes = LZMA_FAST_BYTES_DEFAULT,
-		.match_finder = LZMA_MF_BT4,
-		.match_finder_cycles = 0,
+		.nice_len = 64,
+		.mf = LZMA_MF_BT4,
+		.depth = 0,
 	};
 
 	parse_options(str, opts, &set_lzma, options);
+
+	if (options->lc + options->lp > LZMA_LCLP_MAX) {
+		errmsg(V_ERROR, "The sum of lc and lp must be at "
+				"maximum of 4");
+		exit(ERROR);
+	}
+
+	const uint32_t nice_len_min = options->mf & 0x0F;
+	if (options->nice_len < nice_len_min) {
+		errmsg(V_ERROR, "The selected match finder requires at "
+				"least nice=%" PRIu32, nice_len_min);
+		exit(ERROR);
+	}
 
 	return options;
 }

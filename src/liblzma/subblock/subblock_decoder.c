@@ -291,7 +291,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Optimization: We know that LZMA uses End of Payload Marker
 		// (not End of Input), so we can omit the helper filter.
-		if (filters[0].id == LZMA_FILTER_LZMA)
+		if (filters[0].id == LZMA_FILTER_LZMA1)
 			filters[1].id = LZMA_VLI_UNKNOWN;
 
 		return_if_error(lzma_raw_decoder_init(

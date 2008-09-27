@@ -68,12 +68,11 @@ alone_decode(lzma_coder *coder,
 		break;
 
 	case SEQ_DICTIONARY_SIZE:
-		coder->options.dictionary_size
+		coder->options.dict_size
 				|= (size_t)(in[*in_pos]) << (coder->pos * 8);
 
 		if (++coder->pos == 4) {
-			if (coder->options.dictionary_size
-					> LZMA_DICTIONARY_SIZE_MAX)
+			if (coder->options.dict_size > (UINT32_C(1) << 30))
 				return LZMA_FORMAT_ERROR;
 
 			// A hack to ditch tons of false positives: We allow
@@ -81,7 +80,7 @@ alone_decode(lzma_coder *coder,
 			// LZMA_Alone created only files with 2^n, but accepts
 			// any dictionary size. If someone complains, this
 			// will be reconsidered.
-			uint32_t d = coder->options.dictionary_size - 1;
+			uint32_t d = coder->options.dict_size - 1;
 			d |= d >> 2;
 			d |= d >> 3;
 			d |= d >> 4;
@@ -89,7 +88,7 @@ alone_decode(lzma_coder *coder,
 			d |= d >> 16;
 			++d;
 
-			if (d != coder->options.dictionary_size)
+			if (d != coder->options.dict_size)
 				return LZMA_FORMAT_ERROR;
 
 			coder->pos = 0;
@@ -199,7 +198,7 @@ lzma_alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	next->coder->sequence = SEQ_PROPERTIES;
 	next->coder->pos = 0;
-	next->coder->options.dictionary_size = 0;
+	next->coder->options.dict_size = 0;
 	next->coder->uncompressed_size = 0;
 	next->coder->memlimit = memlimit;
 

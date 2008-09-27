@@ -55,7 +55,7 @@ lzma_chunk_size(const lzma_options_filter *filters)
 			// splitting the data in smaller blocks.
 			break;
 
-		case LZMA_FILTER_LZMA:
+		case LZMA_FILTER_LZMA1:
 			// The block sizes of the possible next filters in
 			// the chain are irrelevant after the LZMA filter.
 			return ((lzma_options_lzma *)(filters->options))

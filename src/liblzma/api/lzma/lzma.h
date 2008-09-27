@@ -1,6 +1,6 @@
 /**
  * \file        lzma/lzma.h
- * \brief       LZMA filter
+ * \brief       LZMA1 and LZMA2 filters
  *
  * \author      Copyright (C) 1999-2006 Igor Pavlov
  * \author      Copyright (C) 2007 Lasse Collin
@@ -22,12 +22,22 @@
 
 
 /**
- * \brief       Filter ID
+ * \brief       LZMA1 Filter ID
  *
- * Filter ID of the LZMA filter. This is used as lzma_filter.id.
+ * LZMA1 is the very same thing as what was called just LZMA in earlier
+ * LZMA Utils, 7-Zip, and LZMA SDK. It's called LZMA1 here to prevent
+ * developers from accidentally using LZMA when they actually want LZMA2.
  */
-#define LZMA_FILTER_LZMA        LZMA_VLI_C(0x20)
+#define LZMA_FILTER_LZMA1       LZMA_VLI_C(0x4000000000000001)
 
+/**
+ * \brief       LZMA2 Filter ID
+ *
+ * Usually you want this instead of LZMA1. Compared to LZMA1, LZMA2 adds
+ * support for LZMA_SYNC_FLUSH, uncompressed chunks (expands uncompressible
+ * data less), possibility to change lc/lp/pb in the middle of encoding, and
+ * some other internal improvements.
+ */
 #define LZMA_FILTER_LZMA2       LZMA_VLI_C(0x21)
 
 
@@ -36,55 +46,60 @@
  *
  * Match finder has major effect on both speed and compression ratio.
  * Usually hash chains are faster than binary trees.
+ *
+ * The memory usage formulas are only rough estimates, which are closest to
+ * reality when dict_size is a power of two. The formulas are  more complex
+ * in reality, and can also change a little between liblzma versions. Use
+ * lzma_memusage_encoder() to get more accurate estimate of memory usage.
  */
 typedef enum {
 	LZMA_MF_HC3     = 0x03,
 		/**<
-		 * \brief       Hash Chain with 3 bytes hashing
+		 * \brief       Hash Chain with 2- and 3-byte hashing
 		 *
-		 * \todo Memory requirements
+		 * Minimum nice_len: 3
 		 *
-		 * \note        It's possible that this match finder gets
-		 *              removed in future. The definition will stay
-		 *              in this header, but liblzma may return
-		 *              LZMA_OPTIONS_ERROR if it is specified (just
-		 *              like it would if the match finder had been
-		 *              disabled at compile time).
+		 * Memory usage:
+		 *  - dict_size <= 16 MiB: dict_size * 7.5
+		 *  - dict_size > 16 MiB: dict_size * 5.5 + 64 MiB
 		 */
 
 	LZMA_MF_HC4     = 0x04,
 		/**<
-		 * \brief       Hash Chain with 4 bytes hashing
+		 * \brief       Hash Chain with 2-, 3-, and 4-byte hashing
 		 *
-		 * Memory requirements: 7.5 * dictionary_size + 4 MiB
+		 * Minimum nice_len: 4
 		 *
-		 * \note        It's possible that this match finder gets
-		 *              removed in future. The definition will stay
-		 *              in this header, but liblzma may return
-		 *              LZMA_OPTIONS_ERROR if it is specified (just
-		 *              like it would if the match finder had been
-		 *              disabled at compile time).
+		 * Memory usage: dict_size * 7.5
 		 */
 
 	LZMA_MF_BT2     = 0x12,
 		/**<
-		 * \brief       Binary Tree with 2 bytes hashing
+		 * \brief       Binary Tree with 2-byte hashing
 		 *
-		 * Memory requirements: 9.5 * dictionary_size + 4 MiB
+		 * Minimum nice_len: 2
+		 *
+		 * Memory usage: dict_size * 9.5
 		 */
 
 	LZMA_MF_BT3     = 0x13,
 		/**<
-		 * \brief       Binary Tree with 3 bytes hashing
+		 * \brief       Binary Tree with 2- and 3-byte hashing
 		 *
-		 * Memory requirements: 11.5 * dictionary_size + 4 MiB
+		 * Minimum nice_len: 3
+		 *
+		 * Memory usage:
+		 *  - dict_size <= 16 MiB: dict_size * 11.5
+		 *  - dict_size > 16 MiB: dict_size * 9.5 + 64 MiB
 		 */
 
 	LZMA_MF_BT4     = 0x14
 		/**<
-		 * \brief       Binary Tree with 4 bytes hashing
+		 * \brief       Binary Tree with 2-, 3-, and 4-byte hashing
 		 *
-		 * Memory requirements: 11.5 * dictionary_size + 4 MiB
+		 * Minimum nice_len: 4
+		 *
+		 * Memory usage: dict_size * 11.5
 		 */
 } lzma_match_finder;
 
@@ -114,7 +129,7 @@ extern lzma_bool lzma_mf_is_supported(lzma_match_finder match_finder)
  * finder.
  */
 typedef enum {
-	LZMA_MODE_FAST = 0,
+	LZMA_MODE_FAST = 1,
 		/**<
 		 * \brief       Fast compression
 		 *
@@ -122,7 +137,7 @@ typedef enum {
 		 * a hash chain match finder.
 		 */
 
-	LZMA_MODE_NORMAL = 1
+	LZMA_MODE_NORMAL = 2
 		/**<
 		 * \brief       Normal compression
 		 *
@@ -149,7 +164,7 @@ extern lzma_bool lzma_mode_is_available(lzma_mode mode) lzma_attr_const;
 
 
 /**
- * \brief       Options specific to the LZMA method handler
+ * \brief       Options specific to the LZMA1 and LZMA2 filters
  */
 typedef struct {
 	/**********************************
@@ -167,14 +182,30 @@ typedef struct {
 	 * indicate what data to repeat from the dictionary buffer. Thus,
 	 * the bigger the dictionary, the better compression ratio usually is.
 	 *
-	 * Raw decoding: Too big dictionary does no other harm than
-	 * wasting memory. This value is ignored by lzma_raw_decode_buffer(),
-	 * because it uses the target buffer as the dictionary.
+	 * Maximum size of the dictionary depends on multiple things:
+	 *  - Memory usage limit
+	 *  - Available address space (not a problem on 64-bit systems)
+	 *  - Selected match finder (encoder only)
+	 *
+	 * Currently the maximum dictionary size for encoding is 1.5 GiB
+	 * (i.e. (UINT32_C(1) << 30) + (UINT32_C(1) << 29)) even on 64-bit
+	 * systems for certain match finder implementation reasons. In future,
+	 * there may be match finders that support bigger dictionaries (3 GiB
+	 * will probably be the maximum).
+	 *
+	 * Decoder already supports dictionaries up to 4 GiB - 1 B (i.e.
+	 * UINT32_MAX), so increasing the maximum dictionary size of the
+	 * encoder won't cause problems for old decoders.
+	 *
+	 * Because extremely small dictionaries sizes would have unneeded
+	 * overhead in the decoder, the minimum dictionary size is 4096 bytes.
+	 *
+	 * \note        When decoding, too big dictionary does no other harm
+	 *              than wasting memory.
 	 */
-	uint32_t dictionary_size;
-#	define LZMA_DICTIONARY_SIZE_MIN            (UINT32_C(1) << 12)
-#	define LZMA_DICTIONARY_SIZE_MAX            (UINT32_C(1) << 30)
-#	define LZMA_DICTIONARY_SIZE_DEFAULT        (UINT32_C(1) << 23)
+	uint32_t dict_size;
+#	define LZMA_DICT_SIZE_MIN       UINT32_C(4096)
+#	define LZMA_DICT_SIZE_DEFAULT   (UINT32_C(1) << 23)
 
 	/**
 	 * \brief       Pointer to an initial dictionary
@@ -201,18 +232,17 @@ typedef struct {
 	 *
 	 * \todo        This feature is not implemented yet.
 	 */
-	const uint8_t *preset_dictionary;
+	const uint8_t *preset_dict;
 
 	/**
 	 * \brief       Size of the preset dictionary
 	 *
 	 * Specifies the size of the preset dictionary. If the size is
-	 * bigger than dictionary_size, only the last dictionary_size
-	 * bytes are processed.
+	 * bigger than dict_size, only the last dict_size bytes are processed.
 	 *
-	 * This variable is read only when preset_dictionary is not NULL.
+	 * This variable is read only when preset_dict is not NULL.
 	 */
-	uint32_t preset_dictionary_size;
+	uint32_t preset_dict_size;
 
 	/**
 	 * \brief       Number of literal context bits
@@ -222,11 +252,21 @@ typedef struct {
 	 * account when predicting the bits of the next literal.
 	 *
 	 * \todo        Example
+	 *
+	 * There is a limit that applies to literal context bits and literal
+	 * position bits together: lc + lp <= 4. Without this limit the
+	 * decoding could become very slow, which could have security related
+	 * results in some cases like email servers doing virus scanning.
+	 * This limit also simplifies the internal implementation in liblzma.
+	 *
+	 * There may be LZMA streams that have lc + lp > 4 (maximum lc
+	 * possible would be 8). It is not possible to decode such streams
+	 * with liblzma.
 	 */
-	uint32_t literal_context_bits;
-#	define LZMA_LITERAL_CONTEXT_BITS_MIN       0
-#	define LZMA_LITERAL_CONTEXT_BITS_MAX       4
-#	define LZMA_LITERAL_CONTEXT_BITS_DEFAULT   3
+	uint32_t lc;
+#	define LZMA_LCLP_MIN    0
+#	define LZMA_LCLP_MAX    4
+#	define LZMA_LC_DEFAULT  3
 
 	/**
 	 * \brief       Number of literal position bits
@@ -238,10 +278,8 @@ typedef struct {
 	 *
 	 * \todo        Example
 	 */
-	uint32_t literal_pos_bits;
-#	define LZMA_LITERAL_POS_BITS_MIN           0
-#	define LZMA_LITERAL_POS_BITS_MAX           4
-#	define LZMA_LITERAL_POS_BITS_DEFAULT       0
+	uint32_t lp;
+#	define LZMA_LP_DEFAULT  0
 
 	/**
 	 * \brief       Number of position bits
@@ -252,14 +290,13 @@ typedef struct {
 	 * which a matching sequence is found from the dictionary and
 	 * thus can be stored as distance-length pair.
 	 *
-	 * Example: If most of the matches occur at byte positions
-	 * of 8 * n + 3, that is, 3, 11, 19, ... set pos_bits to 3,
-	 * because 2**3 == 8.
+	 * Example: If most of the matches occur at byte positions of
+	 * 8 * n + 3, that is, 3, 11, 19, ... set pb to 3, because 2**3 == 8.
 	 */
-	uint32_t pos_bits;
-#	define LZMA_POS_BITS_MIN                   0
-#	define LZMA_POS_BITS_MAX                   4
-#	define LZMA_POS_BITS_DEFAULT               2
+	uint32_t pb;
+#	define LZMA_PB_MIN      0
+#	define LZMA_PB_MAX      4
+#	define LZMA_PB_DEFAULT  2
 
 	/******************************************
 	 * LZMA options needed only when encoding *
@@ -274,7 +311,7 @@ typedef struct {
 	 * in the middle of the encoding process without resetting the encoder.
 	 *
 	 * This option is used only by LZMA2. LZMA1 ignores this and it is
-	 * safeto not initialize this when encoding with LZMA1.
+	 * safe to not initialize this when encoding with LZMA1.
 	 */
 	lzma_bool persistent;
 
@@ -282,31 +319,56 @@ typedef struct {
 	lzma_mode mode;
 
 	/**
-	 * \brief       Number of fast bytes
+	 * \brief       Nice length of a match
 	 *
-	 * Number of fast bytes determines how many bytes the encoder
-	 * compares from the match candidates when looking for the best
-	 * match. Bigger fast bytes value usually increase both compression
-	 * ratio and time.
+	 * This determines how many bytes the encoder compares from the match
+	 * candidates when looking for the best match. Once a match of at
+	 * least nice_len bytes long is found, the encoder stops looking for
+	 * better condidates and encodes the match. (Naturally, if the found
+	 * match is actually longer than nice_len, the actual length is
+	 * encoded; it's not truncated to nice_len.)
+	 *
+	 * Bigger values usually increase the compression ratio and
+	 * compression time. For most files, 30 to 100 is a good value,
+	 * which gives very good compression ratio at good speed.
+	 *
+	 * The exact minimum value depends on the match finder. The maximum is
+	 * 273, which is the maximum length of a match that LZMA can encode.
 	 */
-	uint32_t fast_bytes;
-#	define LZMA_FAST_BYTES_MIN                 5
-#	define LZMA_FAST_BYTES_MAX                 273
-#	define LZMA_FAST_BYTES_DEFAULT             128
+	uint32_t nice_len;
 
 	/** Match finder ID */
-	lzma_match_finder match_finder;
+	lzma_match_finder mf;
 
 	/**
-	 * \brief       Match finder cycles
+	 * \brief       Maximum search depth in the match finder
 	 *
-	 * Higher values give slightly better compression ratio but
-	 * decrease speed. Use special value 0 to let liblzma use
-	 * match-finder-dependent default value.
+	 * For every input byte, match finder searches through the hash chain
+	 * or binary tree in a loop, each iteration going one step deeper in
+	 * the chain or tree. The searching stops if
+	 *  - a match of at least nice_len bytes long is found;
+	 *  - all match candidates from the hash chain or binary tree have
+	 *    been checked; or
+	 *  - maximum search depth is reached.
 	 *
-	 * \todo        Write much better description.
+	 * Maximum search depth is needed to prevent the match finder from
+	 * wasting too much time in case there are lots of short match
+	 * candidates. On the other hand, stopping the search before all
+	 * candidates have been checked can reduce compression ratio.
+	 *
+	 * Setting depth to zero tells liblzma to use an automatic default
+	 * value, that depends on the selected match finder and nice_len.
+	 * The default is in the range [10, 200] or so (it may vary between
+	 * liblzma versions).
+	 *
+	 * Using a bigger depth value than the default can increase
+	 * compression ratio in some cases. There is no strict maximum value,
+	 * but high values (thousands or millions) should be used with care:
+	 * the encoder could remain fast enough with typical input, but
+	 * malicious input could cause the match finder to slow down
+	 * dramatically, possibly creating a denial of service attack.
 	 */
-	uint32_t match_finder_cycles;
+	uint32_t depth;
 
 	/**
 	 * \brief       Reserved space for possible future extensions
@@ -319,6 +381,10 @@ typedef struct {
 	uint32_t reserved_int2;
 	uint32_t reserved_int3;
 	uint32_t reserved_int4;
+	uint32_t reserved_int5;
+	uint32_t reserved_int6;
+	uint32_t reserved_int7;
+	uint32_t reserved_int8;
 	void *reserved_ptr1;
 	void *reserved_ptr2;
 
@@ -326,21 +392,13 @@ typedef struct {
 
 
 /**
- * \brief       Maximum sum of literal_context_bits and literal_pos_bits
+ * \brief       Set a compression level preset to lzma_options_lzma structure
  *
- * literal_context_bits + literal_pos_bits <= LZMA_LITERAL_BITS_MAX
- */
-#define LZMA_LITERAL_BITS_MAX 4
-
-
-/**
- * \brief       Table of presets for the LZMA filter
- *
- * lzma_preset_lzma[0] is the fastest and lzma_preset_lzma[8] is the slowest.
- * These presets match the switches -1 .. -9 of the lzma command line tool
+ * level = 0 is the fastest and level = 8 is the slowest. These presets match
+ * the switches -1 .. -9 of the command line tool.
  *
  * The preset values are subject to changes between liblzma versions.
  *
- * This variable is available only if LZMA encoder has been enabled.
+ * This function is available only if LZMA encoder has been enabled.
  */
-extern const lzma_options_lzma lzma_preset_lzma[9];
+extern lzma_bool lzma_lzma_preset(lzma_options_lzma *options, uint32_t level);

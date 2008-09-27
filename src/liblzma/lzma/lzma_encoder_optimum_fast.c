@@ -38,7 +38,7 @@ extern void
 lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		uint32_t *restrict back_res, uint32_t *restrict len_res)
 {
-	const uint32_t fast_bytes = mf->find_len_max;
+	const uint32_t nice_len = mf->nice_len;
 
 	uint32_t len_main;
 	uint32_t matches_count;
@@ -79,8 +79,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 				&& buf[len] == buf_back[len]; ++len) ;
 
 		// If we have found a repeated match that is at least
-		// fast_bytes long, return it immediatelly.
-		if (len >= fast_bytes) {
+		// nice_len long, return it immediatelly.
+		if (len >= nice_len) {
 			*back_res = i;
 			*len_res = len;
 			mf_skip(mf, len - 1);
@@ -94,8 +94,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	}
 
 	// We didn't find a long enough repeated match. Encode it as a normal
-	// match if the match length is at least fast_bytes.
-	if (len_main >= fast_bytes) {
+	// match if the match length is at least nice_len.
+	if (len_main >= nice_len) {
 		*back_res = coder->matches[matches_count - 1].dist
 				+ REP_DISTANCES;
 		*len_res = len_main;

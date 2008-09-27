@@ -74,16 +74,16 @@ main(int argc, char **argv)
 
 	// Config
 	lzma_options_lzma opt_lzma = {
-		.dictionary_size = 1 << 16,
-		.literal_context_bits = LZMA_LITERAL_CONTEXT_BITS_DEFAULT,
-		.literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT,
-		.pos_bits = LZMA_POS_BITS_DEFAULT,
-		.preset_dictionary = NULL,
+		.dict_size = 1U << 16,
+		.lc = LZMA_LC_DEFAULT,
+		.lp = LZMA_LP_DEFAULT,
+		.pb = LZMA_PB_DEFAULT,
+		.preset_dict = NULL,
 		.persistent = true,
 		.mode = LZMA_MODE_NORMAL,
-		.fast_bytes = 32,
-		.match_finder = LZMA_MF_HC3,
-		.match_finder_cycles = 0,
+		.nice_len = 32,
+		.mf = LZMA_MF_HC3,
+		.depth = 0,
 	};
 
 	lzma_options_delta opt_delta = {
@@ -97,7 +97,7 @@ main(int argc, char **argv)
 		.rle = 1, // LZMA_SUBBLOCK_RLE_OFF,
 		.subfilter_mode = LZMA_SUBFILTER_SET,
 	};
-	opt_subblock.subfilter_options.id = LZMA_FILTER_LZMA;
+	opt_subblock.subfilter_options.id = LZMA_FILTER_LZMA1;
 	opt_subblock.subfilter_options.options = &opt_lzma;
 	opt_subblock.subfilter_options.id = LZMA_FILTER_DELTA;
 	opt_subblock.subfilter_options.options = &opt_delta;

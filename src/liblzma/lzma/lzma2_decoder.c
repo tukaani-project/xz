@@ -303,14 +303,14 @@ lzma_lzma2_props_decode(void **options, lzma_allocator *allocator,
 		return LZMA_MEM_ERROR;
 
 	if (props[0] == 40) {
-		opt->dictionary_size = UINT32_MAX;
+		opt->dict_size = UINT32_MAX;
 	} else {
-		opt->dictionary_size = 2 | (props[0] & 1);
-		opt->dictionary_size <<= props[0] / 2 + 11;
+		opt->dict_size = 2 | (props[0] & 1);
+		opt->dict_size <<= props[0] / 2 + 11;
 	}
 
-	opt->preset_dictionary = NULL;
-	opt->preset_dictionary_size = 0;
+	opt->preset_dict = NULL;
+	opt->preset_dict_size = 0;
 
 	*options = opt;
 

@@ -27,7 +27,7 @@ SUBDIRS += lz
 liblzma_la_LIBADD += lz/liblz.la
 endif
 
-if COND_FILTER_LZMA
+if COND_FILTER_LZMA1
 SUBDIRS += lzma rangecoder
 liblzma_la_LIBADD += \
 	lzma/liblzma2.la \

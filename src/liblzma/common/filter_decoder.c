@@ -51,9 +51,9 @@ typedef struct {
 
 
 static const lzma_filter_decoder decoders[] = {
-#ifdef HAVE_DECODER_LZMA
+#ifdef HAVE_DECODER_LZMA1
 	{
-		.id = LZMA_FILTER_LZMA,
+		.id = LZMA_FILTER_LZMA1,
 		.init = &lzma_lzma_decoder_init,
 		.memusage = &lzma_lzma_decoder_memusage,
 		.props_decode = &lzma_lzma_props_decode,

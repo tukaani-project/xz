@@ -38,9 +38,9 @@ static const struct {
 	bool changes_size;
 
 } features[] = {
-#if defined (HAVE_ENCODER_LZMA) || defined(HAVE_DECODER_LZMA)
+#if defined (HAVE_ENCODER_LZMA1) || defined(HAVE_DECODER_LZMA1)
 	{
-		.id = LZMA_FILTER_LZMA,
+		.id = LZMA_FILTER_LZMA1,
 		.non_last_ok = false,
 		.last_ok = true,
 		.changes_size = true,

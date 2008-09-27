@@ -231,7 +231,7 @@ struct lzma_coder_s {
 	uint32_t rep2;      ///< Distance of third latest match
 	uint32_t rep3;      ///< Distance of fourth latest match
 
-	uint32_t pos_mask; // (1U << pos_bits) - 1
+	uint32_t pos_mask; // (1U << pb) - 1
 	uint32_t literal_context_bits;
 	uint32_t literal_pos_mask;
 
@@ -866,14 +866,13 @@ lzma_decoder_reset(lzma_coder *coder, const void *opt)
 	// FIXME?
 
 	// Calculate pos_mask. We don't need pos_bits as is for anything.
-	coder->pos_mask = (1U << options->pos_bits) - 1;
+	coder->pos_mask = (1U << options->pb) - 1;
 
 	// Initialize the literal decoder.
-	literal_init(coder->literal, options->literal_context_bits,
-				options->literal_pos_bits);
+	literal_init(coder->literal, options->lc, options->lp);
 
-	coder->literal_context_bits = options->literal_context_bits;
-	coder->literal_pos_mask = (1 << options->literal_pos_bits) - 1;
+	coder->literal_context_bits = options->lc;
+	coder->literal_pos_mask = (1U << options->lp) - 1;
 
 	// State
 	coder->state = STATE_LIT_LIT;
@@ -881,7 +880,7 @@ lzma_decoder_reset(lzma_coder *coder, const void *opt)
 	coder->rep1 = 0;
 	coder->rep2 = 0;
 	coder->rep3 = 0;
-	coder->pos_mask = (1 << options->pos_bits) - 1;
+	coder->pos_mask = (1U << options->pb) - 1;
 
 	// Range decoder
 	rc_reset(coder->rc);
@@ -908,7 +907,7 @@ lzma_decoder_reset(lzma_coder *coder, const void *opt)
 	bittree_reset(coder->pos_align, ALIGN_BITS);
 
 	// Len decoders (also bit/bittree)
-	const uint32_t num_pos_states = 1 << options->pos_bits;
+	const uint32_t num_pos_states = 1U << options->pb;
 	bit_reset(coder->match_len_decoder.choice);
 	bit_reset(coder->match_len_decoder.choice2);
 	bit_reset(coder->rep_len_decoder.choice);
@@ -957,7 +956,7 @@ lzma_lzma_decoder_create(lzma_lz_decoder *lz, lzma_allocator *allocator,
 	// All dictionary sizes are OK here. LZ decoder will take care of
 	// the special cases.
 	const lzma_options_lzma *options = opt;
-	*dict_size = options->dictionary_size;
+	*dict_size = options->dict_size;
 
 	return LZMA_OK;
 }
@@ -1003,13 +1002,12 @@ lzma_lzma_lclppb_decode(lzma_options_lzma *options, uint8_t byte)
 		return true;
 
 	// See the file format specification to understand this.
-	options->pos_bits = byte / (9 * 5);
-	byte -= options->pos_bits * 9 * 5;
-	options->literal_pos_bits = byte / 9;
-	options->literal_context_bits = byte - options->literal_pos_bits * 9;
+	options->pb = byte / (9 * 5);
+	byte -= options->pb * 9 * 5;
+	options->lp = byte / 9;
+	options->lc = byte - options->lp * 9;
 
-	return options->literal_context_bits + options->literal_pos_bits
-			> LZMA_LITERAL_BITS_MAX;
+	return options->lc + options->lp > LZMA_LCLP_MAX;
 }
 
 
@@ -1017,8 +1015,7 @@ extern uint64_t
 lzma_lzma_decoder_memusage(const void *options)
 {
 	const lzma_options_lzma *const opt = options;
-	const uint64_t lz_memusage
-			= lzma_lz_decoder_memusage(opt->dictionary_size);
+	const uint64_t lz_memusage = lzma_lz_decoder_memusage(opt->dict_size);
 	if (lz_memusage == UINT64_MAX)
 		return UINT64_MAX;
 
@@ -1044,10 +1041,10 @@ lzma_lzma_props_decode(void **options, lzma_allocator *allocator,
 	// All dictionary sizes are accepted, including zero. LZ decoder
 	// will automatically use a dictionary at least a few KiB even if
 	// a smaller dictionary is requested.
-	opt->dictionary_size = integer_read_32(props + 1);
+	opt->dict_size = integer_read_32(props + 1);
 
-	opt->preset_dictionary = NULL;
-	opt->preset_dictionary_size = 0;
+	opt->preset_dict = NULL;
+	opt->preset_dict_size = 0;
 
 	*options = opt;
 

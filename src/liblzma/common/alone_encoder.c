@@ -106,9 +106,10 @@ alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	if (lzma_lzma_lclppb_encode(options, next->coder->header))
 		return LZMA_PROG_ERROR;
 
-	// - Dictionary size (4 bytes)
-	if (options->dictionary_size < LZMA_DICTIONARY_SIZE_MIN
-			|| options->dictionary_size > LZMA_DICTIONARY_SIZE_MAX)
+	// - Dictionary size (4 bytes); limit to 1 GiB since that's what
+	//   LZMA SDK currently does for encoding.
+	if (options->dict_size < LZMA_DICT_SIZE_MIN
+			|| options->dict_size > (UINT32_C(1) << 30))
 		return LZMA_PROG_ERROR;
 
 	// Round up to to the next 2^n or 2^n + 2^(n - 1) depending on which
@@ -118,7 +119,7 @@ alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	//
 	// FIXME Maybe LZMA_Alone needs some lower limit for maximum
 	// dictionary size? Must check decoders from old LZMA SDK version.
-	uint32_t d = options->dictionary_size - 1;
+	uint32_t d = options->dict_size - 1;
 	d |= d >> 2;
 	d |= d >> 3;
 	d |= d >> 4;

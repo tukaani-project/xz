@@ -24,7 +24,7 @@ liblzma2_la_CPPFLAGS = \
 
 liblzma2_la_SOURCES = lzma_common.h
 
-if COND_ENCODER_LZMA
+if COND_ENCODER_LZMA1
 liblzma2_la_SOURCES += \
 	fastpos.h \
 	lzma_encoder.h \
@@ -39,7 +39,7 @@ liblzma2_la_SOURCES += fastpos_table.c
 endif
 endif
 
-if COND_DECODER_LZMA
+if COND_DECODER_LZMA1
 liblzma2_la_SOURCES += \
 	lzma_decoder.c \
 	lzma_decoder.h

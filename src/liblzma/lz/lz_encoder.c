@@ -189,15 +189,13 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	// For now, the dictionary size is limited to 1.5 GiB. This may grow
 	// in the future if needed, but it needs a little more work than just
 	// changing this check.
-	if (lz_options->dictionary_size < LZMA_DICTIONARY_SIZE_MIN
-			|| lz_options->dictionary_size
+	if (lz_options->dict_size < LZMA_DICT_SIZE_MIN
+			|| lz_options->dict_size
 				> (UINT32_C(1) << 30) + (UINT32_C(1) << 29)
-			|| lz_options->find_len_max
-				> lz_options->match_len_max)
+			|| lz_options->nice_len > lz_options->match_len_max)
 		return true;
 
-	mf->keep_size_before = lz_options->before_size
-			+ lz_options->dictionary_size;
+	mf->keep_size_before = lz_options->before_size + lz_options->dict_size;
 
 	mf->keep_size_after = lz_options->after_size
 			+ lz_options->match_len_max;
@@ -213,7 +211,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	//     to size_t.
 	//   - Memory usage calculation needs something too, e.g. use uint64_t
 	//     for mf->size.
-	uint32_t reserve = lz_options->dictionary_size / 2;
+	uint32_t reserve = lz_options->dict_size / 2;
 	if (reserve > (UINT32_C(1) << 30))
 		reserve /= 2;
 
@@ -232,7 +230,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 
 	// Match finder options
 	mf->match_len_max = lz_options->match_len_max;
-	mf->find_len_max = lz_options->find_len_max;
+	mf->nice_len = lz_options->nice_len;
 
 	// cyclic_size has to stay smaller than 2 Gi. Note that this doesn't
 	// mean limitting dictionary size to less than 2 GiB. With a match
@@ -249,7 +247,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	// memory to keep the code simpler. The current way is simple and
 	// still allows pretty big dictionaries, so I don't expect these
 	// limits to change.
-	mf->cyclic_size = lz_options->dictionary_size + 1;
+	mf->cyclic_size = lz_options->dict_size + 1;
 
 	// Validate the match finder ID and setup the function pointers.
 	switch (lz_options->match_finder) {
@@ -289,9 +287,9 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	}
 
 	// Calculate the sizes of mf->hash and mf->son and check that
-	// find_len_max is big enough for the selected match finder.
+	// nice_len is big enough for the selected match finder.
 	const uint32_t hash_bytes = lz_options->match_finder & 0x0F;
-	if (hash_bytes > mf->find_len_max)
+	if (hash_bytes > mf->nice_len)
 		return true;
 
 	const bool is_bt = (lz_options->match_finder & 0x10) != 0;
@@ -302,7 +300,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	} else {
 		// Round dictionary size up to the next 2^n - 1 so it can
 		// be used as a hash mask.
-		hs = lz_options->dictionary_size - 1;
+		hs = lz_options->dict_size - 1;
 		hs |= hs >> 1;
 		hs |= hs >> 2;
 		hs |= hs >> 4;
@@ -353,11 +351,11 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	}
 
 	// Maximum number of match finder cycles
-	mf->loops = lz_options->match_finder_cycles;
-	if (mf->loops == 0) {
-		mf->loops = 16 + (mf->find_len_max / 2);
+	mf->depth = lz_options->depth;
+	if (mf->depth == 0) {
+		mf->depth = 16 + (mf->nice_len / 2);
 		if (!is_bt)
-			mf->loops /= 2;
+			mf->depth /= 2;
 	}
 
 	return false;

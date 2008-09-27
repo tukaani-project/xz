@@ -60,9 +60,9 @@ typedef struct {
 	 *  - 16-bit stereo audio: distance = 4 bytes
 	 *  - 24-bit RGB image data: distance = 3 bytes
 	 */
-	uint32_t distance;
-#	define LZMA_DELTA_DISTANCE_MIN 1
-#	define LZMA_DELTA_DISTANCE_MAX 256
+	uint32_t dist;
+#	define LZMA_DELTA_DIST_MIN 1
+#	define LZMA_DELTA_DIST_MAX 256
 
 	/**
 	 * \brief       Reserved space for possible future extensions
@@ -73,6 +73,8 @@ typedef struct {
 	 */
 	uint32_t reserved_int1;
 	uint32_t reserved_int2;
+	uint32_t reserved_int3;
+	uint32_t reserved_int4;
 	void *reserved_ptr1;
 	void *reserved_ptr2;
 

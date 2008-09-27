@@ -23,6 +23,9 @@
 struct lzma_coder_s {
 	lzma_next_coder stream_encoder;
 
+	/// Options for LZMA2
+	lzma_options_lzma opt_lzma;
+
 	/// We need to keep the filters array available in case
 	/// LZMA_FULL_FLUSH is used.
 	lzma_filter filters[5];
@@ -30,7 +33,7 @@ struct lzma_coder_s {
 
 
 static bool
-easy_set_filters(lzma_filter *filters, uint32_t level)
+easy_set_filters(lzma_coder *coder, uint32_t level)
 {
 	bool error = false;
 
@@ -40,9 +43,10 @@ easy_set_filters(lzma_filter *filters, uint32_t level)
 
 #ifdef HAVE_ENCODER_LZMA2
 	} else if (level <= 9) {
-		filters[0].id = LZMA_FILTER_LZMA2;
-		filters[0].options = (void *)(&lzma_preset_lzma[level - 1]);
-		filters[1].id = LZMA_VLI_UNKNOWN;
+		error = lzma_lzma_preset(&coder->opt_lzma, level - 1);
+		coder->filters[0].id = LZMA_FILTER_LZMA2;
+		coder->filters[0].options = &coder->opt_lzma;
+		coder->filters[1].id = LZMA_VLI_UNKNOWN;
 #endif
 
 	} else {
@@ -91,7 +95,7 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->stream_encoder = LZMA_NEXT_CODER_INIT;
 	}
 
-	if (easy_set_filters(next->coder->filters, level))
+	if (easy_set_filters(next->coder, level))
 		return LZMA_OPTIONS_ERROR;
 
 	return lzma_stream_encoder_init(&next->coder->stream_encoder,
@@ -116,9 +120,9 @@ lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
 extern LZMA_API uint64_t
 lzma_easy_memory_usage(lzma_easy_level level)
 {
-	lzma_filter filters[5];
-	if (easy_set_filters(filters, level))
+	lzma_coder coder;
+	if (easy_set_filters(&coder, level))
 		return UINT32_MAX;
 
-	return lzma_memusage_encoder(filters);
+	return lzma_memusage_encoder(coder.filters);
 }

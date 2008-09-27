@@ -110,13 +110,13 @@ struct lzma_mf_s {
 	uint32_t hash_mask;
 
 	/// Maximum number of loops in the match finder
-	uint32_t loops;
+	uint32_t depth;
 
 	/// Maximum length of a match that the match finder will try to find.
-	uint32_t find_len_max;
+	uint32_t nice_len;
 
 	/// Maximum length of a match supported by the LZ-based encoder.
-	/// If the longest match found by the match finder is find_len_max,
+	/// If the longest match found by the match finder is nice_len,
 	/// mf_find() tries to expand it up to match_len_max bytes.
 	uint32_t match_len_max;
 
@@ -139,40 +139,40 @@ typedef struct {
 	size_t before_size;
 
 	/// Size of the history buffer
-	size_t dictionary_size;
+	size_t dict_size;
 
 	/// Extra amount of data to keep available after the "actual"
 	/// dictionary.
 	size_t after_size;
 
 	/// Maximum length of a match that the LZ-based encoder can accept.
-	/// This is used to extend matches of length find_len_max to the
+	/// This is used to extend matches of length nice_len to the
 	/// maximum possible length.
 	size_t match_len_max;
 
 	/// Match finder will search matches of at maximum of this length.
 	/// This must be less than or equal to match_len_max.
-	size_t find_len_max;
+	size_t nice_len;
 
 	/// Type of the match finder to use
 	lzma_match_finder match_finder;
 
-	/// TODO: Comment
-	uint32_t match_finder_cycles;
+	/// Maximum search depth
+	uint32_t depth;
 
 	/// TODO: Comment
-	const uint8_t *preset_dictionary;
+	const uint8_t *preset_dict;
 
-	uint32_t preset_dictionary_size;
+	uint32_t preset_dict_size;
 
 } lzma_lz_options;
 
 
 // The total usable buffer space at any moment outside the match finder:
-// before_size + dictionary_size + after_size + match_len_max
+// before_size + dict_size + after_size + match_len_max
 //
 // In reality, there's some extra space allocated to prevent the number of
-// memmove() calls reasonable. The bigger the dictionary_size is, the bigger
+// memmove() calls reasonable. The bigger the dict_size is, the bigger
 // this extra buffer will be since with bigger dictionaries memmove() would
 // also take longer.
 //
@@ -181,7 +181,7 @@ typedef struct {
 // In other words, a single encoder loop may advance lzma_mf.read_pos at
 // maximum of after_size times. Since matches are looked up to
 // lzma_mf.buffer[lzma_mf.read_pos + match_len_max - 1], the total
-// amount of extra buffer needed after dictionary_size becomes
+// amount of extra buffer needed after dict_size becomes
 // after_size + match_len_max.
 //
 // before_size has two uses. The first one is to keep literals available

@@ -50,17 +50,17 @@ lzma_delta_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Set the delta distance.
 	if (filters[0].options == NULL)
 		return LZMA_PROG_ERROR;
-	next->coder->distance = ((lzma_options_delta *)(filters[0].options))
-			->distance;
-	if (next->coder->distance < LZMA_DELTA_DISTANCE_MIN
-			|| next->coder->distance > LZMA_DELTA_DISTANCE_MAX)
+	next->coder->distance
+			= ((lzma_options_delta *)(filters[0].options))->dist;
+	if (next->coder->distance < LZMA_DELTA_DIST_MIN
+			|| next->coder->distance > LZMA_DELTA_DIST_MAX)
 		return LZMA_OPTIONS_ERROR;
 
 	// Initialize the rest of the variables.
 	next->coder->pos = 0;
-	memzero(next->coder->history, LZMA_DELTA_DISTANCE_MAX);
+	memzero(next->coder->history, LZMA_DELTA_DIST_MAX);
 
 	// Initialize the next decoder in the chain, if any.
 	return lzma_next_filter_init(&next->coder->next,
-				allocator, filters + 1);
+			allocator, filters + 1);
 }

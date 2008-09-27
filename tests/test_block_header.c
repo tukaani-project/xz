@@ -24,6 +24,8 @@ static uint8_t buf[LZMA_BLOCK_HEADER_SIZE_MAX];
 static lzma_block known_options;
 static lzma_block decoded_options;
 
+static lzma_options_lzma opt_lzma;
+
 static lzma_filter filters_none[1] = {
 	{
 		.id = LZMA_VLI_UNKNOWN,
@@ -34,7 +36,7 @@ static lzma_filter filters_none[1] = {
 static lzma_filter filters_one[2] = {
 	{
 		.id = LZMA_FILTER_LZMA2,
-		.options = (void *)(&lzma_preset_lzma[0]),
+		.options = &opt_lzma,
 	}, {
 		.id = LZMA_VLI_UNKNOWN,
 	}
@@ -53,7 +55,7 @@ static lzma_filter filters_four[5] = {
 		.options = NULL,
 	}, {
 		.id = LZMA_FILTER_LZMA2,
-		.options = (void *)(&lzma_preset_lzma[0]),
+		.options = &opt_lzma,
 	}, {
 		.id = LZMA_VLI_UNKNOWN,
 	}
@@ -75,7 +77,7 @@ static lzma_filter filters_five[6] = {
 		.options = NULL,
 	}, {
 		.id = LZMA_FILTER_LZMA2,
-		.options = (void *)(&lzma_preset_lzma[0]),
+		.options = &opt_lzma,
 	}, {
 		.id = LZMA_VLI_UNKNOWN,
 	}
@@ -230,6 +232,7 @@ int
 main(void)
 {
 	lzma_init();
+	succeed(lzma_lzma_preset(&opt_lzma, 0));
 
 	test1();
 	test2();

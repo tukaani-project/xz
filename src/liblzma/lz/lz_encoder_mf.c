@@ -42,7 +42,7 @@ lzma_mf_find(lzma_mf *mf, uint32_t *count_ptr, lzma_match *matches)
 #ifndef NDEBUG
 		// Validate the matches.
 		for (uint32_t i = 0; i < count; ++i) {
-			assert(matches[i].len <= mf->find_len_max);
+			assert(matches[i].len <= mf->nice_len);
 			assert(matches[i].dist < mf->read_pos);
 			assert(memcmp(mf_ptr(mf) - 1,
 				mf_ptr(mf) - matches[i].dist - 2,
@@ -56,7 +56,7 @@ lzma_mf_find(lzma_mf *mf, uint32_t *count_ptr, lzma_match *matches)
 
 		// If a match of maximum search length was found, try to
 		// extend the match to maximum possible length.
-		if (len_best == mf->find_len_max) {
+		if (len_best == mf->nice_len) {
 			// The limit for the match length is either the
 			// maximum match length supported by the LZ-based
 			// encoder or the number of bytes left in the
@@ -90,7 +90,7 @@ lzma_mf_find(lzma_mf *mf, uint32_t *count_ptr, lzma_match *matches)
 
 
 /// Hash value to indicate unused element in the hash. Since we start the
-/// positions from dictionary_size + 1, zero is always too far to qualify
+/// positions from dict_size + 1, zero is always too far to qualify
 /// as usable match position.
 #define EMPTY_HASH_VALUE 0
 
@@ -166,7 +166,7 @@ move_pos(lzma_mf *mf)
 }
 
 
-/// When flushing, we cannot run the match finder unless there is find_len_max
+/// When flushing, we cannot run the match finder unless there is nice_len
 /// bytes available in the dictionary. Instead, we skip running the match
 /// finder (indicating that no match was found), and count how many bytes we
 /// have ignored this way.
@@ -196,8 +196,8 @@ move_pending(lzma_mf *mf)
 /// in them.
 #define header(is_bt, len_min, ret_op) \
 	uint32_t len_limit = mf_avail(mf); \
-	if (mf->find_len_max <= len_limit) { \
-		len_limit = mf->find_len_max; \
+	if (mf->nice_len <= len_limit) { \
+		len_limit = mf->nice_len; \
 	} else if (len_limit < (len_min) \
 			|| (is_bt && mf->action == LZMA_SYNC_FLUSH)) { \
 		assert(mf->action != LZMA_RUN); \
@@ -226,7 +226,7 @@ move_pending(lzma_mf *mf)
 /// of matches found.
 #define call_find(func, len_best) \
 do { \
-	matches_count = func(len_limit, pos, cur, cur_match, mf->loops, \
+	matches_count = func(len_limit, pos, cur, cur_match, mf->depth, \
 				mf->son, mf->cyclic_pos, mf->cyclic_size, \
 				matches + matches_count, len_best) \
 			- matches; \
@@ -246,7 +246,7 @@ do { \
 /// \param      pos             lzma_mf.read_pos + lzma_mf.offset
 /// \param      cur             Pointer to current byte (mf_ptr(mf))
 /// \param      cur_match       Start position of the current match candidate
-/// \param      loops           Maximum length of the hash chain
+/// \param      depth           Maximum length of the hash chain
 /// \param      son             lzma_mf.son (contains the hash chain)
 /// \param      cyclic_pos
 /// \param      cyclic_size
@@ -258,7 +258,7 @@ hc_find_func(
 		const uint32_t pos,
 		const uint8_t *const cur,
 		uint32_t cur_match,
-		uint32_t loops,
+		uint32_t depth,
 		uint32_t *const son,
 		const uint32_t cyclic_pos,
 		const uint32_t cyclic_size,
@@ -269,7 +269,7 @@ hc_find_func(
 
 	while (true) {
 		const uint32_t delta = pos - cur_match;
-		if (loops-- == 0 || delta >= cyclic_size)
+		if (depth-- == 0 || delta >= cyclic_size)
 			return matches;
 
 		const uint8_t *const pb = cur - delta;
@@ -463,7 +463,7 @@ bt_find_func(
 		const uint32_t pos,
 		const uint8_t *const cur,
 		uint32_t cur_match,
-		uint32_t loops,
+		uint32_t depth,
 		uint32_t *const son,
 		const uint32_t cyclic_pos,
 		const uint32_t cyclic_size,
@@ -478,7 +478,7 @@ bt_find_func(
 
 	while (true) {
 		const uint32_t delta = pos - cur_match;
-		if (loops-- == 0 || delta >= cyclic_size) {
+		if (depth-- == 0 || delta >= cyclic_size) {
 			*ptr0 = EMPTY_HASH_VALUE;
 			*ptr1 = EMPTY_HASH_VALUE;
 			return matches;
@@ -531,7 +531,7 @@ bt_skip_func(
 		const uint32_t pos,
 		const uint8_t *const cur,
 		uint32_t cur_match,
-		uint32_t loops,
+		uint32_t depth,
 		uint32_t *const son,
 		const uint32_t cyclic_pos,
 		const uint32_t cyclic_size)
@@ -544,7 +544,7 @@ bt_skip_func(
 
 	while (true) {
 		const uint32_t delta = pos - cur_match;
-		if (loops-- == 0 || delta >= cyclic_size) {
+		if (depth-- == 0 || delta >= cyclic_size) {
 			*ptr0 = EMPTY_HASH_VALUE;
 			*ptr1 = EMPTY_HASH_VALUE;
 			return;
@@ -588,7 +588,7 @@ bt_skip_func(
 
 #define bt_skip() \
 do { \
-	bt_skip_func(len_limit, pos, cur, cur_match, mf->loops, \
+	bt_skip_func(len_limit, pos, cur, cur_match, mf->depth, \
 			mf->son, mf->cyclic_pos, \
 			mf->cyclic_size); \
 	move_pos(mf); \

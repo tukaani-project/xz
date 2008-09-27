@@ -31,7 +31,7 @@ lzma_init_encoder(void)
 
 	lzma_init_check();
 
-#if defined(HAVE_SMALL) && defined(HAVE_ENCODER_LZMA)
+#if defined(HAVE_SMALL) && defined(HAVE_ENCODER_LZMA1)
 	lzma_rc_init();
 #endif
 

@@ -21,7 +21,7 @@ librangecoder_la_CPPFLAGS = \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_srcdir@/src/liblzma/common
 
-if COND_ENCODER_LZMA
+if COND_ENCODER_LZMA1
 librangecoder_la_SOURCES += \
 	range_encoder.h \
 	price.h
@@ -32,6 +32,6 @@ librangecoder_la_SOURCES += price_table.c
 endif
 endif
 
-if COND_DECODER_LZMA
+if COND_DECODER_LZMA1
 librangecoder_la_SOURCES += range_decoder.h
 endif

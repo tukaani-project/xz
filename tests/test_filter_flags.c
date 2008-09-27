@@ -200,7 +200,7 @@ static void
 test_lzma(void)
 {
 	// Test 1
-	known_flags.id = LZMA_FILTER_LZMA;
+	known_flags.id = LZMA_FILTER_LZMA1;
 	known_flags.options = NULL;
 	expect(encode(99));
 

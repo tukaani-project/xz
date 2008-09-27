@@ -102,9 +102,9 @@ AM_CONDITIONAL(COND_MAIN_DECODER, test "x$enable_decoder" = xyes)
 # Filters #
 ###########
 
-m4_define([SUPPORTED_FILTERS], [lzma,lzma2,subblock,delta,x86,powerpc,ia64,arm,armthumb,sparc])dnl
+m4_define([SUPPORTED_FILTERS], [lzma1,lzma2,subblock,delta,x86,powerpc,ia64,arm,armthumb,sparc])dnl
 m4_define([SIMPLE_FILTERS], [x86,powerpc,ia64,arm,armthumb,sparc])
-m4_define([LZ_FILTERS], [lzma,lzma2])
+m4_define([LZ_FILTERS], [lzma1,lzma2])
 
 m4_foreach([NAME], [SUPPORTED_FILTERS],
 [enable_filter_[]NAME=no
@@ -165,16 +165,16 @@ else
 		esac
 	done
 
-	# LZMA2 requires that LZMA is enabled.
-	test "x$enable_encoder_lzma2" = xyes && enable_encoder_lzma=yes
-	test "x$enable_decoder_lzma2" = xyes && enable_decoder_lzma=yes
+	# LZMA2 requires that LZMA1 is enabled.
+	test "x$enable_encoder_lzma2" = xyes && enable_encoder_lzma1=yes
+	test "x$enable_decoder_lzma2" = xyes && enable_decoder_lzma1=yes
 
 	AC_MSG_RESULT([$enable_decoders])
 fi
 
-if test "x$enable_encoder_lzma2$enable_encoder_lzma" = xyesno \
-		|| test "x$enable_decoder_lzma2$enable_decoder_lzma" = xyesno; then
-	AC_MSG_ERROR([LZMA2 requires that LZMA is also enabled.])
+if test "x$enable_encoder_lzma2$enable_encoder_lzma1" = xyesno \
+		|| test "x$enable_decoder_lzma2$enable_decoder_lzma1" = xyesno; then
+	AC_MSG_ERROR([LZMA2 requires that LZMA1 is also enabled.])
 fi
 
 m4_foreach([NAME], [SUPPORTED_FILTERS],
@@ -224,7 +224,7 @@ AC_MSG_CHECKING([which match finders to build])
 AC_ARG_ENABLE(match-finders, AC_HELP_STRING([--enable-match-finders=LIST],
 		[Comma-separated list of match finders to build. Default=all.
 		At least one match finder is required for encoding with
-		the LZMA filter. Available match finders:]
+		the LZMA1 and LZMA2 filters. Available match finders:]
 		m4_translit(m4_defn([SUPPORTED_MATCH_FINDERS]), [,], [ ])), [],
 	[enable_match_finders=SUPPORTED_MATCH_FINDERS])
 enable_match_finders=`echo "$enable_match_finders" | sed 's/,/ /g'`

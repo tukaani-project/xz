@@ -111,9 +111,9 @@ do
 		--subblock=size=8,rle=4 \
 		--subblock=size=8,rle=8 \
 		--subblock=size=4096,rle=12 \
-		--delta=distance=1 \
-		--delta=distance=4 \
-		--delta=distance=256 \
+		--delta=dist=1 \
+		--delta=dist=4 \
+		--delta=dist=256 \
 		--x86 \
 		--powerpc \
 		--ia64 \

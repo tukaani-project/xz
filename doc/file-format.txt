@@ -1,6 +1,6 @@
 
-The .lzma File Format
----------------------
+The .xz File Format
+-------------------
 
         0. Preface
            0.1. Copyright Notices
@@ -8,7 +8,7 @@ The .lzma File Format
         1. Conventions
            1.1. Byte and Its Representation
            1.2. Multibyte Integers
-        2. Overall Structure of .lzma File
+        2. Overall Structure of .xz File
            2.1. Stream
                 2.1.1. Stream Header
                        2.1.1.1. Header Magic Bytes
@@ -43,11 +43,10 @@ The .lzma File Format
            5.1. Alignment
            5.2. Security
            5.3. Filters
-                5.3.1. LZMA
-                5.3.2. LZMA2
-                5.3.3. Branch/Call/Jump Filters for Executables
-                5.3.4. Delta
-                       5.3.4.1. Format of the Encoded Output
+                5.3.1. LZMA2
+                5.3.2. Branch/Call/Jump Filters for Executables
+                5.3.3. Delta
+                       5.3.3.1. Format of the Encoded Output
            5.4. Custom Filter IDs
                 5.4.1. Reserved Custom Filter ID Ranges
         6. Cyclic Redundancy Checks
@@ -56,10 +55,10 @@ The .lzma File Format
 
 0. Preface
 
-        This document describes the .lzma file format (filename suffix
-        `.lzma', MIME type `application/x-lzma'). It is intended that
-        this format replace the format used by the LZMA_Alone tool
-        included in LZMA SDK up to and including version 4.57.
+        This document describes the .xz file format (filename suffix
+        `.xz', MIME type `application/x-xz'). It is intended that this
+        this format replace the old .lzma format used by LZMA SDK and
+        LZMA Utils.
 
         IMPORTANT:  The version described in this document is a
                     draft, NOT a final, official version. Changes
@@ -86,7 +85,7 @@ The .lzma File Format
 
 0.2. Changes
 
-        Last modified: 2008-09-07 10:20+0300
+        Last modified: 2008-09-24 21:05+0300
 
         (A changelog will be kept once the first official version
         is made.)
@@ -205,7 +204,7 @@ The .lzma File Format
             }
 
 
-2. Overall Structure of .lzma File
+2. Overall Structure of .xz File
 
         +========+================+========+================+
         | Stream | Stream Padding | Stream | Stream Padding | ...
@@ -243,9 +242,9 @@ The .lzma File Format
         The same limit applies to the total amount of uncompressed
         data stored in a Stream.
 
-        If an implementation supports handling .lzma files with
-        multiple concatenated Streams, it may apply the above limits
-        to the file as a whole instead of limiting per Stream basis.
+        If an implementation supports handling .xz files with multiple
+        concatenated Streams, it may apply the above limits to the file
+        as a whole instead of limiting per Stream basis.
 
 
 2.1.1. Stream Header
@@ -262,15 +261,15 @@ The .lzma File Format
 
             Using a C array and ASCII:
             const uint8_t HEADER_MAGIC[6]
-                    = { 0xFF, 'L', 'Z', 'M', 'A', 0x00 };
+                    = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
 
             In plain hexadecimal:
-            FF 4C 5A 4D 41 00
+            FD 37 7A 58 5A 00
 
         Notes:
-          - The first byte (0xFF) was chosen so that the files cannot
-            be erroneously detected as being in LZMA_Alone format, in
-            which the first byte is in the range [0x00, 0xE0].
+          - The first byte (0xFD) was chosen so that the files cannot
+            be erroneously detected as being in .lzma format, in which
+            the first byte is in the range [0x00, 0xE0].
           - The sixth byte (0x00) was chosen to prevent applications
             from misdetecting the file as a text file.
 
@@ -704,15 +703,15 @@ The .lzma File Format
         PowerPC executable files in the archive stream start at
         offsets that are multiples of four bytes.
 
-        Some filters, for example LZMA, can be configured to take
+        Some filters, for example LZMA2, can be configured to take
         advantage of specified alignment of input data. Note that
         taking advantage of aligned input can be benefical also when
         a filter is not the first filter in the chain. For example,
         if you compress PowerPC executables, you may want to use the
-        PowerPC filter and chain that with the LZMA filter. Because not
-        only the input but also the output alignment of the PowerPC
-        filter is four bytes, it is now benefical to set LZMA settings
-        so that the LZMA encoder can take advantage of its
+        PowerPC filter and chain that with the LZMA2 filter. Because
+        not only the input but also the output alignment of the PowerPC
+        filter is four bytes, it is now benefical to set LZMA2 settings
+        so that the LZMA2 encoder can take advantage of its
         four-byte-aligned input data.
 
         The output of the last filter in the chain is stored to the
@@ -770,78 +769,18 @@ The .lzma File Format
 
 5.3. Filters
 
-5.3.1. LZMA
+5.3.1. LZMA2
 
         LZMA (Lempel-Ziv-Markov chain-Algorithm) is a general-purporse
         compression algorithm with high compression ratio and fast
         decompression. LZMA is based on LZ77 and range coding
         algorithms.
 
-            Filter ID:                  0x20
-            Size of Filter Properties:  5 bytes
-            Changes size of data:       Yes
-            Allow as a non-last filter: No
-            Allow as the last filter:   Yes
-
-            Preferred alignment:
-                Input data:             Adjustable to 1/2/4/8/16 byte(s)
-                Output data:            1 byte
-
-        At the time of writing, there is no other documentation about
-        how LZMA works than the source code in LZMA SDK. Once such
-        documentation gets written, it will probably be published as
-        a separate document, because including the documentation here
-        would lengthen this document considerably.
-
-        The format of the Filter Properties field is as follows:
-
-            +-----------------+----+----+----+----+
-            | LZMA Properties |  Dictionary Size  |
-            +-----------------+----+----+----+----+
-
-        The LZMA Properties field contains three properties. An
-        abbreviation is given in parentheses, followed by the value
-        range of the property. The field consists of
-
-            1) the number of literal context bits (lc, [0, 4]);
-            2) the number of literal position bits (lp, [0, 4]); and
-            3) the number of position bits (pb, [0, 4]).
-
-        In addition to above ranges, the sum of lc and lp must not
-        exceed four. Note that this limit didn't exist in the old
-        LZMA_Alone format, which allowed lc to be in the range [0, 8].
-
-        The properties are encoded using the following formula:
-
-            LZMA Properties = (pb * 5 + lp) * 9 + lc
-
-        The following C code illustrates a straightforward way to
-        decode the properties:
-
-            uint8_t lc, lp, pb;
-            uint8_t prop = get_lzma_properties();
-            if (prop > (4 * 5 + 4) * 9 + 8)
-                return LZMA_PROPERTIES_ERROR;
-
-            pb = prop / (9 * 5);
-            prop -= pb * 9 * 5;
-            lp = prop / 9;
-            lc = prop - lp * 9;
-
-            if (lc + lp > 4)
-                return LZMA_PROPERTIES_ERROR;
-
-        Dictionary Size is encoded as unsigned 32-bit little endian
-        integer.
-
-
-5.3.2. LZMA2
-
         LZMA2 is an extensions on top of the original LZMA. LZMA2 uses
         LZMA internally, but adds support for flushing the encoder,
         uncompressed chunks, eases stateful decoder implementations,
-        and improves support for multithreading. For most uses, it is
-        recommended to use LZMA2 instead of LZMA.
+        and improves support for multithreading. Thus, the plain LZMA
+        will not be supported in this file format.
 
             Filter ID:                  0x21
             Size of Filter Properties:  1 byte
@@ -896,7 +835,7 @@ The .lzma File Format
             }
 
 
-5.3.3. Branch/Call/Jump Filters for Executables
+5.3.2. Branch/Call/Jump Filters for Executables
 
         These filters convert relative branch, call, and jump
         instructions to their absolute counterparts in executable
@@ -936,7 +875,7 @@ The .lzma File Format
         the Subblock filter.
 
 
-5.3.4. Delta
+5.3.3. Delta
 
         The Delta filter may increase compression ratio when the value
         of the next byte correlates with the value of an earlier byte
@@ -957,7 +896,7 @@ The .lzma File Format
         distance of 1 byte and 0xFF distance of 256 bytes.
 
 
-5.3.4.1. Format of the Encoded Output
+5.3.3.1. Format of the Encoded Output
 
         The code below illustrates both encoding and decoding with
         the Delta filter.

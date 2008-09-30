@@ -16,7 +16,7 @@
 #
 ###############################################################################
 
-for I in "$srcdir"/files/good-*.lzma
+for I in "$srcdir"/files/good-*.xz
 do
 	if ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
 		:
@@ -27,7 +27,7 @@ do
 	fi
 done
 
-for I in "$srcdir"/files/bad-*.lzma
+for I in "$srcdir"/files/bad-*.xz
 do
 	if ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
 		echo "Bad file succeeded: $I"
@@ -35,8 +35,6 @@ do
 		exit 1
 	fi
 done
-
-# TODO: Test malicious files too, but with care.
 
 (exit 0)
 exit 0

@@ -123,14 +123,21 @@
     bad-0cat-alone.lzma is good-0-empty.lzma concatenated with an empty
     LZMA_Alone file.
 
-    bad-0-empty-truncated.lzma is good-0-empty.lzma without the last byte
-    of the file.
+    bad-0cat-header_magic.lzma is good-0cat-empty.lzma but with one byte
+    wrong in the Header Magic Bytes field of the second Stream. liblzma
+    gives LZMA_DATA_ERROR for this. (LZMA_FORMAT_ERROR is used only if
+    the first Stream of a file has invalid Header Magic Bytes.)
 
     bad-0-header_magic.lzma is good-0-empty.lzma but with one byte wrong
-    in the Header Magic Bytes field.
+    in the Header Magic Bytes field. liblzma gives LZMA_FORMAT_ERROR for
+    this.
 
     bad-0-footer_magic.lzma is good-0-empty.lzma but with one byte wrong
-    in the Footer Magic Bytes field.
+    in the Footer Magic Bytes field. liblzma gives LZMA_DATA_ERROR for
+    this.
+
+    bad-0-empty-truncated.lzma is good-0-empty.lzma without the last byte
+    of the file.
 
     bad-0-nonempty_index.lzma has no Blocks but Index claims that there is
     one Block.

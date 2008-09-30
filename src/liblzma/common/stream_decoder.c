@@ -128,6 +128,11 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return ret == LZMA_FORMAT_ERROR && !coder->first_stream
 					? LZMA_DATA_ERROR : ret;
 
+		// If we are decoding concatenated Streams, and the later
+		// Streams have invalid Header Magic Bytes, we give
+		// LZMA_DATA_ERROR instead of LZMA_FORMAT_ERROR.
+		coder->first_stream = false;
+
 		// Copy the type of the Check so that Block Header and Block
 		// decoders see it.
 		coder->block_options.check = coder->stream_flags.check;

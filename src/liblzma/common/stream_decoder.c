@@ -396,6 +396,7 @@ lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			= (flags & LZMA_TELL_UNSUPPORTED_CHECK) != 0;
 	next->coder->tell_any_check = (flags & LZMA_TELL_ANY_CHECK) != 0;
 	next->coder->concatenated = (flags & LZMA_CONCATENATED) != 0;
+	next->coder->first_stream = true;
 
 	return stream_decoder_reset(next->coder, allocator);
 }

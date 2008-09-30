@@ -126,6 +126,12 @@
     bad-0-empty-truncated.lzma is good-0-empty.lzma without the last byte
     of the file.
 
+    bad-0-header_magic.lzma is good-0-empty.lzma but with one byte wrong
+    in the Header Magic Bytes field.
+
+    bad-0-footer_magic.lzma is good-0-empty.lzma but with one byte wrong
+    in the Footer Magic Bytes field.
+
     bad-0-nonempty_index.lzma has no Blocks but Index claims that there is
     one Block.
 

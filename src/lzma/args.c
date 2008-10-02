@@ -26,7 +26,7 @@
 
 
 enum tool_mode opt_mode = MODE_COMPRESS;
-enum header_type opt_header = HEADER_AUTO;
+enum format_type opt_format = FORMAT_AUTO;
 
 char *opt_suffix = NULL;
 
@@ -49,6 +49,12 @@ const char *stdin_filename = "(stdin)";
 static size_t preset_number = 7 - 1;
 static bool preset_default = true;
 static size_t filter_count = 0;
+
+/// When compressing, which file format to use if --format=auto or no --format
+/// at all has been specified. We need a variable because this depends on
+/// with which name we are called. All names with "lz" in them makes us to
+/// use the legacy .lzma format.
+static enum format_type format_compress_auto = FORMAT_XZ;
 
 
 enum {
@@ -312,18 +318,25 @@ parse_real(int argc, char **argv)
 
 		// --format
 		case 'F': {
-			static const char *types[] = {
-				"auto",
-				"native",
-				"alone",
-				// "gzip",
-				"raw",
-				NULL
+			// Just in case, support both "lzma" and "alone" since
+			// the latter was used for forward compatibility in
+			// LZMA Utils 4.32.x.
+			static const struct {
+				char str[8];
+				enum format_type format;
+			} types[] = {
+				{ "auto",   FORMAT_AUTO },
+				{ "xz",     FORMAT_XZ },
+				{ "lzma",   FORMAT_LZMA },
+				{ "alone",  FORMAT_LZMA },
+				// { "gzip",   FORMAT_GZIP },
+				// { "gz",     FORMAT_GZIP },
+				{ "raw",    FORMAT_RAW },
 			};
 
-			opt_header = 0;
-			while (strcmp(types[opt_header], optarg) != 0) {
-				if (types[++opt_header] == NULL) {
+			size_t i = 0;
+			while (strcmp(types[i].str, optarg) != 0) {
+				if (++i == ARRAY_SIZE(types)) {
 					errmsg(V_ERROR, _("%s: Unknown file "
 							"format type"),
 							optarg);
@@ -331,25 +344,25 @@ parse_real(int argc, char **argv)
 				}
 			}
 
+			opt_format = types[i].format;
 			break;
 		}
 
 		// --check
 		case 'C': {
 			static const struct {
-				const char *str;
-				unsigned int value;
+				char str[8];
+				lzma_check check;
 			} types[] = {
 				{ "none",   LZMA_CHECK_NONE },
 				{ "crc32",  LZMA_CHECK_CRC32 },
 				{ "crc64",  LZMA_CHECK_CRC64 },
 				{ "sha256", LZMA_CHECK_SHA256 },
-				{ NULL,     0 }
 			};
 
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0) {
-				if (types[++i].str == NULL) {
+				if (++i == ARRAY_SIZE(types)) {
 					errmsg(V_ERROR, _("%s: Unknown "
 							"integrity check "
 							"type"), optarg);
@@ -357,7 +370,7 @@ parse_real(int argc, char **argv)
 				}
 			}
 
-			opt_check = types[i].value;
+			opt_check = types[i].check;
 			break;
 		}
 
@@ -460,7 +473,7 @@ set_compression_settings(void)
 			my_exit(ERROR);
 		}
 
-		opt_filters[0].id = opt_header == HEADER_ALONE
+		opt_filters[0].id = opt_format == FORMAT_LZMA
 				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
 		opt_filters[0].options = &opt_lzma;
 		filter_count = 1;
@@ -471,9 +484,9 @@ set_compression_settings(void)
 
 	// If we are using the LZMA_Alone format, allow exactly one filter
 	// which has to be LZMA.
-	if (opt_header == HEADER_ALONE && (filter_count != 1
+	if (opt_format == FORMAT_LZMA && (filter_count != 1
 			|| opt_filters[0].id != LZMA_FILTER_LZMA1)) {
-		errmsg(V_ERROR, _("With --format=alone only the LZMA1 filter "
+		errmsg(V_ERROR, _("With --format=lzma only the LZMA1 filter "
 				"is supported"));
 		my_exit(ERROR);
 	}
@@ -503,6 +516,12 @@ set_compression_settings(void)
 
 			memory_usage = lzma_memusage_encoder(opt_filters);
 		}
+
+		// TODO: With --format=raw, we should print a warning since
+		// the presets may change and thus the next version may not
+		// be able to uncompress the raw stream with the same preset
+		// number.
+
 	} else {
 		if (memory_usage > opt_memory) {
 			errmsg(V_ERROR, _("Memory usage limit is too small "
@@ -532,6 +551,11 @@ parse_args(int argc, char **argv)
 	{
 		const char *name = str_filename(argv[0]);
 		if (name != NULL) {
+			// Default file format
+			if (strstr(name, "lz") != NULL)
+				format_compress_auto = FORMAT_LZMA;
+
+			// Operation mode
 			if (strstr(name, "cat") != NULL) {
 				opt_mode = MODE_DECOMPRESS;
 				opt_stdout = true;
@@ -556,7 +580,10 @@ parse_args(int argc, char **argv)
 		opt_stdout = true;
 	}
 
-	if (opt_mode == MODE_COMPRESS || opt_header == HEADER_RAW)
+	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_AUTO)
+		opt_format = format_compress_auto;
+
+	if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
 		set_compression_settings();
 
 	// If no filenames are given, use stdin.

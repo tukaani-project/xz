@@ -69,7 +69,8 @@ test_lzma() {
 	echo . | tr -d '\n\r'
 }
 
-LZMA="../src/lzma/lzma --memory=15Mi --threads=1"
+# TODO: Remove --format=xz once the command name has been changed.
+LZMA="../src/lzma/lzma --memory=15Mi --threads=1 --format=xz"
 LZMADEC="../src/lzmadec/lzmadec --memory=4Mi"
 unset LZMA_OPT
 

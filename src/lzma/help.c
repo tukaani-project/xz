@@ -46,7 +46,7 @@ show_help(void)
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
 "  -t, --test          test compressed file integrity\n"
-"  -l, --list          list block sizes, total sizes, and possible metadata\n"
+"  -l, --list          list information about files\n"
 ));
 
 	puts(_(
@@ -57,7 +57,7 @@ show_help(void)
 "  -c, --stdout        write to standard output and don't delete input files\n"
 "  -S, --suffix=.SUF   use suffix `.SUF' on compressed files instead of `.lzma'\n"
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      `auto' (default), `native', `alone', and `raw'\n"
+"                      `auto' (default), `xz', `lzma', and `raw'\n"
 "      --files=[FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"

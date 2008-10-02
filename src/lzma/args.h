@@ -30,12 +30,13 @@ enum tool_mode {
 	MODE_LIST,
 };
 
-enum header_type {
-	HEADER_AUTO,
-	HEADER_NATIVE,
-	HEADER_ALONE,
+// NOTE: The order of these is significant in suffix.c.
+enum format_type {
+	FORMAT_AUTO,
+	FORMAT_XZ,
+	FORMAT_LZMA,
 	// HEADER_GZIP,
-	HEADER_RAW,
+	FORMAT_RAW,
 };
 
 
@@ -51,7 +52,7 @@ extern bool opt_keep_original;
 extern bool opt_preserve_name;
 // extern bool opt_recursive;
 extern enum tool_mode opt_mode;
-extern enum header_type opt_header;
+extern enum format_type opt_format;
 
 extern lzma_check opt_check;
 extern lzma_filter opt_filters[8];

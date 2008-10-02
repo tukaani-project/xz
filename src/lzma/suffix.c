@@ -20,14 +20,9 @@
 #include "private.h"
 
 
-static const struct {
+struct suffix_pair {
 	const char *compressed;
 	const char *uncompressed;
-} suffixes[] = {
-	{ ".lzma",  "" },
-	{ ".tlz",   ".tar" },
-	{ ".ylz",   ".yar" },
-	{ NULL,     NULL }
 };
 
 
@@ -63,13 +58,21 @@ test_suffix(const char *suffix, const char *src_name, size_t src_len)
 /// \return     Name of the uncompressed file, or NULL if file has unknown
 ///             suffix.
 static char *
-uncompressed_name(const char *src_name)
+uncompressed_name(const char *src_name, const size_t src_len)
 {
+	static const struct suffix_pair suffixes[] = {
+		{ ".xz",    "" },
+		{ ".txz",   ".tar" }, // .txz abbreviation for .txt.gz is rare.
+		{ ".lzma",  "" },
+		{ ".tlz",   ".tar" },
+		// { ".gz",    "" },
+		// { ".tgz",   ".tar" },
+	};
+
 	const char *new_suffix = "";
-	const size_t src_len = strlen(src_name);
 	size_t new_len = 0;
 
-	for (size_t i = 0; suffixes[i].compressed != NULL; ++i) {
+	for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
 		new_len = test_suffix(suffixes[i].compressed,
 				src_name, src_len);
 		if (new_len != 0) {
@@ -103,10 +106,40 @@ uncompressed_name(const char *src_name)
 
 
 /// \brief      Appends suffix to src_name
+///
+/// In contrast to uncompressed_name(), we check only suffixes that are valid
+/// for the specified file format.
 static char *
-compressed_name(const char *src_name)
+compressed_name(const char *src_name, const size_t src_len)
 {
-	const size_t src_len = strlen(src_name);
+	// The order of these must match the order in args.h.
+	static const struct suffix_pair all_suffixes[][3] = {
+		{
+			{ ".xz",    "" },
+			{ ".txz",   ".tar" },
+			{ NULL, NULL }
+		}, {
+			{ ".lzma",  "" },
+			{ ".tlz",   ".tar" },
+			{ NULL,     NULL }
+/*
+		}, {
+			{ ".gz",    "" },
+			{ ".tgz",   ".tar" },
+			{ NULL,     NULL }
+*/
+		}, {
+			// --format=raw requires specifying the suffix
+			// manually or using stdout.
+			{ NULL,     NULL }
+		}
+	};
+
+	// args.c ensures this.
+	assert(opt_format != FORMAT_AUTO);
+
+	const size_t format = opt_format - 1;
+	const struct suffix_pair *const suffixes = all_suffixes[format];
 
 	for (size_t i = 0; suffixes[i].compressed != NULL; ++i) {
 		if (test_suffix(suffixes[i].compressed, src_name, src_len)
@@ -116,6 +149,15 @@ compressed_name(const char *src_name)
 					suffixes[i].compressed);
 			return NULL;
 		}
+	}
+
+	// TODO: Hmm, maybe it would be better to validate this in args.c,
+	// since the suffix handling when decoding is weird now.
+	if (opt_format == FORMAT_RAW && opt_suffix == NULL) {
+		errmsg(V_ERROR, _("%s: With --format=raw, --suffix=.SUF is "
+				"required unless writing to stdout"),
+				src_name);
+		return NULL;
 	}
 
 	const char *suffix = opt_suffix != NULL
@@ -139,7 +181,13 @@ compressed_name(const char *src_name)
 extern char *
 get_dest_name(const char *src_name)
 {
+	assert(src_name != NULL);
+
+	// Length of the name is needed in all cases to locate the end of
+	// the string to compare the suffix, so calculate the length here.
+	const size_t src_len = strlen(src_name);
+
 	return opt_mode == MODE_COMPRESS
-			? compressed_name(src_name)
-			: uncompressed_name(src_name);
+			? compressed_name(src_name, src_len)
+			: uncompressed_name(src_name, src_len);
 }

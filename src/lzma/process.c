@@ -155,19 +155,23 @@ single_init(thread_data *t)
 	lzma_ret ret = LZMA_PROG_ERROR;
 
 	if (opt_mode == MODE_COMPRESS) {
-		switch (opt_header) {
-		case HEADER_AUTO:
-		case HEADER_NATIVE:
+		switch (opt_format) {
+		case FORMAT_AUTO:
+			// args.c ensures this.
+			assert(0);
+			break;
+
+		case FORMAT_XZ:
 			ret = lzma_stream_encoder(&t->strm,
 					opt_filters, opt_check);
 			break;
 
-		case HEADER_ALONE:
+		case FORMAT_LZMA:
 			ret = lzma_alone_encoder(&t->strm,
 					opt_filters[0].options);
 			break;
 
-		case HEADER_RAW:
+		case FORMAT_RAW:
 			ret = lzma_raw_encoder(&t->strm, opt_filters);
 			break;
 		}
@@ -175,20 +179,20 @@ single_init(thread_data *t)
 		const uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK
 				| LZMA_CONCATENATED;
 
-		switch (opt_header) {
-		case HEADER_AUTO:
+		switch (opt_format) {
+		case FORMAT_AUTO:
 			ret = lzma_auto_decoder(&t->strm, opt_memory, flags);
 			break;
 
-		case HEADER_NATIVE:
+		case FORMAT_XZ:
 			ret = lzma_stream_decoder(&t->strm, opt_memory, flags);
 			break;
 
-		case HEADER_ALONE:
+		case FORMAT_LZMA:
 			ret = lzma_alone_decoder(&t->strm, opt_memory);
 			break;
 
-		case HEADER_RAW:
+		case FORMAT_RAW:
 			// Memory usage has already been checked in args.c.
 			ret = lzma_raw_decoder(&t->strm, opt_filters);
 			break;

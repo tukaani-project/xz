@@ -72,12 +72,22 @@ uncompressed_name(const char *src_name, const size_t src_len)
 	const char *new_suffix = "";
 	size_t new_len = 0;
 
-	for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
-		new_len = test_suffix(suffixes[i].compressed,
-				src_name, src_len);
-		if (new_len != 0) {
-			new_suffix = suffixes[i].uncompressed;
-			break;
+	if (opt_format == FORMAT_RAW) {
+		// Don't check for known suffixes when --format=raw was used.
+		if (opt_suffix == NULL) {
+			errmsg(V_ERROR, _("%s: With --format=raw, "
+					"--suffix=.SUF is required unless "
+					"writing to stdout"), src_name);
+			return NULL;
+		}
+	} else {
+		for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
+			new_len = test_suffix(suffixes[i].compressed,
+					src_name, src_len);
+			if (new_len != 0) {
+				new_suffix = suffixes[i].uncompressed;
+				break;
+			}
 		}
 	}
 
@@ -154,9 +164,9 @@ compressed_name(const char *src_name, const size_t src_len)
 	// TODO: Hmm, maybe it would be better to validate this in args.c,
 	// since the suffix handling when decoding is weird now.
 	if (opt_format == FORMAT_RAW && opt_suffix == NULL) {
-		errmsg(V_ERROR, _("%s: With --format=raw, --suffix=.SUF is "
-				"required unless writing to stdout"),
-				src_name);
+		errmsg(V_ERROR, _("%s: With --format=raw, "
+				"--suffix=.SUF is required unless "
+				"writing to stdout"), src_name);
 		return NULL;
 	}
 

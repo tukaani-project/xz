@@ -40,13 +40,13 @@ bool opt_keep_original = false;
 bool opt_preserve_name = false;
 
 lzma_check opt_check = LZMA_CHECK_CRC64;
-lzma_filter opt_filters[8];
+lzma_filter opt_filters[LZMA_BLOCK_FILTERS_MAX + 1];
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
 const char *stdin_filename = "(stdin)";
 
-static size_t preset_number = 7 - 1;
+static size_t preset_number = 7;
 static bool preset_default = true;
 static size_t filter_count = 0;
 
@@ -178,7 +178,7 @@ parse_real(int argc, char **argv)
 
 		case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
-			preset_number = c - '1';
+			preset_number = c - '0';
 			preset_default = false;
 			break;
 
@@ -502,7 +502,7 @@ set_compression_settings(void)
 	// setting is used.
 	if (preset_default) {
 		while (memory_usage > opt_memory) {
-			if (preset_number == 0) {
+			if (preset_number == 1) {
 				errmsg(V_ERROR, _("Memory usage limit is too "
 						"small for any internal "
 						"filter preset"));

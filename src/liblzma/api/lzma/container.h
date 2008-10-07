@@ -49,7 +49,7 @@ typedef enum {
 		/**<
 		 * LZMA2 filter with fast compression (fast in terms of LZMA2).
 		 * If you are interested in the exact options used, see
-		 * lzma_preset_lzma[0]. Note that the exact options may
+		 * lzma_lzma_preset(1). Note that the exact options may
 		 * change between liblzma versions.
 		 *
 		 * At the moment, the command line tool uses these settings
@@ -57,18 +57,18 @@ typedef enum {
 		 * may default to some more complex way to determine the
 		 * settings used e.g. the type of files being compressed.
 		 *
-		 * LZMA_EASY_LZMA_2 is equivalent to lzma_preset_lzma[1]
+		 * LZMA_EASY_LZMA2_2 is equivalent to lzma_lzma_preset(2)
 		 * and so on.
 		 */
 
-	LZMA_EASY_LZMA_2    = 2,
-	LZMA_EASY_LZMA_3    = 3,
-	LZMA_EASY_LZMA_4    = 4,
-	LZMA_EASY_LZMA_5    = 5,
-	LZMA_EASY_LZMA_6    = 6,
-	LZMA_EASY_LZMA_7    = 7,
-	LZMA_EASY_LZMA_8    = 8,
-	LZMA_EASY_LZMA_9    = 9,
+	LZMA_EASY_LZMA2_2    = 2,
+	LZMA_EASY_LZMA2_3    = 3,
+	LZMA_EASY_LZMA2_4    = 4,
+	LZMA_EASY_LZMA2_5    = 5,
+	LZMA_EASY_LZMA2_6    = 6,
+	LZMA_EASY_LZMA2_7    = 7,
+	LZMA_EASY_LZMA2_8    = 8,
+	LZMA_EASY_LZMA2_9    = 9,
 } lzma_easy_level;
 
 

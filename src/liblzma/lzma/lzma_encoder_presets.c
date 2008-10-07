@@ -53,9 +53,10 @@ lzma_lzma_preset(lzma_options_lzma *options, uint32_t level)
 extern LZMA_API lzma_bool
 lzma_lzma_preset(lzma_options_lzma *options, uint32_t level)
 {
-	if (level >= 9)
+	if (level == 0 || level > 9)
 		return true;
 
+	--level;
 	memzero(options, sizeof(*options));
 
 	static const uint8_t shift[9] = { 16, 20, 19, 20, 21, 22, 23, 24, 25 };

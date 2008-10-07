@@ -394,7 +394,7 @@ typedef struct {
 /**
  * \brief       Set a compression level preset to lzma_options_lzma structure
  *
- * level = 0 is the fastest and level = 8 is the slowest. These presets match
+ * level = 1 is the fastest and level = 9 is the slowest. These presets match
  * the switches -1 .. -9 of the command line tool.
  *
  * The preset values are subject to changes between liblzma versions.

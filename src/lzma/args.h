@@ -55,7 +55,7 @@ extern enum tool_mode opt_mode;
 extern enum format_type opt_format;
 
 extern lzma_check opt_check;
-extern lzma_filter opt_filters[8];
+extern lzma_filter opt_filters[LZMA_BLOCK_FILTERS_MAX + 1];
 
 extern const char *stdin_filename;
 

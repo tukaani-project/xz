@@ -232,7 +232,7 @@ int
 main(void)
 {
 	lzma_init();
-	succeed(lzma_lzma_preset(&opt_lzma, 0));
+	succeed(lzma_lzma_preset(&opt_lzma, 1));
 
 	test1();
 	test2();

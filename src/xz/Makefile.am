@@ -12,9 +12,9 @@
 ##  Lesser General Public License for more details.
 ##
 
-bin_PROGRAMS = lzma
+bin_PROGRAMS = xz
 
-lzma_SOURCES = \
+xz_SOURCES = \
 	args.c \
 	args.h \
 	hardware.c \
@@ -35,38 +35,40 @@ lzma_SOURCES = \
 	util.c \
 	util.h
 
-## It must be able to find sysdefs.h, lzma_adv.h, and possible
-## replacement headers.
-lzma_CPPFLAGS = \
+xz_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-I@top_srcdir@/src/common \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_builddir@/lib \
 	-I@top_srcdir@/lib
 
-lzma_CFLAGS = @PTHREAD_CFLAGS@
+xz_CFLAGS = @PTHREAD_CFLAGS@
 
 ## Always link the command line tool statically against liblzma. It is
 ## faster on x86, because no need for PIC. We also have one dependency less,
-## which allows users to more freely copy the lzma binary to other boxes.
-lzma_LDFLAGS = -static
-lzma_LDADD = \
+## which allows users to more freely copy the xz binary to other boxes.
+xz_LDFLAGS = -static
+xz_LDADD = \
 	@top_builddir@/src/liblzma/liblzma.la \
 	@LTLIBINTL@ \
 	@PTHREAD_LIBS@
 
 if COND_GNULIB
-lzma_LDADD += @top_builddir@/lib/libgnu.a
+xz_LDADD += @top_builddir@/lib/libgnu.a
 endif
 
 
-## Create symlinks for unlzma and lzcat:
+## Create symlinks for unxz and xzcat for convenicen. Create symlinks also
+## for lzma, unlzma, and lzcat for compatibility with LZMA Utils 4.32.x.
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
-	rm -f unlzma lzcat && \
-	$(LN_S) lzma unlzma && \
-	$(LN_S) lzma lzcat
+	rm -f unxz xzcat lzma unlzma lzcat && \
+	$(LN_S) xz unxz && \
+	$(LN_S) xz xzcat && \
+	$(LN_S) xz lzma && \
+	$(LN_S) xz unlzma && \
+	$(LN_S) xz lzcat
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
-	rm -f unlzma lzcat
+	rm -f unxz xzcat lzma unlzma lzcat

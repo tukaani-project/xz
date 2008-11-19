@@ -24,8 +24,8 @@ if test $? != 42 ; then
 	exit 77
 fi
 
-test_lzma() {
-	if $LZMA -c "$@" "$FILE" > tmp_compressed; then
+test_xz() {
+	if $XZ -c "$@" "$FILE" > tmp_compressed; then
 		:
 	else
 		echo "Compressing failed: $* $FILE"
@@ -33,7 +33,7 @@ test_lzma() {
 		exit 1
 	fi
 
-	if $LZMA -cd tmp_compressed > tmp_uncompressed ; then
+	if $XZ -cd tmp_compressed > tmp_uncompressed ; then
 		:
 	else
 		echo "Decoding failed: $* $FILE"
@@ -49,7 +49,7 @@ test_lzma() {
 		exit 1
 	fi
 
-	if $LZMADEC tmp_compressed > tmp_uncompressed ; then
+	if $XZDEC tmp_compressed > tmp_uncompressed ; then
 		:
 	else
 		echo "Decoding failed: $* $FILE"
@@ -69,10 +69,9 @@ test_lzma() {
 	echo . | tr -d '\n\r'
 }
 
-# TODO: Remove --format=xz once the command name has been changed.
-LZMA="../src/lzma/lzma --memory=15Mi --threads=1 --format=xz"
-LZMADEC="../src/lzmadec/lzmadec --memory=4Mi"
-unset LZMA_OPT
+XZ="../src/xz/xz --memory=15MiB --threads=1"
+XZDEC="../src/xzdec/xzdec --memory=4MiB"
+unset XZ_OPT
 
 # Create the required input files.
 if ./create_compress_files ; then
@@ -97,11 +96,11 @@ do
 	echo "  $MSG" | tr -d '\n\r'
 
 	# Don't test with empty arguments; it breaks some ancient
-	# proprietary /bin/sh versions due to $@ used in test_lzma().
-	test_lzma -1
-	test_lzma -2
-	test_lzma -3
-	test_lzma -4
+	# proprietary /bin/sh versions due to $@ used in test_xz().
+	test_xz -1
+	test_xz -2
+	test_xz -3
+	test_xz -4
 
 	for ARGS in \
 		--subblock \
@@ -122,8 +121,8 @@ do
 		--armthumb \
 		--sparc
 	do
-		test_lzma $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
-		test_lzma --subblock $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
+		test_xz $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
+		test_xz --subblock $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
 	done
 
 	echo

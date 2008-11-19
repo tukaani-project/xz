@@ -12,5 +12,5 @@
 ##  Lesser General Public License for more details.
 ##
 
-SUBDIRS = liblzma lzma lzmadec scripts
+SUBDIRS = liblzma xz xzdec scripts
 EXTRA_DIST = common

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       lzmadec.c
+/// \file       xzdec.c
 /// \brief      Simple single-threaded tool to uncompress .lzma files
 //
 //  Copyright (C) 2007 Lasse Collin
@@ -151,7 +151,7 @@ set_default_memlimit(void)
 
 /// \brief      Converts a string to size_t
 ///
-/// This is rudely copied from src/lzma/util.c and modified a little. :-(
+/// This is rudely copied from src/xz/util.c and modified a little. :-(
 ///
 static size_t
 str_to_uint64(const char *value)

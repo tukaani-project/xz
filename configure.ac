@@ -709,8 +709,8 @@ AC_CONFIG_FILES([
 	src/liblzma/subblock/Makefile
 	src/liblzma/delta/Makefile
 	src/liblzma/simple/Makefile
-	src/lzma/Makefile
-	src/lzmadec/Makefile
+	src/xz/Makefile
+	src/xzdec/Makefile
 	src/scripts/Makefile
 	tests/Makefile
 	debug/Makefile

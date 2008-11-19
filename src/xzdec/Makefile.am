@@ -12,18 +12,18 @@
 ##  Lesser General Public License for more details.
 ##
 
-bin_PROGRAMS = lzmadec
+bin_PROGRAMS = xzdec
 
-lzmadec_SOURCES = lzmadec.c
-lzmadec_CPPFLAGS = \
+xzdec_SOURCES = xzdec.c
+xzdec_CPPFLAGS = \
 	-I@top_srcdir@/src/common \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_builddir@/lib
-lzmadec_LDFLAGS = -static
-lzmadec_LDADD = \
+xzdec_LDFLAGS = -static
+xzdec_LDADD = \
 	@top_builddir@/src/liblzma/liblzma.la \
 	@LTLIBINTL@
 
 if COND_GNULIB
-lzmadec_LDADD += @top_builddir@/lib/libgnu.a
+xzdec_LDADD += @top_builddir@/lib/libgnu.a
 endif

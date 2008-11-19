@@ -18,7 +18,7 @@
 
 for I in "$srcdir"/files/good-*.xz
 do
-	if ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
+	if ../src/xzdec/xzdec "$I" > /dev/null 2> /dev/null ; then
 		:
 	else
 		echo "Good file failed: $I"
@@ -29,7 +29,7 @@ done
 
 for I in "$srcdir"/files/bad-*.xz
 do
-	if ../src/lzmadec/lzmadec "$I" > /dev/null 2> /dev/null ; then
+	if ../src/xzdec/xzdec "$I" > /dev/null 2> /dev/null ; then
 		echo "Bad file succeeded: $I"
 		(exit 1)
 		exit 1

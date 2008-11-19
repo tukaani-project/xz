@@ -172,10 +172,13 @@
 
     bad-1-block_header-3.xz has wrong CRC32 in Block Header.
 
-    bad-1-block_header-4.xz has too big Compressed Size (2^63 bytes while
-    maximum is 2^63 - 4 bytes) in Block Header. It's important that the
-    file gets rejected due to invalid Compressed Size value; the decoder
+    bad-1-block_header-4.xz has too big Compressed Size in Block Header
+    (2^64 - 1 bytes while maximum is a little less, because the whole
+    Block must stay smaller than 2^64). It's important that the file
+    gets rejected due to invalid Compressed Size value; the decoder
     must not try decoding the Compressed Data field.
+
+    bad-1-block_header-5.xz has zero as Compressed Size in Block Header.
 
     bad-2-index-1.xz has wrong Total Sizes in Index.
 
@@ -184,6 +187,9 @@
     bad-2-index-3.xz has non-nul byte in Index Padding.
 
     bad-2-index-4.xz wrong CRC32 in Index.
+
+    bad-2-index-5.xz has zero as Total Size. It is important that the file
+    gets rejected specifically due to Total Size having an invalid value.
 
     bad-2-compressed_data_padding.xz has non-nul byte in the padding of
     the Compressed Data field of the first Block.

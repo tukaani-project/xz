@@ -66,10 +66,6 @@
 	| LZMA_CONCATENATED )
 
 
-///////////
-// Types //
-///////////
-
 /// Type of encoder/decoder specific data; the actual structure is defined
 /// differently in different coders.
 typedef struct lzma_coder_s lzma_coder;
@@ -186,10 +182,6 @@ struct lzma_internal_s {
 	bool allow_buf_error;
 };
 
-
-///////////////
-// Functions //
-///////////////
 
 /// Allocates memory
 extern void *lzma_alloc(size_t size, lzma_allocator *allocator)

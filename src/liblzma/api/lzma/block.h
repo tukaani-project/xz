@@ -1,6 +1,6 @@
 /**
  * \file        lzma/block.h
- * \brief       .lzma Block handling
+ * \brief       .xz Block handling
  *
  * \author      Copyright (C) 1999-2006 Igor Pavlov
  * \author      Copyright (C) 2007 Lasse Collin
@@ -131,11 +131,10 @@ typedef struct {
 	 *
 	 * \note        Because of the array is terminated with
 	 *              .id = LZMA_VLI_UNKNOWN, the actual array must
-	 *              have LZMA_BLOCK_FILTERS_MAX + 1 members or the Block
+	 *              have LZMA_FILTERS_MAX + 1 members or the Block
 	 *              Header decoder will overflow the buffer.
 	 */
 	lzma_filter *filters;
-#	define LZMA_BLOCK_FILTERS_MAX 4
 
 } lzma_block;
 
@@ -148,6 +147,8 @@ typedef struct {
  * The size can be calculated from the first byte of a Block using this macro.
  * Note that if the first byte is 0x00, it indicates beginning of Index; use
  * this macro only when the byte is not 0x00.
+ *
+ * There is no encoding macro, because Block Header encoder is enough for that.
  */
 #define lzma_block_header_size_decode(b) (((uint32_t)(b) + 1) * 4)
 
@@ -211,38 +212,50 @@ extern lzma_ret lzma_block_header_decode(lzma_block *options,
 
 
 /**
- * \brief       Sets Compressed Size according to Total Size
+ * \brief       Sets Compressed Size according to Unpadded Size
  *
- * Block Header stores Compressed Size, but Index has Total Size. If the
+ * Block Header stores Compressed Size, but Index has Unpadded Size. If the
  * application has already parsed the Index and is now decoding Blocks,
- * it can calculate Compressed Size from Total Size. This function does
+ * it can calculate Compressed Size from Unpadded Size. This function does
  * exactly that with error checking, so application doesn't need to check,
  * for example, if the value in Index is too small to contain even the
- * Block Header. Note that you need to call this function after decoding
+ * Block Header. Note that you need to call this function _after_ decoding
  * the Block Header field.
  *
  * \return      - LZMA_OK: options->compressed_size was set successfully.
- *              - LZMA_DATA_ERROR: total_size is too small compared to
+ *              - LZMA_DATA_ERROR: unpadded_size is too small compared to
  *                options->header_size and lzma_check_sizes[options->check].
  *              - LZMA_PROG_ERROR: Some values are invalid. For example,
- *                total_size and options->header_size must be multiples
- *                of four, total_size must be at least 12, and
+ *                options->header_size must be a multiple of four, and
  *                options->header_size between 8 and 1024 inclusive.
  */
-extern lzma_ret lzma_block_total_size_set(
-		lzma_block *options, lzma_vli total_size)
+extern lzma_ret lzma_block_compressed_size(
+		lzma_block *options, lzma_vli unpadded_size)
 		lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Calculates Total Size
+ * \brief       Calculates Unpadded Size
  *
- * This function can be useful after decoding a Block to get Total Size
+ * This function can be useful after decoding a Block to get Unpadded Size
  * that is stored in Index.
  *
- * \return      Total Size on success, or zero on error.
+ * \return      Unpadded Size on success, or zero on error.
  */
-extern lzma_vli lzma_block_total_size_get(const lzma_block *options)
+extern lzma_vli lzma_block_unpadded_size(const lzma_block *options)
+		lzma_attr_pure;
+
+
+/**
+ * \brief       Calculates the total encoded size of a Block
+ *
+ * This is equivalent to lzma_block_unpadded_size() except that the returned
+ * value includes the size of the Block Padding field.
+ *
+ * \return      On success, total encoded size of the Block. On error,
+ *              zero is returned.
+ */
+extern lzma_vli lzma_block_total_size(const lzma_block *options)
 		lzma_attr_pure;
 
 
@@ -255,8 +268,6 @@ extern lzma_vli lzma_block_total_size_get(const lzma_block *options)
  * \return      - LZMA_OK: All good, continue with lzma_code().
  *              - LZMA_MEM_ERROR
  *              - LZMA_OPTIONS_ERROR
- *              - LZMA_DATA_ERROR: Limits (total_limit and uncompressed_limit)
- *                have been reached already.
  *              - LZMA_UNSUPPORTED_CHECK: options->check specfies a Check
  *                that is not supported by this buid of liblzma. Initializing
  *                the encoder failed.

@@ -20,17 +20,29 @@
 #include "private.h"
 
 
-/// \brief      Fancy version of strtoull()
-///
-/// \param      name    Name of the option to show in case of an error
-/// \param      value   String containing the number to be parsed; may
-///                     contain suffixes "k", "M", "G", "Ki", "Mi", or "Gi"
-/// \param      min     Minimum valid value
-/// \param      max     Maximum valid value
-///
-/// \return     Parsed value that is in the range [min, max]. Does not return
-///             if an error occurs.
-///
+extern void *
+xrealloc(void *ptr, size_t size)
+{
+	assert(size > 0);
+
+	ptr = realloc(ptr, size);
+	if (ptr == NULL)
+		message_fatal("%s", strerror(errno));
+
+	return ptr;
+}
+
+
+extern char *
+xstrdup(const char *src)
+{
+	assert(src != NULL);
+	const size_t size = strlen(src) + 1;
+	char *dest = xmalloc(size);
+	return memcpy(dest, src, size);
+}
+
+
 extern uint64_t
 str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 {
@@ -40,12 +52,9 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 	while (*value == ' ' || *value == '\t')
 		++value;
 
-	if (*value < '0' || *value > '9') {
-		errmsg(V_ERROR, _("%s: Value is not a non-negative "
-				"decimal integer"),
-				value);
-		my_exit(ERROR);
-	}
+	if (*value < '0' || *value > '9')
+		message_fatal(_("%s: Value is not a non-negative "
+				"decimal integer"), value);
 
 	do {
 		// Don't overflow.
@@ -86,12 +95,11 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 		}
 
 		if (multiplier == 0) {
-			errmsg(V_ERROR, _("%s: Invalid multiplier suffix. "
+			message(V_ERROR, _("%s: Invalid multiplier suffix. "
 					"Valid suffixes:"), value);
-			errmsg(V_ERROR, "`k' (10^3), `M' (10^6), `G' (10^9) "
+			message_fatal("`k' (10^3), `M' (10^6), `G' (10^9) "
 					"`Ki' (2^10), `Mi' (2^20), "
 					"`Gi' (2^30)");
-			my_exit(ERROR);
 		}
 
 		// Don't overflow here either.
@@ -107,32 +115,10 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 	return result;
 
 error:
-	errmsg(V_ERROR, _("Value of the option `%s' must be in the range "
+	message_fatal(_("Value of the option `%s' must be in the range "
 				"[%llu, %llu]"), name,
 				(unsigned long long)(min),
 				(unsigned long long)(max));
-	my_exit(ERROR);
-}
-
-
-/// \brief      Gets filename part from pathname+filename
-///
-/// \return     Pointer in the filename where the actual filename starts.
-///             If the last character is a slash, NULL is returned.
-///
-extern const char *
-str_filename(const char *name)
-{
-	const char *base = strrchr(name, '/');
-
-	if (base == NULL) {
-		base = name;
-	} else if (*++base == '\0') {
-		base = NULL;
-		errmsg(V_ERROR, _("%s: Invalid filename"), name);
-	}
-
-	return base;
 }
 
 
@@ -179,9 +165,35 @@ extern bool
 is_empty_filename(const char *filename)
 {
 	if (filename[0] == '\0') {
-		errmsg(V_WARNING, _("Empty filename, skipping"));
+		message_error(_("Empty filename, skipping"));
 		return true;
 	}
 
 	return false;
+}
+
+
+extern bool
+is_tty_stdin(void)
+{
+	const bool ret = isatty(STDIN_FILENO);
+
+	if (ret)
+		message_error(_("Compressed data not read from a terminal "
+				"unless `--force' is used."));
+
+	return ret;
+}
+
+
+extern bool
+is_tty_stdout(void)
+{
+	const bool ret = isatty(STDOUT_FILENO);
+
+	if (ret)
+		message_error(_("Compressed data not written to a terminal "
+				"unless `--force' is used."));
+
+	return ret;
 }

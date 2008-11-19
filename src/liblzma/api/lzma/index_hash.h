@@ -57,7 +57,7 @@ extern void lzma_index_hash_end(
  * \brief       Add a new Record to an Index hash
  *
  * \param       index             Pointer to a lzma_index_hash structure
- * \param       total_size        Total Size of a Block
+ * \param       unpadded_size     Unpadded Size of a Block
  * \param       uncompressed_size Uncompressed Size of a Block
  *
  * \return      - LZMA_OK
@@ -67,7 +67,7 @@ extern void lzma_index_hash_end(
  *                used when lzma_index_hash_decode() has already been used.
  */
 extern lzma_ret lzma_index_hash_append(lzma_index_hash *index_hash,
-		lzma_vli total_size, lzma_vli uncompressed_size)
+		lzma_vli unpadded_size, lzma_vli uncompressed_size)
 		lzma_attr_warn_unused_result;
 
 

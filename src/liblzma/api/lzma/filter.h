@@ -55,6 +55,14 @@ typedef struct {
 
 
 /**
+ * \brief       Maximum number of filters in a chain
+ *
+ * FIXME desc
+ */
+#define LZMA_FILTERS_MAX 4
+
+
+/**
  * \brief       Test if the given Filter ID is supported for encoding
  *
  * Returns true if the give Filter ID  is supported for encoding by this

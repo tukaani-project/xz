@@ -79,11 +79,9 @@ parse_options(const char *str, const option_map *opts,
 		if (value != NULL)
 			*value++ = '\0';
 
-		if (value == NULL || value[0] == '\0') {
-			errmsg(V_ERROR, _("%s: Options must be `name=value' "
+		if (value == NULL || value[0] == '\0')
+			message_fatal(_("%s: Options must be `name=value' "
 					"pairs separated with commas"), str);
-			my_exit(ERROR);
-		}
 
 		// Look for the option name from the option map.
 		bool found = false;
@@ -106,11 +104,9 @@ parse_options(const char *str, const option_map *opts,
 						break;
 				}
 
-				if (opts[i].map[j].name == NULL) {
-					errmsg(V_ERROR, _("%s: Invalid option "
+				if (opts[i].map[j].name == NULL)
+					message_fatal(_("%s: Invalid option "
 							"value"), value);
-					my_exit(ERROR);
-				}
 
 				set(filter_options, i, opts[i].map[j].id);
 			}
@@ -119,10 +115,8 @@ parse_options(const char *str, const option_map *opts,
 			break;
 		}
 
-		if (!found) {
-			errmsg(V_ERROR, _("%s: Invalid option name"), name);
-			my_exit(ERROR);
-		}
+		if (!found)
+			message_fatal(_("%s: Invalid option name"), name);
 
 		if (split == NULL)
 			break;
@@ -168,7 +162,7 @@ set_subblock(void *options, uint32_t key, uint64_t value)
 
 
 extern lzma_options_subblock *
-parse_options_subblock(const char *str)
+options_subblock(const char *str)
 {
 	static const option_map opts[] = {
 		{ "size", NULL,   LZMA_SUBBLOCK_DATA_SIZE_MIN,
@@ -217,7 +211,7 @@ set_delta(void *options, uint32_t key, uint64_t value)
 
 
 extern lzma_options_delta *
-parse_options_delta(const char *str)
+options_delta(const char *str)
 {
 	static const option_map opts[] = {
 		{ "dist",     NULL,  LZMA_DELTA_DIST_MIN,
@@ -225,7 +219,7 @@ parse_options_delta(const char *str)
 		{ NULL,       NULL,  0, 0 }
 	};
 
-	lzma_options_delta *options = xmalloc(sizeof(lzma_options_subblock));
+	lzma_options_delta *options = xmalloc(sizeof(lzma_options_delta));
 	*options = (lzma_options_delta){
 		// It's hard to give a useful default for this.
 		.type = LZMA_DELTA_TYPE_BYTE,
@@ -296,7 +290,7 @@ set_lzma(void *options, uint32_t key, uint64_t value)
 
 
 extern lzma_options_lzma *
-parse_options_lzma(const char *str)
+options_lzma(const char *str)
 {
 	static const name_id_map modes[] = {
 		{ "fast",   LZMA_MODE_FAST },
@@ -345,18 +339,14 @@ parse_options_lzma(const char *str)
 
 	parse_options(str, opts, &set_lzma, options);
 
-	if (options->lc + options->lp > LZMA_LCLP_MAX) {
-		errmsg(V_ERROR, "The sum of lc and lp must be at "
-				"maximum of 4");
-		exit(ERROR);
-	}
+	if (options->lc + options->lp > LZMA_LCLP_MAX)
+		message_fatal(_("The sum of lc and lp must be at "
+				"maximum of 4"));
 
 	const uint32_t nice_len_min = options->mf & 0x0F;
-	if (options->nice_len < nice_len_min) {
-		errmsg(V_ERROR, "The selected match finder requires at "
-				"least nice=%" PRIu32, nice_len_min);
-		exit(ERROR);
-	}
+	if (options->nice_len < nice_len_min)
+		message_fatal(_("The selected match finder requires at "
+				"least nice=%" PRIu32), nice_len_min);
 
 	return options;
 }

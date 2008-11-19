@@ -27,7 +27,7 @@ free_properties(lzma_block *options, lzma_allocator *allocator)
 	// Free allocated filter options. The last array member is not
 	// touched after the initialization in the beginning of
 	// lzma_block_header_decode(), so we don't need to touch that here.
-	for (size_t i = 0; i < LZMA_BLOCK_FILTERS_MAX; ++i) {
+	for (size_t i = 0; i < LZMA_FILTERS_MAX; ++i) {
 		lzma_free(options->filters[i].options, allocator);
 		options->filters[i].id = LZMA_VLI_UNKNOWN;
 		options->filters[i].options = NULL;
@@ -48,24 +48,19 @@ lzma_block_header_decode(lzma_block *options,
 
 	// Initialize the filter options array. This way the caller can
 	// safely free() the options even if an error occurs in this function.
-	for (size_t i = 0; i <= LZMA_BLOCK_FILTERS_MAX; ++i) {
+	for (size_t i = 0; i <= LZMA_FILTERS_MAX; ++i) {
 		options->filters[i].id = LZMA_VLI_UNKNOWN;
 		options->filters[i].options = NULL;
 	}
 
-	size_t in_size = options->header_size;
-
-	// Validate. The caller must have set options->header_size with
-	// lzma_block_header_size_decode() macro, so it is a programming error
-	// if these tests fail.
-	if (in_size < LZMA_BLOCK_HEADER_SIZE_MIN
-			|| in_size > LZMA_BLOCK_HEADER_SIZE_MAX
-			|| (in_size & 3)
-			|| lzma_block_header_size_decode(in[0]) != in_size)
+	// Validate Block Header Size and Check type. The caller must have
+	// already set these, so it is a programming error if this test fails.
+	if (lzma_block_header_size_decode(in[0]) != options->header_size
+			|| (unsigned int)(options->check) > LZMA_CHECK_ID_MAX)
 		return LZMA_PROG_ERROR;
 
 	// Exclude the CRC32 field.
-	in_size -= 4;
+	const size_t in_size = options->header_size - 4;
 
 	// Verify CRC32
 	if (lzma_crc32(in, in_size, 0) != integer_read_32(in + in_size))
@@ -83,15 +78,9 @@ lzma_block_header_decode(lzma_block *options,
 		return_if_error(lzma_vli_decode(&options->compressed_size,
 				NULL, in, &in_pos, in_size));
 
-		if (options->compressed_size > LZMA_VLI_MAX / 4 - 1)
-			return LZMA_DATA_ERROR;
-
-		options->compressed_size = (options->compressed_size + 1) * 4;
-
-		// Check that Total Size (that is, size of
-		// Block Header + Compressed Data + Check) is
-		// representable as a VLI.
-		if (lzma_block_total_size_get(options) == 0)
+		// Validate Compressed Size. This checks that it isn't zero
+		// and that the total size of the Block is a valid VLI.
+		if (lzma_block_unpadded_size(options) == 0)
 			return LZMA_DATA_ERROR;
 	} else {
 		options->compressed_size = LZMA_VLI_UNKNOWN;

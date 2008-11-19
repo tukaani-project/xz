@@ -26,7 +26,7 @@ struct lzma_coder_s {
 	enum {
 		SEQ_INDICATOR,
 		SEQ_COUNT,
-		SEQ_TOTAL,
+		SEQ_UNPADDED,
 		SEQ_UNCOMPRESSED,
 		SEQ_NEXT,
 		SEQ_PADDING,
@@ -97,18 +97,20 @@ index_encode(lzma_coder *coder,
 			break;
 		}
 
-		// Total Size must be a multiple of four.
-		if (coder->record.total_size & 3)
+		// Unpadded Size must be within valid limits.
+		if (coder->record.unpadded_size < UNPADDED_SIZE_MIN
+				|| coder->record.unpadded_size
+					> UNPADDED_SIZE_MAX)
 			return LZMA_PROG_ERROR;
 
-		coder->sequence = SEQ_TOTAL;
+		coder->sequence = SEQ_UNPADDED;
 
 	// Fall through
 
-	case SEQ_TOTAL:
+	case SEQ_UNPADDED:
 	case SEQ_UNCOMPRESSED: {
-		const lzma_vli size = coder->sequence == SEQ_TOTAL
-				? total_size_encode(coder->record.total_size)
+		const lzma_vli size = coder->sequence == SEQ_UNPADDED
+				? coder->record.unpadded_size
 				: coder->record.uncompressed_size;
 
 		ret = lzma_vli_encode(size, &coder->pos,

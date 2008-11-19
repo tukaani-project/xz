@@ -20,6 +20,9 @@
 #include "private.h"
 
 
+static char *custom_suffix = NULL;
+
+
 struct suffix_pair {
 	const char *compressed;
 	const char *uncompressed;
@@ -74,8 +77,8 @@ uncompressed_name(const char *src_name, const size_t src_len)
 
 	if (opt_format == FORMAT_RAW) {
 		// Don't check for known suffixes when --format=raw was used.
-		if (opt_suffix == NULL) {
-			errmsg(V_ERROR, _("%s: With --format=raw, "
+		if (custom_suffix == NULL) {
+			message_error(_("%s: With --format=raw, "
 					"--suffix=.SUF is required unless "
 					"writing to stdout"), src_name);
 			return NULL;
@@ -91,21 +94,17 @@ uncompressed_name(const char *src_name, const size_t src_len)
 		}
 	}
 
-	if (new_len == 0 && opt_suffix != NULL)
-		new_len = test_suffix(opt_suffix, src_name, src_len);
+	if (new_len == 0 && custom_suffix != NULL)
+		new_len = test_suffix(custom_suffix, src_name, src_len);
 
 	if (new_len == 0) {
-		errmsg(V_WARNING, _("%s: Filename has an unknown suffix, "
+		message_warning(_("%s: Filename has an unknown suffix, "
 				"skipping"), src_name);
 		return NULL;
 	}
 
 	const size_t new_suffix_len = strlen(new_suffix);
-	char *dest_name = malloc(new_len + new_suffix_len + 1);
-	if (dest_name == NULL) {
-		out_of_memory();
-		return NULL;
-	}
+	char *dest_name = xmalloc(new_len + new_suffix_len + 1);
 
 	memcpy(dest_name, src_name, new_len);
 	memcpy(dest_name + new_len, new_suffix, new_suffix_len);
@@ -154,7 +153,7 @@ compressed_name(const char *src_name, const size_t src_len)
 	for (size_t i = 0; suffixes[i].compressed != NULL; ++i) {
 		if (test_suffix(suffixes[i].compressed, src_name, src_len)
 				!= 0) {
-			errmsg(V_WARNING, _("%s: File already has `%s' "
+			message_warning(_("%s: File already has `%s' "
 					"suffix, skipping"), src_name,
 					suffixes[i].compressed);
 			return NULL;
@@ -163,22 +162,18 @@ compressed_name(const char *src_name, const size_t src_len)
 
 	// TODO: Hmm, maybe it would be better to validate this in args.c,
 	// since the suffix handling when decoding is weird now.
-	if (opt_format == FORMAT_RAW && opt_suffix == NULL) {
-		errmsg(V_ERROR, _("%s: With --format=raw, "
+	if (opt_format == FORMAT_RAW && custom_suffix == NULL) {
+		message_error(_("%s: With --format=raw, "
 				"--suffix=.SUF is required unless "
 				"writing to stdout"), src_name);
 		return NULL;
 	}
 
-	const char *suffix = opt_suffix != NULL
-			? opt_suffix : suffixes[0].compressed;
+	const char *suffix = custom_suffix != NULL
+			? custom_suffix : suffixes[0].compressed;
 	const size_t suffix_len = strlen(suffix);
 
-	char *dest_name = malloc(src_len + suffix_len + 1);
-	if (dest_name == NULL) {
-		out_of_memory();
-		return NULL;
-	}
+	char *dest_name = xmalloc(src_len + suffix_len + 1);
 
 	memcpy(dest_name, src_name, src_len);
 	memcpy(dest_name + src_len, suffix, suffix_len);
@@ -189,7 +184,7 @@ compressed_name(const char *src_name, const size_t src_len)
 
 
 extern char *
-get_dest_name(const char *src_name)
+suffix_get_dest_name(const char *src_name)
 {
 	assert(src_name != NULL);
 
@@ -200,4 +195,19 @@ get_dest_name(const char *src_name)
 	return opt_mode == MODE_COMPRESS
 			? compressed_name(src_name, src_len)
 			: uncompressed_name(src_name, src_len);
+}
+
+
+extern void
+suffix_set(const char *suffix)
+{
+	// Empty suffix and suffixes having a slash are rejected. Such
+	// suffixes would break things later.
+	if (suffix[0] == '\0' || strchr(suffix, '/') != NULL)
+		message_fatal(_("%s: Invalid filename suffix"), optarg);
+
+	// Replace the old custom_suffix (if any) with the new suffix.
+	free(custom_suffix);
+	custom_suffix = xstrdup(suffix);
+	return;
 }

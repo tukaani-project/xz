@@ -23,42 +23,34 @@
 #include "private.h"
 
 
-enum tool_mode {
-	MODE_COMPRESS,
-	MODE_DECOMPRESS,
-	MODE_TEST,
-	MODE_LIST,
-};
+typedef struct {
+	/// Filenames from command line
+	char **arg_names;
 
-// NOTE: The order of these is significant in suffix.c.
-enum format_type {
-	FORMAT_AUTO,
-	FORMAT_XZ,
-	FORMAT_LZMA,
-	// HEADER_GZIP,
-	FORMAT_RAW,
-};
+	/// Number of filenames from command line
+	size_t arg_count;
 
+	/// Name of the file from which to read filenames. This is NULL
+	/// if --files or --files0 was not used.
+	char *files_name;
 
-extern char *opt_suffix;
+	/// File opened for reading from which filenames are read. This is
+	/// non-NULL only if files_name is non-NULL.
+	FILE *files_file;
 
-extern char *opt_files_name;
-extern char opt_files_split;
-extern FILE *opt_files_file;
+	/// Delimiter for filenames read from files_file
+	char files_delim;
+
+} args_info;
+
 
 extern bool opt_stdout;
 extern bool opt_force;
 extern bool opt_keep_original;
-extern bool opt_preserve_name;
 // extern bool opt_recursive;
-extern enum tool_mode opt_mode;
-extern enum format_type opt_format;
-
-extern lzma_check opt_check;
-extern lzma_filter opt_filters[LZMA_BLOCK_FILTERS_MAX + 1];
 
 extern const char *stdin_filename;
 
-extern char **parse_args(int argc, char **argv);
+extern void args_parse(args_info *args, int argc, char **argv);
 
 #endif

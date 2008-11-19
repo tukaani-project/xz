@@ -23,6 +23,10 @@
 #	endif
 #endif
 
+#if defined(HAVE_PHYSMEM_SYSCONF) || defined(HAVE_NCPU_SYSCONF)
+#	include <unistd.h>
+#endif
+
 
 /// \brief      Get the amount of physical memory in bytes
 ///

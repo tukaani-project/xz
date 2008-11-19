@@ -24,8 +24,22 @@
 
 
 extern size_t opt_threads;
-extern size_t opt_memory;
 
+
+/// Initialize some hardware-specific variables, which are needed by other
+/// hardware_* functions.
 extern void hardware_init(void);
+
+
+/// Set custom memory usage limit. This is used for both encoding and
+/// decoding. Zero indicates resetting the limit back to defaults.
+extern void hardware_memlimit_set(uint64_t memlimit);
+
+/// Get the memory usage limit for encoding. By default this is 90 % of RAM.
+extern uint64_t hardware_memlimit_encoder(void);
+
+
+/// Get the memory usage limit for decoding. By default this is 30 % of RAM.
+extern uint64_t hardware_memlimit_decoder(void);
 
 #endif

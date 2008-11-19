@@ -23,14 +23,11 @@
 #include "common.h"
 
 
-/// Maximum encoded value of Total Size.
-#define TOTAL_SIZE_ENCODED_MAX (LZMA_VLI_MAX / 4 - 1)
+/// Minimum Unpadded Size
+#define UNPADDED_SIZE_MIN LZMA_VLI_C(5)
 
-/// Convert the real Total Size value to a value that is stored to the Index.
-#define total_size_encode(size) ((size) / 4 - 1)
-
-/// Convert the encoded Total Size value from Index to the real Total Size.
-#define total_size_decode(size) (((size) + 1) * 4)
+/// Maximum Unpadded Size
+#define UNPADDED_SIZE_MAX (LZMA_VLI_MAX & ~LZMA_VLI_C(3))
 
 
 /// Get the size of the Index Padding field. This is needed by Index encoder
@@ -38,6 +35,16 @@
 extern uint32_t lzma_index_padding_size(const lzma_index *i);
 
 
+/// Round the variable-length integer to the next multiple of four.
+static inline lzma_vli
+vli_ceil4(lzma_vli vli)
+{
+	assert(vli <= LZMA_VLI_MAX);
+	return (vli + 3) & ~LZMA_VLI_C(3);
+}
+
+
+/// Calculate the size of the Index field excluding Index Padding
 static inline lzma_vli
 index_size_unpadded(lzma_vli count, lzma_vli index_list_size)
 {
@@ -46,20 +53,20 @@ index_size_unpadded(lzma_vli count, lzma_vli index_list_size)
 }
 
 
+/// Calculate the size of the Index field including Index Padding
 static inline lzma_vli
 index_size(lzma_vli count, lzma_vli index_list_size)
 {
-	// Round up to a mulitiple of four.
-	return (index_size_unpadded(count, index_list_size) + 3)
-			& ~LZMA_VLI_C(3);
+	return vli_ceil4(index_size_unpadded(count, index_list_size));
 }
 
 
+/// Calculate the total size of the Stream
 static inline lzma_vli
-index_stream_size(
-		lzma_vli total_size, lzma_vli count, lzma_vli index_list_size)
+index_stream_size(lzma_vli blocks_size,
+		lzma_vli count, lzma_vli index_list_size)
 {
-	return LZMA_STREAM_HEADER_SIZE + total_size
+	return LZMA_STREAM_HEADER_SIZE + blocks_size
 			+ index_size(count, index_list_size)
 			+ LZMA_STREAM_HEADER_SIZE;
 }

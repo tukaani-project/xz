@@ -33,13 +33,13 @@ struct lzma_coder_s {
 	lzma_next_coder next;
 
 	/// Decoding options; we also write Compressed Size and Uncompressed
-	/// Size back to this structure when the encoding has been finished.
+	/// Size back to this structure when the decoding has been finished.
 	lzma_block *options;
 
-	/// Compressed Size calculated while encoding
+	/// Compressed Size calculated while decoding
 	lzma_vli compressed_size;
 
-	/// Uncompressed Size calculated while encoding
+	/// Uncompressed Size calculated while decoding
 	lzma_vli uncompressed_size;
 
 	/// Maximum allowed Compressed Size; this takes into account the
@@ -110,25 +110,6 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		if (ret != LZMA_STREAM_END)
 			return ret;
 
-		coder->sequence = SEQ_PADDING;
-	}
-
-	// Fall through
-
-	case SEQ_PADDING:
-		// Compressed Data is padded to a multiple of four bytes.
-		while (coder->compressed_size & 3) {
-			if (*in_pos >= in_size)
-				return LZMA_OK;
-
-			if (in[(*in_pos)++] != 0x00)
-				return LZMA_DATA_ERROR;
-
-			if (update_size(&coder->compressed_size, 1,
-					coder->compressed_limit))
-				return LZMA_DATA_ERROR;
-		}
-
 		// Compressed and Uncompressed Sizes are now at their final
 		// values. Verify that they match the values given to us.
 		if (!is_size_valid(coder->compressed_size,
@@ -141,6 +122,27 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 		// may use this information to construct Index.
 		coder->options->compressed_size = coder->compressed_size;
 		coder->options->uncompressed_size = coder->uncompressed_size;
+
+		coder->sequence = SEQ_PADDING;
+	}
+
+	// Fall through
+
+	case SEQ_PADDING:
+		// Compressed Data is padded to a multiple of four bytes.
+		while (coder->compressed_size & 3) {
+			// We use compressed_size here just get the Padding
+			// right. The actual Compressed Size was stored to
+			// coder->options already, and won't be modified by
+			// us anymore.
+			++coder->compressed_size;
+
+			if (*in_pos >= in_size)
+				return LZMA_OK;
+
+			if (in[(*in_pos)++] != 0x00)
+				return LZMA_DATA_ERROR;
+		}
 
 		if (coder->options->check == LZMA_CHECK_NONE)
 			return LZMA_STREAM_END;
@@ -193,14 +195,11 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 {
 	lzma_next_coder_init(lzma_block_decoder_init, next, allocator);
 
-	// While lzma_block_total_size_get() is meant to calculate the Total
-	// Size, it also validates the options excluding the filters.
-	if (lzma_block_total_size_get(options) == 0)
-		return LZMA_PROG_ERROR;
-
-	// options->check is used for array indexing so we need to know that
-	// it is in the valid range.
-	if ((unsigned)(options->check) > LZMA_CHECK_ID_MAX)
+	// Validate the options. lzma_block_unpadded_size() does that for us
+	// except for Uncompressed Size and filters. Filters are validated
+	// by the raw decoder.
+	if (lzma_block_unpadded_size(options) == 0
+			|| !lzma_vli_is_valid(options->uncompressed_size))
 		return LZMA_PROG_ERROR;
 
 	// Allocate and initialize *next->coder if needed.
@@ -221,8 +220,8 @@ lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->uncompressed_size = 0;
 
 	// If Compressed Size is not known, we calculate the maximum allowed
-	// value so that Total Size of the Block still is a valid VLI and
-	// a multiple of four.
+	// value so that encoded size of the Block (including Block Padding)
+	// is still a valid VLI and a multiple of four.
 	next->coder->compressed_limit
 			= options->compressed_size == LZMA_VLI_UNKNOWN
 				? (LZMA_VLI_MAX & ~LZMA_VLI_C(3))

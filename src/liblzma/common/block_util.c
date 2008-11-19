@@ -18,10 +18,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
+#include "index.h"
 
 
 extern LZMA_API lzma_ret
-lzma_block_total_size_set(lzma_block *options, lzma_vli total_size)
+lzma_block_compressed_size(lzma_block *options, lzma_vli total_size)
 {
 	// Validate.
 	if (options->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
@@ -45,29 +46,47 @@ lzma_block_total_size_set(lzma_block *options, lzma_vli total_size)
 
 
 extern LZMA_API lzma_vli
-lzma_block_total_size_get(const lzma_block *options)
+lzma_block_unpadded_size(const lzma_block *options)
 {
-	// Validate the values that we are interested in.
+	// Validate the values that we are interested in i.e. all but
+	// Uncompressed Size and the filters.
+	//
+	// NOTE: This function is used for validation too, so it is
+	// essential that these checks are always done even if
+	// Compressed Size is unknown.
 	if (options->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
 			|| options->header_size > LZMA_BLOCK_HEADER_SIZE_MAX
 			|| (options->header_size & 3)
-			|| (unsigned)(options->check) > LZMA_CHECK_ID_MAX)
+			|| !lzma_vli_is_valid(options->compressed_size)
+			|| options->compressed_size == 0
+			|| (unsigned int)(options->check) > LZMA_CHECK_ID_MAX)
 		return 0;
 
 	// If Compressed Size is unknown, return that we cannot know
-	// Total Size either.
+	// size of the Block either.
 	if (options->compressed_size == LZMA_VLI_UNKNOWN)
 		return LZMA_VLI_UNKNOWN;
 
-	const lzma_vli total_size = options->compressed_size
-			+ options->header_size
-			+ lzma_check_size(options->check);
+	// Calculate Unpadded Size and validate it.
+	const lzma_vli unpadded_size = options->compressed_size
+				+ options->header_size
+				+ lzma_check_size(options->check);
 
-	// Validate the calculated Total Size.
-	if (options->compressed_size > LZMA_VLI_MAX
-			|| (options->compressed_size & 3)
-			|| total_size > LZMA_VLI_MAX)
+	assert(unpadded_size >= UNPADDED_SIZE_MIN);
+	if (unpadded_size > UNPADDED_SIZE_MAX)
 		return 0;
 
-	return total_size;
+	return unpadded_size;
+}
+
+
+extern LZMA_API lzma_vli
+lzma_block_total_size(const lzma_block *options)
+{
+	lzma_vli unpadded_size = lzma_block_unpadded_size(options);
+
+	if (unpadded_size != 0 && unpadded_size != LZMA_VLI_UNKNOWN)
+		unpadded_size = vli_ceil4(unpadded_size);
+
+	return unpadded_size;
 }

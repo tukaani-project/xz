@@ -157,14 +157,14 @@ dict_repeat(lzma_dict *dict, uint32_t distance, uint32_t *len)
 		uint32_t copy_size = dict->size - copy_pos;
 
 		if (copy_size < left) {
-			memcpy(dict->buf + dict->pos, dict->buf + copy_pos,
+			memmove(dict->buf + dict->pos, dict->buf + copy_pos,
 					copy_size);
 			dict->pos += copy_size;
 			copy_size = left - copy_size;
 			memcpy(dict->buf + dict->pos, dict->buf, copy_size);
 			dict->pos += copy_size;
 		} else {
-			memcpy(dict->buf + dict->pos, dict->buf + copy_pos,
+			memmove(dict->buf + dict->pos, dict->buf + copy_pos,
 					left);
 			dict->pos += left;
 		}

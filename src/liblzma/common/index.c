@@ -20,24 +20,34 @@
 #include "index.h"
 
 
-/// Number of Records to allocate at once.
+/// Number of Records to allocate at once in the unrolled list.
 #define INDEX_GROUP_SIZE 256
 
 
 typedef struct lzma_index_group_s lzma_index_group;
 struct lzma_index_group_s {
-	/// Next group
+	/// Previous group
 	lzma_index_group *prev;
 
-	/// Previous group
+	/// Next group
 	lzma_index_group *next;
 
 	/// Index of the last Record in this group
 	size_t last;
 
-	/// Total Size fields as cumulative sum relative to the beginning
-	/// of the group. The total size of the group is total_sums[last].
-	lzma_vli total_sums[INDEX_GROUP_SIZE];
+	/// Unpadded Size fields as special cumulative sum relative to the
+	/// beginning of the group. It's special in sense that the previous
+	/// value is rounded up the next multiple of four with before
+	/// calculating the new value. The total encoded size of the Blocks
+	/// in the group is unpadded_sums[last] rounded up to the next
+	/// multiple of four.
+	///
+	/// For example, if the Unpadded Sizes are 39, 57, and 81, the stored
+	/// values are 39, 97 (40 + 57), and 181 (100 + 181). The total
+	/// encoded size of these Blocks is 184.
+	///
+	/// This encoding is nice from point of view of lzma_index_locate().
+	lzma_vli unpadded_sums[INDEX_GROUP_SIZE];
 
 	/// Uncompressed Size fields as cumulative sum relative to the
 	/// beginning of the group. The uncompressed size of the group is
@@ -56,18 +66,12 @@ struct lzma_index_s {
 	/// Uncompressed size of the Stream
 	lzma_vli uncompressed_size;
 
-	/// Number of non-padding records. This is needed by Index encoder.
+	/// Number of non-padding records. This is needed for Index encoder.
 	lzma_vli count;
 
 	/// Size of the List of Records field; this is updated every time
 	/// a new non-padding Record is added.
 	lzma_vli index_list_size;
-
-	/// This is zero if no Indexes have been combined with
-	/// lzma_index_cat(). With combined Indexes, this contains the sizes
-	/// of all but latest the Streams, including possible Stream Padding
-	/// fields.
-	lzma_vli padding_size;
 
 	/// First group of Records
 	lzma_index_group *head;
@@ -80,8 +84,8 @@ struct lzma_index_s {
 		/// Group where the current read position is.
 		lzma_index_group *group;
 
-		/// The most recently read record in *group
-		lzma_vli record;
+		/// The most recently read Record in *group
+		size_t record;
 
 		/// Uncompressed offset of the beginning of *group relative
 		/// to the beginning of the Stream
@@ -102,6 +106,10 @@ struct lzma_index_s {
 		/// Stream. This is needed when a new Index is concatenated
 		/// to this lzma_index structure.
 		lzma_vli index_list_size;
+
+		/// Total size of all but the last Stream and all Stream
+		/// Padding fields.
+		lzma_vli streams_size;
 	} old;
 };
 
@@ -136,12 +144,12 @@ lzma_index_init(lzma_index *i, lzma_allocator *allocator)
 	i->uncompressed_size = 0;
 	i->count = 0;
 	i->index_list_size = 0;
-	i->padding_size = 0;
 	i->head = NULL;
 	i->tail = NULL;
 	i->current.group = NULL;
 	i->old.count = 0;
 	i->old.index_list_size = 0;
+	i->old.streams_size = 0;
 
 	return i;
 }
@@ -195,12 +203,12 @@ lzma_index_file_size(const lzma_index *i)
 {
 	// If multiple Streams are concatenated, the Stream Header, Index,
 	// and Stream Footer fields of all but the last Stream are already
-	// included in padding_size. Thus, we need to calculate only the
+	// included in old.streams_size. Thus, we need to calculate only the
 	// size of the last Index, not all Indexes.
-	return i->total_size + i->padding_size
+	return i->old.streams_size + LZMA_STREAM_HEADER_SIZE + i->total_size
 			+ index_size(i->count - i->old.count,
 				i->index_list_size - i->old.index_list_size)
-			+ LZMA_STREAM_HEADER_SIZE * 2;
+			+ LZMA_STREAM_HEADER_SIZE;
 }
 
 
@@ -219,10 +227,11 @@ lzma_index_padding_size(const lzma_index *i)
 }
 
 
-/// Helper function for index_append()
+/// Appends a new Record to the Index. If needed, this allocates a new
+/// Record group.
 static lzma_ret
 index_append_real(lzma_index *i, lzma_allocator *allocator,
-		lzma_vli total_size, lzma_vli uncompressed_size,
+		lzma_vli unpadded_size, lzma_vli uncompressed_size,
 		bool is_padding)
 {
 	// Add the new record.
@@ -237,7 +246,7 @@ index_append_real(lzma_index *i, lzma_allocator *allocator,
 		g->prev = i->tail;
 		g->next = NULL;
 		g->last = 0;
-		g->total_sums[0] = total_size;
+		g->unpadded_sums[0] = unpadded_size;
 		g->uncompressed_sums[0] = uncompressed_size;
 		g->paddings[0] = is_padding;
 
@@ -252,9 +261,9 @@ index_append_real(lzma_index *i, lzma_allocator *allocator,
 
 	} else {
 		// i->tail has space left for at least one record.
-		i->tail->total_sums[i->tail->last + 1]
-				= i->tail->total_sums[i->tail->last]
-					+ total_size;
+		i->tail->unpadded_sums[i->tail->last + 1]
+				= unpadded_size + vli_ceil4(
+					i->tail->unpadded_sums[i->tail->last]);
 		i->tail->uncompressed_sums[i->tail->last + 1]
 				= i->tail->uncompressed_sums[i->tail->last]
 					+ uncompressed_size;
@@ -266,13 +275,14 @@ index_append_real(lzma_index *i, lzma_allocator *allocator,
 }
 
 
-static lzma_ret
-index_append(lzma_index *i, lzma_allocator *allocator, lzma_vli total_size,
-		lzma_vli uncompressed_size, bool is_padding)
+extern LZMA_API lzma_ret
+lzma_index_append(lzma_index *i, lzma_allocator *allocator,
+		lzma_vli unpadded_size, lzma_vli uncompressed_size)
 {
-	if (total_size > LZMA_VLI_MAX
+	if (unpadded_size < UNPADDED_SIZE_MIN
+			|| unpadded_size > UNPADDED_SIZE_MAX
 			|| uncompressed_size > LZMA_VLI_MAX)
-		return LZMA_DATA_ERROR;
+		return LZMA_PROG_ERROR;
 
 	// This looks a bit ugly. We want to first validate that the Index
 	// and Stream stay in valid limits after adding this Record. After
@@ -280,62 +290,35 @@ index_append(lzma_index *i, lzma_allocator *allocator, lzma_vli total_size,
 	// slightly more correct to validate before allocating, YMMV).
 	lzma_ret ret;
 
-	if (is_padding) {
-		assert(uncompressed_size == 0);
+	// First update the overall info so we can validate it.
+	const lzma_vli index_list_size_add = lzma_vli_size(unpadded_size)
+			+ lzma_vli_size(uncompressed_size);
 
-		// First update the info so we can validate it.
-		i->padding_size += total_size;
+	const lzma_vli total_size = vli_ceil4(unpadded_size);
 
-		if (i->padding_size > LZMA_VLI_MAX
-				|| lzma_index_file_size(i) > LZMA_VLI_MAX)
-			ret = LZMA_DATA_ERROR; // Would grow past the limits.
-		else
-			ret = index_append_real(i, allocator,
-					total_size, uncompressed_size, true);
+	i->total_size += total_size;
+	i->uncompressed_size += uncompressed_size;
+	++i->count;
+	i->index_list_size += index_list_size_add;
 
-		// If something went wrong, undo the updated value.
-		if (ret != LZMA_OK)
-			i->padding_size -= total_size;
+	if (i->total_size > LZMA_VLI_MAX
+			|| i->uncompressed_size > LZMA_VLI_MAX
+			|| lzma_index_size(i) > LZMA_BACKWARD_SIZE_MAX
+			|| lzma_index_file_size(i) > LZMA_VLI_MAX)
+		ret = LZMA_DATA_ERROR; // Would grow past the limits.
+	else
+		ret = index_append_real(i, allocator, unpadded_size,
+				uncompressed_size, false);
 
-	} else {
-		// First update the overall info so we can validate it.
-		const lzma_vli index_list_size_add
-				= lzma_vli_size(total_size / 4 - 1)
-				+ lzma_vli_size(uncompressed_size);
-
-		i->total_size += total_size;
-		i->uncompressed_size += uncompressed_size;
-		++i->count;
-		i->index_list_size += index_list_size_add;
-
-		if (i->total_size > LZMA_VLI_MAX
-				|| i->uncompressed_size > LZMA_VLI_MAX
-				|| lzma_index_size(i) > LZMA_BACKWARD_SIZE_MAX
-				|| lzma_index_file_size(i) > LZMA_VLI_MAX)
-			ret = LZMA_DATA_ERROR; // Would grow past the limits.
-		else
-			ret = index_append_real(i, allocator,
-					total_size, uncompressed_size, false);
-
-		if (ret != LZMA_OK) {
-			// Something went wrong. Undo the updates.
-			i->total_size -= total_size;
-			i->uncompressed_size -= uncompressed_size;
-			--i->count;
-			i->index_list_size -= index_list_size_add;
-		}
+	if (ret != LZMA_OK) {
+		// Something went wrong. Undo the updates.
+		i->total_size -= total_size;
+		i->uncompressed_size -= uncompressed_size;
+		--i->count;
+		i->index_list_size -= index_list_size_add;
 	}
 
 	return ret;
-}
-
-
-extern LZMA_API lzma_ret
-lzma_index_append(lzma_index *i, lzma_allocator *allocator,
-		lzma_vli total_size, lzma_vli uncompressed_size)
-{
-	return index_append(i, allocator,
-			total_size, uncompressed_size, false);
 }
 
 
@@ -370,10 +353,10 @@ previous_group(lzma_index *i)
 	i->current.record = i->current.group->last;
 
 	// Then update the offsets.
-	i->current.stream_offset -= i->current.group
-			->total_sums[i->current.group->last];
-	i->current.uncompressed_offset -= i->current.group
-			->uncompressed_sums[i->current.group->last];
+	i->current.stream_offset -= vli_ceil4(i->current.group->unpadded_sums[
+			i->current.group->last]);
+	i->current.uncompressed_offset -= i->current.group->uncompressed_sums[
+			i->current.group->last];
 
 	return;
 }
@@ -386,8 +369,8 @@ next_group(lzma_index *i)
 	assert(i->current.group->next != NULL);
 
 	// Update the offsets first.
-	i->current.stream_offset += i->current.group
-			->total_sums[i->current.group->last];
+	i->current.stream_offset += vli_ceil4(i->current.group->unpadded_sums[
+			i->current.group->last]);
 	i->current.uncompressed_offset += i->current.group
 			->uncompressed_sums[i->current.group->last];
 
@@ -403,30 +386,39 @@ next_group(lzma_index *i)
 static void
 set_info(const lzma_index *i, lzma_index_record *info)
 {
-	info->total_size = i->current.group->total_sums[i->current.record];
+	// First copy the cumulative sizes from the current Record of the
+	// current group.
+	info->unpadded_size
+			= i->current.group->unpadded_sums[i->current.record];
+	info->total_size = vli_ceil4(info->unpadded_size);
 	info->uncompressed_size = i->current.group->uncompressed_sums[
 			i->current.record];
 
+	// Copy the start offsets of this group.
 	info->stream_offset = i->current.stream_offset;
 	info->uncompressed_offset = i->current.uncompressed_offset;
 
 	// If it's not the first Record in this group, we need to do some
 	// adjustements.
 	if (i->current.record > 0) {
-		// _sums[] are cumulative, thus we need to substract the
-		// _previous _sums[] to get the sizes of this Record.
-		info->total_size -= i->current.group
-				->total_sums[i->current.record - 1];
-		info->uncompressed_size -= i->current.group
+		// Since the _sums[] are cumulative, we substract the sums of
+		// the previous Record to get the sizes of the current Record,
+		// and add the sums of the previous Record to the offsets.
+		// With unpadded_sums[] we need to take into account that it
+		// uses a bit weird way to do the cumulative summing
+		const lzma_vli total_sum
+				= vli_ceil4(i->current.group->unpadded_sums[
+					i->current.record - 1]);
+
+		const lzma_vli uncompressed_sum = i->current.group
 				->uncompressed_sums[i->current.record - 1];
 
-		// i->current.{total,uncompressed}_offsets have the offset
-		// of the beginning of the group, thus we need to add the
-		// appropriate amount to get the offsetes of this Record.
-		info->stream_offset += i->current.group
-				->total_sums[i->current.record - 1];
-		info->uncompressed_offset += i->current.group
-				->uncompressed_sums[i->current.record - 1];
+		info->total_size -= total_sum;
+		info->unpadded_size -= total_sum;
+		info->uncompressed_size -= uncompressed_sum;
+
+		info->stream_offset += total_sum;
+		info->uncompressed_offset += uncompressed_sum;
 	}
 
 	return;
@@ -548,11 +540,22 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 
 	// Check that the combined size of the Indexes stays within limits.
 	{
+		const lzma_vli dest_size = index_size_unpadded(
+				dest->count, dest->index_list_size);
+		const lzma_vli src_size = index_size_unpadded(
+				src->count, src->index_list_size);
+		if (vli_ceil4(dest_size + src_size) > LZMA_BACKWARD_SIZE_MAX)
+			return LZMA_DATA_ERROR;
+	}
+
+	// Check that the combined size of the "files" (combined total
+	// encoded sizes) stays within limits.
+	{
 		const lzma_vli dest_size = lzma_index_file_size(dest);
 		const lzma_vli src_size = lzma_index_file_size(src);
-		if (dest_size + src_size > LZMA_VLI_UNKNOWN
+		if (dest_size + src_size > LZMA_VLI_MAX
 				|| dest_size + src_size + padding
-					> LZMA_VLI_UNKNOWN)
+					> LZMA_VLI_MAX)
 			return LZMA_DATA_ERROR;
 	}
 
@@ -561,17 +564,37 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	//
 	// NOTE: This cannot overflow, because Index Size is always
 	// far smaller than LZMA_VLI_MAX, and adding two VLIs
-	// (Index Size and padding) doesn't overflow. It may become
-	// an invalid VLI if padding is huge, but that is caught by
-	// index_append().
+	// (Index Size and padding) doesn't overflow.
 	padding += index_size(dest->count - dest->old.count,
 				dest->index_list_size
 					- dest->old.index_list_size)
 			+ LZMA_STREAM_HEADER_SIZE * 2;
 
+	// While the above cannot overflow, but it may become an invalid VLI.
+	if (padding > LZMA_VLI_MAX)
+		return LZMA_DATA_ERROR;
+
 	// Add the padding Record.
-	return_if_error(index_append(
-			dest, allocator, padding, 0, true));
+	{
+		lzma_ret ret;
+
+		// First update the info so we can validate it.
+		dest->old.streams_size += padding;
+
+		if (dest->old.streams_size > LZMA_VLI_MAX
+				|| lzma_index_file_size(dest) > LZMA_VLI_MAX)
+			ret = LZMA_DATA_ERROR; // Would grow past the limits.
+		else
+			ret = index_append_real(dest, allocator,
+					padding, 0, true);
+
+		// If something went wrong, undo the updated value and return
+		// the error.
+		if (ret != LZMA_OK) {
+			dest->old.streams_size -= padding;
+			return ret;
+		}
+	}
 
 	// Avoid wasting lots of memory if src->head has only a few records
 	// that fit into dest->tail. That is, combine two groups if possible.
@@ -581,9 +604,10 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	if (src->head != NULL && src->head->last + 1
 			<= INDEX_GROUP_SIZE - dest->tail->last - 1) {
 		// Copy the first Record.
-		dest->tail->total_sums[dest->tail->last + 1]
-			= dest->tail->total_sums[dest->tail->last]
-				+ src->head->total_sums[0];
+		dest->tail->unpadded_sums[dest->tail->last + 1]
+				= vli_ceil4(dest->tail->unpadded_sums[
+					dest->tail->last])
+				+ src->head->unpadded_sums[0];
 
 		dest->tail->uncompressed_sums[dest->tail->last + 1]
 			= dest->tail->uncompressed_sums[dest->tail->last]
@@ -596,10 +620,11 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 
 		// Copy the rest.
 		for (size_t i = 1; i < src->head->last; ++i) {
-			dest->tail->total_sums[dest->tail->last + 1]
-				= dest->tail->total_sums[dest->tail->last]
-					+ src->head->total_sums[i + 1]
-					- src->head->total_sums[i];
+			dest->tail->unpadded_sums[dest->tail->last + 1]
+				= vli_ceil4(dest->tail->unpadded_sums[
+						dest->tail->last])
+					+ src->head->unpadded_sums[i + 1]
+					- src->head->unpadded_sums[i];
 
 			dest->tail->uncompressed_sums[dest->tail->last + 1]
 				= dest->tail->uncompressed_sums[
@@ -636,13 +661,13 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	dest->old.count = dest->count + src->old.count;
 	dest->old.index_list_size
 			= dest->index_list_size + src->old.index_list_size;
+	dest->old.streams_size += src->old.streams_size;
 
 	// Update overall information.
 	dest->total_size += src->total_size;
 	dest->uncompressed_size += src->uncompressed_size;
 	dest->count += src->count;
 	dest->index_list_size += src->index_list_size;
-	dest->padding_size += src->padding_size;
 
 	// *src has nothing left but the base structure.
 	lzma_free(src, allocator);
@@ -690,7 +715,7 @@ lzma_index_dup(const lzma_index *src, lzma_allocator *allocator)
 
 		// Copy the arrays so that we don't read uninitialized memory.
 		const size_t count = src_group->last + 1;
-		memcpy(dest_group->total_sums, src_group->total_sums,
+		memcpy(dest_group->unpadded_sums, src_group->unpadded_sums,
 				sizeof(lzma_vli) * count);
 		memcpy(dest_group->uncompressed_sums,
 				src_group->uncompressed_sums,
@@ -729,8 +754,8 @@ lzma_index_equal(const lzma_index *a, const lzma_index *b)
 	while (ag != NULL && bg != NULL) {
 		const size_t count = ag->last + 1;
 		if (ag->last != bg->last
-				|| memcmp(ag->total_sums,
-					bg->total_sums,
+				|| memcmp(ag->unpadded_sums,
+					bg->unpadded_sums,
 					sizeof(lzma_vli) * count) != 0
 				|| memcmp(ag->uncompressed_sums,
 					bg->uncompressed_sums,

@@ -19,12 +19,7 @@
 
 #include "sysdefs.h"
 
-#ifdef HAVE_ERRNO_H
-#	include <errno.h>
-#else
-extern int errno;
-#endif
-
+#include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -65,7 +60,7 @@ static uint8_t out_buf[BUFSIZ];
 static lzma_stream strm = LZMA_STREAM_INIT;
 
 /// Number of bytes to use memory at maximum
-static size_t memlimit;
+static uint64_t memlimit;
 
 /// Program name to be shown in error messages
 static const char *argv0;
@@ -94,8 +89,8 @@ help(void)
 "  -d, --decompress   (ignored)\n"
 "  -k, --keep         (ignored)\n"
 "  -f, --force        allow reading compressed data from a terminal\n"
-"  -M, --memory=NUM   use NUM bytes of memory at maximum; the suffixes\n"
-"                     k, M, G, Ki, Mi, and Gi are supported.\n"
+"  -M, --memory=NUM   use NUM bytes of memory at maximum (0 means default);\n"
+"                     the suffixes k, M, G, Ki, Mi, and Gi are supported.\n"
 "      --format=FMT   accept only files in the given file format;\n"
 "                     possible FMTs are `auto', `native', and alone',\n"
 "  -h, --help         display this help and exit\n"
@@ -141,20 +136,14 @@ version(void)
 static void
 set_default_memlimit(void)
 {
-	uint64_t mem = physmem();
-	if (mem != 0) {
-		mem /= 3;
+	const uint64_t mem = physmem();
 
-#if UINT64_MAX > SIZE_MAX
-		if (mem > SIZE_MAX)
-			mem = SIZE_MAX;
-#endif
-
-		memlimit = mem / 3;
-	} else {
+	if (mem == 0)
 		// Cannot autodetect, use 10 MiB as the default limit.
 		memlimit = (1U << 23) + (1U << 21);
-	}
+	else
+		// Limit is 33 % of RAM.
+		memlimit = mem / 3;
 
 	return;
 }
@@ -165,7 +154,7 @@ set_default_memlimit(void)
 /// This is rudely copied from src/lzma/util.c and modified a little. :-(
 ///
 static size_t
-str_to_size(const char *value)
+str_to_uint64(const char *value)
 {
 	size_t result = 0;
 
@@ -263,7 +252,10 @@ parse_options(int argc, char **argv)
 			break;
 
 		case 'M':
-			memlimit = str_to_size(optarg);
+			memlimit = str_to_uint64(optarg);
+			if (memlimit == 0)
+				set_default_memlimit();
+
 			break;
 
 		case 'h':

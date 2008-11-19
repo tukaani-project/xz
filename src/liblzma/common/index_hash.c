@@ -23,8 +23,8 @@
 
 
 typedef struct {
-	/// Sum of the Total Size fields
-	lzma_vli total_size;
+	/// Sum of the Block sizes (including Block Padding)
+	lzma_vli blocks_size;
 
 	/// Sum of the Uncompressed Size fields
 	lzma_vli uncompressed_size;
@@ -35,7 +35,7 @@ typedef struct {
 	/// Size of the List of Index Records as bytes
 	lzma_vli index_list_size;
 
-	/// Check calculated from Total Sizes and Uncompressed Sizes.
+	/// Check calculated from Unpadded Sizes and Uncompressed Sizes.
 	lzma_check_state check;
 
 } lzma_index_hash_info;
@@ -45,7 +45,7 @@ struct lzma_index_hash_s {
 	enum {
 		SEQ_BLOCK,
 		SEQ_COUNT,
-		SEQ_TOTAL,
+		SEQ_UNPADDED,
 		SEQ_UNCOMPRESSED,
 		SEQ_PADDING_INIT,
 		SEQ_PADDING,
@@ -61,8 +61,8 @@ struct lzma_index_hash_s {
 	/// Number of Records not fully decoded
 	lzma_vli remaining;
 
-	/// Total Size currently being read from an Index Record.
-	lzma_vli total_size;
+	/// Unpadded Size currently being read from an Index Record.
+	lzma_vli unpadded_size;
 
 	/// Uncompressed Size currently being read from an Index Record.
 	lzma_vli uncompressed_size;
@@ -86,15 +86,15 @@ lzma_index_hash_init(lzma_index_hash *index_hash, lzma_allocator *allocator)
 	}
 
 	index_hash->sequence = SEQ_BLOCK;
-	index_hash->blocks.total_size = 0;
+	index_hash->blocks.blocks_size = 0;
 	index_hash->blocks.uncompressed_size = 0;
 	index_hash->blocks.count = 0;
 	index_hash->blocks.index_list_size = 0;
-	index_hash->records.total_size = 0;
+	index_hash->records.blocks_size = 0;
 	index_hash->records.uncompressed_size = 0;
 	index_hash->records.count = 0;
 	index_hash->records.index_list_size = 0;
-	index_hash->total_size = 0;
+	index_hash->unpadded_size = 0;
 	index_hash->uncompressed_size = 0;
 	index_hash->pos = 0;
 	index_hash->crc32 = 0;
@@ -128,16 +128,16 @@ lzma_index_hash_size(const lzma_index_hash *index_hash)
 
 /// Updates the sizes and the hash without any validation.
 static lzma_ret
-hash_append(lzma_index_hash_info *info, lzma_vli total_size,
+hash_append(lzma_index_hash_info *info, lzma_vli unpadded_size,
 		lzma_vli uncompressed_size)
 {
-	info->total_size += total_size;
+	info->blocks_size += vli_ceil4(unpadded_size);
 	info->uncompressed_size += uncompressed_size;
-	info->index_list_size += lzma_vli_size(total_size_encode(total_size))
+	info->index_list_size += lzma_vli_size(unpadded_size)
 			+ lzma_vli_size(uncompressed_size);
 	++info->count;
 
-	const lzma_vli sizes[2] = { total_size, uncompressed_size };
+	const lzma_vli sizes[2] = { unpadded_size, uncompressed_size };
 	lzma_check_update(&info->check, LZMA_CHECK_BEST,
 			(const uint8_t *)(sizes), sizeof(sizes));
 
@@ -146,26 +146,27 @@ hash_append(lzma_index_hash_info *info, lzma_vli total_size,
 
 
 extern LZMA_API lzma_ret
-lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli total_size,
+lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli unpadded_size,
 		lzma_vli uncompressed_size)
 {
 	// Validate the arguments.
-	if (index_hash->sequence != SEQ_BLOCK || total_size == 0
-			|| total_size > LZMA_VLI_MAX || (total_size & 3)
+	if (index_hash->sequence != SEQ_BLOCK
+			|| unpadded_size < UNPADDED_SIZE_MIN
+			|| unpadded_size > UNPADDED_SIZE_MAX
 			|| uncompressed_size > LZMA_VLI_MAX)
 		return LZMA_PROG_ERROR;
 
 	// Update the hash.
 	return_if_error(hash_append(&index_hash->blocks,
-			total_size, uncompressed_size));
+			unpadded_size, uncompressed_size));
 
 	// Validate the properties of *info are still in allowed limits.
-	if (index_hash->blocks.total_size > LZMA_VLI_MAX
+	if (index_hash->blocks.blocks_size > LZMA_VLI_MAX
 			|| index_hash->blocks.uncompressed_size > LZMA_VLI_MAX
 			|| index_size(index_hash->blocks.count,
 					index_hash->blocks.index_list_size)
 				> LZMA_BACKWARD_SIZE_MAX
-			|| index_stream_size(index_hash->blocks.total_size,
+			|| index_stream_size(index_hash->blocks.blocks_size,
 					index_hash->blocks.count,
 					index_hash->blocks.index_list_size)
 				> LZMA_VLI_MAX)
@@ -216,14 +217,14 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 
 		// Handle the special case when there are no Blocks.
 		index_hash->sequence = index_hash->remaining == 0
-				? SEQ_PADDING_INIT : SEQ_TOTAL;
+				? SEQ_PADDING_INIT : SEQ_UNPADDED;
 		break;
 	}
 
-	case SEQ_TOTAL:
+	case SEQ_UNPADDED:
 	case SEQ_UNCOMPRESSED: {
-		lzma_vli *size = index_hash->sequence == SEQ_TOTAL
-				? &index_hash->total_size
+		lzma_vli *size = index_hash->sequence == SEQ_UNPADDED
+				? &index_hash->unpadded_size
 				: &index_hash->uncompressed_size;
 
 		ret = lzma_vli_decode(size, &index_hash->pos,
@@ -234,18 +235,17 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 		ret = LZMA_OK;
 		index_hash->pos = 0;
 
-		if (index_hash->sequence == SEQ_TOTAL) {
-			if (index_hash->total_size > TOTAL_SIZE_ENCODED_MAX)
+		if (index_hash->sequence == SEQ_UNPADDED) {
+			if (index_hash->unpadded_size < UNPADDED_SIZE_MIN
+					|| index_hash->unpadded_size
+						> UNPADDED_SIZE_MAX)
 				return LZMA_DATA_ERROR;
-
-			index_hash->total_size = total_size_decode(
-					index_hash->total_size);
 
 			index_hash->sequence = SEQ_UNCOMPRESSED;
 		} else {
 			// Update the hash.
 			return_if_error(hash_append(&index_hash->records,
-					index_hash->total_size,
+					index_hash->unpadded_size,
 					index_hash->uncompressed_size));
 
 			// Verify that we don't go over the known sizes. Note
@@ -254,8 +254,8 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 			// that values in index_hash->blocks are already
 			// validated and we are fine as long as we don't
 			// exceed them in index_hash->records.
-			if (index_hash->blocks.total_size
-					< index_hash->records.total_size
+			if (index_hash->blocks.blocks_size
+					< index_hash->records.blocks_size
 					|| index_hash->blocks.uncompressed_size
 					< index_hash->records.uncompressed_size
 					|| index_hash->blocks.index_list_size
@@ -264,7 +264,7 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 
 			// Check if this was the last Record.
 			index_hash->sequence = --index_hash->remaining == 0
-					? SEQ_PADDING_INIT : SEQ_TOTAL;
+					? SEQ_PADDING_INIT : SEQ_UNPADDED;
 		}
 
 		break;
@@ -288,8 +288,8 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 		}
 
 		// Compare the sizes.
-		if (index_hash->blocks.total_size
-				!= index_hash->records.total_size
+		if (index_hash->blocks.blocks_size
+				!= index_hash->records.blocks_size
 				|| index_hash->blocks.uncompressed_size
 				!= index_hash->records.uncompressed_size
 				|| index_hash->blocks.index_list_size

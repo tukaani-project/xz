@@ -30,12 +30,13 @@ The .xz File Format
                 3.1.6. Header Padding
                 3.1.7. CRC32
            3.2. Compressed Data
-           3.3. Check
+           3.3. Block Padding
+           3.4. Check
         4. Index
            4.1. Index Indicator
            4.2. Number of Records
            4.3. List of Records
-                4.3.1. Total Size
+                4.3.1. Unpadded Size
                 4.3.2. Uncompressed Size
            4.4. Index Padding
            4.5. CRC32
@@ -56,7 +57,7 @@ The .xz File Format
 0. Preface
 
         This document describes the .xz file format (filename suffix
-        `.xz', MIME type `application/x-xz'). It is intended that this
+        ".xz", MIME type "application/x-xz"). It is intended that this
         this format replace the old .lzma format used by LZMA SDK and
         LZMA Utils.
 
@@ -80,12 +81,12 @@ The .xz File Format
 
         Special thanks for helping with this document goes to
         Igor Pavlov. Thanks for helping with this document goes to
-        Mark Adler, H. Peter Anvin, and Mikko Pouru.
+        Mark Adler, H. Peter Anvin, Mikko Pouru, and Lars Wirzenius.
 
 
 0.2. Changes
 
-        Last modified: 2008-09-24 21:05+0300
+        Last modified: 2008-11-03 00:35+0200
 
         (A changelog will be kept once the first official version
         is made.)
@@ -93,20 +94,19 @@ The .xz File Format
 
 1. Conventions
 
-        The keywords `must', `must not', `required', `should',
-        `should not', `recommended', `may', and `optional' in this
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD",
+        "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
         document are to be interpreted as described in [RFC-2119].
-        These words are not capitalized in this document.
 
         Indicating a warning means displaying a message, returning
-        appropriate exit status, or something else to let the user
-        know that something worth warning occurred. The operation
-        should still finish if a warning is indicated.
+        appropriate exit status, or doing something else to let the
+        user know that something worth warning occurred. The operation
+        SHOULD still finish if a warning is indicated.
 
         Indicating an error means displaying a message, returning
-        appropriate exit status, or something else to let the user
-        know that something prevented successfully finishing the
-        operation. The operation must be aborted once an error has
+        appropriate exit status, or doing something else to let the
+        user know that something prevented successfully finishing the
+        operation. The operation MUST be aborted once an error has
         been indicated.
 
 
@@ -114,7 +114,7 @@ The .xz File Format
 
         In this document, byte is always 8 bits.
 
-        A `nul byte' has all bits unset. That is, the value of a nul
+        A "null byte" has all bits unset. That is, the value of a null
         byte is 0x00.
 
         To represent byte blocks, this document uses notation that
@@ -133,8 +133,25 @@ The .xz File Format
             +=======+
 
         In this document, a boxed byte or a byte sequence declared
-        using this notation is called `a field'. The example field
-        above would be called `the Foo field' or plain `Foo'.
+        using this notation is called "a field". The example field
+        above would be called "the Foo field" or plain "Foo".
+
+        If there are many fields, they may be split to multiple lines.
+        This is indicated with an arrow ("--->"):
+
+            +=====+
+            | Foo |
+            +=====+
+
+                 +=====+
+            ---> | Bar |
+                 +=====+
+
+        The above is equivalent to this:
+
+            +=====+=====+
+            | Foo | Bar |
+            +=====+=====+
 
 
 1.2. Multibyte Integers
@@ -166,7 +183,7 @@ The .xz File Format
             size_t
             encode(uint8_t buf[static 9], uint64_t num)
             {
-                if (num >= UINT64_MAX / 2)
+                if (num > UINT64_MAX / 2)
                     return 0;
 
                 size_t i = 0;
@@ -194,7 +211,7 @@ The .xz File Format
                 size_t i = 0;
 
                 while (buf[i++] & 0x80) {
-                    if (i > size_max || buf[i] == 0x00)
+                    if (i >= size_max || buf[i] == 0x00)
                         return 0;
 
                     *num |= (uint64_t)(buf[i] & 0x7F) << (i * 7);
@@ -206,15 +223,22 @@ The .xz File Format
 
 2. Overall Structure of .xz File
 
-        +========+================+========+================+
-        | Stream | Stream Padding | Stream | Stream Padding | ...
-        +========+================+========+================+
+        A standalone .xz files consist of one or more Streams which may
+        have Stream Padding between or after them:
 
-        A file contains usually only one Stream. However, it is
-        possible to concatenate multiple Streams together with no
-        additional processing. It is up to the implementation to
-        decide if the decoder will continue decoding from the next
-        Stream once the end of the first Stream has been reached.
+            +========+================+========+================+
+            | Stream | Stream Padding | Stream | Stream Padding | ...
+            +========+================+========+================+
+
+        While a typical file contains only one Stream and no Stream
+        Padding, a decoder handling standalone .xz files SHOULD support
+        files that have more than one Stream or Stream Padding.
+
+        In contrast to standalone .xz files, when the .xz file format
+        is used as an internal part of some other file format or
+        communication protocol, it usually is expected that the decoder
+        stops after the first Stream, and doesn't look for Stream
+        Padding or possibly other Streams.
 
 
 2.1. Stream
@@ -229,7 +253,7 @@ The .xz File Format
 
         All the above fields have a size that is a multiple of four. If
         Stream is used as an internal part of another file format, it
-        is recommended to make the Stream start at an offset that is
+        is RECOMMENDED to make the Stream start at an offset that is
         a multiple of four bytes.
 
         Stream Header, Index, and Stream Footer are always present in
@@ -238,12 +262,12 @@ The .xz File Format
         There are zero or more Blocks. The maximum number of Blocks is
         limited only by the maximum size of the Index field.
 
-        Total size of a Stream must be less than 8 EiB (2^63 bytes).
+        Total size of a Stream MUST be less than 8 EiB (2^63 bytes).
         The same limit applies to the total amount of uncompressed
         data stored in a Stream.
 
         If an implementation supports handling .xz files with multiple
-        concatenated Streams, it may apply the above limits to the file
+        concatenated Streams, it MAY apply the above limits to the file
         as a whole instead of limiting per Stream basis.
 
 
@@ -273,20 +297,20 @@ The .xz File Format
           - The sixth byte (0x00) was chosen to prevent applications
             from misdetecting the file as a text file.
 
-        If the Header Magic Bytes don't match, the decoder must
+        If the Header Magic Bytes don't match, the decoder MUST
         indicate an error.
 
 
 2.1.1.2. Stream Flags
 
-        The first byte of Stream Flags is always a nul byte. In future
+        The first byte of Stream Flags is always a null byte. In future
         this byte may be used to indicate new Stream version or other
         Stream properties.
 
         The second byte of Stream Flags is a bit field:
 
             Bit(s)  Mask  Description
-             0-3    0x0F  Type of Check (see Section 3.3):
+             0-3    0x0F  Type of Check (see Section 3.4):
                               ID    Size      Check name
                               0x00   0 bytes  None
                               0x01   4 bytes  CRC32
@@ -304,14 +328,14 @@ The .xz File Format
                               0x0D  64 bytes  (Reserved)
                               0x0E  64 bytes  (Reserved)
                               0x0F  64 bytes  (Reserved)
-             4-7    0xF0  Reserved for future use; must be zero for now.
+             4-7    0xF0  Reserved for future use; MUST be zero for now.
 
-        Implementations must support at least the Check IDs 0x00 (None)
-        and 0x01 (CRC32). Supporting other Check IDs is optional. If
-        an unsupported Check is used, the decoder should indicate a
-        warning or error.
+        Implementations SHOULD support at least the Check IDs 0x00
+        (None) and 0x01 (CRC32). Supporting other Check IDs is
+        OPTIONAL. If an unsupported Check is used, the decoder SHOULD
+        indicate a warning or error.
 
-        If any reserved bit is set, the decoder must indicate an error.
+        If any reserved bit is set, the decoder MUST indicate an error.
         It is possible that there is a new field present which the
         decoder is not aware of, and can thus parse the Stream Header
         incorrectly.
@@ -322,7 +346,7 @@ The .xz File Format
         The CRC32 is calculated from the Stream Flags field. It is
         stored as an unsigned 32-bit little endian integer. If the
         calculated value does not match the stored one, the decoder
-        must indicate an error.
+        MUST indicate an error.
 
         The idea is that Stream Flags would always be two bytes, even
         if new features are needed. This way old decoders will be able
@@ -344,7 +368,7 @@ The .xz File Format
         The CRC32 is calculated from the Backward Size and Stream Flags
         fields. It is stored as an unsigned 32-bit little endian
         integer. If the calculated value does not match the stored one,
-        the decoder must indicate an error.
+        the decoder MUST indicate an error.
 
         The reason to have the CRC32 field before the Backward Size and
         Stream Flags fields is to keep the four-byte fields aligned to
@@ -359,8 +383,11 @@ The .xz File Format
 
             real_backward_size = (stored_backward_size + 1) * 4;
 
-        Using a fixed-size integer to store this value makes it
-        slightly simpler to parse the Stream Footer when the
+        If the stored value does not match the real size of the Index
+        field, the decoder MUST indicate an error.
+
+        Using a fixed-size integer to store Backward Size makes
+        it slightly simpler to parse the Stream Footer when the
         application needs to parse the Stream backwards.
 
 
@@ -368,16 +395,16 @@ The .xz File Format
 
         This is a copy of the Stream Flags field from the Stream
         Header. The information stored to Stream Flags is needed
-        when parsing the Stream backwards. The decoder must compare
+        when parsing the Stream backwards. The decoder MUST compare
         the Stream Flags fields in both Stream Header and Stream
         Footer, and indicate an error if they are not identical.
 
 
 2.1.2.4. Footer Magic Bytes
 
-        As the last step of the decoding process, the decoder must
+        As the last step of the decoding process, the decoder MUST
         verify the existence of Footer Magic Bytes. If they don't
-        match, an error must be indicated.
+        match, an error MUST be indicated.
 
             Using a C array and ASCII:
             const uint8_t FOOTER_MAGIC[2] = { 'Y', 'Z' };
@@ -396,28 +423,28 @@ The .xz File Format
 2.2. Stream Padding
 
         Only the decoders that support decoding of concatenated Streams
-        must support Stream Padding.
+        MUST support Stream Padding.
 
-        Stream Padding must contain only nul bytes. Any non-nul byte
-        should be considered as the beginning of a new Stream. To
-        preserve the four-byte alignment of consecutive Streams, the
-        size of Stream Padding must be a multiple of four bytes. Empty
-        Stream Padding is allowed.
+        Stream Padding MUST contain only null bytes. To preserve the
+        four-byte alignment of consecutive Streams, the size of Stream
+        Padding MUST be a multiple of four bytes. Empty Stream Padding
+        is allowed.
 
         Note that non-empty Stream Padding is allowed at the end of the
         file; there doesn't need to be a new Stream after non-empty
         Stream Padding. This can be convenient in certain situations
         [GNU-tar].
 
-        The possibility of Padding should be taken into account when
-        designing an application that parses the Stream backwards.
+        The possibility of Padding MUST be taken into account when
+        designing an application that parses Streams backwards, and
+        the application supports concatenated Streams.
 
 
 3. Block
 
-        +==============+=================+=======+
-        | Block Header | Compressed Data | Check |
-        +==============+=================+=======+
+        +==============+=================+===============+=======+
+        | Block Header | Compressed Data | Block Padding | Check |
+        +==============+=================+===============+=======+
 
 
 3.1. Block Header
@@ -460,11 +487,11 @@ The .xz File Format
 
             Bit(s)  Mask  Description
              0-1    0x03  Number of filters (1-4)
-             2-5    0x3C  Reserved for future use; must be zero for now.
+             2-5    0x3C  Reserved for future use; MUST be zero for now.
               6     0x40  The Compressed Size field is present.
               7     0x80  The Uncompressed Size field is present.
 
-        If any reserved bit is set, the decoder must indicate an error.
+        If any reserved bit is set, the decoder MUST indicate an error.
         It is possible that there is a new field present which the
         decoder is not aware of, and can thus parse the Block Header
         incorrectly.
@@ -475,14 +502,11 @@ The .xz File Format
         This field is present only if the appropriate bit is set in
         the Block Flags field (see Section 3.1.2).
 
-        This field contains the size of the Compressed Data field as
-        multiple of four bytes, minimum value being four bytes:
-
-            real_compressed_size = (stored_compressed_size + 1) * 4;
-
-        The size is stored using the encoding described in Section 1.2.
-        If the Compressed Size does not match the real size of the
-        Compressed Data field, the decoder must indicate an error.
+        The Compressed Size field contains the size of the Compressed
+        Data field, which MUST be non-zero. Compressed Size is stored
+        using the encoding described in Section 1.2. If the Compressed
+        Size doesn't match the size of the Compressed Data field, the
+        decoder MUST indicate an error.
 
 
 3.1.4. Uncompressed Size
@@ -493,7 +517,7 @@ The .xz File Format
         The Uncompressed Size field contains the size of the Block
         after uncompressing. Uncompressed Size is stored using the
         encoding described in Section 1.2. If the Uncompressed Size
-        does not match the real uncompressed size, the decoder must
+        does not match the real uncompressed size, the decoder MUST
         indicate an error.
 
         Storing the Compressed Size and Uncompressed Size fields serves
@@ -532,14 +556,14 @@ The .xz File Format
 
         Filter IDs greater than or equal to 0x4000_0000_0000_0000
         (2^62) are reserved for implementation-specific internal use.
-        These Filter IDs must never be used in List of Filter Flags.
+        These Filter IDs MUST never be used in List of Filter Flags.
 
 
 3.1.6. Header Padding
 
-        This field contains as many nul byte as it is needed to make
+        This field contains as many null byte as it is needed to make
         the Block Header have the size specified in Block Header Size.
-        If any of the bytes are not nul bytes, the decoder must
+        If any of the bytes are not null bytes, the decoder MUST
         indicate an error. It is possible that there is a new field
         present which the decoder is not aware of, and can thus parse
         the Block Header incorrectly.
@@ -550,7 +574,7 @@ The .xz File Format
         The CRC32 is calculated over everything in the Block Header
         field except the CRC32 field itself. It is stored as an
         unsigned 32-bit little endian integer. If the calculated
-        value does not match the stored one, the decoder must indicate
+        value does not match the stored one, the decoder MUST indicate
         an error.
 
         By verifying the CRC32 of the Block Header before parsing the
@@ -565,20 +589,23 @@ The .xz File Format
         filters in Section 5.3, the format of the filter-specific
         encoded data is out of scope of this document.
 
-        If the natural size of Compressed Data is not a multiple of
-        four bytes, it must be padded with 1-3 nul bytes to make it
-        a multiple of four bytes.
+
+3.3. Block Padding
+
+        Block Padding MUST contain 0-3 null bytes to make the size of
+        the Block a multiple of four bytes. This can be needed when
+        the size of Compressed Data is not a multiple of four.
 
 
-3.3. Check
+3.4. Check
 
         The type and size of the Check field depends on which bits
         are set in the Stream Flags field (see Section 2.1.1.2).
 
         The Check, when used, is calculated from the original
         uncompressed data. If the calculated Check does not match the
-        stored one, the decoder must indicate an error. If the selected
-        type of Check is not supported by the decoder, it must indicate
+        stored one, the decoder MUST indicate an error. If the selected
+        type of Check is not supported by the decoder, it MUST indicate
         a warning or error.
 
 
@@ -611,7 +638,7 @@ The .xz File Format
         Stream. The value is stored using the encoding described in
         Section 1.2. If the decoder has decoded all the Blocks of the
         Stream, and then notices that the Number of Records doesn't
-        match the real number of Blocks, the decoder must indicate an
+        match the real number of Blocks, the decoder MUST indicate an
         error.
 
 
@@ -624,39 +651,49 @@ The .xz File Format
             | Record | Record | ...
             +========+========+
 
-        Each Record contains two fields:
+        Each Record contains information about one Block:
 
-            +============+===================+
-            | Total Size | Uncompressed Size |
-            +============+===================+
+            +===============+===================+
+            | Unpadded Size | Uncompressed Size |
+            +===============+===================+
 
         If the decoder has decoded all the Blocks of the Stream, it
-        must verify that the contents of the Records match the real
-        Total Size and Uncompressed Size of the respective Blocks.
+        MUST verify that the contents of the Records match the real
+        Unpadded Size and Uncompressed Size of the respective Blocks.
 
         Implementation hint: It is possible to verify the Index with
         constant memory usage by calculating for example SHA256 of both
         the real size values and the List of Records, then comparing
         the check values. Implementing this using non-cryptographic
-        check like CRC32 should be avoided unless small code size is
+        check like CRC32 SHOULD be avoided unless small code size is
         important.
 
-        If the decoder supports random-access reading, it must verify
-        that Total Size and Uncompressed Size of every completely
+        If the decoder supports random-access reading, it MUST verify
+        that Unpadded Size and Uncompressed Size of every completely
         decoded Block match the sizes stored in the Index. If only
-        partial Block is decoded, the decoder must verify that the
+        partial Block is decoded, the decoder MUST verify that the
         processed sizes don't exceed the sizes stored in the Index.
 
 
-4.3.1. Total Size
+4.3.1. Unpadded Size
 
-        This field indicates the encoded size of the respective Block
-        as multiples of four bytes, minimum value being four bytes:
+        This field indicates the size of the Block excluding the Block
+        Padding field. That is, Unpadded Size is the size of the Block
+        Header, Compressed Data, and Check fields. Unpadded Size is
+        stored using the encoding described in Section 1.2. The value
+        MUST never be zero; with the current structure of Blocks, the
+        actual minimum value for Unpadded Size is five.
 
-            real_total_size = (stored_total_size + 1) * 4;
+        Implementation note: Because the size of the Block Padding
+        field is not included in Unpadded Size, calculating the total
+        size of a Stream or doing random-access reading requires
+        calculating the actual size of the Blocks by rounding Unpadded
+        Sizes up to the next multiple of four.
 
-        The value is stored using the encoding described in Section
-        1.2.
+        The reason to exclude Block Padding from Unpadded Size is to
+        ease making a raw copy of Compressed Data without Block
+        Padding. This can be useful, for example, if someone wants
+        to convert Streams to some other file format quickly.
 
 
 4.3.2. Uncompressed Size
@@ -668,7 +705,7 @@ The .xz File Format
 
 4.4. Index Padding
 
-        This field must contain 0-3 nul bytes to pad the Index to
+        This field MUST contain 0-3 null bytes to pad the Index to
         a multiple of four bytes.
 
 
@@ -677,7 +714,7 @@ The .xz File Format
         The CRC32 is calculated over everything in the Index field
         except the CRC32 field itself. The CRC32 is stored as an
         unsigned 32-bit little endian integer. If the calculated
-        value does not match the stored one, the decoder must indicate
+        value does not match the stored one, the decoder MUST indicate
         an error.
 
 
@@ -748,7 +785,7 @@ The .xz File Format
         gets very little work done.
 
         To prevent this kind of slow files, there are restrictions on
-        how the filters can be chained. These restrictions must be
+        how the filters can be chained. These restrictions MUST be
         taken into account when designing new filters.
 
         The maximum number of filters in the chain has been limited to
@@ -756,11 +793,11 @@ The .xz File Format
         Of these three non-last filters, only two are allowed to change
         the size of the data.
 
-        The non-last filters, that change the size of the data, must
+        The non-last filters, that change the size of the data, MUST
         have a limit how much the decoder can compress the data: the
-        decoder should produce at least n bytes of output when the
+        decoder SHOULD produce at least n bytes of output when the
         filter is given 2n bytes of input. This  limit is not
-        absolute, but significant deviations must be avoided.
+        absolute, but significant deviations MUST be avoided.
 
         The above limitations guarantee that if the last filter in the
         chain produces 4n bytes of output, the chain as a whole will
@@ -797,7 +834,7 @@ The .xz File Format
 
             Bits   Mask   Description
             0-5    0x3F   Dictionary Size
-            6-7    0xC0   Reserved for future use; must be zero for now.
+            6-7    0xC0   Reserved for future use; MUST be zero for now.
 
         Dictionary Size is encoded with one-bit mantissa and five-bit
         exponent. The smallest dictionary size is 4 KiB and the biggest
@@ -846,11 +883,6 @@ The .xz File Format
             Changes size of data:       No
             Allow as a non-last filter: Yes
             Allow as the last filter:   No
-
-            Detecting when all of the data has been decoded:
-                Uncompressed size:      Yes
-                End of Payload Marker:  No
-                End of Input:           Yes
 
         Below is the list of filters in this category. The alignment
         is the same for both input and output data.
@@ -968,7 +1000,7 @@ The .xz File Format
         There are several incompatible variations to calculate CRC32
         and CRC64. For simplicity and clarity, complete examples are
         provided to calculate the checks as they are used in this file
-        format. Implementations may use different code as long as it
+        format. Implementations MAY use different code as long as it
         gives identical results.
 
         The program below reads data from standard input, calculates
@@ -1069,19 +1101,19 @@ The .xz File Format
         [RFC-1952]
         GZIP file format specification version 4.3
         http://www.ietf.org/rfc/rfc1952.txt
-          - Notation of byte boxes in section `2.1. Overall conventions'
+          - Notation of byte boxes in section "2.1. Overall conventions"
 
         [RFC-2119]
         Key words for use in RFCs to Indicate Requirement Levels
         http://www.ietf.org/rfc/rfc2119.txt
 
         [GNU-tar]
-        GNU tar 1.16.1 manual
+        GNU tar 1.20 manual
         http://www.gnu.org/software/tar/manual/html_node/Blocking-Factor.html
-          - Node 9.4.2 `Blocking Factor', paragraph that begins
-            `gzip will complain about trailing garbage'
+          - Node 9.4.2 "Blocking Factor", paragraph that begins
+            "gzip will complain about trailing garbage"
           - Note that this URL points to the latest version of the
             manual, and may some day not contain the note which is in
-            1.16.1. For the exact version of the manual, download GNU
-            tar 1.16.1: ftp://ftp.gnu.org/pub/gnu/tar/tar-1.16.1.tar.gz
+            1.20. For the exact version of the manual, download GNU
+            tar 1.20: ftp://ftp.gnu.org/pub/gnu/tar/tar-1.20.tar.gz
 

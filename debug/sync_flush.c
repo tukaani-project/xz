@@ -87,7 +87,7 @@ main(int argc, char **argv)
 	};
 
 	lzma_options_delta opt_delta = {
-		.distance = 16
+		.dist = 16
 	};
 
 	lzma_options_subblock opt_subblock = {
@@ -102,7 +102,7 @@ main(int argc, char **argv)
 	opt_subblock.subfilter_options.id = LZMA_FILTER_DELTA;
 	opt_subblock.subfilter_options.options = &opt_delta;
 
-	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 	filters[0].id = LZMA_FILTER_LZMA2;
 	filters[0].options = &opt_lzma;
 	filters[1].id = LZMA_VLI_UNKNOWN;
@@ -114,20 +114,20 @@ main(int argc, char **argv)
 	}
 
 	// Encoding
-/*
+
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(6, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(7, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_FINISH);
-*/
+/*
 	encode(53, LZMA_SYNC_FLUSH);
 // 	opt_lzma.literal_context_bits = 2;
 // 	opt_lzma.literal_pos_bits = 1;
 // 	opt_lzma.pos_bits = 0;
 	encode(404, LZMA_FINISH);
-
+*/
 	// Clean up
 	lzma_end(&strm);
 

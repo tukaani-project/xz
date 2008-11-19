@@ -27,8 +27,8 @@
 /// take into account the headers etc. to determine the exact maximum size
 /// of the Compressed Data field, but the complexity would give us nothing
 /// useful. Instead, limit the size of Compressed Data so that even with
-/// biggest possible Block Header and Check fields the total size of the
-/// Block stays as valid VLI. This way we don't produce incorrect output
+/// biggest possible Block Header and Check fields the total encoded size of
+/// the Block stays as valid VLI. This way we don't produce incorrect output
 /// if someone will really try creating a Block of 8 EiB.
 ///
 /// ~LZMA_VLI_C(3) is to guarantee that if we need padding at the end of
@@ -41,9 +41,9 @@ struct lzma_coder_s {
 	/// The filters in the chain; initialized with lzma_raw_decoder_init().
 	lzma_next_coder next;
 
-	/// Encoding options; we also write Total Size, Compressed Size, and
-	/// Uncompressed Size back to this structure when the encoding has
-	/// been finished.
+	/// Encoding options; we also write Unpadded Size, Compressed Size,
+	/// and Uncompressed Size back to this structure when the encoding
+	/// has been finished.
 	lzma_block *options;
 
 	enum {
@@ -58,8 +58,8 @@ struct lzma_coder_s {
 	/// Uncompressed Size calculated while encoding
 	lzma_vli uncompressed_size;
 
-	/// Position when writing out the Check field
-	size_t check_pos;
+	/// Position in Block Padding and the Check fields
+	size_t pos;
 
 	/// Check of the uncompressed data
 	lzma_check_state check;
@@ -106,6 +106,11 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 		assert(*in_pos == in_size);
 		assert(action == LZMA_FINISH);
 
+		// Copy the values into coder->options. The caller
+		// may use this information to construct Index.
+		coder->options->compressed_size = coder->compressed_size;
+		coder->options->uncompressed_size = coder->uncompressed_size;
+
 		coder->sequence = SEQ_PADDING;
 	}
 
@@ -113,28 +118,21 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 	case SEQ_PADDING:
 		// Pad Compressed Data to a multiple of four bytes.
-		while (coder->compressed_size & 3) {
+		while ((coder->compressed_size + coder->pos) & 3) {
 			if (*out_pos >= out_size)
 				return LZMA_OK;
 
 			out[*out_pos] = 0x00;
 			++*out_pos;
-
-			// No need to use check for overflow here since we
-			// have already checked in SEQ_CODE that Compressed
-			// Size will stay in proper limits.
-			++coder->compressed_size;
+			++coder->pos;
 		}
-
-		// Copy the values into coder->options. The caller
-		// may use this information to construct Index.
-		coder->options->compressed_size = coder->compressed_size;
-		coder->options->uncompressed_size = coder->uncompressed_size;
 
 		if (coder->options->check == LZMA_CHECK_NONE)
 			return LZMA_STREAM_END;
 
 		lzma_check_finish(&coder->check, coder->options->check);
+
+		coder->pos = 0;
 		coder->sequence = SEQ_CHECK;
 
 	// Fall through
@@ -144,11 +142,10 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 				= lzma_check_size(coder->options->check);
 
 		while (*out_pos < out_size) {
-			out[*out_pos] = coder->check.buffer.u8[
-					coder->check_pos];
+			out[*out_pos] = coder->check.buffer.u8[coder->pos];
 			++*out_pos;
 
-			if (++coder->check_pos == check_size)
+			if (++coder->pos == check_size)
 				return LZMA_STREAM_END;
 		}
 
@@ -199,9 +196,9 @@ lzma_block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->options = options;
 	next->coder->compressed_size = 0;
 	next->coder->uncompressed_size = 0;
+	next->coder->pos = 0;
 
 	// Initialize the check
-	next->coder->check_pos = 0;
 	lzma_check_init(&next->coder->check, options->check);
 
 	// Initialize the requested filters.

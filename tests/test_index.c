@@ -34,9 +34,9 @@ create_small(void)
 {
 	lzma_index *i = lzma_index_init(NULL, NULL);
 	expect(i != NULL);
-	expect(lzma_index_append(i, NULL, 400, 555) == LZMA_OK);
-	expect(lzma_index_append(i, NULL, 600, 777) == LZMA_OK);
-	expect(lzma_index_append(i, NULL, 800, 999) == LZMA_OK);
+	expect(lzma_index_append(i, NULL, 101, 555) == LZMA_OK);
+	expect(lzma_index_append(i, NULL, 602, 777) == LZMA_OK);
+	expect(lzma_index_append(i, NULL, 804, 999) == LZMA_OK);
 	return i;
 }
 
@@ -55,9 +55,9 @@ create_big(void)
 	uint32_t n = 11;
 	for (size_t j = 0; j < count; ++j) {
 		n = 7019 * n + 7607;
-		const uint32_t t = (n * 3011) & ~UINT32_C(3);
+		const uint32_t t = n * 3011;
 		expect(lzma_index_append(i, NULL, t, n) == LZMA_OK);
-		total_size += t;
+		total_size += (t + 3) & ~LZMA_VLI_C(3);
 		uncompressed_size += n;
 	}
 
@@ -184,7 +184,7 @@ test_code(lzma_index *i)
 	lzma_index_rewind(i);
 	lzma_index_record r;
 	while (!lzma_index_read(i, &r))
-		expect(lzma_index_hash_append(h, r.total_size,
+		expect(lzma_index_hash_append(h, r.unpadded_size,
 				r.uncompressed_size) == LZMA_OK);
 	size_t pos = 0;
 	while (pos < index_size - 1)
@@ -302,7 +302,7 @@ test_locate(void)
 	expect(!lzma_index_locate(i, &r, 0));
 	expect(r.total_size == 32);
 	expect(r.uncompressed_size == 5);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 16);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 16);
 	expect(r.uncompressed_offset == 0);
 
 	// Still cannot find anything past the end.
@@ -314,31 +314,31 @@ test_locate(void)
 	expect(!lzma_index_locate(i, &r, 0));
 	expect(r.total_size == 32);
 	expect(r.uncompressed_size == 5);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 16);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 16);
 	expect(r.uncompressed_offset == 0);
 
 	expect(!lzma_index_read(i, &r));
 	expect(r.total_size == 40);
 	expect(r.uncompressed_size == 11);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 16 + 32);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 16 + 32);
 	expect(r.uncompressed_offset == 5);
 
 	expect(!lzma_index_locate(i, &r, 2));
 	expect(r.total_size == 32);
 	expect(r.uncompressed_size == 5);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 16);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 16);
 	expect(r.uncompressed_offset == 0);
 
 	expect(!lzma_index_locate(i, &r, 5));
 	expect(r.total_size == 40);
 	expect(r.uncompressed_size == 11);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 16 + 32);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 16 + 32);
 	expect(r.uncompressed_offset == 5);
 
 	expect(!lzma_index_locate(i, &r, 5 + 11 - 1));
 	expect(r.total_size == 40);
 	expect(r.uncompressed_size == 11);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 16 + 32);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 16 + 32);
 	expect(r.uncompressed_offset == 5);
 
 	expect(lzma_index_locate(i, &r, 5 + 11));
@@ -357,27 +357,27 @@ test_locate(void)
 	expect(!lzma_index_locate(i, &r, 0));
 	expect(r.total_size == 4 + 8);
 	expect(r.uncompressed_size == 4);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE);
 	expect(r.uncompressed_offset == 0);
 
 	expect(!lzma_index_locate(i, &r, 3));
 	expect(r.total_size == 4 + 8);
 	expect(r.uncompressed_size == 4);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE);
 	expect(r.uncompressed_offset == 0);
 
 	// Second Record
 	expect(!lzma_index_locate(i, &r, 4));
 	expect(r.total_size == 2 * 4 + 8);
 	expect(r.uncompressed_size == 2 * 4);
-	expect(r.stream_offset = LZMA_STREAM_HEADER_SIZE + 4 + 8);
+	expect(r.stream_offset == LZMA_STREAM_HEADER_SIZE + 4 + 8);
 	expect(r.uncompressed_offset == 4);
 
 	// Last Record
 	expect(!lzma_index_locate(i, &r, lzma_index_uncompressed_size(i) - 1));
 	expect(r.total_size == 4 * 5555 + 8);
 	expect(r.uncompressed_size == 4 * 5555);
-	expect(r.stream_offset = lzma_index_total_size(i)
+	expect(r.stream_offset == lzma_index_total_size(i)
 			+ LZMA_STREAM_HEADER_SIZE - 4 * 5555 - 8);
 	expect(r.uncompressed_offset
 			== lzma_index_uncompressed_size(i) - 4 * 5555);
@@ -452,15 +452,7 @@ test_corrupt(void)
 	lzma_stream strm = LZMA_STREAM_INIT;
 
 	lzma_index *i = create_empty();
-	expect(lzma_index_append(i, NULL, 7, 1) == LZMA_OK);
-	expect(lzma_index_encoder(&strm, i) == LZMA_OK);
-	succeed(coder_loop(&strm, NULL, 0, buf, 2, LZMA_PROG_ERROR, LZMA_RUN));
-	lzma_index_end(i, NULL);
-
-	i = create_empty();
-	expect(lzma_index_append(i, NULL, 0, 1) == LZMA_OK);
-	expect(lzma_index_encoder(&strm, i) == LZMA_OK);
-	succeed(coder_loop(&strm, NULL, 0, buf, 2, LZMA_PROG_ERROR, LZMA_RUN));
+	expect(lzma_index_append(i, NULL, 0, 1) == LZMA_PROG_ERROR);
 	lzma_index_end(i, NULL);
 
 	// Create a valid Index and corrupt it in different ways.

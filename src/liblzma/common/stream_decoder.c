@@ -190,7 +190,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		// Set up a buffer to hold the filter chain. Block Header
 		// decoder will initialize all members of this array so
 		// we don't need to do it here.
-		lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+		lzma_filter filters[LZMA_FILTERS_MAX + 1];
 		coder->block_options.filters = filters;
 
 		// Decode the Block Header.
@@ -216,7 +216,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		// Free the allocated filter options since they are needed
 		// only to initialize the Block decoder.
-		for (size_t i = 0; i < LZMA_BLOCK_FILTERS_MAX; ++i)
+		for (size_t i = 0; i < LZMA_FILTERS_MAX; ++i)
 			lzma_free(filters[i].options, allocator);
 
 		coder->block_options.filters = NULL;
@@ -243,7 +243,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		// Block decoded successfully. Add the new size pair to
 		// the Index hash.
 		return_if_error(lzma_index_hash_append(coder->index_hash,
-				lzma_block_total_size_get(
+				lzma_block_unpadded_size(
 					&coder->block_options),
 				coder->block_options.uncompressed_size));
 
@@ -270,7 +270,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 	// Fall through
 
-	case SEQ_STREAM_FOOTER:
+	case SEQ_STREAM_FOOTER: {
 		// Copy the Stream Footer to the internal buffer.
 		lzma_bufcpy(in, in_pos, in_size, coder->buffer, &coder->pos,
 				LZMA_STREAM_HEADER_SIZE);
@@ -306,6 +306,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 			return LZMA_STREAM_END;
 
 		coder->sequence = SEQ_STREAM_PADDING;
+	}
 
 	// Fall through
 

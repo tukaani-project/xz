@@ -157,11 +157,11 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			return ret;
 
 		// Add a new Index Record.
-		const lzma_vli total_size = lzma_block_total_size_get(
+		const lzma_vli unpadded_size = lzma_block_unpadded_size(
 				&coder->block_options);
-		assert(total_size != 0);
+		assert(unpadded_size != 0);
 		return_if_error(lzma_index_append(coder->index, allocator,
-				total_size,
+				unpadded_size,
 				coder->block_options.uncompressed_size));
 
 		coder->sequence = SEQ_BLOCK_INIT;

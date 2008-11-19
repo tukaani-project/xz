@@ -25,7 +25,7 @@ struct lzma_coder_s {
 	enum {
 		SEQ_INDICATOR,
 		SEQ_COUNT,
-		SEQ_TOTAL,
+		SEQ_UNPADDED,
 		SEQ_UNCOMPRESSED,
 		SEQ_PADDING_INIT,
 		SEQ_PADDING,
@@ -38,8 +38,8 @@ struct lzma_coder_s {
 	/// Number of Records left to decode.
 	lzma_vli count;
 
-	/// The most recent Total Size field
-	lzma_vli total_size;
+	/// The most recent Unpadded Size field
+	lzma_vli unpadded_size;
 
 	/// The most recent Uncompressed Size field
 	lzma_vli uncompressed_size;
@@ -91,14 +91,14 @@ index_decode(lzma_coder *coder, lzma_allocator *allocator,
 		ret = LZMA_OK;
 		coder->pos = 0;
 		coder->sequence = coder->count == 0
-				? SEQ_PADDING_INIT : SEQ_TOTAL;
+				? SEQ_PADDING_INIT : SEQ_UNPADDED;
 		break;
 	}
 
-	case SEQ_TOTAL:
+	case SEQ_UNPADDED:
 	case SEQ_UNCOMPRESSED: {
-		lzma_vli *size = coder->sequence == SEQ_TOTAL
-				? &coder->total_size
+		lzma_vli *size = coder->sequence == SEQ_UNPADDED
+				? &coder->unpadded_size
 				: &coder->uncompressed_size;
 
 		ret = lzma_vli_decode(size, &coder->pos,
@@ -109,27 +109,26 @@ index_decode(lzma_coder *coder, lzma_allocator *allocator,
 		ret = LZMA_OK;
 		coder->pos = 0;
 
-		if (coder->sequence == SEQ_TOTAL) {
-			// Validate that encoded Total Size isn't too big.
-			if (coder->total_size > TOTAL_SIZE_ENCODED_MAX)
+		if (coder->sequence == SEQ_UNPADDED) {
+			// Validate that encoded Unpadded Size isn't too small
+			// or too big.
+			if (coder->unpadded_size < UNPADDED_SIZE_MIN
+					|| coder->unpadded_size
+						> UNPADDED_SIZE_MAX)
 				return LZMA_DATA_ERROR;
 
-			// Convert the encoded Total Size to the real
-			// Total Size.
-			coder->total_size = total_size_decode(
-					coder->total_size);
 			coder->sequence = SEQ_UNCOMPRESSED;
 		} else {
 			// Add the decoded Record to the Index.
 			return_if_error(lzma_index_append(
 					coder->index, allocator,
-					coder->total_size,
+					coder->unpadded_size,
 					coder->uncompressed_size));
 
 			// Check if this was the last Record.
 			coder->sequence = --coder->count == 0
 					? SEQ_PADDING_INIT
-					: SEQ_TOTAL;
+					: SEQ_UNPADDED;
 		}
 
 		break;

@@ -54,7 +54,7 @@ AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Enable debugging code.]),
 if test "x$enable_debug" = xyes; then
 	AC_MSG_RESULT([yes])
 else
-	AC_DEFINE(NDEBUG, 1, [Define to disable debugging code.])
+	AC_DEFINE(NDEBUG, 1, [Define to 1 to disable debugging code.])
 	AC_MSG_RESULT([no])
 fi
 
@@ -440,12 +440,33 @@ AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
 	[AC_MSG_ERROR([Required header file(s) are missing.])])
 
 # If any of these headers are missing, things should still work correctly:
-AC_CHECK_HEADERS([assert.h errno.h byteswap.h sys/param.h sys/sysctl.h],
+AC_CHECK_HEADERS([sys/param.h sys/sysctl.h byteswap.h],
 	[], [], [
 #ifdef HAVE_SYS_PARAM_H
 #	include <sys/param.h>
 #endif
 ])
+
+# Even if we have byteswap.h, we may lack the specific macros/functions.
+if test x$ac_cv_header_byteswap_h = xyes ; then
+	m4_foreach([FUNC], [bswap_16,bswap_32,bswap_64], [
+		AC_MSG_CHECKING([if FUNC is available])
+		AC_LINK_IFELSE([AC_LANG_SOURCE([
+#include <byteswap.h>
+int
+main(void)
+{
+	FUNC[](42);
+	return 0;
+}
+		])], [
+			AC_DEFINE(HAVE_[]m4_toupper(FUNC), [1],
+					[Define to 1 if] FUNC [is available.])
+			AC_MSG_RESULT([yes])
+		], [AC_MSG_RESULT([no])])
+
+	])dnl
+fi
 
 
 ###############################################################################
@@ -469,9 +490,13 @@ AC_CHECK_SIZEOF([size_t])
 
 # The command line tool can copy high resolution timestamps if such
 # information is availabe in struct stat. Otherwise one second accuracy
-# is used. Most systems seem to have st_xtim but BSDs have st_xtimespec.
-AC_CHECK_MEMBERS([struct stat.st_atim.tv_nsec, struct stat.st_mtim.tv_nsec,
-	struct stat.st_atimespec.tv_nsec, struct stat.st_mtimespec.tv_nsec])
+# is used.
+AC_CHECK_MEMBERS([
+	struct stat.st_atim.tv_nsec,
+	struct stat.st_atimespec.tv_nsec,
+	struct stat.st_atimensec,
+	struct stat.st_uatime,
+	struct stat.st_atim.st__tim.tv_nsec])
 
 AC_SYS_LARGEFILE
 AC_C_BIGENDIAN
@@ -484,16 +509,15 @@ AC_C_BIGENDIAN
 # Gnulib replacements as needed
 gl_GETOPT
 
-# Functions that are not mandatory i.e. we have alternatives for them
-# or we can just drop some functionality:
-AC_CHECK_FUNCS([futimes futimesat])
+# Find the best function to set timestamps.
+AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 
 # Check how to find out the amount of physical memory in the system. The
 # lzma command line tool uses this to automatically limits its memory usage.
 # - sysconf() gives all the needed info on GNU+Linux and Solaris.
 # - BSDs use sysctl().
 AC_MSG_CHECKING([how to detect the amount of physical memory])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 int
 main()
@@ -503,7 +527,7 @@ main()
 	i = sysconf(_SC_PHYS_PAGES);
 	return 0;
 }
-], [
+]])], [
 	AC_DEFINE([HAVE_PHYSMEM_SYSCONF], 1,
 		[Define to 1 if the amount of physical memory can be detected
 		with sysconf(_SC_PAGESIZE) and sysconf(_SC_PHYS_PAGES).])
@@ -537,7 +561,7 @@ main()
 # sysconf(_SC_NPROCESSORS_ONLN) works on most systems, except that BSDs
 # use sysctl().
 AC_MSG_CHECKING([how to detect the number of available CPU cores])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 int
 main()
@@ -546,7 +570,7 @@ main()
 	i = sysconf(_SC_NPROCESSORS_ONLN);
 	return 0;
 }
-], [
+]])], [
 	AC_DEFINE([HAVE_NCPU_SYSCONF], 1,
 		[Define to 1 if the number of available CPU cores can be
 		detected with sysconf(_SC_NPROCESSORS_ONLN).])

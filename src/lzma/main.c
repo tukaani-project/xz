@@ -21,16 +21,30 @@
 #include "open_stdxxx.h"
 #include <ctype.h>
 
-static sig_atomic_t exit_signal = 0;
+
+volatile sig_atomic_t user_abort = false;
+
+/// Exit status to use. This can be changed with set_exit_status().
+static enum exit_status_type exit_status = E_SUCCESS;
+
+/// If we were interrupted by a signal, we store the signal number so that
+/// we can raise that signal to kill the program when all cleanups have
+/// been done.
+static volatile sig_atomic_t exit_signal = 0;
+
+/// Mask of signals for which have have established a signal handler to set
+/// user_abort to true.
+static sigset_t hooked_signals;
+
+/// signals_block() and signals_unblock() can be called recursively.
+static size_t signals_block_count = 0;
 
 
 static void
 signal_handler(int sig)
 {
-	// FIXME Is this thread-safe together with main()?
 	exit_signal = sig;
-
-	user_abort = 1;
+	user_abort = true;
 	return;
 }
 
@@ -38,116 +52,226 @@ signal_handler(int sig)
 static void
 establish_signal_handlers(void)
 {
-	struct sigaction sa;
-	sa.sa_handler = &signal_handler;
-	sigfillset(&sa.sa_mask);
-	sa.sa_flags = 0;
-
+	// List of signals for which we establish the signal handler.
 	static const int sigs[] = {
-		SIGHUP,
 		SIGINT,
-		SIGPIPE,
 		SIGTERM,
+#ifdef SIGHUP
+		SIGHUP,
+#endif
+#ifdef SIGPIPE
+		SIGPIPE,
+#endif
+#ifdef SIGXCPU
 		SIGXCPU,
+#endif
+#ifdef SIGXFSZ
 		SIGXFSZ,
+#endif
 	};
 
-	for (size_t i = 0; i < sizeof(sigs) / sizeof(sigs[0]); ++i) {
-		if (sigaction(sigs[i], &sa, NULL)) {
-			errmsg(V_ERROR, _("Cannot establish signal handlers"));
-			my_exit(ERROR);
+	// Mask of the signals for which we have established a signal handler.
+	sigemptyset(&hooked_signals);
+	for (size_t i = 0; i < ARRAY_SIZE(sigs); ++i)
+		sigaddset(&hooked_signals, sigs[i]);
+
+	struct sigaction sa;
+
+	// All the signals that we handle we also blocked while the signal
+	// handler runs.
+	sa.sa_mask = hooked_signals;
+
+	// Don't set SA_RESTART, because we want EINTR so that we can check
+	// for user_abort and cleanup before exiting. We block the signals
+	// for which we have established a handler when we don't want EINTR.
+	sa.sa_flags = 0;
+	sa.sa_handler = &signal_handler;
+
+	for (size_t i = 0; i < ARRAY_SIZE(sigs); ++i) {
+		// If the parent process has left some signals ignored,
+		// we don't unignore them.
+		struct sigaction old;
+		if (sigaction(sigs[i], NULL, &old) == 0
+				&& old.sa_handler == SIG_IGN)
+			continue;
+
+		// Establish the signal handler.
+		if (sigaction(sigs[i], &sa, NULL))
+			message_signal_handler();
+	}
+
+	return;
+}
+
+
+extern void
+signals_block(void)
+{
+	if (signals_block_count++ == 0) {
+		const int saved_errno = errno;
+		sigprocmask(SIG_BLOCK, &hooked_signals, NULL);
+		errno = saved_errno;
+	}
+
+	return;
+}
+
+
+extern void
+signals_unblock(void)
+{
+	assert(signals_block_count > 0);
+
+	if (--signals_block_count == 0) {
+		const int saved_errno = errno;
+		sigprocmask(SIG_UNBLOCK, &hooked_signals, NULL);
+		errno = saved_errno;
+	}
+
+	return;
+}
+
+
+extern void
+set_exit_status(enum exit_status_type new_status)
+{
+	assert(new_status == E_WARNING || new_status == E_ERROR);
+
+	if (exit_status != E_ERROR)
+		exit_status = new_status;
+
+	return;
+}
+
+
+extern void
+my_exit(enum exit_status_type status)
+{
+	// Close stdout. If something goes wrong, print an error message
+	// to stderr.
+	{
+		const int ferror_err = ferror(stdout);
+		const int fclose_err = fclose(stdout);
+		if (ferror_err || fclose_err) {
+			// If it was fclose() that failed, we have the reason
+			// in errno. If only ferror() indicated an error,
+			// we have no idea what the reason was.
+			message(V_ERROR, _("Writing to standard output "
+					"failed: %s"),
+					fclose_err ? strerror(errno)
+						: _("Unknown error"));
+			status = E_ERROR;
 		}
 	}
 
-	/*
-	SIGINFO/SIGUSR1 for status reporting?
-	*/
-}
-
-
-static bool
-is_tty_stdin(void)
-{
-	const bool ret = isatty(STDIN_FILENO);
-	if (ret) {
-		// FIXME: Other threads may print between these lines.
-		// Maybe that should be fixed. Not a big issue in practice.
-		errmsg(V_ERROR, _("Compressed data not read from "
-				"a terminal."));
-		errmsg(V_ERROR, _("Use `--force' to force decompression."));
-		show_try_help();
+	// Close stderr. If something goes wrong, there's nothing where we
+	// could print an error message. Just set the exit status.
+	{
+		const int ferror_err = ferror(stderr);
+		const int fclose_err = fclose(stderr);
+		if (fclose_err || ferror_err)
+			status = E_ERROR;
 	}
 
-	return ret;
-}
+	// If we have got a signal, raise it to kill the program.
+	const int sig = exit_signal;
+	if (sig != 0) {
+		struct sigaction sa;
+		sa.sa_handler = SIG_DFL;
+		sigfillset(&sa.sa_mask);
+		sa.sa_flags = 0;
+		sigaction(sig, &sa, NULL);
+		raise(exit_signal);
 
-
-static bool
-is_tty_stdout(void)
-{
-	const bool ret = isatty(STDOUT_FILENO);
-	if (ret) {
-		errmsg(V_ERROR, _("Compressed data not written to "
-				"a terminal."));
-		errmsg(V_ERROR, _("Use `--force' to force compression."));
-		show_try_help();
+		// If, for some weird reason, the signal doesn't kill us,
+		// we safely fall to the exit below.
 	}
 
-	return ret;
+	exit(status);
 }
 
 
-static char *
-read_name(void)
+static const char *
+read_name(const args_info *args)
 {
-	size_t size = 256;
+	// FIXME: Maybe we should have some kind of memory usage limit here
+	// like the tool has for the actual compression and uncompression.
+	// Giving some huge text file with --files0 makes us to read the
+	// whole file in RAM.
+	static char *name = NULL;
+	static size_t size = 256;
+
+	// Allocate the initial buffer. This is never freed, since after it
+	// is no longer needed, the program exits very soon. It is safe to
+	// use xmalloc() and xrealloc() in this function, because while
+	// executing this function, no files are open for writing, and thus
+	// there's no need to cleanup anything before exiting.
+	if (name == NULL)
+		name = xmalloc(size);
+
+	// Write position in name
 	size_t pos = 0;
-	char *name = malloc(size);
-	if (name == NULL) {
-		out_of_memory();
-		return NULL;
-	}
 
-	while (true) {
-		const int c = fgetc(opt_files_file);
-		if (c == EOF) {
-			free(name);
+	// Read one character at a time into name.
+	while (!user_abort) {
+		const int c = fgetc(args->files_file);
 
-			if (ferror(opt_files_file))
-				errmsg(V_ERROR, _("%s: Error reading "
-						"filenames: %s"),
-						opt_files_name,
-						strerror(errno));
-			else if (pos != 0)
-				errmsg(V_ERROR, _("%s: Unexpected end of "
-						"input when reading "
-						"filenames"), opt_files_name);
+		if (ferror(args->files_file)) {
+			// Take care of EINTR since we have established
+			// the signal handlers already.
+			if (errno == EINTR)
+				continue;
+
+			message_error(_("%s: Error reading filenames: %s"),
+					args->files_name, strerror(errno));
+			return NULL;
+		}
+
+		if (feof(args->files_file)) {
+			if (pos != 0)
+				message_error(_("%s: Unexpected end of input "
+						"when reading filenames"),
+						args->files_name);
 
 			return NULL;
 		}
 
-		if (c == '\0' || c == opt_files_split)
-			break;
+		if (c == args->files_delim) {
+			// We allow consecutive newline (--files) or '\0'
+			// characters (--files0), and ignore such empty
+			// filenames.
+			if (pos == 0)
+				continue;
+
+			// A non-empty name was read. Terminate it with '\0'
+			// and return it.
+			name[pos] = '\0';
+			return name;
+		}
+
+		if (c == '\0') {
+			// A null character was found when using --files,
+			// which expects plain text input separated with
+			// newlines.
+			message_error(_("%s: Null character found when "
+					"reading filenames; maybe you meant "
+					"to use `--files0' instead "
+					"of `--files'?"), args->files_name);
+			return NULL;
+		}
 
 		name[pos++] = c;
 
+		// Allocate more memory if needed. There must always be space
+		// at least for one character to allow terminating the string
+		// with '\0'.
 		if (pos == size) {
 			size *= 2;
-			char *tmp = realloc(name, size);
-			if (tmp == NULL) {
-				free(name);
-				out_of_memory();
-				return NULL;
-			}
-
-			name = tmp;
+			name = xrealloc(name, size);
 		}
 	}
 
-	if (name != NULL)
-		name[pos] = '\0';
-
-	return name;
+	return NULL;
 }
 
 
@@ -158,35 +282,56 @@ main(int argc, char **argv)
 	// a valid file descriptor. Exit immediatelly with exit code ERROR
 	// if we cannot make the file descriptors valid. Maybe we should
 	// print an error message, but our stderr could be screwed anyway.
-	open_stdxxx(ERROR);
+	open_stdxxx(E_ERROR);
 
-	// Set the program invocation name used in various messages.
-	argv0 = argv[0];
+	// This has to be done before calling any liblzma functions.
+	lzma_init();
 
-	setlocale(LC_ALL, "en_US.UTF-8");
+	// Set up the locale.
+	setlocale(LC_ALL, "");
+
+#ifdef ENABLE_NLS
+	// Set up the message translations too.
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
+#endif
+
+	// Set the program invocation name used in various messages, and
+	// do other message handling related initializations.
+	message_init(argv[0]);
 
 	// Set hardware-dependent default values. These can be overriden
 	// on the command line, thus this must be done before parse_args().
 	hardware_init();
 
-	char **files = parse_args(argc, argv);
+	// Parse the command line arguments and get an array of filenames.
+	// This doesn't return if something is wrong with the command line
+	// arguments. If there are no arguments, one filename ("-") is still
+	// returned to indicate stdin.
+	args_info args;
+	args_parse(&args, argc, argv);
 
-	if (opt_mode == MODE_COMPRESS && opt_stdout && is_tty_stdout())
-		return ERROR;
-
-	if (opt_mode == MODE_COMPRESS)
-		lzma_init_encoder();
+	// Tell the message handling code how many input files there are if
+	// we know it. This way the progress indicator can show it.
+	if (args.files_name != NULL)
+		message_set_files(0);
 	else
-		lzma_init_decoder();
+		message_set_files(args.arg_count);
 
-	io_init();
-	process_init();
+	// Refuse to write compressed data to standard output if it is
+	// a terminal and --force wasn't used.
+	if (opt_mode == MODE_COMPRESS) {
+		if (opt_stdout || (args.arg_count == 1
+				&& strcmp(args.arg_names[0], "-") == 0)) {
+			if (is_tty_stdout()) {
+				message_try_help();
+				my_exit(E_ERROR);
+			}
+		}
+	}
 
 	if (opt_mode == MODE_LIST) {
-		errmsg(V_ERROR, "--list is not implemented yet.");
-		my_exit(ERROR);
+		message_fatal("--list is not implemented yet.");
 	}
 
 	// Hook the signal handlers. We don't need these before we start
@@ -194,60 +339,63 @@ main(int argc, char **argv)
 	// line arguments.
 	establish_signal_handlers();
 
-	while (*files != NULL && !user_abort) {
-		if (strcmp("-", *files) == 0) {
+	// Process the files given on the command line. Note that if no names
+	// were given, parse_args() gave us a fake "-" filename.
+	for (size_t i = 0; i < args.arg_count && !user_abort; ++i) {
+		if (strcmp("-", args.arg_names[i]) == 0) {
+			// Processing from stdin to stdout. Unless --force
+			// was used, check that we aren't writing compressed
+			// data to a terminal or reading it from terminal.
 			if (!opt_force) {
 				if (opt_mode == MODE_COMPRESS) {
-					if (is_tty_stdout()) {
-						++files;
+					if (is_tty_stdout())
 						continue;
-					}
 				} else if (is_tty_stdin()) {
-					++files;
 					continue;
 				}
 			}
 
-			if (opt_files_name == stdin_filename) {
-				errmsg(V_ERROR, _("Cannot read data from "
+			// It doesn't make sense to compress data from stdin
+			// if we are supposed to read filenames from stdin
+			// too (enabled with --files or --files0).
+			if (args.files_name == stdin_filename) {
+				message_error(_("Cannot read data from "
 						"standard input when "
 						"reading filenames "
 						"from standard input"));
-				++files;
 				continue;
 			}
 
-			*files = (char *)stdin_filename;
+			// Replace the "-" with a special pointer, which is
+			// recognized by process_file() and other things.
+			// This way error messages get a proper filename
+			// string and the code still knows that it is
+			// handling the special case of stdin.
+			args.arg_names[i] = (char *)stdin_filename;
 		}
 
-		process_file(*files++);
+		// Do the actual compression or uncompression.
+		process_file(args.arg_names[i]);
 	}
 
-	if (opt_files_name != NULL) {
+	// If --files or --files0 was used, process the filenames from the
+	// given file or stdin. Note that here we don't consider "-" to
+	// indicate stdin like we do with the command line arguments.
+	if (args.files_name != NULL) {
+		// read_name() checks for user_abort so we don't need to
+		// check it as loop termination condition.
 		while (true) {
-			char *name = read_name();
+			const char *name = read_name(&args);
 			if (name == NULL)
 				break;
 
-			if (name[0] != '\0')
-				process_file(name);
-
-			free(name);
+			// read_name() doesn't return empty names.
+			assert(name[0] != '\0');
+			process_file(name);
 		}
 
-		if (opt_files_name != stdin_filename)
-			(void)fclose(opt_files_file);
-	}
-
-	io_finish();
-
-	if (exit_signal != 0) {
-		struct sigaction sa;
-		sa.sa_handler = SIG_DFL;
-		sigfillset(&sa.sa_mask);
-		sa.sa_flags = 0;
-		sigaction(exit_signal, &sa, NULL);
-		raise(exit_signal);
+		if (args.files_name != stdin_filename)
+			(void)fclose(args.files_file);
 	}
 
 	my_exit(exit_status);

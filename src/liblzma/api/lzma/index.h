@@ -32,12 +32,24 @@ typedef struct lzma_index_s lzma_index;
  */
 typedef struct {
 	/**
-	 * Total Size of a Block.
+	 * \brief       Total encoded size of a Block including Block Padding
+	 *
+	 * This value is useful if you need to know the actual size of the
+	 * Block that the Block decoder will read.
 	 */
 	lzma_vli total_size;
 
 	/**
-	 * Uncompressed Size of a Block
+	 * \brief       Encoded size of a Block excluding Block Padding
+	 *
+	 * This value is stored in the Index. When doing random-access
+	 * reading, you should give this value to the Block decoder along
+	 * with uncompressed_size.
+	 */
+	lzma_vli unpadded_size;
+
+	/**
+	 * \brief       Uncompressed Size of a Block
 	 */
 	lzma_vli uncompressed_size;
 
@@ -80,7 +92,7 @@ extern void lzma_index_end(lzma_index *i, lzma_allocator *allocator);
  * \brief       Add a new Record to an Index
  *
  * \param       index             Pointer to a lzma_index structure
- * \param       total_size        Total Size of a Block
+ * \param       unpadded_size     Unpadded Size of a Block
  * \param       uncompressed_size Uncompressed Size of a Block, or
  *                                LZMA_VLI_UNKNOWN to indicate padding.
  *
@@ -92,7 +104,7 @@ extern void lzma_index_end(lzma_index *i, lzma_allocator *allocator);
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_index_append(lzma_index *i, lzma_allocator *allocator,
-		lzma_vli total_size, lzma_vli uncompressed_size)
+		lzma_vli unpadded_size, lzma_vli uncompressed_size)
 		lzma_attr_warn_unused_result;
 
 

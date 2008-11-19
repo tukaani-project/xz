@@ -22,32 +22,30 @@
 
 #include "sysdefs.h"
 
-#ifdef HAVE_ERRNO_H
-#	include <errno.h>
-#else
-extern int errno;
-#endif
-
+#include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <signal.h>
-#include <pthread.h>
 #include <locale.h>
 #include <stdio.h>
-#include <fcntl.h>
 #include <unistd.h>
 
-#include "gettext.h"
-#define _(msgid) gettext(msgid)
-#define N_(msgid1, msgid2, n) ngettext(msgid1, msgid2, n)
+#ifdef ENABLE_NLS
+#	include <libintl.h>
+#	define _(msgid) gettext(msgid)
+#	define N_(msgid1, msgid2, n) ngettext(msgid1, msgid2, n)
+#else
+#	define _(msgid) (msgid)
+#	define N_(msgid1, msgid2, n) ((n) == 1 ? (msgid1) : (msgid2))
+#endif
 
-#include "alloc.h"
+#include "main.h"
+#include "process.h"
+#include "message.h"
 #include "args.h"
-#include "error.h"
 #include "hardware.h"
-#include "help.h"
 #include "io.h"
 #include "options.h"
-#include "process.h"
 #include "suffix.h"
 #include "util.h"
 

@@ -15,19 +15,16 @@
 bin_PROGRAMS = lzma
 
 lzma_SOURCES = \
-	alloc.c \
-	alloc.h \
 	args.c \
 	args.h \
-	error.c \
-	error.h \
 	hardware.c \
 	hardware.h \
-	help.c \
-	help.h \
 	io.c \
 	io.h \
 	main.c \
+	main.h \
+	message.c \
+	message.h \
 	options.c \
 	options.h \
 	private.h \

@@ -1,5 +1,5 @@
-# getopt.m4 serial 13
-dnl Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+# getopt.m4 serial 14 (modified version)
+dnl Copyright (C) 2002-2006, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -13,7 +13,6 @@ AC_DEFUN([gl_GETOPT_SUBSTITUTE],
   AC_LIBOBJ([getopt])
   AC_LIBOBJ([getopt1])
   gl_GETOPT_SUBSTITUTE_HEADER
-  gl_PREREQ_GETOPT
 ])
 
 AC_DEFUN([gl_GETOPT_SUBSTITUTE_HEADER],
@@ -31,41 +30,32 @@ AC_DEFUN([gl_GETOPT_CHECK_HEADERS],
     AC_CHECK_HEADERS([getopt.h], [], [GETOPT_H=getopt.h])
   fi
 
+  dnl BSD getopt_long uses a way to reset option processing, that is different
+  dnl from GNU and Solaris (which copied the GNU behavior). We support both
+  dnl GNU and BSD style resetting of getopt_long(), so there's no need to use
+  dnl GNU getopt_long() on BSD due to different resetting style.
+  dnl
+  dnl With getopt_long(), some BSD versions have a bug in handling optional
+  dnl arguments. This bug appears only if the environment variable
+  dnl POSIXLY_CORRECT has been set, so it shouldn't be too bad in most
+  dnl cases; probably most don't have that variable set. But if we actually
+  dnl hit this bug, it is a real problem due to our heavy use of optional
+  dnl arguments.
+  dnl
+  dnl According to CVS logs, the bug was introduced in OpenBSD in 2003-09-22
+  dnl and copied to FreeBSD in 2004-02-24. It was fixed in both in 2006-09-22,
+  dnl so the affected versions shouldn't be popular anymore anyway. NetBSD
+  dnl never had this bug. TODO: What about Darwin and others?
   if test -z "$GETOPT_H"; then
-    AC_CHECK_FUNCS([getopt_long_only], [], [GETOPT_H=getopt.h])
-  fi
-
-  dnl BSD getopt_long uses an incompatible method to reset option processing,
-  dnl and (as of 2004-10-15) mishandles optional option-arguments.
-  if test -z "$GETOPT_H"; then
-    AC_CHECK_DECL([optreset], [GETOPT_H=getopt.h], [], [#include <getopt.h>])
+    AC_CHECK_DECL([optreset],
+      [AC_DEFINE([HAVE_OPTRESET], 1,
+        [Define to 1 if getopt.h declares extern int optreset.])],
+      [], [#include <getopt.h>])
   fi
 
   dnl Solaris 10 getopt doesn't handle `+' as a leading character in an
-  dnl option string (as of 2005-05-05).
-  if test -z "$GETOPT_H"; then
-    AC_CACHE_CHECK([for working GNU getopt function], [gl_cv_func_gnu_getopt],
-      [AC_RUN_IFELSE(
-	[AC_LANG_PROGRAM([#include <getopt.h>],
-	   [[
-	     char *myargv[3];
-	     myargv[0] = "conftest";
-	     myargv[1] = "-+";
-	     myargv[2] = 0;
-	     return getopt (2, myargv, "+a") != '?';
-	   ]])],
-	[gl_cv_func_gnu_getopt=yes],
-	[gl_cv_func_gnu_getopt=no],
-	[dnl cross compiling - pessimistically guess based on decls
-	 dnl Solaris 10 getopt doesn't handle `+' as a leading character in an
-	 dnl option string (as of 2005-05-05).
-	 AC_CHECK_DECL([getopt_clip],
-	   [gl_cv_func_gnu_getopt=no], [gl_cv_func_gnu_getopt=yes],
-	   [#include <getopt.h>])])])
-    if test "$gl_cv_func_gnu_getopt" = "no"; then
-      GETOPT_H=getopt.h
-    fi
-  fi
+  dnl option string (as of 2005-05-05). We don't use that feature, so this
+  dnl is not a problem for us. Thus, the respective test was removed here.
 ])
 
 AC_DEFUN([gl_GETOPT_IFELSE],
@@ -75,9 +65,3 @@ AC_DEFUN([gl_GETOPT_IFELSE],
 ])
 
 AC_DEFUN([gl_GETOPT], [gl_GETOPT_IFELSE([gl_GETOPT_SUBSTITUTE])])
-
-# Prerequisites of lib/getopt*.
-AC_DEFUN([gl_PREREQ_GETOPT],
-[
-  AC_CHECK_DECLS_ONCE([getenv])
-])

@@ -26,33 +26,15 @@
 size_t opt_threads = 1;
 
 
-/// Number of bytes of memory to use at maximum (only a rough limit).
-/// This can be set with the --memory=NUM command line option.
-/// If no better value can be determined, the default is 14 MiB, which
-/// should be quite safe even for older systems while still allowing
-/// reasonable compression ratio.
-size_t opt_memory = 14 * 1024 * 1024;
+/// Memory usage limit for encoding
+static uint64_t memlimit_encoder;
 
+/// Memory usage limit for decoding
+static uint64_t memlimit_decoder;
 
-/// Get the amount of physical memory, and set opt_memory to 1/3 of it.
-/// User can then override this with --memory command line option.
-static void
-hardware_memory(void)
-{
-	uint64_t mem = physmem();
-	if (mem != 0) {
-		mem /= 3;
-
-#if UINT64_MAX > SIZE_MAX
-		if (mem > SIZE_MAX)
-			mem = SIZE_MAX;
-#endif
-
-		opt_memory = mem;
-	}
-
-	return;
-}
+/// Memory usage limit given on the command line or environment variable.
+/// Zero indicates the default (memlimit_encoder or memlimit_decoder).
+static uint64_t memlimit_custom = 0;
 
 
 /// Get the number of CPU cores, and set opt_threads to default to that value.
@@ -90,10 +72,51 @@ hardware_cores(void)
 }
 
 
+static void
+hardware_memlimit_init(void)
+{
+	uint64_t mem = physmem();
+
+	// If we cannot determine the amount of RAM, assume 32 MiB. Maybe
+	// even that is too much on some systems. But on most systems it's
+	// far too little, and can be annoying.
+	if (mem == 0)
+		mem = UINT64_C(16) * 1024 * 1024;
+
+	// Use at maximum of 90 % of RAM when encoding and 33 % when decoding.
+	memlimit_encoder = mem - mem / 10;
+	memlimit_decoder = mem / 3;
+
+	return;
+}
+
+
+extern void
+hardware_memlimit_set(uint64_t memlimit)
+{
+	memlimit_custom = memlimit;
+	return;
+}
+
+
+extern uint64_t
+hardware_memlimit_encoder(void)
+{
+	return memlimit_custom != 0 ? memlimit_custom : memlimit_encoder;
+}
+
+
+extern uint64_t
+hardware_memlimit_decoder(void)
+{
+	return memlimit_custom != 0 ? memlimit_custom : memlimit_decoder;
+}
+
+
 extern void
 hardware_init(void)
 {
-	hardware_memory();
+	hardware_memlimit_init();
 	hardware_cores();
 	return;
 }

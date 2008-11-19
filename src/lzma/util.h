@@ -20,13 +20,52 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "private.h"
+/// \brief      Safe malloc() that never returns NULL
+///
+/// \note       xmalloc(), xrealloc(), and xstrdup() must not be used when
+///             there are files open for writing, that should be cleaned up
+///             before exiting.
+#define xmalloc(size) xrealloc(NULL, size)
 
+
+/// \brief      Safe realloc() that never returns NULL
+extern void *xrealloc(void *ptr, size_t size);
+
+
+/// \brief      Safe strdup() that never returns NULL
+extern char *xstrdup(const char *src);
+
+
+/// \brief      Fancy version of strtoull()
+///
+/// \param      name    Name of the option to show in case of an error
+/// \param      value   String containing the number to be parsed; may
+///                     contain suffixes "k", "M", "G", "Ki", "Mi", or "Gi"
+/// \param      min     Minimum valid value
+/// \param      max     Maximum valid value
+///
+/// \return     Parsed value that is in the range [min, max]. Does not return
+///             if an error occurs.
+///
 extern uint64_t str_to_uint64(const char *name, const char *value,
 		uint64_t min, uint64_t max);
 
-extern const char *str_filename(const char *filename);
 
+/// \brief      Check if filename is empty and print an error message
 extern bool is_empty_filename(const char *filename);
+
+
+/// \brief      Test if stdin is a terminal
+///
+/// If stdin is a terminal, an error message is printed and exit status set
+/// to EXIT_ERROR.
+extern bool is_tty_stdin(void);
+
+
+/// \brief      Test if stdout is a terminal
+///
+/// If stdout is a terminal, an error message is printed and exit status set
+/// to EXIT_ERROR.
+extern bool is_tty_stdout(void);
 
 #endif

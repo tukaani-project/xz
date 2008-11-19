@@ -75,17 +75,17 @@ main(int argc, char **argv)
 
 	// Config
 	lzma_options_lzma opt_lzma;
-	if (lzma_lzma_preset(&opt_lzma, 0)) {
+	if (lzma_lzma_preset(&opt_lzma, 1)) {
 		fprintf(stderr, "preset failed\n");
 		exit(1);
 	}
-	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 	filters[0].id = LZMA_FILTER_LZMA2;
 	filters[0].options = &opt_lzma;
 	filters[1].id = LZMA_VLI_UNKNOWN;
 
 	// Init
-	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_SHA256) != LZMA_OK) {
+	if (lzma_stream_encoder(&strm, filters, LZMA_CHECK_CRC32) != LZMA_OK) {
 		fprintf(stderr, "init failed\n");
 		exit(1);
 	}

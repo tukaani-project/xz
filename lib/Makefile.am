@@ -1,6 +1,5 @@
 ##
 ##  Copyright (C) 2004-2007 Free Software Foundation, Inc.
-##  Copyright (C) 2007 Lasse Collin
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -13,7 +12,8 @@
 ##  GNU General Public License for more details.
 ##
 
-## Not using gnulib-tool, at least for now. Less mess this way.
+## Not using gnulib-tool, at least for now. It is likely that we won't
+## need anything else from Gnulib than getopt_long().
 
 noinst_LIBRARIES = libgnu.a
 
@@ -21,12 +21,12 @@ libgnu_a_SOURCES =
 libgnu_a_DEPENDENCIES = $(LIBOBJS)
 libgnu_a_LIBADD = $(LIBOBJS)
 
-EXTRA_DIST = gettext.h getopt_.h getopt.c getopt1.c getopt_int.h
+EXTRA_DIST = getopt.in.h getopt.c getopt1.c getopt_int.h
 BUILT_SOURCES = $(GETOPT_H)
 MOSTLYCLEANFILES = getopt.h getopt.h-t
 
-getopt.h: getopt_.h
+getopt.h: getopt.in.h
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  cat $(srcdir)/getopt_.h; \
+	  cat $(srcdir)/getopt.in.h; \
 	} > $@-t
 	mv -f $@-t $@

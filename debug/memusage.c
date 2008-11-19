@@ -26,7 +26,7 @@ main(void)
 	lzma_init();
 
 	lzma_options_lzma lzma = {
-		.dict_size = (1U << 27) + (1U << 26),
+		.dict_size = (1U << 30) + (1U << 29),
 		.lc = 3,
 		.lp = 0,
 		.pb = 2,

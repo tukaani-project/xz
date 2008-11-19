@@ -20,137 +20,158 @@
 #include "private.h"
 
 
-typedef struct {
-	lzma_stream strm;
-	void *options;
+enum operation_mode opt_mode = MODE_COMPRESS;
 
-	file_pair *pair;
-
-	/// We don't need this for *anything* but seems that at least with
-	/// glibc pthread_create() doesn't allow NULL.
-	pthread_t thread;
-
-	bool in_use;
-
-} thread_data;
+enum format_type opt_format = FORMAT_AUTO;
 
 
-/// Number of available threads
-static size_t free_threads;
+/// Stream used to communicate with liblzma
+static lzma_stream strm = LZMA_STREAM_INIT;
 
-/// Thread-specific data
-static thread_data *threads;
+/// Filters needed for all encoding all formats, and also decoding in raw data
+static lzma_filter filters[LZMA_FILTERS_MAX + 1];
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+/// Number of filters. Zero indicates that we are using a preset.
+static size_t filters_count = 0;
 
-/// Attributes of new coder threads. They are created in detached state.
-/// Coder threads signal to the service thread themselves when they are done.
-static pthread_attr_t thread_attr;
+/// Number of the preset (1-9)
+static size_t preset_number = 7;
 
+/// Indicate if no preset has been given. In that case, we will auto-adjust
+/// the compression preset so that it doesn't use too much RAM.
+// FIXME
+static bool preset_default = true;
 
-//////////
-// Init //
-//////////
+/// Integrity check type
+static lzma_check check = LZMA_CHECK_CRC64;
+
 
 extern void
-process_init(void)
+coder_set_check(lzma_check new_check)
 {
-	threads = malloc(sizeof(thread_data) * opt_threads);
-	if (threads == NULL) {
-		out_of_memory();
-		my_exit(ERROR);
-	}
+	check = new_check;
+	return;
+}
 
-	for (size_t i = 0; i < opt_threads; ++i)
-		memzero(&threads[i], sizeof(threads[0]));
 
-	if (pthread_attr_init(&thread_attr)
-			|| pthread_attr_setdetachstate(
-				&thread_attr, PTHREAD_CREATE_DETACHED)) {
-		out_of_memory();
-		my_exit(ERROR);
-	}
+extern void
+coder_set_preset(size_t new_preset)
+{
+	preset_number = new_preset;
+	preset_default = false;
+	return;
+}
 
-	free_threads = opt_threads;
+
+extern void
+coder_add_filter(lzma_vli id, void *options)
+{
+	if (filters_count == LZMA_FILTERS_MAX)
+		message_fatal(_("Maximum number of filters is four"));
+
+	filters[filters_count].id = id;
+	filters[filters_count].options = options;
+	++filters_count;
 
 	return;
 }
 
 
-//////////////////////////
-// Thread-specific data //
-//////////////////////////
-
-static thread_data *
-get_thread_data(void)
+extern void
+coder_set_compression_settings(void)
 {
-	pthread_mutex_lock(&mutex);
+	// Options for LZMA1 or LZMA2 in case we are using a preset.
+	static lzma_options_lzma opt_lzma;
 
-	while (free_threads == 0) {
-		pthread_cond_wait(&cond, &mutex);
-
-		if (user_abort) {
-			pthread_cond_signal(&cond);
-			pthread_mutex_unlock(&mutex);
-			return NULL;
+	if (filters_count == 0) {
+		// We are using a preset. This is not a good idea in raw mode
+		// except when playing around with things. Different versions
+		// of this software may use different options in presets, and
+		// thus make uncompressing the raw data difficult.
+		if (opt_format == FORMAT_RAW) {
+			// The message is shown only if warnings are allowed
+			// but the exit status isn't changed.
+			message(V_WARNING, _("Using a preset in raw mode "
+					"is discouraged."));
+			message(V_WARNING, _("The exact options of the "
+					"presets may vary between software "
+					"versions."));
 		}
+
+		// Get the preset for LZMA1 or LZMA2.
+		if (lzma_lzma_preset(&opt_lzma, preset_number))
+			message_bug();
+
+		// Use LZMA2 except with --format=lzma we use LZMA1.
+		filters[0].id = opt_format == FORMAT_LZMA
+				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
+		filters[0].options = &opt_lzma;
+		filters_count = 1;
 	}
 
-	thread_data *t = threads;
-	while (t->in_use)
-		++t;
+	// Terminate the filter options array.
+	filters[filters_count].id = LZMA_VLI_UNKNOWN;
 
-	t->in_use = true;
-	--free_threads;
+	// If we are using the LZMA_Alone format, allow exactly one filter
+	// which has to be LZMA.
+	if (opt_format == FORMAT_LZMA && (filters_count != 1
+			|| filters[0].id != LZMA_FILTER_LZMA1))
+		message_fatal(_("With --format=lzma only the LZMA1 filter "
+				"is supported"));
 
-	pthread_mutex_unlock(&mutex);
+	// TODO: liblzma probably needs an API to validate the filter chain.
 
-	return t;
-}
-
-
-static void
-release_thread_data(thread_data *t)
-{
-	pthread_mutex_lock(&mutex);
-
-	t->in_use = false;
-	++free_threads;
-
-	pthread_cond_signal(&cond);
-	pthread_mutex_unlock(&mutex);
-
-	return;
-}
-
-
-static int
-create_thread(void *(*func)(thread_data *t), thread_data *t)
-{
-	if (opt_threads == 1) {
-		func(t);
+	// If using --format=raw, we can be decoding.
+	uint64_t memory_usage;
+	uint64_t memory_limit;
+	if (opt_mode == MODE_COMPRESS) {
+		memory_usage = lzma_memusage_encoder(filters);
+		memory_limit = hardware_memlimit_encoder();
 	} else {
-		const int err = pthread_create(&t->thread, &thread_attr,
-				(void *(*)(void *))(func), t);
-		if (err) {
-			errmsg(V_ERROR, _("Cannot create a thread: %s"),
-					strerror(err));
-			user_abort = 1;
-			return -1;
-		}
+		memory_usage = lzma_memusage_decoder(filters);
+		memory_limit = hardware_memlimit_decoder();
 	}
 
-	return 0;
+	if (memory_usage == UINT64_MAX)
+		message_bug();
+
+	if (preset_default) {
+		// When no preset was explicitly requested, we use the default
+		// preset only if the memory usage limit allows. Otherwise we
+		// select a lower preset automatically.
+		while (memory_usage > memory_limit) {
+			if (preset_number == 1)
+				message_fatal(_("Memory usage limit is too "
+						"small for any internal "
+						"filter preset"));
+
+			if (lzma_lzma_preset(&opt_lzma, --preset_number))
+				message_bug();
+
+			memory_usage = lzma_memusage_encoder(filters);
+		}
+	} else {
+		if (memory_usage > memory_limit)
+			message_fatal(_("Memory usage limit is too small "
+					"for the given filter setup"));
+	}
+
+	// Limit the number of worked threads so that memory usage
+	// limit isn't exceeded.
+	assert(memory_usage > 0);
+	size_t thread_limit = memory_limit / memory_usage;
+	if (thread_limit == 0)
+		thread_limit = 1;
+
+	if (opt_threads > thread_limit)
+		opt_threads = thread_limit;
+
+	return;
 }
 
 
-/////////////////////////
-// One thread per file //
-/////////////////////////
-
-static int
-single_init(thread_data *t)
+static bool
+coder_init(void)
 {
 	lzma_ret ret = LZMA_PROG_ERROR;
 
@@ -162,17 +183,15 @@ single_init(thread_data *t)
 			break;
 
 		case FORMAT_XZ:
-			ret = lzma_stream_encoder(&t->strm,
-					opt_filters, opt_check);
+			ret = lzma_stream_encoder(&strm, filters, check);
 			break;
 
 		case FORMAT_LZMA:
-			ret = lzma_alone_encoder(&t->strm,
-					opt_filters[0].options);
+			ret = lzma_alone_encoder(&strm, filters[0].options);
 			break;
 
 		case FORMAT_RAW:
-			ret = lzma_raw_encoder(&t->strm, opt_filters);
+			ret = lzma_raw_encoder(&strm, filters);
 			break;
 		}
 	} else {
@@ -181,254 +200,192 @@ single_init(thread_data *t)
 
 		switch (opt_format) {
 		case FORMAT_AUTO:
-			ret = lzma_auto_decoder(&t->strm, opt_memory, flags);
+			ret = lzma_auto_decoder(&strm,
+					hardware_memlimit_decoder(), flags);
 			break;
 
 		case FORMAT_XZ:
-			ret = lzma_stream_decoder(&t->strm, opt_memory, flags);
+			ret = lzma_stream_decoder(&strm,
+					hardware_memlimit_decoder(), flags);
 			break;
 
 		case FORMAT_LZMA:
-			ret = lzma_alone_decoder(&t->strm, opt_memory);
+			ret = lzma_alone_decoder(&strm,
+					hardware_memlimit_decoder());
 			break;
 
 		case FORMAT_RAW:
 			// Memory usage has already been checked in args.c.
-			ret = lzma_raw_decoder(&t->strm, opt_filters);
+			// FIXME Comment
+			ret = lzma_raw_decoder(&strm, filters);
 			break;
 		}
 	}
 
 	if (ret != LZMA_OK) {
 		if (ret == LZMA_MEM_ERROR)
-			out_of_memory();
+			message_error("%s", message_strm(LZMA_MEM_ERROR));
 		else
-			internal_error();
+			message_bug();
 
-		return -1;
+		return true;
 	}
 
-	return 0;
+	return false;
 }
 
 
-static void *
-single(thread_data *t)
+static bool
+coder_run(file_pair *pair)
 {
-	if (single_init(t)) {
-		io_close(t->pair, false);
-		release_thread_data(t);
-		return NULL;
-	}
+	// Buffers to hold input and output data.
+	uint8_t in_buf[IO_BUFFER_SIZE];
+	uint8_t out_buf[IO_BUFFER_SIZE];
 
-	uint8_t in_buf[BUFSIZ];
-	uint8_t out_buf[BUFSIZ];
+	// Initialize the progress indicator.
+	const uint64_t in_size = pair->src_st.st_size <= (off_t)(0)
+			? 0 : (uint64_t)(pair->src_st.st_size);
+	message_progress_start(pair->src_name, in_size);
+
 	lzma_action action = LZMA_RUN;
 	lzma_ret ret;
-	bool success = false;
 
-	t->strm.avail_in = 0;
-	t->strm.next_out = out_buf;
-	t->strm.avail_out = BUFSIZ;
+	strm.avail_in = 0;
+	strm.next_out = out_buf;
+	strm.avail_out = IO_BUFFER_SIZE;
 
 	while (!user_abort) {
-		if (t->strm.avail_in == 0 && !t->pair->src_eof) {
-			t->strm.next_in = in_buf;
-			t->strm.avail_in = io_read(t->pair, in_buf, BUFSIZ);
+		// Fill the input buffer if it is empty and we haven't reached
+		// end of file yet.
+		if (strm.avail_in == 0 && !pair->src_eof) {
+			strm.next_in = in_buf;
+			strm.avail_in = io_read(pair, in_buf, IO_BUFFER_SIZE);
 
-			if (t->strm.avail_in == SIZE_MAX)
+			if (strm.avail_in == SIZE_MAX)
 				break;
 
-			if (t->pair->src_eof)
+			// Encoder needs to know when we have given all the
+			// input to it. The decoders need to know it too when
+			// we are using LZMA_CONCATENATED.
+			if (pair->src_eof)
 				action = LZMA_FINISH;
 		}
 
-		ret = lzma_code(&t->strm, action);
+		// Let liblzma do the actual work.
+		ret = lzma_code(&strm, action);
 
-		if ((t->strm.avail_out == 0 || ret != LZMA_OK)
-				&& opt_mode != MODE_TEST) {
-			if (io_write(t->pair, out_buf,
-					BUFSIZ - t->strm.avail_out))
-				break;
+		// Write out if the output buffer became full.
+		if (strm.avail_out == 0) {
+			if (opt_mode != MODE_TEST && io_write(pair, out_buf,
+					IO_BUFFER_SIZE - strm.avail_out))
+				return false;
 
-			t->strm.next_out = out_buf;
-			t->strm.avail_out = BUFSIZ;
+			strm.next_out = out_buf;
+			strm.avail_out = IO_BUFFER_SIZE;
 		}
 
 		if (ret != LZMA_OK) {
-			// Check that there is no trailing garbage. This is
-			// needed for LZMA_Alone and raw streams.
-			if (ret == LZMA_STREAM_END && (t->strm.avail_in != 0
-					|| (!t->pair->src_eof && io_read(
-						t->pair, in_buf, 1) != 0)))
-				ret = LZMA_DATA_ERROR;
+			// Determine if the return value indicates that we
+			// won't continue coding.
+			const bool stop = ret != LZMA_NO_CHECK
+					&& ret != LZMA_UNSUPPORTED_CHECK;
 
-			if (ret != LZMA_STREAM_END) {
-				errmsg(V_ERROR, "%s: %s", t->pair->src_name,
-						str_strm_error(ret));
-				break;
+			if (stop) {
+				// First print the final progress info.
+				// This way the user sees more accurately
+				// where the error occurred. Note that we
+				// print this *before* the possible error
+				// message.
+				//
+				// FIXME: What if something goes wrong
+				// after this?
+				message_progress_end(strm.total_in,
+						strm.total_out,
+						ret == LZMA_STREAM_END);
+
+				// Write the remaining bytes even if something
+				// went wrong, because that way the user gets
+				// as much data as possible, which can be good
+				// when trying to get at least some useful
+				// data out of damaged files.
+				if (opt_mode != MODE_TEST && io_write(pair,
+						out_buf, IO_BUFFER_SIZE
+							- strm.avail_out))
+					return false;
 			}
 
-			assert(t->pair->src_eof);
-			success = true;
-			break;
+			if (ret == LZMA_STREAM_END) {
+				// Check that there is no trailing garbage.
+				// This is needed for LZMA_Alone and raw
+				// streams.
+				if (strm.avail_in == 0 && (pair->src_eof
+						|| io_read(pair, in_buf, 1)
+							== 0)) {
+					assert(pair->src_eof);
+					return true;
+				}
+
+				// FIXME: What about io_read() failing?
+
+				// We hadn't reached the end of the file.
+				ret = LZMA_DATA_ERROR;
+				assert(stop);
+			}
+
+			// If we get here and stop is true, something went
+			// wrong and we print an error. Otherwise it's just
+			// a warning and coding can continue.
+			if (stop) {
+				message_error("%s: %s", pair->src_name,
+						message_strm(ret));
+			} else {
+				message_warning("%s: %s", pair->src_name,
+						message_strm(ret));
+
+				// When compressing, all possible errors set
+				// stop to true.
+				assert(opt_mode != MODE_COMPRESS);
+			}
+
+			if (ret == LZMA_MEMLIMIT_ERROR) {
+				// Figure out how much memory would have
+				// actually needed.
+				// TODO
+			}
+
+			if (stop)
+				return false;
 		}
+
+		// Show progress information if --verbose was specified and
+		// stderr is a terminal.
+		message_progress_update(strm.total_in, strm.total_out);
 	}
 
-	io_close(t->pair, success);
-	release_thread_data(t);
-
-	return NULL;
+	return false;
 }
 
-
-///////////////////////////////
-// Multiple threads per file //
-///////////////////////////////
-
-// TODO
-
-// I'm not sure what would the best way to implement this. Here's one
-// possible way:
-//  - Reader thread would read the input data and control the coders threads.
-//  - Every coder thread is associated with input and output buffer pools.
-//    The input buffer pool is filled by reader thread, and the output buffer
-//    pool is emptied by the writer thread.
-//  - Writer thread writes the output data of the oldest living coder thread.
-//
-// The per-file thread started by the application's main thread is used as
-// the reader thread. In the beginning, it starts the writer thread and the
-// first coder thread. The coder thread would be left waiting for input from
-// the reader thread, and the writer thread would be waiting for input from
-// the coder thread.
-//
-// The reader thread reads the input data into a ring buffer, whose size
-// depends on the value returned by lzma_chunk_size(). If the ring buffer
-// gets full, the buffer is marked "to be finished", which indicates to
-// the coder thread that no more input is coming. Then a new coder thread
-// would be started.
-//
-// TODO
-
-/*
-typedef struct {
-	/// Buffers
-	uint8_t (*buffers)[BUFSIZ];
-
-	/// Number of buffers
-	size_t buffer_count;
-
-	/// buffers[read_pos] is the buffer currently being read. Once finish
-	/// is true and read_pos == write_pos, end of input has been reached.
-	size_t read_pos;
-
-	/// buffers[write_pos] is the buffer into which data is currently
-	/// being written.
-	size_t write_pos;
-
-	/// This variable matters only when read_pos == write_pos && finish.
-	/// In that case, this variable will contain the size of the
-	/// buffers[read_pos].
-	size_t last_size;
-
-	/// True once no more data is being written to the buffer. When this
-	/// is set, the last_size variable must have been set too.
-	bool finish;
-
-	/// Mutex to protect access to the variables in this structure
-	pthread_mutex_t mutex;
-
-	/// Condition to indicate when another thread can continue
-	pthread_cond_t cond;
-} mem_pool;
-
-
-static foo
-multi_reader(thread_data *t)
-{
-	bool done = false;
-
-	do {
-		const size_t size = io_read(t->pair,
-				m->buffers + m->write_pos, BUFSIZ);
-		if (size == SIZE_MAX) {
-			// TODO
-		} else if (t->pair->src_eof) {
-			m->last_size = size;
-		}
-
-		pthread_mutex_lock(&m->mutex);
-
-		if (++m->write_pos == m->buffer_count)
-			m->write_pos = 0;
-
-		if (m->write_pos == m->read_pos || t->pair->src_eof)
-			m->finish = true;
-
-		pthread_cond_signal(&m->cond);
-		pthread_mutex_unlock(&m->mutex);
-
-	} while (!m->finish);
-
-	return done ? 0 : -1;
-}
-
-
-static foo
-multi_code()
-{
-	lzma_action = LZMA_RUN;
-
-	while (true) {
-		pthread_mutex_lock(&m->mutex);
-
-		while (m->read_pos == m->write_pos && !m->finish)
-			pthread_cond_wait(&m->cond, &m->mutex);
-
-		pthread_mutex_unlock(&m->mutex);
-
-		if (m->finish) {
-			t->strm.avail_in = m->last_size;
-			if (opt_mode == MODE_COMPRESS)
-				action = LZMA_FINISH;
-		} else {
-			t->strm.avail_in = BUFSIZ;
-		}
-
-		t->strm.next_in = m->buffers + m->read_pos;
-
-		const lzma_ret ret = lzma_code(&t->strm, action);
-
-	}
-}
-
-*/
-
-
-///////////////////////
-// Starting new file //
-///////////////////////
 
 extern void
 process_file(const char *filename)
 {
-	thread_data *t = get_thread_data();
-	if (t == NULL)
-		return; // User abort
-
-	// If this fails, it shows appropriate error messages too.
-	t->pair = io_open(filename);
-	if (t->pair == NULL) {
-		release_thread_data(t);
+	// First try initializing the coder. If it fails, it's useless to try
+	// opening the file. Check also for user_abort just in case if we had
+	// got a signal while initializing the coder.
+	if (coder_init() || user_abort)
 		return;
-	}
 
-	// TODO Currently only one-thread-per-file mode is implemented.
+	// Try to open the input and output files.
+	file_pair *pair = io_open(filename);
+	if (pair == NULL)
+		return;
 
-	if (create_thread(&single, t)) {
-		io_close(t->pair, false);
-		release_thread_data(t);
-	}
+	// Do the actual coding.
+	const bool success = coder_run(pair);
+
+	// Close the file pair. It needs to know if coding was successful to
+	// know if the source or target file should be unlinked.
+	io_close(pair, success);
 
 	return;
 }

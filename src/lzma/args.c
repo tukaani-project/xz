@@ -25,150 +25,90 @@
 #include <ctype.h>
 
 
-enum tool_mode opt_mode = MODE_COMPRESS;
-enum format_type opt_format = FORMAT_AUTO;
-
-char *opt_suffix = NULL;
-
-char *opt_files_name = NULL;
-char opt_files_split = '\0';
-FILE *opt_files_file = NULL;
-
 bool opt_stdout = false;
 bool opt_force = false;
 bool opt_keep_original = false;
-bool opt_preserve_name = false;
-
-lzma_check opt_check = LZMA_CHECK_CRC64;
-lzma_filter opt_filters[LZMA_BLOCK_FILTERS_MAX + 1];
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
 const char *stdin_filename = "(stdin)";
 
-static size_t preset_number = 7;
-static bool preset_default = true;
-static size_t filter_count = 0;
-
-/// When compressing, which file format to use if --format=auto or no --format
-/// at all has been specified. We need a variable because this depends on
-/// with which name we are called. All names with "lz" in them makes us to
-/// use the legacy .lzma format.
-static enum format_type format_compress_auto = FORMAT_XZ;
-
-
-enum {
-	OPT_SUBBLOCK = INT_MIN,
-	OPT_X86,
-	OPT_POWERPC,
-	OPT_IA64,
-	OPT_ARM,
-	OPT_ARMTHUMB,
-	OPT_SPARC,
-	OPT_DELTA,
-	OPT_LZMA1,
-	OPT_LZMA2,
-
-	OPT_FILES,
-	OPT_FILES0,
-};
-
-
-static const char short_opts[] = "cC:dfF:hlLkM:qrS:tT:vVz123456789";
-
-
-static const struct option long_opts[] = {
-	// gzip-like options
-	{ "fast",               no_argument,       NULL,  '1' },
-	{ "best",               no_argument,       NULL,  '9' },
-	{ "memory",             required_argument, NULL,  'M' },
-	{ "name",               no_argument,       NULL,  'N' },
-	{ "suffix",             required_argument, NULL,  'S' },
-	{ "threads",            required_argument, NULL,  'T' },
-	{ "version",            no_argument,       NULL,  'V' },
-	{ "stdout",             no_argument,       NULL,  'c' },
-	{ "to-stdout",          no_argument,       NULL,  'c' },
-	{ "decompress",         no_argument,       NULL,  'd' },
-	{ "uncompress",         no_argument,       NULL,  'd' },
-	{ "force",              no_argument,       NULL,  'f' },
-	{ "help",               no_argument,       NULL,  'h' },
-	{ "list",               no_argument,       NULL,  'l' },
-	{ "info",               no_argument,       NULL,  'l' },
-	{ "keep",               no_argument,       NULL,  'k' },
-	{ "no-name",            no_argument,       NULL,  'n' },
-	{ "quiet",              no_argument,       NULL,  'q' },
-//	{ "recursive",          no_argument,       NULL,  'r' }, // TODO
-	{ "test",               no_argument,       NULL,  't' },
-	{ "verbose",            no_argument,       NULL,  'v' },
-	{ "compress",           no_argument,       NULL,  'z' },
-
-	// Filters
-	{ "subblock",           optional_argument, NULL,   OPT_SUBBLOCK },
-	{ "x86",                no_argument,       NULL,   OPT_X86 },
-	{ "bcj",                no_argument,       NULL,   OPT_X86 },
-	{ "powerpc",            no_argument,       NULL,   OPT_POWERPC },
-	{ "ppc",                no_argument,       NULL,   OPT_POWERPC },
-	{ "ia64",               no_argument,       NULL,   OPT_IA64 },
-	{ "itanium",            no_argument,       NULL,   OPT_IA64 },
-	{ "arm",                no_argument,       NULL,   OPT_ARM },
-	{ "armthumb",           no_argument,       NULL,   OPT_ARMTHUMB },
-	{ "sparc",              no_argument,       NULL,   OPT_SPARC },
-	{ "delta",              optional_argument, NULL,   OPT_DELTA },
-	{ "lzma1",              optional_argument, NULL,   OPT_LZMA1 },
-	{ "lzma2",              optional_argument, NULL,   OPT_LZMA2 },
-
-	// Other
-	{ "format",             required_argument, NULL,   'F' },
-	{ "check",              required_argument, NULL,   'C' },
-	{ "files",              optional_argument, NULL,   OPT_FILES },
-	{ "files0",             optional_argument, NULL,   OPT_FILES0 },
-
-	{ NULL,                 0,                 NULL,   0 }
-};
-
 
 static void
-add_filter(lzma_vli id, const char *opt_str)
+parse_real(args_info *args, int argc, char **argv)
 {
-	if (filter_count == LZMA_BLOCK_FILTERS_MAX) {
-		errmsg(V_ERROR, _("Maximum number of filters is seven"));
-		my_exit(ERROR);
-	}
+	enum {
+		OPT_SUBBLOCK = INT_MIN,
+		OPT_X86,
+		OPT_POWERPC,
+		OPT_IA64,
+		OPT_ARM,
+		OPT_ARMTHUMB,
+		OPT_SPARC,
+		OPT_DELTA,
+		OPT_LZMA1,
+		OPT_LZMA2,
 
-	opt_filters[filter_count].id = id;
+		OPT_FILES,
+		OPT_FILES0,
+	};
 
-	switch (id) {
-	case LZMA_FILTER_SUBBLOCK:
-		opt_filters[filter_count].options
-				= parse_options_subblock(opt_str);
-		break;
+	static const char short_opts[] = "cC:dfF:hHlLkM:p:qrS:tT:vVz123456789";
 
-	case LZMA_FILTER_DELTA:
-		opt_filters[filter_count].options
-				= parse_options_delta(opt_str);
-		break;
+	static const struct option long_opts[] = {
+		// Operation mode
+		{ "compress",       no_argument,       NULL,  'z' },
+		{ "decompress",     no_argument,       NULL,  'd' },
+		{ "uncompress",     no_argument,       NULL,  'd' },
+		{ "test",           no_argument,       NULL,  't' },
+		{ "list",           no_argument,       NULL,  'l' },
+		{ "info",           no_argument,       NULL,  'l' },
 
-	case LZMA_FILTER_LZMA1:
-	case LZMA_FILTER_LZMA2:
-		opt_filters[filter_count].options
-				= parse_options_lzma(opt_str);
-		break;
+		// Operation modifiers
+		{ "keep",           no_argument,       NULL,  'k' },
+		{ "force",          no_argument,       NULL,  'f' },
+		{ "stdout",         no_argument,       NULL,  'c' },
+		{ "to-stdout",      no_argument,       NULL,  'c' },
+		{ "suffix",         required_argument, NULL,  'S' },
+		// { "recursive",      no_argument,       NULL,  'r' }, // TODO
+		{ "files",          optional_argument, NULL,  OPT_FILES },
+		{ "files0",         optional_argument, NULL,  OPT_FILES0 },
 
-	default:
-		assert(opt_str == NULL);
-		opt_filters[filter_count].options = NULL;
-		break;
-	}
+		// Basic compression settings
+		{ "format",         required_argument, NULL,  'F' },
+		{ "check",          required_argument, NULL,  'C' },
+		{ "preset",         required_argument, NULL,  'p' },
+		{ "memory",         required_argument, NULL,  'M' },
+		{ "threads",        required_argument, NULL,  'T' },
 
-	++filter_count;
-	preset_default = false;
-	return;
-}
+		{ "fast",           no_argument,       NULL,  '1' },
+		{ "best",           no_argument,       NULL,  '9' },
 
+		// Filters
+		{ "lzma1",          optional_argument, NULL,  OPT_LZMA1 },
+		{ "lzma2",          optional_argument, NULL,  OPT_LZMA2 },
+		{ "x86",            no_argument,       NULL,  OPT_X86 },
+		{ "bcj",            no_argument,       NULL,  OPT_X86 },
+		{ "powerpc",        no_argument,       NULL,  OPT_POWERPC },
+		{ "ppc",            no_argument,       NULL,  OPT_POWERPC },
+		{ "ia64",           no_argument,       NULL,  OPT_IA64 },
+		{ "itanium",        no_argument,       NULL,  OPT_IA64 },
+		{ "arm",            no_argument,       NULL,  OPT_ARM },
+		{ "armthumb",       no_argument,       NULL,  OPT_ARMTHUMB },
+		{ "sparc",          no_argument,       NULL,  OPT_SPARC },
+		{ "delta",          optional_argument, NULL,  OPT_DELTA },
+		{ "subblock",       optional_argument, NULL,  OPT_SUBBLOCK },
 
-static void
-parse_real(int argc, char **argv)
-{
+		// Other options
+		{ "quiet",          no_argument,       NULL,  'q' },
+		{ "verbose",        no_argument,       NULL,  'v' },
+		{ "help",           no_argument,       NULL,  'h' },
+		{ "long-help",      no_argument,       NULL,  'H' },
+		{ "version",        no_argument,       NULL,  'V' },
+
+		{ NULL,                 0,                 NULL,   0 }
+	};
+
 	int c;
 
 	while ((c = getopt_long(argc, argv, short_opts, long_opts, NULL))
@@ -178,32 +118,28 @@ parse_real(int argc, char **argv)
 
 		case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
-			preset_number = c - '0';
-			preset_default = false;
+			coder_set_preset(c - '0');
 			break;
+
+		case 'p': {
+			const uint64_t preset = str_to_uint64(
+					"preset", optarg, 1, 9);
+			coder_set_preset(preset);
+			break;
+		}
 
 		// --memory
 		case 'M':
-			opt_memory = str_to_uint64("memory", optarg,
-					1, SIZE_MAX);
-			break;
-
-		case 'N':
-			opt_preserve_name = true;
+			// On 32-bit systems, SIZE_MAX would make more sense
+			// than UINT64_MAX. But use UINT64_MAX still so that
+			// scripts that assume > 4 GiB values don't break.
+			hardware_memlimit_set(str_to_uint64(
+					"memory", optarg, 0, UINT64_MAX));
 			break;
 
 		// --suffix
 		case 'S':
-			// Empty suffix and suffixes having a slash are
-			// rejected. Such suffixes would break things later.
-			if (optarg[0] == '\0' || strchr(optarg, '/') != NULL) {
-				errmsg(V_ERROR, _("%s: Invalid filename "
-						"suffix"), optarg);
-				my_exit(ERROR);
-			}
-
-			free(opt_suffix);
-			opt_suffix = xstrdup(optarg);
+			suffix_set(optarg);
 			break;
 
 		case 'T':
@@ -214,7 +150,7 @@ parse_real(int argc, char **argv)
 		// --version
 		case 'V':
 			// This doesn't return.
-			show_version();
+			message_version();
 
 		// --stdout
 		case 'c':
@@ -234,7 +170,12 @@ parse_real(int argc, char **argv)
 		// --help
 		case 'h':
 			// This doesn't return.
-			show_help();
+			message_help(false);
+
+		// --long-help
+		case 'H':
+			// This doesn't return.
+			message_help(true);
 
 		// --list
 		case 'l':
@@ -246,15 +187,9 @@ parse_real(int argc, char **argv)
 			opt_keep_original = true;
 			break;
 
-		case 'n':
-			opt_preserve_name = false;
-			break;
-
 		// --quiet
 		case 'q':
-			if (verbosity > V_SILENT)
-				--verbosity;
-
+			message_verbosity_decrease();
 			break;
 
 		case 't':
@@ -263,9 +198,7 @@ parse_real(int argc, char **argv)
 
 		// --verbose
 		case 'v':
-			if (verbosity < V_DEBUG)
-				++verbosity;
-
+			message_verbosity_increase();
 			break;
 
 		case 'z':
@@ -275,43 +208,47 @@ parse_real(int argc, char **argv)
 		// Filter setup
 
 		case OPT_SUBBLOCK:
-			add_filter(LZMA_FILTER_SUBBLOCK, optarg);
+			coder_add_filter(LZMA_FILTER_SUBBLOCK,
+					options_subblock(optarg));
 			break;
 
 		case OPT_X86:
-			add_filter(LZMA_FILTER_X86, NULL);
+			coder_add_filter(LZMA_FILTER_X86, NULL);
 			break;
 
 		case OPT_POWERPC:
-			add_filter(LZMA_FILTER_POWERPC, NULL);
+			coder_add_filter(LZMA_FILTER_POWERPC, NULL);
 			break;
 
 		case OPT_IA64:
-			add_filter(LZMA_FILTER_IA64, NULL);
+			coder_add_filter(LZMA_FILTER_IA64, NULL);
 			break;
 
 		case OPT_ARM:
-			add_filter(LZMA_FILTER_ARM, NULL);
+			coder_add_filter(LZMA_FILTER_ARM, NULL);
 			break;
 
 		case OPT_ARMTHUMB:
-			add_filter(LZMA_FILTER_ARMTHUMB, NULL);
+			coder_add_filter(LZMA_FILTER_ARMTHUMB, NULL);
 			break;
 
 		case OPT_SPARC:
-			add_filter(LZMA_FILTER_SPARC, NULL);
+			coder_add_filter(LZMA_FILTER_SPARC, NULL);
 			break;
 
 		case OPT_DELTA:
-			add_filter(LZMA_FILTER_DELTA, optarg);
+			coder_add_filter(LZMA_FILTER_DELTA,
+					options_delta(optarg));
 			break;
 
 		case OPT_LZMA1:
-			add_filter(LZMA_FILTER_LZMA1, optarg);
+			coder_add_filter(LZMA_FILTER_LZMA1,
+					options_lzma(optarg));
 			break;
 
 		case OPT_LZMA2:
-			add_filter(LZMA_FILTER_LZMA2, optarg);
+			coder_add_filter(LZMA_FILTER_LZMA2,
+					options_lzma(optarg));
 			break;
 
 		// Other
@@ -335,14 +272,11 @@ parse_real(int argc, char **argv)
 			};
 
 			size_t i = 0;
-			while (strcmp(types[i].str, optarg) != 0) {
-				if (++i == ARRAY_SIZE(types)) {
-					errmsg(V_ERROR, _("%s: Unknown file "
+			while (strcmp(types[i].str, optarg) != 0)
+				if (++i == ARRAY_SIZE(types))
+					message_fatal(_("%s: Unknown file "
 							"format type"),
 							optarg);
-					my_exit(ERROR);
-				}
-			}
 
 			opt_format = types[i].format;
 			break;
@@ -362,50 +296,43 @@ parse_real(int argc, char **argv)
 
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0) {
-				if (++i == ARRAY_SIZE(types)) {
-					errmsg(V_ERROR, _("%s: Unknown "
-							"integrity check "
-							"type"), optarg);
-					my_exit(ERROR);
-				}
+				if (++i == ARRAY_SIZE(types))
+					message_fatal(_("%s: Unknown integrity"
+							"check type"), optarg);
 			}
 
-			opt_check = types[i].check;
+			coder_set_check(types[i].check);
 			break;
 		}
 
 		case OPT_FILES:
-			opt_files_split = '\n';
+			args->files_delim = '\n';
 
 		// Fall through
 
 		case OPT_FILES0:
-			if (opt_files_name != NULL) {
-				errmsg(V_ERROR, _("Only one file can be "
+			if (args->files_name != NULL)
+				message_fatal(_("Only one file can be "
 						"specified with `--files'"
 						"or `--files0'."));
-				my_exit(ERROR);
-			}
 
 			if (optarg == NULL) {
-				opt_files_name = (char *)stdin_filename;
-				opt_files_file = stdin;
+				args->files_name = (char *)stdin_filename;
+				args->files_file = stdin;
 			} else {
-				opt_files_name = optarg;
-				opt_files_file = fopen(optarg,
+				args->files_name = optarg;
+				args->files_file = fopen(optarg,
 						c == OPT_FILES ? "r" : "rb");
-				if (opt_files_file == NULL) {
-					errmsg(V_ERROR, "%s: %s", optarg,
+				if (args->files_file == NULL)
+					message_fatal("%s: %s", optarg,
 							strerror(errno));
-					my_exit(ERROR);
-				}
 			}
 
 			break;
 
 		default:
-			show_try_help();
-			my_exit(ERROR);
+			message_try_help();
+			my_exit(E_ERROR);
 		}
 	}
 
@@ -414,163 +341,124 @@ parse_real(int argc, char **argv)
 
 
 static void
-parse_environment(void)
+parse_environment(args_info *args, char *argv0)
 {
-	char *env = getenv("LZMA_OPT");
+	char *env = getenv("XZ_OPT");
 	if (env == NULL)
 		return;
 
+	// We modify the string, so make a copy of it.
 	env = xstrdup(env);
 
-	// Calculate the number of arguments in env.
-	unsigned int argc = 1;
+	// Calculate the number of arguments in env. argc stats at one
+	// to include space for the program name.
+	int argc = 1;
 	bool prev_was_space = true;
 	for (size_t i = 0; env[i] != '\0'; ++i) {
 		if (isspace(env[i])) {
 			prev_was_space = true;
 		} else if (prev_was_space) {
 			prev_was_space = false;
-			if (++argc > (unsigned int)(INT_MAX)) {
-				errmsg(V_ERROR, _("The environment variable "
-						"LZMA_OPT contains too many "
+
+			// Keep argc small enough to fit into a singed int
+			// and to keep it usable for memory allocation.
+			if (++argc == MIN(INT_MAX, SIZE_MAX / sizeof(char *)))
+				message_fatal(_("The environment variable "
+						"XZ_OPT contains too many "
 						"arguments"));
-				my_exit(ERROR);
-			}
 		}
 	}
 
-	char **argv = xmalloc((argc + 1) * sizeof(char*));
+	// Allocate memory to hold pointers to the arguments. Add one to get
+	// space for the terminating NULL (if some systems happen to need it).
+	char **argv = xmalloc(((size_t)(argc) + 1) * sizeof(char *));
 	argv[0] = argv0;
 	argv[argc] = NULL;
 
+	// Go through the string again. Split the arguments using '\0'
+	// characters and add pointers to the resulting strings to argv.
 	argc = 1;
 	prev_was_space = true;
 	for (size_t i = 0; env[i] != '\0'; ++i) {
 		if (isspace(env[i])) {
 			prev_was_space = true;
+			env[i] = '\0';
 		} else if (prev_was_space) {
 			prev_was_space = false;
 			argv[argc++] = env + i;
 		}
 	}
 
-	parse_real((int)(argc), argv);
+	// Parse the argument list we got from the environment. All non-option
+	// arguments i.e. filenames are ignored.
+	parse_real(args, argc, argv);
 
+	// Reset the state of the getopt_long() so that we can parse the
+	// command line options too. There are two incompatible ways to
+	// do it.
+#ifdef HAVE_OPTRESET
+	// BSD
+	optind = 1;
+	optreset = 1;
+#else
+	// GNU, Solaris
+	optind = 0;
+#endif
+
+	// We don't need the argument list from environment anymore.
+	free(argv);
 	free(env);
 
 	return;
 }
 
 
-static void
-set_compression_settings(void)
+extern void
+args_parse(args_info *args, int argc, char **argv)
 {
-	static lzma_options_lzma opt_lzma;
+	// Initialize those parts of *args that we need later.
+	args->files_name = NULL;
+	args->files_file = NULL;
+	args->files_delim = '\0';
 
-	if (filter_count == 0) {
-		if (lzma_lzma_preset(&opt_lzma, preset_number)) {
-			errmsg(V_ERROR, _("Internal error (bug)"));
-			my_exit(ERROR);
-		}
+	// Type of the file format to use when --format=auto or no --format
+	// was specified.
+	enum format_type format_compress_auto = FORMAT_XZ;
 
-		opt_filters[0].id = opt_format == FORMAT_LZMA
-				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
-		opt_filters[0].options = &opt_lzma;
-		filter_count = 1;
-	}
-
-	// Terminate the filter options array.
-	opt_filters[filter_count].id = LZMA_VLI_UNKNOWN;
-
-	// If we are using the LZMA_Alone format, allow exactly one filter
-	// which has to be LZMA.
-	if (opt_format == FORMAT_LZMA && (filter_count != 1
-			|| opt_filters[0].id != LZMA_FILTER_LZMA1)) {
-		errmsg(V_ERROR, _("With --format=lzma only the LZMA1 filter "
-				"is supported"));
-		my_exit(ERROR);
-	}
-
-	// TODO: liblzma probably needs an API to validate the filter chain.
-
-	// If using --format=raw, we can be decoding.
-	uint64_t memory_usage = opt_mode == MODE_COMPRESS
-			? lzma_memusage_encoder(opt_filters)
-			: lzma_memusage_decoder(opt_filters);
-
-	// Don't go over the memory limits when the default
-	// setting is used.
-	if (preset_default) {
-		while (memory_usage > opt_memory) {
-			if (preset_number == 1) {
-				errmsg(V_ERROR, _("Memory usage limit is too "
-						"small for any internal "
-						"filter preset"));
-				my_exit(ERROR);
-			}
-
-			if (lzma_lzma_preset(&opt_lzma, --preset_number)) {
-				errmsg(V_ERROR, _("Internal error (bug)"));
-				my_exit(ERROR);
-			}
-
-			memory_usage = lzma_memusage_encoder(opt_filters);
-		}
-
-		// TODO: With --format=raw, we should print a warning since
-		// the presets may change and thus the next version may not
-		// be able to uncompress the raw stream with the same preset
-		// number.
-
-	} else {
-		if (memory_usage > opt_memory) {
-			errmsg(V_ERROR, _("Memory usage limit is too small "
-					"for the given filter setup"));
-			my_exit(ERROR);
-		}
-	}
-
-	// Limit the number of worked threads so that memory usage
-	// limit isn't exceeded.
-	assert(memory_usage > 0);
-	size_t thread_limit = opt_memory / memory_usage;
-	if (thread_limit == 0)
-		thread_limit = 1;
-
-	if (opt_threads > thread_limit)
-		opt_threads = thread_limit;
-
-	return;
-}
-
-
-extern char **
-parse_args(int argc, char **argv)
-{
 	// Check how we were called.
 	{
-		const char *name = str_filename(argv[0]);
-		if (name != NULL) {
-			// Default file format
-			if (strstr(name, "lz") != NULL)
-				format_compress_auto = FORMAT_LZMA;
+		// Remove the leading path name, if any.
+		const char *name = strrchr(argv[0], '/');
+		if (name == NULL)
+			name = argv[0];
+		else
+			++name;
 
-			// Operation mode
-			if (strstr(name, "cat") != NULL) {
-				opt_mode = MODE_DECOMPRESS;
-				opt_stdout = true;
-			} else if (strstr(name, "un") != NULL) {
-				opt_mode = MODE_DECOMPRESS;
-			}
+		// NOTE: It's possible that name[0] is now '\0' if argv[0]
+		// is weird, but it doesn't matter here.
+
+		// The default file format is .lzma if the command name
+		// contains "lz".
+		if (strstr(name, "lz") != NULL)
+			format_compress_auto = FORMAT_LZMA;
+
+		// Operation mode
+		if (strstr(name, "cat") != NULL) {
+			// Imply --decompress --stdout
+			opt_mode = MODE_DECOMPRESS;
+			opt_stdout = true;
+		} else if (strstr(name, "un") != NULL) {
+			// Imply --decompress
+			opt_mode = MODE_DECOMPRESS;
 		}
 	}
 
 	// First the flags from environment
-	parse_environment();
+	parse_environment(args, argv[0]);
 
 	// Then from the command line
 	optind = 1;
-	parse_real(argc, argv);
+	parse_real(args, argc, argv);
 
 	// Never remove the source file when the destination is not on disk.
 	// In test mode the data is written nowhere, but setting opt_stdout
@@ -580,18 +468,33 @@ parse_args(int argc, char **argv)
 		opt_stdout = true;
 	}
 
+	// If no --format flag was used, or it was --format=auto, we need to
+	// decide what is the target file format we are going to use. This
+	// depends on how we were called (checked earlier in this function).
 	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_AUTO)
 		opt_format = format_compress_auto;
 
+	// Compression settings need to be validated (options themselves and
+	// their memory usage) when compressing to any file format. It has to
+	// be done also when uncompressing raw data, since for raw decoding
+	// the options given on the command line are used to know what kind
+	// of raw data we are supposed to decode.
 	if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
-		set_compression_settings();
+		coder_set_compression_settings();
 
 	// If no filenames are given, use stdin.
-	if (argv[optind] == NULL && opt_files_name == NULL) {
-		// We don't modify or free() the "-" constant.
-		static char *argv_stdin[2] = { (char *)"-", NULL };
-		return argv_stdin;
+	if (argv[optind] == NULL && args->files_name == NULL) {
+		// We don't modify or free() the "-" constant. The caller
+		// modifies this so don't make the struct itself const.
+		static char *names_stdin[2] = { (char *)"-", NULL };
+		args->arg_names = names_stdin;
+		args->arg_count = 1;
+	} else {
+		// We got at least one filename from the command line, or
+		// --files or --files0 was specified.
+		args->arg_names = argv + optind;
+		args->arg_count = argc - optind;
 	}
 
-	return argv + optind;
+	return;
 }

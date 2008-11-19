@@ -111,6 +111,7 @@
 #endif
 
 #include <stdlib.h>
+#include <assert.h>
 
 // Pre-C99 systems lack stdbool.h. All the code in LZMA Utils must be written
 // so that it works with fake bool type, for example:
@@ -132,17 +133,6 @@ typedef unsigned char _Bool;
 #	define false 0
 #	define true 1
 #	define __bool_true_false_are_defined 1
-#endif
-
-#ifdef HAVE_ASSERT_H
-#	include <assert.h>
-#else
-#	ifdef NDEBUG
-#		define assert(x)
-#	else
-		// TODO: Pretty bad assert macro.
-#		define assert(x) (!(x) && abort())
-#	endif
 #endif
 
 // string.h should be enough but let's include strings.h and memory.h too if

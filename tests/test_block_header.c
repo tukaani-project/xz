@@ -89,7 +89,7 @@ code(void)
 {
 	expect(lzma_block_header_encode(&known_options, buf) == LZMA_OK);
 
-	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 	memcrap(filters, sizeof(filters));
 	memcrap(&decoded_options, sizeof(decoded_options));
 
@@ -108,7 +108,7 @@ code(void)
 			!= LZMA_VLI_UNKNOWN; ++i)
 		expect(known_options.filters[i].id == filters[i].id);
 
-	for (size_t i = 0; i < LZMA_BLOCK_FILTERS_MAX; ++i)
+	for (size_t i = 0; i < LZMA_FILTERS_MAX; ++i)
 		free(decoded_options.filters[i].options);
 }
 
@@ -137,11 +137,17 @@ test1(void)
 	known_options.check = 999; // Some invalid value, which gets ignored.
 	expect(lzma_block_header_size(&known_options) == LZMA_OK);
 
-	known_options.compressed_size = 5; // Not a multiple of four.
-	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+	known_options.compressed_size = 5;
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
 
 	known_options.compressed_size = 0; // Cannot be zero.
 	expect(lzma_block_header_size(&known_options) == LZMA_PROG_ERROR);
+
+	// LZMA_VLI_MAX is too big to keep the total size of the Block
+	// a valid VLI, but lzma_block_header_size() is not meant
+	// to validate it. (lzma_block_header_encode() must validate it.)
+	known_options.compressed_size = LZMA_VLI_MAX;
+	expect(lzma_block_header_size(&known_options) == LZMA_OK);
 
 	known_options.compressed_size = LZMA_VLI_UNKNOWN;
 	known_options.uncompressed_size = 0;
@@ -192,7 +198,7 @@ test3(void)
 	known_options.header_size += 4;
 	expect(lzma_block_header_encode(&known_options, buf) == LZMA_OK);
 
-	lzma_filter filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 	decoded_options.header_size = known_options.header_size;
 	decoded_options.check = known_options.check;
 	decoded_options.filters = filters;

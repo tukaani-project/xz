@@ -164,7 +164,7 @@ validate_chain(const lzma_filter *filters, size_t *count)
 	// There must be 1-4 filters. The last filter must be usable as
 	// the last filter in the chain. At maximum of three filters are
 	// allowed to change the size of the data.
-	if (i > LZMA_BLOCK_FILTERS_MAX || !last_ok || changes_size_count > 3)
+	if (i > LZMA_FILTERS_MAX || !last_ok || changes_size_count > 3)
 		return LZMA_OPTIONS_ERROR;
 
 	*count = i;
@@ -182,7 +182,7 @@ lzma_raw_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	return_if_error(validate_chain(options, &count));
 
 	// Set the filter functions and copy the options pointer.
-	lzma_filter_info filters[LZMA_BLOCK_FILTERS_MAX + 1];
+	lzma_filter_info filters[LZMA_FILTERS_MAX + 1];
 	if (is_encoder) {
 		for (size_t i = 0; i < count; ++i) {
 			// The order of the filters is reversed in the

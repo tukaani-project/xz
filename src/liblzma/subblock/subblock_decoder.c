@@ -211,7 +211,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			break;
 		}
 
-		case FLAG_END_SUBFILTER:
+		case FLAG_END_SUBFILTER: {
 			if (coder->padding != 0 || (in[*in_pos] & 0x0F)
 					|| coder->subfilter.code == NULL
 					|| !coder->got_output_with_subfilter)
@@ -250,6 +250,7 @@ decode_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			++*in_pos;
 
 			break;
+		}
 
 		default:
 			return LZMA_DATA_ERROR;

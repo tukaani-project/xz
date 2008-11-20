@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       xzdec.c
-/// \brief      Simple single-threaded tool to uncompress .lzma files
+/// \brief      Simple single-threaded tool to uncompress .xz or .lzma files
 //
 //  Copyright (C) 2007 Lasse Collin
 //
@@ -31,33 +31,12 @@
 #include "physmem.h"
 
 
-enum return_code {
-	SUCCESS,
-	ERROR,
-	WARNING,
-};
+#ifdef LZMADEC
+#	define TOOL_FORMAT "lzma"
+#else
+#	define TOOL_FORMAT "xz"
+#endif
 
-
-enum format_type {
-	FORMAT_AUTO,
-	FORMAT_NATIVE,
-	FORMAT_ALONE,
-};
-
-
-enum {
-	OPTION_FORMAT = INT_MIN,
-};
-
-
-/// Input buffer
-static uint8_t in_buf[BUFSIZ];
-
-/// Output buffer
-static uint8_t out_buf[BUFSIZ];
-
-/// Decoder
-static lzma_stream strm = LZMA_STREAM_INIT;
 
 /// Number of bytes to use memory at maximum
 static uint64_t memlimit;
@@ -65,17 +44,29 @@ static uint64_t memlimit;
 /// Program name to be shown in error messages
 static const char *argv0;
 
-/// File currently being processed
-static FILE *file;
 
-/// Name of the file currently being processed
-static const char *filename;
+static void lzma_attribute((noreturn))
+my_exit(void)
+{
+	int status = EXIT_SUCCESS;
 
-static enum return_code exit_status = SUCCESS;
+	// Close stdout. We don't care about stderr, because we write to it
+	// only when an error has already occurred.
+	const int ferror_err = ferror(stdout);
+	const int fclose_err = fclose(stdout);
 
-static enum format_type format_type = FORMAT_AUTO;
+	if (ferror_err || fclose_err) {
+		// If it was fclose() that failed, we have the reason
+		// in errno. If only ferror() indicated an error,
+		// we have no idea what the reason was.
+		fprintf(stderr, "%s: Cannot write to standard output: %s\n",
+				argv0, fclose_err
+					? strerror(errno) : "Unknown error");
+		status = EXIT_FAILURE;
+	}
 
-static bool force = false;
+	exit(status);
+}
 
 
 static void lzma_attribute((noreturn))
@@ -83,16 +74,14 @@ help(void)
 {
 	printf(
 "Usage: %s [OPTION]... [FILE]...\n"
-"Uncompress files in the .lzma format to the standard output.\n"
+"Uncompress files in the ." TOOL_FORMAT " format to the standard output.\n"
 "\n"
 "  -c, --stdout       (ignored)\n"
 "  -d, --decompress   (ignored)\n"
 "  -k, --keep         (ignored)\n"
-"  -f, --force        allow reading compressed data from a terminal\n"
+"  -f, --force        (ignored)\n"
 "  -M, --memory=NUM   use NUM bytes of memory at maximum (0 means default);\n"
 "                     the suffixes k, M, G, Ki, Mi, and Gi are supported.\n"
-"      --format=FMT   accept only files in the given file format;\n"
-"                     possible FMTs are `auto', `native', and alone',\n"
 "  -h, --help         display this help and exit\n"
 "  -V, --version      display version and license information and exit\n"
 "\n"
@@ -102,32 +91,18 @@ help(void)
 		" MiB of memory at maximum.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n",
-		argv0, ((uint64_t)(memlimit) + 512 * 1024) / (1024 * 1024));
-		// Using PRIu64 above instead of %zu to support pre-C99 libc.
-	exit(0);
+		argv0, (memlimit + 512 * 1024) / (1024 * 1024));
+	my_exit();
 }
 
 
 static void lzma_attribute((noreturn))
 version(void)
 {
-	printf(
-"xzdec " PACKAGE_VERSION "\n"
-"\n"
-"Copyright (C) 1999-2006 Igor Pavlov\n"
-"Copyright (C) 2007 Lasse Collin\n"
-"\n"
-"This program is free software; you can redistribute it and/or\n"
-"modify it under the terms of the GNU Lesser General Public\n"
-"License as published by the Free Software Foundation; either\n"
-"version 2.1 of the License, or (at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
-"Lesser General Public License for more details.\n"
-"\n");
-	exit(0);
+	printf(TOOL_FORMAT "dec " PACKAGE_VERSION "\n"
+			"liblzma %s\n", lzma_version_string());
+
+	my_exit();
 }
 
 
@@ -160,7 +135,7 @@ str_to_uint64(const char *value)
 
 	if (*value < '0' || *value > '9') {
 		fprintf(stderr, "%s: %s: Not a number", argv0, value);
-		exit(ERROR);
+		exit(EXIT_FAILURE);
 	}
 
 	do {
@@ -204,7 +179,7 @@ str_to_uint64(const char *value)
 		if (multiplier == 0) {
 			fprintf(stderr, "%s: %s: Invalid suffix",
 					argv0, value);
-			exit(ERROR);
+			exit(EXIT_FAILURE);
 		}
 
 		// Don't overflow here either.
@@ -231,7 +206,6 @@ parse_options(int argc, char **argv)
 		{ "force",        no_argument,         NULL, 'f' },
 		{ "keep",         no_argument,         NULL, 'k' },
 		{ "memory",       required_argument,   NULL, 'M' },
-		{ "format",       required_argument,   NULL, OPTION_FORMAT },
 		{ "help",         no_argument,         NULL, 'h' },
 		{ "version",      no_argument,         NULL, 'V' },
 		{ NULL,           0,                   NULL, 0   }
@@ -244,11 +218,8 @@ parse_options(int argc, char **argv)
 		switch (c) {
 		case 'c':
 		case 'd':
-		case 'k':
-			break;
-
 		case 'f':
-			force = true;
+		case 'k':
 			break;
 
 		case 'M':
@@ -264,23 +235,8 @@ parse_options(int argc, char **argv)
 		case 'V':
 			version();
 
-		case OPTION_FORMAT: {
-			if (strcmp("auto", optarg) == 0) {
-				format_type = FORMAT_AUTO;
-			} else if (strcmp("native", optarg) == 0) {
-				format_type = FORMAT_NATIVE;
-			} else if (strcmp("alone", optarg) == 0) {
-				format_type = FORMAT_ALONE;
-			} else {
-				fprintf(stderr, "%s: %s: Unknown file format "
-						"name\n", argv0, optarg);
-				exit(ERROR);
-			}
-			break;
-		}
-
 		default:
-			exit(ERROR);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -288,31 +244,20 @@ parse_options(int argc, char **argv)
 }
 
 
-/// Initializes lzma_stream structure for decoding of a new Stream.
 static void
-init(void)
+uncompress(lzma_stream *strm, FILE *file, const char *filename)
 {
-	const uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK | LZMA_CONCATENATED;
 	lzma_ret ret;
 
-	switch (format_type) {
-	case FORMAT_AUTO:
-		ret = lzma_auto_decoder(&strm, memlimit, flags);
-		break;
+	// Initialize the decoder
+#ifdef LZMADEC
+	ret = lzma_alone_decoder(strm, memlimit);
+#else
+	ret = lzma_stream_decoder(strm, memlimit, LZMA_CONCATENATED);
+#endif
 
-	case FORMAT_NATIVE:
-		ret = lzma_stream_decoder(&strm, memlimit, flags);
-		break;
-
-	case FORMAT_ALONE:
-		ret = lzma_alone_decoder(&strm, memlimit);
-		break;
-
-	default:
-		assert(0);
-		ret = LZMA_PROG_ERROR;
-	}
-
+	// The only reasonable error here is LZMA_MEM_ERROR.
+	// FIXME: Maybe also LZMA_MEMLIMIT_ERROR in future?
 	if (ret != LZMA_OK) {
 		fprintf(stderr, "%s: ", argv0);
 
@@ -321,36 +266,23 @@ init(void)
 		else
 			fprintf(stderr, "Internal program error (bug)\n");
 
-		exit(ERROR);
+		exit(EXIT_FAILURE);
 	}
 
-	return;
-}
+	// Input and output buffers
+	uint8_t in_buf[BUFSIZ];
+	uint8_t out_buf[BUFSIZ];
 
-
-static void
-uncompress(void)
-{
-	if (file == stdin && !force && isatty(STDIN_FILENO)) {
-		fprintf(stderr, "%s: Compressed data not read from "
-				"a terminal.\n%s: Use `-f' to force reading "
-				"from a terminal, or `-h' for help.\n",
-				argv0, argv0);
-		exit(ERROR);
-	}
-
-	init();
-
-	strm.avail_in = 0;
-	strm.next_out = out_buf;
-	strm.avail_out = BUFSIZ;
+	strm->avail_in = 0;
+	strm->next_out = out_buf;
+	strm->avail_out = BUFSIZ;
 
 	lzma_action action = LZMA_RUN;
 
 	while (true) {
-		if (strm.avail_in == 0) {
-			strm.next_in = in_buf;
-			strm.avail_in = fread(in_buf, 1, BUFSIZ, file);
+		if (strm->avail_in == 0) {
+			strm->next_in = in_buf;
+			strm->avail_in = fread(in_buf, 1, BUFSIZ, file);
 
 			if (ferror(file)) {
 				// POSIX says that fread() sets errno if
@@ -360,20 +292,24 @@ uncompress(void)
 						"input file: %s\n",
 						argv0, filename,
 						strerror(errno));
-				exit(ERROR);
+				exit(EXIT_FAILURE);
 			}
 
+#ifndef LZMADEC
+			// When using LZMA_CONCATENATED, we need to tell
+			// liblzma when it has got all the input.
 			if (feof(file))
 				action = LZMA_FINISH;
+#endif
 		}
 
-		const lzma_ret ret = lzma_code(&strm, action);
+		ret = lzma_code(strm, action);
 
 		// Write and check write error before checking decoder error.
 		// This way as much data as possible gets written to output
 		// even if decoder detected an error.
-		if (strm.avail_out == 0 || ret != LZMA_OK) {
-			const size_t write_size = BUFSIZ - strm.avail_out;
+		if (strm->avail_out == 0 || ret != LZMA_OK) {
+			const size_t write_size = BUFSIZ - strm->avail_out;
 
 			if (fwrite(out_buf, 1, write_size, stdout)
 					!= write_size) {
@@ -383,58 +319,69 @@ uncompress(void)
 				fprintf(stderr, "%s: Cannot write to "
 						"standard output: %s\n", argv0,
 						strerror(errno));
-				exit(ERROR);
+				exit(EXIT_FAILURE);
 			}
 
-			strm.next_out = out_buf;
-			strm.avail_out = BUFSIZ;
+			strm->next_out = out_buf;
+			strm->avail_out = BUFSIZ;
 		}
 
 		if (ret != LZMA_OK) {
-			// FIXME !!! Doesn't work with LZMA_Alone for the
-			// same reason as in process.c.
-			if (ret == LZMA_STREAM_END)
+			if (ret == LZMA_STREAM_END) {
+#ifdef LZMADEC
+				// Check that there's no trailing garbage.
+				if (strm->avail_in != 0
+						|| fread(in_buf, 1, 1, file)
+							!= 0
+						|| !feof(file))
+					ret = LZMA_DATA_ERROR;
+				else
+					return;
+#else
+				// lzma_stream_decoder() already guarantees
+				// that there's no trailing garbage.
+				assert(strm->avail_in == 0);
+				assert(action == LZMA_FINISH);
+				assert(feof(file));
 				return;
+#endif
+			}
 
-			fprintf(stderr, "%s: %s: ", argv0, filename);
-
-			// FIXME Add LZMA_*_CHECK and LZMA_FORMAT_ERROR.
+			const char *msg;
 			switch (ret) {
-			case LZMA_DATA_ERROR:
-				fprintf(stderr, "File is corrupt\n");
-				exit(ERROR);
-
-			case LZMA_OPTIONS_ERROR:
-				fprintf(stderr, "Unsupported file "
-						"format or filters\n");
-				exit(ERROR);
-
 			case LZMA_MEM_ERROR:
-				fprintf(stderr, "%s\n", strerror(ENOMEM));
-				exit(ERROR);
-
-			case LZMA_MEMLIMIT_ERROR:
-				fprintf(stderr, "Memory usage limit "
-						"reached\n");
-				exit(ERROR);
-
-			case LZMA_BUF_ERROR:
-				fprintf(stderr, "Unexpected end of input\n");
-				exit(ERROR);
-
-			case LZMA_UNSUPPORTED_CHECK:
-				fprintf(stderr, "Unsupported type of "
-						"integrity check; not "
-						"verifying file integrity\n");
-				exit_status = WARNING;
+				msg = strerror(ENOMEM);
 				break;
 
-			case LZMA_PROG_ERROR:
+			case LZMA_MEMLIMIT_ERROR:
+				msg = "Memory usage limit reached";
+				break;
+
+			case LZMA_FORMAT_ERROR:
+				msg = "File format not recognized";
+				break;
+
+			case LZMA_OPTIONS_ERROR:
+				// FIXME: Better message?
+				msg = "Unsupported compression options";
+				break;
+
+			case LZMA_DATA_ERROR:
+				msg = "File is corrupt";
+				break;
+
+			case LZMA_BUF_ERROR:
+				msg = "Unexpected end of input";
+				break;
+
 			default:
-				fprintf(stderr, "Internal program "
-						"error (bug)\n");
-				exit(ERROR);
+				msg = "Internal program error (bug)";
+				break;
 			}
+
+			fprintf(stderr, "%s: %s: %s", argv0, filename, msg);
+
+			exit(EXIT_FAILURE);
 		}
 	}
 }
@@ -443,40 +390,50 @@ uncompress(void)
 int
 main(int argc, char **argv)
 {
+	// Set the argv0 global so that we can print the command name in
+	// error and help messages.
 	argv0 = argv[0];
 
+	// Detect amount of installed RAM and set the memory usage limit.
+	// This is needed before parsing the command line arguments.
 	set_default_memlimit();
 
+	// Parse the command line options.
 	parse_options(argc, argv);
 
+	// Initialize liblzma internals.
 	lzma_init_decoder();
 
+	// The same lzma_stream is used for all files that we decode. This way
+	// we don't need to reallocate memory for every file if they use same
+	// compression settings.
+	lzma_stream strm = LZMA_STREAM_INIT;
+
+	// Some systems require setting stdin and stdout to binary mode.
 #ifdef WIN32
 	setmode(fileno(stdin), O_BINARY);
 	setmode(fileno(stdout), O_BINARY);
 #endif
 
 	if (optind == argc) {
-		file = stdin;
-		filename = "(stdin)";
-		uncompress();
+		// No filenames given, decode from stdin.
+		uncompress(&strm, stdin, "(stdin)");
 	} else {
+		// Loop through the filenames given on the command line.
 		do {
+			// "-" indicates stdin.
 			if (strcmp(argv[optind], "-") == 0) {
-				file = stdin;
-				filename = "(stdin)";
-				uncompress();
+				uncompress(&strm, stdin, "(stdin)");
 			} else {
-				filename = argv[optind];
-				file = fopen(filename, "rb");
+				FILE *file = fopen(argv[optind], "rb");
 				if (file == NULL) {
 					fprintf(stderr, "%s: %s: %s\n",
-							argv0, filename,
+							argv0, argv[optind],
 							strerror(errno));
-					exit(ERROR);
+					exit(EXIT_FAILURE);
 				}
 
-				uncompress();
+				uncompress(&strm, file, argv[optind]);
 				fclose(file);
 			}
 		} while (++optind < argc);
@@ -488,5 +445,5 @@ main(int argc, char **argv)
 	lzma_end(&strm);
 #endif
 
-	return exit_status;
+	my_exit();
 }

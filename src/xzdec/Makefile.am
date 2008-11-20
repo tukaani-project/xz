@@ -12,7 +12,7 @@
 ##  Lesser General Public License for more details.
 ##
 
-bin_PROGRAMS = xzdec
+bin_PROGRAMS = xzdec lzmadec
 
 xzdec_SOURCES = xzdec.c
 xzdec_CPPFLAGS = \
@@ -27,3 +27,8 @@ xzdec_LDADD = \
 if COND_GNULIB
 xzdec_LDADD += @top_builddir@/lib/libgnu.a
 endif
+
+lzmadec_SOURCES = $(xzdec_SOURCES)
+lzmadec_CPPFLAGS = $(xzdec_CPPFLAGS) -DLZMADEC
+lzmadec_LDFLAGS = $(xzdec_LDFLAGS)
+lzmadec_LDADD = $(xzdec_LDADD)

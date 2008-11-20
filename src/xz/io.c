@@ -300,6 +300,14 @@ io_open_src(file_pair *pair)
 		if (errno == ENOTSUP)
 			was_symlink = true;
 
+#	elif defined(__NetBSD__)
+		// FIXME? As of 2008-11-20, NetBSD doesn't document what
+		// errno is used with O_NOFOLLOW. It seems to be EFTYPE,
+		// but since it isn't documented, it may be wrong to rely
+		// on it here.
+		if (errno == EFTYPE)
+			was_symlink = true;
+
 #	else
 		if (errno == ELOOP && reg_files_only) {
 			const int saved_errno = errno;

@@ -112,7 +112,7 @@ static void lzma_attribute((noreturn))
 version(void)
 {
 	printf(
-"lzmadec (LZMA Utils) " PACKAGE_VERSION "\n"
+"xzdec " PACKAGE_VERSION "\n"
 "\n"
 "Copyright (C) 1999-2006 Igor Pavlov\n"
 "Copyright (C) 2007 Lasse Collin\n"
@@ -149,14 +149,14 @@ set_default_memlimit(void)
 }
 
 
-/// \brief      Converts a string to size_t
+/// \brief      Converts a string to uint64_t
 ///
 /// This is rudely copied from src/xz/util.c and modified a little. :-(
 ///
-static size_t
+static uint64_t
 str_to_uint64(const char *value)
 {
-	size_t result = 0;
+	uint64_t result = 0;
 
 	if (*value < '0' || *value > '9') {
 		fprintf(stderr, "%s: %s: Not a number", argv0, value);
@@ -165,8 +165,8 @@ str_to_uint64(const char *value)
 
 	do {
 		// Don't overflow.
-		if (result > (SIZE_MAX - 9) / 10)
-			return SIZE_MAX;
+		if (result > (UINT64_MAX - 9) / 10)
+			return UINT64_MAX;
 
 		result *= 10;
 		result += *value - '0';
@@ -177,7 +177,7 @@ str_to_uint64(const char *value)
 		// Look for suffix.
 		static const struct {
 			const char name[4];
-			size_t multiplier;
+			uint32_t multiplier;
 		} suffixes[] = {
 			{ "k",   1000 },
 			{ "kB",  1000 },
@@ -193,7 +193,7 @@ str_to_uint64(const char *value)
 			{ "GiB", 1073741824 }
 		};
 
-		size_t multiplier = 0;
+		uint32_t multiplier = 0;
 		for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
 			if (strcmp(value, suffixes[i].name) == 0) {
 				multiplier = suffixes[i].multiplier;
@@ -208,8 +208,8 @@ str_to_uint64(const char *value)
 		}
 
 		// Don't overflow here either.
-		if (result > SIZE_MAX / multiplier)
-			result = SIZE_MAX;
+		if (result > UINT64_MAX / multiplier)
+			result = UINT64_MAX;
 		else
 			result *= multiplier;
 	}

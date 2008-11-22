@@ -156,7 +156,7 @@ coder_set_compression_settings(void)
 					"for the given filter setup"));
 	}
 
-	// Limit the number of worked threads so that memory usage
+	// Limit the number of worker threads so that memory usage
 	// limit isn't exceeded.
 	assert(memory_usage > 0);
 	size_t thread_limit = memory_limit / memory_usage;

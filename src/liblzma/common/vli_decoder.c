@@ -53,23 +53,26 @@ lzma_vli_decode(lzma_vli *restrict vli, size_t *restrict vli_pos,
 	}
 
 	do {
-		// Read the next byte.
-		*vli |= (lzma_vli)(in[*in_pos] & 0x7F) << (*vli_pos * 7);
+		// Read the next byte. Use a temporary variable so that we
+		// can update *in_pos immediatelly.
+		const uint8_t byte = in[*in_pos];
+		++*in_pos;
+
+		// Add the newly read byte to *vli.
+		*vli += (lzma_vli)(byte & 0x7F) << (*vli_pos * 7);
 		++*vli_pos;
 
 		// Check if this is the last byte of a multibyte integer.
-		if (!(in[*in_pos] & 0x80)) {
+		if ((byte & 0x80) == 0) {
 			// We don't allow using variable-length integers as
 			// padding i.e. the encoding must use the most the
 			// compact form.
-			if (in[(*in_pos)++] == 0x00 && *vli_pos > 1)
+			if (byte == 0x00 && *vli_pos > 1)
 				return LZMA_DATA_ERROR;
 
 			return vli_pos == &vli_pos_internal
 					? LZMA_OK : LZMA_STREAM_END;
 		}
-
-		++*in_pos;
 
 		// There is at least one more byte coming. If we have already
 		// read maximum number of bytes, the integer is considered

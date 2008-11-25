@@ -33,7 +33,6 @@ libcommon_la_SOURCES = \
 	index.c \
 	index.h \
 	init.c \
-	memory_limiter.c \
 	stream_flags_common.c \
 	stream_flags_common.h \
 	vli_size.c

@@ -34,7 +34,6 @@ endif
 
 check_PROGRAMS = \
 	create_compress_files \
-	test_memlimit \
 	test_check \
 	test_stream_flags \
 	test_filter_flags \
@@ -42,7 +41,6 @@ check_PROGRAMS = \
 	test_index
 
 TESTS = \
-	test_memlimit \
 	test_check \
 	test_stream_flags \
 	test_filter_flags \

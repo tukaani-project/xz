@@ -208,7 +208,6 @@ extern "C" {
 #include "lzma/index.h"
 #include "lzma/index_hash.h"
 #include "lzma/stream_flags.h"
-#include "lzma/memlimit.h"
 
 /*
  * All subheaders included. Undefine LZMA_H_INTERNAL to prevent applications

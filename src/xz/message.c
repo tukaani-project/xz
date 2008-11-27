@@ -102,7 +102,7 @@ my_time(void)
 
 
 /// Wrapper for snprintf() to help constructing a string in pieces.
-static void /* lzma_attribute((format(printf, 3, 4))) */
+static void lzma_attribute((format(printf, 3, 4)))
 my_snprintf(char **pos, size_t *left, const char *fmt, ...)
 {
 	va_list ap;
@@ -122,6 +122,15 @@ my_snprintf(char **pos, size_t *left, const char *fmt, ...)
 
 	return;
 }
+
+// Ugly hack to make it possible to use lzma_attribute((format(printf, 3, 4)))
+// and thus catch stupid things, while still allowing format characters that
+// are not in ISO C but are in POSIX. This has to be done after my_snprintf()
+// has been defined.
+#ifdef __GNUC__
+#	define my_snprintf __extension__ my_snprintf
+#	define my_printf __extension__ printf
+#endif
 
 
 extern void
@@ -301,8 +310,6 @@ progress_sizes_helper(char **pos, size_t *left, uint64_t value, bool final)
 			return;
 		}
 
-// 		// At maximum of four significant digits is allowed for KiB.
-// 		if (value < UINT64_C(1023900)) {
 		// At maximum of five significant digits is allowed for KiB.
 		if (value < UINT64_C(10239900)) {
 			my_snprintf(pos, left, "%'.1f KiB",
@@ -832,20 +839,6 @@ message_help(bool long_help)
 #endif
 	}
 
-/*
-	if (long_help)
-		puts(_(
-"\n"
-" Resource usage options:\n"
-"\n"
-"  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"
-"                      the default setting, which depends on the operation mode\n"
-"                      and the amount of physical memory (RAM)\n"
-"  -T, --threads=NUM   use a maximum of NUM (de)compression threads"
-// "      --threading=STR threading style; possible values are `auto' (default),\n"
-// "                      `files', and `stream'
-));
-*/
 	if (long_help)
 		puts(_("\n Other options:\n"));
 
@@ -869,19 +862,15 @@ message_help(bool long_help)
 	puts(_("\nWith no FILE, or when FILE is -, read standard input.\n"));
 
 	if (long_help) {
-		// FIXME !!!
-		size_t mem_limit = hardware_memlimit_encoder() / (1024 * 1024);
-		if (mem_limit == 0)
-			mem_limit = 1;
-
 		// We use PRIu64 instead of %zu to support pre-C99 libc.
-		// FIXME: Use ' but avoid warnings.
-		puts(_("On this system and configuration, the tool will use"));
-		printf(_("  * roughly %" PRIu64 " MiB of memory at maximum; and\n"),
-				(uint64_t)(mem_limit));
-		printf(N_("  * at maximum of one thread for (de)compression.\n\n",
-			"  * at maximum of %" PRIu64
-			" threads for (de)compression.\n\n",
+		my_printf(_(
+"On this system and configuration, the tool will use at maximum of\n"
+"  * roughly %'" PRIu64 " MiB RAM for compression;\n"
+"  * roughly %'" PRIu64 " MiB RAM for uncompression; and\n"),
+				hardware_memlimit_encoder() / (1024 * 1024),
+				hardware_memlimit_decoder() / (1024 * 1024));
+		my_printf(N_("  * one thread for (de)compression.\n\n",
+			"  * %'" PRIu64 " threads for (de)compression.\n\n",
 			(uint64_t)(opt_threads)), (uint64_t)(opt_threads));
 	}
 

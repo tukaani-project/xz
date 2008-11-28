@@ -147,6 +147,9 @@ message_init(const char *given_argv0)
 	// updating.
 	progress_automatic = isatty(STDERR_FILENO);
 
+	// Commented out because COLUMNS is rarely exported to environment.
+	// Most users have at least 80 columns anyway, let's think something
+	// fancy here if enough people complain.
 /*
 	if (progress_automatic) {
 		// stderr is a terminal. Check the COLUMNS environment
@@ -154,11 +157,12 @@ message_init(const char *given_argv0)
 		// doesn't exist or it has some unparseable value, we assume
 		// that the terminal is wide enough.
 		const char *columns_str = getenv("COLUMNS");
-		uint64_t columns;
-		if (columns_str != NULL
-				&& !str_to_uint64_raw(&columns, columns_str)
-				&& columns < 80)
-			progress_automatic = false;
+		if (columns_str != NULL) {
+			char *endptr;
+			const long columns = strtol(columns_str, &endptr, 10);
+			if (*endptr != '\0' || columns < 80)
+				progress_automatic = false;
+		}
 	}
 */
 

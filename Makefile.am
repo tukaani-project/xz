@@ -22,7 +22,6 @@ endif
 SUBDIRS += src po tests
 
 EXTRA_DIST = \
-	m4 \
 	config.rpath  \
 	Doxyfile.in \
 	extra \

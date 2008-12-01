@@ -119,9 +119,9 @@ coder_set_compression_settings(void)
 		message_fatal(_("With --format=lzma only the LZMA1 filter "
 				"is supported"));
 
-	// TODO: liblzma probably needs an API to validate the filter chain.
-
-	// If using --format=raw, we can be decoding.
+	// If using --format=raw, we can be decoding. The memusage function
+	// also validates the filter chain and the options used for the
+	// filters.
 	uint64_t memory_usage;
 	uint64_t memory_limit;
 	if (opt_mode == MODE_COMPRESS) {
@@ -133,7 +133,7 @@ coder_set_compression_settings(void)
 	}
 
 	if (memory_usage == UINT64_MAX)
-		message_bug();
+		message_fatal("Unsupported filter chain or filter options");
 
 	if (preset_default) {
 		// When no preset was explicitly requested, we use the default

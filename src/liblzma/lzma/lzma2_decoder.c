@@ -70,76 +70,63 @@ lzma2_decode(lzma_coder *restrict coder, lzma_dict *restrict dict,
 	// at least one byte of input.
 	while (*in_pos < in_size || coder->sequence == SEQ_LZMA)
 	switch (coder->sequence) {
-	case SEQ_CONTROL:
-		if (in[*in_pos] & 0x80) {
-			// Get the highest five bits of uncompressed size.
-			coder->uncompressed_size
-					= (uint32_t)(in[*in_pos] & 0x1F) << 16;
+	case SEQ_CONTROL: {
+		const uint32_t control = in[*in_pos];
+		++*in_pos;
+
+		// Dictionary reset implies that next LZMA chunk has to set
+		// new properties.
+		if (control >= 0xE0 || control == 1) {
+			dict_reset(dict);
+			coder->need_dictionary_reset = false;
+			coder->need_properties = true;
+		} else if (coder->need_dictionary_reset) {
+			return LZMA_DATA_ERROR;
+		}
+
+		if (control >= 0x80) {
+			// LZMA chunk. The highest five bits of the
+			// uncompressed size are taken from the control byte.
+			coder->uncompressed_size = (control & 0x1F) << 16;
 			coder->sequence = SEQ_UNCOMPRESSED_1;
 
-			// See if we need to reset dictionary or state.
-			switch ((in[(*in_pos)++] >> 5) & 3) {
-			case 3:
-				dict_reset(dict);
-				coder->need_dictionary_reset = false;
-
-			// Fall through
-
-			case 2:
-				if (coder->need_dictionary_reset)
-					return LZMA_DATA_ERROR;
-
+			// See if there are new properties or if we need to
+			// reset the state.
+			if (control >= 0xC0) {
+				// When there are new properties, state reset
+				// is done at SEQ_PROPERTIES.
 				coder->need_properties = false;
 				coder->next_sequence = SEQ_PROPERTIES;
-				break;
 
-			case 1:
-				if (coder->need_properties)
-					return LZMA_DATA_ERROR;
+			} else if (coder->need_properties) {
+				return LZMA_DATA_ERROR;
 
-				coder->lzma.reset(coder->lzma.coder,
-						&coder->options);
-
+			} else {
 				coder->next_sequence = SEQ_LZMA;
-				break;
 
-			case 0:
-				if (coder->need_properties)
-					return LZMA_DATA_ERROR;
-
-				coder->next_sequence = SEQ_LZMA;
-				break;
+				// If only state reset is wanted with old
+				// properties, do the resetting here for
+				// simplicity.
+				if (control >= 0xA0)
+					coder->lzma.reset(coder->lzma.coder,
+							&coder->options);
 			}
-
 		} else {
-			switch (in[(*in_pos)++]) {
-			case 0:
-				// End of payload marker
+			// End marker
+			if (control == 0x00)
 				return LZMA_STREAM_END;
 
-			case 1:
-				// Dictionary reset
-				dict_reset(dict);
-				coder->need_dictionary_reset = false;
-
-			// Fall through
-
-			case 2:
-				if (coder->need_dictionary_reset)
-					return LZMA_DATA_ERROR;
-
-				// Uncompressed chunk; we need to read total
-				// size first.
-				coder->sequence = SEQ_COMPRESSED_0;
-				coder->next_sequence = SEQ_COPY;
-				break;
-
-			default:
+			// Invalid control values
+			if (control > 2)
 				return LZMA_DATA_ERROR;
-			}
+
+			// It's uncompressed chunk
+			coder->sequence = SEQ_COMPRESSED_0;
+			coder->next_sequence = SEQ_COPY;
 		}
 
 		break;
+	}
 
 	case SEQ_UNCOMPRESSED_1:
 		coder->uncompressed_size += (uint32_t)(in[(*in_pos)++]) << 8;

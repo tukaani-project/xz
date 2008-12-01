@@ -227,8 +227,11 @@ lzma_memusage_coder(lzma_filter_find coder_find,
 		const lzma_filter *filters)
 {
 	// The chain has to have at least one filter.
-	if (filters[0].id == LZMA_VLI_UNKNOWN)
-		return UINT64_MAX;
+	{
+		size_t tmp;
+		if (validate_chain(filters, &tmp) != LZMA_OK)
+			return UINT64_MAX;
+	}
 
 	uint64_t total = 0;
 	size_t i = 0;
@@ -241,8 +244,11 @@ lzma_memusage_coder(lzma_filter_find coder_find,
 
 		if (fc->memusage == NULL) {
 			// This filter doesn't have a function to calculate
-			// the memory usage. Such filters need only little
-			// memory, so we use 1 KiB as a good estimate.
+			// the memory usage and validate the options. Such
+			// filters need only little memory, so we use 1 KiB
+			// as a good estimate. They also accept all possible
+			// options, so there's no need to worry about lack
+			// of validation.
 			total += 1024;
 		} else {
 			// Call the filter-specific memory usage calculation

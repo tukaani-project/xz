@@ -1012,14 +1012,20 @@ lzma_lzma_lclppb_decode(lzma_options_lzma *options, uint8_t byte)
 
 
 extern uint64_t
-lzma_lzma_decoder_memusage(const void *options)
+lzma_lzma_decoder_memusage_nocheck(const void *options)
 {
 	const lzma_options_lzma *const opt = options;
-	const uint64_t lz_memusage = lzma_lz_decoder_memusage(opt->dict_size);
-	if (lz_memusage == UINT64_MAX)
+	return sizeof(lzma_coder) + lzma_lz_decoder_memusage(opt->dict_size);
+}
+
+
+extern uint64_t
+lzma_lzma_decoder_memusage(const void *options)
+{
+	if (!is_lclppb_valid(options))
 		return UINT64_MAX;
 
-	return sizeof(lzma_coder) + lz_memusage;
+	return lzma_lzma_decoder_memusage_nocheck(options);
 }
 
 

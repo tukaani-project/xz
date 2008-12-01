@@ -261,11 +261,8 @@ lzma_lzma2_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 extern uint64_t
 lzma_lzma2_decoder_memusage(const void *options)
 {
-	const uint64_t lzma_memusage = lzma_lzma_decoder_memusage(options);
-	if (lzma_memusage == UINT64_MAX)
-		return UINT64_MAX;
-
-	return sizeof(lzma_coder) + lzma_memusage;
+	return sizeof(lzma_coder)
+			+ lzma_lzma_decoder_memusage_nocheck(options);
 }
 
 

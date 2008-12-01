@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "delta_encoder.h"
-#include "delta_common.h"
+#include "delta_private.h"
 
 
 /// Copies and encodes the data at the same time. This is used when Delta
@@ -101,18 +101,12 @@ lzma_delta_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 extern lzma_ret
 lzma_delta_props_encode(const void *options, uint8_t *out)
 {
-	if (options == NULL)
+	// The caller must have already validated the options, so it's
+	// LZMA_PROG_ERROR if they are invalid.
+	if (lzma_delta_coder_memusage(options) == UINT64_MAX)
 		return LZMA_PROG_ERROR;
 
 	const lzma_options_delta *opt = options;
-
-	// It's possible that newer liblzma versions will support larger
-	// distance values.
-	if (opt->type != LZMA_DELTA_TYPE_BYTE
-			|| opt->dist < LZMA_DELTA_DIST_MIN
-			|| opt->dist > LZMA_DELTA_DIST_MAX)
-		return LZMA_OPTIONS_ERROR;
-
 	out[0] = opt->dist - LZMA_DELTA_DIST_MIN;
 
 	return LZMA_OK;

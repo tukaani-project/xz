@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "delta_decoder.h"
-#include "delta_common.h"
+#include "delta_private.h"
 
 
 static void

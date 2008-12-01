@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       delta_decoder.h
-/// \brief      Delta filter decoder
+/// \file       delta_private.h
+/// \brief      Private common stuff for Delta encoder and decoder
 //
 //  Copyright (C) 2007 Lasse Collin
 //
@@ -17,16 +17,28 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef LZMA_DELTA_DECODER_H
-#define LZMA_DELTA_DECODER_H
+#ifndef LZMA_DELTA_PRIVATE_H
+#define LZMA_DELTA_PRIVATE_H
 
 #include "delta_common.h"
 
-extern lzma_ret lzma_delta_decoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, const lzma_filter_info *filters);
+struct lzma_coder_s {
+	/// Next coder in the chain
+	lzma_next_coder next;
 
-extern lzma_ret lzma_delta_props_decode(
-		void **options, lzma_allocator *allocator,
-		const uint8_t *props, size_t props_size);
+	/// Delta distance
+	size_t distance;
+
+	/// Position in history[]
+	uint8_t pos;
+
+	/// Buffer to hold history of the original data
+	uint8_t history[LZMA_DELTA_DIST_MAX];
+};
+
+
+extern lzma_ret lzma_delta_coder_init(
+		lzma_next_coder *next, lzma_allocator *allocator,
+		const lzma_filter_info *filters, lzma_code_function code);
 
 #endif

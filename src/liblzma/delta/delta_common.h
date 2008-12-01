@@ -22,23 +22,6 @@
 
 #include "common.h"
 
-struct lzma_coder_s {
-	/// Next coder in the chain
-	lzma_next_coder next;
-
-	/// Delta distance
-	size_t distance;
-
-	/// Position in history[]
-	uint8_t pos;
-
-	/// Buffer to hold history of the original data
-	uint8_t history[LZMA_DELTA_DIST_MAX];
-};
-
-
-extern lzma_ret lzma_delta_coder_init(
-		lzma_next_coder *next, lzma_allocator *allocator,
-		const lzma_filter_info *filters, lzma_code_function code);
+extern uint64_t lzma_delta_coder_memusage(const void *options);
 
 #endif

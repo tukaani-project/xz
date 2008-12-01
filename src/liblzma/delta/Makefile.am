@@ -19,7 +19,8 @@ libdelta_la_CPPFLAGS = \
 
 libdelta_la_SOURCES = \
 	delta_common.c \
-	delta_common.h
+	delta_common.h \
+	delta_private.h
 
 if COND_ENCODER_DELTA
 libdelta_la_SOURCES += \

@@ -20,7 +20,7 @@
 #ifndef LZMA_DELTA_ENCODER_H
 #define LZMA_DELTA_ENCODER_H
 
-#include "common.h"
+#include "delta_common.h"
 
 extern lzma_ret lzma_delta_encoder_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters);

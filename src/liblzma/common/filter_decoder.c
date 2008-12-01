@@ -133,7 +133,7 @@ static const lzma_filter_decoder decoders[] = {
 	{
 		.id = LZMA_FILTER_DELTA,
 		.init = &lzma_delta_decoder_init,
-		.memusage = NULL,
+		.memusage = &lzma_delta_coder_memusage,
 		.props_decode = &lzma_delta_props_decode,
 	},
 #endif

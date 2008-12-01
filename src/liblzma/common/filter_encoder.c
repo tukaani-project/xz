@@ -159,7 +159,7 @@ static const lzma_filter_encoder encoders[] = {
 	{
 		.id = LZMA_FILTER_DELTA,
 		.init = &lzma_delta_encoder_init,
-		.memusage = NULL,
+		.memusage = &lzma_delta_coder_memusage,
 		.chunk_size = NULL,
 		.props_size_get = NULL,
 		.props_size_fixed = 1,

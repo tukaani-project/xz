@@ -3,7 +3,7 @@ The .xz File Format
 -------------------
 
         0. Preface
-           0.1. Copyright Notices
+           0.1. Notices and Acknowledgements
            0.2. Changes
         1. Conventions
            1.1. Byte and Its Representation
@@ -66,27 +66,21 @@ The .xz File Format
                     are possible.
 
 
-0.1. Copyright Notices
+0.1. Notices and Acknowledgements
 
-        Copyright (C) 2006-2008 Lasse Collin <lasse.collin@tukaani.org>
-        Copyright (C) 2006 Ville Koskinen <w-ber@iki.fi>
+        This file format was designed by Lasse Collin
+        <lasse.collin@tukaani.org> and Igor Pavlov.
 
-        Copying and distribution of this file, with or without
-        modification, are permitted in any medium without royalty
-        provided the copyright notice and this notice are preserved.
-        Modified versions must be marked as such.
-
-        All source code examples given in this document are put into
-        the public domain by the authors of this document.
-
-        Special thanks for helping with this document goes to
-        Igor Pavlov. Thanks for helping with this document goes to
+        Special thanks for helping with this document goes to Ville
+        Koskinen. Thanks for helping with this document goes to
         Mark Adler, H. Peter Anvin, Mikko Pouru, and Lars Wirzenius.
+
+        This document has been put into the public domain.
 
 
 0.2. Changes
 
-        Last modified: 2008-11-03 00:35+0200
+        Last modified: 2008-12-05 12:45+0200
 
         (A changelog will be kept once the first official version
         is made.)

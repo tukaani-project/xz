@@ -867,7 +867,6 @@ message_help(bool long_help)
 	puts(_("\nWith no FILE, or when FILE is -, read standard input.\n"));
 
 	if (long_help) {
-		// We use PRIu64 instead of %zu to support pre-C99 libc.
 		my_printf(_(
 "On this system and configuration, the tool will use at maximum of\n"
 "  * roughly %'" PRIu64 " MiB RAM for compression;\n"

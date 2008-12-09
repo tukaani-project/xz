@@ -871,7 +871,7 @@ message_help(bool long_help)
 		my_printf(_(
 "On this system and configuration, the tool will use at maximum of\n"
 "  * roughly %'" PRIu64 " MiB RAM for compression;\n"
-"  * roughly %'" PRIu64 " MiB RAM for uncompression; and\n"),
+"  * roughly %'" PRIu64 " MiB RAM for decompression; and\n"),
 				hardware_memlimit_encoder() / (1024 * 1024),
 				hardware_memlimit_decoder() / (1024 * 1024));
 		my_printf(N_("  * one thread for (de)compression.\n\n",

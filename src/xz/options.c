@@ -237,6 +237,7 @@ options_delta(const char *str)
 //////////
 
 enum {
+	OPT_PRESET,
 	OPT_DICT,
 	OPT_LC,
 	OPT_LP,
@@ -254,6 +255,12 @@ set_lzma(void *options, uint32_t key, uint64_t value)
 	lzma_options_lzma *opt = options;
 
 	switch (key) {
+	case OPT_PRESET:
+		if (lzma_lzma_preset(options, (uint32_t)(value)))
+			message_fatal("LZMA1/LZMA2 preset %u is not supported",
+					(unsigned int)(value));
+		break;
+
 	case OPT_DICT:
 		opt->dict_size = value;
 		break;
@@ -308,6 +315,7 @@ options_lzma(const char *str)
 	};
 
 	static const option_map opts[] = {
+		{ "preset", NULL,   1, 9 },
 		{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
 				(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
 		{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },

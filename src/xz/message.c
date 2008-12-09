@@ -806,6 +806,7 @@ message_help(bool long_help)
 "\n"
 "  --lzma1=[OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
 "  --lzma2=[OPTS]      more of the following options (valid values; default):\n"
+"                        preset=NUM reset options to preset number NUM (1-9)\n"
 "                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
 "                        lc=NUM     number of literal context bits (0-4; 3)\n"
 "                        lp=NUM     number of literal position bits (0-4; 0)\n"

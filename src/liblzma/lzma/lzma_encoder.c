@@ -422,11 +422,24 @@ lzma_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 // Initialization //
 ////////////////////
 
+static bool
+is_options_valid(const lzma_options_lzma *options)
+{
+	// Validate some of the options. LZ encoder validates nice_len too
+	// but we need a valid value here earlier.
+	return is_lclppb_valid(options)
+			&& options->nice_len >= MATCH_LEN_MIN
+			&& options->nice_len <= MATCH_LEN_MAX
+			&& (options->mode == LZMA_MODE_FAST
+				|| options->mode == LZMA_MODE_NORMAL);
+}
+
+
 static void
 set_lz_options(lzma_lz_options *lz_options, const lzma_options_lzma *options)
 {
-	// LZ encoder initialization does the validation, also when just
-	// calculating memory usage, so we don't need to validate here.
+	// LZ encoder initialization does the validation for these so we
+	// don't need to validate here.
 	lz_options->before_size = OPTS;
 	lz_options->dict_size = options->dict_size;
 	lz_options->after_size = LOOP_INPUT_MAX;
@@ -436,6 +449,7 @@ set_lz_options(lzma_lz_options *lz_options, const lzma_options_lzma *options)
 	lz_options->depth = options->depth;
 	lz_options->preset_dict = options->preset_dict;
 	lz_options->preset_dict_size = options->preset_dict_size;
+	return;
 }
 
 
@@ -462,10 +476,11 @@ length_encoder_reset(lzma_length_encoder *lencoder,
 }
 
 
-extern void
+extern lzma_ret
 lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 {
-	assert(!coder->is_flushed);
+	if (!is_options_valid(options))
+		return LZMA_OPTIONS_ERROR;
 
 	coder->pos_mask = (1U << options->pb) - 1;
 	coder->literal_context_bits = options->lc;
@@ -528,6 +543,8 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 
 	coder->opts_end_index = 0;
 	coder->opts_current_index = 0;
+
+	return LZMA_OK;
 }
 
 
@@ -535,6 +552,7 @@ extern lzma_ret
 lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 		const lzma_options_lzma *options, lzma_lz_options *lz_options)
 {
+	// Allocate lzma_coder if it wasn't already allocated.
 	if (*coder_ptr == NULL) {
 		*coder_ptr = lzma_alloc(sizeof(lzma_coder), allocator);
 		if (*coder_ptr == NULL)
@@ -543,13 +561,10 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 
 	lzma_coder *coder = *coder_ptr;
 
-	// Validate some of the options. LZ encoder validates fast_bytes too
-	// but we need a valid value here earlier.
-	if (!is_lclppb_valid(options) || options->nice_len < MATCH_LEN_MIN
-			|| options->nice_len > MATCH_LEN_MAX)
-		return LZMA_OPTIONS_ERROR;
-
-	// Set compression mode.
+	// Set compression mode. We haven't validates the options yet,
+	// but it's OK here, since nothing bad happens with invalid
+	// options in the code below, and they will get rejected by
+	// lzma_lzma_encoder_reset() call at the end of this function.
 	switch (options->mode) {
 		case LZMA_MODE_FAST:
 			coder->fast_mode = true;
@@ -581,11 +596,9 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 	coder->is_initialized = false;
 	coder->is_flushed = false;
 
-	lzma_lzma_encoder_reset(coder, options);
-
 	set_lz_options(lz_options, options);
 
-	return LZMA_OK;
+	return lzma_lzma_encoder_reset(coder, options);
 }
 
 
@@ -611,6 +624,9 @@ lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 extern uint64_t
 lzma_lzma_encoder_memusage(const void *options)
 {
+	if (!is_options_valid(options))
+		return UINT64_MAX;
+
 	lzma_lz_options lz_options;
 	set_lz_options(&lz_options, options);
 

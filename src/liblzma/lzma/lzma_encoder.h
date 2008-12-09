@@ -55,7 +55,7 @@ extern lzma_ret lzma_lzma_encoder_create(
 
 
 /// Resets an already initialized LZMA encoder; this is used by LZMA2.
-extern void lzma_lzma_encoder_reset(
+extern lzma_ret lzma_lzma_encoder_reset(
 		lzma_coder *coder, const lzma_options_lzma *options);
 
 

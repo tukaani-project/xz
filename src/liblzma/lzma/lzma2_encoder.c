@@ -182,6 +182,8 @@ lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 				|| coder->opt_cur.lp != coder->opt_new->lp
 				|| coder->opt_cur.pb != coder->opt_new->pb)) {
 			// Options have been changed, copy them to opt_cur.
+			// These get validated as part of
+			// lzma_lzma_encoder_reset() below.
 			coder->opt_cur.lc = coder->opt_new->lc;
 			coder->opt_cur.lp = coder->opt_new->lp;
 			coder->opt_cur.pb = coder->opt_new->pb;
@@ -193,7 +195,8 @@ lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		}
 
 		if (coder->need_state_reset)
-			lzma_lzma_encoder_reset(coder->lzma, &coder->opt_cur);
+			return_if_error(lzma_lzma_encoder_reset(
+					coder->lzma, &coder->opt_cur));
 
 		coder->uncompressed_size = 0;
 		coder->compressed_size = 0;

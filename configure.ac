@@ -24,15 +24,12 @@
 
 AC_PREREQ(2.61)
 
-# [LZMA] instead of [LZMA utils] since I prefer to have lzma-version.tar.gz
-# instead of lzma-utils-version.tar.gz.
-AC_INIT([LZMA], [4.999.6alpha], [lasse.collin@tukaani.org])
-
+AC_INIT([xz], [4.999.6alpha], [lasse.collin@tukaani.org])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])
 
 echo
-echo "LZMA Utils $PACKAGE_VERSION"
+echo "$PACKAGE_STRING"
 
 echo
 echo "System type:"
@@ -514,7 +511,7 @@ gl_GETOPT
 AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 
 # Check how to find out the amount of physical memory in the system. The
-# lzma command line tool uses this to automatically limits its memory usage.
+# xz command line tool uses this to automatically limit its memory usage.
 # - sysconf() gives all the needed info on GNU+Linux and Solaris.
 # - BSDs use sysctl().
 AC_MSG_CHECKING([how to detect the amount of physical memory])
@@ -626,7 +623,7 @@ if test "x$GCC" = xyes ; then
 	AC_MSG_RESULT([$Wno_uninitialized])
 
 	# Enable as much warnings as possible. These commented warnings won't
-	# work for LZMA Utils though:
+	# work for this package though:
 	#   * -Wunreachable-code breaks several assert(0) cases, which are
 	#     backed up with "return LZMA_PROG_ERROR".
 	#   * -Wcast-qual would break various things where we need a non-const

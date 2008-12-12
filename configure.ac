@@ -648,17 +648,19 @@ if test "x$GCC" = xyes ; then
 			-Wold-style-definition \
 			-Wstrict-prototypes \
 			-Waggregate-return \
+			-Wlogical-op \
 			-Wwrite-strings \
 			-Wbad-function-cast \
 			-Wpointer-arith \
 			-Wshadow \
+			-Wundef \
 			-Wfloat-equal \
-			-Wstrict-aliasing=2 \
+			-Wstrict-aliasing \
+			-Wmissing-include-dirs \
 			-Winit-self \
 			-Wformat=2 \
 			-Wextra \
-			-Wall \
-			-pedantic
+			-Wall
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"

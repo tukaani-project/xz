@@ -104,27 +104,26 @@ alone_decode(lzma_coder *coder,
 	case SEQ_UNCOMPRESSED_SIZE:
 		coder->uncompressed_size
 				|= (lzma_vli)(in[*in_pos]) << (coder->pos * 8);
-
-		if (++coder->pos == 8) {
-			// Another hack to ditch false positives: Assume that
-			// if the uncompressed size is known, it must be less
-			// than 256 GiB. Again, if someone complains, this
-			// will be reconsidered.
-			if (coder->uncompressed_size != LZMA_VLI_UNKNOWN
-					&& coder->uncompressed_size
-						>= (LZMA_VLI_C(1) << 38))
-				return LZMA_FORMAT_ERROR;
-
-			coder->pos = 0;
-			coder->sequence = SEQ_CODER_INIT;
-		}
-
 		++*in_pos;
+		if (++coder->pos < 8)
+			break;
+
+		// Another hack to ditch false positives: Assume that
+		// if the uncompressed size is known, it must be less
+		// than 256 GiB. Again, if someone complains, this
+		// will be reconsidered.
+		if (coder->uncompressed_size != LZMA_VLI_UNKNOWN
+				&& coder->uncompressed_size
+					>= (LZMA_VLI_C(1) << 38))
+			return LZMA_FORMAT_ERROR;
 
 		// Calculate the memory usage so that it is ready
 		// for SEQ_CODER_INIT.
 		coder->memusage = lzma_lzma_decoder_memusage(&coder->options)
 				+ LZMA_MEMUSAGE_BASE;
+
+		coder->pos = 0;
+		coder->sequence = SEQ_CODER_INIT;
 
 	// Fall through
 

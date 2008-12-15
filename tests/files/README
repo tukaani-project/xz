@@ -83,6 +83,10 @@
     uncompressed and the second is LZMA. The first chunk resets dictionary
     and the second sets new properties.
 
+    good-1-lzma2-4.xz has three LZMA2 chunks: First is LZMA, second is
+    uncompressed with dictionary reset, and third is LZMA with new
+    properties but without dictionary reset.
+
     good-1-3delta-lzma2.xz has three Delta filters and LZMA2.
 
 
@@ -221,4 +225,7 @@
     bad-1-lzma2-6.xz has reserved LZMA2 control byte value (0x03).
 
     bad-1-lzma2-7.xz has EOPM at LZMA level.
+
+    bad-1-lzma2-8.xz is like good-1-lzma2-4.xz but doesn't set new
+    properties in the third LZMA2 chunk.
 

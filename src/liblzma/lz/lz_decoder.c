@@ -58,6 +58,17 @@ struct lzma_coder_s {
 };
 
 
+static void
+lz_decoder_reset(lzma_coder *coder)
+{
+	coder->dict.pos = 0;
+	coder->dict.full = 0;
+	coder->dict.buf[coder->dict.size - 1] = '\0';
+	coder->dict.need_reset = false;
+	return;
+}
+
+
 static lzma_ret
 decode_buffer(lzma_coder *coder,
 		const uint8_t *restrict in, size_t *restrict in_pos,
@@ -92,6 +103,10 @@ decode_buffer(lzma_coder *coder,
 		memcpy(out + *out_pos, coder->dict.buf + dict_start,
 				copy_size);
 		*out_pos += copy_size;
+
+		// Reset the dictionary if so requested by process().
+		if (coder->dict.need_reset)
+			lz_decoder_reset(coder);
 
 		// Return if everything got decoded or an error occurred, or
 		// if there's no more data to decode.
@@ -235,7 +250,7 @@ lzma_lz_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->dict.size = dict_size;
 	}
 
-	dict_reset(&next->coder->dict);
+	lz_decoder_reset(next->coder);
 
 	// Miscellaneous initializations
 	next->coder->next_finished = false;

@@ -45,6 +45,9 @@ typedef struct {
 	/// Size of the dictionary
 	size_t size;
 
+	/// True when dictionary should be reset before decoding more data.
+	bool need_reset;
+
 } lzma_dict;
 
 
@@ -224,9 +227,8 @@ dict_write(lzma_dict *restrict dict, const uint8_t *restrict in,
 static inline void
 dict_reset(lzma_dict *dict)
 {
-	dict->pos = 0;
-	dict->full = 0;
-	dict->buf[dict->size - 1] = '\0';
+	dict->need_reset = true;
+	return;
 }
 
 #endif

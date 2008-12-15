@@ -74,12 +74,11 @@ lzma2_decode(lzma_coder *restrict coder, lzma_dict *restrict dict,
 		const uint32_t control = in[*in_pos];
 		++*in_pos;
 
-		// Dictionary reset implies that next LZMA chunk has to set
-		// new properties.
 		if (control >= 0xE0 || control == 1) {
-			dict_reset(dict);
-			coder->need_dictionary_reset = false;
+			// Dictionary reset implies that next LZMA chunk has
+			// to set new properties.
 			coder->need_properties = true;
+			coder->need_dictionary_reset = true;
 		} else if (coder->need_dictionary_reset) {
 			return LZMA_DATA_ERROR;
 		}
@@ -123,6 +122,14 @@ lzma2_decode(lzma_coder *restrict coder, lzma_dict *restrict dict,
 			// It's uncompressed chunk
 			coder->sequence = SEQ_COMPRESSED_0;
 			coder->next_sequence = SEQ_COPY;
+		}
+
+		if (coder->need_dictionary_reset) {
+			// Finish the dictionary reset and let the caller
+			// flush the dictionary to the actual output buffer.
+			coder->need_dictionary_reset = false;
+			dict_reset(dict);
+			return LZMA_OK;
 		}
 
 		break;

@@ -84,14 +84,14 @@ decode_buffer(lzma_coder *coder,
 		// where to start copying to the out[] buffer.
 		const size_t dict_start = coder->dict.pos;
 
-		// Calculate how much we allow the process() function to
-		// decode. It must not decode past the end of the dictionary
+		// Calculate how much we allow coder->lz.code() to decode.
+		// It must not decode past the end of the dictionary
 		// buffer, and we don't want it to decode more than is
 		// actually needed to fill the out[] buffer.
 		coder->dict.limit = coder->dict.pos + MIN(out_size - *out_pos,
 				coder->dict.size - coder->dict.pos);
 
-		// Call the process() function to do the actual decoding.
+		// Call the coder->lz.code() to do the actual decoding.
 		const lzma_ret ret = coder->lz.code(
 				coder->lz.coder, &coder->dict,
 				in, in_pos, in_size);
@@ -104,15 +104,28 @@ decode_buffer(lzma_coder *coder,
 				copy_size);
 		*out_pos += copy_size;
 
-		// Reset the dictionary if so requested by process().
-		if (coder->dict.need_reset)
+		// Reset the dictionary if so requested by coder->lz.code().
+		if (coder->dict.need_reset) {
 			lz_decoder_reset(coder);
 
-		// Return if everything got decoded or an error occurred, or
-		// if there's no more data to decode.
-		if (ret != LZMA_OK || *out_pos == out_size
-				|| coder->dict.pos < coder->dict.size)
-			return ret;
+			// Since we reset dictionary, we don't check if
+			// dictionary became full.
+			if (ret != LZMA_OK || *out_pos == out_size)
+				return ret;
+		} else {
+			// Return if everything got decoded or an error
+			// occurred, or if there's no more data to decode.
+			//
+			// Note that detecting if there's something to decode
+			// is done by looking if dictionary become full
+			// instead of looking if *in_pos == in_size. This
+			// is because it is possible that all the input was
+			// consumed already but some data is pending to be
+			// written to the dictionary.
+			if (ret != LZMA_OK || *out_pos == out_size
+					|| coder->dict.pos < coder->dict.size)
+				return ret;
+		}
 	}
 }
 

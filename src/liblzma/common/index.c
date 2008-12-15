@@ -114,6 +114,17 @@ struct lzma_index_s {
 };
 
 
+extern LZMA_API lzma_vli
+lzma_index_memusage(lzma_vli count)
+{
+	if (count > LZMA_VLI_MAX)
+		return UINT64_MAX;
+
+	return sizeof(lzma_index) + (count + INDEX_GROUP_SIZE - 1)
+			/ INDEX_GROUP_SIZE * sizeof(lzma_index_group);
+}
+
+
 static void
 free_index_list(lzma_index *i, lzma_allocator *allocator)
 {

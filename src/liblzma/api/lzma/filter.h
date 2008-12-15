@@ -22,10 +22,27 @@
 
 
 /**
+ * \brief       Maximum number of filters in a chain
+ *
+ * A filter chain can have 1-4 filters, of which three are allowed to change
+ * the size of the data. Usually only one or two filters are needed.
+ */
+#define LZMA_FILTERS_MAX 4
+
+
+/**
  * \brief       Filter options
  *
  * This structure is used to pass Filter ID and a pointer filter's options
- * to liblzma.
+ * to liblzma. An array of lzma_filter structures is used to define a filter
+ * chain.
+ *
+ * A filter chain is indicated with an array of lzma_filter structures.
+ * The array is terminated with .id = LZMA_VLI_UNKNOWN. Thus, the filter array
+ * must have LZMA_FILTERS_MAX + 1 elements (that is, five) to be able to hold
+ * any arbitrary filter chain. This is important when using
+ * lzma_block_header_decode() from block.h, because too small array would
+ * make liblzma write past the end of the filters array.
  */
 typedef struct {
 	/**
@@ -52,14 +69,6 @@ typedef struct {
 	void *options;
 
 } lzma_filter;
-
-
-/**
- * \brief       Maximum number of filters in a chain
- *
- * FIXME desc
- */
-#define LZMA_FILTERS_MAX 4
 
 
 /**

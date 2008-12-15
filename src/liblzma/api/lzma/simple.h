@@ -86,8 +86,8 @@ typedef struct {
 	 * of the cross-section branch/call/jump instructions will use the
 	 * same absolute addresses as in the first section.
 	 *
-	 * When the pointer to options is NULL, the default value is used.
-	 * The default value is zero.
+	 * When the pointer to options is NULL, the default value (zero)
+	 * is used.
 	 */
 	uint32_t start_offset;
 

@@ -26,90 +26,78 @@
  ************/
 
 /**
- * \brief       Compression level names for lzma_easy_* functions
+ * \brief       Default compression level for easy encoder
  *
- * At the moment, all the compression levels support LZMA_SYNC_FLUSH.
- * In future there may be levels that don't support LZMA_SYNC_FLUSH.
- * However, the LZMA_SYNC_FLUSH support won't be removed from the
- * existing compression levels.
- *
- * \note        If liblzma is built without encoder support, or with some
- *              filters disabled, some of the compression levels may be
- *              unsupported. In that case, the initialization functions
- *              will return LZMA_OPTIONS_ERROR.
+ * It's not straightforward to recommend a default level, because in some
+ * cases keeping the resource usage relatively low is more important that
+ * getting the maximum compression ratio.
  */
-typedef enum {
-	LZMA_EASY_COPY      = 0,
-		/**<
-		 * No compression; the data is just wrapped into .lzma
-		 * container.
-		 */
+#define LZMA_EASY_LEVEL_DEFAULT 6
 
-	LZMA_EASY_LZMA2_1   = 1,
-		/**<
-		 * LZMA2 filter with fast compression (fast in terms of LZMA2).
-		 * If you are interested in the exact options used, see
-		 * lzma_lzma_preset(1). Note that the exact options may
-		 * change between liblzma versions.
-		 *
-		 * At the moment, the command line tool uses these settings
-		 * when `lzma -1' is used. In future, the command line tool
-		 * may default to some more complex way to determine the
-		 * settings used e.g. the type of files being compressed.
-		 *
-		 * LZMA_EASY_LZMA2_2 is equivalent to lzma_lzma_preset(2)
-		 * and so on.
-		 */
 
-	LZMA_EASY_LZMA2_2    = 2,
-	LZMA_EASY_LZMA2_3    = 3,
-	LZMA_EASY_LZMA2_4    = 4,
-	LZMA_EASY_LZMA2_5    = 5,
-	LZMA_EASY_LZMA2_6    = 6,
-	LZMA_EASY_LZMA2_7    = 7,
-	LZMA_EASY_LZMA2_8    = 8,
-	LZMA_EASY_LZMA2_9    = 9,
-} lzma_easy_level;
+/*
+ * Flags for easy encoder
+ *
+ * Currently only one flag is defined.
+ */
+
+/**
+ * Use significantly slower compression to get marginally better compression
+ * ratio. This doesn't affect the memory requirements of the encoder or
+ * decoder. This flag is useful when you don't mind wasting time to get as
+ * small result as possible.
+ *
+ * FIXME: Not implemented yet.
+ */
+#define LZMA_EASY_EXTREME       UINT32_C(0x01)
 
 
 /**
- * \brief       Default compression level
+ * \brief       Calculate rough memory usage of easy encoder
  *
- * Data Blocks contain the actual compressed data. It's not straightforward
- * to recommend a default level, because in some cases keeping the resource
- * usage relatively low is more important that getting the maximum
- * compression ratio.
+ * This function is a wrapper for lzma_raw_encoder_memusage().
+ *
+ * \param       level   Compression level
+ * \param       flags   Easy encoder flags (usually zero). This parameter is
+ *                      needed, because in future some flags may affect the
+ *                      memory requirements.
  */
-#define LZMA_EASY_DEFAULT LZMA_EASY_LZMA2_7
-
-
-/**
- * \brief       Calculates rough memory requirements of a compression level
- *
- * This function is a wrapper for lzma_memory_usage(), which is declared
- * in filter.h.
- *
- * \return      Approximate memory usage of the encoder with the given
- *              compression level in mebibytes (value * 1024 * 1024 bytes).
- *              On error (e.g. compression level is not supported),
- *              UINT32_MAX is returned.
- */
-extern uint64_t lzma_easy_memory_usage(lzma_easy_level level)
+extern uint64_t lzma_easy_encoder_memusage(uint32_t level, uint32_t flags)
 		lzma_attr_pure;
 
 
 /**
- * \brief       Initializes .lzma Stream encoder
+ * \brief       Calculate rough memory usage FIXME
+ *
+ * This function is a wrapper for lzma_raw_decoder_memusage().
+ *
+ * \param       level   Compression level
+ * \param       flags   Easy encoder flags (usually zero). This parameter is
+ *                      needed, because in future some flags may affect the
+ *                      memory requirements.
+ */
+extern uint64_t lzma_easy_decoder_memusage(uint32_t level, uint32_t flags)
+		lzma_attr_pure;
+
+
+/**
+ * \brief       Initialize .xz Stream encoder using a preset number
  *
  * This function is intended for those who just want to use the basic features
- * if liblzma (that is, most developers out there). Lots of assumptions are
- * made, which are correct or at least good enough for most situations.
+ * if liblzma (that is, most developers out there).
  *
  * \param       strm    Pointer to lzma_stream that is at least initialized
  *                      with LZMA_STREAM_INIT.
  * \param       level   Compression level to use. This selects a set of
  *                      compression settings from a list of compression
- *                      presets.
+ *                      presets. Currently levels from 1 to 9 are defined,
+ *                      which match the options -1 .. -9 of the xz command
+ *                      line tool.
+ * \param       flags   Flags that can finetune the compression preset.
+ *                      In most cases, no flags are wanted, and this
+ *                      parameter is zero.
+ * \param       check   Integrity check type to use. See check.h for available
+ *                      checks. If you are unsure, use LZMA_CHECK_CRC32.
  *
  * \return      - LZMA_OK: Initialization succeeded. Use lzma_code() to
  *                encode your data.
@@ -117,18 +105,23 @@ extern uint64_t lzma_easy_memory_usage(lzma_easy_level level)
  *                previously allocated for *strm is now freed.
  *              - LZMA_OPTIONS_ERROR: The given compression level is not
  *                supported by this build of liblzma.
+ *              - LZMA_UNSUPPORTED_CHECK: The given check type is not
+ *                supported by this liblzma build.
+ *              - LZMA_PROG_ERROR: One or more of the parameters have values
+ *                that will never be valid. For example, strm == NULL.
  *
  * If initialization succeeds, use lzma_code() to do the actual encoding.
  * Valid values for `action' (the second argument of lzma_code()) are
  * LZMA_RUN, LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, and LZMA_FINISH. In future,
- * there may be compression levels that don't support LZMA_SYNC_FLUSH.
+ * there may be compression levels or flags that don't support LZMA_SYNC_FLUSH.
  */
-extern lzma_ret lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
+extern lzma_ret lzma_easy_encoder(lzma_stream *strm,
+		uint32_t level, uint32_t flags, lzma_check check)
 		lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Initializes .lzma Stream encoder
+ * \brief       Initialize .xz Stream encoder using a custom filter chain
  *
  * \param       strm    Pointer to properly prepared lzma_stream
  * \param       filters Array of filters. This must be terminated with
@@ -150,19 +143,25 @@ extern lzma_ret lzma_stream_encoder(lzma_stream *strm,
 
 
 /**
- * \brief       Initializes LZMA_Alone (deprecated file format) encoder
+ * \brief       Initialize .lzma encoder (legacy file format)
  *
- * LZMA_Alone files have the suffix .lzma like the .lzma Stream files.
- * LZMA_Alone format supports only one filter, the LZMA filter. There is
- * no support for integrity checks like CRC32.
+ * The .lzma format is sometimes called the LZMA_Alone format, which is the
+ * reason for the name of this function. The .lzma format supports only the
+ * LZMA1 filter. There is no support for integrity checks like CRC32.
  *
- * Use this format if and only if you need to create files readable by
- * legacy LZMA tools such as LZMA Utils 4.32.x.
+ * Use this function if and only if you need to create files readable by
+ * legacy LZMA tools such as LZMA Utils 4.32.x. Moving to the .xz format
+ * is strongly recommended.
  *
- * LZMA_Alone encoder doesn't support LZMA_SYNC_FLUSH or LZMA_FULL_FLUSH.
+ * FIXME: Dictionary size limit?
+ *
+ * The valid action values for lzma_code() are LZMA_RUN and LZMA_FINISH.
+ * No kind of flushing is supported, because the file format doesn't make
+ * it possible.
  *
  * \return      - LZMA_OK
  *              - LZMA_MEM_ERROR
+ *              - LZMA_OPTIONS_ERROR // FIXME
  *              - LZMA_PROG_ERROR
  */
 extern lzma_ret lzma_alone_encoder(
@@ -177,7 +176,7 @@ extern lzma_ret lzma_alone_encoder(
 /**
  * This flag makes lzma_code() return LZMA_NO_CHECK if the input stream
  * being decoded has no integrity check. Note that when used with
- * lzma_auto_decoder(), all LZMA_Alone files will trigger LZMA_NO_CHECK
+ * lzma_auto_decoder(), all .lzma files will trigger LZMA_NO_CHECK
  * if LZMA_TELL_NO_CHECK is used.
  */
 #define LZMA_TELL_NO_CHECK              UINT32_C(0x01)
@@ -203,8 +202,8 @@ extern lzma_ret lzma_alone_encoder(
 /**
  * This flag enables decoding of concatenated files with file formats that
  * allow concatenating compressed files as is. From the formats currently
- * supported by liblzma, only the new .lzma format allows concatenated files.
- * Concatenated files are not allowed with the LZMA_Alone format.
+ * supported by liblzma, only the .xz format allows concatenated files.
+ * Concatenated files are not allowed with the legacy .lzma format.
  *
  * This flag also affects the usage of the `action' argument for lzma_code().
  * When LZMA_CONCATENATED is used, lzma_code() won't return LZMA_STREAM_END
@@ -218,7 +217,7 @@ extern lzma_ret lzma_alone_encoder(
 
 
 /**
- * \brief       Initializes decoder for .lzma Stream
+ * \brief       Initialize .xz Stream decoder
  *
  * \param       strm        Pointer to properly prepared lzma_stream
  * \param       memlimit    Rough memory usage limit as bytes
@@ -233,13 +232,13 @@ extern lzma_ret lzma_stream_decoder(
 
 
 /**
- * \brief       Decode .lzma Streams and LZMA_Alone files with autodetection
+ * \brief       Decode .xz Streams and .lzma files with autodetection
  *
- * Autodetects between the .lzma Stream and LZMA_Alone formats, and
+ * This decoder autodetects between the .xz and .lzma file formats, and
  * calls lzma_stream_decoder() or lzma_alone_decoder() once the type
- * of the file has been detected.
+ * of the input file has been detected.
  *
- * \param       strm        Pointer to propertily prepared lzma_stream
+ * \param       strm        Pointer to properly prepared lzma_stream
  * \param       memlimit    Rough memory usage limit as bytes
  * \param       flags       Bitwise-or of flags, or zero for no flags.
  *
@@ -253,7 +252,7 @@ extern lzma_ret lzma_auto_decoder(
 
 
 /**
- * \brief       Initializes decoder for LZMA_Alone file
+ * \brief       Initializes decoder for .lzma file
  *
  * Valid `action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
  * There is no need to use LZMA_FINISH, but allowing it may simplify

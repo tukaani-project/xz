@@ -264,5 +264,5 @@ lzma_memusage_coder(lzma_filter_find coder_find,
 
 	// Add some fixed amount of extra. It's to compensate memory usage
 	// of Stream, Block etc. coders, malloc() overhead, stack etc.
-	return total + (1U << 15);
+	return total + LZMA_MEMUSAGE_BASE;
 }

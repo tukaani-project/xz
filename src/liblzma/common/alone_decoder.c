@@ -42,6 +42,9 @@ struct lzma_coder_s {
 	/// Memory usage limit
 	uint64_t memlimit;
 
+	/// Amount of memory actually needed (only an estimate)
+	uint64_t memusage;
+
 	/// Options decoded from the header needed to initialize
 	/// the LZMA decoder
 	lzma_options_lzma options;
@@ -117,21 +120,16 @@ alone_decode(lzma_coder *coder,
 		}
 
 		++*in_pos;
-		break;
+
+		// Calculate the memory usage so that it is ready
+		// for SEQ_CODER_INIT.
+		coder->memusage = lzma_lzma_decoder_memusage(&coder->options)
+				+ LZMA_MEMUSAGE_BASE;
+
+	// Fall through
 
 	case SEQ_CODER_INIT: {
-		// FIXME It is unfair that this doesn't add a fixed amount
-		// like lzma_memusage_common() does.
-		const uint64_t memusage
-				= lzma_lzma_decoder_memusage(&coder->options);
-
-		// Use LZMA_PROG_ERROR since LZMA_Alone decoder cannot be
-		// built without LZMA support.
-		// FIXME TODO Make the above comment true.
-		if (memusage == UINT64_MAX)
-			return LZMA_PROG_ERROR;
-
-		if (memusage > coder->memlimit)
+		if (coder->memusage > coder->memlimit)
 			return LZMA_MEMLIMIT_ERROR;
 
 		lzma_filter_info filters[2] = {
@@ -153,9 +151,8 @@ alone_decode(lzma_coder *coder,
 				coder->uncompressed_size);
 
 		coder->sequence = SEQ_CODE;
+		break;
 	}
-
-	// Fall through
 
 	case SEQ_CODE: {
 		return coder->next.code(coder->next.coder,
@@ -180,11 +177,29 @@ alone_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 }
 
 
+static lzma_ret
+alone_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
+		uint64_t *old_memlimit, uint64_t new_memlimit)
+{
+	if (new_memlimit != 0 && new_memlimit < coder->memusage)
+		return LZMA_MEMLIMIT_ERROR;
+
+	*memusage = coder->memusage;
+	*old_memlimit = coder->memlimit;
+	coder->memlimit = new_memlimit;
+
+	return LZMA_OK;
+}
+
+
 extern lzma_ret
 lzma_alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		uint64_t memlimit)
 {
 	lzma_next_coder_init(lzma_alone_decoder_init, next, allocator);
+
+	if (memlimit == 0)
+		return LZMA_PROG_ERROR;
 
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
@@ -193,6 +208,7 @@ lzma_alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &alone_decode;
 		next->end = &alone_decoder_end;
+		next->memconfig = &alone_decoder_memconfig;
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
@@ -201,6 +217,7 @@ lzma_alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->options.dict_size = 0;
 	next->coder->uncompressed_size = 0;
 	next->coder->memlimit = memlimit;
+	next->coder->memusage = LZMA_MEMUSAGE_BASE;
 
 	return LZMA_OK;
 }

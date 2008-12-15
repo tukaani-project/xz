@@ -33,8 +33,11 @@ struct lzma_coder_s {
 
 
 static bool
-easy_set_filters(lzma_coder *coder, uint32_t level)
+easy_set_filters(lzma_coder *coder, uint32_t level, uint32_t flags)
 {
+	// FIXME
+	(void)flags;
+
 	bool error = false;
 
 	if (level == 0) {
@@ -43,7 +46,7 @@ easy_set_filters(lzma_coder *coder, uint32_t level)
 
 #ifdef HAVE_ENCODER_LZMA2
 	} else if (level <= 9) {
-		error = lzma_lzma_preset(&coder->opt_lzma, level - 1);
+		error = lzma_lzma_preset(&coder->opt_lzma, level);
 		coder->filters[0].id = LZMA_FILTER_LZMA2;
 		coder->filters[0].options = &coder->opt_lzma;
 		coder->filters[1].id = LZMA_VLI_UNKNOWN;
@@ -80,7 +83,7 @@ easy_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 static lzma_ret
 easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_easy_level level)
+		uint32_t level, uint32_t flags, lzma_check check)
 {
 	lzma_next_coder_init(easy_encoder_init, next, allocator);
 
@@ -95,18 +98,19 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->stream_encoder = LZMA_NEXT_CODER_INIT;
 	}
 
-	if (easy_set_filters(next->coder, level))
+	if (easy_set_filters(next->coder, level, flags))
 		return LZMA_OPTIONS_ERROR;
 
 	return lzma_stream_encoder_init(&next->coder->stream_encoder,
-			allocator, next->coder->filters, LZMA_CHECK_CRC32);
+			allocator, next->coder->filters, check);
 }
 
 
 extern LZMA_API lzma_ret
-lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
+lzma_easy_encoder(lzma_stream *strm,
+		uint32_t level, uint32_t flags, lzma_check check)
 {
-	lzma_next_strm_init(easy_encoder_init, strm, level);
+	lzma_next_strm_init(easy_encoder_init, strm, level, flags, check);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
@@ -118,11 +122,22 @@ lzma_easy_encoder(lzma_stream *strm, lzma_easy_level level)
 
 
 extern LZMA_API uint64_t
-lzma_easy_memory_usage(lzma_easy_level level)
+lzma_easy_encoder_memusage(uint32_t level, uint32_t flags)
 {
 	lzma_coder coder;
-	if (easy_set_filters(&coder, level))
+	if (easy_set_filters(&coder, level, flags))
 		return UINT32_MAX;
 
 	return lzma_memusage_encoder(coder.filters);
+}
+
+
+extern LZMA_API uint64_t
+lzma_easy_decoder_memusage(uint32_t level, uint32_t flags)
+{
+	lzma_coder coder;
+	if (easy_set_filters(&coder, level, flags))
+		return UINT32_MAX;
+
+	return lzma_memusage_decoder(coder.filters);
 }

@@ -46,6 +46,12 @@
 #define LZMA_BUFFER_SIZE 4096
 
 
+/// Starting value for memory usage estimates. Instead of calculating size
+/// of _every_ structure and taking into accont malloc() overhead etc. we
+/// add a base size to all memory usage estimates. It's not very accurate
+/// but should be easily good enough.
+#define LZMA_MEMUSAGE_BASE (UINT64_C(1) << 15)
+
 /// Start of internal Filter ID space. These IDs must never be used
 /// in Streams.
 #define LZMA_FILTER_RESERVED_START (LZMA_VLI_C(1) << 62)
@@ -134,7 +140,8 @@ struct lzma_next_coder_s {
 
 	/// Pointer to function to get and/or change the memory usage limit.
 	/// If memlimit == 0, the limit is not changed.
-	uint64_t (*memconfig)(lzma_coder *coder, uint64_t memlimit);
+	lzma_ret (*memconfig)(lzma_coder *coder, uint64_t *memusage,
+			uint64_t *old_memlimit, uint64_t new_memlimit);
 };
 
 

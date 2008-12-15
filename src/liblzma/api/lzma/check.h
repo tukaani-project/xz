@@ -22,11 +22,11 @@
 
 
 /**
- * \brief       Type of the Check
+ * \brief       Type of the integrity check (Check ID)
  *
- * The .lzma format supports multiple types of Checks that are calculated
- * from the uncompressed data (unless it is empty; then it's calculated
- * from Block Header).
+ * The .xz format supports multiple types of checks that are calculated
+ * from the uncompressed data. They very in both speed and ability to
+ * detect errors.
  */
 typedef enum {
 	LZMA_CHECK_NONE     = 0,
@@ -62,11 +62,11 @@ typedef enum {
 /**
  * \brief       Maximum valid Check ID
  *
- * The .lzma file format specification specifies eight Check IDs (0-15). Some
+ * The .xz file format specification specifies 16 Check IDs (0-15). Some
  * of them are only reserved i.e. no actual Check algorithm has been assigned.
- * Still liblzma accepts any of these eight IDs for future compatibility
- * when decoding files. If a valid but unsupported Check ID is detected,
- * liblzma indicates a warning with LZMA_UNSUPPORTED_CHECK.
+ * Still liblzma accepts any of these IDs for future compatibility when
+ * decoding files. If a valid but unsupported Check ID is detected, liblzma
+ * indicates a warning with LZMA_UNSUPPORTED_CHECK.
  *
  * FIXME bad desc
  */
@@ -85,18 +85,20 @@ typedef enum {
  * Returns true if the given Check ID is supported by this liblzma build.
  * Otherwise false is returned. It is safe to call this with a value that
  * is not in the range [0, 15]; in that case the return value is always false.
+ *
+ * You can assume that LZMA_CHECK_NONE and LZMA_CHECK_CRC32 are always
+ * supported (even if liblzma is built with limited features).
  */
 extern lzma_bool lzma_check_is_supported(lzma_check check)
 		lzma_attr_const;
 
 
 /**
- * \brief       Get the size of the Check field with given Check ID
+ * \brief       Get the size of the Check field with the given Check ID
  *
  * Although not all Check IDs have a check algorithm associated, the size of
  * every Check is already frozen. This function returns the size (in bytes) of
- * the Check field with the specified Check ID. The values are taken from the
- * section 2.1.1.2 of the .lzma file format specification:
+ * the Check field with the specified Check ID. The values are:
  * { 0, 4, 4, 4, 8, 8, 8, 16, 16, 16, 32, 32, 32, 64, 64, 64 }
  *
  * If the argument is not in the range [0, 15], UINT32_MAX is returned.
@@ -134,8 +136,8 @@ extern uint64_t lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 
 
 /*
- * SHA256 functions are currently not exported to public API.
- * Contact the author if you think it should be.
+ * SHA-256 functions are currently not exported to public API.
+ * Contact Lasse Collin if you think it should be.
  */
 
 

@@ -25,12 +25,16 @@ struct lzma_coder_s {
 	enum {
 		SEQ_INDICATOR,
 		SEQ_COUNT,
+		SEQ_MEMUSAGE,
 		SEQ_UNPADDED,
 		SEQ_UNCOMPRESSED,
 		SEQ_PADDING_INIT,
 		SEQ_PADDING,
 		SEQ_CRC32,
 	} sequence;
+
+	/// Memory usage limit
+	uint64_t memlimit;
 
 	/// Target Index
 	lzma_index *index;
@@ -82,18 +86,27 @@ index_decode(lzma_coder *coder, lzma_allocator *allocator,
 		coder->sequence = SEQ_COUNT;
 		break;
 
-	case SEQ_COUNT: {
+	case SEQ_COUNT:
 		ret = lzma_vli_decode(&coder->count, &coder->pos,
 				in, in_pos, in_size);
 		if (ret != LZMA_STREAM_END)
 			goto out;
 
-		ret = LZMA_OK;
 		coder->pos = 0;
+		coder->sequence = SEQ_MEMUSAGE;
+
+	// Fall through
+
+	case SEQ_MEMUSAGE:
+		if (lzma_index_memusage(coder->count) > coder->memlimit) {
+			ret = LZMA_MEMLIMIT_ERROR;
+			goto out;
+		}
+
+		ret = LZMA_OK;
 		coder->sequence = coder->count == 0
 				? SEQ_PADDING_INIT : SEQ_UNPADDED;
 		break;
-	}
 
 	case SEQ_UNPADDED:
 	case SEQ_UNCOMPRESSED: {
@@ -197,12 +210,28 @@ index_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
+index_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
+		uint64_t *old_memlimit, uint64_t new_memlimit)
+{
+	*memusage = lzma_index_memusage(coder->count);
+
+	if (new_memlimit != 0 && new_memlimit < *memusage)
+		return LZMA_MEMLIMIT_ERROR;
+
+	*old_memlimit = coder->memlimit;
+	coder->memlimit = new_memlimit;
+
+	return LZMA_OK;
+}
+
+
+static lzma_ret
 index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_index **i)
+		lzma_index **i, uint64_t memlimit)
 {
 	lzma_next_coder_init(index_decoder_init, next, allocator);
 
-	if (i == NULL)
+	if (i == NULL || memlimit == 0)
 		return LZMA_PROG_ERROR;
 
 	if (next->coder == NULL) {
@@ -212,6 +241,7 @@ index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &index_decode;
 		next->end = &index_decoder_end;
+		next->memconfig = &index_decoder_memconfig;
 		next->coder->index = NULL;
 	} else {
 		lzma_index_end(next->coder->index, allocator);
@@ -224,7 +254,9 @@ index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Initialize the rest.
 	next->coder->sequence = SEQ_INDICATOR;
+	next->coder->memlimit = memlimit;
 	next->coder->index = *i;
+	next->coder->count = 0; // Needs to be initialized due to _memconfig().
 	next->coder->pos = 0;
 	next->coder->crc32 = 0;
 
@@ -233,9 +265,9 @@ index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern LZMA_API lzma_ret
-lzma_index_decoder(lzma_stream *strm, lzma_index **i)
+lzma_index_decoder(lzma_stream *strm, lzma_index **i, uint64_t memlimit)
 {
-	lzma_next_strm_init(index_decoder_init, strm, i);
+	lzma_next_strm_init(index_decoder_init, strm, i, memlimit);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 

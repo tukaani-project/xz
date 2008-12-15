@@ -44,7 +44,7 @@
  * functions, you may use other initialization functions, which initialize
  * only a subset of liblzma's internal static variables. Using those
  * functions have the following advantages:
- *  - When linking statically against liblzma, less useless functions will
+ *  - When linking statically against liblzma, fewer useless functions will
  *    get linked into the binary. E.g. if you need only the decoder functions,
  *    using lzma_init_decoder() avoids linking bunch of encoder related code.
  *  - There is less things to initialize, making the initialization

@@ -19,6 +19,8 @@
 
 #include "tests.h"
 
+#define MEMLIMIT (LZMA_VLI_C(1) << 20)
+
 
 static lzma_index *
 create_empty(void)
@@ -170,7 +172,7 @@ test_code(lzma_index *i)
 
 	// Decode
 	lzma_index *d;
-	expect(lzma_index_decoder(&strm, &d) == LZMA_OK);
+	expect(lzma_index_decoder(&strm, &d, MEMLIMIT) == LZMA_OK);
 	succeed(decoder_loop(&strm, buf, index_size));
 
 	expect(lzma_index_equal(i, d));
@@ -464,19 +466,19 @@ test_corrupt(void)
 
 	// Wrong Index Indicator
 	buf[0] ^= 1;
-	expect(lzma_index_decoder(&strm, &i) == LZMA_OK);
+	expect(lzma_index_decoder(&strm, &i, MEMLIMIT) == LZMA_OK);
 	succeed(decoder_loop_ret(&strm, buf, 1, LZMA_DATA_ERROR));
 	buf[0] ^= 1;
 
 	// Wrong Number of Records and thus CRC32 fails.
 	--buf[1];
-	expect(lzma_index_decoder(&strm, &i) == LZMA_OK);
+	expect(lzma_index_decoder(&strm, &i, MEMLIMIT) == LZMA_OK);
 	succeed(decoder_loop_ret(&strm, buf, 10, LZMA_DATA_ERROR));
 	++buf[1];
 
 	// Padding not NULs
 	buf[15] ^= 1;
-	expect(lzma_index_decoder(&strm, &i) == LZMA_OK);
+	expect(lzma_index_decoder(&strm, &i, MEMLIMIT) == LZMA_OK);
 	succeed(decoder_loop_ret(&strm, buf, 16, LZMA_DATA_ERROR));
 
 	lzma_end(&strm);

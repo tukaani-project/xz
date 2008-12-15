@@ -30,10 +30,10 @@
  *  - zzz = revision
  *  - s indicates stability: 0 = alpha, 1 = beta, 2 = stable
  *
- * See the README file for details about the version numbering.
+ * See the README file for details about the version numbering. FIXME
  *
- * \note        The version number of LZMA Utils (and thus liblzma)
- *              has nothing to with the version number of LZMA SDK.
+ * \note        The version number of liblzma has nothing to with
+ *              the version number of Igor Pavlov's LZMA SDK.
  */
 #define LZMA_VERSION UINT32_C(49990060)
 

@@ -64,12 +64,12 @@ typedef struct {
 #	define LZMA_DELTA_DIST_MIN 1
 #	define LZMA_DELTA_DIST_MAX 256
 
-	/**
-	 * \brief       Reserved space for possible future extensions
-	 *
-	 * You should not touch these, because the names of these variables
-	 * may change. These are and will never be used when type is
-	 * LZMA_DELTA_TYPE_BYTE, so it is safe to leave these uninitialized.
+	/*
+	 * Reserved space to allow possible future extensions without
+	 * breaking the ABI. You should not touch these, because the names
+	 * of these variables may change. These are and will never be used
+	 * when type is LZMA_DELTA_TYPE_BYTE, so it is safe to leave these
+	 * uninitialized.
 	 */
 	uint32_t reserved_int1;
 	uint32_t reserved_int2;

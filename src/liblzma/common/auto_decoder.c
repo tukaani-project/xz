@@ -125,10 +125,38 @@ auto_decoder_get_check(const lzma_coder *coder)
 
 
 static lzma_ret
+auto_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
+		uint64_t *old_memlimit, uint64_t new_memlimit)
+{
+	lzma_ret ret;
+
+	if (coder->next.memconfig != NULL) {
+		ret = coder->next.memconfig(coder->next.coder,
+				memusage, old_memlimit, new_memlimit);
+		assert(*old_memlimit == coder->memlimit);
+	} else {
+		// No coder is configured yet. Use the base value as
+		// the current memory usage.
+		*memusage = LZMA_MEMUSAGE_BASE;
+		*old_memlimit = coder->memlimit;
+		ret = LZMA_OK;
+	}
+
+	if (ret == LZMA_OK && new_memlimit != 0)
+		coder->memlimit = new_memlimit;
+
+	return ret;
+}
+
+
+static lzma_ret
 auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		uint64_t memlimit, uint32_t flags)
 {
 	lzma_next_coder_init(auto_decoder_init, next, allocator);
+
+	if (memlimit == 0)
+		return LZMA_PROG_ERROR;
 
 	if (flags & ~LZMA_SUPPORTED_FLAGS)
 		return LZMA_OPTIONS_ERROR;
@@ -141,6 +169,7 @@ auto_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->code = &auto_decode;
 		next->end = &auto_decoder_end;
 		next->get_check = &auto_decoder_get_check;
+		next->memconfig = &auto_decoder_memconfig;
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
 

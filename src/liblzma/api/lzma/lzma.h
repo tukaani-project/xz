@@ -370,12 +370,12 @@ typedef struct {
 	 */
 	uint32_t depth;
 
-	/**
-	 * \brief       Reserved space for possible future extensions
-	 *
-	 * You should not touch these, because the names of these variables
-	 * may change. These are and will never be used with the currently
-	 * supported options, so it is safe to leave these uninitialized.
+	/*
+	 * Reserved space to allow possible future extensions without
+	 * breaking the ABI. You should not touch these, because the names
+	 * of these variables may change. These are and will never be used
+	 * with the currently supported options, so it is safe to leave these
+	 * uninitialized.
 	 */
 	uint32_t reserved_int1;
 	uint32_t reserved_int2;

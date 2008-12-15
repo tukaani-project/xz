@@ -50,6 +50,9 @@ struct lzma_coder_s {
 	/// Memory usage limit
 	uint64_t memlimit;
 
+	/// Amount of memory actually needed (only an estimate)
+	uint64_t memusage;
+
 	/// If true, LZMA_NO_CHECK is returned if the Stream has
 	/// no integrity check.
 	bool tell_no_check;
@@ -204,14 +207,24 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		if (memusage == UINT64_MAX) {
 			// One or more unknown Filter IDs.
 			ret = LZMA_OPTIONS_ERROR;
-		} else if (memusage > coder->memlimit) {
-			// The chain would need too much memory.
-			ret = LZMA_MEMLIMIT_ERROR;
 		} else {
-			// Memory usage is OK. Initialize the Block decoder.
-			ret = lzma_block_decoder_init(
-					&coder->block_decoder,
-					allocator, &coder->block_options);
+			// Now we can set coder->memusage since we know that
+			// the filter chain is valid. We don't want
+			// lzma_memusage() to return UINT64_MAX in case of
+			// invalid filter chain.
+			coder->memusage = memusage;
+
+			if (memusage > coder->memlimit) {
+				// The chain would need too much memory.
+				ret = LZMA_MEMLIMIT_ERROR;
+			} else {
+				// Memory usage is OK.
+				// Initialize the Block decoder.
+				ret = lzma_block_decoder_init(
+						&coder->block_decoder,
+						allocator,
+						&coder->block_options);
+			}
 		}
 
 		// Free the allocated filter options since they are needed
@@ -374,11 +387,29 @@ stream_decoder_get_check(const lzma_coder *coder)
 }
 
 
+static lzma_ret
+stream_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
+		uint64_t *old_memlimit, uint64_t new_memlimit)
+{
+	if (new_memlimit != 0 && new_memlimit < coder->memusage)
+		return LZMA_MEMLIMIT_ERROR;
+
+	*memusage = coder->memusage;
+	*old_memlimit = coder->memlimit;
+	coder->memlimit = new_memlimit;
+
+	return LZMA_OK;
+}
+
+
 extern lzma_ret
 lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		uint64_t memlimit, uint32_t flags)
 {
 	lzma_next_coder_init(lzma_stream_decoder_init, next, allocator);
+
+	if (memlimit == 0)
+		return LZMA_PROG_ERROR;
 
 	if (flags & ~LZMA_SUPPORTED_FLAGS)
 		return LZMA_OPTIONS_ERROR;
@@ -391,12 +422,14 @@ lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->code = &stream_decode;
 		next->end = &stream_decoder_end;
 		next->get_check = &stream_decoder_get_check;
+		next->memconfig = &stream_decoder_memconfig;
 
 		next->coder->block_decoder = LZMA_NEXT_CODER_INIT;
 		next->coder->index_hash = NULL;
 	}
 
 	next->coder->memlimit = memlimit;
+	next->coder->memusage = LZMA_MEMUSAGE_BASE;
 	next->coder->tell_no_check = (flags & LZMA_TELL_NO_CHECK) != 0;
 	next->coder->tell_unsupported_check
 			= (flags & LZMA_TELL_UNSUPPORTED_CHECK) != 0;

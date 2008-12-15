@@ -301,5 +301,63 @@ lzma_end(lzma_stream *strm)
 extern LZMA_API lzma_check
 lzma_get_check(const lzma_stream *strm)
 {
+	// Return LZMA_CHECK_NONE if we cannot know the check type.
+	// It's a bug in the application if this happens.
+	if (strm->internal->next.get_check == NULL)
+		return LZMA_CHECK_NONE;
+
 	return strm->internal->next.get_check(strm->internal->next.coder);
+}
+
+
+extern LZMA_API uint64_t
+lzma_memusage(const lzma_stream *strm)
+{
+	uint64_t memusage;
+	uint64_t old_memlimit;
+
+	if (strm == NULL || strm->internal == NULL
+			|| strm->internal->next.memconfig == NULL
+			|| strm->internal->next.memconfig(
+				strm->internal->next.coder,
+				&memusage, &old_memlimit, 0) != LZMA_OK)
+		return 0;
+
+	return memusage;
+}
+
+
+extern LZMA_API uint64_t
+lzma_memlimit_get(const lzma_stream *strm)
+{
+	uint64_t old_memlimit;
+	uint64_t memusage;
+
+	if (strm == NULL || strm->internal == NULL
+			|| strm->internal->next.memconfig == NULL
+			|| strm->internal->next.memconfig(
+				strm->internal->next.coder,
+				&memusage, &old_memlimit, 0) != LZMA_OK)
+		return 0;
+
+	return old_memlimit;
+}
+
+
+extern LZMA_API lzma_ret
+lzma_memlimit_set(lzma_stream *strm, uint64_t new_memlimit)
+{
+	// Dummy variables to simplify memconfig functions
+	uint64_t old_memlimit;
+	uint64_t memusage;
+
+	if (strm == NULL || strm->internal == NULL
+			|| strm->internal->next.memconfig == NULL)
+		return LZMA_PROG_ERROR;
+
+	if (new_memlimit != 0 && new_memlimit < LZMA_MEMUSAGE_BASE)
+		return LZMA_MEMLIMIT_ERROR;
+
+	return strm->internal->next.memconfig(strm->internal->next.coder,
+			&memusage, &old_memlimit, new_memlimit);
 }

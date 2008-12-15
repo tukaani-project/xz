@@ -48,8 +48,7 @@
  *
  * This will always be unsigned integer. Valid VLI values are in the range
  * [0, LZMA_VLI_MAX]. Unknown value is indicated with LZMA_VLI_UNKNOWN,
- * which is the maximum value of the underlaying integer type (this feature
- * is useful in several situations).
+ * which is the maximum value of the underlaying integer type.
  *
  * In future, even if lzma_vli is typdefined to something else than uint64_t,
  * it is guaranteed that 2 * LZMA_VLI_MAX will not overflow lzma_vli.
@@ -74,9 +73,9 @@ typedef uint64_t lzma_vli;
 /**
  * \brief       Encodes variable-length integer
  *
- * In the .lzma format, most integers are encoded in variable-length
- * representation. This saves space when smaller values are more likely
- * than bigger values.
+ * In the .xz format, most integers are encoded in a variable-length
+ * representation, which is sometimes called little endian base-128 encoding.
+ * This saves space when smaller values are more likely than bigger values.
  *
  * The encoding scheme encodes seven bits to every byte, using minimum
  * number of bytes required to represent the given value. Encodings that use
@@ -118,8 +117,7 @@ typedef uint64_t lzma_vli;
  *              - LZMA_BUF_ERROR: No output space was provided.
  *              - LZMA_PROG_ERROR: Arguments are not sane.
  */
-extern lzma_ret lzma_vli_encode(
-		lzma_vli vli, size_t *lzma_restrict vli_pos,
+extern lzma_ret lzma_vli_encode(lzma_vli vli, size_t *lzma_restrict vli_pos,
 		uint8_t *lzma_restrict out, size_t *lzma_restrict out_pos,
 		size_t out_size);
 
@@ -165,10 +163,9 @@ extern lzma_ret lzma_vli_decode(lzma_vli *lzma_restrict vli,
 
 
 /**
- * \brief       Gets the number of bytes required to encode vli
+ * \brief       Get the number of bytes required to encode a VLI
  *
  * \return      Number of bytes on success (1-9). If vli isn't valid,
  *              zero is returned.
  */
-extern uint32_t lzma_vli_size(lzma_vli vli)
-		lzma_attr_pure;
+extern uint32_t lzma_vli_size(lzma_vli vli) lzma_attr_pure;

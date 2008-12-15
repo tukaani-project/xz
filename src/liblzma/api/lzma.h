@@ -30,7 +30,8 @@
  * liblzma API headers need some standard types and macros. To allow
  * including lzma.h without requiring the application to include other
  * headers first, lzma.h includes the required standard headers unless
- * they already seem to be included.
+ * they already seem to be included already or if LZMA_MANUAL_HEADERS
+ * has been defined.
  *
  * Here's what types and macros are needed and from which headers:
  *  - stddef.h: size_t, NULL
@@ -42,10 +43,12 @@
  *
  * The hacks below aren't perfect, specifically they assume that inttypes.h
  * exists and that it typedefs at least uint8_t, uint32_t, and uint64_t,
- * and that unsigned int is 32-bit. If your application already takes care
- * of setting up all the types properly (for example by using gnulib's
- * stdint.h or inttypes.h), feel free to define LZMA_MANUAL_HEADERS before
- * including lzma.h.
+ * and that, in case of incomplete inttypes.h, unsigned int is 32-bit.
+ * If the application already takes care of setting up all the types and
+ * macros properly (for example by using gnulib's stdint.h or inttypes.h),
+ * we try to detect that the macros are already defined and don't include
+ * inttypes.h here again. However, you may define LZMA_MANUAL_HEADERS to
+ * force this file to never include any system headers.
  *
  * Some could argue that liblzma API should provide all the required types,
  * for example lzma_uint64, LZMA_UINT64_C(n), and LZMA_UINT64_MAX. This was
@@ -53,66 +56,75 @@
  * types and macros in the standard headers.
  *
  * Note that liblzma API still has lzma_bool, because using stdbool.h would
- * break C89 and C++ programs on many systems.
+ * break C89 and C++ programs on many systems. sizeof(bool) in C99 isn't
+ * necessarily the same as sizeof(bool) in C++.
  */
 
-/* stddef.h even in C++ so that we get size_t in global namespace. */
-#include <stddef.h>
-
-#if !defined(UINT32_C) || !defined(UINT64_C) \
-		|| !defined(UINT32_MAX) || !defined(UINT64_MAX)
-#	ifdef __cplusplus
-		/*
-		 * C99 sections 7.18.2 and 7.18.4 specify that in C++
-		 * implementations define the limit and constant macros only
-		 * if specifically requested. Note that if you want the
-		 * format macros too, you need to define __STDC_FORMAT_MACROS
-		 * before including lzma.h, since re-including inttypes.h
-		 * with __STDC_FORMAT_MACROS defined doesn't necessarily work.
-		 */
-#		ifndef __STDC_LIMIT_MACROS
-#			define __STDC_LIMIT_MACROS 1
-#		endif
-#		ifndef __STDC_CONSTANT_MACROS
-#			define __STDC_CONSTANT_MACROS 1
-#		endif
-#	endif
-
-#	include <inttypes.h>
+#ifndef LZMA_MANUAL_HEADERS
+	/*
+	 * I suppose this works portably also in C++. Note that in C++,
+	 * we need to get size_t into the global namespace.
+	 */
+	#include <stddef.h>
 
 	/*
-	 * Some old systems have only the typedefs in inttypes.h, and lack
-	 * all the macros. For those systems, we need a few more hacks.
-	 * We assume that unsigned int is 32-bit and unsigned long is either
-	 * 32-bit or 64-bit. If these hacks aren't enough, the application
-	 * has to use setup the types manually before including lzma.h.
+	 * Skip inttypes.h if we already have all the required macros. If we
+	 * have the macros, we assume that we have the matching typedefs too.
 	 */
-#	ifndef UINT32_C
-#		define UINT32_C(n) n # U
-#	endif
+#	if !defined(UINT32_C) || !defined(UINT64_C) \
+			|| !defined(UINT32_MAX) || !defined(UINT64_MAX)
+#		ifdef __cplusplus
+			/*
+			 * C99 sections 7.18.2 and 7.18.4 specify that in C++
+			 * implementations define the limit and constant
+			 * macros only if specifically requested. Note that
+			 * if you want the format macros (PRIu64 etc.) too,
+			 * you need to define __STDC_FORMAT_MACROS before
+			 * including lzma.h, since re-including inttypes.h
+			 * with __STDC_FORMAT_MACROS defined doesn't
+			 * necessarily work.
+			 */
+#			ifndef __STDC_LIMIT_MACROS
+#				define __STDC_LIMIT_MACROS 1
+#			endif
+#			ifndef __STDC_CONSTANT_MACROS
+#				define __STDC_CONSTANT_MACROS 1
+#			endif
+#		endif
 
-#	ifndef UINT64_C
-		/* Get ULONG_MAX. */
-#		ifndef __cplusplus
+#		include <inttypes.h>
+
+		/*
+		 * Some old systems have only the typedefs in inttypes.h, and
+		 * lack all the macros. For those systems, we need a few more
+		 * hacks. We assume that unsigned int is 32-bit and unsigned
+		 * long is either 32-bit or 64-bit. If these hacks aren't
+		 * enough, the application has to setup the types manually
+		 * before including lzma.h.
+		 */
+#		ifndef UINT32_C
+#			define UINT32_C(n) n # U
+#		endif
+
+#		ifndef UINT64_C
+			/* Get ULONG_MAX. */
 #			include <limits.h>
-#		else
-#			include <climits>
+#			if ULONG_MAX == 4294967295UL
+#				define UINT64_C(n) n ## ULL
+#			else
+#				define UINT64_C(n) n ## UL
+#			endif
 #		endif
-#		if ULONG_MAX == 4294967295UL
-#			define UINT64_C(n) n ## ULL
-#		else
-#			define UINT64_C(n) n ## UL
+
+#		ifndef UINT32_MAX
+#			define UINT32_MAX (UINT32_C(4294967295))
+#		endif
+
+#		ifndef UINT64_MAX
+#			define UINT64_MAX (UINT64_C(18446744073709551615))
 #		endif
 #	endif
-
-#	ifndef UINT32_MAX
-#		define UINT32_MAX (UINT32_C(4294967295))
-#	endif
-
-#	ifndef UINT64_MAX
-#		define UINT64_MAX (UINT64_C(18446744073709551615))
-#	endif
-#endif
+#endif /* ifdef LZMA_MANUAL_HEADERS */
 
 
 /******************
@@ -152,8 +164,6 @@
 #			define lzma_restrict
 #		endif
 #	endif
-
-#	define lzma_attr_warn_unused_result
 #endif
 
 
@@ -204,10 +214,10 @@ extern "C" {
 
 /* Advanced features */
 #include "lzma/alignment.h" /* FIXME */
+#include "lzma/stream_flags.h"
 #include "lzma/block.h"
 #include "lzma/index.h"
 #include "lzma/index_hash.h"
-#include "lzma/stream_flags.h"
 
 /*
  * All subheaders included. Undefine LZMA_H_INTERNAL to prevent applications

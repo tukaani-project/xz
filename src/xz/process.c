@@ -119,6 +119,9 @@ coder_set_compression_settings(void)
 		message_fatal(_("With --format=lzma only the LZMA1 filter "
 				"is supported"));
 
+	// Print the selected filter chain.
+	message_filters(V_DEBUG, filters);
+
 	// If using --format=raw, we can be decoding. The memusage function
 	// also validates the filter chain and the options used for the
 	// filters.
@@ -134,6 +137,12 @@ coder_set_compression_settings(void)
 
 	if (memory_usage == UINT64_MAX)
 		message_fatal("Unsupported filter chain or filter options");
+
+	// Print memory usage info.
+	message(V_DEBUG, _("%" PRIu64 " MiB of memory is required per thread, "
+			"limit is %" PRIu64 " MiB"),
+			memory_usage / (1024 * 1024),
+			memory_limit / (1024 * 1024));
 
 	if (preset_default) {
 		// When no preset was explicitly requested, we use the default
@@ -348,9 +357,24 @@ coder_run(file_pair *pair)
 			}
 
 			if (ret == LZMA_MEMLIMIT_ERROR) {
-				// Figure out how much memory would have
+				// Figure out how much memory it would have
 				// actually needed.
-				// TODO
+				uint64_t memusage = lzma_memusage(&strm);
+				uint64_t memlimit
+						= hardware_memlimit_decoder();
+
+				// Round the memory limit down and usage up.
+				// This way we don't display a ridiculous
+				// message like "Limit was 9 MiB, but 9 MiB
+				// would have been needed".
+				memusage = (memusage + 1024 * 1024 - 1)
+						/ (1024 * 1024);
+				memlimit /= 1024 * 1024;
+
+				message_error(_("Limit was %'" PRIu64 " MiB, "
+						"but %'" PRIu64 " MiB would "
+						"have been needed"),
+						memlimit, memusage);
 			}
 
 			if (stop)

@@ -94,8 +94,13 @@ extern void message_bug(void) lzma_attribute((noreturn));
 extern void message_signal_handler(void) lzma_attribute((noreturn));
 
 
-/// Converts lzma_ret to a string.
+/// Convert lzma_ret to a string.
 extern const char *message_strm(lzma_ret code);
+
+
+/// Print the filter chain.
+extern void message_filters(
+		enum message_verbosity v, const lzma_filter *filters);
 
 
 /// Print a message that user should try --help.

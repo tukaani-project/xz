@@ -123,15 +123,6 @@ my_snprintf(char **pos, size_t *left, const char *fmt, ...)
 	return;
 }
 
-// Ugly hack to make it possible to use lzma_attribute((format(printf, 3, 4)))
-// and thus catch stupid things, while still allowing format characters that
-// are not in ISO C but are in POSIX. This has to be done after my_snprintf()
-// has been defined.
-#ifdef __GNUC__
-#	define my_snprintf __extension__ my_snprintf
-#	define my_printf __extension__ printf
-#endif
-
 
 extern void
 message_init(const char *given_argv0)
@@ -723,6 +714,118 @@ message_strm(lzma_ret code)
 
 
 extern void
+message_filters(enum message_verbosity v, const lzma_filter *filters)
+{
+	if (v > verbosity)
+		return;
+
+	fprintf(stderr, _("%s: Filter chain:"), argv0);
+
+	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+		fprintf(stderr, " --");
+
+		switch (filters[i].id) {
+		case LZMA_FILTER_LZMA1:
+		case LZMA_FILTER_LZMA2: {
+			const lzma_options_lzma *opt = filters[i].options;
+			const char *mode;
+			const char *mf;
+
+			switch (opt->mode) {
+			case LZMA_MODE_FAST:
+				mode = "fast";
+				break;
+
+			case LZMA_MODE_NORMAL:
+				mode = "normal";
+				break;
+
+			default:
+				mode = "UNKNOWN";
+				break;
+			}
+
+			switch (opt->mf) {
+			case LZMA_MF_HC3:
+				mf = "hc3";
+				break;
+
+			case LZMA_MF_HC4:
+				mf = "hc4";
+				break;
+
+			case LZMA_MF_BT2:
+				mf = "bt2";
+				break;
+
+			case LZMA_MF_BT3:
+				mf = "bt3";
+				break;
+
+			case LZMA_MF_BT4:
+				mf = "bt4";
+				break;
+
+			default:
+				mf = "UNKNOWN";
+				break;
+			}
+
+			fprintf(stderr, "lzma%c=dict=%" PRIu32
+					",lc=%" PRIu32 ",lp=%" PRIu32
+					",pb=%" PRIu32
+					",mode=%s,nice=%" PRIu32 ",mf=%s"
+					",depth=%" PRIu32,
+					filters[i].id == LZMA_FILTER_LZMA2
+						? '2' : '1',
+					opt->dict_size,
+					opt->lc, opt->lp, opt->pb,
+					mode, opt->nice_len, mf, opt->depth);
+			break;
+		}
+
+		case LZMA_FILTER_X86:
+			fprintf(stderr, "x86");
+			break;
+
+		case LZMA_FILTER_POWERPC:
+			fprintf(stderr, "powerpc");
+			break;
+
+		case LZMA_FILTER_IA64:
+			fprintf(stderr, "ia64");
+			break;
+
+		case LZMA_FILTER_ARM:
+			fprintf(stderr, "arm");
+			break;
+
+		case LZMA_FILTER_ARMTHUMB:
+			fprintf(stderr, "armthumb");
+			break;
+
+		case LZMA_FILTER_SPARC:
+			fprintf(stderr, "sparc");
+			break;
+
+		case LZMA_FILTER_DELTA: {
+			const lzma_options_delta *opt = filters[i].options;
+			fprintf(stderr, "delta=dist=%" PRIu32, opt->dist);
+			break;
+		}
+
+		default:
+			fprintf(stderr, "UNKNOWN");
+			break;
+		}
+	}
+
+	fputc('\n', stderr);
+	return;
+}
+
+
+extern void
 message_try_help(void)
 {
 	// Print this with V_WARNING instead of V_ERROR to prevent it from
@@ -867,13 +970,13 @@ message_help(bool long_help)
 	puts(_("\nWith no FILE, or when FILE is -, read standard input.\n"));
 
 	if (long_help) {
-		my_printf(_(
+		printf(_(
 "On this system and configuration, the tool will use at maximum of\n"
 "  * roughly %'" PRIu64 " MiB RAM for compression;\n"
 "  * roughly %'" PRIu64 " MiB RAM for decompression; and\n"),
 				hardware_memlimit_encoder() / (1024 * 1024),
 				hardware_memlimit_decoder() / (1024 * 1024));
-		my_printf(N_("  * one thread for (de)compression.\n\n",
+		printf(N_("  * one thread for (de)compression.\n\n",
 			"  * %'" PRIu64 " threads for (de)compression.\n\n",
 			(uint64_t)(opt_threads)), (uint64_t)(opt_threads));
 	}

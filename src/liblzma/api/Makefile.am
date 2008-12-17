@@ -14,7 +14,6 @@
 
 nobase_include_HEADERS = \
 	lzma.h \
-	lzma/alignment.h \
 	lzma/base.h \
 	lzma/block.h \
 	lzma/check.h \

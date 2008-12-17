@@ -213,7 +213,6 @@ extern "C" {
 #include "lzma/container.h"
 
 /* Advanced features */
-#include "lzma/alignment.h" /* FIXME */
 #include "lzma/stream_flags.h"
 #include "lzma/block.h"
 #include "lzma/index.h"

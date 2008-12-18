@@ -39,7 +39,6 @@ libcommon_la_SOURCES = \
 
 if COND_MAIN_ENCODER
 libcommon_la_SOURCES += \
-	alignment.c \
 	alone_encoder.c \
 	block_encoder.c \
 	block_encoder.h \

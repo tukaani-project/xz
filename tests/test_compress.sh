@@ -69,7 +69,7 @@ test_xz() {
 	echo . | tr -d '\n\r'
 }
 
-XZ="../src/xz/xz --memory=15MiB --threads=1"
+XZ="../src/xz/xz --memory=28MiB --threads=1"
 XZDEC="../src/xzdec/xzdec --memory=4MiB"
 unset XZ_OPT
 

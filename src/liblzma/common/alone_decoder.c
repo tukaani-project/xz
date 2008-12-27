@@ -75,24 +75,24 @@ alone_decode(lzma_coder *coder,
 				|= (size_t)(in[*in_pos]) << (coder->pos * 8);
 
 		if (++coder->pos == 4) {
-			if (coder->options.dict_size > (UINT32_C(1) << 30))
-				return LZMA_FORMAT_ERROR;
+			if (coder->options.dict_size != UINT32_MAX) {
+				// A hack to ditch tons of false positives:
+				// We allow only dictionary sizes that are
+				// 2^n or 2^n + 2^(n-1). LZMA_Alone created
+				// only files with 2^n, but accepts any
+				// dictionary size. If someone complains, this
+				// will be reconsidered.
+				uint32_t d = coder->options.dict_size - 1;
+				d |= d >> 2;
+				d |= d >> 3;
+				d |= d >> 4;
+				d |= d >> 8;
+				d |= d >> 16;
+				++d;
 
-			// A hack to ditch tons of false positives: We allow
-			// only dictionary sizes that are 2^n or 2^n + 2^(n-1).
-			// LZMA_Alone created only files with 2^n, but accepts
-			// any dictionary size. If someone complains, this
-			// will be reconsidered.
-			uint32_t d = coder->options.dict_size - 1;
-			d |= d >> 2;
-			d |= d >> 3;
-			d |= d >> 4;
-			d |= d >> 8;
-			d |= d >> 16;
-			++d;
-
-			if (d != coder->options.dict_size)
-				return LZMA_FORMAT_ERROR;
+				if (d != coder->options.dict_size)
+					return LZMA_FORMAT_ERROR;
+			}
 
 			coder->pos = 0;
 			coder->sequence = SEQ_UNCOMPRESSED_SIZE;

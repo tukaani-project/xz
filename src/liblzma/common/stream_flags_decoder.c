@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       stream_flags_decoder.c
-/// \brief      Decodes Stream Header and Stream Footer from .lzma files
+/// \brief      Decodes Stream Header and Stream Footer from .xz files
 //
 //  Copyright (C) 2007 Lasse Collin
 //

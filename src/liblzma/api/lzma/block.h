@@ -33,6 +33,35 @@
  */
 typedef struct {
 	/**
+	 * \brief       Block format version
+	 *
+	 * To prevent API and ABI breakages if new features are needed in
+	 * Block, a version number is used to indicate which fields in this
+	 * structure are in use. For now, version must always be zero.
+	 * With non-zero version, most Block related functions will return
+	 * LZMA_OPTIONS_ERROR.
+	 *
+	 * The decoding functions will always set this to the lowest value
+	 * that supports all the features indicated by the Block Header field.
+	 * The application must check that the version number set by the
+	 * decoding functions is supported by the application. Otherwise it
+	 * is possible that the application will decode the Block incorrectly.
+	 *
+	 * Read by:
+	 *  - lzma_block_header_size()
+	 *  - lzma_block_header_encode()
+	 *  - lzma_block_compressed_size()
+	 *  - lzma_block_unpadded_size()
+	 *  - lzma_block_total_size()
+	 *  - lzma_block_encoder()
+	 *  - lzma_block_decoder()
+	 *
+	 * Written by:
+	 *  - lzma_block_header_decode()
+	 */
+	uint32_t version;
+
+	/**
 	 * \brief       Size of the Block Header field
 	 *
 	 * This is always a multiple of four.
@@ -168,6 +197,37 @@ typedef struct {
 	 */
 	lzma_filter *filters;
 
+	/*
+	 * Reserved space to allow possible future extensions without
+	 * breaking the ABI. You should not touch these, because the names
+	 * of these variables may change. These are and will never be used
+	 * with the currently supported options, so it is safe to leave these
+	 * uninitialized.
+	 */
+	void *reserved_ptr1;
+	void *reserved_ptr2;
+	void *reserved_ptr3;
+	uint32_t reserved_int1;
+	uint32_t reserved_int2;
+	lzma_vli reserved_int3;
+	lzma_vli reserved_int4;
+	lzma_vli reserved_int5;
+	lzma_vli reserved_int6;
+	lzma_vli reserved_int7;
+	lzma_vli reserved_int8;
+	lzma_reserved_enum reserved_enum1;
+	lzma_reserved_enum reserved_enum2;
+	lzma_reserved_enum reserved_enum3;
+	lzma_reserved_enum reserved_enum4;
+	lzma_bool reserved_bool1;
+	lzma_bool reserved_bool2;
+	lzma_bool reserved_bool3;
+	lzma_bool reserved_bool4;
+	lzma_bool reserved_bool5;
+	lzma_bool reserved_bool6;
+	lzma_bool reserved_bool7;
+	lzma_bool reserved_bool8;
+
 } lzma_block;
 
 
@@ -196,7 +256,8 @@ typedef struct {
  *
  * \return      - LZMA_OK: Size calculated successfully and stored to
  *                block->header_size.
- *              - LZMA_OPTIONS_ERROR: Unsupported filters or filter options.
+ *              - LZMA_OPTIONS_ERROR: Unsupported version, filters or
+ *                filter options.
  *              - LZMA_PROG_ERROR: Invalid values like compressed_size == 0.
  *
  * \note        This doesn't check that all the options are valid i.e. this

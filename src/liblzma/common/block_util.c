@@ -58,7 +58,8 @@ lzma_block_unpadded_size(const lzma_block *block)
 	// NOTE: This function is used for validation too, so it is
 	// essential that these checks are always done even if
 	// Compressed Size is unknown.
-	if (block->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
+	if (block->version != 0
+			|| block->header_size < LZMA_BLOCK_HEADER_SIZE_MIN
 			|| block->header_size > LZMA_BLOCK_HEADER_SIZE_MAX
 			|| (block->header_size & 3)
 			|| !lzma_vli_is_valid(block->compressed_size)

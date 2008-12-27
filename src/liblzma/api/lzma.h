@@ -127,12 +127,12 @@
 #endif /* ifdef LZMA_MANUAL_HEADERS */
 
 
-/******************
- * GCC extensions *
- ******************/
+/********************
+ * GNU C extensions *
+ ********************/
 
 /*
- * GCC extensions are used conditionally in the public API. It doesn't
+ * GNU C extensions are used conditionally in the public API. It doesn't
  * break anything if these are sometimes enabled and sometimes not, only
  * affects warnings and optimizations.
  */

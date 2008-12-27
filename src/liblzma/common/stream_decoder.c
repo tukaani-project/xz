@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       stream_decoder.c
-/// \brief      Decodes .lzma Streams
+/// \brief      Decodes .xz Streams
 //
 //  Copyright (C) 2007 Lasse Collin
 //
@@ -96,7 +96,6 @@ stream_decoder_reset(lzma_coder *coder, lzma_allocator *allocator)
 
 	// Reset the rest of the variables.
 	coder->sequence = SEQ_STREAM_HEADER;
-	coder->block_options.filters = NULL;
 	coder->pos = 0;
 
 	return LZMA_OK;

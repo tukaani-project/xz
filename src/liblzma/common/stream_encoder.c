@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       stream_encoder.c
-/// \brief      Encodes .lzma Streams
+/// \brief      Encodes .xz Streams
 //
 //  Copyright (C) 2007-2008 Lasse Collin
 //
@@ -238,6 +238,7 @@ lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Basic initializations
 	next->coder->sequence = SEQ_STREAM_HEADER;
+	next->coder->block_options.version = 0;
 	next->coder->block_options.check = check;
 	next->coder->block_options.filters = (lzma_filter *)(filters);
 

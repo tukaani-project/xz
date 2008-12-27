@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       block_decoder.h
-/// \brief      Decodes .lzma Blocks
+/// \brief      Decodes .xz Blocks
 //
 //  Copyright (C) 2007 Lasse Collin
 //
@@ -24,6 +24,6 @@
 
 
 extern lzma_ret lzma_block_decoder_init(lzma_next_coder *next,
-		lzma_allocator *allocator, lzma_block *options);
+		lzma_allocator *allocator, lzma_block *block);
 
 #endif

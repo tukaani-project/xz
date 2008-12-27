@@ -104,28 +104,24 @@ alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// Encode the header:
 	// - Properties (1 byte)
 	if (lzma_lzma_lclppb_encode(options, next->coder->header))
-		return LZMA_PROG_ERROR;
+		return LZMA_OPTIONS_ERROR;
 
-	// - Dictionary size (4 bytes); limit to 1 GiB since that's what
-	//   LZMA SDK currently does for encoding.
-	if (options->dict_size < LZMA_DICT_SIZE_MIN
-			|| options->dict_size > (UINT32_C(1) << 30))
-		return LZMA_PROG_ERROR;
+	// - Dictionary size (4 bytes)
+	if (options->dict_size < LZMA_DICT_SIZE_MIN)
+		return LZMA_OPTIONS_ERROR;
 
 	// Round up to to the next 2^n or 2^n + 2^(n - 1) depending on which
-	// one is the next. While the header would allow any 32-bit integer,
-	// we do this to keep the decoder of liblzma accepting the resulting
-	// files.
-	//
-	// FIXME Maybe LZMA_Alone needs some lower limit for maximum
-	// dictionary size? Must check decoders from old LZMA SDK version.
+	// one is the next unless it is UINT32_MAX. While the header would
+	// allow any 32-bit integer, we do this to keep the decoder of liblzma
+	// accepting the resulting files.
 	uint32_t d = options->dict_size - 1;
 	d |= d >> 2;
 	d |= d >> 3;
 	d |= d >> 4;
 	d |= d >> 8;
 	d |= d >> 16;
-	++d;
+	if (d != UINT32_MAX)
+		++d;
 
 	integer_write_32(next->coder->header + 1, d);
 

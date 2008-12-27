@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       stream_decoder.h
-/// \brief      Decodes .lzma Streams
+/// \brief      Decodes .xz Streams
 //
 //  Copyright (C) 2008 Lasse Collin
 //

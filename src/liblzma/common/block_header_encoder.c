@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       block_header_encoder.c
-/// \brief      Encodes Block Header for .lzma files
+/// \brief      Encodes Block Header for .xz files
 //
 //  Copyright (C) 2007 Lasse Collin
 //
@@ -22,23 +22,26 @@
 
 
 extern LZMA_API lzma_ret
-lzma_block_header_size(lzma_block *options)
+lzma_block_header_size(lzma_block *block)
 {
+	if (block->version != 0)
+		return LZMA_OPTIONS_ERROR;
+
 	// Block Header Size + Block Flags + CRC32.
 	uint32_t size = 1 + 1 + 4;
 
 	// Compressed Size
-	if (options->compressed_size != LZMA_VLI_UNKNOWN) {
-		const uint32_t add = lzma_vli_size(options->compressed_size);
-		if (add == 0 || options->compressed_size == 0)
+	if (block->compressed_size != LZMA_VLI_UNKNOWN) {
+		const uint32_t add = lzma_vli_size(block->compressed_size);
+		if (add == 0 || block->compressed_size == 0)
 			return LZMA_PROG_ERROR;
 
 		size += add;
 	}
 
 	// Uncompressed Size
-	if (options->uncompressed_size != LZMA_VLI_UNKNOWN) {
-		const uint32_t add = lzma_vli_size(options->uncompressed_size);
+	if (block->uncompressed_size != LZMA_VLI_UNKNOWN) {
+		const uint32_t add = lzma_vli_size(block->uncompressed_size);
 		if (add == 0)
 			return LZMA_PROG_ERROR;
 
@@ -46,24 +49,23 @@ lzma_block_header_size(lzma_block *options)
 	}
 
 	// List of Filter Flags
-	if (options->filters == NULL
-			|| options->filters[0].id == LZMA_VLI_UNKNOWN)
+	if (block->filters == NULL || block->filters[0].id == LZMA_VLI_UNKNOWN)
 		return LZMA_PROG_ERROR;
 
-	for (size_t i = 0; options->filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+	for (size_t i = 0; block->filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
 		// Don't allow too many filters.
 		if (i == LZMA_FILTERS_MAX)
 			return LZMA_PROG_ERROR;
 
 		uint32_t add;
 		return_if_error(lzma_filter_flags_size(&add,
-				options->filters + i));
+				block->filters + i));
 
 		size += add;
 	}
 
 	// Pad to a multiple of four bytes.
-	options->header_size = (size + 3) & ~UINT32_C(3);
+	block->header_size = (size + 3) & ~UINT32_C(3);
 
 	// NOTE: We don't verify that the encoded size of the Block stays
 	// within limits. This is because it is possible that we are called
@@ -76,15 +78,15 @@ lzma_block_header_size(lzma_block *options)
 
 
 extern LZMA_API lzma_ret
-lzma_block_header_encode(const lzma_block *options, uint8_t *out)
+lzma_block_header_encode(const lzma_block *block, uint8_t *out)
 {
 	// Valdidate everything but filters.
-	if (lzma_block_unpadded_size(options) == 0
-			|| !lzma_vli_is_valid(options->uncompressed_size))
+	if (lzma_block_unpadded_size(block) == 0
+			|| !lzma_vli_is_valid(block->uncompressed_size))
 		return LZMA_PROG_ERROR;
 
 	// Indicate the size of the buffer _excluding_ the CRC32 field.
-	const size_t out_size = options->header_size - 4;
+	const size_t out_size = block->header_size - 4;
 
 	// Store the Block Header Size.
 	out[0] = out_size / 4;
@@ -94,26 +96,23 @@ lzma_block_header_encode(const lzma_block *options, uint8_t *out)
 	size_t out_pos = 2;
 
 	// Compressed Size
-	if (options->compressed_size != LZMA_VLI_UNKNOWN) {
-		return_if_error(lzma_vli_encode(
-				options->compressed_size, NULL,
+	if (block->compressed_size != LZMA_VLI_UNKNOWN) {
+		return_if_error(lzma_vli_encode(block->compressed_size, NULL,
 				out, &out_pos, out_size));
 
 		out[1] |= 0x40;
 	}
 
 	// Uncompressed Size
-	if (options->uncompressed_size != LZMA_VLI_UNKNOWN) {
-		return_if_error(lzma_vli_encode(
-				options->uncompressed_size, NULL,
+	if (block->uncompressed_size != LZMA_VLI_UNKNOWN) {
+		return_if_error(lzma_vli_encode(block->uncompressed_size, NULL,
 				out, &out_pos, out_size));
 
 		out[1] |= 0x80;
 	}
 
 	// Filter Flags
-	if (options->filters == NULL
-			|| options->filters[0].id == LZMA_VLI_UNKNOWN)
+	if (block->filters == NULL || block->filters[0].id == LZMA_VLI_UNKNOWN)
 		return LZMA_PROG_ERROR;
 
 	size_t filter_count = 0;
@@ -123,10 +122,10 @@ lzma_block_header_encode(const lzma_block *options, uint8_t *out)
 			return LZMA_PROG_ERROR;
 
 		return_if_error(lzma_filter_flags_encode(
-				options->filters + filter_count,
+				block->filters + filter_count,
 				out, &out_pos, out_size));
 
-	} while (options->filters[++filter_count].id != LZMA_VLI_UNKNOWN);
+	} while (block->filters[++filter_count].id != LZMA_VLI_UNKNOWN);
 
 	out[1] |= filter_count - 1;
 

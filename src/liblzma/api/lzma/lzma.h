@@ -160,19 +160,20 @@ typedef enum {
  * mode, which the application developer wasn't aware, could require giving
  * additional options to the encoder that the older modes don't need.
  */
-extern lzma_bool lzma_mode_is_available(lzma_mode mode) lzma_attr_const;
+extern lzma_bool lzma_mode_is_supported(lzma_mode mode) lzma_attr_const;
 
 
 /**
  * \brief       Options specific to the LZMA1 and LZMA2 filters
+ *
+ * Since LZMA1 and LZMA2 share most of the code, it's simplest to share
+ * the options structure too. For encoding, all but the reserved variables
+ * need to be initialized unless specifically mentioned otherwise.
+ *
+ * For raw decoding, both LZMA1 and LZMA2 need dict_size, preset_dict, and
+ * preset_dict_size (if preset_dict != NULL). LZMA1 needs also lc, lp, and pb.
  */
 typedef struct {
-	/**********************************
-	 * LZMA encoding/decoding options *
-	 **********************************/
-
-	/* These options are required in encoder and also with raw decoding. */
-
 	/**
 	 * \brief       Dictionary size in bytes
 	 *
@@ -298,10 +299,6 @@ typedef struct {
 #	define LZMA_PB_MAX      4
 #	define LZMA_PB_DEFAULT  2
 
-	/******************************************
-	 * LZMA options needed only when encoding *
-	 ******************************************/
-
 	/**
 	 * \brief       Indicate if the options structure is persistent
 	 *
@@ -377,6 +374,8 @@ typedef struct {
 	 * with the currently supported options, so it is safe to leave these
 	 * uninitialized.
 	 */
+	void *reserved_ptr1;
+	void *reserved_ptr2;
 	uint32_t reserved_int1;
 	uint32_t reserved_int2;
 	uint32_t reserved_int3;
@@ -385,20 +384,26 @@ typedef struct {
 	uint32_t reserved_int6;
 	uint32_t reserved_int7;
 	uint32_t reserved_int8;
-	void *reserved_ptr1;
-	void *reserved_ptr2;
+	lzma_reserved_enum reserved_enum1;
+	lzma_reserved_enum reserved_enum2;
+	lzma_reserved_enum reserved_enum3;
+	lzma_reserved_enum reserved_enum4;
 
 } lzma_options_lzma;
 
 
 /**
- * \brief       Set a compression level preset to lzma_options_lzma structure
+ * \brief       Set a compression preset to lzma_options_lzma structure
  *
- * level = 1 is the fastest and level = 9 is the slowest. These presets match
- * the switches -1 .. -9 of the command line tool.
+ * 0 is the fastest and 9 is the slowest. These match the switches -0 .. -9
+ * of the xz command line tool. In addition, it is possible to bitwise-or
+ * flags to the preset. Currently only LZMA_PRESET_EXTREME is supported.
+ * The flags are defined in container.h, because the flags are used also
+ * with lzma_easy_encoder().
  *
  * The preset values are subject to changes between liblzma versions.
  *
- * This function is available only if LZMA encoder has been enabled.
+ * This function is available only if LZMA1 or LZMA2 encoder has been enabled
+ * when building liblzma.
  */
-extern lzma_bool lzma_lzma_preset(lzma_options_lzma *options, uint32_t level);
+extern lzma_bool lzma_lzma_preset(lzma_options_lzma *options, uint32_t preset);

@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       auto_decoder.c
-/// \brief      Autodetect between .lzma Stream and LZMA_Alone formats
+/// \brief      Autodetect between .xz Stream and .lzma (LZMA_Alone) formats
 //
 //  Copyright (C) 2007 Lasse Collin
 //

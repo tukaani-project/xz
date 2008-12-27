@@ -23,17 +23,6 @@
 	(((big_dist) >> 7) > (small_dist))
 
 
-static inline void
-literal(const lzma_coder *restrict coder, const uint8_t *restrict buf,
-		uint32_t *restrict back_res, uint32_t *restrict len_res)
-{
-	// Try short rep0 instead of always coding it as a literal.
-	*back_res = *buf == *(buf - coder->reps[0] - 1) ? 0 : UINT32_MAX;
-	*len_res = 1;
-	return;
-}
-
-
 extern void
 lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		uint32_t *restrict back_res, uint32_t *restrict len_res)
@@ -55,7 +44,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 
 	if (buf_avail < 2) {
 		// There's not enough input left to encode a match.
-		literal(coder, buf, back_res, len_res);
+		*back_res = UINT32_MAX;
+		*len_res = 1;
 		return;
 	}
 
@@ -137,7 +127,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	}
 
 	if (len_main < 2 || buf_avail <= 2) {
-		literal(coder, buf, back_res, len_res);
+		*back_res = UINT32_MAX;
+		*len_res = 1;
 		return;
 	}
 
@@ -158,7 +149,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 				|| (coder->longest_match_length + 1 >= len_main
 					&& len_main >= 3
 					&& change_pair(new_dist, back_main))) {
-			literal(coder, buf, back_res, len_res);
+			*back_res = UINT32_MAX;
+			*len_res = 1;
 			return;
 		}
 	}
@@ -181,7 +173,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 				&& buf[len] == buf_back[len]; ++len) ;
 
 		if (len >= limit) {
-			literal(coder, buf - 1, back_res, len_res);
+			*back_res = UINT32_MAX;
+			*len_res = 1;
 			return;
 		}
 	}

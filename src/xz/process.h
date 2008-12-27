@@ -57,6 +57,9 @@ extern void coder_set_check(lzma_check check);
 /// Set preset number
 extern void coder_set_preset(size_t new_preset);
 
+/// Enable extreme mode
+extern void coder_set_extreme(void);
+
 /// Add a filter to the custom filter chain
 extern void coder_add_filter(lzma_vli id, void *options);
 

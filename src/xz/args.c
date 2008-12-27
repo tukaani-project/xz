@@ -53,7 +53,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_FILES0,
 	};
 
-	static const char short_opts[] = "cC:dfF:hHlLkM:p:qrS:tT:vVz123456789";
+	static const char short_opts[] = "cC:defF:hHlkM:qrS:tT:vVz0123456789";
 
 	static const struct option long_opts[] = {
 		// Operation mode
@@ -77,11 +77,11 @@ parse_real(args_info *args, int argc, char **argv)
 		// Basic compression settings
 		{ "format",         required_argument, NULL,  'F' },
 		{ "check",          required_argument, NULL,  'C' },
-		{ "preset",         required_argument, NULL,  'p' },
 		{ "memory",         required_argument, NULL,  'M' },
 		{ "threads",        required_argument, NULL,  'T' },
 
-		{ "fast",           no_argument,       NULL,  '1' },
+		{ "extreme",        no_argument,       NULL,  'e' },
+		{ "fast",           no_argument,       NULL,  '0' },
 		{ "best",           no_argument,       NULL,  '9' },
 
 		// Filters
@@ -114,19 +114,11 @@ parse_real(args_info *args, int argc, char **argv)
 	while ((c = getopt_long(argc, argv, short_opts, long_opts, NULL))
 			!= -1) {
 		switch (c) {
-		// gzip-like options
-
-		case '1': case '2': case '3': case '4':
+		// Compression preset (also for decompression if --format=raw)
+		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
 			coder_set_preset(c - '0');
 			break;
-
-		case 'p': {
-			const uint64_t preset = str_to_uint64(
-					"preset", optarg, 1, 9);
-			coder_set_preset(preset);
-			break;
-		}
 
 		// --memory
 		case 'M':
@@ -160,6 +152,11 @@ parse_real(args_info *args, int argc, char **argv)
 		// --decompress
 		case 'd':
 			opt_mode = MODE_DECOMPRESS;
+			break;
+
+		// --extreme
+		case 'e':
+			coder_set_extreme();
 			break;
 
 		// --force

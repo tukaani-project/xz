@@ -891,8 +891,8 @@ message_help(bool long_help)
 	}
 
 	puts(_(
-"  -p, --preset=NUM    compression preset: 1-2 fast compression, 3-6 good\n"
-"                      compression, 7-9 excellent compression; default is 7"));
+"  -0 .. -9            compression preset; 0-2 fast compression, 3-5 good\n"
+"                      compression, 6-9 excellent compression; default is 6"));
 
 	puts(_(
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"

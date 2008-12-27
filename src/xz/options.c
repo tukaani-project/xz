@@ -315,7 +315,7 @@ options_lzma(const char *str)
 	};
 
 	static const option_map opts[] = {
-		{ "preset", NULL,   1, 9 },
+		{ "preset", NULL,   0, 9 },
 		{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
 				(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
 		{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },

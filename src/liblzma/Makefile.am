@@ -52,5 +52,5 @@ endif
 
 ## pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = lzma.pc
-EXTRA_DIST = lzma.pc.in
+pkgconfig_DATA = liblzma.pc
+EXTRA_DIST = liblzma.pc.in

@@ -22,7 +22,7 @@
 # of malloc(), stat(), or lstat(), since we don't use those functions in
 # a way that would cause the problems the autoconf macros check.
 
-AC_PREREQ(2.61)
+AC_PREREQ([2.61])
 
 AC_INIT([xz], [4.999.6alpha], [lasse.collin@tukaani.org])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
@@ -46,12 +46,12 @@ echo "Configure options:"
 #############
 
 AC_MSG_CHECKING([if debugging code should be compiled])
-AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Enable debugging code.]),
+AC_ARG_ENABLE([debug], AC_HELP_STRING([--enable-debug], [Enable debugging code.]),
 	[], enable_debug=no)
 if test "x$enable_debug" = xyes; then
 	AC_MSG_RESULT([yes])
 else
-	AC_DEFINE(NDEBUG, 1, [Define to 1 to disable debugging code.])
+	AC_DEFINE([NDEBUG], [1], [Define to 1 to disable debugging code.])
 	AC_MSG_RESULT([no])
 fi
 
@@ -61,11 +61,11 @@ fi
 ###########
 
 AC_MSG_CHECKING([if encoder components should be built])
-AC_ARG_ENABLE(encoder, AC_HELP_STRING([--disable-encoder],
+AC_ARG_ENABLE([encoder], AC_HELP_STRING([--disable-encoder],
 		[Do not build the encoder components.]),
 	[], enable_encoder=yes)
 if test "x$enable_encoder" = xyes; then
-	AC_DEFINE([HAVE_ENCODER], 1,
+	AC_DEFINE([HAVE_ENCODER], [1],
 		[Define to 1 if encoder components are enabled.])
 	AC_MSG_RESULT([yes])
 else
@@ -79,11 +79,11 @@ AM_CONDITIONAL(COND_MAIN_ENCODER, test "x$enable_encoder" = xyes)
 ###########
 
 AC_MSG_CHECKING([if decoder components should be built])
-AC_ARG_ENABLE(decoder, AC_HELP_STRING([--disable-decoder],
+AC_ARG_ENABLE([decoder], AC_HELP_STRING([--disable-decoder],
 		[Do not build the decoder components.]),
 	[], enable_decoder=yes)
 if test "x$enable_decoder" = xyes; then
-	AC_DEFINE([HAVE_DECODER], 1,
+	AC_DEFINE([HAVE_DECODER], [1],
 		[Define to 1 if decoder components are enabled.])
 	AC_MSG_RESULT([yes])
 else
@@ -218,7 +218,7 @@ m4_foreach([NAME], [SUPPORTED_MATCH_FINDERS],
 ])
 
 AC_MSG_CHECKING([which match finders to build])
-AC_ARG_ENABLE(match-finders, AC_HELP_STRING([--enable-match-finders=LIST],
+AC_ARG_ENABLE([match-finders], AC_HELP_STRING([--enable-match-finders=LIST],
 		[Comma-separated list of match finders to build. Default=all.
 		At least one match finder is required for encoding with
 		the LZMA1 and LZMA2 filters. Available match finders:]
@@ -257,7 +257,7 @@ m4_foreach([NAME], [SUPPORTED_FILTERS],
 ])dnl
 
 AC_MSG_CHECKING([which integrity checks to build])
-AC_ARG_ENABLE(checks, AC_HELP_STRING([--enable-checks=LIST],
+AC_ARG_ENABLE([checks], AC_HELP_STRING([--enable-checks=LIST],
 		[Comma-separated list of integrity checks to build.
 		Default=all. Available integrity checks:]
 		m4_translit(m4_defn([SUPPORTED_CHECKS]), [,], [ ])),
@@ -297,7 +297,7 @@ m4_foreach([NAME], [SUPPORTED_CHECKS],
 ###########################
 
 AC_MSG_CHECKING([if assembler optimizations should be used])
-AC_ARG_ENABLE(assembler, AC_HELP_STRING([--disable-assembler],
+AC_ARG_ENABLE([assembler], AC_HELP_STRING([--disable-assembler],
 		[Do not use assembler optimizations even if such exist
 		for the architecture.]),
 	[], [enable_assembler=yes])
@@ -316,11 +316,11 @@ if test "x$enable_assembler" = xyes; then
 fi
 case $enable_assembler in
 	x86)
-		AC_DEFINE([HAVE_ASM_X86], 1,
+		AC_DEFINE([HAVE_ASM_X86], [1],
 			[Define to 1 if using x86 assembler optimizations.])
 		;;
 	x86_64)
-		AC_DEFINE([HAVE_ASM_X86_64], 1,
+		AC_DEFINE([HAVE_ASM_X86_64], [1],
 			[Define to 1 if using x86_64 assembler optimizations.])
 		;;
 	no)
@@ -340,7 +340,7 @@ AM_CONDITIONAL(COND_ASM_X86_64, test "x$enable_assembler" = xx86_64)
 ################################
 
 AC_MSG_CHECKING([if unaligned memory access should be used])
-AC_ARG_ENABLE(unaligned-access, AC_HELP_STRING([--enable-unaligned-access],
+AC_ARG_ENABLE([unaligned-access], AC_HELP_STRING([--enable-unaligned-access],
 		[Enable if the system supports *fast* unaligned memory access
 		with 16-bit and 32-bit integers. By default, this is enabled
 		only on x86, x86_64, and big endian PowerPC.]),
@@ -369,12 +369,12 @@ fi
 #####################
 
 AC_MSG_CHECKING([if small size is preferred over speed])
-AC_ARG_ENABLE(small, AC_HELP_STRING([--enable-small],
+AC_ARG_ENABLE([small], AC_HELP_STRING([--enable-small],
 		[Make liblzma smaller and a little slower.
 		This is disabled by default to optimize for speed.]),
 	[], [enable_small=no])
 if test "x$enable_small" = xyes; then
-	AC_DEFINE([HAVE_SMALL], 1, [Define to 1 if optimizing for size.])
+	AC_DEFINE([HAVE_SMALL], [1], [Define to 1 if optimizing for size.])
 elif test "x$enable_small" != xno; then
 	AC_MSG_RESULT([])
 	AC_MSG_ERROR([--enable-small accepts only \`yes' or \`no'])
@@ -545,7 +545,7 @@ main()
 	return 0;
 }
 ]])], [
-	AC_DEFINE([HAVE_PHYSMEM_SYSCONF], 1,
+	AC_DEFINE([HAVE_PHYSMEM_SYSCONF], [1],
 		[Define to 1 if the amount of physical memory can be detected
 		with sysconf(_SC_PAGESIZE) and sysconf(_SC_PHYS_PAGES).])
 	AC_MSG_RESULT([sysconf])
@@ -566,7 +566,7 @@ main()
 	return 0;
 }
 ]])], [
-	AC_DEFINE([HAVE_PHYSMEM_SYSCTL], 1,
+	AC_DEFINE([HAVE_PHYSMEM_SYSCTL], [1],
 		[Define to 1 if the amount of physical memory can be detected
 		with sysctl().])
 	AC_MSG_RESULT([sysctl])
@@ -588,7 +588,7 @@ main()
 	return 0;
 }
 ]])], [
-	AC_DEFINE([HAVE_NCPU_SYSCONF], 1,
+	AC_DEFINE([HAVE_NCPU_SYSCONF], [1],
 		[Define to 1 if the number of available CPU cores can be
 		detected with sysconf(_SC_NPROCESSORS_ONLN).])
 	AC_MSG_RESULT([sysconf])
@@ -609,7 +609,7 @@ main()
 	return 0;
 }
 ]])], [
-	AC_DEFINE([HAVE_NCPU_SYSCTL], 1,
+	AC_DEFINE([HAVE_NCPU_SYSCTL], [1],
 		[Define to 1 if the number of available CPU cores can be
 		detected with sysctl().])
 	AC_MSG_RESULT([sysctl])

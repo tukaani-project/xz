@@ -284,9 +284,6 @@ main(int argc, char **argv)
 	// print an error message, but our stderr could be screwed anyway.
 	open_stdxxx(E_ERROR);
 
-	// This has to be done before calling any liblzma functions.
-	lzma_init();
-
 	// Set up the locale.
 	setlocale(LC_ALL, "");
 

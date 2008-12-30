@@ -21,6 +21,7 @@
 #define LZMA_COMMON_H
 
 #include "../../common/sysdefs.h"
+#include "../../common/mythread.h"
 #include "../../common/integer.h"
 
 // Don't use ifdef...

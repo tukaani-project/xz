@@ -22,7 +22,6 @@ nobase_include_HEADERS = \
 	lzma/filter.h \
 	lzma/index.h \
 	lzma/index_hash.h \
-	lzma/init.h \
 	lzma/lzma.h \
 	lzma/simple.h \
 	lzma/stream_flags.h \

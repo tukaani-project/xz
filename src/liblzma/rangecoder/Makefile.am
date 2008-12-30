@@ -24,12 +24,8 @@ librangecoder_la_CPPFLAGS = \
 if COND_ENCODER_LZMA1
 librangecoder_la_SOURCES += \
 	range_encoder.h \
-	price.h
-if COND_SMALL
-librangecoder_la_SOURCES += price_table_init.c
-else
-librangecoder_la_SOURCES += price_table.c
-endif
+	price.h \
+	price_table.c
 endif
 
 if COND_DECODER_LZMA1

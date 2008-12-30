@@ -489,8 +489,6 @@ test_corrupt(void)
 int
 main(void)
 {
-	lzma_init();
-
 	test_equal();
 
 	test_overflow();

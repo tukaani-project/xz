@@ -32,7 +32,6 @@ libcommon_la_SOURCES = \
 	filter_common.h \
 	index.c \
 	index.h \
-	init.c \
 	stream_flags_common.c \
 	stream_flags_common.h \
 	vli_size.c
@@ -49,7 +48,6 @@ libcommon_la_SOURCES += \
 	filter_flags_encoder.c \
 	index_encoder.c \
 	index_encoder.h \
-	init_encoder.c \
 	stream_encoder.c \
 	stream_encoder.h \
 	stream_flags_encoder.c \
@@ -69,7 +67,6 @@ libcommon_la_SOURCES += \
 	filter_flags_decoder.c \
 	index_decoder.c \
 	index_hash.c \
-	init_decoder.c \
 	stream_decoder.c \
 	stream_decoder.h \
 	stream_flags_decoder.c \

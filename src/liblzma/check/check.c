@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       check.c
-/// \brief      Check sizes
+/// \brief      Single API to access different integrity checks
 //
 //  This code has been put into the public domain.
 //
@@ -17,7 +17,7 @@
 extern LZMA_API lzma_bool
 lzma_check_is_supported(lzma_check type)
 {
-	if ((unsigned)(type) > LZMA_CHECK_ID_MAX)
+	if ((unsigned int)(type) > LZMA_CHECK_ID_MAX)
 		return false;
 
 	static const lzma_bool available_checks[LZMA_CHECK_ID_MAX + 1] = {
@@ -57,14 +57,14 @@ lzma_check_is_supported(lzma_check type)
 		false,  // Reserved
 	};
 
-	return available_checks[(unsigned)(type)];
+	return available_checks[(unsigned int)(type)];
 }
 
 
 extern LZMA_API uint32_t
 lzma_check_size(lzma_check type)
 {
-	if ((unsigned)(type) > LZMA_CHECK_ID_MAX)
+	if ((unsigned int)(type) > LZMA_CHECK_ID_MAX)
 		return UINT32_MAX;
 
 	// See file-format.txt section 2.1.1.2.
@@ -77,7 +77,7 @@ lzma_check_size(lzma_check type)
 		64, 64, 64
 	};
 
-	return check_sizes[(unsigned)(type)];
+	return check_sizes[(unsigned int)(type)];
 }
 
 

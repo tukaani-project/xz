@@ -269,8 +269,6 @@ test_lzma(void)
 int
 main(void)
 {
-	lzma_init();
-
 #if defined(HAVE_ENCODER_SUBBLOCK) && defined(HAVE_DECODER_SUBBLOCK)
 	test_subblock();
 #endif

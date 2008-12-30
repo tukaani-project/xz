@@ -383,6 +383,21 @@ AC_MSG_RESULT([$enable_small])
 AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
 
 
+#############
+# Threading #
+#############
+
+AC_MSG_CHECKING([if threading support is wanted])
+AC_ARG_ENABLE([threads], AC_HELP_STRING([--disable-threads],
+		[Disable threading support.
+		This makes some things thread-unsafe.]),
+	[], [enable_threads=yes])
+if test "x$enable_threads" != xyes && test "x$enable_threads" != xno; then
+	AC_MSG_ERROR([--enable-threads accepts only \`yes' or \`no'])
+fi
+# We use the actual result a little later.
+
+
 ###############################################################################
 # Checks for programs.
 ###############################################################################
@@ -402,10 +417,14 @@ AM_PROG_CC_C_O
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
 
-echo
-echo "Threading support:"
-ACX_PTHREAD
-CC="$PTHREAD_CC"
+if test "x$enable_threads" = xyes; then
+	echo
+	echo "Threading support:"
+	ACX_PTHREAD
+	LIBS="$LIBS $PTHREAD_LIBS"
+	CFLAGS="$PTHREAD_CFLAGS $CFLAGS"
+	CC="$PTHREAD_CC"
+fi
 
 echo
 echo "Initializing Libtool:"
@@ -698,7 +717,7 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	lib/Makefile
 	src/Makefile
-	src/liblzma/lzma.pc
+	src/liblzma/liblzma.pc
 	src/liblzma/Makefile
 	src/liblzma/api/Makefile
 	src/liblzma/common/Makefile

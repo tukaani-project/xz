@@ -171,8 +171,6 @@ test_decode_invalid(void)
 int
 main(void)
 {
-	lzma_init();
-
 	// Valid headers
 	known_flags.backward_size = 1024;
 	for (lzma_check check = LZMA_CHECK_NONE;

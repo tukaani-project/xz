@@ -28,20 +28,8 @@
 #define RC_INFINITY_PRICE (UINT32_C(1) << 30)
 
 
-#if !defined(LZMA_RANGE_ENCODER_H) || defined(HAVE_SMALL)
-/// Probability prices used by *_get_price() macros. This is initialized
-/// by lzma_rc_init() and is not modified later.
-extern uint32_t lzma_rc_prices[RC_PRICE_TABLE_SIZE];
-
-/// Initializes lzma_rc_prices[]. This needs to be called only once.
-extern void lzma_rc_init(void);
-
-#else
-// Not building a size optimized version, so we use a precomputed
-// constant table.
-extern const uint32_t lzma_rc_prices[RC_PRICE_TABLE_SIZE];
-
-#endif
+/// Lookup table for the inline functions defined in this file.
+extern const uint8_t lzma_rc_prices[RC_PRICE_TABLE_SIZE];
 
 
 static inline uint32_t

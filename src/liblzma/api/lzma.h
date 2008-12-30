@@ -197,7 +197,6 @@ extern "C" {
 
 /* Basic features */
 #include "lzma/version.h"
-#include "lzma/init.h"
 #include "lzma/base.h"
 #include "lzma/vli.h"
 #include "lzma/check.h"

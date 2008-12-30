@@ -4,8 +4,9 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: liblzma
-Description: LZMA compression library
-URL: http://tukaani.org/lzma/
+Description: General purporse data compression library
+URL: http://tukaani.org/xz/
 Version: @PACKAGE_VERSION@
 Cflags: -I${includedir}
 Libs: -L${libdir} -llzma
+Libs.private: @PTHREAD_CFLAGS@ @PTHREAD_LIBS@

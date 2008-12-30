@@ -2,7 +2,7 @@
 
 #include "range_encoder.h"
 
-const uint32_t lzma_rc_prices[RC_PRICE_TABLE_SIZE] = {
+const uint8_t lzma_rc_prices[RC_PRICE_TABLE_SIZE] = {
 	 128, 103,  91,  84,  78,  73,  69,  66,
 	  63,  61,  58,  56,  54,  52,  51,  49,
 	  48,  46,  45,  44,  43,  42,  41,  40,

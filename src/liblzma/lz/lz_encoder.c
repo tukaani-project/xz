@@ -472,6 +472,12 @@ lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			lzma_allocator *allocator, const void *options,
 			lzma_lz_options *lz_options))
 {
+#ifdef HAVE_SMALL
+	// We need that the CRC32 table has been initialized.
+	// This is enough to do it.
+	lzma_crc32(NULL, 0, 0);
+#endif
+
 	// Allocate and initialize the base data structure.
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);

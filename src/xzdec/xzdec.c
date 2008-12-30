@@ -401,9 +401,6 @@ main(int argc, char **argv)
 	// Parse the command line options.
 	parse_options(argc, argv);
 
-	// Initialize liblzma internals.
-	lzma_init_decoder();
-
 	// The same lzma_stream is used for all files that we decode. This way
 	// we don't need to reallocate memory for every file if they use same
 	// compression settings.

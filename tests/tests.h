@@ -38,7 +38,7 @@
 static inline const char *
 lzma_ret_sym(lzma_ret ret)
 {
-	if ((unsigned)(ret) > LZMA_PROG_ERROR)
+	if ((unsigned int)(ret) > LZMA_PROG_ERROR)
 		return "UNKNOWN_ERROR";
 
 	static const char *msgs[] = {

@@ -63,20 +63,13 @@ typedef enum {
  * \brief       Maximum valid Check ID
  *
  * The .xz file format specification specifies 16 Check IDs (0-15). Some
- * of them are only reserved i.e. no actual Check algorithm has been assigned.
- * Still liblzma accepts any of these IDs for future compatibility when
- * decoding files. If a valid but unsupported Check ID is detected, liblzma
- * indicates a warning with LZMA_UNSUPPORTED_CHECK.
- *
- * FIXME bad desc
+ * of them are only reserved, that is, no actual Check algorithm has been
+ * assigned. When decoding, liblzma still accepts unknown Check IDs for
+ * future compatibility. If a valid but unsupported Check ID is detected,
+ * liblzma can indicate a warning; see the flags LZMA_TELL_NO_CHECK,
+ * LZMA_TELL_UNSUPPORTED_CHECK, and LZMA_TELL_ANY_CHECK in container.h.
  */
 #define LZMA_CHECK_ID_MAX 15
-
-
-/**
- * \brief       Maximum size of a Check field
- */
-#define LZMA_CHECK_SIZE_MAX 64
 
 
 /**
@@ -104,6 +97,12 @@ extern lzma_bool lzma_check_is_supported(lzma_check check)
  * If the argument is not in the range [0, 15], UINT32_MAX is returned.
  */
 extern uint32_t lzma_check_size(lzma_check check) lzma_attr_const;
+
+
+/**
+ * \brief       Maximum size of a Check field
+ */
+#define LZMA_CHECK_SIZE_MAX 64
 
 
 /**

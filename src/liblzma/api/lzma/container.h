@@ -76,7 +76,7 @@ extern uint64_t lzma_easy_encoder_memusage(uint32_t preset)
 
 
 /**
- * \brief       Calculate rough memory usage FIXME
+ * \brief       Calculate rough decoder memory usage of a preset
  *
  * This function is a wrapper for lzma_raw_decoder_memusage().
  *

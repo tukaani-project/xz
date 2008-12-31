@@ -30,7 +30,9 @@
  *  - zzz = revision
  *  - s indicates stability: 0 = alpha, 1 = beta, 2 = stable
  *
- * See the README file for details about the version numbering. FIXME
+ * The same xyyyzzz triplet is never reused with different stability levels.
+ * For example, if 5.1.0alpha has been released, there will never be 5.1.0beta
+ * or 5.1.0 stable.
  *
  * \note        The version number of liblzma has nothing to with
  *              the version number of Igor Pavlov's LZMA SDK.

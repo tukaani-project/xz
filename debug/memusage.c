@@ -23,8 +23,6 @@
 int
 main(void)
 {
-	lzma_init();
-
 	lzma_options_lzma lzma = {
 		.dict_size = (1U << 30) + (1U << 29),
 		.lc = 3,

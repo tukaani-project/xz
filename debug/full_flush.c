@@ -68,8 +68,6 @@ encode(size_t size, lzma_action action)
 int
 main(int argc, char **argv)
 {
-	lzma_init_encoder();
-
 	file_in = argc > 1 ? fopen(argv[1], "rb") : stdin;
 
 

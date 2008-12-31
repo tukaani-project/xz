@@ -254,7 +254,7 @@ lzma_simple_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	}
 
 	if (filters[0].options != NULL) {
-		const lzma_options_simple *simple = filters[0].options;
+		const lzma_options_bcj *simple = filters[0].options;
 		next->coder->now_pos = simple->start_offset;
 	} else {
 		next->coder->now_pos = 0;

@@ -1,6 +1,6 @@
 /**
- * \file        lzma/simple.h
- * \brief       So called "simple" filters
+ * \file        lzma/bcj.h
+ * \brief       Branch/Call/Jump conversion filters
  *
  * \author      Copyright (C) 1999-2006 Igor Pavlov
  * \author      Copyright (C) 2007 Lasse Collin
@@ -25,7 +25,7 @@
 
 #define LZMA_FILTER_X86         LZMA_VLI_C(0x04)
 	/**<
-	 * BCJ (Branch, Call, Jump) filter for x86 binaries
+	 * Filter for x86 binaries
 	 */
 
 #define LZMA_FILTER_POWERPC     LZMA_VLI_C(0x05)
@@ -55,17 +55,17 @@
 
 
 /**
- * \brief       Options for so called "simple" filters
+ * \brief       Options for BCJ filters
  *
- * The simple filters never change the size of the data. Specifying options
- * for them is optional: if pointer to options is NULL, default values are
- * used. You probably never need to specify these options, so just set the
- * options pointer to NULL and be happy.
+ * The BCJ filters never change the size of the data. Specifying options
+ * for them is optional: if pointer to options is NULL, default value is
+ * used. You probably never need to specify options to BCJ filters, so just
+ * set the options pointer to NULL and be happy.
  *
  * If options with non-default values have been specified when encoding,
  * the same options must also be specified when decoding.
  *
- * \note        At the moment, none of the simple filters support
+ * \note        At the moment, none of the BCJ filters support
  *              LZMA_SYNC_FLUSH. If LZMA_SYNC_FLUSH is specified,
  *              LZMA_OPTIONS_ERROR will be returned. If there is need,
  *              partial support for LZMA_SYNC_FLUSH can be added in future.
@@ -76,7 +76,7 @@
  */
 typedef struct {
 	/**
-	 * \brief       Start offset for branch conversions
+	 * \brief       Start offset for conversions
 	 *
 	 * This setting is useful only when the same filter is used
 	 * _separately_ for multiple sections of the same executable file,
@@ -91,4 +91,4 @@ typedef struct {
 	 */
 	uint32_t start_offset;
 
-} lzma_options_simple;
+} lzma_options_bcj;

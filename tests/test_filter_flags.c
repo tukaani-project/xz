@@ -100,7 +100,7 @@ test_subblock(void)
 
 #if defined(HAVE_ENCODER_X86) && defined(HAVE_DECODER_X86)
 static void
-test_simple(void)
+test_bcj(void)
 {
 	// Test 1
 	known_flags.id = LZMA_FILTER_X86;
@@ -111,7 +111,7 @@ test_simple(void)
 	expect(decoded_flags.options == NULL);
 
 	// Test 2
-	lzma_options_simple options;
+	lzma_options_bcj options;
 	options.start_offset = 0;
 	known_flags.options = &options;
 	expect(!encode(2));
@@ -125,7 +125,7 @@ test_simple(void)
 	expect(!decode(6));
 	expect(decoded_flags.options != NULL);
 
-	lzma_options_simple *decoded = decoded_flags.options;
+	lzma_options_bcj *decoded = decoded_flags.options;
 	expect(decoded->start_offset == options.start_offset);
 
 	free(decoded);
@@ -273,7 +273,7 @@ main(void)
 	test_subblock();
 #endif
 #if defined(HAVE_ENCODER_X86) && defined(HAVE_DECODER_X86)
-	test_simple();
+	test_bcj();
 #endif
 #if defined(HAVE_ENCODER_DELTA) && defined(HAVE_DECODER_DELTA)
 	test_delta();

@@ -142,7 +142,7 @@ AC_ARG_ENABLE([decoders], AC_HELP_STRING([--enable-decoders=LIST],
 		[Comma-separated list of decoders to build. Default=all.
 		Available decoders are the same as available encoders.]),
 	[], [enable_decoders=SUPPORTED_FILTERS])
-enable_decoders=`echo "$enable_decoders" | sed 's/,/ /g'`
+enable_decoders=`echo "$enable_decoders" | sed 's/,subblock//; s/,/ /g'`
 if test "x$enable_decoders" = xno || test "x$enable_decoders" = x; then
 	AC_MSG_RESULT([(none)])
 else

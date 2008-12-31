@@ -24,7 +24,7 @@
 
 AC_PREREQ([2.61])
 
-AC_INIT([xz], [4.999.6alpha], [lasse.collin@tukaani.org])
+AC_INIT([XZ Utils], [4.999.7beta], [lasse.collin@tukaani.org], [xz])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])
 
@@ -115,7 +115,7 @@ AC_ARG_ENABLE([encoders], AC_HELP_STRING([--enable-encoders=LIST],
 		Available encoders:]
 			m4_translit(m4_defn([SUPPORTED_FILTERS]), [,], [ ])),
 	[], [enable_encoders=SUPPORTED_FILTERS])
-enable_encoders=`echo "$enable_encoders" | sed 's/,/ /g'`
+enable_encoders=`echo "$enable_encoders" | sed 's/,subblock//; s/,/ /g'`
 if test "x$enable_encoders" = xno || test "x$enable_encoders" = x; then
 	AC_MSG_RESULT([(none)])
 else

@@ -37,7 +37,7 @@
  * \note        The version number of liblzma has nothing to with
  *              the version number of Igor Pavlov's LZMA SDK.
  */
-#define LZMA_VERSION UINT32_C(49990060)
+#define LZMA_VERSION UINT32_C(49990071)
 
 
 /**

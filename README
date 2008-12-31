@@ -1,13 +1,13 @@
 
-LZMA Utils
-----------
+XZ Utils
+--------
 
 Warning
 
-    This is an early alpha version. Don't trust the files produced by
+    This is a beta version. Don't trust the files produced by
     this version of the software - not even if the software can
     uncompress the files properly! This is because the file format
-    isn't completely frozen yet.
+    isn't officially frozen yet although changes are very unlikely.
 
     So please test a lot, but don't use for anything serious yet.
 
@@ -18,19 +18,19 @@ Overview
     Igor Pavlov as part of 7-Zip. It provides high compression ratio
     while keeping the decompression speed fast.
 
-    LZMA Utils are an attempt to make LZMA compression easy to use
+    XZ Utils are an attempt to make LZMA compression easy to use
     on free (as in freedom) operating systems. This is achieved by
     providing tools and libraries which are similar to use than the
     equivalents of the most popular existing compression algorithms.
 
-    LZMA Utils consist of a few relatively separate parts:
+    XZ Utils consist of a few relatively separate parts:
       * liblzma is an encoder/decoder library with support for several
         filters (algorithm implementations). The primary filter is LZMA.
-      * libzfile enables reading from and writing to gzip, bzip2 and
-        LZMA compressed and uncompressed files with an API similar to
-        the standard ANSI-C file I/O.
+      * libzfile (or whatever the name will be) enables reading from and
+        writing to gzip, bzip2 and LZMA compressed and uncompressed files
+        with an API similar to the standard ANSI-C file I/O.
         [ NOTE: libzfile is not implemented yet. ]
-      * lzma command line tool has almost identical syntax than gzip
+      * xz command line tool has almost identical syntax than gzip
         and bzip2. It makes LZMA easy for average users, but also
         provides advanced options to finetune the compression settings.
       * A few shell scripts make diffing and grepping LZMA compressed
@@ -39,15 +39,15 @@ Overview
 
 Supported platforms
 
-    LZMA Utils are developed on GNU+Linux, but they should work at
+    XZ Utils are developed on GNU+Linux, but they should work at
     least on *BSDs and Solaris. They probably work on some other
     POSIX-like operating systems too.
 
-    If you use GCC to compile LZMA Utils, you need at least version
+    If you use GCC to compile XZ Utils, you need at least version
     3.x.x. GCC version 2.xx.x doesn't support some C99 features used
-    in LZMA Utils source code, thus GCC 2 won't compile LZMA Utils.
+    in XZ Utils source code, thus GCC 2 won't compile XZ Utils.
 
-    If you have written patches to make LZMA Utils to work on previously
+    If you have written patches to make XZ Utils to work on previously
     unsupported platform, please send the patches to me! I will consider
     including them to the official version. It's nice to minimize the
     need of third-party patching.
@@ -61,9 +61,9 @@ Supported platforms
 
 Version numbering
 
-    Starting from LZMA Utils 5, the version number of LZMA Utils has
-    absolutely nothing to do with the version number of LZMA SDK or
-    7-Zip. The new version number format of LZMA Utils is X.Y.ZS:
+    The version number of XZ Utils has absolutely nothing to do with
+    the version number of LZMA SDK or 7-Zip. The new version number
+    format of XZ Utils is X.Y.ZS:
 
       - X is the major version. When this is incremented, the library
         API and ABI break.

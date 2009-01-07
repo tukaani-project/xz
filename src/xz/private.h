@@ -21,6 +21,7 @@
 #define PRIVATE_H
 
 #include "sysdefs.h"
+#include "mythread.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

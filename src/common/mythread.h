@@ -20,6 +20,9 @@
 		pthread_once(&once_, &func); \
 	} while (0)
 
+#	define mythread_sigmask(how, set, oset) \
+		pthread_sigmask(how, set, oset)
+
 #else
 
 #	define mythread_once(func) \
@@ -30,5 +33,8 @@
 			once_ = true; \
 		} \
 	} while (0)
+
+#	define mythread_sigmask(how, set, oset) \
+		sigprocmask(how, set, oset)
 
 #endif

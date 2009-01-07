@@ -109,7 +109,7 @@ signals_block(void)
 {
 	if (signals_block_count++ == 0) {
 		const int saved_errno = errno;
-		sigprocmask(SIG_BLOCK, &hooked_signals, NULL);
+		mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
 		errno = saved_errno;
 	}
 
@@ -124,7 +124,7 @@ signals_unblock(void)
 
 	if (--signals_block_count == 0) {
 		const int saved_errno = errno;
-		sigprocmask(SIG_UNBLOCK, &hooked_signals, NULL);
+		mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
 		errno = saved_errno;
 	}
 

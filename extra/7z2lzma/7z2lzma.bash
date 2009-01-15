@@ -11,30 +11,14 @@
 #
 # This script requires basic GNU tools and 7z or 7za tool from p7zip.
 #
-# Last modified: 2008-09-27 11:05+0300
+# Last modified: 2009-01-15 14:25+0200
 #
 #############################################################################
 #
-# Copyright (C) 2008 Lasse Collin <lasse.collin@tukaani.org>
+# Author: Lasse Collin <lasse.collin@tukaani.org>
 #
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# This file has been put into the public domain.
+# You can do whatever you want with this file.
 #
 #############################################################################
 
@@ -81,7 +65,7 @@ fi
 # Get copmressed, uncompressed, and dictionary size.
 CSIZE=$(printf '%s\n' "$INFO" | sed -rn 's|^Packed Size = ([0-9]+$)|\1|p')
 USIZE=$(printf '%s\n' "$INFO" | sed -rn 's|^Size = ([0-9]+$)|\1|p')
-DICT=$(printf '%s\n' "$INFO" | sed -rn 's|^Method = LZMA:([0-9]+)$|\1|p')
+DICT=$(printf '%s\n' "$INFO" | sed -rn 's|^Method = LZMA:([0-9]+[bkm]?)$|\1|p')
 
 if [ -z "$CSIZE" -o -z "$USIZE" -o -z "$DICT" ]; then
 	echo "Parsing output of $SEVENZIP failed. Maybe the file uses some"
@@ -93,8 +77,25 @@ fi
 # Otherwise the output will be corrupt.
 printf '\x5D' > "$2"
 
-# Dictionary size
-int2bin 4 "$((1 << DICT))" >> "$2"
+# Dictionary size can be either was power of two, bytes, kibibytes, or
+# mebibytes. We need to convert it to bytes.
+case $DICT in
+	*b)
+		DICT=${DICT%b}
+		;;
+	*k)
+		DICT=${DICT%k}
+		DICT=$((DICT << 10))
+		;;
+	*m)
+		DICT=${DICT%m}
+		DICT=$((DICT << 20))
+		;;
+	*)
+		DICT=$((1 << DICT))
+		;;
+esac
+int2bin 4 "$DICT" >> "$2"
 
 # Uncompressed size
 int2bin 8 "$USIZE" >> "$2"

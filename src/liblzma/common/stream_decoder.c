@@ -200,7 +200,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 				allocator, coder->buffer));
 
 		// Check the memory usage limit.
-		const uint64_t memusage = lzma_memusage_decoder(filters);
+		const uint64_t memusage = lzma_raw_decoder_memusage(filters);
 		lzma_ret ret;
 
 		if (memusage == UINT64_MAX) {

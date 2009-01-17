@@ -211,9 +211,9 @@ lzma_raw_encoder(lzma_stream *strm, const lzma_filter *options)
 
 
 extern LZMA_API uint64_t
-lzma_memusage_encoder(const lzma_filter *filters)
+lzma_raw_encoder_memusage(const lzma_filter *filters)
 {
-	return lzma_memusage_coder(
+	return lzma_raw_coder_memusage(
 			(lzma_filter_find)(&encoder_find), filters);
 }
 

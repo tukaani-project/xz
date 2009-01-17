@@ -113,7 +113,7 @@ lzma_easy_encoder_memusage(uint32_t preset)
 	if (easy_set_filters(&coder, preset))
 		return UINT32_MAX;
 
-	return lzma_memusage_encoder(coder.filters);
+	return lzma_raw_encoder_memusage(coder.filters);
 }
 
 
@@ -124,5 +124,5 @@ lzma_easy_decoder_memusage(uint32_t preset)
 	if (easy_set_filters(&coder, preset))
 		return UINT32_MAX;
 
-	return lzma_memusage_decoder(coder.filters);
+	return lzma_raw_decoder_memusage(coder.filters);
 }

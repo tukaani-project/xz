@@ -102,7 +102,7 @@ extern lzma_bool lzma_filter_decoder_is_supported(lzma_vli id);
  * \return      Rough number of bytes required for the given filter chain
  *              when encoding.
  */
-extern uint64_t lzma_memusage_encoder(const lzma_filter *filters)
+extern uint64_t lzma_raw_encoder_memusage(const lzma_filter *filters)
 		lzma_attr_pure;
 
 
@@ -115,7 +115,7 @@ extern uint64_t lzma_memusage_encoder(const lzma_filter *filters)
  * \return      Rough number of bytes required for the given filter chain
  *              when decoding.
  */
-extern uint64_t lzma_memusage_decoder(const lzma_filter *filters)
+extern uint64_t lzma_raw_decoder_memusage(const lzma_filter *filters)
 		lzma_attr_pure;
 
 

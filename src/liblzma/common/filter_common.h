@@ -48,7 +48,7 @@ extern lzma_ret lzma_raw_coder_init(
 		lzma_filter_find coder_find, bool is_encoder);
 
 
-extern uint64_t lzma_memusage_coder(lzma_filter_find coder_find,
+extern uint64_t lzma_raw_coder_memusage(lzma_filter_find coder_find,
 		const lzma_filter *filters);
 
 

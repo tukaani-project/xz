@@ -158,10 +158,10 @@ coder_set_compression_settings(void)
 	uint64_t memory_usage;
 	uint64_t memory_limit;
 	if (opt_mode == MODE_COMPRESS) {
-		memory_usage = lzma_memusage_encoder(filters);
+		memory_usage = lzma_raw_encoder_memusage(filters);
 		memory_limit = hardware_memlimit_encoder();
 	} else {
-		memory_usage = lzma_memusage_decoder(filters);
+		memory_usage = lzma_raw_decoder_memusage(filters);
 		memory_limit = hardware_memlimit_decoder();
 	}
 
@@ -212,7 +212,7 @@ coder_set_compression_settings(void)
 			if (opt->dict_size < (UINT32_C(1) << 20))
 				memlimit_too_small(memory_usage, memory_limit);
 
-			memory_usage = lzma_memusage_encoder(filters);
+			memory_usage = lzma_raw_encoder_memusage(filters);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
 

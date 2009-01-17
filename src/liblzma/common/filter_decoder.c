@@ -180,9 +180,9 @@ lzma_raw_decoder(lzma_stream *strm, const lzma_filter *options)
 
 
 extern LZMA_API uint64_t
-lzma_memusage_decoder(const lzma_filter *filters)
+lzma_raw_decoder_memusage(const lzma_filter *filters)
 {
-	return lzma_memusage_coder(
+	return lzma_raw_coder_memusage(
 			(lzma_filter_find)(&decoder_find), filters);
 }
 

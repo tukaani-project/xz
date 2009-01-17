@@ -223,7 +223,7 @@ lzma_raw_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern uint64_t
-lzma_memusage_coder(lzma_filter_find coder_find,
+lzma_raw_coder_memusage(lzma_filter_find coder_find,
 		const lzma_filter *filters)
 {
 	// The chain has to have at least one filter.

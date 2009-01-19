@@ -269,14 +269,21 @@ lzma_code(lzma_stream *strm, lzma_action action)
 			strm->internal->sequence = ISEQ_RUN;
 		else
 			strm->internal->sequence = ISEQ_END;
-		break;
 
+	// Fall through
+
+	case LZMA_NO_CHECK:
 	case LZMA_UNSUPPORTED_CHECK:
+	case LZMA_GET_CHECK:
+	case LZMA_MEMLIMIT_ERROR:
+		// Something else than LZMA_OK, but not a fatal error,
+		// that is, coding may be continued (except if ISEQ_END).
 		strm->internal->allow_buf_error = false;
 		break;
 
 	default:
 		// All the other errors are fatal; coding cannot be continued.
+		assert(ret != LZMA_BUF_ERROR);
 		strm->internal->sequence = ISEQ_ERROR;
 		break;
 	}

@@ -18,6 +18,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "lzma2_encoder.h"
 #include "lzma_encoder_private.h"
 #include "fastpos.h"
 
@@ -342,7 +343,7 @@ lzma_lzma_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		if (limit != UINT32_MAX
 				&& (mf->read_pos - mf->read_ahead >= limit
 					|| *out_pos + rc_pending(&coder->rc)
-						>= (UINT32_C(1) << 16)
+						>= LZMA2_CHUNK_MAX
 							- LOOP_INPUT_MAX))
 			break;
 

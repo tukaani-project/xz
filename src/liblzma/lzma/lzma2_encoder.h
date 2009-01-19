@@ -23,6 +23,20 @@
 
 #include "common.h"
 
+
+/// Maximum number of bytes of actual data per chunk (no headers)
+#define LZMA2_CHUNK_MAX (UINT32_C(1) << 16)
+
+/// Maximum uncompressed size of LZMA chunk (no headers)
+#define LZMA2_UNCOMPRESSED_MAX (UINT32_C(1) << 21)
+
+/// Maximum size of LZMA2 headers
+#define LZMA2_HEADER_MAX 6
+
+/// Size of a header for uncompressed chunk
+#define LZMA2_HEADER_UNCOMPRESSED 3
+
+
 extern lzma_ret lzma_lzma2_encoder_init(
 		lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters);

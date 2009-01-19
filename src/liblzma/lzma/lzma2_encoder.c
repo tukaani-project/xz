@@ -24,19 +24,6 @@
 #include "lzma2_encoder.h"
 
 
-/// Maximum number of bytes of actual data per chunk (no headers)
-#define LZMA2_CHUNK_MAX (UINT32_C(1) << 16)
-
-/// Maximum uncompressed size of LZMA chunk (no headers)
-#define LZMA2_UNCOMPRESSED_MAX (UINT32_C(1) << 21)
-
-/// Maximum size of LZMA2 headers
-#define LZMA2_HEADER_MAX 6
-
-/// Size of a header for uncompressed chunk
-#define LZMA2_HEADER_UNCOMPRESSED 3
-
-
 struct lzma_coder_s {
 	enum {
 		SEQ_INIT,

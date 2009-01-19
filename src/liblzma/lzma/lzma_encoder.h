@@ -38,14 +38,6 @@ extern bool lzma_lzma_lclppb_encode(
 		const lzma_options_lzma *options, uint8_t *byte);
 
 
-#ifdef HAVE_SMALL
-
-/// Initializes the lzma_fastpos[] array.
-extern void lzma_fastpos_init(void);
-
-#endif
-
-
 #ifdef LZMA_LZ_ENCODER_H
 
 /// Initializes raw LZMA encoder; this is used by LZMA2.

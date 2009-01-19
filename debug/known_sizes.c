@@ -50,7 +50,7 @@ main(void)
 	lzma_options_lzma opt_lzma;
 	if (lzma_lzma_preset(&opt_lzma, 1))
 		return 1;
-	
+
 	lzma_filter filters[] = {
 		{
 			.id = LZMA_FILTER_LZMA2,

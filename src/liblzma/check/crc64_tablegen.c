@@ -71,7 +71,7 @@ print_crc64_table(void)
 					crc64_table[s][b]);
 
 			if (b != 255)
-				printf(", ");
+				printf(",%s", (b+1) % 2 == 0 ? "" : " ");
 		}
 
 		if (s == 3)

@@ -192,33 +192,25 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		break;
 
 	case ISEQ_SYNC_FLUSH:
-		if (action != LZMA_SYNC_FLUSH)
+		// The same action must be used until we return
+		// LZMA_STREAM_END, and the amount of input must not change.
+		if (action != LZMA_SYNC_FLUSH
+				|| strm->internal->avail_in != strm->avail_in)
 			return LZMA_PROG_ERROR;
-
-		// Check that application doesn't change avail_in once
-		// LZMA_SYNC_FLUSH has been used.
-		if (strm->internal->avail_in != strm->avail_in)
-			return LZMA_DATA_ERROR;
 
 		break;
 
 	case ISEQ_FULL_FLUSH:
-		if (action != LZMA_FULL_FLUSH)
+		if (action != LZMA_FULL_FLUSH
+				|| strm->internal->avail_in != strm->avail_in)
 			return LZMA_PROG_ERROR;
-
-		// Check that application doesn't change avail_in once
-		// LZMA_FULL_FLUSH has been used.
-		if (strm->internal->avail_in != strm->avail_in)
-			return LZMA_DATA_ERROR;
 
 		break;
 
 	case ISEQ_FINISH:
-		if (action != LZMA_FINISH)
+		if (action != LZMA_FINISH
+				|| strm->internal->avail_in != strm->avail_in)
 			return LZMA_PROG_ERROR;
-
-		if (strm->internal->avail_in != strm->avail_in)
-			return LZMA_DATA_ERROR;
 
 		break;
 

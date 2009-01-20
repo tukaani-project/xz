@@ -22,21 +22,6 @@
 #include "check.h"
 
 
-/// The maximum size of a single Block is limited by the maximum size of
-/// a Stream, which is 2^63 - 1 bytes (i.e. LZMA_VLI_MAX). We could
-/// take into account the headers etc. to determine the exact maximum size
-/// of the Compressed Data field, but the complexity would give us nothing
-/// useful. Instead, limit the size of Compressed Data so that even with
-/// biggest possible Block Header and Check fields the total encoded size of
-/// the Block stays as valid VLI. This way we don't produce incorrect output
-/// if someone will really try creating a Block of 8 EiB.
-///
-/// ~LZMA_VLI_C(3) is to guarantee that if we need padding at the end of
-/// the Compressed Data field, it will still stay in the proper limit.
-#define COMPRESSED_SIZE_MAX ((LZMA_VLI_MAX - LZMA_BLOCK_HEADER_SIZE_MAX \
-		- LZMA_CHECK_SIZE_MAX) & ~LZMA_VLI_C(3))
-
-
 struct lzma_coder_s {
 	/// The filters in the chain; initialized with lzma_raw_decoder_init().
 	lzma_next_coder next;
@@ -58,7 +43,7 @@ struct lzma_coder_s {
 	/// Uncompressed Size calculated while encoding
 	lzma_vli uncompressed_size;
 
-	/// Position in Block Padding and the Check fields
+	/// Position in the Check field
 	size_t pos;
 
 	/// Check of the uncompressed data
@@ -74,7 +59,7 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 {
 	// Check that our amount of input stays in proper limits.
 	if (LZMA_VLI_MAX - coder->uncompressed_size < in_size - *in_pos)
-		return LZMA_PROG_ERROR;
+		return LZMA_DATA_ERROR;
 
 	switch (coder->sequence) {
 	case SEQ_CODE: {
@@ -117,14 +102,16 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 	// Fall through
 
 	case SEQ_PADDING:
-		// Pad Compressed Data to a multiple of four bytes.
-		while ((coder->compressed_size + coder->pos) & 3) {
+		// Pad Compressed Data to a multiple of four bytes. We can
+		// use coder->compressed_size for this since we don't need
+		// it for anything else anymore.
+		while (coder->compressed_size & 3) {
 			if (*out_pos >= out_size)
 				return LZMA_OK;
 
 			out[*out_pos] = 0x00;
 			++*out_pos;
-			++coder->pos;
+			++coder->compressed_size;
 		}
 
 		if (coder->block->check == LZMA_CHECK_NONE)
@@ -132,7 +119,6 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 		lzma_check_finish(&coder->check, coder->block->check);
 
-		coder->pos = 0;
 		coder->sequence = SEQ_CHECK;
 
 	// Fall through

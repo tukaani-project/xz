@@ -55,6 +55,7 @@ typedef struct {
 	 *  - lzma_block_total_size()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode()
@@ -76,6 +77,7 @@ typedef struct {
 	 *
 	 * Written by:
 	 *  - lzma_block_header_size()
+	 *  - lzma_block_buffer_encode()
 	 */
 	uint32_t header_size;
 #	define LZMA_BLOCK_HEADER_SIZE_MIN 8
@@ -95,6 +97,7 @@ typedef struct {
 	 *  - lzma_block_total_size()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
 	 */
 	lzma_check check;
 
@@ -147,6 +150,7 @@ typedef struct {
 	 *  - lzma_block_compressed_size()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
 	 */
 	lzma_vli compressed_size;
 
@@ -168,6 +172,7 @@ typedef struct {
 	 *  - lzma_block_header_decode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
 	 */
 	lzma_vli uncompressed_size;
 
@@ -182,6 +187,7 @@ typedef struct {
 	 *  - lzma_block_header_encode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode(): Note that this does NOT free()
@@ -415,3 +421,54 @@ extern lzma_ret lzma_block_encoder(lzma_stream *strm, lzma_block *block)
  */
 extern lzma_ret lzma_block_decoder(lzma_stream *strm, lzma_block *block)
 		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Calculate maximum output buffer size for single-call encoding
+ *
+ * This is equivalent to lzma_stream_buffer_bound() but for .xz Blocks.
+ * See the documentation of lzma_stream_buffer_bound().
+ */
+extern size_t lzma_block_buffer_bound(size_t uncompressed_size);
+
+
+/**
+ * \brief       Single-call .xz Block encoder
+ *
+ * In contrast to the multi-call encoder initialized with
+ * lzma_block_encoder(), this function encodes also the Block Header. This
+ * is required to make it possible to write appropriate Block Header also
+ * in case the data isn't compressible, and different filter chain has to be
+ * used to encode the data in uncompressed form using uncompressed chunks
+ * of the LZMA2 filter.
+ *
+ * When the data isn't compressible, header_size, compressed_size, and
+ * uncompressed_size are set just like when the data was compressible, but
+ * it is possible that header_size is too small to hold the filter chain
+ * specified in block->filters, because that isn't necessarily the filter
+ * chain that was actually used to encode the data. lzma_block_unpadded_size()
+ * still works normally, because it doesn't read the filters array.
+ *
+ * \param       block       Block options: block->version, block->check,
+ *                          and block->filters must be initialized.
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_size     Size of the input buffer
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Encoding was successful.
+ *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_block_buffer_encode(
+		lzma_block *block, lzma_allocator *allocator,
+		const uint8_t *in, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size);

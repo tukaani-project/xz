@@ -178,6 +178,20 @@ index_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 }
 
 
+static void
+index_encoder_reset(lzma_coder *coder, lzma_index *i)
+{
+	lzma_index_rewind(i);
+
+	coder->sequence = SEQ_INDICATOR;
+	coder->index = i;
+	coder->pos = 0;
+	coder->crc32 = 0;
+
+	return;
+}
+
+
 extern lzma_ret
 lzma_index_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_index *i)
@@ -196,12 +210,7 @@ lzma_index_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->end = &index_encoder_end;
 	}
 
-	lzma_index_rewind(i);
-
-	next->coder->sequence = SEQ_INDICATOR;
-	next->coder->index = i;
-	next->coder->pos = 0;
-	next->coder->crc32 = 0;
+	index_encoder_reset(next->coder, i);
 
 	return LZMA_OK;
 }
@@ -215,4 +224,42 @@ lzma_index_encoder(lzma_stream *strm, lzma_index *i)
 	strm->internal->supported_actions[LZMA_RUN] = true;
 
 	return LZMA_OK;
+}
+
+
+extern LZMA_API lzma_ret
+lzma_index_buffer_encode(lzma_index *i,
+		uint8_t *out, size_t *out_pos, size_t out_size)
+{
+	// Validate the arugments.
+	if (i == NULL || out == NULL || out_pos == NULL || *out_pos > out_size)
+		return LZMA_PROG_ERROR;
+
+	// Don't try to encode if there's not enough output space.
+	if (out_size - *out_pos < lzma_index_size(i))
+		return LZMA_BUF_ERROR;
+
+	// The Index encoder needs just one small data structure so we can
+	// allocate it on stack.
+	lzma_coder coder;
+	index_encoder_reset(&coder, i);
+
+	// Do the actual encoding. This should never fail, but store
+	// the original *out_pos just in case.
+	const size_t out_start = *out_pos;
+	lzma_ret ret = index_encode(&coder, NULL, NULL, NULL, 0,
+			out, out_pos, out_size, LZMA_RUN);
+
+	if (ret == LZMA_STREAM_END) {
+		ret = LZMA_OK;
+	} else {
+		// We should never get here, but just in case, restore the
+		// output position and set the error accordingly if something
+		// goes wrong and debugging isn't enabled.
+		assert(0);
+		*out_pos = out_start;
+		ret = LZMA_PROG_ERROR;
+	}
+
+	return ret;
 }

@@ -169,6 +169,62 @@ extern lzma_ret lzma_alone_encoder(
 		lzma_attr_warn_unused_result;
 
 
+/**
+ * \brief       Calculate output buffer size for single-call Stream encoder
+ *
+ * When trying to compress uncompressible data, the encoded size will be
+ * slightly bigger than the input data. This function calculates how much
+ * output buffer space is required to be sure that lzma_stream_buffer_encode()
+ * doesn't return LZMA_BUF_ERROR.
+ *
+ * The calculated value is not exact, but it is guaranteed to be big enough.
+ * The actual maximum output space required may be slightly smaller (up to
+ * about 100 bytes). This should not be a problem in practice.
+ *
+ * If the calculated maximum size doesn't fit into size_t or would make the
+ * Stream grow past LZMA_VLI_MAX (which should never happen in practice),
+ * zero is returned to indicate the error.
+ *
+ * \note        The limit calculated by this function applies only to
+ *              single-call encoding. Multi-call encoding may (and probably
+ *              will) have larger maximum expansion when encoding
+ *              uncompressible data. Currently there is no function to
+ *              calculate the maximum expansion of multi-call encoding.
+ */
+extern size_t lzma_stream_buffer_bound(size_t uncompressed_size);
+
+
+/**
+ * \brief       Single-call Stream encoder
+ *
+ * \param       filters     Array of filters. This must be terminated with
+ *                          filters[n].id = LZMA_VLI_UNKNOWN. See filter.h
+ *                          for more information.
+ * \param       check       Type of the integrity check to calculate from
+ *                          uncompressed data.
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_size     Size of the input buffer
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Encoding was successful.
+ *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_stream_buffer_encode(
+		lzma_filter *filters, lzma_check check,
+		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size);
+
+
 /************
  * Decoding *
  ************/

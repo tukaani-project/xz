@@ -226,6 +226,27 @@ index_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
 
 
 static lzma_ret
+index_decoder_reset(lzma_coder *coder, lzma_allocator *allocator,
+		lzma_index **i, uint64_t memlimit)
+{
+	// We always allocate a new lzma_index.
+	*i = lzma_index_init(NULL, allocator);
+	if (*i == NULL)
+		return LZMA_MEM_ERROR;
+
+	// Initialize the rest.
+	coder->sequence = SEQ_INDICATOR;
+	coder->memlimit = memlimit;
+	coder->index = *i;
+	coder->count = 0; // Needs to be initialized due to _memconfig().
+	coder->pos = 0;
+	coder->crc32 = 0;
+
+	return LZMA_OK;
+}
+
+
+static lzma_ret
 index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_index **i, uint64_t memlimit)
 {
@@ -247,20 +268,7 @@ index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_index_end(next->coder->index, allocator);
 	}
 
-	// We always allocate a new lzma_index.
-	*i = lzma_index_init(NULL, allocator);
-	if (*i == NULL)
-		return LZMA_MEM_ERROR;
-
-	// Initialize the rest.
-	next->coder->sequence = SEQ_INDICATOR;
-	next->coder->memlimit = memlimit;
-	next->coder->index = *i;
-	next->coder->count = 0; // Needs to be initialized due to _memconfig().
-	next->coder->pos = 0;
-	next->coder->crc32 = 0;
-
-	return LZMA_OK;
+	return index_decoder_reset(next->coder, allocator, i, memlimit);
 }
 
 
@@ -272,4 +280,51 @@ lzma_index_decoder(lzma_stream *strm, lzma_index **i, uint64_t memlimit)
 	strm->internal->supported_actions[LZMA_RUN] = true;
 
 	return LZMA_OK;
+}
+
+
+extern LZMA_API lzma_ret
+lzma_index_buffer_decode(
+		lzma_index **i, uint64_t *memlimit, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size)
+{
+	// Sanity checks
+	if (i == NULL || in == NULL || in_pos == NULL || *in_pos > in_size)
+		return LZMA_PROG_ERROR;
+
+	// Initialize the decoder.
+	lzma_coder coder;
+	return_if_error(index_decoder_reset(&coder, allocator, i, *memlimit));
+
+	// Store the input start position so that we can restore it in case
+	// of an error.
+	const size_t in_start = *in_pos;
+
+	// Do the actual decoding.
+	lzma_ret ret = index_decode(&coder, allocator, in, in_pos, in_size,
+			NULL, NULL, 0, LZMA_RUN);
+
+	if (ret == LZMA_STREAM_END) {
+		ret = LZMA_OK;
+	} else {
+		// Something went wrong, free the Index structure and restore
+		// the input position.
+		lzma_index_end(*i, allocator);
+		*i = NULL;
+		*in_pos = in_start;
+
+		if (ret == LZMA_OK) {
+			// The input is truncated or otherwise corrupt.
+			// Use LZMA_DATA_ERROR instead of LZMA_BUF_ERROR
+			// like lzma_vli_decode() does in single-call mode.
+			ret = LZMA_DATA_ERROR;
+
+		} else if (ret == LZMA_MEMLIMIT_ERROR) {
+			// Tell the caller how much memory would have
+			// been needed.
+			*memlimit = lzma_index_memusage(coder.count);
+		}
+	}
+
+	return ret;
 }

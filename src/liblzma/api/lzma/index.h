@@ -255,7 +255,7 @@ extern lzma_ret lzma_index_cat(lzma_index *lzma_restrict dest,
 
 
 /**
- * \brief       Duplicates an Index list
+ * \brief       Duplicate an Index list
  *
  * Makes an identical copy of the Index. Also the read position is copied.
  *
@@ -267,7 +267,7 @@ extern lzma_index *lzma_index_dup(
 
 
 /**
- * \brief       Compares if two Index lists are identical
+ * \brief       Compare if two Index lists are identical
  *
  * \return      True if *a and *b are equal, false otherwise.
  */
@@ -276,7 +276,7 @@ extern lzma_bool lzma_index_equal(const lzma_index *a, const lzma_index *b)
 
 
 /**
- * \brief       Initializes Index encoder
+ * \brief       Initialize Index encoder
  *
  * \param       strm        Pointer to properly prepared lzma_stream
  * \param       i           Pointer to lzma_index which should be encoded.
@@ -294,14 +294,15 @@ extern lzma_ret lzma_index_encoder(lzma_stream *strm, lzma_index *i)
 
 
 /**
- * \brief       Initializes Index decoder
+ * \brief       Initialize Index decoder
  *
  * \param       strm        Pointer to properly prepared lzma_stream
  * \param       i           Pointer to a pointer that will be made to point
  *                          to the final decoded Index once lzma_code() has
  *                          returned LZMA_STREAM_END. That is,
- *                          lzma_index_decoder() takes care of allocating
- *                          a new lzma_index structure.
+ *                          lzma_index_decoder() always takes care of
+ *                          allocating a new lzma_index structure, and *i
+ *                          doesn't need to be initialized by the caller.
  * \param       memlimit    How much memory the resulting Index is allowed
  *                          to require.
  *
@@ -321,3 +322,60 @@ extern lzma_ret lzma_index_encoder(lzma_stream *strm, lzma_index *i)
 extern lzma_ret lzma_index_decoder(
 		lzma_stream *strm, lzma_index **i, uint64_t memlimit)
 		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Single-call Index encoder
+ *
+ * \param       i         Index to be encoded. The read position will be at
+ *                        the end of the Index if encoding succeeds, or at
+ *                        unspecified position in case an error occurs.
+ * \param       out       Beginning of the output buffer
+ * \param       out_pos   The next byte will be written to out[*out_pos].
+ *                        *out_pos is updated only if encoding succeeds.
+ * \param       out_size  Size of the out buffer; the first byte into
+ *                        which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Encoding was successful.
+ *              - LZMA_BUF_ERROR: Output buffer is too small. Use
+ *                lzma_index_size() to find out how much output
+ *                space is needed.
+ *              - LZMA_PROG_ERROR
+ *
+ * \note        This function doesn't take allocator argument since all
+ *              the internal data is allocated on stack.
+ */
+extern lzma_ret lzma_index_buffer_encode(lzma_index *i,
+		uint8_t *out, size_t *out_pos, size_t out_size);
+
+
+/**
+ * \brief       Single-call Index decoder
+ *
+ * \param       i           Pointer to a pointer that will be made to point
+ *                          to the final decoded Index if decoding is
+ *                          successful. That is, lzma_index_buffer_decode()
+ *                          always takes care of allocating a new
+ *                          lzma_index structure, and *i doesn't need to be
+ *                          initialized by the caller.
+ * \param       memlimit    Pointer to how much memory the resulting Index
+ *                          is allowed to require. The value pointed by
+ *                          this pointer is modified if and only if
+ *                          LZMA_MEMLIMIT_ERROR is returned.
+ * \param       allocator   Pointer to lzma_allocator, or NULL to use malloc()
+ * \param       in          Beginning of the input buffer
+ * \param       in_pos      The next byte will be read from in[*in_pos].
+ *                          *in_pos is updated only if decoding succeeds.
+ * \param       in_size     Size of the input buffer; the first byte that
+ *                          won't be read is in[in_size].
+ *
+ * \return      - LZMA_OK: Decoding was successful.
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_MEMLIMIT_ERROR: Memory usage limit was reached.
+ *                The minimum required memlimit value was stored to *memlimit.
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_index_buffer_decode(
+		lzma_index **i,  uint64_t *memlimit, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size);

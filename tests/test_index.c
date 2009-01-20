@@ -197,6 +197,30 @@ test_code(lzma_index *i)
 
 	lzma_index_hash_end(h, NULL);
 
+	// Encode buffer
+	size_t buf_pos = 1;
+	expect(lzma_index_buffer_encode(i, buf, &buf_pos, index_size)
+			== LZMA_BUF_ERROR);
+	expect(buf_pos == 1);
+
+	succeed(lzma_index_buffer_encode(i, buf, &buf_pos, index_size + 1));
+	expect(buf_pos == index_size + 1);
+
+	// Decode buffer
+	buf_pos = 1;
+	uint64_t memlimit = MEMLIMIT;
+	expect(lzma_index_buffer_decode(&d, &memlimit, NULL, buf, &buf_pos,
+			index_size) == LZMA_DATA_ERROR);
+	expect(buf_pos == 1);
+	expect(d == NULL);
+
+	succeed(lzma_index_buffer_decode(&d, &memlimit, NULL, buf, &buf_pos,
+			index_size + 1));
+	expect(buf_pos == index_size + 1);
+	expect(lzma_index_equal(i, d));
+
+	lzma_index_end(d, NULL);
+
 	free(buf);
 }
 

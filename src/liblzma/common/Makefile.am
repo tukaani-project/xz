@@ -39,6 +39,7 @@ libcommon_la_SOURCES = \
 if COND_MAIN_ENCODER
 libcommon_la_SOURCES += \
 	alone_encoder.c \
+	block_buffer_encoder.c \
 	block_encoder.c \
 	block_encoder.h \
 	block_header_encoder.c \
@@ -48,6 +49,7 @@ libcommon_la_SOURCES += \
 	filter_flags_encoder.c \
 	index_encoder.c \
 	index_encoder.h \
+	stream_buffer_encoder.c \
 	stream_encoder.c \
 	stream_encoder.h \
 	stream_flags_encoder.c \

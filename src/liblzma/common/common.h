@@ -140,7 +140,7 @@ struct lzma_next_coder_s {
 	lzma_check (*get_check)(const lzma_coder *coder);
 
 	/// Pointer to function to get and/or change the memory usage limit.
-	/// If memlimit == 0, the limit is not changed.
+	/// If new_memlimit == 0, the limit is not changed.
 	lzma_ret (*memconfig)(lzma_coder *coder, uint64_t *memusage,
 			uint64_t *old_memlimit, uint64_t new_memlimit);
 };

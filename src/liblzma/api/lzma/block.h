@@ -471,4 +471,5 @@ extern size_t lzma_block_buffer_bound(size_t uncompressed_size);
 extern lzma_ret lzma_block_buffer_encode(
 		lzma_block *block, lzma_allocator *allocator,
 		const uint8_t *in, size_t in_size,
-		uint8_t *out, size_t *out_pos, size_t out_size);
+		uint8_t *out, size_t *out_pos, size_t out_size)
+		lzma_attr_warn_unused_result;

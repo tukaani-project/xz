@@ -222,7 +222,8 @@ extern size_t lzma_stream_buffer_bound(size_t uncompressed_size);
 extern lzma_ret lzma_stream_buffer_encode(
 		lzma_filter *filters, lzma_check check,
 		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
-		uint8_t *out, size_t *out_pos, size_t out_size);
+		uint8_t *out, size_t *out_pos, size_t out_size)
+		lzma_attr_warn_unused_result;
 
 
 /************
@@ -277,6 +278,9 @@ extern lzma_ret lzma_stream_buffer_encode(
  *
  * \param       strm        Pointer to properly prepared lzma_stream
  * \param       memlimit    Rough memory usage limit as bytes
+ * \param       flags       Bitwise-or of zero or more of the decoder flags:
+ *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
+ *                          LZMA_TELL_ANY_CHECK, LZMA_CONCATENATED
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
@@ -318,4 +322,49 @@ extern lzma_ret lzma_auto_decoder(
  *              - LZMA_MEM_ERROR
  */
 extern lzma_ret lzma_alone_decoder(lzma_stream *strm, uint64_t memlimit)
+		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Single-call .xz Stream decoder
+ *
+ * \param       memlimit    Pointer to how much memory the decoder is allowed
+ *                          to allocate. The value pointed by this pointer is
+ *                          modified if and only if LZMA_MEMLIMIT_ERROR is
+ *                          returned.
+ * \param       flags       Bitwise-or of zero or more of the decoder flags:
+ *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
+ *                          LZMA_CONCATENATED. Note that LZMA_TELL_ANY_CHECK
+ *                          is not allowed and will return LZMA_PROG_ERROR.
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_pos      The next byte will be read from in[*in_pos].
+ *                          *in_pos is updated only if decoding succeeds.
+ * \param       in_size     Size of the input buffer; the first byte that
+ *                          won't be read is in[in_size].
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Decoding was successful.
+ *              - LZMA_FORMAT_ERROR
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_NO_CHECK: This can be returned only if using
+ *                the LZMA_TELL_NO_CHECK flag.
+ *              - LZMA_UNSUPPORTED_CHECK: This can be returned only if using
+ *                the LZMA_TELL_UNSUPPORTED_CHECK flag.
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_MEMLIMIT_ERROR: Memory usage limit was reached.
+ *                The minimum required memlimit value was stored to *memlimit.
+ *              - LZMA_BUF_ERROR: Output buffer was too small.
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_stream_buffer_decode(
+		uint64_t *memlimit, uint32_t flags, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_attr_warn_unused_result;

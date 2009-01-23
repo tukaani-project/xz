@@ -69,6 +69,7 @@ libcommon_la_SOURCES += \
 	filter_flags_decoder.c \
 	index_decoder.c \
 	index_hash.c \
+	stream_buffer_decoder.c \
 	stream_decoder.c \
 	stream_decoder.h \
 	stream_flags_decoder.c \

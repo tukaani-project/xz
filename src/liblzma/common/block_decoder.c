@@ -131,14 +131,14 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 	case SEQ_PADDING:
 		// Compressed Data is padded to a multiple of four bytes.
 		while (coder->compressed_size & 3) {
+			if (*in_pos >= in_size)
+				return LZMA_OK;
+
 			// We use compressed_size here just get the Padding
 			// right. The actual Compressed Size was stored to
 			// coder->block already, and won't be modified by
 			// us anymore.
 			++coder->compressed_size;
-
-			if (*in_pos >= in_size)
-				return LZMA_OK;
 
 			if (in[(*in_pos)++] != 0x00)
 				return LZMA_DATA_ERROR;

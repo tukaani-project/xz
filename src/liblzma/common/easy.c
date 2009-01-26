@@ -28,7 +28,7 @@ struct lzma_coder_s {
 
 	/// We need to keep the filters array available in case
 	/// LZMA_FULL_FLUSH is used.
-	lzma_filter filters[5];
+	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 };
 
 

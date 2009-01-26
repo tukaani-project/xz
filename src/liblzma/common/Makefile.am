@@ -61,6 +61,7 @@ libcommon_la_SOURCES += \
 	alone_decoder.c \
 	alone_decoder.h \
 	auto_decoder.c \
+	block_buffer_decoder.c \
 	block_decoder.c \
 	block_decoder.h \
 	block_header_decoder.c \

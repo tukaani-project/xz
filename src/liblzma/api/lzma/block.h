@@ -56,6 +56,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_buffer_decode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode()
@@ -74,6 +75,7 @@ typedef struct {
 	 *  - lzma_block_unpadded_size()
 	 *  - lzma_block_total_size()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_decode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_size()
@@ -98,6 +100,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_buffer_decode()
 	 */
 	lzma_check check;
 
@@ -144,6 +147,7 @@ typedef struct {
 	 *  - lzma_block_unpadded_size()
 	 *  - lzma_block_total_size()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_decode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode()
@@ -151,6 +155,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_buffer_decode()
 	 */
 	lzma_vli compressed_size;
 
@@ -167,12 +172,14 @@ typedef struct {
 	 *  - lzma_block_header_size()
 	 *  - lzma_block_header_encode()
 	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_decode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode()
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_buffer_decode()
 	 */
 	lzma_vli uncompressed_size;
 
@@ -188,6 +195,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_buffer_decode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode(): Note that this does NOT free()
@@ -473,3 +481,36 @@ extern lzma_ret lzma_block_buffer_encode(
 		const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Single-call .xz Block decoder
+ *
+ * This is single-call equivalent of lzma_block_decoder(), and requires that
+ * the caller has already decoded Block Header and checked its memory usage.
+ *
+ * \param       block       Block options just like with lzma_block_decoder().
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_pos      The next byte will be read from in[*in_pos].
+ *                          *in_pos is updated only if decoding succeeds.
+ * \param       in_size     Size of the input buffer; the first byte that
+ *                          won't be read is in[in_size].
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Decoding was successful.
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_BUF_ERROR: Output buffer was too small.
+ *              - LZMA_PROG_ERROR
+ */
+extern lzma_ret lzma_block_buffer_decode(
+		lzma_block *block, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size);

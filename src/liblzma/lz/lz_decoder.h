@@ -52,6 +52,13 @@ typedef struct {
 
 
 typedef struct {
+	size_t dict_size;
+	const uint8_t *preset_dict;
+	size_t preset_dict_size;
+} lzma_lz_options;
+
+
+typedef struct {
 	/// Data specific to the LZ-based decoder
 	lzma_coder *coder;
 
@@ -86,7 +93,7 @@ extern lzma_ret lzma_lz_decoder_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters,
 		lzma_ret (*lz_init)(lzma_lz_decoder *lz,
 			lzma_allocator *allocator, const void *options,
-			size_t *dict_size));
+			lzma_lz_options *lz_options));
 
 extern uint64_t lzma_lz_decoder_memusage(size_t dictionary_size);
 

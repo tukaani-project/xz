@@ -363,7 +363,8 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 
 
 static bool
-lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator)
+lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator,
+		const lzma_lz_options *lz_options)
 {
 	// Allocate the history buffer.
 	if (mf->buffer == NULL) {
@@ -420,6 +421,19 @@ lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator)
 	// of the mf->hash won't get actually allocated by the kernel, so
 	// we avoid wasting RAM and improve initialization speed a lot.
 	//memzero(mf->son, (size_t)(mf->sons_count) * sizeof(uint32_t));
+
+	// Handle preset dictionary.
+	if (lz_options->preset_dict != NULL
+			&& lz_options->preset_dict_size > 0) {
+		// If the preset dictionary is bigger than the actual
+		// dictionary, use only the tail.
+		mf->write_pos = MIN(lz_options->preset_dict_size, mf->size);
+		memcpy(mf->buffer, lz_options->preset_dict
+				+ lz_options->preset_dict_size - mf->write_pos,
+				mf->write_pos);
+		mf->action = LZMA_SYNC_FLUSH;
+		mf->skip(mf, mf->write_pos);
+	}
 
 	mf->action = LZMA_RUN;
 
@@ -509,7 +523,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Allocate new buffers if needed, and do the rest of
 	// the initialization.
-	if (lz_encoder_init(&next->coder->mf, allocator))
+	if (lz_encoder_init(&next->coder->mf, allocator, &lz_options))
 		return LZMA_MEM_ERROR;
 
 	// Initialize the next filter in the chain, if any.

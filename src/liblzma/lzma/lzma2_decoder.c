@@ -230,7 +230,7 @@ lzma2_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 static lzma_ret
 lzma2_decoder_init(lzma_lz_decoder *lz, lzma_allocator *allocator,
-		const void *options, size_t *dict_size)
+		const void *opt, lzma_lz_options *lz_options)
 {
 	if (lz->coder == NULL) {
 		lz->coder = lzma_alloc(sizeof(lzma_coder), allocator);
@@ -243,12 +243,15 @@ lzma2_decoder_init(lzma_lz_decoder *lz, lzma_allocator *allocator,
 		lz->coder->lzma = LZMA_LZ_DECODER_INIT;
 	}
 
+	const lzma_options_lzma *options = opt;
+
 	lz->coder->sequence = SEQ_CONTROL;
 	lz->coder->need_properties = true;
-	lz->coder->need_dictionary_reset = true;
+	lz->coder->need_dictionary_reset = options->preset_dict == NULL
+			|| options->preset_dict_size == 0;
 
 	return lzma_lzma_decoder_create(&lz->coder->lzma,
-			allocator, options, dict_size);
+			allocator, options, lz_options);
 }
 
 

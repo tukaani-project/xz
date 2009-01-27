@@ -48,7 +48,7 @@ extern bool lzma_lzma_lclppb_decode(
 /// LZMA2 decoders.
 extern lzma_ret lzma_lzma_decoder_create(
 		lzma_lz_decoder *lz, lzma_allocator *allocator,
-		const void *opt, size_t *dict_size);
+		const void *opt, lzma_lz_options *lz_options);
 
 /// Gets memory usage without validating lc/lp/pb. This is used by LZMA2
 /// decoder, because raw LZMA2 decoding doesn't need lc/lp/pb.

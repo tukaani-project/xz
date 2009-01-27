@@ -210,7 +210,7 @@ lzma_lz_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters,
 		lzma_ret (*lz_init)(lzma_lz_decoder *lz,
 			lzma_allocator *allocator, const void *options,
-			size_t *dict_size))
+			lzma_lz_options *lz_options))
 {
 	// Allocate the base structure if it isn't already allocated.
 	if (next->coder == NULL) {
@@ -229,17 +229,17 @@ lzma_lz_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 	// Allocate and initialize the LZ-based decoder. It will also give
 	// us the dictionary size.
-	size_t dict_size;
+	lzma_lz_options lz_options;
 	return_if_error(lz_init(&next->coder->lz, allocator,
-			filters[0].options, &dict_size));
+			filters[0].options, &lz_options));
 
 	// If the dictionary size is very small, increase it to 4096 bytes.
 	// This is to prevent constant wrapping of the dictionary, which
 	// would slow things down. The downside is that since we don't check
 	// separately for the real dictionary size, we may happily accept
 	// corrupt files.
-	if (dict_size < 4096)
-		dict_size = 4096;
+	if (lz_options.dict_size < 4096)
+		lz_options.dict_size = 4096;
 
 	// Make dictionary size a multipe of 16. Some LZ-based decoders like
 	// LZMA use the lowest bits lzma_dict.pos to know the alignment of the
@@ -248,22 +248,37 @@ lzma_lz_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	// recommended to give aligned buffers to liblzma.
 	//
 	// Avoid integer overflow.
-	if (dict_size > SIZE_MAX - 15)
+	if (lz_options.dict_size > SIZE_MAX - 15)
 		return LZMA_MEM_ERROR;
 
-	dict_size = (dict_size + 15) & ~((size_t)(15));
+	lz_options.dict_size = (lz_options.dict_size + 15) & ~((size_t)(15));
 
 	// Allocate and initialize the dictionary.
-	if (next->coder->dict.size != dict_size) {
+	if (next->coder->dict.size != lz_options.dict_size) {
 		lzma_free(next->coder->dict.buf, allocator);
-		next->coder->dict.buf = lzma_alloc(dict_size, allocator);
+		next->coder->dict.buf
+				= lzma_alloc(lz_options.dict_size, allocator);
 		if (next->coder->dict.buf == NULL)
 			return LZMA_MEM_ERROR;
 
-		next->coder->dict.size = dict_size;
+		next->coder->dict.size = lz_options.dict_size;
 	}
 
 	lz_decoder_reset(next->coder);
+
+	// Use the preset dictionary if it was given to us.
+	if (lz_options.preset_dict != NULL
+			&& lz_options.preset_dict_size > 0) {
+		// If the preset dictionary is bigger than the actual
+		// dictionary, copy only the tail.
+		const size_t copy_size = MIN(lz_options.preset_dict_size,
+				lz_options.dict_size);
+		const size_t offset = lz_options.preset_dict_size - copy_size;
+		memcpy(next->coder->dict.buf, lz_options.preset_dict + offset,
+				copy_size);
+		next->coder->dict.pos = copy_size;
+		next->coder->dict.full = copy_size;
+	}
 
 	// Miscellaneous initializations
 	next->coder->next_finished = false;

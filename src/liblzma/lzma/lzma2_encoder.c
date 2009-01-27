@@ -318,14 +318,16 @@ lzma2_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
 		lz->coder->lzma = NULL;
 	}
 
-	lz->coder->sequence = SEQ_INIT;
-	lz->coder->need_properties = true;
-	lz->coder->need_state_reset = false;
-	lz->coder->need_dictionary_reset = true;
-
 	lz->coder->opt_cur = *(const lzma_options_lzma *)(options);
 	lz->coder->opt_new = lz->coder->opt_cur.persistent
 				? options : NULL;
+
+	lz->coder->sequence = SEQ_INIT;
+	lz->coder->need_properties = true;
+	lz->coder->need_state_reset = false;
+	lz->coder->need_dictionary_reset
+			= lz->coder->opt_cur.preset_dict == NULL
+			|| lz->coder->opt_cur.preset_dict_size == 0;
 
 	// Initialize LZMA encoder
 	return_if_error(lzma_lzma_encoder_create(&lz->coder->lzma, allocator,

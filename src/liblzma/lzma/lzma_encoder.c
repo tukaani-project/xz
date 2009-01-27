@@ -274,6 +274,8 @@ encode_symbol(lzma_coder *coder, lzma_mf *mf,
 static bool
 encode_init(lzma_coder *coder, lzma_mf *mf)
 {
+	assert(mf_position(mf) == 0);
+
 	if (mf->read_pos == mf->read_limit) {
 		if (mf->action == LZMA_RUN)
 			return false; // We cannot do anything.
@@ -594,7 +596,12 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 			return LZMA_OPTIONS_ERROR;
 	}
 
-	coder->is_initialized = false;
+	// We don't need to write the first byte as literal if there is
+	// a non-empty preset dictionary. encode_init() wouldn't even work
+	// if there is a non-empty preset dictionary, because encode_init()
+	// assumes that position is zero and previous byte is also zero.
+	coder->is_initialized = options->preset_dict != NULL
+			&& options->preset_dict_size > 0;
 	coder->is_flushed = false;
 
 	set_lz_options(lz_options, options);

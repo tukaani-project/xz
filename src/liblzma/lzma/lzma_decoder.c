@@ -941,7 +941,7 @@ lzma_decoder_reset(lzma_coder *coder, const void *opt)
 
 extern lzma_ret
 lzma_lzma_decoder_create(lzma_lz_decoder *lz, lzma_allocator *allocator,
-		const void *opt, size_t *dict_size)
+		const void *opt, lzma_lz_options *lz_options)
 {
 	if (lz->coder == NULL) {
 		lz->coder = lzma_alloc(sizeof(lzma_coder), allocator);
@@ -956,7 +956,9 @@ lzma_lzma_decoder_create(lzma_lz_decoder *lz, lzma_allocator *allocator,
 	// All dictionary sizes are OK here. LZ decoder will take care of
 	// the special cases.
 	const lzma_options_lzma *options = opt;
-	*dict_size = options->dict_size;
+	lz_options->dict_size = options->dict_size;
+	lz_options->preset_dict = options->preset_dict;
+	lz_options->preset_dict_size = options->preset_dict_size;
 
 	return LZMA_OK;
 }
@@ -967,13 +969,13 @@ lzma_lzma_decoder_create(lzma_lz_decoder *lz, lzma_allocator *allocator,
 /// the LZ initialization).
 static lzma_ret
 lzma_decoder_init(lzma_lz_decoder *lz, lzma_allocator *allocator,
-		const void *options, size_t *dict_size)
+		const void *options, lzma_lz_options *lz_options)
 {
 	if (!is_lclppb_valid(options))
 		return LZMA_PROG_ERROR;
 
 	return_if_error(lzma_lzma_decoder_create(
-			lz, allocator, options, dict_size));
+			lz, allocator, options, lz_options));
 
 	lzma_decoder_reset(lz->coder, options);
 	lzma_decoder_uncompressed(lz->coder, LZMA_VLI_UNKNOWN);

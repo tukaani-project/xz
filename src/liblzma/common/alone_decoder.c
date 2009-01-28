@@ -214,6 +214,8 @@ lzma_alone_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->sequence = SEQ_PROPERTIES;
 	next->coder->pos = 0;
 	next->coder->options.dict_size = 0;
+	next->coder->options.preset_dict = NULL;
+	next->coder->options.preset_dict_size = 0;
 	next->coder->uncompressed_size = 0;
 	next->coder->memlimit = memlimit;
 	next->coder->memusage = LZMA_MEMUSAGE_BASE;

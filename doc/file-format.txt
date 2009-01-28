@@ -1,10 +1,14 @@
 
 The .xz File Format
--------------------
+===================
+
+Version 1.0.0 (2009-01-14)
+
 
         0. Preface
            0.1. Notices and Acknowledgements
-           0.2. Changes
+           0.2. Getting the Latest Version
+           0.3. Version History
         1. Conventions
            1.1. Byte and Its Representation
            1.2. Multibyte Integers
@@ -61,29 +65,34 @@ The .xz File Format
         this format replace the old .lzma format used by LZMA SDK and
         LZMA Utils.
 
-        IMPORTANT:  The version described in this document is a
-                    draft, NOT a final, official version. Changes
-                    are possible.
-
 
 0.1. Notices and Acknowledgements
 
         This file format was designed by Lasse Collin
         <lasse.collin@tukaani.org> and Igor Pavlov.
 
-        Special thanks for helping with this document goes to Ville
-        Koskinen. Thanks for helping with this document goes to
+        Special thanks for helping with this document goes to
+        Ville Koskinen. Thanks for helping with this document goes to
         Mark Adler, H. Peter Anvin, Mikko Pouru, and Lars Wirzenius.
 
         This document has been put into the public domain.
 
 
-0.2. Changes
+0.2. Getting the Latest Version
 
-        Last modified: 2008-12-05 12:45+0200
+        The latest official version of this document can be downloaded
+        from <http://tukaani.org/xz/xz-file-format.txt>.
 
-        (A changelog will be kept once the first official version
-        is made.)
+        Specific versions of this document have a filename
+        xz-file-format-X.Y.Z.txt where X.Y.Z is the version number.
+        For example, the version 1.0.0 of this document is available
+        at <http://tukaani.org/xz/xz-file-format-1.0.0.txt>.
+
+
+0.3. Version History
+
+        Version   Date          Description
+        1.0.0     2008-01-14    The first official version
 
 
 1. Conventions
@@ -171,7 +180,7 @@ The .xz File Format
         variable-length integers. The functions return the number of
         bytes occupied by the integer (1-9), or zero on error.
 
-            #include <sys/types.h>
+            #include <stddef.h>
             #include <inttypes.h>
 
             size_t
@@ -429,9 +438,9 @@ The .xz File Format
         Stream Padding. This can be convenient in certain situations
         [GNU-tar].
 
-        The possibility of Padding MUST be taken into account when
-        designing an application that parses Streams backwards, and
-        the application supports concatenated Streams.
+        The possibility of Stream Padding MUST be taken into account
+        when designing an application that parses Streams backwards,
+        and the application supports concatenated Streams.
 
 
 3. Block
@@ -599,19 +608,19 @@ The .xz File Format
         The Check, when used, is calculated from the original
         uncompressed data. If the calculated Check does not match the
         stored one, the decoder MUST indicate an error. If the selected
-        type of Check is not supported by the decoder, it MUST indicate
-        a warning or error.
+        type of Check is not supported by the decoder, it SHOULD
+        indicate a warning or error.
 
 
 4. Index
 
-        +-----------------+=========================+
-        | Index Indicator | Number of Index Records |
-        +-----------------+=========================+
+        +-----------------+===================+
+        | Index Indicator | Number of Records |
+        +-----------------+===================+
 
-             +=================+=========+-+-+-+-+
-        ---> | List of Records | Padding | CRC32 |
-             +=================+=========+-+-+-+-+
+             +=================+===============+-+-+-+-+
+        ---> | List of Records | Index Padding | CRC32 |
+             +=================+===============+-+-+-+-+
 
         Index serves several purporses. Using it, one can
           - verify that all Blocks in a Stream have been processed;
@@ -656,11 +665,11 @@ The .xz File Format
         Unpadded Size and Uncompressed Size of the respective Blocks.
 
         Implementation hint: It is possible to verify the Index with
-        constant memory usage by calculating for example SHA256 of both
-        the real size values and the List of Records, then comparing
-        the check values. Implementing this using non-cryptographic
-        check like CRC32 SHOULD be avoided unless small code size is
-        important.
+        constant memory usage by calculating for example SHA-256 of
+        both the real size values and the List of Records, then
+        comparing the hash values. Implementing this using
+        non-cryptographic hash like CRC32 SHOULD be avoided unless
+        small code size is important.
 
         If the decoder supports random-access reading, it MUST verify
         that Unpadded Size and Uncompressed Size of every completely
@@ -898,7 +907,7 @@ The .xz File Format
         Setting the start offset may be useful if an executable has
         multiple sections, and there are many cross-section calls.
         Taking advantage of this feature usually requires usage of
-        the Subblock filter.
+        the Subblock filter, whose design is not complete yet.
 
 
 5.3.3. Delta
@@ -985,6 +994,7 @@ The .xz File Format
 5.4.1. Reserved Custom Filter ID Ranges
 
         Range                       Description
+        0x0000_0300 - 0x0000_04FF   Reserved to ease .7z compatibility
         0x0002_0000 - 0x0007_FFFF   Reserved to ease .7z compatibility
         0x0200_0000 - 0x07FF_FFFF   Reserved to ease .7z compatibility
 
@@ -1001,7 +1011,7 @@ The .xz File Format
         the CRC32 and CRC64 values, and prints the calculated values
         as big endian hexadecimal strings to standard output.
 
-            #include <sys/types.h>
+            #include <stddef.h>
             #include <inttypes.h>
             #include <stdio.h>
 
@@ -1067,7 +1077,8 @@ The .xz File Format
                 uint8_t buf[8192];
 
                 while (1) {
-                    const size_t buf_size = fread(buf, 1, 8192, stdin);
+                    const size_t buf_size
+                            = fread(buf, 1, sizeof(buf), stdin);
                     if (buf_size == 0)
                         break;
 
@@ -1092,6 +1103,9 @@ The .xz File Format
         LZMA Utils - LZMA adapted to POSIX-like systems
         http://tukaani.org/lzma/
 
+        XZ Utils - The next generation of LZMA Utils
+        http://tukaani.org/xz/
+
         [RFC-1952]
         GZIP file format specification version 4.3
         http://www.ietf.org/rfc/rfc1952.txt
@@ -1102,12 +1116,12 @@ The .xz File Format
         http://www.ietf.org/rfc/rfc2119.txt
 
         [GNU-tar]
-        GNU tar 1.20 manual
+        GNU tar 1.21 manual
         http://www.gnu.org/software/tar/manual/html_node/Blocking-Factor.html
           - Node 9.4.2 "Blocking Factor", paragraph that begins
             "gzip will complain about trailing garbage"
           - Note that this URL points to the latest version of the
             manual, and may some day not contain the note which is in
-            1.20. For the exact version of the manual, download GNU
-            tar 1.20: ftp://ftp.gnu.org/pub/gnu/tar/tar-1.20.tar.gz
+            1.21. For the exact version of the manual, download GNU
+            tar 1.21: ftp://ftp.gnu.org/pub/gnu/tar/tar-1.21.tar.gz
 

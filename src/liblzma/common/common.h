@@ -24,20 +24,16 @@
 #include "../../common/mythread.h"
 #include "../../common/integer.h"
 
-// Don't use ifdef...
-#if HAVE_VISIBILITY
-#	define LZMA_VISIBILITY __attribute__((__visibility__("default")))
+#if defined(_WIN32)
+#	define LZMA_API_EXPORT __declspec(dllexport)
+// Don't use ifdef or defined() below.
+#elif HAVE_VISIBILITY
+#	define LZMA_API_EXPORT __attribute__((__visibility__("default")))
 #else
-#	define LZMA_VISIBILITY
+#	define LZMA_API_EXPORT
 #endif
 
-#ifdef _WIN32
-#	define LZMA_EXPORT __cdecl __declspec(dllexport)
-#else
-#	define LZMA_EXPORT
-#endif
-
-#define LZMA_API LZMA_VISIBILITY LZMA_EXPORT
+#define LZMA_API LZMA_API_CALL LZMA_API_EXPORT
 
 #include "lzma.h"
 

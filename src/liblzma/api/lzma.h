@@ -154,15 +154,19 @@
  ******************/
 
 /*
- * Some systems require that the functions are declared specially
- * in the headers.
+ * Some systems require (or at least recommend) that the functions and
+ * function pointers are declared specially in the headers.
  */
+#ifdef _WIN32
+#	define LZMA_API_CALL __cdecl
+#	define LZMA_API_IMPORT __declspec(dllimport)
+#else
+#	define LZMA_API_CALL
+#	define LZMA_API_IMPORT
+#endif
+
 #ifndef LZMA_API
-#	if defined(_WIN32)
-#		define LZMA_API __cdecl __declspec(dllimport)
-#	else
-#		define LZMA_API
-#	endif
+#	define LZMA_API LZMA_API_CALL LZMA_API_IMPORT
 #endif
 
 

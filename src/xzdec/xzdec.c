@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #	include <fcntl.h>
 #endif
 
@@ -407,7 +407,7 @@ main(int argc, char **argv)
 	lzma_stream strm = LZMA_STREAM_INIT;
 
 	// Some systems require setting stdin and stdout to binary mode.
-#ifdef WIN32
+#ifdef _WIN32
 	setmode(fileno(stdin), O_BINARY);
 	setmode(fileno(stdout), O_BINARY);
 #endif

@@ -73,26 +73,40 @@
 	 */
 #	if !defined(UINT32_C) || !defined(UINT64_C) \
 			|| !defined(UINT32_MAX) || !defined(UINT64_MAX)
-#		ifdef __cplusplus
-			/*
-			 * C99 sections 7.18.2 and 7.18.4 specify that in C++
-			 * implementations define the limit and constant
-			 * macros only if specifically requested. Note that
-			 * if you want the format macros (PRIu64 etc.) too,
-			 * you need to define __STDC_FORMAT_MACROS before
-			 * including lzma.h, since re-including inttypes.h
-			 * with __STDC_FORMAT_MACROS defined doesn't
-			 * necessarily work.
-			 */
-#			ifndef __STDC_LIMIT_MACROS
-#				define __STDC_LIMIT_MACROS 1
+		/*
+		 * MSVC has no C99 support, and thus it cannot be used to
+		 * compile liblzma. The liblzma API has to still be usable
+		 * from MSVC, so we need to define the required standard
+		 * integer types here.
+		 */
+		#if defined(_WIN32) && defined(_MSC_VER)
+			typedef unsigned __int8 uint8_t;
+			typedef unsigned __int32 uint32_t;
+			typedef unsigned __int64 uint64_t;
+#		else
+			/* Use the standard inttypes.h. */
+#			ifdef __cplusplus
+				/*
+				 * C99 sections 7.18.2 and 7.18.4 specify that
+				 * in C++ implementations define the limit
+				 * and constant macros only if specifically
+				 * requested. Note that if you want the
+				 * format macros (PRIu64 etc.) too, you need
+				 * to define __STDC_FORMAT_MACROS before
+				 * including lzma.h, since re-including
+				 * inttypes.h with __STDC_FORMAT_MACROS
+				 * defined doesn't necessarily work.
+				 */
+#				ifndef __STDC_LIMIT_MACROS
+#					define __STDC_LIMIT_MACROS 1
+#				endif
+#				ifndef __STDC_CONSTANT_MACROS
+#					define __STDC_CONSTANT_MACROS 1
+#				endif
 #			endif
-#			ifndef __STDC_CONSTANT_MACROS
-#				define __STDC_CONSTANT_MACROS 1
-#			endif
-#		endif
 
-#		include <inttypes.h>
+#			include <inttypes.h>
+#		endif
 
 		/*
 		 * Some old systems have only the typedefs in inttypes.h, and
@@ -103,16 +117,24 @@
 		 * before including lzma.h.
 		 */
 #		ifndef UINT32_C
-#			define UINT32_C(n) n ## U
+#			if defined(_WIN32) && defined(_MSC_VER)
+#				define UINT32_C(n) n ## UI32
+#			else
+#				define UINT32_C(n) n ## U
+#			endif
 #		endif
 
 #		ifndef UINT64_C
-			/* Get ULONG_MAX. */
-#			include <limits.h>
-#			if ULONG_MAX == 4294967295UL
-#				define UINT64_C(n) n ## ULL
+#			if defined(_WIN32) && defined(_MSC_VER)
+#				define UINT64_C(n) n ## UI64
 #			else
-#				define UINT64_C(n) n ## UL
+				/* Get ULONG_MAX. */
+#				include <limits.h>
+#				if ULONG_MAX == 4294967295UL
+#					define UINT64_C(n) n ## ULL
+#				else
+#					define UINT64_C(n) n ## UL
+#				endif
 #			endif
 #		endif
 

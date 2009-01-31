@@ -22,6 +22,7 @@
 
 #include "sysdefs.h"
 #include "mythread.h"
+#include "lzma.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

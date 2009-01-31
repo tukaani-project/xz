@@ -26,11 +26,20 @@
 
 // Don't use ifdef...
 #if HAVE_VISIBILITY
-#	define LZMA_API __attribute__((__visibility__("default")))
+#	define LZMA_VISIBILITY __attribute__((__visibility__("default")))
 #else
-#	define LZMA_API
+#	define LZMA_VISIBILITY
 #endif
 
+#ifdef _WIN32
+#	define LZMA_EXPORT __cdecl __declspec(dllexport)
+#else
+#	define LZMA_EXPORT
+#endif
+
+#define LZMA_API LZMA_VISIBILITY LZMA_EXPORT
+
+#include "lzma.h"
 
 // These allow helping the compiler in some often-executed branches, whose
 // result is almost always the same.

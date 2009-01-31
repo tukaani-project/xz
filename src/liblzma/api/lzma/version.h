@@ -47,7 +47,7 @@
  * This allows the application to compare if it was built against the same,
  * older, or newer version of liblzma that is currently running.
  */
-extern uint32_t lzma_version_number(void) lzma_attr_const;
+extern LZMA_API uint32_t lzma_version_number(void) lzma_attr_const;
 
 
 /**
@@ -56,4 +56,4 @@ extern uint32_t lzma_version_number(void) lzma_attr_const;
  * This function may be useful if you want to display which version of
  * liblzma your application is currently using.
  */
-extern const char *lzma_version_string(void) lzma_attr_const;
+extern LZMA_API const char *lzma_version_string(void) lzma_attr_const;

@@ -22,6 +22,7 @@
 
 #include "sysdefs.h"
 #include "integer.h"
+#include "lzma.h"
 
 #include <stdio.h>
 

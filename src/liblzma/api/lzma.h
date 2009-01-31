@@ -149,6 +149,23 @@
 #endif /* ifdef LZMA_MANUAL_HEADERS */
 
 
+/******************
+ * LZMA_API macro *
+ ******************/
+
+/*
+ * Some systems require that the functions are declared specially
+ * in the headers.
+ */
+#ifndef LZMA_API
+#	if defined(_WIN32)
+#		define LZMA_API __cdecl __declspec(dllimport)
+#	else
+#		define LZMA_API
+#	endif
+#endif
+
+
 /********************
  * GNU C extensions *
  ********************/

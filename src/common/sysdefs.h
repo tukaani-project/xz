@@ -149,8 +149,6 @@ typedef unsigned char _Bool;
 #	include <memory.h>
 #endif
 
-#include "lzma.h"
-
 
 ////////////
 // Macros //

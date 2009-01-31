@@ -81,7 +81,7 @@ typedef struct {
  * liblzma version and build. It would be useless, because the application
  * couldn't know what kind of options the filter would need.
  */
-extern lzma_bool lzma_filter_encoder_is_supported(lzma_vli id);
+extern LZMA_API lzma_bool lzma_filter_encoder_is_supported(lzma_vli id);
 
 
 /**
@@ -90,7 +90,7 @@ extern lzma_bool lzma_filter_encoder_is_supported(lzma_vli id);
  * Returns true if the give Filter ID  is supported for decoding by this
  * liblzma build. Otherwise false is returned.
  */
-extern lzma_bool lzma_filter_decoder_is_supported(lzma_vli id);
+extern LZMA_API lzma_bool lzma_filter_decoder_is_supported(lzma_vli id);
 
 
 /**
@@ -102,7 +102,7 @@ extern lzma_bool lzma_filter_decoder_is_supported(lzma_vli id);
  * \return      Rough number of bytes required for the given filter chain
  *              when encoding.
  */
-extern uint64_t lzma_raw_encoder_memusage(const lzma_filter *filters)
+extern LZMA_API uint64_t lzma_raw_encoder_memusage(const lzma_filter *filters)
 		lzma_attr_pure;
 
 
@@ -115,7 +115,7 @@ extern uint64_t lzma_raw_encoder_memusage(const lzma_filter *filters)
  * \return      Rough number of bytes required for the given filter chain
  *              when decoding.
  */
-extern uint64_t lzma_raw_decoder_memusage(const lzma_filter *filters)
+extern LZMA_API uint64_t lzma_raw_decoder_memusage(const lzma_filter *filters)
 		lzma_attr_pure;
 
 
@@ -138,7 +138,7 @@ extern uint64_t lzma_raw_decoder_memusage(const lzma_filter *filters)
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  */
-extern lzma_ret lzma_raw_encoder(
+extern LZMA_API lzma_ret lzma_raw_encoder(
 		lzma_stream *strm, const lzma_filter *options)
 		lzma_attr_warn_unused_result;
 
@@ -156,7 +156,7 @@ extern lzma_ret lzma_raw_encoder(
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  */
-extern lzma_ret lzma_raw_decoder(
+extern LZMA_API lzma_ret lzma_raw_decoder(
 		lzma_stream *strm, const lzma_filter *options)
 		lzma_attr_warn_unused_result;
 
@@ -180,7 +180,7 @@ extern lzma_ret lzma_raw_decoder(
  *              that this returns LZMA_OK while the following call to
  *              lzma_properties_encode() returns LZMA_OPTIONS_ERROR.
  */
-extern lzma_ret lzma_properties_size(
+extern LZMA_API lzma_ret lzma_properties_size(
 		uint32_t *size, const lzma_filter *filter);
 
 
@@ -205,7 +205,7 @@ extern lzma_ret lzma_properties_size(
  *              lzma_properties_size() indicated that the size
  *              of the Filter Properties field is zero.
  */
-extern lzma_ret lzma_properties_encode(
+extern LZMA_API lzma_ret lzma_properties_encode(
 		const lzma_filter *filter, uint8_t *props);
 
 
@@ -230,7 +230,7 @@ extern lzma_ret lzma_properties_encode(
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_MEM_ERROR
  */
-extern lzma_ret lzma_properties_decode(
+extern LZMA_API lzma_ret lzma_properties_decode(
 		lzma_filter *filter, lzma_allocator *allocator,
 		const uint8_t *props, size_t props_size);
 
@@ -254,7 +254,7 @@ extern lzma_ret lzma_properties_decode(
  * \note        If you need to calculate size of List of Filter Flags,
  *              you need to loop over every lzma_filter entry.
  */
-extern lzma_ret lzma_filter_flags_size(
+extern LZMA_API lzma_ret lzma_filter_flags_size(
 		uint32_t *size, const lzma_filter *options)
 		lzma_attr_warn_unused_result;
 
@@ -277,7 +277,7 @@ extern lzma_ret lzma_filter_flags_size(
  *                buffer space (you should have checked it with
  *                lzma_filter_flags_size()).
  */
-extern lzma_ret lzma_filter_flags_encode(const lzma_filter *options,
+extern LZMA_API lzma_ret lzma_filter_flags_encode(const lzma_filter *options,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_attr_warn_unused_result;
 
@@ -297,7 +297,7 @@ extern lzma_ret lzma_filter_flags_encode(const lzma_filter *options,
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
  */
-extern lzma_ret lzma_filter_flags_decode(
+extern LZMA_API lzma_ret lzma_filter_flags_decode(
 		lzma_filter *options, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size)
 		lzma_attr_warn_unused_result;

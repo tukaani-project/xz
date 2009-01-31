@@ -65,7 +65,7 @@
 	 * I suppose this works portably also in C++. Note that in C++,
 	 * we need to get size_t into the global namespace.
 	 */
-	#include <stddef.h>
+#	include <stddef.h>
 
 	/*
 	 * Skip inttypes.h if we already have all the required macros. If we
@@ -79,7 +79,7 @@
 		 * from MSVC, so we need to define the required standard
 		 * integer types here.
 		 */
-		#if defined(_WIN32) && defined(_MSC_VER)
+#		if defined(_WIN32) && defined(_MSC_VER)
 			typedef unsigned __int8 uint8_t;
 			typedef unsigned __int32 uint32_t;
 			typedef unsigned __int64 uint64_t;

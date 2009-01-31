@@ -135,7 +135,7 @@ str_to_uint64(const char *value)
 	uint64_t result = 0;
 
 	if (*value < '0' || *value > '9') {
-		fprintf(stderr, "%s: %s: Not a number", argv0, value);
+		fprintf(stderr, "%s: %s: Not a number\n", argv0, value);
 		exit(EXIT_FAILURE);
 	}
 
@@ -178,7 +178,7 @@ str_to_uint64(const char *value)
 		}
 
 		if (multiplier == 0) {
-			fprintf(stderr, "%s: %s: Invalid suffix",
+			fprintf(stderr, "%s: %s: Invalid suffix\n",
 					argv0, value);
 			exit(EXIT_FAILURE);
 		}
@@ -380,7 +380,7 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				break;
 			}
 
-			fprintf(stderr, "%s: %s: %s", argv0, filename, msg);
+			fprintf(stderr, "%s: %s: %s\n", argv0, filename, msg);
 
 			exit(EXIT_FAILURE);
 		}

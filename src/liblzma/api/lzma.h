@@ -103,7 +103,7 @@
 		 * before including lzma.h.
 		 */
 #		ifndef UINT32_C
-#			define UINT32_C(n) n # U
+#			define UINT32_C(n) n ## U
 #		endif
 
 #		ifndef UINT64_C

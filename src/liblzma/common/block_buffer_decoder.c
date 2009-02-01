@@ -50,10 +50,6 @@ lzma_block_buffer_decode(lzma_block *block, lzma_allocator *allocator,
 		if (ret == LZMA_STREAM_END) {
 			ret = LZMA_OK;
 		} else {
-			// Something went wrong, restore the positions.
-			*in_pos = in_start;
-			*out_pos = out_start;
-
 			if (ret == LZMA_OK) {
 				// Either the input was truncated or the
 				// output buffer was too small.
@@ -75,6 +71,10 @@ lzma_block_buffer_decode(lzma_block *block, lzma_allocator *allocator,
 				else
 					ret = LZMA_BUF_ERROR;
 			}
+
+			// Restore the positions.
+			*in_pos = in_start;
+			*out_pos = out_start;
 		}
 	}
 

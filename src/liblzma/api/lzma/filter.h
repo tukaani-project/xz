@@ -49,8 +49,8 @@ typedef struct {
 	 * \brief       Filter ID
 	 *
 	 * Use constants whose name begin with `LZMA_FILTER_' to specify
-	 * different filters. In an array of lzma_option_filter structures,
-	 * use LZMA_VLI_UNKNOWN to indicate end of filters.
+	 * different filters. In an array of lzma_filter structures, use
+	 * LZMA_VLI_UNKNOWN to indicate end of filters.
 	 */
 	lzma_vli id;
 
@@ -125,7 +125,7 @@ extern LZMA_API uint64_t lzma_raw_decoder_memusage(const lzma_filter *filters)
  * This function may be useful when implementing custom file formats.
  *
  * \param       strm    Pointer to properly prepared lzma_stream
- * \param       options Array of lzma_filter structures.
+ * \param       filters Array of lzma_filter structures.
  *                      The end of the array must be marked with
  *                      .id = LZMA_VLI_UNKNOWN. The minimum
  *                      number of filters is one and the maximum is four.
@@ -139,7 +139,7 @@ extern LZMA_API uint64_t lzma_raw_decoder_memusage(const lzma_filter *filters)
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API lzma_ret lzma_raw_encoder(
-		lzma_stream *strm, const lzma_filter *options)
+		lzma_stream *strm, const lzma_filter *filters)
 		lzma_attr_warn_unused_result;
 
 
@@ -157,8 +157,56 @@ extern LZMA_API lzma_ret lzma_raw_encoder(
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API lzma_ret lzma_raw_decoder(
-		lzma_stream *strm, const lzma_filter *options)
+		lzma_stream *strm, const lzma_filter *filters)
 		lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Single-call raw encoder
+ *
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_size     Size of the input buffer
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Encoding was successful.
+ *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern LZMA_API lzma_ret lzma_raw_buffer_encode(
+		const lzma_filter *filters, lzma_allocator *allocator,
+		const uint8_t *in, size_t in_size, uint8_t *out,
+		size_t *out_pos, size_t out_size);
+
+
+/**
+ * \brief       Single-call raw decoder
+ *
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_pos      The next byte will be read from in[*in_pos].
+ *                          *in_pos is updated only if decoding succeeds.
+ * \param       in_size     Size of the input buffer; the first byte that
+ *                          won't be read is in[in_size].
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ */
+extern LZMA_API lzma_ret lzma_raw_buffer_decode(
+		const lzma_filter *filters, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size);
 
 
 /**
@@ -236,17 +284,17 @@ extern LZMA_API lzma_ret lzma_properties_decode(
 
 
 /**
- * \brief       Calculates encoded size of a Filter Flags field
+ * \brief       Calculate encoded size of a Filter Flags field
  *
  * Knowing the size of Filter Flags is useful to know when allocating
  * memory to hold the encoded Filter Flags.
  *
  * \param       size    Pointer to integer to hold the calculated size
- * \param       options Filter ID and associated options whose encoded
+ * \param       filters Filter ID and associated options whose encoded
  *                      size is to be calculted
  *
  * \return      - LZMA_OK: *size set successfully. Note that this doesn't
- *                guarantee that options->options is valid, thus
+ *                guarantee that filters->options is valid, thus
  *                lzma_filter_flags_encode() may still fail.
  *              - LZMA_OPTIONS_ERROR: Unknown Filter ID or unsupported options.
  *              - LZMA_PROG_ERROR: Invalid options
@@ -255,21 +303,21 @@ extern LZMA_API lzma_ret lzma_properties_decode(
  *              you need to loop over every lzma_filter entry.
  */
 extern LZMA_API lzma_ret lzma_filter_flags_size(
-		uint32_t *size, const lzma_filter *options)
+		uint32_t *size, const lzma_filter *filters)
 		lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Encodes Filter Flags into given buffer
+ * \brief       Encode Filter Flags into given buffer
  *
  * In contrast to some functions, this doesn't allocate the needed buffer.
  * This is due to how this function is used internally by liblzma.
  *
+ * \param       filters     Filter ID and options to be encoded
  * \param       out         Beginning of the output buffer
  * \param       out_pos     out[*out_pos] is the next write position. This
  *                          is updated by the encoder.
  * \param       out_size    out[out_size] is the first byte to not write.
- * \param       options     Filter options to be encoded
  *
  * \return      - LZMA_OK: Encoding was successful.
  *              - LZMA_OPTIONS_ERROR: Invalid or unsupported options.
@@ -277,27 +325,23 @@ extern LZMA_API lzma_ret lzma_filter_flags_size(
  *                buffer space (you should have checked it with
  *                lzma_filter_flags_size()).
  */
-extern LZMA_API lzma_ret lzma_filter_flags_encode(const lzma_filter *options,
+extern LZMA_API lzma_ret lzma_filter_flags_encode(const lzma_filter *filters,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Initializes Filter Flags decoder
+ * \brief       Decode Filter Flags from given buffer
  *
- * The decoded result is stored into *options. options->options is
+ * The decoded result is stored into *filters. filters->options is
  * initialized but the old value is NOT free()d.
  *
- * Because the results of this decoder are placed into *options,
- * strm->next_in, strm->avail_in, and strm->total_in are not used
- * when calling lzma_code(). The only valid action for lzma_code()
- * is LZMA_RUN
- *
  * \return      - LZMA_OK
+ *              - LZMA_OPTIONS_ERROR
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API lzma_ret lzma_filter_flags_decode(
-		lzma_filter *options, lzma_allocator *allocator,
+		lzma_filter *filters, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size)
 		lzma_attr_warn_unused_result;

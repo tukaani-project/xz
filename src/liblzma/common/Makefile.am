@@ -44,6 +44,7 @@ libcommon_la_SOURCES += \
 	block_encoder.h \
 	block_header_encoder.c \
 	easy.c \
+	filter_buffer_encoder.c \
 	filter_encoder.c \
 	filter_encoder.h \
 	filter_flags_encoder.c \
@@ -65,6 +66,7 @@ libcommon_la_SOURCES += \
 	block_decoder.c \
 	block_decoder.h \
 	block_header_decoder.c \
+	filter_buffer_decoder.c \
 	filter_decoder.c \
 	filter_decoder.h \
 	filter_flags_decoder.c \

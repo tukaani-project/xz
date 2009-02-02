@@ -14,7 +14,7 @@
 #include "check.h"
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_check_is_supported(lzma_check type)
 {
 	if ((unsigned int)(type) > LZMA_CHECK_ID_MAX)
@@ -61,7 +61,7 @@ lzma_check_is_supported(lzma_check type)
 }
 
 
-extern LZMA_API uint32_t
+extern LZMA_API(uint32_t)
 lzma_check_size(lzma_check type)
 {
 	if ((unsigned int)(type) > LZMA_CHECK_ID_MAX)

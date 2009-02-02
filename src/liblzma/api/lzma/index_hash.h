@@ -41,7 +41,7 @@ typedef struct lzma_index_hash_s lzma_index_hash;
  * returned. In this case, return value cannot be NULL or a different
  * pointer than the index_hash that was given as an argument.
  */
-extern LZMA_API lzma_index_hash *lzma_index_hash_init(
+extern LZMA_API(lzma_index_hash *) lzma_index_hash_init(
 		lzma_index_hash *index_hash, lzma_allocator *allocator)
 		lzma_attr_warn_unused_result;
 
@@ -49,7 +49,7 @@ extern LZMA_API lzma_index_hash *lzma_index_hash_init(
 /**
  * \brief       Deallocate lzma_index_hash structure
  */
-extern LZMA_API void lzma_index_hash_end(
+extern LZMA_API(void) lzma_index_hash_end(
 		lzma_index_hash *index_hash, lzma_allocator *allocator);
 
 
@@ -66,7 +66,7 @@ extern LZMA_API void lzma_index_hash_end(
  *              - LZMA_PROG_ERROR: Invalid arguments or this function is being
  *                used when lzma_index_hash_decode() has already been used.
  */
-extern LZMA_API lzma_ret lzma_index_hash_append(lzma_index_hash *index_hash,
+extern LZMA_API(lzma_ret) lzma_index_hash_append(lzma_index_hash *index_hash,
 		lzma_vli unpadded_size, lzma_vli uncompressed_size)
 		lzma_attr_warn_unused_result;
 
@@ -96,7 +96,7 @@ extern LZMA_API lzma_ret lzma_index_hash_append(lzma_index_hash *index_hash,
  *              - LZMA_BUF_ERROR: Cannot progress because *in_pos >= in_size.
  *              - LZMA_PROG_ERROR
  */
-extern LZMA_API lzma_ret lzma_index_hash_decode(lzma_index_hash *index_hash,
+extern LZMA_API(lzma_ret) lzma_index_hash_decode(lzma_index_hash *index_hash,
 		const uint8_t *in, size_t *in_pos, size_t in_size)
 		lzma_attr_warn_unused_result;
 
@@ -106,6 +106,6 @@ extern LZMA_API lzma_ret lzma_index_hash_decode(lzma_index_hash *index_hash,
  *
  * This is needed to verify the Backward Size field in the Stream Footer.
  */
-extern LZMA_API lzma_vli lzma_index_hash_size(
+extern LZMA_API(lzma_vli) lzma_index_hash_size(
 		const lzma_index_hash *index_hash)
 		lzma_attr_pure;

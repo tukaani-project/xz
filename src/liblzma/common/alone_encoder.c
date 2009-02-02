@@ -152,7 +152,7 @@ lzma_alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 */
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_alone_encoder(lzma_stream *strm, const lzma_options_lzma *options)
 {
 	lzma_next_strm_init(alone_encoder_init, strm, options);

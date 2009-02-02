@@ -92,7 +92,7 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_easy_encoder(lzma_stream *strm, uint32_t preset, lzma_check check)
 {
 	lzma_next_strm_init(easy_encoder_init, strm, preset, check);
@@ -106,7 +106,7 @@ lzma_easy_encoder(lzma_stream *strm, uint32_t preset, lzma_check check)
 }
 
 
-extern LZMA_API uint64_t
+extern LZMA_API(uint64_t)
 lzma_easy_encoder_memusage(uint32_t preset)
 {
 	lzma_coder coder;
@@ -117,7 +117,7 @@ lzma_easy_encoder_memusage(uint32_t preset)
 }
 
 
-extern LZMA_API uint64_t
+extern LZMA_API(uint64_t)
 lzma_easy_decoder_memusage(uint32_t preset)
 {
 	lzma_coder coder;

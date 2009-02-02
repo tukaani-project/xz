@@ -37,7 +37,7 @@ free_properties(lzma_block *block, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_block_header_decode(lzma_block *block,
 		lzma_allocator *allocator, const uint8_t *in)
 {

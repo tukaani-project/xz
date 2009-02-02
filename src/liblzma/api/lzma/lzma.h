@@ -118,7 +118,7 @@ typedef enum {
  * could require giving additional options to the encoder that the older
  * match finders don't need.
  */
-extern LZMA_API lzma_bool lzma_mf_is_supported(lzma_match_finder match_finder)
+extern LZMA_API(lzma_bool) lzma_mf_is_supported(lzma_match_finder match_finder)
 		lzma_attr_const;
 
 
@@ -160,7 +160,7 @@ typedef enum {
  * mode, which the application developer wasn't aware, could require giving
  * additional options to the encoder that the older modes don't need.
  */
-extern LZMA_API lzma_bool lzma_mode_is_supported(lzma_mode mode)
+extern LZMA_API(lzma_bool) lzma_mode_is_supported(lzma_mode mode)
 		lzma_attr_const;
 
 
@@ -407,5 +407,5 @@ typedef struct {
  * This function is available only if LZMA1 or LZMA2 encoder has been enabled
  * when building liblzma.
  */
-extern LZMA_API lzma_bool lzma_lzma_preset(
+extern LZMA_API(lzma_bool) lzma_lzma_preset(
 		lzma_options_lzma *options, uint32_t preset);

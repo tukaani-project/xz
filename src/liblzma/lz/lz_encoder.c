@@ -532,7 +532,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_mf_is_supported(lzma_match_finder mf)
 {
 	bool ret = false;

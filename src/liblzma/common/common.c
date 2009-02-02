@@ -24,14 +24,14 @@
 // Version //
 /////////////
 
-extern LZMA_API uint32_t
+extern LZMA_API(uint32_t)
 lzma_version_number(void)
 {
 	return LZMA_VERSION;
 }
 
 
-extern LZMA_API const char *
+extern LZMA_API(const char *)
 lzma_version_string(void)
 {
 	return PACKAGE_VERSION;
@@ -158,7 +158,7 @@ lzma_strm_init(lzma_stream *strm)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_code(lzma_stream *strm, lzma_action action)
 {
 	// Sanity checks
@@ -284,7 +284,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 }
 
 
-extern LZMA_API void
+extern LZMA_API(void)
 lzma_end(lzma_stream *strm)
 {
 	if (strm != NULL && strm->internal != NULL) {
@@ -297,7 +297,7 @@ lzma_end(lzma_stream *strm)
 }
 
 
-extern LZMA_API lzma_check
+extern LZMA_API(lzma_check)
 lzma_get_check(const lzma_stream *strm)
 {
 	// Return LZMA_CHECK_NONE if we cannot know the check type.
@@ -309,7 +309,7 @@ lzma_get_check(const lzma_stream *strm)
 }
 
 
-extern LZMA_API uint64_t
+extern LZMA_API(uint64_t)
 lzma_memusage(const lzma_stream *strm)
 {
 	uint64_t memusage;
@@ -326,7 +326,7 @@ lzma_memusage(const lzma_stream *strm)
 }
 
 
-extern LZMA_API uint64_t
+extern LZMA_API(uint64_t)
 lzma_memlimit_get(const lzma_stream *strm)
 {
 	uint64_t old_memlimit;
@@ -343,7 +343,7 @@ lzma_memlimit_get(const lzma_stream *strm)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_memlimit_set(lzma_stream *strm, uint64_t new_memlimit)
 {
 	// Dummy variables to simplify memconfig functions

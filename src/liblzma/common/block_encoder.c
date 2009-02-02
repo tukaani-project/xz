@@ -196,7 +196,7 @@ lzma_block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_block_encoder(lzma_stream *strm, lzma_block *block)
 {
 	lzma_next_strm_init(lzma_block_encoder_init, strm, block);

@@ -29,7 +29,7 @@
 #define HEADERS_BOUND (2 * LZMA_STREAM_HEADER_SIZE + INDEX_BOUND)
 
 
-extern LZMA_API size_t
+extern LZMA_API(size_t)
 lzma_stream_buffer_bound(size_t uncompressed_size)
 {
 	// Get the maximum possible size of a Block.
@@ -47,7 +47,7 @@ lzma_stream_buffer_bound(size_t uncompressed_size)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_stream_buffer_encode(lzma_filter *filters, lzma_check check,
 		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos_ptr, size_t out_size)

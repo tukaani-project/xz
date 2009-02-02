@@ -20,7 +20,7 @@
 #include "filter_encoder.h"
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_filter_flags_size(uint32_t *size, const lzma_filter *filter)
 {
 	if (filter->id >= LZMA_FILTER_RESERVED_START)
@@ -34,7 +34,7 @@ lzma_filter_flags_size(uint32_t *size, const lzma_filter *filter)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_filter_flags_encode(const lzma_filter *filter,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 {

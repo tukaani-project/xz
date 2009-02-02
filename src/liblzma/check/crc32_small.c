@@ -38,7 +38,7 @@ crc32_init(void)
 }
 
 
-extern LZMA_API uint32_t
+extern LZMA_API(uint32_t)
 lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 {
 	mythread_once(crc32_init);

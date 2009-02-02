@@ -127,7 +127,7 @@ typedef struct {
  *                this liblzma version.
  *              - LZMA_PROG_ERROR: Invalid options.
  */
-extern LZMA_API lzma_ret lzma_stream_header_encode(
+extern LZMA_API(lzma_ret) lzma_stream_header_encode(
 		const lzma_stream_flags *options, uint8_t *out)
 		lzma_attr_warn_unused_result;
 
@@ -144,7 +144,7 @@ extern LZMA_API lzma_ret lzma_stream_header_encode(
  *                this liblzma version.
  *              - LZMA_PROG_ERROR: Invalid options.
  */
-extern LZMA_API lzma_ret lzma_stream_footer_encode(
+extern LZMA_API(lzma_ret) lzma_stream_footer_encode(
 		const lzma_stream_flags *options, uint8_t *out)
 		lzma_attr_warn_unused_result;
 
@@ -179,7 +179,7 @@ extern LZMA_API lzma_ret lzma_stream_footer_encode(
  *              LZMA_FORMAT_ERROR is returned by lzma_stream_header_decode()
  *              when decoding non-first Stream.
  */
-extern LZMA_API lzma_ret lzma_stream_header_decode(
+extern LZMA_API(lzma_ret) lzma_stream_header_decode(
 		lzma_stream_flags *options, const uint8_t *in)
 		lzma_attr_warn_unused_result;
 
@@ -206,7 +206,7 @@ extern LZMA_API lzma_ret lzma_stream_header_decode(
  *              is corrupt (possibly truncated). Stream decoder in liblzma
  *              uses LZMA_DATA_ERROR in this situation.
  */
-extern LZMA_API lzma_ret lzma_stream_footer_decode(
+extern LZMA_API(lzma_ret) lzma_stream_footer_decode(
 		lzma_stream_flags *options, const uint8_t *in)
 		lzma_attr_warn_unused_result;
 
@@ -226,6 +226,6 @@ extern LZMA_API lzma_ret lzma_stream_footer_decode(
  *              - LZMA_PROG_ERROR: Invalid value, e.g. invalid check or
  *                backward_size.
  */
-extern LZMA_API lzma_ret lzma_stream_flags_compare(
+extern LZMA_API(lzma_ret) lzma_stream_flags_compare(
 		const lzma_stream_flags *a, const lzma_stream_flags *b)
 		lzma_attr_pure;

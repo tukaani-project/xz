@@ -158,15 +158,15 @@
  * function pointers are declared specially in the headers.
  */
 #ifdef _WIN32
-#	define LZMA_API_CALL __cdecl
 #	define LZMA_API_IMPORT __declspec(dllimport)
+#	define LZMA_API_CALL __cdecl
 #else
-#	define LZMA_API_CALL
 #	define LZMA_API_IMPORT
+#	define LZMA_API_CALL
 #endif
 
 #ifndef LZMA_API
-#	define LZMA_API LZMA_API_CALL LZMA_API_IMPORT
+#	define LZMA_API(type) LZMA_API_IMPORT type LZMA_API_CALL
 #endif
 
 

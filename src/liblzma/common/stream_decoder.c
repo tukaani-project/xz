@@ -440,7 +440,7 @@ lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_stream_decoder(lzma_stream *strm, uint64_t memlimit, uint32_t flags)
 {
 	lzma_next_strm_init(lzma_stream_decoder_init, strm, memlimit, flags);

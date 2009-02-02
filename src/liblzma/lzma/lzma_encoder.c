@@ -675,7 +675,7 @@ lzma_lzma_props_encode(const void *options, uint8_t *out)
 #endif
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_mode_is_supported(lzma_mode mode)
 {
 	return mode == LZMA_MODE_FAST || mode == LZMA_MODE_NORMAL;

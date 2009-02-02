@@ -21,7 +21,7 @@
 #include "check.h"
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_block_header_size(lzma_block *block)
 {
 	if (block->version != 0)
@@ -77,7 +77,7 @@ lzma_block_header_size(lzma_block *block)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_block_header_encode(const lzma_block *block, uint8_t *out)
 {
 	// Valdidate everything but filters.

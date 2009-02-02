@@ -216,7 +216,7 @@ lzma_index_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_index_encoder(lzma_stream *strm, lzma_index *i)
 {
 	lzma_next_strm_init(lzma_index_encoder_init, strm, i);
@@ -227,7 +227,7 @@ lzma_index_encoder(lzma_stream *strm, lzma_index *i)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_index_buffer_encode(lzma_index *i,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 {

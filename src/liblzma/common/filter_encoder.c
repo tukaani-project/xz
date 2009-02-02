@@ -180,7 +180,7 @@ encoder_find(lzma_vli id)
 }
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_filter_encoder_is_supported(lzma_vli id)
 {
 	return encoder_find(id) != NULL;
@@ -196,7 +196,7 @@ lzma_raw_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_raw_encoder(lzma_stream *strm, const lzma_filter *options)
 {
 	lzma_next_strm_init(lzma_raw_coder_init, strm, options,
@@ -210,7 +210,7 @@ lzma_raw_encoder(lzma_stream *strm, const lzma_filter *options)
 }
 
 
-extern LZMA_API uint64_t
+extern LZMA_API(uint64_t)
 lzma_raw_encoder_memusage(const lzma_filter *filters)
 {
 	return lzma_raw_coder_memusage(
@@ -218,7 +218,7 @@ lzma_raw_encoder_memusage(const lzma_filter *filters)
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_chunk_size(const lzma_filter *filters)
 {
 	lzma_vli max = 0;
@@ -241,7 +241,7 @@ lzma_chunk_size(const lzma_filter *filters)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_properties_size(uint32_t *size, const lzma_filter *filter)
 {
 	const lzma_filter_encoder *const fe = encoder_find(filter->id);
@@ -264,7 +264,7 @@ lzma_properties_size(uint32_t *size, const lzma_filter *filter)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_properties_encode(const lzma_filter *filter, uint8_t *props)
 {
 	const lzma_filter_encoder *const fe = encoder_find(filter->id);

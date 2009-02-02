@@ -20,7 +20,7 @@
 #include "stream_decoder.h"
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_stream_buffer_decode(uint64_t *memlimit, uint32_t flags,
 		lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size,

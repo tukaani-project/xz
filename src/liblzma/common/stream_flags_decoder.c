@@ -34,7 +34,7 @@ stream_flags_decode(lzma_stream_flags *options, const uint8_t *in)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_stream_header_decode(lzma_stream_flags *options, const uint8_t *in)
 {
 	// Magic
@@ -63,7 +63,7 @@ lzma_stream_header_decode(lzma_stream_flags *options, const uint8_t *in)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_stream_footer_decode(lzma_stream_flags *options, const uint8_t *in)
 {
 	// Magic

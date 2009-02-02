@@ -523,7 +523,7 @@ typedef struct {
  * out what `action' values are supported by the coder. See documentation of
  * lzma_ret for the possible return values.
  */
-extern LZMA_API lzma_ret lzma_code(lzma_stream *strm, lzma_action action)
+extern LZMA_API(lzma_ret) lzma_code(lzma_stream *strm, lzma_action action)
 		lzma_attr_warn_unused_result;
 
 
@@ -540,7 +540,7 @@ extern LZMA_API lzma_ret lzma_code(lzma_stream *strm, lzma_action action)
  *              stream structure. liblzma doesn't do this, and assumes that
  *              application knows what it is doing.
  */
-extern LZMA_API void lzma_end(lzma_stream *strm);
+extern LZMA_API(void) lzma_end(lzma_stream *strm);
 
 
 /**
@@ -565,7 +565,7 @@ extern LZMA_API void lzma_end(lzma_stream *strm);
  *              If this function isn't supported by *strm or some other error
  *              occurs, zero is returned.
  */
-extern LZMA_API uint64_t lzma_memusage(const lzma_stream *strm);
+extern LZMA_API(uint64_t) lzma_memusage(const lzma_stream *strm);
 
 
 /**
@@ -577,7 +577,7 @@ extern LZMA_API uint64_t lzma_memusage(const lzma_stream *strm);
  * \return      On success, the current memory usage limit is returned
  *              (always non-zero). On error, zero is returned.
  */
-extern LZMA_API uint64_t lzma_memlimit_get(const lzma_stream *strm);
+extern LZMA_API(uint64_t) lzma_memlimit_get(const lzma_stream *strm);
 
 
 /**
@@ -592,4 +592,5 @@ extern LZMA_API uint64_t lzma_memlimit_get(const lzma_stream *strm);
  *              - LZMA_PROG_ERROR: Invalid arguments, e.g. *strm doesn't
  *                support memory usage limit or memlimit was zero.
  */
-extern LZMA_API lzma_ret lzma_memlimit_set(lzma_stream *strm, uint64_t memlimit);
+extern LZMA_API(lzma_ret) lzma_memlimit_set(
+		lzma_stream *strm, uint64_t memlimit);

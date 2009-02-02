@@ -114,7 +114,7 @@ struct lzma_index_s {
 };
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_memusage(lzma_vli count)
 {
 	if (count > LZMA_VLI_MAX)
@@ -140,7 +140,7 @@ free_index_list(lzma_index *i, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API lzma_index *
+extern LZMA_API(lzma_index *)
 lzma_index_init(lzma_index *i, lzma_allocator *allocator)
 {
 	if (i == NULL) {
@@ -166,7 +166,7 @@ lzma_index_init(lzma_index *i, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API void
+extern LZMA_API(void)
 lzma_index_end(lzma_index *i, lzma_allocator *allocator)
 {
 	if (i != NULL) {
@@ -178,28 +178,28 @@ lzma_index_end(lzma_index *i, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_count(const lzma_index *i)
 {
 	return i->count;
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_size(const lzma_index *i)
 {
 	return index_size(i->count, i->index_list_size);
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_total_size(const lzma_index *i)
 {
 	return i->total_size;
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_stream_size(const lzma_index *i)
 {
 	// Stream Header + Blocks + Index + Stream Footer
@@ -209,7 +209,7 @@ lzma_index_stream_size(const lzma_index *i)
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_file_size(const lzma_index *i)
 {
 	// If multiple Streams are concatenated, the Stream Header, Index,
@@ -223,7 +223,7 @@ lzma_index_file_size(const lzma_index *i)
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_uncompressed_size(const lzma_index *i)
 {
 	return i->uncompressed_size;
@@ -286,7 +286,7 @@ index_append_real(lzma_index *i, lzma_allocator *allocator,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_index_append(lzma_index *i, lzma_allocator *allocator,
 		lzma_vli unpadded_size, lzma_vli uncompressed_size)
 {
@@ -436,7 +436,7 @@ set_info(const lzma_index *i, lzma_index_record *info)
 }
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_index_read(lzma_index *i, lzma_index_record *info)
 {
 	if (i->current.group == NULL) {
@@ -462,7 +462,7 @@ lzma_index_read(lzma_index *i, lzma_index_record *info)
 }
 
 
-extern LZMA_API void
+extern LZMA_API(void)
 lzma_index_rewind(lzma_index *i)
 {
 	i->current.group = NULL;
@@ -470,7 +470,7 @@ lzma_index_rewind(lzma_index *i)
 }
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_index_locate(lzma_index *i, lzma_index_record *info, lzma_vli target)
 {
 	// Check if it is possible to fullfill the request.
@@ -541,7 +541,7 @@ lzma_index_locate(lzma_index *i, lzma_index_record *info, lzma_vli target)
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 		lzma_allocator *allocator, lzma_vli padding)
 {
@@ -687,7 +687,7 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 }
 
 
-extern LZMA_API lzma_index *
+extern LZMA_API(lzma_index *)
 lzma_index_dup(const lzma_index *src, lzma_allocator *allocator)
 {
 	lzma_index *dest = lzma_alloc(sizeof(lzma_index), allocator);
@@ -745,7 +745,7 @@ lzma_index_dup(const lzma_index *src, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API lzma_bool
+extern LZMA_API(lzma_bool)
 lzma_index_equal(const lzma_index *a, const lzma_index *b)
 {
 	// No point to compare more if the pointers are the same.

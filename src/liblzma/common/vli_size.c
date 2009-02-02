@@ -20,7 +20,7 @@
 #include "common.h"
 
 
-extern LZMA_API uint32_t
+extern LZMA_API(uint32_t)
 lzma_vli_size(lzma_vli vli)
 {
 	if (vli > LZMA_VLI_MAX)

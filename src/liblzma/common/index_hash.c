@@ -76,7 +76,7 @@ struct lzma_index_hash_s {
 };
 
 
-extern LZMA_API lzma_index_hash *
+extern LZMA_API(lzma_index_hash *)
 lzma_index_hash_init(lzma_index_hash *index_hash, lzma_allocator *allocator)
 {
 	if (index_hash == NULL) {
@@ -107,7 +107,7 @@ lzma_index_hash_init(lzma_index_hash *index_hash, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API void
+extern LZMA_API(void)
 lzma_index_hash_end(lzma_index_hash *index_hash, lzma_allocator *allocator)
 {
 	lzma_free(index_hash, allocator);
@@ -115,7 +115,7 @@ lzma_index_hash_end(lzma_index_hash *index_hash, lzma_allocator *allocator)
 }
 
 
-extern LZMA_API lzma_vli
+extern LZMA_API(lzma_vli)
 lzma_index_hash_size(const lzma_index_hash *index_hash)
 {
 	// Get the size of the Index from ->blocks instead of ->records for
@@ -145,7 +145,7 @@ hash_append(lzma_index_hash_info *info, lzma_vli unpadded_size,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli unpadded_size,
 		lzma_vli uncompressed_size)
 {
@@ -176,7 +176,7 @@ lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli unpadded_size,
 }
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 		size_t *in_pos, size_t in_size)
 {

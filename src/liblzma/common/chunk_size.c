@@ -36,7 +36,7 @@
 
  Zero if the Uncompressed Sizes of Blocks don't matter
  */
-extern LZMA_API size_t
+extern LZMA_API(size_t)
 lzma_chunk_size(const lzma_options_filter *filters)
 {
 	while (filters->id != LZMA_VLI_UNKNOWN) {

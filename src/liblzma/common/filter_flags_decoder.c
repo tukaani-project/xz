@@ -20,7 +20,7 @@
 #include "filter_decoder.h"
 
 
-extern LZMA_API lzma_ret
+extern LZMA_API(lzma_ret)
 lzma_filter_flags_decode(
 		lzma_filter *filter, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size)

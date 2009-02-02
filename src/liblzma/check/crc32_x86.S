@@ -44,12 +44,37 @@ init_table(void)
  * extern uint32_t lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc);
  */
 
-	.text
-	.globl	lzma_crc32
-	.type	lzma_crc32, @function
+/*
+ * On some systems, the functions need to be prefixed. The prefix is
+ * usually an underscore.
+ */
+#ifndef __USER_LABEL_PREFIX__
+#	define __USER_LABEL_PREFIX__
+#endif
+#define MAKE_SYM_CAT(prefix, sym) prefix ## sym
+#define MAKE_SYM(prefix, sym) MAKE_SYM_CAT(prefix, sym)
+#define LZMA_CRC32 MAKE_SYM(__USER_LABEL_PREFIX__, lzma_crc32)
+#define LZMA_CRC32_TABLE MAKE_SYM(__USER_LABEL_PREFIX__, lzma_crc32_table)
 
-	.align	16
-lzma_crc32:
+/*
+ * Solaris assembler doesn't have .p2align, and Darwin uses .align
+ * differently than GNU/Linux and Solaris.
+ */
+#ifdef __MACH__
+#	define ALIGN(pow2, abs) .align pow2
+#else
+#	define ALIGN(pow2, abs) .align abs
+#endif
+
+	.text
+	.globl	LZMA_CRC32
+
+#if !defined(__MACH__) && !defined(_WIN32)
+	.type	LZMA_CRC32, @function
+#endif
+
+	ALIGN(4, 16)
+LZMA_CRC32:
 	/*
 	 * Register usage:
 	 * %eax crc
@@ -71,17 +96,32 @@ lzma_crc32:
 	/*
 	 * Store the address of lzma_crc32_table to %ebx. This is needed to
 	 * get position-independent code (PIC).
+	 *
+	 * The PIC macro is defined by libtool, while __PIC__ is defined
+	 * by GCC but only on some systems. Testing for both makes it simpler
+	 * to test this code without libtool, and keeps the code working also
+	 * when built with libtool but using something else than GCC.
 	 */
-	call	.L_PIC
-.L_PIC:
-	popl	%ebx
-	addl	$_GLOBAL_OFFSET_TABLE_+[.-.L_PIC], %ebx
-	movl	lzma_crc32_table@GOT(%ebx), %ebx
+#if !defined(PIC) && !defined(__PIC__)
+	/* Not PIC */
+	movl	$LZMA_CRC32_TABLE, %ebx
+#elif defined(__MACH__)
+	/* Mach-O */
+	call	.L_get_pc
+.L_pic:
+	leal	.L_lzma_crc32_table$non_lazy_ptr-.L_pic(%ebx), %ebx
+	movl	(%ebx), %ebx
+#else
+	/* ELF */
+	call	.L_get_pc
+	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
+	movl	LZMA_CRC32_TABLE@GOT(%ebx), %ebx
+#endif
 
 	/* Complement the initial value. */
 	notl	%eax
 
-	.align	16
+	ALIGN(4, 16)
 .L_align:
 	/*
 	 * Check if there is enough input to use slicing-by-eight.
@@ -104,7 +144,7 @@ lzma_crc32:
 	decl	%edi
 	jmp	.L_align
 
-	.align	4
+	ALIGN(2, 4)
 .L_slice:
 	/*
 	 * If we get here, there's at least 16 bytes of aligned input
@@ -214,7 +254,27 @@ lzma_crc32:
 	popl	%ebx
 	ret
 
-	.size	lzma_crc32, .-lzma_crc32
+#if defined(PIC) || defined(__PIC__)
+	ALIGN(4, 16)
+.L_get_pc:
+	movl	(%esp), %ebx
+	ret
+#endif
+
+#if defined(__MACH__) && (defined(PIC) || defined(__PIC__))
+	.section __IMPORT,__pointers,non_lazy_symbol_pointers
+.L_lzma_crc32_table$non_lazy_ptr:
+	.indirect_symbol LZMA_CRC32_TABLE
+	.long 0
+
+#elif defined(_WIN32)
+	/* This is equivalent of __declspec(dllexport). */
+	.section .drectve
+	.ascii " -export:lzma_crc32"
+
+#else
+	.size	LZMA_CRC32, .-LZMA_CRC32
+#endif
 
 /*
  * This is needed to support non-executable stack. It's ugly to

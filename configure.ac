@@ -307,12 +307,6 @@ if test "x$enable_assembler" = xyes; then
 		x86_64) enable_assembler=x86_64 ;;
 		*)      enable_assembler=no ;;
 	esac
-	# Darwin has different ABI than GNU+Linux and Solaris,
-	# and the assembler code doesn't assemble.
-	case $host_os in
-		darwin*) enable_assembler=no ;;
-		*)       ;;
-	esac
 fi
 case $enable_assembler in
 	x86)

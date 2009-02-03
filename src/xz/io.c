@@ -180,7 +180,7 @@ io_copy_attrs(const file_pair *pair)
 	(void)futimesat(pair->dest_fd, NULL, tv);
 #	else
 	// Argh, no function to use a file descriptor to set the timestamp.
-	(void)utimes(pair->src_name, tv);
+	(void)utimes(pair->dest_name, tv);
 #	endif
 
 #elif defined(HAVE_UTIME)
@@ -195,7 +195,7 @@ io_copy_attrs(const file_pair *pair)
 	(void)atime_nsec;
 	(void)mtime_nsec;
 
-	(void)utime(pair->src_name, &buf);
+	(void)utime(pair->dest_name, &buf);
 #endif
 
 	return;

@@ -185,10 +185,11 @@ io_copy_attrs(const file_pair *pair)
 
 #elif defined(HAVE_UTIME)
 	// Use one-second precision. utime() doesn't support using file
-	// descriptor either.
-	const struct utimbuf buf = {
-		.actime = pair->src_st.st_atime;
-		.modtime = pair->src_st.st_mtime;
+	// descriptor either. Some systems have broken utime() prototype
+	// so don't make this const.
+	struct utimbuf buf = {
+		.actime = pair->src_st.st_atime,
+		.modtime = pair->src_st.st_mtime,
 	};
 
 	// Avoid warnings.

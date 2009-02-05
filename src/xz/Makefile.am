@@ -30,6 +30,8 @@ xz_SOURCES = \
 	private.h \
 	process.c \
 	process.h \
+	signals.c \
+	signals.h \
 	suffix.c \
 	suffix.h \
 	util.c \

@@ -17,12 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef IO_H
-#define IO_H
-
-#include "private.h"
-
-
 // Some systems have suboptimal BUFSIZ. Use a bit bigger value on them.
 #if BUFSIZ <= 1024
 #	define IO_BUFFER_SIZE 8192
@@ -56,6 +50,10 @@ typedef struct {
 	bool src_eof;
 
 } file_pair;
+
+
+/// \brief      Initialize the I/O module
+extern void io_init(void);
 
 
 /// \brief      Opens a file pair
@@ -93,5 +91,3 @@ extern size_t io_read(file_pair *pair, uint8_t *buf, size_t size);
 /// \return     On success, zero is returned. On error, -1 is returned
 ///             and error message printed.
 extern bool io_write(const file_pair *pair, const uint8_t *buf, size_t size);
-
-#endif

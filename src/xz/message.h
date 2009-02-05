@@ -17,10 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MESSAGE_H
-#define MESSAGE_H
-
-
 /// Verbosity levels
 enum message_verbosity {
 	V_SILENT,   ///< No messages
@@ -133,5 +129,3 @@ extern void message_progress_update(uint64_t in_pos, uint64_t out_pos);
 ///
 extern void message_progress_end(
 		uint64_t in_pos, uint64_t out_pos, bool success);
-
-#endif

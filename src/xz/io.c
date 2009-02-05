@@ -27,6 +27,38 @@
 #	include <utime.h>
 #endif
 
+#ifndef O_BINARY
+#	define O_BINARY 0
+#endif
+
+#ifndef O_NOCTTY
+#	define O_NOCTTY 0
+#endif
+
+#ifndef _WIN32
+#	include "open_stdxxx.h"
+static bool warn_fchown;
+#endif
+
+
+extern void
+io_init(void)
+{
+#ifndef _WIN32
+	// Make sure that stdin, stdout, and and stderr are connected to
+	// a valid file descriptor. Exit immediatelly with exit code ERROR
+	// if we cannot make the file descriptors valid. Maybe we should
+	// print an error message, but our stderr could be screwed anyway.
+	open_stdxxx(E_ERROR);
+
+	// If fchown() fails setting the owner, we warn about it only if
+	// we are root.
+	warn_fchown = geteuid() == 0;
+#endif
+
+	return;
+}
+
 
 /// \brief      Unlinks a file
 ///
@@ -37,20 +69,22 @@
 static void
 io_unlink(const char *name, const struct stat *known_st)
 {
+	// On Windows, st_ino is meaningless, so don't bother testing it.
+#ifndef _WIN32
 	struct stat new_st;
 
 	if (lstat(name, &new_st)
 			|| new_st.st_dev != known_st->st_dev
-			|| new_st.st_ino != known_st->st_ino) {
+			|| new_st.st_ino != known_st->st_ino)
 		message_error(_("%s: File seems to be moved, not removing"),
 				name);
-	} else {
+	else
+#endif
 		// There's a race condition between lstat() and unlink()
 		// but at least we have tried to avoid removing wrong file.
 		if (unlink(name))
 			message_error(_("%s: Cannot remove: %s"),
 					name, strerror(errno));
-	}
 
 	return;
 }
@@ -63,31 +97,19 @@ io_unlink(const char *name, const struct stat *known_st)
 static void
 io_copy_attrs(const file_pair *pair)
 {
+	// Skip chown and chmod on Windows.
+#ifndef _WIN32
 	// This function is more tricky than you may think at first.
 	// Blindly copying permissions may permit users to access the
 	// destination file who didn't have permission to access the
 	// source file.
 
-	// Simple cache to avoid repeated calls to geteuid().
-	static enum {
-		WARN_FCHOWN_UNKNOWN,
-		WARN_FCHOWN_NO,
-		WARN_FCHOWN_YES,
-	} warn_fchown = WARN_FCHOWN_UNKNOWN;
-
 	// Try changing the owner of the file. If we aren't root or the owner
 	// isn't already us, fchown() probably doesn't succeed. We warn
 	// about failing fchown() only if we are root.
-	if (fchown(pair->dest_fd, pair->src_st.st_uid, -1)
-			&& warn_fchown != WARN_FCHOWN_NO) {
-		if (warn_fchown == WARN_FCHOWN_UNKNOWN)
-			warn_fchown = geteuid() == 0
-					? WARN_FCHOWN_YES : WARN_FCHOWN_NO;
-
-		if (warn_fchown == WARN_FCHOWN_YES)
-			message_warning(_("%s: Cannot set the file owner: %s"),
-					pair->dest_name, strerror(errno));
-	}
+	if (fchown(pair->dest_fd, pair->src_st.st_uid, -1) && warn_fchown)
+		message_warning(_("%s: Cannot set the file owner: %s"),
+				pair->dest_name, strerror(errno));
 
 	mode_t mode;
 
@@ -113,6 +135,7 @@ io_copy_attrs(const file_pair *pair)
 	if (fchmod(pair->dest_fd, mode))
 		message_warning(_("%s: Cannot set the file permissions: %s"),
 				pair->dest_name, strerror(errno));
+#endif
 
 	// Copy the timestamps. We have several possible ways to do this, of
 	// which some are better in both security and precision.
@@ -210,6 +233,9 @@ io_open_src(file_pair *pair)
 	// There's nothing to open when reading from stdin.
 	if (pair->src_name == stdin_filename) {
 		pair->src_fd = STDIN_FILENO;
+#ifdef _WIN32
+		setmode(STDIN_FILENO, O_BINARY);
+#endif
 		return false;
 	}
 
@@ -218,8 +244,9 @@ io_open_src(file_pair *pair)
 	const bool reg_files_only = !opt_stdout && !opt_force;
 
 	// Flags for open()
-	int flags = O_RDONLY | O_NOCTTY;
+	int flags = O_RDONLY | O_BINARY | O_NOCTTY;
 
+#ifndef _WIN32
 	// If we accept only regular files, we need to be careful to avoid
 	// problems with special files like devices and FIFOs. O_NONBLOCK
 	// prevents blocking when opening such files. When we want to accept
@@ -227,11 +254,12 @@ io_open_src(file_pair *pair)
 	// block waiting e.g. FIFOs to become readable.
 	if (reg_files_only)
 		flags |= O_NONBLOCK;
+#endif
 
-#ifdef O_NOFOLLOW
+#if defined(O_NOFOLLOW)
 	if (reg_files_only)
 		flags |= O_NOFOLLOW;
-#else
+#elif !defined(_WIN32)
 	// Some POSIX-like systems lack O_NOFOLLOW (it's not required
 	// by POSIX). Check for symlinks with a separate lstat() on
 	// these systems.
@@ -335,6 +363,7 @@ io_open_src(file_pair *pair)
 		return true;
 	}
 
+#ifndef _WIN32
 	// Drop O_NONBLOCK, which is used only when we are accepting only
 	// regular files. After the open() call, we want things to block
 	// instead of giving EAGAIN.
@@ -348,6 +377,7 @@ io_open_src(file_pair *pair)
 		if (fcntl(pair->src_fd, F_SETFL, flags))
 			goto error_msg;
 	}
+#endif
 
 	// Stat the source file. We need the result also when we copy
 	// the permissions, and when unlinking.
@@ -367,6 +397,8 @@ io_open_src(file_pair *pair)
 			goto error;
 		}
 
+		// These are meaningless on Windows.
+#ifndef _WIN32
 		if (pair->src_st.st_mode & (S_ISUID | S_ISGID)) {
 			// gzip rejects setuid and setgid files even
 			// when --force was used. bzip2 doesn't check
@@ -396,6 +428,7 @@ io_open_src(file_pair *pair)
 					"skipping"), pair->src_name);
 			goto error;
 		}
+#endif
 	}
 
 	return false;
@@ -417,14 +450,23 @@ static void
 io_close_src(file_pair *pair, bool success)
 {
 	if (pair->src_fd != STDIN_FILENO && pair->src_fd != -1) {
+#ifdef _WIN32
+		(void)close(pair->src_fd);
+#endif
+
 		// If we are going to unlink(), do it before closing the file.
 		// This way there's no risk that someone replaces the file and
 		// happens to get same inode number, which would make us
 		// unlink() wrong file.
+		//
+		// NOTE: Windows is an exception to this, because it doesn't
+		// allow unlinking files that are open. *sigh*
 		if (success && !opt_keep_original)
 			io_unlink(pair->src_name, &pair->src_st);
 
+#ifndef _WIN32
 		(void)close(pair->src_fd);
+#endif
 	}
 
 	return;
@@ -438,6 +480,9 @@ io_open_dest(file_pair *pair)
 		// We don't modify or free() this.
 		pair->dest_name = (char *)"(stdout)";
 		pair->dest_fd = STDOUT_FILENO;
+#ifdef _WIN32
+		setmode(STDOUT_FILENO, O_BINARY);
+#endif
 		return false;
 	}
 
@@ -461,7 +506,7 @@ io_open_dest(file_pair *pair)
 	}
 
 	// Open the file.
-	const int flags = O_WRONLY | O_NOCTTY | O_CREAT | O_EXCL;
+	const int flags = O_WRONLY | O_BINARY | O_NOCTTY | O_CREAT | O_EXCL;
 	const mode_t mode = S_IRUSR | S_IWUSR;
 	pair->dest_fd = open(pair->dest_name, flags, mode);
 

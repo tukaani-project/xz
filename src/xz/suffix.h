@@ -17,9 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUFFIX_H
-#define SUFFIX_H
-
 /// \brief      Get the name of the destination file
 ///
 /// Depending on the global variable opt_mode, this tries to find a matching
@@ -36,5 +33,3 @@ extern char *suffix_get_dest_name(const char *src_name);
 /// suffix, thus if this is called multiple times, the old suffixes are freed
 /// and forgotten.
 extern void suffix_set(const char *suffix);
-
-#endif

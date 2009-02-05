@@ -17,12 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
-
-#include "private.h"
-
-
 /// \brief      Parser for Subblock options
 ///
 /// \return     Pointer to allocated options structure.
@@ -42,5 +36,3 @@ extern lzma_options_delta *options_delta(const char *str);
 /// \return     Pointer to allocated options structure.
 ///             Doesn't return on error.
 extern lzma_options_lzma *options_lzma(const char *str);
-
-#endif

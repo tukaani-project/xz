@@ -17,12 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef ARGS_H
-#define ARGS_H
-
-#include "private.h"
-
-
 typedef struct {
 	/// Filenames from command line
 	char **arg_names;
@@ -52,5 +46,3 @@ extern bool opt_keep_original;
 extern const char *stdin_filename;
 
 extern void args_parse(args_info *args, int argc, char **argv);
-
-#endif

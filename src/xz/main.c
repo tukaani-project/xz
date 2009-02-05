@@ -18,118 +18,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
-#include "open_stdxxx.h"
 #include <ctype.h>
 
 
-volatile sig_atomic_t user_abort = false;
-
 /// Exit status to use. This can be changed with set_exit_status().
 static enum exit_status_type exit_status = E_SUCCESS;
-
-/// If we were interrupted by a signal, we store the signal number so that
-/// we can raise that signal to kill the program when all cleanups have
-/// been done.
-static volatile sig_atomic_t exit_signal = 0;
-
-/// Mask of signals for which have have established a signal handler to set
-/// user_abort to true.
-static sigset_t hooked_signals;
-
-/// signals_block() and signals_unblock() can be called recursively.
-static size_t signals_block_count = 0;
-
-
-static void
-signal_handler(int sig)
-{
-	exit_signal = sig;
-	user_abort = true;
-	return;
-}
-
-
-static void
-establish_signal_handlers(void)
-{
-	// List of signals for which we establish the signal handler.
-	static const int sigs[] = {
-		SIGINT,
-		SIGTERM,
-#ifdef SIGHUP
-		SIGHUP,
-#endif
-#ifdef SIGPIPE
-		SIGPIPE,
-#endif
-#ifdef SIGXCPU
-		SIGXCPU,
-#endif
-#ifdef SIGXFSZ
-		SIGXFSZ,
-#endif
-	};
-
-	// Mask of the signals for which we have established a signal handler.
-	sigemptyset(&hooked_signals);
-	for (size_t i = 0; i < ARRAY_SIZE(sigs); ++i)
-		sigaddset(&hooked_signals, sigs[i]);
-
-	struct sigaction sa;
-
-	// All the signals that we handle we also blocked while the signal
-	// handler runs.
-	sa.sa_mask = hooked_signals;
-
-	// Don't set SA_RESTART, because we want EINTR so that we can check
-	// for user_abort and cleanup before exiting. We block the signals
-	// for which we have established a handler when we don't want EINTR.
-	sa.sa_flags = 0;
-	sa.sa_handler = &signal_handler;
-
-	for (size_t i = 0; i < ARRAY_SIZE(sigs); ++i) {
-		// If the parent process has left some signals ignored,
-		// we don't unignore them.
-		struct sigaction old;
-		if (sigaction(sigs[i], NULL, &old) == 0
-				&& old.sa_handler == SIG_IGN)
-			continue;
-
-		// Establish the signal handler.
-		if (sigaction(sigs[i], &sa, NULL))
-			message_signal_handler();
-	}
-
-	return;
-}
-
-
-extern void
-signals_block(void)
-{
-	if (signals_block_count++ == 0) {
-		const int saved_errno = errno;
-		mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
-		errno = saved_errno;
-	}
-
-	return;
-}
-
-
-extern void
-signals_unblock(void)
-{
-	assert(signals_block_count > 0);
-
-	if (--signals_block_count == 0) {
-		const int saved_errno = errno;
-		mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
-		errno = saved_errno;
-	}
-
-	return;
-}
 
 
 extern void
@@ -174,19 +67,8 @@ my_exit(enum exit_status_type status)
 	}
 
 	// If we have got a signal, raise it to kill the program.
-	const int sig = exit_signal;
-	if (sig != 0) {
-		struct sigaction sa;
-		sa.sa_handler = SIG_DFL;
-		sigfillset(&sa.sa_mask);
-		sa.sa_flags = 0;
-		sigaction(sig, &sa, NULL);
-		raise(exit_signal);
-
-		// If, for some weird reason, the signal doesn't kill us,
-		// we safely fall to the exit below.
-	}
-
+	// Otherwise we just call exit().
+	signals_exit();
 	exit(status);
 }
 
@@ -278,11 +160,9 @@ read_name(const args_info *args)
 int
 main(int argc, char **argv)
 {
-	// Make sure that stdin, stdout, and and stderr are connected to
-	// a valid file descriptor. Exit immediatelly with exit code ERROR
-	// if we cannot make the file descriptors valid. Maybe we should
-	// print an error message, but our stderr could be screwed anyway.
-	open_stdxxx(E_ERROR);
+	// Initialize the file I/O as the very first step. This makes sure
+	// that stdin, stdout, and stderr are something valid.
+	io_init();
 
 	// Set up the locale.
 	setlocale(LC_ALL, "");
@@ -334,7 +214,7 @@ main(int argc, char **argv)
 	// Hook the signal handlers. We don't need these before we start
 	// the actual action, so this is done after parsing the command
 	// line arguments.
-	establish_signal_handlers();
+	signals_init();
 
 	// Process the files given on the command line. Note that if no names
 	// were given, parse_args() gave us a fake "-" filename.

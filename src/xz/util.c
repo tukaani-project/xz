@@ -116,9 +116,8 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 
 error:
 	message_fatal(_("Value of the option `%s' must be in the range "
-				"[%llu, %llu]"), name,
-				(unsigned long long)(min),
-				(unsigned long long)(max));
+				"[%" PRIu64 ", %" PRIu64 "]"),
+				name, min, max);
 }
 
 

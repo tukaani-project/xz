@@ -27,6 +27,13 @@
 #	include <unistd.h>
 #endif
 
+#ifdef _WIN32
+#	ifndef _WIN32_WINNT
+#		define _WIN32_WINNT 0x0500
+#	endif
+#	include <windows.h>
+#endif
+
 
 /// \brief      Get the amount of physical memory in bytes
 ///
@@ -62,6 +69,12 @@ physmem(void)
 			ret = mem;
 		}
 	}
+
+#elif defined(_WIN32)
+	MEMORYSTATUSEX meminfo;
+	meminfo.dwLength = sizeof(meminfo);
+	if (GlobalMemoryStatusEx(&meminfo))
+		ret = meminfo.ullTotalPhys;
 #endif
 
 	return ret;

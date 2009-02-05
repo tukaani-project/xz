@@ -17,9 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef PRIVATE_H
-#define PRIVATE_H
-
 #include "sysdefs.h"
 #include "mythread.h"
 #include "lzma.h"
@@ -41,6 +38,18 @@
 #	define N_(msgid1, msgid2, n) ((n) == 1 ? (msgid1) : (msgid2))
 #endif
 
+#ifndef STDIN_FILENO
+#	define STDIN_FILENO (fileno(stdin))
+#endif
+
+#ifndef STDOUT_FILENO
+#	define STDOUT_FILENO (fileno(stdout))
+#endif
+
+#ifndef STDERR_FILENO
+#	define STDERR_FILENO (fileno(stderr))
+#endif
+
 #include "main.h"
 #include "process.h"
 #include "message.h"
@@ -48,7 +57,6 @@
 #include "hardware.h"
 #include "io.h"
 #include "options.h"
+#include "signals.h"
 #include "suffix.h"
 #include "util.h"
-
-#endif

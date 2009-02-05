@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       process.c
+/// \file       process.h
 /// \brief      Compresses or uncompresses a file
 //
 //  Copyright (C) 2007 Lasse Collin
@@ -16,12 +16,6 @@
 //  Lesser General Public License for more details.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-#ifndef PROCESS_H
-#define PROCESS_H
-
-#include "private.h"
-
 
 enum operation_mode {
 	MODE_COMPRESS,
@@ -69,5 +63,3 @@ extern void coder_set_compression_settings(void);
 extern void process_init(void);
 
 extern void process_file(const char *filename);
-
-#endif

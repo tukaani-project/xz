@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       hardware.c
+/// \file       hardware.h
 /// \brief      Detection of available hardware resources
 //
 //  Copyright (C) 2007 Lasse Collin
@@ -16,12 +16,6 @@
 //  Lesser General Public License for more details.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-#ifndef HARDWARE_H
-#define HARDWARE_H
-
-#include "private.h"
-
 
 extern size_t opt_threads;
 
@@ -41,5 +35,3 @@ extern uint64_t hardware_memlimit_encoder(void);
 
 /// Get the memory usage limit for decoding. By default this is 30 % of RAM.
 extern uint64_t hardware_memlimit_decoder(void);
-
-#endif

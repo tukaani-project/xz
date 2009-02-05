@@ -19,10 +19,15 @@
 
 #include "private.h"
 
-#if defined(HAVE_SYS_TIME_H)
+#ifdef HAVE_SYS_TIME_H
 #	include <sys/time.h>
-#elif defined(SIGALRM)
-// FIXME
+#endif
+
+#ifdef _WIN32
+#	ifndef _WIN32_WINNT
+#		define _WIN32_WINNT 0x0500
+#	endif
+#	include <windows.h>
 #endif
 
 #include <stdarg.h>
@@ -76,6 +81,47 @@ static double start_time;
 static volatile sig_atomic_t progress_needs_updating = false;
 
 
+#ifdef _WIN32
+
+static HANDLE timer_queue = NULL;
+static HANDLE timer_timer = NULL;
+
+
+static void CALLBACK
+timer_callback(PVOID dummy1 lzma_attribute((unused)),
+		BOOLEAN dummy2 lzma_attribute((unused)))
+{
+	progress_needs_updating = true;
+	return;
+}
+
+
+/// Emulate alarm() on Windows.
+static void
+my_alarm(unsigned int seconds)
+{
+	// Just in case creating the queue has failed.
+	if (timer_queue == NULL)
+		return;
+
+	// If an old timer_timer exists, get rid of it first.
+	if (timer_timer != NULL) {
+		(void)DeleteTimerQueueTimer(timer_queue, timer_timer, NULL);
+		timer_timer = NULL;
+	}
+
+	// If it fails, tough luck. It's not that important.
+	(void)CreateTimerQueueTimer(&timer_timer, timer_queue, &timer_callback,
+			NULL, 1000U * seconds, 0,
+			WT_EXECUTEINTIMERTHREAD | WT_EXECUTEONLYONCE);
+
+	return;
+}
+
+#else
+
+#define my_alarm alarm
+
 /// Signal handler for SIGALRM
 static void
 progress_signal_handler(int sig lzma_attribute((unused)))
@@ -84,6 +130,7 @@ progress_signal_handler(int sig lzma_attribute((unused)))
 	return;
 }
 
+#endif
 
 /// Get the current time as double
 static double
@@ -157,7 +204,9 @@ message_init(const char *given_argv0)
 	}
 */
 
-#ifdef SIGALRM
+#ifdef _WIN32
+	timer_queue = CreateTimerQueue();
+#else
 	// Establish the signal handler for SIGALRM. Since this signal
 	// doesn't require any quick action, we set SA_RESTART.
 	struct sigaction sa;
@@ -266,7 +315,7 @@ message_progress_start(const char *src_name, uint64_t in_size)
 		// progress_needs_updating to true here immediatelly, but
 		// setting the timer looks better to me, since extremely
 		// early progress info is pretty much useless.
-		alarm(1);
+		my_alarm(1);
 	}
 
 	return;
@@ -486,7 +535,7 @@ message_progress_update(uint64_t in_pos, uint64_t out_pos)
 	// Updating the progress info was finished. Reset
 	// progress_needs_updating to wait for the next SIGALRM.
 	//
-	// NOTE: This has to be done before alarm() call or with (very) bad
+	// NOTE: This has to be done before my_alarm() call or with (very) bad
 	// luck we could be setting this to false after the alarm has already
 	// been triggered.
 	progress_needs_updating = false;
@@ -498,7 +547,7 @@ message_progress_update(uint64_t in_pos, uint64_t out_pos)
 
 		// Restart the timer so that progress_needs_updating gets
 		// set to true after about one second.
-		alarm(1);
+		my_alarm(1);
 	} else {
 		// The progress message was printed because user had sent us
 		// SIGALRM. In this case, each progress message is printed
@@ -521,7 +570,7 @@ message_progress_end(uint64_t in_pos, uint64_t out_pos, bool success)
 
 	// Cancel a pending alarm, if any.
 	if (progress_automatic) {
-		alarm(0);
+		my_alarm(0);
 		progress_active = false;
 	}
 

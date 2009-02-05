@@ -17,9 +17,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef UTIL_H
-#define UTIL_H
-
 /// \brief      Safe malloc() that never returns NULL
 ///
 /// \note       xmalloc(), xrealloc(), and xstrdup() must not be used when
@@ -67,5 +64,3 @@ extern bool is_tty_stdin(void);
 /// If stdout is a terminal, an error message is printed and exit status set
 /// to EXIT_ERROR.
 extern bool is_tty_stdout(void);
-
-#endif

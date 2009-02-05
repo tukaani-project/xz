@@ -26,6 +26,7 @@ EXTRA_DIST = \
 	Doxyfile.in \
 	extra \
 	doc \
+	windows \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
 	COPYING.LGPLv2.1

@@ -8,7 +8,7 @@
 /// be used to test the branch conversion filters. Note that this program
 /// itself does nothing useful.
 ///
-/// Compiling: gcc -std=c99 -fPIC bcj_test.c
+/// Compiling: gcc -std=c99 -fPIC -c bcj_test.c
 /// Don't optimize or strip.
 //
 //  This code has been put into the public domain.

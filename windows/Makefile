@@ -36,6 +36,8 @@ STRIP = strip
 endif
 
 SED = sed
+MKDIR = mkdir
+CP = cp
 RM = rm -f
 
 CFLAGS = -g -Wall -Wextra -O2
@@ -90,11 +92,11 @@ clean: liblzma-clean xzdec-clean xz-clean
 
 pkg: all
 	$(RM) -r pkg
-	install -d pkg/lib pkg/include/lzma
-	install -m 0644 liblzma.dll xz.exe xzdec.exe lzmadec.exe pkg
-	install -m 0644 liblzma.a liblzma.def pkg/lib
-	install -m 0644 ../src/liblzma/api/lzma.h pkg/include
-	install -m 0644 ../src/liblzma/api/lzma/*.h pkg/include/lzma
+	$(MKDIR) -p pkg/lib pkg/include/lzma
+	$(CP) liblzma.dll xz.exe xzdec.exe lzmadec.exe pkg
+	$(CP) liblzma.a liblzma.def pkg/lib
+	$(CP) ../src/liblzma/api/lzma.h pkg/include
+	$(CP) ../src/liblzma/api/lzma/*.h pkg/include/lzma
 
 
 ###############

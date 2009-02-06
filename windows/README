@@ -65,23 +65,24 @@ Building for 32-bit Windows
     Add MinGW and MSYS to PATH (adjust if you installed to non-default
     location):
 
-        C:\>set PATH=C:\MinGW\bin;C:\MSYS\1.0\bin;%PATH%
+        set PATH=C:\MinGW\bin;C:\MSYS\1.0\bin;%PATH%
 
-    Then it should be enough to just run mingw32-make in this directory:
+    Then it should be enough to just run mingw32-make in this directory
+    (the directory containing this README):
 
-        C:\xz-5.x.x\windows>mingw32-make
+        mingw32-make
 
 
 Building for 64-bit Windows
 
     For 64-bit build the PATH has to point to 64-bit MinGW:
 
-        C:\>set PATH=C:\MinGW64\bin;C:\MSYS\1.0\bin;%PATH%
+        set PATH=C:\MinGW64\bin;C:\MSYS\1.0\bin;%PATH%
 
     You need to pass W64=1 to mingw32-make (or make if you don't have
     mingw32-make):
 
-        C:\xz-5.x.x\windows>mingw32-make W64=1
+        mingw32-make W64=1
 
 
 Additional Make Flags and Targets

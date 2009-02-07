@@ -99,14 +99,6 @@ Additional Make Flags and Targets
 
         mingw32-make DEBUG=1 CFLAGS="-g -O0"
 
-    By default, liblzma is built as a DLL and the command line tools
-    linked dynamically against that liblzma.dll. To build static
-    versions instead, use STATIC=1:
-
-        mingw32-make STATIC=1
-
-    TODO: Static build is not implemented yet.
-
     To copy the built binaries and required headers into a clean
     directory, use the pkg target:
 
@@ -136,8 +128,6 @@ To Do
 
     - Test Win64 support and add instructions about getting x86-64
       version of MinGW.
-
-    - Static liblzma and statically linked command line tools
 
     - Creating the import library for other compilers/linkers
 

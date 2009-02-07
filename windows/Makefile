@@ -11,9 +11,7 @@
 #   W64=1       Build for 64-bit Windows. Make sure that you have 64-bit
 #               MinGW in PATH.
 #
-#   STATIC=1    TODO: Build static library instead of a DLL.
-#
-#   WINE=1      Shortcut to set CC and STRIP to use Wine to run Windows
+#   WINE=1      Shortcut to set CC, AR, and STRIP to use Wine to run Windows
 #               versions of MinGW binaries.
 #
 # The usual CPPFLAGS and CFLAGS are supported too.
@@ -29,9 +27,11 @@
 
 ifdef W64
 CC = x86_64-pc-mingw32-gcc
+AR = x86_64-pc-mingw32-ar
 STRIP = x86_64-pc-mingw32-strip
 else
 CC = mingw32-gcc
+AR = ar
 STRIP = strip
 endif
 
@@ -60,13 +60,17 @@ ALL_CPPFLAGS = \
 
 ALL_CPPFLAGS += -DHAVE_CONFIG_H
 
+STATIC_CPPFLAGS = -DLZMA_API_STATIC
+
 # This works with Wine too while using native GNU make, sed, and rm.
 ifdef WINE
 ifdef W64
 CC := wine c:/MinGW64/bin/x86_64-pc-mingw32-gcc
+AR := wine c:/MinGW64/bin/x86_64-pc-mingw32-ar
 STRIP := wine c:/MinGW64/bin/x86_64-pc-mingw32-strip
 else
 CC := wine c:/MinGW/bin/gcc
+AR := wine c:/MinGW/bin/ar
 STRIP := wine c:/MinGW/bin/strip
 endif
 endif
@@ -87,14 +91,14 @@ ALL_CFLAGS += $(CFLAGS)
 ################
 
 .PHONY: all clean pkg
-all: liblzma.dll xzdec.exe lzmadec.exe xz.exe
+all: liblzma xzdec xz
 clean: liblzma-clean xzdec-clean xz-clean
 
 pkg: all
 	$(RM) -r pkg
 	$(MKDIR) -p pkg/lib pkg/include/lzma
-	$(CP) liblzma.dll xz.exe xzdec.exe lzmadec.exe pkg
-	$(CP) liblzma.a liblzma.def pkg/lib
+	$(CP) liblzma.dll xz-dynamic.exe xz.exe xzdec-dynamic.exe xzdec.exe lzmadec-dynamic.exe lzmadec.exe pkg
+	$(CP) liblzma.a liblzma.def liblzma_static.lib pkg/lib
 	$(CP) ../src/liblzma/api/lzma.h pkg/include
 	$(CP) ../src/liblzma/api/lzma/*.h pkg/include/lzma
 
@@ -102,6 +106,9 @@ pkg: all
 ###############
 # liblzma.dll #
 ###############
+
+.PHONY: liblzma
+liblzma: liblzma.dll liblzma_static.lib
 
 LIBLZMA_SRCS_C = \
 	../src/liblzma/common/alone_decoder.c \
@@ -144,7 +151,6 @@ LIBLZMA_SRCS_C = \
 	../src/liblzma/lz/lz_encoder.c \
 	../src/liblzma/lz/lz_encoder_mf.c \
 	../src/liblzma/lzma/fastpos_table.c \
-	../src/liblzma/lzma/fastpos_tablegen.c \
 	../src/liblzma/lzma/lzma2_decoder.c \
 	../src/liblzma/lzma/lzma2_encoder.c \
 	../src/liblzma/lzma/lzma_decoder.c \
@@ -181,11 +187,15 @@ LIBLZMA_OBJS_C = $(LIBLZMA_SRCS_C:.c=.o)
 LIBLZMA_OBJS_ASM = $(LIBLZMA_SRCS_ASM:.S=.o)
 LIBLZMA_OBJS = $(LIBLZMA_OBJS_C) $(LIBLZMA_OBJS_ASM)
 
+LIBLZMA_OBJS_STATIC_C = $(LIBLZMA_SRCS_C:.c=-static.o)
+LIBLZMA_OBJS_STATIC_ASM = $(LIBLZMA_SRCS_ASM:.S=-static.o)
+LIBLZMA_OBJS_STATIC = $(LIBLZMA_OBJS_STATIC_C) $(LIBLZMA_OBJS_STATIC_ASM)
+
 # The sed is needed to remove ordinals from the .def file. I'm not going
 # to track the ordinal numbers, so people should link against liblzma.dll
 # only by using symbol names.
 liblzma.dll: $(LIBLZMA_OBJS)
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -shared -o liblzma.dll $(LIBLZMA_OBJS) -Wl,--out-implib,liblzma.a,--output-def,liblzma.def.in
+	$(CC) $(ALL_CFLAGS) -shared -o liblzma.dll $(LIBLZMA_OBJS) -Wl,--out-implib,liblzma.a,--output-def,liblzma.def.in
 	$(SED) 's/ \+@ *[0-9]\+//' liblzma.def.in > liblzma.def
 	$(RM) liblzma.def.in
 	$(STRIP) --strip-unneeded liblzma.a
@@ -197,33 +207,58 @@ $(LIBLZMA_OBJS_C): %.o: %.c
 $(LIBLZMA_OBJS_ASM): %.o: %.S
 	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
+liblzma_static.lib: $(LIBLZMA_OBJS_STATIC)
+	$(RM) $@
+	$(AR) rcs $@ $(LIBLZMA_OBJS_STATIC)
+	$(STRIP) --strip-unneeded $@
+
+$(LIBLZMA_OBJS_STATIC_C): %-static.o: %.c
+	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+
+$(LIBLZMA_OBJS_STATIC_ASM): %-static.o: %.S
+	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+
 .PHONY: liblzma-clean
 liblzma-clean:
-	-$(RM) $(LIBLZMA_OBJS) liblzma.def.in liblzma.def liblzma.a liblzma.dll
+	-$(RM) $(LIBLZMA_OBJS) $(LIBLZMA_OBJS_STATIC) liblzma.def.in liblzma.def liblzma.a liblzma.dll liblzma_static.lib
 
 
 ###########################
 # xzdec.exe & lzmadec.exe #
 ###########################
 
+.PHONY: xzdec
+xzdec: xzdec-dynamic.exe lzmadec-dynamic.exe xzdec.exe lzmadec.exe
+
 XZDEC_SRCS = ../src/xzdec/xzdec.c
 
-xzdec.exe: liblzma.dll $(XZDEC_SRCS)
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) -o xzdec.exe liblzma.a
-	$(STRIP) --strip-all xzdec.exe
+xzdec-dynamic.exe: liblzma.dll $(XZDEC_SRCS)
+	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) -o $@ liblzma.a
+	$(STRIP) --strip-all $@
 
-lzmadec.exe: liblzma.dll $(XZDEC_SRCS)
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -DLZMADEC $(XZDEC_SRCS) -o lzmadec.exe liblzma.a
-	$(STRIP) --strip-all lzmadec.exe
+lzmadec-dynamic.exe: liblzma.dll $(XZDEC_SRCS)
+	$(CC) $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) -o $@ liblzma.a
+	$(STRIP) --strip-all $@
+
+xzdec.exe: liblzma_static.lib $(XZDEC_SRCS)
+	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) -o $@ liblzma_static.lib
+	$(STRIP) --strip-all $@
+
+lzmadec.exe: liblzma_static.lib $(XZDEC_SRCS)
+	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) -o $@ liblzma_static.lib
+	$(STRIP) --strip-all $@
 
 .PHONY: xzdec-clean
 xzdec-clean:
-	-$(RM) xzdec.exe lzmadec.exe
+	-$(RM) xzdec-dynamic.exe lzmadec-dynamic.exe xzdec.exe lzmadec.exe
 
 
 ##########
 # xz.exe #
 ##########
+
+.PHONY: xz
+xz: xz-dynamic.exe xz.exe
 
 XZ_SRCS = \
 	../src/xz/args.c \
@@ -237,19 +272,30 @@ XZ_SRCS = \
 	../src/xz/suffix.c \
 	../src/xz/util.c
 
+XZ_SRCS_FIXED = $(XZ_SRCS:.c=-fixed.c)
 XZ_OBJS = $(XZ_SRCS:.c=.o)
+XZ_OBJS_STATIC = $(XZ_SRCS:.c=-static.o)
+
+$(XZ_SRCS_FIXED): %-fixed.c: %.c
+	$(SED) "s/%'/%/g" $< > $@
 
 # We need to "fix" the source files which use ' as format character
 # in printf() to get thousand separators. Windows doesn't support it.
 # It's not in C89 or C99, but it is in POSIX.
-$(XZ_OBJS): %.o: %.c
-	$(SED) "s/%'/%/g" $< > $(<:.c=-fixed.c)
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $(<:.c=-fixed.c)
+$(XZ_OBJS): %.o: %-fixed.c
+	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
-xz.exe: $(XZ_OBJS)
-	$(CC) $(ALL_CFLAGS) $(XZ_OBJS) -o xz.exe liblzma.a
-	$(STRIP) --strip-all xz.exe
+xz-dynamic.exe: liblzma.dll $(XZ_OBJS)
+	$(CC) $(ALL_CFLAGS) $(XZ_OBJS) -o $@ liblzma.a
+	$(STRIP) --strip-all $@
+
+$(XZ_OBJS_STATIC): %-static.o: %-fixed.c
+	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+
+xz.exe: liblzma_static.lib $(XZ_OBJS_STATIC)
+	$(CC) $(ALL_CFLAGS) $(XZ_OBJS_STATIC) -o $@ liblzma_static.lib
+	$(STRIP) --strip-all $@
 
 .PHONY: xz-clean
 xz-clean:
-	-$(RM) $(XZ_OBJS) $(XZ_SRCS:.c=-fixed.c) xz.exe
+	-$(RM) $(XZ_OBJS) $(XZ_OBJS_STATIC) $(XZ_SRCS_FIXED) xz-dynamic.exe xz.exe

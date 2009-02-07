@@ -42,12 +42,10 @@ xz_CPPFLAGS = \
 	-I@top_srcdir@/src/common \
 	-I@top_srcdir@/src/liblzma/api \
 	-I@top_builddir@/lib \
-	-I@top_srcdir@/lib
+	-I@top_srcdir@/lib \
+	@STATIC_CPPFLAGS@
 
-## Always link the command line tool statically against liblzma. It is
-## faster on x86, because no need for PIC. We also have one dependency less,
-## which allows users to more freely copy the xz binary to other boxes.
-xz_LDFLAGS = -static
+xz_LDFLAGS = @STATIC_LDFLAGS@
 xz_LDADD = \
 	@top_builddir@/src/liblzma/liblzma.la \
 	@LTLIBINTL@

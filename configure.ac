@@ -387,9 +387,48 @@ AC_ARG_ENABLE([threads], AC_HELP_STRING([--disable-threads],
 		This makes some things thread-unsafe.]),
 	[], [enable_threads=yes])
 if test "x$enable_threads" != xyes && test "x$enable_threads" != xno; then
+	AC_MSG_RESULT([])
 	AC_MSG_ERROR([--enable-threads accepts only \`yes' or \`no'])
 fi
+AC_MSG_RESULT([$enable_threads])
 # We use the actual result a little later.
+
+
+############################################
+# xz/xzdec/lzmadec linkage against liblzma #
+############################################
+
+# Link the command line tool statically against liblzma unless using
+# --enable-dynamic. Using static liblzma gives a little bit faster executable
+# on x86, because no register is wasted for PIC. We also have one dependency
+# less, which allows users to more freely copy the xz binary to other boxes.
+# However, I wouldn't be surprised if distro maintainers still prefer dynamic
+# linking, so let's make it easy for them.
+
+AC_MSG_CHECKING([how command line tools should be linked against liblzma])
+AC_ARG_ENABLE([dynamic], [AC_HELP_STRING([--enable-dynamic],
+			[Link command line tools dynamically against liblzma.
+			The default is to use static liblzma if it was
+			built.])],
+		[], [enable_dynamic=no])
+case $enable_dynamic in
+	yes)
+		STATIC_CPPFLAGS=
+		STATIC_LDFLAGS=
+		AC_MSG_RESULT([dynamically])
+		;;
+	no)
+		STATIC_CPPFLAGS="-DLZMA_API_STATIC"
+		STATIC_LDFLAGS="-static"
+		AC_MSG_RESULT([statically])
+		;;
+	*)
+		AC_MSG_RESULT([])
+		AC_MSG_ERROR([--enable-dynamic accepts only \`yes' or \`no'])
+		;;
+esac
+AC_SUBST([STATIC_CPPFLAGS])
+AC_SUBST([STATIC_LDFLAGS])
 
 
 ###############################################################################

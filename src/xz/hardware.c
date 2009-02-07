@@ -81,7 +81,7 @@ hardware_memlimit_init(void)
 	// even that is too much on some systems. But on most systems it's
 	// far too little, and can be annoying.
 	if (mem == 0)
-		mem = UINT64_C(16) * 1024 * 1024;
+		mem = UINT64_C(32) * 1024 * 1024;
 
 	// Use at maximum of 90 % of RAM when encoding and 33 % when decoding.
 	memlimit_encoder = mem - mem / 10;

@@ -255,9 +255,11 @@ LZMA_CRC64:
 	.long 0
 
 #elif defined(_WIN32)
+#	ifndef LZMA_API_STATIC
 	/* This is equivalent of __declspec(dllexport). */
 	.section .drectve
 	.ascii " -export:lzma_crc64"
+#	endif
 
 #else
 	/* ELF */

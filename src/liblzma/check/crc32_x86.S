@@ -262,17 +262,21 @@ LZMA_CRC32:
 #endif
 
 #if defined(__MACH__) && (defined(PIC) || defined(__PIC__))
+	/* Mach-O PIC */
 	.section __IMPORT,__pointers,non_lazy_symbol_pointers
 .L_lzma_crc32_table$non_lazy_ptr:
 	.indirect_symbol LZMA_CRC32_TABLE
 	.long 0
 
 #elif defined(_WIN32)
+#	ifndef LZMA_API_STATIC
 	/* This is equivalent of __declspec(dllexport). */
 	.section .drectve
 	.ascii " -export:lzma_crc32"
+#	endif
 
 #else
+	/* ELF */
 	.size	LZMA_CRC32, .-LZMA_CRC32
 #endif
 

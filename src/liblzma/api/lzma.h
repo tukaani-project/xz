@@ -155,14 +155,31 @@
 
 /*
  * Some systems require (or at least recommend) that the functions and
- * function pointers are declared specially in the headers.
+ * function pointers are declared specially in the headers. LZMA_API_IMPORT
+ * is for importing symbols and LZMA_API_CALL is to specify calling
+ * convention.
+ *
+ * By default it is assumed that the application will link dynamically
+ * against liblzma. #define LZMA_API_STATIC in your application if you
+ * want to link against static liblzma. If you don't care about portability
+ * to operating systems like Windows, or at least don't care about linking
+ * against static liblzma on them, don't worry about LZMA_API_STATIC. That
+ * is, most developers will never need to use LZMA_API_STATIC.
  */
-#ifdef _WIN32
-#	define LZMA_API_IMPORT __declspec(dllimport)
-#	define LZMA_API_CALL __cdecl
-#else
-#	define LZMA_API_IMPORT
-#	define LZMA_API_CALL
+#ifndef LZMA_API_IMPORT
+#	if !defined(LZMA_API_STATIC) && defined(_WIN32)
+#		define LZMA_API_IMPORT __declspec(dllimport)
+#	else
+#		define LZMA_API_IMPORT
+#	endif
+#endif
+
+#ifndef LZMA_API_CALL
+#	ifdef _WIN32
+#		define LZMA_API_CALL __cdecl
+#	else
+#		define LZMA_API_CALL
+#	endif
 #endif
 
 #ifndef LZMA_API

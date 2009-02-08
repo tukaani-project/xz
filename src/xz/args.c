@@ -425,11 +425,20 @@ args_parse(args_info *args, int argc, char **argv)
 	// Check how we were called.
 	{
 		// Remove the leading path name, if any.
+#ifdef _WIN32
+		// Some systems support both / and \ to separate path
+		// components.
+		const char *name = argv[0] + strlen(argv[0]);
+		while (argv[0] < name && name[-1] != '/' && name[-1] != '\\')
+			--name;
+#else
+		// POSIX
 		const char *name = strrchr(argv[0], '/');
 		if (name == NULL)
 			name = argv[0];
 		else
 			++name;
+#endif
 
 		// NOTE: It's possible that name[0] is now '\0' if argv[0]
 		// is weird, but it doesn't matter here.

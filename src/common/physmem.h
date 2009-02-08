@@ -57,17 +57,18 @@ physmem(void)
 
 #elif defined(HAVE_PHYSMEM_SYSCTL)
 	int name[2] = { CTL_HW, HW_PHYSMEM };
-	unsigned long mem;
-	size_t mem_ptr_size = sizeof(mem);
-	if (!sysctl(name, 2, &mem, &mem_ptr_size, NULL, NULL)) {
+	union {
+		unsigned long ul;
+		unsigned int ui;
+	} mem;
+	size_t mem_ptr_size = sizeof(mem.ul);
+	if (!sysctl(name, 2, &mem.ul, &mem_ptr_size, NULL, NULL)) {
 		// Some systems use unsigned int as the "return value".
 		// This makes a difference on 64-bit boxes.
-		if (mem_ptr_size != sizeof(mem)) {
-			if (mem_ptr_size == sizeof(unsigned int))
-				ret = *(unsigned int *)(&mem);
-		} else {
-			ret = mem;
-		}
+		if (mem_ptr_size == sizeof(mem.ul))
+			ret = mem.ul;
+		else if (mem_ptr_size == sizeof(mem.ui))
+			ret = mem.ui;
 	}
 
 #elif defined(_WIN32)

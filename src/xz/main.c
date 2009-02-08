@@ -197,7 +197,7 @@ main(int argc, char **argv)
 
 	// Refuse to write compressed data to standard output if it is
 	// a terminal and --force wasn't used.
-	if (opt_mode == MODE_COMPRESS) {
+	if (opt_mode == MODE_COMPRESS && !opt_force) {
 		if (opt_stdout || (args.arg_count == 1
 				&& strcmp(args.arg_names[0], "-") == 0)) {
 			if (is_tty_stdout()) {

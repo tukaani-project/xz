@@ -20,6 +20,7 @@
 
 #include "lz_encoder.h"
 #include "lz_encoder_hash.h"
+#include "check.h"
 
 
 struct lzma_coder_s {
@@ -488,8 +489,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 {
 #ifdef HAVE_SMALL
 	// We need that the CRC32 table has been initialized.
-	// This is enough to do it.
-	lzma_crc32(NULL, 0, 0);
+	lzma_crc32_init();
 #endif
 
 	// Allocate and initialize the base data structure.

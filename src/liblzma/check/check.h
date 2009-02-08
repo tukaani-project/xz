@@ -61,6 +61,7 @@ typedef struct {
 /// the array two-dimensional.
 #ifdef HAVE_SMALL
 extern uint32_t lzma_crc32_table[1][256];
+extern void lzma_crc32_init(void);
 #else
 extern const uint32_t lzma_crc32_table[8][256];
 extern const uint64_t lzma_crc64_table[4][256];

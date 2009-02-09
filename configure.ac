@@ -39,6 +39,7 @@ AC_CANONICAL_HOST
 
 echo
 echo "Configure options:"
+AM_CFLAGS=
 
 
 #############
@@ -455,7 +456,7 @@ if test "x$enable_threads" = xyes; then
 	echo "Threading support:"
 	ACX_PTHREAD
 	LIBS="$LIBS $PTHREAD_LIBS"
-	CFLAGS="$PTHREAD_CFLAGS $CFLAGS"
+	AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
 	CC="$PTHREAD_CC"
 fi
 
@@ -652,7 +653,7 @@ main()
 
 
 ###############################################################################
-# If using GCC, set some additional CFLAGS:
+# If using GCC, set some additional AM_CFLAGS:
 ###############################################################################
 
 Wno_uninitialized=no
@@ -662,7 +663,7 @@ if test "x$GCC" = xyes ; then
 	echo "GCC extensions:"
 	gl_VISIBILITY
 	if test -n "$CFLAG_VISIBILITY" ; then
-		CFLAGS="$CFLAG_VISIBILITY $CFLAGS"
+		AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
 	fi
 
 	# -Wno-uninitialized is needed with -Werror with SHA256 code
@@ -686,40 +687,38 @@ if test "x$GCC" = xyes ; then
 	#   * -Winline, -Wdisabled-optimization, -Wunsafe-loop-optimizations
 	#     don't seem so useful here; at least the last one gives some
 	#     warnings which are not bugs.
-	#
-	# The flags are in reverse order below so they end up in "beautiful"
-	# order on the actual command line.
 	for NEW_FLAG in \
-			-Wredundant-decls \
-			-Wmissing-noreturn \
-			-Wmissing-declarations \
-			-Wmissing-prototypes \
-			-Wold-style-definition \
-			-Wstrict-prototypes \
-			-Waggregate-return \
-			-Wlogical-op \
-			-Wwrite-strings \
-			-Wbad-function-cast \
-			-Wpointer-arith \
-			-Wshadow \
-			-Wundef \
-			-Wfloat-equal \
-			-Wstrict-aliasing \
-			-Wmissing-include-dirs \
-			-Winit-self \
-			-Wformat=2 \
+			-Wall \
 			-Wextra \
-			-Wall
+			-Wformat=2 \
+			-Winit-self \
+			-Wmissing-include-dirs \
+			-Wstrict-aliasing \
+			-Wfloat-equal \
+			-Wundef \
+			-Wshadow \
+			-Wpointer-arith \
+			-Wbad-function-cast \
+			-Wwrite-strings \
+			-Wlogical-op \
+			-Waggregate-return \
+			-Wstrict-prototypes \
+			-Wold-style-definition \
+			-Wmissing-prototypes \
+			-Wmissing-declarations \
+			-Wmissing-noreturn \
+			-Wredundant-decls
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"
-		CFLAGS="$NEW_FLAG $CFLAGS"
+		CFLAGS="$CFLAGS $NEW_FLAG"
 		AC_COMPILE_IFELSE([void foo(void) { }], [
+			AM_CFLAGS="$AM_CFLAGS $NEW_FLAG"
 			AC_MSG_RESULT([yes])
 		], [
-			CFLAGS="$OLD_CFLAGS"
 			AC_MSG_RESULT([no])
 		])
+		CFLAGS="$OLD_CFLAGS"
 	done
 
 	AC_ARG_ENABLE([werror],
@@ -727,7 +726,7 @@ if test "x$GCC" = xyes ; then
 			compilation on all compiler warnings.]),
 		[], [enable_werror=no])
 	if test "x$enable_werror" = "xyes"; then
-		CFLAGS="-Werror $CFLAGS"
+		AM_CFLAGS="$AM_CFLAGS -Werror"
 	fi
 fi
 
@@ -743,6 +742,9 @@ echo
 # Don't build the lib directory at all if we don't need any replacement
 # functions.
 AM_CONDITIONAL([COND_GNULIB], test -n "$LIBOBJS")
+
+# Add default AM_CFLAGS.
+AC_SUBST([AM_CFLAGS])
 
 AC_CONFIG_FILES([
 	Doxyfile

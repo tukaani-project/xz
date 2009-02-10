@@ -1,0 +1,5 @@
+#define MY_TYPE VFT_APP
+#define MY_NAME "xzdec"
+#define MY_SUFFIX ".exe"
+#define MY_DESC "xzdec uncompression tool for .xz files"
+#include "common.rc"

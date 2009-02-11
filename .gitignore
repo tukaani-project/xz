@@ -36,7 +36,6 @@ Makefile.in
 /po/Makefile
 /debug/Makefile
 /src/scripts/Makefile
-/src/lzmadec/Makefile
 /src/xz/Makefile
 /src/Makefile
 /src/liblzma/check/Makefile
@@ -49,5 +48,4 @@ Makefile.in
 /src/liblzma/lzma/Makefile
 /src/liblzma/common/Makefile
 /src/liblzma/subblock/Makefile
-/src/lzma/Makefile
 /src/xzdec/Makefile

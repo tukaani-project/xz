@@ -294,9 +294,16 @@ parse_real(args_info *args, int argc, char **argv)
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0) {
 				if (++i == ARRAY_SIZE(types))
-					message_fatal(_("%s: Unknown integrity"
+					message_fatal(_("%s: Unsupported "
+							"integrity "
 							"check type"), optarg);
 			}
+
+			// Use a separate check in case we are using different
+			// liblzma than what was used to compile us.
+			if (!lzma_check_is_supported(types[i].check))
+				message_fatal(_("%s: Unsupported integrity "
+						"check type"), optarg);
 
 			coder_set_check(types[i].check);
 			break;

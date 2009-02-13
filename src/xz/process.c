@@ -51,7 +51,11 @@ static bool preset_default = true;
 static bool preset_extreme = false;
 
 /// Integrity check type
+#ifdef HAVE_CHECK_CRC64
 static lzma_check check = LZMA_CHECK_CRC64;
+#else
+static lzma_check check = LZMA_CHECK_CRC32;
+#endif
 
 
 extern void

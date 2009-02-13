@@ -892,7 +892,7 @@ message_version(void)
 {
 	// It is possible that liblzma version is different than the command
 	// line tool version, so print both.
-	printf("xz " PACKAGE_VERSION "\n");
+	printf("xz " LZMA_VERSION_STRING "\n");
 	printf("liblzma %s\n", lzma_version_string());
 	my_exit(E_SUCCESS);
 }

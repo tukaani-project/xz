@@ -34,7 +34,7 @@ lzma_version_number(void)
 extern LZMA_API(const char *)
 lzma_version_string(void)
 {
-	return PACKAGE_VERSION;
+	return LZMA_VERSION_STRING;
 }
 
 

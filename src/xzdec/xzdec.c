@@ -101,7 +101,7 @@ help(void)
 static void lzma_attribute((noreturn))
 version(void)
 {
-	printf(TOOL_FORMAT "dec " PACKAGE_VERSION "\n"
+	printf(TOOL_FORMAT "dec " LZMA_VERSION_STRING "\n"
 			"liblzma %s\n", lzma_version_string());
 
 	my_exit();

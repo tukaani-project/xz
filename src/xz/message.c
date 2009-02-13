@@ -1029,8 +1029,9 @@ message_help(bool long_help)
 				hardware_memlimit_encoder() / (1024 * 1024),
 				hardware_memlimit_decoder() / (1024 * 1024));
 		printf(N_("  * one thread for (de)compression.\n\n",
-			"  * %'" PRIu64 " threads for (de)compression.\n\n",
-			(uint64_t)(opt_threads)), (uint64_t)(opt_threads));
+			"  * %'" PRIu32 " threads for (de)compression.\n\n",
+			hardware_threadlimit_get()),
+			hardware_threadlimit_get());
 	}
 
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),

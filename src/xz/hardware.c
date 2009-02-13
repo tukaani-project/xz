@@ -19,11 +19,12 @@
 
 #include "private.h"
 #include "physmem.h"
+#include "cpucores.h"
 
 
 /// Maximum number of free *coder* threads. This can be set with
 /// the --threads=NUM command line option.
-size_t opt_threads = 1;
+static uint32_t threads_max;
 
 
 /// Memory usage limit for encoding
@@ -40,35 +41,28 @@ static uint64_t memlimit_custom = 0;
 /// Get the number of CPU cores, and set opt_threads to default to that value.
 /// User can then override this with --threads command line option.
 static void
-hardware_cores(void)
+hardware_threadlimit_init(void)
 {
-#if defined(HAVE_NUM_PROCESSORS_SYSCONF)
-	const long cpus = sysconf(_SC_NPROCESSORS_ONLN);
-	if (cpus > 0)
-		opt_threads = (size_t)(cpus);
-
-#elif defined(HAVE_NUM_PROCESSORS_SYSCTL)
-	int name[2] = { CTL_HW, HW_NCPU };
-	int cpus;
-	size_t cpus_size = sizeof(cpus);
-	if (!sysctl(name, &cpus, &cpus_size, NULL, NULL)
-			&& cpus_size == sizeof(cpus) && cpus > 0)
-		opt_threads = (size_t)(cpus);
-#endif
-
-	// Limit opt_threads so that maximum number of threads doesn't exceed.
-
-#if defined(_SC_THREAD_THREADS_MAX)
-	const long threads_max = sysconf(_SC_THREAD_THREADS_MAX);
-	if (threads_max > 0 && (size_t)(threads_max) < opt_threads)
-		opt_threads = (size_t)(threads_max);
-
-#elif defined(PTHREAD_THREADS_MAX)
-	if (opt_threads > PTHREAD_THREADS_MAX)
-		opt_threads = PTHREAD_THREADS_MAX;
-#endif
+	threads_max = cpucores();
+	if (threads_max == 0)
+		threads_max = 1;
 
 	return;
+}
+
+
+extern void
+hardware_threadlimit_set(uint32_t threadlimit)
+{
+	threads_max = threadlimit;
+	return;
+}
+
+
+extern uint32_t
+hardware_threadlimit_get(void)
+{
+	return threads_max;
 }
 
 
@@ -117,6 +111,6 @@ extern void
 hardware_init(void)
 {
 	hardware_memlimit_init();
-	hardware_cores();
+	hardware_threadlimit_init();
 	return;
 }

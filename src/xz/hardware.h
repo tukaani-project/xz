@@ -17,12 +17,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-extern size_t opt_threads;
-
-
 /// Initialize some hardware-specific variables, which are needed by other
 /// hardware_* functions.
 extern void hardware_init(void);
+
+
+/// Set custom value for maximum number of coder threads.
+extern void hardware_threadlimit_set(uint32_t threadlimit);
+
+/// Get the maximum number of coder threads. Some additional helper threads
+/// are allowed on top of this).
+extern uint32_t hardware_threadlimit_get(void);
 
 
 /// Set custom memory usage limit. This is used for both encoding and

@@ -14,27 +14,27 @@
 #ifndef PHYSMEM_H
 #define PHYSMEM_H
 
-#if defined(HAVE_PHYSMEM_SYSCTL) || defined(HAVE_NCPU_SYSCTL)
+#if defined(HAVE_PHYSMEM_SYSCONF)
+#	include <unistd.h>
+
+#elif defined(HAVE_PHYSMEM_SYSCTL)
 #	ifdef HAVE_SYS_PARAM_H
 #		include <sys/param.h>
 #	endif
 #	ifdef HAVE_SYS_SYSCTL_H
 #		include <sys/sysctl.h>
 #	endif
-#endif
 
-#if defined(HAVE_PHYSMEM_SYSCONF) || defined(HAVE_NCPU_SYSCONF)
-#	include <unistd.h>
-#endif
+#elif defined(HAVE_PHYSMEM_SYSINFO)
+#	include <sys/sysinfo.h>
 
-#ifdef _WIN32
+#elif defined(_WIN32)
 #	ifndef _WIN32_WINNT
 #		define _WIN32_WINNT 0x0500
 #	endif
 #	include <windows.h>
-#endif
 
-#ifdef __DJGPP__
+#elif defined(__DJGPP__)
 #	include <dpmi.h>
 #endif
 
@@ -74,6 +74,11 @@ physmem(void)
 		else if (mem_ptr_size == sizeof(mem.ui))
 			ret = mem.ui;
 	}
+
+#elif defined(HAVE_PHYSMEM_SYSINFO)
+	struct sysinfo si;
+	if (sysinfo(&si) == 0)
+		ret = (uint64_t)(si.totalram) * si.mem_unit;
 
 #elif defined(_WIN32)
 	MEMORYSTATUSEX meminfo;

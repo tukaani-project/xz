@@ -246,6 +246,7 @@ coder_set_compression_settings(void)
 					memory_limit >> 20);
 	}
 
+/*
 	// Limit the number of worker threads so that memory usage
 	// limit isn't exceeded.
 	assert(memory_usage > 0);
@@ -255,6 +256,7 @@ coder_set_compression_settings(void)
 
 	if (opt_threads > thread_limit)
 		opt_threads = thread_limit;
+*/
 
 	return;
 }

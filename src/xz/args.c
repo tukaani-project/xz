@@ -135,8 +135,8 @@ parse_real(args_info *args, int argc, char **argv)
 			break;
 
 		case 'T':
-			opt_threads = str_to_uint64("threads", optarg,
-					1, SIZE_MAX);
+			hardware_threadlimit_set(str_to_uint64(
+					"threads", optarg, 1, SIZE_MAX));
 			break;
 
 		// --version

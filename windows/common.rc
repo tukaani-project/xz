@@ -1,13 +1,13 @@
 #include <winresrc.h>
 #include "config.h"
+#define LZMA_H_INTERNAL
+#define LZMA_H_INTERNAL_RC
+#include "lzma/version.h"
 
-#define MY_VER_MAJOR 4
-#define MY_VER_MINOR 999
-#define MY_VER_PATCH 8
-#ifndef MY_VER_BUILD
-# define MY_VER_BUILD 0
+#ifndef MY_BUILD
+# define MY_BUILD 0
 #endif
-#define MY_VERSION MY_VER_MAJOR,MY_VER_MINOR,MY_VER_PATCH,MY_VER_BUILD
+#define MY_VERSION LZMA_VERSION_MAJOR,LZMA_VERSION_MINOR,LZMA_VERSION_PATCH,MY_BUILD
 
 #define MY_FILENAME    MY_NAME MY_SUFFIX
 #define MY_COMPANY     "Lasse Collin and Igor Pavlov"
@@ -31,12 +31,12 @@ BEGIN
             VALUE "Comments", MY_COMMENTS
             VALUE "CompanyName", MY_COMPANY
             VALUE "FileDescription", MY_DESC
-            VALUE "FileVersion", PACKAGE_VERSION
+            VALUE "FileVersion", LZMA_VERSION_STRING
             VALUE "InternalName", MY_NAME
             VALUE "LegalCopyright", MY_COPYRIGHT
             VALUE "OriginalFilename", MY_FILENAME
             VALUE "ProductName", PACKAGE_NAME
-            VALUE "ProductVersion", PACKAGE_VERSION
+            VALUE "ProductVersion", LZMA_VERSION_STRING
         END
     END
     BLOCK "VarFileInfo"

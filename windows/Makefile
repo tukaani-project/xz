@@ -107,7 +107,7 @@ pkg: all
 	$(CP) ../src/liblzma/api/lzma/*.h pkg/include/lzma
 
 %_rc.o: %.rc
-	$(WINDRES) $< $@
+	$(WINDRES) $(ALL_CPPFLAGS) $< $@
 
 
 ###############

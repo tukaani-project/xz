@@ -140,23 +140,11 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #define HAVE__BOOL 1
 
-/* Name of package */
-#define PACKAGE "xz"
-
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT "lasse.collin@tukaani.org"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "XZ Utils"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "XZ Utils 4.999.8beta"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "xz"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "4.999.8beta"
 
 /* The size of `size_t', as computed by sizeof. */
 #ifdef _WIN64
@@ -167,9 +155,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
-
-/* Version number of package */
-#define VERSION "4.999.8beta"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel and VAX). */

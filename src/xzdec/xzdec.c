@@ -24,8 +24,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#ifdef _WIN32
+#ifdef DOSLIKE
 #	include <fcntl.h>
+#	include <io.h>
 #endif
 
 #include "getopt.h"
@@ -408,7 +409,7 @@ main(int argc, char **argv)
 	lzma_stream strm = LZMA_STREAM_INIT;
 
 	// Some systems require setting stdin and stdout to binary mode.
-#ifdef _WIN32
+#ifdef DOSLIKE
 	setmode(fileno(stdin), O_BINARY);
 	setmode(fileno(stdout), O_BINARY);
 #endif

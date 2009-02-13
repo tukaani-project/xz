@@ -60,7 +60,7 @@ init_table(void)
  * Solaris assembler doesn't have .p2align, and Darwin uses .align
  * differently than GNU/Linux and Solaris.
  */
-#ifdef __MACH__
+#if defined(__MACH__) || defined(__MSDOS__)
 #	define ALIGN(pow2, abs) .align pow2
 #else
 #	define ALIGN(pow2, abs) .align abs
@@ -69,7 +69,7 @@ init_table(void)
 	.text
 	.globl	LZMA_CRC32
 
-#if !defined(__MACH__) && !defined(_WIN32)
+#if !defined(__MACH__) && !defined(_WIN32) && !defined(__MSDOS__)
 	.type	LZMA_CRC32, @function
 #endif
 
@@ -275,7 +275,7 @@ LZMA_CRC32:
 	.ascii " -export:lzma_crc32"
 #	endif
 
-#else
+#elif !defined(__MSDOS__)
 	/* ELF */
 	.size	LZMA_CRC32, .-LZMA_CRC32
 #endif

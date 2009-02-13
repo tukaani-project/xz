@@ -164,6 +164,29 @@ main(int argc, char **argv)
 	// that stdin, stdout, and stderr are something valid.
 	io_init();
 
+#ifdef DOSLIKE
+	// Adjust argv[0] to make it look nicer in messages, and also to
+	// help the code in args.c.
+	{
+		// Strip the leading path.
+		char *p = argv[0] + strlen(argv[0]);
+		while (argv[0] < p && p[-1] != '/' && p[-1] != '\\')
+			--p;
+
+		argv[0] = p;
+
+		// Strip the .exe suffix.
+		p = strrchr(p, '.');
+		if (p != NULL)
+			*p = '\0';
+
+		// Make it lowercase.
+		for (p = argv[0]; *p != '\0'; ++p)
+			if (*p >= 'A' && *p <= 'Z')
+				*p = *p - 'A' + 'a';
+	}
+#endif
+
 	// Set up the locale.
 	setlocale(LC_ALL, "");
 

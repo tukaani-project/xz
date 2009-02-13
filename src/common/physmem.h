@@ -34,6 +34,10 @@
 #	include <windows.h>
 #endif
 
+#ifdef __DJGPP__
+#	include <dpmi.h>
+#endif
+
 
 /// \brief      Get the amount of physical memory in bytes
 ///
@@ -76,6 +80,14 @@ physmem(void)
 	meminfo.dwLength = sizeof(meminfo);
 	if (GlobalMemoryStatusEx(&meminfo))
 		ret = meminfo.ullTotalPhys;
+
+#elif defined(__DJGPP__)
+	__dpmi_free_mem_info meminfo;
+	if (__dpmi_get_free_memory_information(&meminfo) == 0
+			&& meminfo.total_number_of_physical_pages
+				!= (unsigned long)(-1))
+		ret = (uint64_t)(meminfo.total_number_of_physical_pages)
+				* 4096;
 #endif
 
 	return ret;

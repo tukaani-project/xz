@@ -154,6 +154,10 @@ typedef unsigned char _Bool;
 // Macros //
 ////////////
 
+#if defined(_WIN32) || defined(__MSDOS__) || defined(__OS2__)
+#	define DOSLIKE 1
+#endif
+
 #undef memzero
 #define memzero(s, n) memset(s, 0, n)
 

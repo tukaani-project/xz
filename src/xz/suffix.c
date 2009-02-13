@@ -19,6 +19,11 @@
 
 #include "private.h"
 
+// For case-insensitive filename suffix on case-insensitive systems
+#ifdef DOSLIKE
+#	define strcmp strcasecmp
+#endif
+
 
 static char *custom_suffix = NULL;
 

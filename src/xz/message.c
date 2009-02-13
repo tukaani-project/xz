@@ -207,6 +207,9 @@ message_init(const char *given_argv0)
 #ifdef _WIN32
 	timer_queue = CreateTimerQueue();
 #else
+#	ifndef SA_RESTART
+#		define SA_RESTART 0
+#	endif
 	// Establish the signal handler for SIGALRM. Since this signal
 	// doesn't require any quick action, we set SA_RESTART.
 	struct sigaction sa;

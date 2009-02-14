@@ -144,7 +144,7 @@ my_time(void)
 	if (gettimeofday(&tv, NULL))
 		return -1.0;
 
-	return (double)(tv.tv_sec) + (double)(tv.tv_usec) / 1.0e9;
+	return (double)(tv.tv_sec) + (double)(tv.tv_usec) / 1.0e6;
 }
 
 

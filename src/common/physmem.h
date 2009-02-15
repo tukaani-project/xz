@@ -81,10 +81,33 @@ physmem(void)
 		ret = (uint64_t)(si.totalram) * si.mem_unit;
 
 #elif defined(_WIN32)
-	MEMORYSTATUSEX meminfo;
-	meminfo.dwLength = sizeof(meminfo);
-	if (GlobalMemoryStatusEx(&meminfo))
-		ret = meminfo.ullTotalPhys;
+	if ((GetVersion() & 0xFF) >= 5) {
+		// Windows 2000 and later have GlobalMemoryStatusEx() which
+		// supports reporting values greater than 4 GiB. To keep the
+		// code working also on older Windows versions, use
+		// GlobalMemoryStatusEx() conditionally.
+		HMODULE kernel32 = GetModuleHandle("kernel32.dll");
+		if (kernel32 != NULL) {
+			BOOL (WINAPI *gmse)(LPMEMORYSTATUSEX) = GetProcAddress(
+					kernel32, "GlobalMemoryStatusEx");
+			if (gmse != NULL) {
+				MEMORYSTATUSEX meminfo;
+				meminfo.dwLength = sizeof(meminfo);
+				if (gmse(&meminfo))
+					ret = meminfo.ullTotalPhys;
+			}
+		}
+	}
+
+	if (ret == 0) {
+		// GlobalMemoryStatus() is supported by Windows 95 and later,
+		// so it is fine to link against it unconditionally. Note that
+		// GlobalMemoryStatus() has no return value.
+		MEMORYSTATUS meminfo;
+		meminfo.dwLength = sizeof(meminfo);
+		GlobalMemoryStatus(&meminfo);
+		ret = meminfo.dwTotalPhys;
+	}
 
 #elif defined(__DJGPP__)
 	__dpmi_free_mem_info meminfo;

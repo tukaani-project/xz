@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       easy.c
-/// \brief      Easy Stream encoder initialization
+/// \file       easy_encoder.c
+/// \brief      Easy .xz Stream encoder initialization
 //
 //  Copyright (C) 2008 Lasse Collin
 //
@@ -17,33 +17,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "easy_preset.h"
 #include "stream_encoder.h"
 
 
 struct lzma_coder_s {
 	lzma_next_coder stream_encoder;
-
-	/// Options for LZMA2
-	lzma_options_lzma opt_lzma;
-
-	/// We need to keep the filters array available in case
-	/// LZMA_FULL_FLUSH is used.
-	lzma_filter filters[LZMA_FILTERS_MAX + 1];
+	lzma_options_easy opt_easy;
 };
-
-
-static bool
-easy_set_filters(lzma_coder *coder, uint32_t preset)
-{
-	if (lzma_lzma_preset(&coder->opt_lzma, preset))
-		return true;
-
-	coder->filters[0].id = LZMA_FILTER_LZMA2;
-	coder->filters[0].options = &coder->opt_lzma;
-	coder->filters[1].id = LZMA_VLI_UNKNOWN;
-
-	return false;
-}
 
 
 static lzma_ret
@@ -84,11 +65,11 @@ easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->coder->stream_encoder = LZMA_NEXT_CODER_INIT;
 	}
 
-	if (easy_set_filters(next->coder, preset))
+	if (lzma_easy_preset(&next->coder->opt_easy, preset))
 		return LZMA_OPTIONS_ERROR;
 
 	return lzma_stream_encoder_init(&next->coder->stream_encoder,
-			allocator, next->coder->filters, check);
+			allocator, next->coder->opt_easy.filters, check);
 }
 
 
@@ -103,26 +84,4 @@ lzma_easy_encoder(lzma_stream *strm, uint32_t preset, lzma_check check)
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;
-}
-
-
-extern LZMA_API(uint64_t)
-lzma_easy_encoder_memusage(uint32_t preset)
-{
-	lzma_coder coder;
-	if (easy_set_filters(&coder, preset))
-		return UINT32_MAX;
-
-	return lzma_raw_encoder_memusage(coder.filters);
-}
-
-
-extern LZMA_API(uint64_t)
-lzma_easy_decoder_memusage(uint32_t preset)
-{
-	lzma_coder coder;
-	if (easy_set_filters(&coder, preset))
-		return UINT32_MAX;
-
-	return lzma_raw_decoder_memusage(coder.filters);
 }

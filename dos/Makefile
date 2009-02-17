@@ -82,7 +82,11 @@ LIBLZMA_SRCS_C = \
 	../src/liblzma/common/block_header_encoder.c \
 	../src/liblzma/common/block_util.c \
 	../src/liblzma/common/common.c \
-	../src/liblzma/common/easy.c \
+	../src/liblzma/common/easy_buffer_encoder.c \
+	../src/liblzma/common/easy_decoder_memusage.c \
+	../src/liblzma/common/easy_encoder.c \
+	../src/liblzma/common/easy_encoder_memusage.c \
+	../src/liblzma/common/easy_preset.c \
 	../src/liblzma/common/filter_common.c \
 	../src/liblzma/common/filter_decoder.c \
 	../src/liblzma/common/filter_encoder.c \

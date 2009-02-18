@@ -28,6 +28,8 @@ libcommon_la_SOURCES = \
 	common.h \
 	bsr.h \
 	block_util.c \
+	easy_preset.c \
+	easy_preset.h \
 	filter_common.c \
 	filter_common.h \
 	index.c \
@@ -43,7 +45,9 @@ libcommon_la_SOURCES += \
 	block_encoder.c \
 	block_encoder.h \
 	block_header_encoder.c \
-	easy.c \
+	easy_buffer_encoder.c \
+	easy_encoder.c \
+	easy_encoder_memusage.c \
 	filter_buffer_encoder.c \
 	filter_encoder.c \
 	filter_encoder.h \
@@ -66,6 +70,7 @@ libcommon_la_SOURCES += \
 	block_decoder.c \
 	block_decoder.h \
 	block_header_decoder.c \
+	easy_decoder_memusage.c \
 	filter_buffer_decoder.c \
 	filter_decoder.c \
 	filter_decoder.h \

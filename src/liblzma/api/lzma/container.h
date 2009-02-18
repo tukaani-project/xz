@@ -125,6 +125,39 @@ extern LZMA_API(lzma_ret) lzma_easy_encoder(
 
 
 /**
+ * \brief       Single-call .xz Stream encoding using a preset number
+ *
+ * The maximum required output buffer size can be calculated with
+ * lzma_stream_buffer_bound().
+ *
+ * \param       preset      Compression preset to use. See the description
+ *                          in lzma_easy_encoder().
+ * \param       check       Type of the integrity check to calculate from
+ *                          uncompressed data.
+ * \param       allocator   lzma_allocator for custom allocator functions.
+ *                          Set to NULL to use malloc() and free().
+ * \param       in          Beginning of the input buffer
+ * \param       in_size     Size of the input buffer
+ * \param       out         Beginning of the output buffer
+ * \param       out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      - LZMA_OK: Encoding was successful.
+ *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_PROG_ERROR
+ */
+extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
+		uint32_t preset, lzma_check check,
+		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size);
+
+
+/**
  * \brief       Initialize .xz Stream encoder using a custom filter chain
  *
  * \param       strm    Pointer to properly prepared lzma_stream

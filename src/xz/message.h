@@ -111,21 +111,29 @@ extern void message_version(void) lzma_attribute((noreturn));
 extern void message_help(bool long_help) lzma_attribute((noreturn));
 
 
+/// \brief      Start progress info handling
 ///
-extern void message_progress_start(const char *filename, uint64_t in_size);
+/// This must be paired with a call to message_progress_end() before the
+/// given *strm becomes invalid.
+///
+/// \param      strm      Pointer to lzma_stream used for the coding.
+/// \param      filename  Name of the input file. stdin_filename is
+///                       handled specially.
+/// \param      in_size   Size of the input file, or zero if unknown.
+///
+extern void message_progress_start(
+		lzma_stream *strm, const char *filename, uint64_t in_size);
 
 
-///
-extern void message_progress_update(uint64_t in_pos, uint64_t out_pos);
+/// Update the progress info if in verbose mode and enough time has passed
+/// since the previous update. This can be called only when
+/// message_progress_start() has already been used.
+extern void message_progress_update(void);
 
 
 /// \brief      Finishes the progress message if we were in verbose mode
 ///
-/// \param      in_pos      Final input position i.e. how much input there was.
-/// \param      out_pos     Final output position
-/// \param      success     True if the operation was successful. We don't
-///                         print the final progress message if the operation
-///                         wasn't successful.
+/// \param      finished    True if the whole stream was successfully coded
+///                         and output written to the output stream.
 ///
-extern void message_progress_end(
-		uint64_t in_pos, uint64_t out_pos, bool success);
+extern void message_progress_end(bool finished);

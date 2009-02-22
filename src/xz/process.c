@@ -337,10 +337,11 @@ coder_run(file_pair *pair)
 	// Initialize the progress indicator.
 	const uint64_t in_size = pair->src_st.st_size <= (off_t)(0)
 			? 0 : (uint64_t)(pair->src_st.st_size);
-	message_progress_start(pair->src_name, in_size);
+	message_progress_start(&strm, pair->src_name, in_size);
 
 	lzma_action action = LZMA_RUN;
 	lzma_ret ret;
+	bool success = false; // Assume that something goes wrong.
 
 	strm.avail_in = 0;
 	strm.next_out = out_buf;
@@ -370,7 +371,7 @@ coder_run(file_pair *pair)
 		if (strm.avail_out == 0) {
 			if (opt_mode != MODE_TEST && io_write(pair, out_buf,
 					IO_BUFFER_SIZE - strm.avail_out))
-				return false;
+				break;
 
 			strm.next_out = out_buf;
 			strm.avail_out = IO_BUFFER_SIZE;
@@ -383,18 +384,6 @@ coder_run(file_pair *pair)
 					&& ret != LZMA_UNSUPPORTED_CHECK;
 
 			if (stop) {
-				// First print the final progress info.
-				// This way the user sees more accurately
-				// where the error occurred. Note that we
-				// print this *before* the possible error
-				// message.
-				//
-				// FIXME: What if something goes wrong
-				// after this?
-				message_progress_end(strm.total_in,
-						strm.total_out,
-						ret == LZMA_STREAM_END);
-
 				// Write the remaining bytes even if something
 				// went wrong, because that way the user gets
 				// as much data as possible, which can be good
@@ -403,21 +392,32 @@ coder_run(file_pair *pair)
 				if (opt_mode != MODE_TEST && io_write(pair,
 						out_buf, IO_BUFFER_SIZE
 							- strm.avail_out))
-					return false;
+					break;
 			}
 
 			if (ret == LZMA_STREAM_END) {
 				// Check that there is no trailing garbage.
 				// This is needed for LZMA_Alone and raw
 				// streams.
-				if (strm.avail_in == 0 && (pair->src_eof
-						|| io_read(pair, in_buf, 1)
-							== 0)) {
-					assert(pair->src_eof);
-					return true;
+				if (strm.avail_in == 0 && !pair->src_eof) {
+					// Try reading one more byte.
+					// Hopefully we don't get any more
+					// input, and thus pair->src_eof
+					// becomes true.
+					strm.avail_in = io_read(
+							pair, in_buf, 1);
+					if (strm.avail_in == SIZE_MAX)
+						break;
+
+					assert(strm.avail_in == 0
+							|| strm.avail_in == 1);
 				}
 
-				// FIXME: What about io_read() failing?
+				if (strm.avail_in == 0) {
+					assert(pair->src_eof);
+					success = true;
+					break;
+				}
 
 				// We hadn't reached the end of the file.
 				ret = LZMA_DATA_ERROR;
@@ -461,15 +461,16 @@ coder_run(file_pair *pair)
 			}
 
 			if (stop)
-				return false;
+				break;
 		}
 
-		// Show progress information if --verbose was specified and
-		// stderr is a terminal.
-		message_progress_update(strm.total_in, strm.total_out);
+		// Show progress information under certain conditions.
+		message_progress_update();
 	}
 
-	return false;
+	message_progress_end(success);
+
+	return success;
 }
 
 

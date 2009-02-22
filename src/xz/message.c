@@ -23,13 +23,6 @@
 #	include <sys/time.h>
 #endif
 
-#ifdef _WIN32
-#	ifndef _WIN32_WINNT
-#		define _WIN32_WINNT 0x0500
-#	endif
-#	include <windows.h>
-#endif
-
 #include <stdarg.h>
 
 
@@ -51,76 +44,52 @@ static const char *filename;
 /// True once the a filename has been printed to stderr as part of progress
 /// message. If automatic progress updating isn't enabled, this becomes true
 /// after the first progress message has been printed due to user sending
-/// SIGALRM. Once this variable is true,  we will print an empty line before
-/// the next filename to make the output more readable.
+/// SIGINFO, SIGUSR1, or SIGALRM. Once this variable is true, we will print
+/// an empty line before the next filename to make the output more readable.
 static bool first_filename_printed = false;
 
 /// This is set to true when we have printed the current filename to stderr
 /// as part of a progress message. This variable is useful only if not
-/// updating progress automatically: if user sends many SIGALRM signals,
-/// we won't print the name of the same file multiple times.
+/// updating progress automatically: if user sends many SIGINFO, SIGUSR1, or
+/// SIGALRM signals, we won't print the name of the same file multiple times.
 static bool current_filename_printed = false;
 
-/// True if we should print progress indicator and update it automatically.
+/// True if we should print progress indicator and update it automatically
+/// if also verbose >= V_VERBOSE.
 static bool progress_automatic;
+
+/// True if message_progress_start() has been called but
+/// message_progress_end() hasn't been called yet.
+static bool progress_started = false;
 
 /// This is true when a progress message was printed and the cursor is still
 /// on the same line with the progress message. In that case, a newline has
 /// to be printed before any error messages.
 static bool progress_active = false;
 
+/// Pointer to lzma_stream used to do the encoding or decoding.
+static lzma_stream *progress_strm;
+
 /// Expected size of the input stream is needed to show completion percentage
 /// and estimate remaining time.
 static uint64_t expected_in_size;
 
 /// Time when we started processing the file
-static double start_time;
+static uint64_t start_time;
+
+
+// Use alarm() and SIGALRM when they are supported. This has two minor
+// advantages over the alternative of polling gettimeofday():
+//  - It is possible for the user to send SIGINFO, SIGUSR1, or SIGALRM to
+//    get intermediate progress information even when --verbose wasn't used
+//    or stderr is not a terminal.
+//  - alarm() + SIGALRM seems to have slightly less overhead than polling
+//    gettimeofday().
+#ifdef SIGALRM
 
 /// The signal handler for SIGALRM sets this to true. It is set back to false
 /// once the progress message has been updated.
 static volatile sig_atomic_t progress_needs_updating = false;
-
-
-#ifdef _WIN32
-
-static HANDLE timer_queue = NULL;
-static HANDLE timer_timer = NULL;
-
-
-static void CALLBACK
-timer_callback(PVOID dummy1 lzma_attribute((unused)),
-		BOOLEAN dummy2 lzma_attribute((unused)))
-{
-	progress_needs_updating = true;
-	return;
-}
-
-
-/// Emulate alarm() on Windows.
-static void
-my_alarm(unsigned int seconds)
-{
-	// Just in case creating the queue has failed.
-	if (timer_queue == NULL)
-		return;
-
-	// If an old timer_timer exists, get rid of it first.
-	if (timer_timer != NULL) {
-		(void)DeleteTimerQueueTimer(timer_queue, timer_timer, NULL);
-		timer_timer = NULL;
-	}
-
-	// If it fails, tough luck. It's not that important.
-	(void)CreateTimerQueueTimer(&timer_timer, timer_queue, &timer_callback,
-			NULL, 1000U * seconds, 0,
-			WT_EXECUTEINTIMERTHREAD | WT_EXECUTEONLYONCE);
-
-	return;
-}
-
-#else
-
-#define my_alarm alarm
 
 /// Signal handler for SIGALRM
 static void
@@ -130,21 +99,25 @@ progress_signal_handler(int sig lzma_attribute((unused)))
 	return;
 }
 
+#else
+
+/// This is true when progress message printing is wanted. Using the same
+/// variable name as above to avoid some ifdefs.
+static bool progress_needs_updating = false;
+
+/// Elapsed time when the next progress message update should be done.
+static uint64_t progress_next_update;
+
 #endif
 
-/// Get the current time as double
-static double
+
+/// Get the current time as microseconds since epoch
+static uint64_t
 my_time(void)
 {
 	struct timeval tv;
-
-	// This really shouldn't fail. I'm not sure what to return if it
-	// still fails. It doesn't look so useful to check the return value
-	// everywhere. FIXME?
-	if (gettimeofday(&tv, NULL))
-		return -1.0;
-
-	return (double)(tv.tv_sec) + (double)(tv.tv_usec) / 1.0e6;
+	gettimeofday(&tv, NULL);
+	return (uint64_t)(tv.tv_sec) * UINT64_C(1000000) + tv.tv_usec;
 }
 
 
@@ -204,20 +177,36 @@ message_init(const char *given_argv0)
 	}
 */
 
-#ifdef _WIN32
-	timer_queue = CreateTimerQueue();
-#else
+#ifdef SIGALRM
+	// At least DJGPP lacks SA_RESTART. It's not essential for us (the
+	// rest of the code can handle interrupted system calls), so just
+	// define it zero.
 #	ifndef SA_RESTART
 #		define SA_RESTART 0
 #	endif
-	// Establish the signal handler for SIGALRM. Since this signal
-	// doesn't require any quick action, we set SA_RESTART.
+	// Establish the signal handlers which set a flag to tell us that
+	// progress info should be updated. Since these signals don't
+	// require any quick action, we set SA_RESTART.
+	static const int sigs[] = {
+#ifdef SIGALRM
+		SIGALRM,
+#endif
+#ifdef SIGINFO
+		SIGINFO,
+#endif
+#ifdef SIGUSR1
+		SIGUSR1,
+#endif
+	};
+
 	struct sigaction sa;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = &progress_signal_handler;
-	if (sigaction(SIGALRM, &sa, NULL))
-		message_signal_handler();
+
+	for (size_t i = 0; i < ARRAY_SIZE(sigs); ++i)
+		if (sigaction(sigs[i], &sa, NULL))
+			message_signal_handler();
 #endif
 
 	return;
@@ -288,15 +277,24 @@ print_filename(void)
 
 
 extern void
-message_progress_start(const char *src_name, uint64_t in_size)
+message_progress_start(
+		lzma_stream *strm, const char *src_name, uint64_t in_size)
 {
+	// Store the pointer to the lzma_stream used to do the coding.
+	// It is needed to find out the position in the stream.
+	progress_strm = strm;
+
 	// Store the processing start time of the file and its expected size.
 	// If we aren't printing any statistics, then these are unused. But
-	// since it is possible that the user tells us with SIGALRM to show
+	// since it is possible that the user sends us a signal to show
 	// statistics, we need to have these available anyway.
 	start_time = my_time();
 	filename = src_name;
 	expected_in_size = in_size;
+
+	// Indicate that progress info may need to be printed before
+	// printing error messages.
+	progress_started = true;
 
 	// Indicate the name of this file hasn't been printed to
 	// stderr yet.
@@ -306,19 +304,26 @@ message_progress_start(const char *src_name, uint64_t in_size)
 	++files_pos;
 
 	// If progress indicator is wanted, print the filename and possibly
-	// the file count now. As an exception, if there is exactly one file,
-	// do not print the filename at all.
+	// the file count now.
 	if (verbosity >= V_VERBOSE && progress_automatic) {
 		// Print the filename to stderr if that is appropriate with
 		// the current settings.
 		print_filename();
 
-		// Start the timer to set progress_needs_updating to true
-		// after about one second. An alternative would to be set
-		// progress_needs_updating to true here immediatelly, but
-		// setting the timer looks better to me, since extremely
-		// early progress info is pretty much useless.
-		my_alarm(1);
+		// Start the timer to display the first progress message
+		// after one second. An alternative would be to show the
+		// first message almost immediatelly, but delaying by one
+		// second looks better to me, since extremely early
+		// progress info is pretty much useless.
+#ifdef SIGALRM
+		// First disable a possibly existing alarm.
+		alarm(0);
+		progress_needs_updating = false;
+		alarm(1);
+#else
+		progress_needs_updating = true;
+		progress_next_update = 1000000;
+#endif
 	}
 
 	return;
@@ -327,21 +332,31 @@ message_progress_start(const char *src_name, uint64_t in_size)
 
 /// Make the string indicating completion percentage.
 static const char *
-progress_percentage(uint64_t in_pos)
+progress_percentage(uint64_t in_pos, bool final)
 {
-	// If the size of the input file is unknown or the size told us is
-	// clearly wrong since we have processed more data than the alleged
-	// size of the file, show a static string indicating that we have
-	// no idea of the completion percentage.
-	if (expected_in_size == 0 || in_pos > expected_in_size)
-		return "--- %";
+	static char buf[sizeof("100.0 %")];
 
-	static char buf[sizeof("99.9 %")];
+	double percentage;
 
-	// Never show 100.0 % before we actually are finished (that case is
-	// handled separately in message_progress_end()).
-	snprintf(buf, sizeof(buf), "%.1f %%",
-			(double)(in_pos) / (double)(expected_in_size) * 99.9);
+	if (final) {
+		// Use floating point conversion of snprintf() also for
+		// 100.0 % instead of fixed string, because the decimal
+		// separator isn't a dot in all locales.
+		percentage = 100.0;
+	} else {
+		// If the size of the input file is unknown or the size told us is
+		// clearly wrong since we have processed more data than the alleged
+		// size of the file, show a static string indicating that we have
+		// no idea of the completion percentage.
+		if (expected_in_size == 0 || in_pos > expected_in_size)
+			return "--- %";
+
+		// Never show 100.0 % before we actually are finished.
+		percentage = (double)(in_pos) / (double)(expected_in_size)
+				* 99.9;
+	}
+
+	snprintf(buf, sizeof(buf), "%.1f %%", percentage);
 
 	return buf;
 }
@@ -350,6 +365,8 @@ progress_percentage(uint64_t in_pos)
 static void
 progress_sizes_helper(char **pos, size_t *left, uint64_t value, bool final)
 {
+	// Allow high precision only for the final message, since it looks
+	// stupid for in-progress information.
 	if (final) {
 		// At maximum of four digits is allowed for exact byte count.
 		if (value < 10000) {
@@ -368,6 +385,7 @@ progress_sizes_helper(char **pos, size_t *left, uint64_t value, bool final)
 	// Otherwise we use MiB.
 	my_snprintf(pos, left, "%'.1f MiB",
 			(double)(value) / (1024.0 * 1024.0));
+
 	return;
 }
 
@@ -412,11 +430,11 @@ progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 
 /// Make the string containing the processing speed of uncompressed data.
 static const char *
-progress_speed(uint64_t uncompressed_pos, double elapsed)
+progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 {
 	// Don't print the speed immediatelly, since the early values look
 	// like somewhat random.
-	if (elapsed < 3.0)
+	if (elapsed < 3000000)
 		return "";
 
 	static const char unit[][8] = {
@@ -428,17 +446,24 @@ progress_speed(uint64_t uncompressed_pos, double elapsed)
 	size_t unit_index = 0;
 
 	// Calculate the speed as KiB/s.
-	double speed = (double)(uncompressed_pos) / (elapsed * 1024.0);
+	double speed = (double)(uncompressed_pos)
+			/ ((double)(elapsed) * (1024.0 / 1e6));
 
 	// Adjust the unit of the speed if needed.
-	while (speed > 999.9) {
+	while (speed > 999.0) {
 		speed /= 1024.0;
 		if (++unit_index == ARRAY_SIZE(unit))
 			return ""; // Way too fast ;-)
 	}
 
-	static char buf[sizeof("999.9 GiB/s")];
-	snprintf(buf, sizeof(buf), "%.1f %s", speed, unit[unit_index]);
+	// Use decimal point only if the number is small. Examples:
+	//  - 0.1 KiB/s
+	//  - 9.9 KiB/s
+	//  - 99 KiB/s
+	//  - 999 KiB/s
+	static char buf[sizeof("999 GiB/s")];
+	snprintf(buf, sizeof(buf), "%.*f %s",
+			speed > 9.9 ? 0 : 1, speed, unit[unit_index]);
 	return buf;
 }
 
@@ -446,13 +471,15 @@ progress_speed(uint64_t uncompressed_pos, double elapsed)
 /// Make a string indicating elapsed or remaining time. The format is either
 /// M:SS or H:MM:SS depending on if the time is an hour or more.
 static const char *
-progress_time(uint32_t seconds)
+progress_time(uint64_t useconds)
 {
 	// 9999 hours = 416 days
 	static char buf[sizeof("9999:59:59")];
 
+	uint32_t seconds = useconds / 1000000;
+
 	// Don't show anything if the time is zero or ridiculously big.
-	if (seconds == 0 || seconds > ((UINT32_C(9999) * 60) + 59) * 60 + 59)
+	if (seconds == 0 || seconds > ((9999 * 60) + 59) * 60 + 59)
 		return "";
 
 	uint32_t minutes = seconds / 60;
@@ -476,87 +503,187 @@ progress_time(uint32_t seconds)
 /// Make the string to contain the estimated remaining time, or if the amount
 /// of input isn't known, how much time has elapsed.
 static const char *
-progress_remaining(uint64_t in_pos, double elapsed)
+progress_remaining(uint64_t in_pos, uint64_t elapsed)
 {
-	// If we don't know the size of the input, we indicate the time
-	// spent so far.
-	if (expected_in_size == 0 || in_pos > expected_in_size)
-		return progress_time((uint32_t)(elapsed));
-
-	// If we are at the very beginning of the file or the file is very
-	// small, don't give any estimate to avoid far too wrong estimations.
-	if (in_pos < (UINT64_C(1) << 19) || elapsed < 8.0)
-		return "";
+	// Show the amount of time spent so far when making an estimate of
+	// remaining time wouldn't be reasonable:
+	//  - Input size is unknown.
+	//  - Input has grown bigger since we started (de)compressing.
+	//  - We haven't processed much data yet, so estimate would be
+	//    too inaccurate.
+	//  - Only a few seconds has passed since we started (de)compressing,
+	//    so estimate would be too inaccurate.
+	if (expected_in_size == 0 || in_pos > expected_in_size
+			|| in_pos < (UINT64_C(1) << 19) || elapsed < 8000000)
+		return progress_time(elapsed);
 
 	// Calculate the estimate. Don't give an estimate of zero seconds,
 	// since it is possible that all the input has been already passed
 	// to the library, but there is still quite a bit of output pending.
 	uint32_t remaining = (double)(expected_in_size - in_pos)
-			* elapsed / (double)(in_pos);
-	if (remaining == 0)
+			* ((double)(elapsed) / 1e6) / (double)(in_pos);
+	if (remaining < 1)
 		remaining = 1;
 
-	return progress_time(remaining);
+	static char buf[sizeof("9 h 55 min")];
+
+	// Select appropriate precision for the estimated remaining time.
+	if (remaining <= 10) {
+		// At maximum of 10 seconds remaining.
+		// Show the number of seconds as is.
+		snprintf(buf, sizeof(buf), "%" PRIu32 " s", remaining);
+
+	} else if (remaining <= 50) {
+		// At maximum of 50 seconds remaining.
+		// Round up to the next multiple of five seconds.
+		remaining = (remaining + 4) / 5 * 5;
+		snprintf(buf, sizeof(buf), "%" PRIu32 " s", remaining);
+
+	} else if (remaining <= 590) {
+		// At maximum of 9 minutes and 50 seconds remaining.
+		// Round up to the next multiple of ten seconds.
+		remaining = (remaining + 9) / 10 * 10;
+		snprintf(buf, sizeof(buf), "%" PRIu32 " min %" PRIu32 " s",
+				remaining / 60, remaining % 60);
+
+	} else if (remaining <= 59 * 60) {
+		// At maximum of 59 minutes remaining.
+		// Round up to the next multiple of a minute.
+		remaining = (remaining + 59) / 60;
+		snprintf(buf, sizeof(buf), "%" PRIu32 " min", remaining);
+
+	} else if (remaining <= 9 * 3600 + 50 * 60) {
+		// At maximum of 9 hours and 50 minutes left.
+		// Round up to the next multiple of ten minutes.
+		remaining = (remaining + 599) / 600 * 10;
+		snprintf(buf, sizeof(buf), "%" PRIu32 " h %" PRIu32 " min",
+				remaining / 60, remaining % 60);
+
+	} else if (remaining <= 23 * 3600) {
+		// At maximum of 23 hours remaining.
+		// Round up to the next multiple of an hour.
+		remaining = (remaining + 3599) / 3600;
+		snprintf(buf, sizeof(buf), "%" PRIu32 " h", remaining);
+
+	} else if (remaining <= 9 * 24 * 3600 + 23 * 3600) {
+		// At maximum of 9 days and 23 hours remaining.
+		// Round up to the next multiple of an hour.
+		remaining = (remaining + 3599) / 3600;
+		snprintf(buf, sizeof(buf), "%" PRIu32 " d %" PRIu32 " h",
+				remaining / 24, remaining % 24);
+
+	} else if (remaining <= 999 * 24 * 3600) {
+		// At maximum of 999 days remaining. ;-)
+		// Round up to the next multiple of a day.
+		remaining = (remaining + 24 * 3600 - 1) / (24 * 3600);
+		snprintf(buf, sizeof(buf), "%" PRIu32 " d", remaining);
+
+	} else {
+		// The estimated remaining time is so big that it's better
+		// that we just show the elapsed time.
+		return progress_time(elapsed);
+	}
+
+	return buf;
+}
+
+
+/// Calculate the elapsed time as microseconds.
+static uint64_t
+progress_elapsed(void)
+{
+	return my_time() - start_time;
+}
+
+
+/// Get information about position in the stream. This is currently simple,
+/// but it will become more complicated once we have multithreading support.
+static void
+progress_pos(uint64_t *in_pos,
+		uint64_t *compressed_pos, uint64_t *uncompressed_pos)
+{
+	*in_pos = progress_strm->total_in;
+
+	if (opt_mode == MODE_COMPRESS) {
+		*compressed_pos = progress_strm->total_out;
+		*uncompressed_pos = progress_strm->total_in;
+	} else {
+		*compressed_pos = progress_strm->total_in;
+		*uncompressed_pos = progress_strm->total_out;
+	}
+
+	return;
 }
 
 
 extern void
-message_progress_update(uint64_t in_pos, uint64_t out_pos)
+message_progress_update(void)
 {
-	// If there's nothing to do, return immediatelly.
-	if (!progress_needs_updating || in_pos == 0)
+	if (!progress_needs_updating)
 		return;
+
+	// Calculate how long we have been processing this file.
+	const uint64_t elapsed = progress_elapsed();
+
+#ifndef SIGALRM
+	if (progress_next_update > elapsed)
+		return;
+
+	progress_next_update = elapsed + 1000000;
+#endif
+
+	// Get our current position in the stream.
+	uint64_t in_pos;
+	uint64_t compressed_pos;
+	uint64_t uncompressed_pos;
+	progress_pos(&in_pos, &compressed_pos, &uncompressed_pos);
+
+	// Block signals so that fprintf() doesn't get interrupted.
+	signals_block();
 
 	// Print the filename if it hasn't been printed yet.
 	print_filename();
 
-	// Calculate how long we have been processing this file.
-	const double elapsed = my_time() - start_time;
-
-	// Set compressed_pos and uncompressed_pos.
-	uint64_t compressed_pos;
-	uint64_t uncompressed_pos;
-	if (opt_mode == MODE_COMPRESS) {
-		compressed_pos = out_pos;
-		uncompressed_pos = in_pos;
-	} else {
-		compressed_pos = in_pos;
-		uncompressed_pos = out_pos;
-	}
-
-	signals_block();
-
 	// Print the actual progress message. The idea is that there is at
 	// least three spaces between the fields in typical situations, but
 	// even in rare situations there is at least one space.
-	fprintf(stderr, "  %7s %43s   %11s %10s\r",
-		progress_percentage(in_pos),
+	fprintf(stderr, "  %7s %43s   %9s   %10s\r",
+		progress_percentage(in_pos, false),
 		progress_sizes(compressed_pos, uncompressed_pos, false),
 		progress_speed(uncompressed_pos, elapsed),
 		progress_remaining(in_pos, elapsed));
 
+#ifdef SIGALRM
 	// Updating the progress info was finished. Reset
 	// progress_needs_updating to wait for the next SIGALRM.
 	//
-	// NOTE: This has to be done before my_alarm() call or with (very) bad
+	// NOTE: This has to be done before alarm(1) or with (very) bad
 	// luck we could be setting this to false after the alarm has already
 	// been triggered.
 	progress_needs_updating = false;
 
-	if (progress_automatic) {
+	if (verbosity >= V_VERBOSE && progress_automatic) {
 		// Mark that the progress indicator is active, so if an error
 		// occurs, the error message gets printed cleanly.
 		progress_active = true;
 
 		// Restart the timer so that progress_needs_updating gets
 		// set to true after about one second.
-		my_alarm(1);
+		alarm(1);
 	} else {
 		// The progress message was printed because user had sent us
 		// SIGALRM. In this case, each progress message is printed
 		// on its own line.
 		fputc('\n', stderr);
 	}
+#else
+	// When SIGALRM isn't supported and we get here, it's always due to
+	// automatic progress update. We set progress_active here too like
+	// described above.
+	assert(verbosity >= V_VERBOSE);
+	assert(progress_automatic);
+	progress_active = true;
+#endif
 
 	signals_unblock();
 
@@ -564,57 +691,58 @@ message_progress_update(uint64_t in_pos, uint64_t out_pos)
 }
 
 
-extern void
-message_progress_end(uint64_t in_pos, uint64_t out_pos, bool success)
+static void
+progress_flush(bool finished)
 {
-	// If we are not in verbose mode, we have nothing to do.
-	if (verbosity < V_VERBOSE || user_abort)
+	if (!progress_started || verbosity < V_VERBOSE)
 		return;
 
-	// Cancel a pending alarm, if any.
-	if (progress_automatic) {
-		my_alarm(0);
-		progress_active = false;
-	}
-
-	const double elapsed = my_time() - start_time;
-
+	uint64_t in_pos;
 	uint64_t compressed_pos;
 	uint64_t uncompressed_pos;
-	if (opt_mode == MODE_COMPRESS) {
-		compressed_pos = out_pos;
-		uncompressed_pos = in_pos;
-	} else {
-		compressed_pos = in_pos;
-		uncompressed_pos = out_pos;
-	}
+	progress_pos(&in_pos, &compressed_pos, &uncompressed_pos);
 
-	// If it took less than a second, don't display the time.
-	const char *elapsed_str = progress_time((double)(elapsed));
+	// Avoid printing intermediate progress info if some error occurs
+	// in the beginning of the stream. (If something goes wrong later in
+	// the stream, it is sometimes useful to tell the user where the
+	// error approximately occurred, especially if the error occurs
+	// after a time-consuming operation.)
+	if (!finished && !progress_active
+			&& (compressed_pos == 0 || uncompressed_pos == 0))
+		return;
+
+	progress_active = false;
+
+	const uint64_t elapsed = progress_elapsed();
+	const char *elapsed_str = progress_time(elapsed);
 
 	signals_block();
 
 	// When using the auto-updating progress indicator, the final
 	// statistics are printed in the same format as the progress
 	// indicator itself.
-	if (progress_automatic && in_pos > 0) {
+	if (progress_automatic) {
 		// Using floating point conversion for the percentage instead
 		// of static "100.0 %" string, because the decimal separator
 		// isn't a dot in all locales.
-		fprintf(stderr, "  %5.1f %% %43s   %11s %10s\n",
-			100.0,
+		fprintf(stderr, "  %7s %43s   %9s   %10s\n",
+			progress_percentage(in_pos, finished),
 			progress_sizes(compressed_pos, uncompressed_pos, true),
 			progress_speed(uncompressed_pos, elapsed),
 			elapsed_str);
+	} else {
+		// The filename is always printed.
+		fprintf(stderr, "%s: ", filename);
 
-	// When no automatic progress indicator is used, don't print a verbose
-	// message at all if we something went wrong and we couldn't produce
-	// any output. If we did produce output, then it is sometimes useful
-	// to tell that to the user, especially if we detected an error after
-	// a time-consuming operation.
-	} else if (success || out_pos > 0) {
-		// The filename and size information are always printed.
-		fprintf(stderr, "%s: %s", filename, progress_sizes(
+		// Percentage is printed only if we didn't finish yet.
+		// FIXME: This may look weird when size of the input
+		// isn't known.
+		if (!finished)
+			fprintf(stderr, "%s, ",
+					progress_percentage(in_pos, false));
+
+		// Size information is always printed.
+		fprintf(stderr, "%s", progress_sizes(
 				compressed_pos, uncompressed_pos, true));
 
 		// The speed and elapsed time aren't always shown.
@@ -634,22 +762,23 @@ message_progress_end(uint64_t in_pos, uint64_t out_pos, bool success)
 }
 
 
+extern void
+message_progress_end(bool success)
+{
+	assert(progress_started);
+	progress_flush(success);
+	progress_started = false;
+	return;
+}
+
+
 static void
 vmessage(enum message_verbosity v, const char *fmt, va_list ap)
 {
 	if (v <= verbosity) {
 		signals_block();
 
-		// If there currently is a progress message on the screen,
-		// print a newline so that the progress message is left
-		// readable. This is good, because it is nice to be able to
-		// see where the error occurred. (The alternative would be
-		// to clear the progress message and replace it with the
-		// error message.)
-		if (progress_active) {
-			progress_active = false;
-			fputc('\n', stderr);
-		}
+		progress_flush(false);
 
 		fprintf(stderr, "%s: ", argv0);
 		vfprintf(stderr, fmt, ap);

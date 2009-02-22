@@ -1076,6 +1076,10 @@ message_help(bool long_help)
 "                      compression, 6-9 excellent compression; default is 6"));
 
 	puts(_(
+"  -e, --extreme       use more CPU time when encoding to increase compression\n"
+"                      ratio without increasing memory usage of the decoder"));
+
+	puts(_(
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"
 "                      the default setting, which depends on the operation mode\n"
 "                      and the amount of physical memory (RAM)"));

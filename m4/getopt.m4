@@ -30,6 +30,10 @@ AC_DEFUN([gl_GETOPT_CHECK_HEADERS],
     AC_CHECK_HEADERS([getopt.h], [], [GETOPT_H=getopt.h])
   fi
 
+  if test -z "$GETOPT_H"; then
+    AC_CHECK_FUNCS([getopt_long], [], [GETOPT_H=getopt.h])
+  fi
+
   dnl BSD getopt_long uses a way to reset option processing, that is different
   dnl from GNU and Solaris (which copied the GNU behavior). We support both
   dnl GNU and BSD style resetting of getopt_long(), so there's no need to use

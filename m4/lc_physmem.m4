@@ -54,7 +54,11 @@ main(void)
 		with sysctl().])
 	AC_MSG_RESULT([sysctl])
 ], [
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+dnl sysinfo() is Linux-specific. Some non-Linux systems have
+dnl incompatible sysinfo() so we must check $host_os.
+case $host_os in
+	linux*)
+		AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <sys/sysinfo.h>
 int
 main(void)
@@ -63,12 +67,18 @@ main(void)
 	sysinfo(&si);
 	return 0;
 }
-]])], [
-	AC_DEFINE([HAVE_PHYSMEM_SYSINFO], [1],
-		[Define to 1 if the amount of physical memory can be detected
-		with sysinfo().])
-	AC_MSG_RESULT([sysinfo])
-], [
-	AC_MSG_RESULT([unknown])
-])])])
+		]])], [
+			AC_DEFINE([HAVE_PHYSMEM_SYSINFO], [1],
+				[Define to 1 if the amount of physical memory
+				can be detected with Linux sysinfo().])
+			AC_MSG_RESULT([sysinfo])
+		], [
+			AC_MSG_RESULT([unknown])
+		])
+		;;
+	*)
+		AC_MSG_RESULT([unknown])
+		;;
+esac
+])])
 ])dnl lc_PHYSMEM

@@ -28,6 +28,7 @@ AC_INIT([XZ Utils], m4_esyscmd([/bin/sh version.sh]),
 	[lasse.collin@tukaani.org], [xz])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 echo
 echo "$PACKAGE_STRING"

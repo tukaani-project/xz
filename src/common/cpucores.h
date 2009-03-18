@@ -14,10 +14,10 @@
 #ifndef CPUCORES_H
 #define CPUCORES_H
 
-#if defined(HAVE_NCPU_SYSCONF)
+#if defined(HAVE_CPUCORES_SYSCONF)
 #	include <unistd.h>
 
-#elif defined(HAVE_NCPU_SYSCTL)
+#elif defined(HAVE_CPUCORES_SYSCTL)
 #	ifdef HAVE_SYS_PARAM_H
 #		include <sys/param.h>
 #	endif

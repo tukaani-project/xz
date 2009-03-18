@@ -26,7 +26,7 @@ main(void)
 	return 0;
 }
 ]])], [
-	AC_DEFINE([HAVE_NCPU_SYSCONF], [1],
+	AC_DEFINE([HAVE_CPUCORES_SYSCONF], [1],
 		[Define to 1 if the number of available CPU cores can be
 		detected with sysconf(_SC_NPROCESSORS_ONLN).])
 	AC_MSG_RESULT([sysconf])
@@ -47,7 +47,7 @@ main(void)
 	return 0;
 }
 ]])], [
-	AC_DEFINE([HAVE_NCPU_SYSCTL], [1],
+	AC_DEFINE([HAVE_CPUCORES_SYSCTL], [1],
 		[Define to 1 if the number of available CPU cores can be
 		detected with sysctl().])
 	AC_MSG_RESULT([sysctl])

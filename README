@@ -16,7 +16,7 @@ Important
     some distributions using the alpha versions already had to use
     other versions than .so.0.0.0.
 
-    Excluding the Doxygen style docs in libilzma API headers, the
+    Excluding the Doxygen style docs in liblzma API headers, the
     documentation in this package (including the rest of this
     README) is not very up to date, and may contain incorrect or
     misleading information.
@@ -24,7 +24,7 @@ Important
 
 Overview
 
-    LZMA is a general purporse compression algorithm designed by
+    LZMA is a general purpose compression algorithm designed by
     Igor Pavlov as part of 7-Zip. It provides high compression ratio
     while keeping the decompression speed fast.
 
@@ -192,7 +192,7 @@ Static vs. dynamic linking of the command line tools
     liblzma. There a are a few reasons:
 
       - The executable(s) can be in /bin while the shared liblzma can still
-        be in /usr/lib (if the distro uses such file system hierachy).
+        be in /usr/lib (if the distro uses such file system hierarchy).
 
       - It's easier to copy the executables to other systems, since they
         depend only on libc.

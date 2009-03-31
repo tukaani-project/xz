@@ -69,6 +69,17 @@ Supported platforms
     in C89 or C++.
 
 
+Platform-specific notes
+
+    On some Tru64 systems using the native C99 compiler, the configure
+    script may reject the compiler as non-C99 compiler. This may happen
+    if there is no stdbool.h available. You can still compile XZ Utils
+    on such a system by passing ac_cv_prog_cc_c99= to configure script.
+    Fixing this bug seems to be non-trivial since if the configure
+    doesn't check for stdbool.h, it runs into problems at least on
+    Solaris.
+
+
 Version numbering
 
     The version number of XZ Utils has absolutely nothing to do with

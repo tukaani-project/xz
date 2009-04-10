@@ -126,7 +126,7 @@ dict_is_empty(const lzma_dict *const dict)
 static inline bool
 dict_is_distance_valid(const lzma_dict *const dict, const size_t distance)
 {
-	return dict->full >= distance;
+	return dict->full > distance;
 }
 
 

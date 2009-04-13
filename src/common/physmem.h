@@ -3,11 +3,10 @@
 /// \file       physmem.h
 /// \brief      Get the amount of physical memory
 //
-//  This code has been put into the public domain.
+//  Author:     Lasse Collin
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//  This file has been put into the public domain.
+//  You can do whatever you want with this file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

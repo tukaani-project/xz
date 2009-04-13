@@ -2,12 +2,17 @@
 //
 /// \file       crc32.c
 /// \brief      CRC32 calculation
+///
+/// Calculate the CRC32 using the slice-by-eight algorithm.
+/// It is explained in this document:
+/// http://www.intel.com/technology/comms/perfnet/download/CRC_generators.pdf
+/// The code in this file is not the same as in Intel's paper, but
+/// the basic principle is identical.
 //
-//  This code has been put into the public domain.
+//  Author:     Lasse Collin
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//  This file has been put into the public domain.
+//  You can do whatever you want with this file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -43,17 +48,6 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 		size &= (size_t)(7);
 
 		// Calculate the CRC32 using the slice-by-eight algorithm.
-		// It is explained in this document:
-		// http://www.intel.com/technology/comms/perfnet/download/CRC_generators.pdf
-		//
-		// The code below is different than the code in Intel's
-		// paper, but the principle is identical. This should be
-		// faster with GCC than Intel's code. This is tested only
-		// with GCC 3.4.6 and 4.1.2 on x86, so your results may vary.
-		//
-		// Using -Os and -fomit-frame-pointer seem to give the best
-		// results at least with GCC 4.1.2 on x86. It's sill far
-		// from the speed of hand-optimized assembler.
 		while (buf < limit) {
 			crc ^= *(uint32_t *)(buf);
 			buf += 4;
@@ -66,9 +60,9 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 			const uint32_t tmp = *(uint32_t *)(buf);
 			buf += 4;
 
-			// It is critical for performance, that
-			// the crc variable is XORed between the
-			// two table-lookup pairs.
+			// At least with some compilers, it is critical for
+			// performance, that the crc variable is XORed
+			// between the two table-lookup pairs.
 			crc = lzma_crc32_table[3][A(tmp)]
 			    ^ lzma_crc32_table[2][B(tmp)]
 			    ^ crc

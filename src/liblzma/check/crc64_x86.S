@@ -1,11 +1,14 @@
 /*
  * Speed-optimized CRC64 using slicing-by-four algorithm
- * Instruction set: i386
- * Optimized for:   i686
  *
- * This code has been put into the public domain by its authors:
- * Igor Pavlov <http://7-zip.org/>
- * Lasse Collin <lasse.collin@tukaani.org>
+ * This uses only i386 instructions, but it is optimized for i686 and later
+ * (including e.g. Pentium II/III/IV, Athlon XP, and Core 2).
+ *
+ * Authors: Igor Pavlov (original CRC32 assembly code)
+ *          Lasse Collin (CRC64 adaptation of the modified CRC32 code)
+ *
+ * This file has been put into the public domain.
+ * You can do whatever you want with this file.
  *
  * This code needs lzma_crc64_table, which can be created using the
  * following C code:
@@ -15,6 +18,7 @@ uint64_t lzma_crc64_table[4][256];
 void
 init_table(void)
 {
+	// ECMA-182
 	static const uint64_t poly64 = UINT64_C(0xC96C5795D7870F42);
 
 	for (size_t s = 0; s < 4; ++s) {

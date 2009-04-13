@@ -1,22 +1,30 @@
 /**
- * \file        lzma.h
- * \brief       The public API of liblzma
+ * \file        api/lzma.h
+ * \brief       The public API of liblzma data compression library
  *
- * liblzma is a LZMA compression library with a zlib-like API.
- * liblzma is based on LZMA SDK found from http://7-zip.org/sdk.html.
+ * liblzma is a public domain general-purpose data compression library with
+ * a zlib-like API. The native file format is .xz, but also the old .lzma
+ * format and raw (no headers) streams are supported. Multiple compression
+ * algorithms (filters) are supported. Currently LZMA2 is the primary filter.
  *
- * \author      Copyright (C) 1999-2006 Igor Pavlov
- * \author      Copyright (C) 2007 Lasse Collin
+ * liblzma is part of XZ Utils <http://tukaani.org/xz/>. XZ Utils includes
+ * a gzip-like command line tool named xz and some other tools. XZ Utils
+ * is developed and maintained by Lasse Collin.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * Major parts of liblzma are based on Igor Pavlov's public domain LZMA SDK
+ * <http://7-zip.org/sdk.html>.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * The SHA-256 implementation is based on the public domain code found from
+ * 7-Zip <http://7-zip.org/>, which has a modified version of the public
+ * domain SHA-256 code found from Crypto++ <http://www.cryptopp.com/>.
+ * The SHA-256 code in Crypto++ was written by Kevin Springle and Wei Dai.
+ */
+
+/*
+ * Author: Lasse Collin
+ *
+ * This file has been put into the public domain.
+ * You can do whatever you want with this file.
  */
 
 #ifndef LZMA_H
@@ -26,7 +34,7 @@
  * Required standard headers *
  *****************************/
 
-/**
+/*
  * liblzma API headers need some standard types and macros. To allow
  * including lzma.h without requiring the application to include other
  * headers first, lzma.h includes the required standard headers unless

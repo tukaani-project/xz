@@ -1,3 +1,10 @@
+##
+## Author: Lasse Collin
+##
+## This file has been put into the public domain.
+## You can do whatever you want with this file.
+##
+
 dist_bin_SCRIPTS = lzdiff lzgrep lzmore
 dist_man_MANS = lzdiff.1 lzgrep.1 lzmore.1
 

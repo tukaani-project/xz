@@ -1,5 +1,14 @@
 #!/bin/sh
 
+###############################################################################
+#
+# Author: Lasse Collin
+#
+# This file has been put into the public domain.
+# You can do whatever you want with this file.
+#
+###############################################################################
+
 set -e -x
 
 autopoint -f

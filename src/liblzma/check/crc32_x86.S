@@ -1,11 +1,18 @@
 /*
  * Speed-optimized CRC32 using slicing-by-eight algorithm
- * Instruction set: i386
- * Optimized for:   i686
  *
- * This code has been put into the public domain by its authors:
- * Original code by Igor Pavlov <http://7-zip.org/>
- * Position-independent version by Lasse Collin <lasse.collin@tukaani.org>
+ * This uses only i386 instructions, but it is optimized for i686 and later
+ * (including e.g. Pentium II/III/IV, Athlon XP, and Core 2). For i586
+ * (e.g. Pentium), slicing-by-four would be better, and even the C version
+ * of slicing-by-eight built with gcc -march=i586 tends to be a little bit
+ * better than this. Very few probably run this code on i586 or older x86
+ * so this shouldn't be a problem in practice.
+ *
+ * Authors: Igor Pavlov (original version)
+ *          Lasse Collin (AT&T syntax, PIC support, better portability)
+ *
+ * This file has been put into the public domain.
+ * You can do whatever you want with this file.
  *
  * This code needs lzma_crc32_table, which can be created using the
  * following C code:
@@ -15,10 +22,10 @@ uint32_t lzma_crc32_table[8][256];
 void
 init_table(void)
 {
-	// IEEE-802.3 (CRC32)
+	// IEEE-802.3
 	static const uint32_t poly32 = UINT32_C(0xEDB88320);
 
-	// Castagnoli (CRC32C)
+	// Castagnoli
 	// static const uint32_t poly32 = UINT32_C(0x82F63B78);
 
 	// Koopman

@@ -1,19 +1,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       sha256.c
-/// \brief      SHA256
-//
-//  Based on the public domain code found from Wei Dai's Crypto++ library
-//  version 5.5.1: http://www.cryptopp.com/
-//  This code has been put into the public domain.
-//
+/// \brief      SHA-256
+///
 /// \todo       Crypto++ has x86 ASM optimizations. They use SSE so if they
 ///             are imported to liblzma, SSE instructions need to be used
 ///             conditionally to keep the code working on older boxes.
+///             We could also support using some external libary for SHA-256.
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//  This code is based on the code found from 7-Zip, which has a modified
+//  version of the SHA-256 found from Crypto++ <http://www.cryptopp.com/>.
+//  The code was modified a little to fit into liblzma.
+//
+//  Authors:    Kevin Springle
+//              Wei Dai
+//              Igor Pavlov
+//              Lasse Collin
+//
+//  This file has been put into the public domain.
+//  You can do whatever you want with this file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

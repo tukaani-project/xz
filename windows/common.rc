@@ -11,7 +11,7 @@
 
 #define MY_FILENAME    MY_NAME MY_SUFFIX
 #define MY_COMPANY     "Lasse Collin and Igor Pavlov"
-#define MY_COPYRIGHT   "Copyright by " MY_COMPANY
+#define MY_COPYRIGHT   "Public Domain by " MY_COMPANY
 #define MY_COMMENTS    "http://tukaani.org/xz/"
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US

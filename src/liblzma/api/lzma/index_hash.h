@@ -1,23 +1,15 @@
 /**
  * \file        lzma/index_hash.h
  * \brief       Validates Index by using a hash function
+ */
+
+/*
+ * Author: Lasse Collin
  *
- * Instead of constructing complete Index while decoding Blocks, Index hash
- * calculates a hash of the Block sizes and Index, and then compares the
- * hashes. This way memory usage is constant even with large number of
- * Blocks and huge Index.
+ * This file has been put into the public domain.
+ * You can do whatever you want with this file.
  *
- * \author      Copyright (C) 2008 Lasse Collin
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * See ../lzma.h for information about liblzma as a whole.
  */
 
 #ifndef LZMA_H_INTERNAL

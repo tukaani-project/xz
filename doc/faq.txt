@@ -1,13 +1,6 @@
 
-LZMA Utils FAQ
---------------
-
-    Copyright (C) 2007 Lasse Collin
-
-    Copying and distribution of this file, with or without modification,
-    are permitted in any medium without royalty provided the copyright
-    notice and this notice are preserved.
-
+XZ Utils FAQ
+============
 
 Q:  What are LZMA, LZMA Utils, lzma, .lzma, liblzma, LZMA SDK, LZMA_Alone,
     7-Zip and p7zip?
@@ -198,32 +191,7 @@ A:  BCJ filter is called "x86" in liblzma. BCJ2 is not included,
 
 Q:  Can I use LZMA in proprietary, non-free applications?
 
-A:  liblzma is under the GNU LGPL version 2.1 or (at your opinion) any
-    later version. To summarise (*NOTE* This summary is not legally
-    binding, that is, it doesn't give you any extra permissions compared
-    to the LGPL. Read the GNU LGPL carefully for the exact license
-    conditions.):
-      * All the changes made into the library itself must be published
-        under the same license.
-      * End users must be able to replace the used liblzma. Easiest way
-        to assure this is to link dynamically against liblzma so users
-        can replace the shared library file if they want.
-      * You must make it clear to your users, that your application uses
-        liblzma, and that liblzma is free software under the GNU LGPL.
-        A copy of GNU LGPL must be included.
-
-    LZMA SDK contains a special exception which allows linking *unmodified*
-    code statically with a non-free application. This exception does *not*
-    apply to liblzma.
-
-    As an alternative, you can support the development of LZMA and 7-Zip
-    by buying a proprietary license from Igor Pavlov. See homepage of
-    LZMA SDK <http://7-zip.org/sdk.html> for more information. Note that
-    having a proprietary license from Igor Pavlov doesn't allow you to use
-    liblzma in a way that contradicts with the GNU LGPL, because liblzma
-    contains code that is not copyrighted by Igor Pavlov. Please contact
-    both Lasse Collin and Igor Pavlov if the license conditions of liblzma
-    are not suitable for you.
+A:  Yes. See the file COPYING for details.
 
 
 Q:  I would like to help. What can I do?

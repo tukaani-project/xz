@@ -3,8 +3,10 @@
 /// \file       mythread.h
 /// \brief      Wrappers for threads
 //
-//  Author: Lasse Collin
+//  Author:     Lasse Collin
+//
 //  This file has been put into the public domain.
+//  You can do whatever you want with this file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

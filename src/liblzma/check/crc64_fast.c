@@ -2,12 +2,15 @@
 //
 /// \file       crc64.c
 /// \brief      CRC64 calculation
+///
+/// Calculate the CRC64 using the slice-by-four algorithm. This is the same
+/// idea that is used in crc32_fast.c, but for CRC64 we use only four tables
+/// instead of eight to avoid increasing CPU cache usage.
 //
-//  This code has been put into the public domain.
+//  Author:     Lasse Collin
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//  This file has been put into the public domain.
+//  You can do whatever you want with this file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +25,7 @@
 #endif
 
 
-// See comments in crc32.c.
+// See the comments in crc32_fast.c. They aren't duplicated here.
 extern LZMA_API(uint64_t)
 lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 {
@@ -41,10 +44,6 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 		const uint8_t *const limit = buf + (size & ~(size_t)(3));
 		size &= (size_t)(3);
 
-		// Calculate the CRC64 using the slice-by-four algorithm.
-		//
-		// In contrast to CRC32 code, this one seems to be fastest
-		// with -O3 -fomit-frame-pointer.
 		while (buf < limit) {
 #ifdef WORDS_BIGENDIAN
 			const uint32_t tmp = (crc >> 32) ^ *(uint32_t *)(buf);
@@ -53,9 +52,6 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 			buf += 4;
 
-			// It is critical for performance, that
-			// the crc variable is XORed between the
-			// two table-lookup pairs.
 			crc = lzma_crc64_table[3][A(tmp)]
 			    ^ lzma_crc64_table[2][B(tmp)]
 			    ^ S32(crc)

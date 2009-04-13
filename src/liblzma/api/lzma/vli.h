@@ -2,18 +2,25 @@
  * \file        lzma/vli.h
  * \brief       Variable-length integer handling
  *
- * \author      Copyright (C) 1999-2006 Igor Pavlov
- * \author      Copyright (C) 2007 Lasse Collin
+ * In the .xz format, most integers are encoded in a variable-length
+ * representation, which is sometimes called little endian base-128 encoding.
+ * This saves space when smaller values are more likely than bigger values.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * The encoding scheme encodes seven bits to every byte, using minimum
+ * number of bytes required to represent the given value. Encodings that use
+ * non-minimum number of bytes are invalid, thus every integer has exactly
+ * one encoded representation. The maximum number of bits in a VLI is 63,
+ * thus the vli argument must be at maximum of UINT64_MAX / 2. You should
+ * use LZMA_VLI_MAX for clarity.
+ */
+
+/*
+ * Author: Lasse Collin
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * This file has been put into the public domain.
+ * You can do whatever you want with this file.
+ *
+ * See ../lzma.h for information about liblzma as a whole.
  */
 
 #ifndef LZMA_H_INTERNAL
@@ -71,18 +78,7 @@ typedef uint64_t lzma_vli;
 
 
 /**
- * \brief       Encodes variable-length integer
- *
- * In the .xz format, most integers are encoded in a variable-length
- * representation, which is sometimes called little endian base-128 encoding.
- * This saves space when smaller values are more likely than bigger values.
- *
- * The encoding scheme encodes seven bits to every byte, using minimum
- * number of bytes required to represent the given value. Encodings that use
- * non-minimum number of bytes are invalid, thus every integer has exactly
- * one encoded representation. The maximum number of bits in a VLI is 63,
- * thus the vli argument must be at maximum of UINT64_MAX / 2. You should
- * use LZMA_VLI_MAX for clarity.
+ * \brief       Encode a variable-length integer
  *
  * This function has two modes: single-call and multi-call. Single-call mode
  * encodes the whole integer at once; it is an error if the output buffer is
@@ -123,7 +119,7 @@ extern LZMA_API(lzma_ret) lzma_vli_encode(lzma_vli vli,
 
 
 /**
- * \brief       Decodes variable-length integer
+ * \brief       Decode a variable-length integer
  *
  * Like lzma_vli_encode(), this function has single-call and multi-call modes.
  *

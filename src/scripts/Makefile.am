@@ -5,27 +5,37 @@
 ## You can do whatever you want with this file.
 ##
 
-dist_bin_SCRIPTS = lzdiff lzgrep lzmore
-dist_man_MANS = lzdiff.1 lzgrep.1 lzmore.1
+dist_bin_SCRIPTS = xzdiff xzgrep xzmore
+dist_man_MANS = xzdiff.1 xzgrep.1 xzmore.1
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
-	rm -f lzcmp lzegrep lzfgrep lzless && \
-	$(LN_S) lzdiff lzcmp && \
-	$(LN_S) lzgrep lzegrep && \
-	$(LN_S) lzgrep lzfgrep && \
-	$(LN_S) lzmore lzless
+	rm -f xzcmp xzegrep xzfgrep xzless lzcmp lzegrep lzfgrep lzless && \
+	$(LN_S) xzdiff xzcmp && \
+	$(LN_S) xzgrep xzegrep && \
+	$(LN_S) xzgrep xzfgrep && \
+	$(LN_S) xzmore xzless && \
+	$(LN_S) xzdiff lzcmp && \
+	$(LN_S) xzgrep lzegrep && \
+	$(LN_S) xzgrep lzfgrep && \
+	$(LN_S) xzmore lzless
 
 install-data-hook:
 	cd $(DESTDIR)$(mandir)/man1 && \
-	rm -f lzcmp.1 lzegrep.1 lzfgrep.1 lzless.1 && \
-	$(LN_S) lzdiff.1 lzcmp.1 && \
-	$(LN_S) lzgrep.1 lzegrep.1 && \
-	$(LN_S) lzgrep.1 lzfgrep.1 && \
-	$(LN_S) lzmore.1 lzless.1
+	rm -f xzcmp.1 xzegrep.1 xzfgrep.1 xzless.1 \
+		lzcmp.1 lzegrep.1 lzfgrep.1 lzless.1 && \
+	$(LN_S) xzdiff.1 xzcmp.1 && \
+	$(LN_S) xzgrep.1 xzegrep.1 && \
+	$(LN_S) xzgrep.1 xzfgrep.1 && \
+	$(LN_S) xzmore.1 xzless.1 && \
+	$(LN_S) xzdiff.1 lzcmp.1 && \
+	$(LN_S) xzgrep.1 lzegrep.1 && \
+	$(LN_S) xzgrep.1 lzfgrep.1 && \
+	$(LN_S) xzmore.1 lzless.1
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
-	rm -f lzcmp lzegrep lzfgrep lzless
+	rm -f xzcmp xzegrep xzfgrep xzless lzcmp lzegrep lzfgrep lzless
 	cd $(DESTDIR)$(mandir)/man1 && \
-	rm -f lzcmp.1 lzegrep.1 lzfgrep.1 lzless.1
+	rm -f xzcmp.1 xzegrep.1 xzfgrep.1 xzless.1 \
+		lzcmp.1 lzegrep.1 lzfgrep.1 lzless.1

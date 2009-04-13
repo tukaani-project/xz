@@ -1,16 +1,23 @@
-.TH LZDIFF 1 "24 Jun 2005" "LZMA utils"
+.\" Original file was take from gzip, thus this man page is under GNU GPLv2+.
+.TH XZDIFF 1 "2009-04-13" "XZ Utils"
 .SH NAME
-lzcmp, lzdiff \- compare LZMA compressed files
+xzcmp, xzdiff, lzcmp, lzdiff \- compare .xz and .lzma compressed files
 .SH SYNOPSIS
+.B xzcmp
+.RI [ cmp_options "] " file1 " [" file2 ]
+.br
+.B xzdiff
+.RI [ diff_options "] " file1 " [" file2 ]
+.br
 .B lzcmp
 .RI [ cmp_options "] " file1 " [" file2 ]
 .br
-.B zdiff
+.B lzdiff
 .RI [ diff_options "] " file1 " [" file2 ]
 .SH DESCRIPTION
-.B  lzcmp
+.B  xzcmp
 and
-.B zdiff
+.B xdiff
 are used to invoke the
 .BR cmp (1)
 or the
@@ -21,8 +28,9 @@ or
 .BR diff "."
 If only 1 file is specified, then the files compared are
 .I file1
-and an uncompressed
-.IB file1 ".gz\fR."
+(which must have .xz or .lzma suffix) and
+.I file1
+from which the .xz or .lzma suffix has been stripped.
 If two files are specified, then they are uncompressed if necessary and fed to
 .B cmp
 or
@@ -39,10 +47,9 @@ shipped in gzip package.
 .SH "SEE ALSO"
 .BR cmp (1),
 .BR diff (1),
-.BR lzmore(1),
-.BR lzgrep(1),
-.BR lzma (1),
-.BR lzmash (1)
+.BR xzmore(1),
+.BR xzgrep(1),
+.BR xz (1)
 .SH BUGS
 Messages from the
 .B cmp

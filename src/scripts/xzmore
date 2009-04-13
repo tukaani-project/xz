@@ -2,7 +2,7 @@
 
 # Copyright (C) 2001 Free Software Foundation
 # Copyright (C) 1992, 1993 Jean-loup Gailly
-# Adapted to LZMA utils from gzip-1.3.3 + Red Hat's security patches
+# Adapted to XZ Utils from gzip-1.3.3 + Red Hat's security patches
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-if test "`echo "$0" | sed 's|.*/||'`" = "lzless"; then
-  PAGER=less
-fi
+case "$0" in
+  *less) PAGER=less ;;
+esac
 
 if test "`echo -n a`" = "-n a"; then
   # looks like a SysV system:
@@ -46,7 +46,7 @@ if test $# = 0; then
     if test -t 0; then
 	echo usage: zmore files...
     else
-	lzma -dc | eval ${PAGER-more}
+	xz -dc | eval ${PAGER-more}
     fi
 else
     FIRST=1
@@ -65,7 +65,7 @@ else
 	fi
 	if test "$ANS" != 's'; then
 		echo "------> $FILE <------"
-		lzma -dc "$FILE" | eval ${PAGER-more}
+		xz -dc -- "$FILE" | eval ${PAGER-more}
 	fi
 	if test -t; then
 		FIRST=0

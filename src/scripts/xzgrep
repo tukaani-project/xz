@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# lzgrep -- a wrapper around a grep program that decompresses files as needed
-# Adapted to LZMA utils from gzip-1.3.3 + Red Hat's security patches
+# xzgrep -- a wrapper around a grep program that decompresses files as needed
+# Adapted to XZ Utils from gzip-1.3.3 + Red Hat's security patches
 # Adapted from a version sent by Charles Levert <charles@comm.polymtl.ca>
 # Copyright (C) 1998, 2001 Free Software Foundation
 # Copyright (C) 1993 Jean-loup Gailly
@@ -82,20 +82,20 @@ while test $# -ne 0; do
 done
 
 if test -z "$pat"; then
-  echo "grep through lzma files"
+  echo "grep through .xz and .lzma files"
   echo "usage: $prog [grep_options] pattern [files]"
   exit 1
 fi
 
 if test $# -eq 0; then
-  lzma -dc | $grep $opt "$pat"
+  xz -dc | $grep $opt "$pat"
   exit $?
 fi
 
 res=0
 trap break SIGPIPE
 for i do
-  lzma -dc "$i" |
+  xz -dc -- "$i" |
     if test $files_with_matches -eq 1; then
       $grep $opt "$pat" > /dev/null && printf "%s\n" "$i"
     elif test $files_without_matches -eq 1; then

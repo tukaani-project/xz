@@ -19,7 +19,7 @@ arm_code(lzma_simple *simple lzma_attribute((unused)),
 		uint32_t now_pos, bool is_encoder,
 		uint8_t *buffer, size_t size)
 {
-	uint32_t i;
+	size_t i;
 	for (i = 0; i + 4 <= size; i += 4) {
 		if (buffer[i + 3] == 0xEB) {
 			uint32_t src = (buffer[i + 2] << 16)

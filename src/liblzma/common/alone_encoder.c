@@ -78,7 +78,7 @@ static lzma_ret
 alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_options_lzma *options)
 {
-	lzma_next_coder_init(alone_encoder_init, next, allocator);
+	lzma_next_coder_init(&alone_encoder_init, next, allocator);
 
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);
@@ -140,7 +140,7 @@ extern lzma_ret
 lzma_alone_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_options_alone *options)
 {
-	lzma_next_coder_init(alone_encoder_init, next, allocator, options);
+	lzma_next_coder_init(&alone_encoder_init, next, allocator, options);
 }
 */
 

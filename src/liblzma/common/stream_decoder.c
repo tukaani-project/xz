@@ -398,7 +398,7 @@ extern lzma_ret
 lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		uint64_t memlimit, uint32_t flags)
 {
-	lzma_next_coder_init(lzma_stream_decoder_init, next, allocator);
+	lzma_next_coder_init(&lzma_stream_decoder_init, next, allocator);
 
 	if (memlimit == 0)
 		return LZMA_PROG_ERROR;

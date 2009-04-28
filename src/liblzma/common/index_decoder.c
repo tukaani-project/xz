@@ -243,7 +243,7 @@ static lzma_ret
 index_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_index **i, uint64_t memlimit)
 {
-	lzma_next_coder_init(index_decoder_init, next, allocator);
+	lzma_next_coder_init(&index_decoder_init, next, allocator);
 
 	if (i == NULL || memlimit == 0)
 		return LZMA_PROG_ERROR;

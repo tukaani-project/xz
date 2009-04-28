@@ -240,9 +240,9 @@ do { \
 /// next->init to func is still OK.
 #define lzma_next_coder_init(func, next, allocator) \
 do { \
-	if ((uintptr_t)(&func) != (next)->init) \
+	if ((uintptr_t)(func) != (next)->init) \
 		lzma_next_end(next, allocator); \
-	(next)->init = (uintptr_t)(&func); \
+	(next)->init = (uintptr_t)(func); \
 } while (0)
 
 

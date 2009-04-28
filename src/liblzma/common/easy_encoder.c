@@ -45,7 +45,7 @@ static lzma_ret
 easy_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		uint32_t preset, lzma_check check)
 {
-	lzma_next_coder_init(easy_encoder_init, next, allocator);
+	lzma_next_coder_init(&easy_encoder_init, next, allocator);
 
 	if (next->coder == NULL) {
 		next->coder = lzma_alloc(sizeof(lzma_coder), allocator);

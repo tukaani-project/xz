@@ -189,7 +189,7 @@ extern lzma_ret
 lzma_index_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_index *i)
 {
-	lzma_next_coder_init(lzma_index_encoder_init, next, allocator);
+	lzma_next_coder_init(&lzma_index_encoder_init, next, allocator);
 
 	if (i == NULL)
 		return LZMA_PROG_ERROR;

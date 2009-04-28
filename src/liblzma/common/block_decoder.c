@@ -186,7 +186,7 @@ extern lzma_ret
 lzma_block_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		lzma_block *block)
 {
-	lzma_next_coder_init(lzma_block_decoder_init, next, allocator);
+	lzma_next_coder_init(&lzma_block_decoder_init, next, allocator);
 
 	// Validate the options. lzma_block_unpadded_size() does that for us
 	// except for Uncompressed Size and filters. Filters are validated

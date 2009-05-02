@@ -44,9 +44,4 @@ endif
 
 if COND_CHECK_SHA256
 libcheck_la_SOURCES += sha256.c
-# Hide bogus warning to allow usage of -Werror. If more issues like this
-# pop up, we'll drop -Werror.
-if COND_WNO_UNINITIALIZED
-AM_CFLAGS += -Wno-uninitialized
-endif
 endif

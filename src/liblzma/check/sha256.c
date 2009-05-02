@@ -22,6 +22,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+// Avoid bogus warnings in transform().
+#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 2) || __GNUC__ > 4
+#	pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
+
 #include "check.h"
 
 #ifndef WORDS_BIGENDIAN

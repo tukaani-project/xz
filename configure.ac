@@ -534,8 +534,6 @@ lc_CPUCORES
 # If using GCC, set some additional AM_CFLAGS:
 ###############################################################################
 
-Wno_uninitialized=no
-
 if test "x$GCC" = xyes ; then
 	echo
 	echo "GCC extensions:"
@@ -543,15 +541,6 @@ if test "x$GCC" = xyes ; then
 	if test -n "$CFLAG_VISIBILITY" ; then
 		AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
 	fi
-
-	# -Wno-uninitialized is needed with -Werror with SHA256 code
-	# to omit a bogus warning.
-	AC_MSG_CHECKING([if $CC accepts -Wno-uninitialized])
-	OLD_CFLAGS="$CFLAGS"
-	CFLAGS="$CFLAGS -Wno-uninitialized"
-	AC_COMPILE_IFELSE([void foo(void) { }], [Wno_uninitialized=yes])
-	CFLAGS="$OLD_CFLAGS"
-	AC_MSG_RESULT([$Wno_uninitialized])
 
 	# Enable as much warnings as possible. These commented warnings won't
 	# work for this package though:
@@ -607,8 +596,6 @@ if test "x$GCC" = xyes ; then
 		AM_CFLAGS="$AM_CFLAGS -Werror"
 	fi
 fi
-
-AM_CONDITIONAL([COND_WNO_UNINITIALIZED], test "x$Wno_uninitialized" = "xyes")
 
 
 ###############################################################################

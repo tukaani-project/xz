@@ -45,6 +45,10 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 	while (*value == ' ' || *value == '\t')
 		++value;
 
+	// Accept special value "max". Supporting "min" doesn't seem useful.
+	if (strcmp(value, "max") == 0)
+		return max;
+
 	if (*value < '0' || *value > '9')
 		message_fatal(_("%s: Value is not a non-negative "
 				"decimal integer"), value);

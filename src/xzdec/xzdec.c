@@ -86,7 +86,7 @@ help(void)
 		" MiB of memory at maximum.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n",
-		argv0, (memlimit + 512 * 1024) / (1024 * 1024));
+		argv0, memlimit / (1024 * 1024));
 	my_exit();
 }
 
@@ -127,6 +127,10 @@ static uint64_t
 str_to_uint64(const char *value)
 {
 	uint64_t result = 0;
+
+	// Accept special value "max".
+	if (strcmp(value, "max") == 0)
+		return UINT64_MAX;
 
 	if (*value < '0' || *value > '9') {
 		fprintf(stderr, "%s: %s: Not a number\n", argv0, value);

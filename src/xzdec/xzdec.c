@@ -82,8 +82,8 @@ help(void)
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
 "\n"
-"On this configuration, the tool will use about %" PRIu64
-		" MiB of memory at maximum.\n"
+"On this system and configuration, this program will use at maximum of roughly\n"
+"%" PRIu64 " MiB RAM.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n",
 		argv0, memlimit / (1024 * 1024));
@@ -110,10 +110,10 @@ set_default_memlimit(void)
 
 	if (mem == 0)
 		// Cannot autodetect, use 10 MiB as the default limit.
-		memlimit = (1U << 23) + (1U << 21);
+		memlimit = UINT64_C(10) * 1024 * 1024;
 	else
-		// Limit is 33 % of RAM.
-		memlimit = mem / 3;
+		// Limit is 40 % of RAM.
+		memlimit = mem * 2 / 5;
 
 	return;
 }

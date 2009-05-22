@@ -55,7 +55,6 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "uncompress",     no_argument,       NULL,  'd' },
 		{ "test",           no_argument,       NULL,  't' },
 		{ "list",           no_argument,       NULL,  'l' },
-		{ "info",           no_argument,       NULL,  'l' },
 
 		// Operation modifiers
 		{ "keep",           no_argument,       NULL,  'k' },

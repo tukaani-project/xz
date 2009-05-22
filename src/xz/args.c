@@ -432,10 +432,6 @@ args_parse(args_info *args, int argc, char **argv)
 	args->files_file = NULL;
 	args->files_delim = '\0';
 
-	// Type of the file format to use when --format=auto or no --format
-	// was specified.
-	enum format_type format_compress_auto = FORMAT_XZ;
-
 	// Check how we were called.
 	{
 #ifdef DOSLIKE
@@ -454,10 +450,10 @@ args_parse(args_info *args, int argc, char **argv)
 		// NOTE: It's possible that name[0] is now '\0' if argv[0]
 		// is weird, but it doesn't matter here.
 
-		// The default file format is .lzma if the command name
-		// contains "lz".
+		// If the command name contains "lz",
+		// it implies --format=lzma.
 		if (strstr(name, "lz") != NULL)
-			format_compress_auto = FORMAT_LZMA;
+			opt_format = FORMAT_LZMA;
 
 		// Operation mode
 		if (strstr(name, "cat") != NULL) {
@@ -485,11 +481,10 @@ args_parse(args_info *args, int argc, char **argv)
 		opt_stdout = true;
 	}
 
-	// If no --format flag was used, or it was --format=auto, we need to
-	// decide what is the target file format we are going to use. This
-	// depends on how we were called (checked earlier in this function).
+	// When compressing, if no --format flag was used, or it
+	// was --format=auto, we compress to the .xz format.
 	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_AUTO)
-		opt_format = format_compress_auto;
+		opt_format = FORMAT_XZ;
 
 	// Compression settings need to be validated (options themselves and
 	// their memory usage) when compressing to any file format. It has to

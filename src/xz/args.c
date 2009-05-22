@@ -114,13 +114,27 @@ parse_real(args_info *args, int argc, char **argv)
 			break;
 
 		// --memory
-		case 'M':
-			// On 32-bit systems, SIZE_MAX would make more sense
-			// than UINT64_MAX. But use UINT64_MAX still so that
-			// scripts that assume > 4 GiB values don't break.
-			hardware_memlimit_set(str_to_uint64(
-					"memory", optarg, 0, UINT64_MAX));
+		case 'M': {
+			// Support specifying the limit as a percentage of
+			// installed physical RAM.
+			size_t len = strlen(optarg);
+			if (len > 0 && optarg[len - 1] == '%') {
+				optarg[len - 1] = '\0';
+				hardware_memlimit_set_percentage(
+						str_to_uint64(
+						"memory%", optarg, 1, 100));
+			} else {
+				// On 32-bit systems, SIZE_MAX would make more
+				// sense than UINT64_MAX. But use UINT64_MAX
+				// still so that scripts that assume > 4 GiB
+				// values don't break.
+				hardware_memlimit_set(str_to_uint64(
+						"memory", optarg,
+						0, UINT64_MAX));
+			}
+
 			break;
+		}
 
 		// --suffix
 		case 'S':
@@ -129,7 +143,7 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case 'T':
 			hardware_threadlimit_set(str_to_uint64(
-					"threads", optarg, 1, SIZE_MAX));
+					"threads", optarg, 0, UINT32_MAX));
 			break;
 
 		// --version

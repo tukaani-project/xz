@@ -1072,7 +1072,8 @@ message_help(bool long_help)
 "  -e, --extreme       use more CPU time when encoding to increase compression\n"
 "                      ratio without increasing memory usage of the decoder"));
 
-	puts(_(
+	if (long_help)
+		puts(_(
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"
 "                      the default setting, which depends on the operation mode\n"
 "                      and the amount of physical memory (RAM)"));
@@ -1085,9 +1086,9 @@ message_help(bool long_help)
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
 		puts(_(
 "\n"
-"  --lzma1=[OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
-"  --lzma2=[OPTS]      more of the following options (valid values; default):\n"
-"                        preset=NUM reset options to preset number NUM (1-9)\n"
+"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
+"  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
+"                        preset=NUM reset options to preset number NUM (0-9)\n"
 "                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
 "                        lc=NUM     number of literal context bits (0-4; 3)\n"
 "                        lp=NUM     number of literal position bits (0-4; 0)\n"
@@ -1110,7 +1111,7 @@ message_help(bool long_help)
 #if defined(HAVE_ENCODER_DELTA) || defined(HAVE_DECODER_DELTA)
 		puts(_(
 "\n"
-"  --delta=[OPTS]      Delta filter; valid OPTS (valid values; default):\n"
+"  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
 "                        dist=NUM   distance between bytes being subtracted\n"
 "                                   from each other (1-256; 1)"));
 #endif
@@ -1118,7 +1119,7 @@ message_help(bool long_help)
 #if defined(HAVE_ENCODER_SUBBLOCK) || defined(HAVE_DECODER_SUBBLOCK)
 		puts(_(
 "\n"
-"  --subblock=[OPTS]   Subblock filter; valid OPTS (valid values; default):\n"
+"  --subblock[=OPTS]   Subblock filter; valid OPTS (valid values; default):\n"
 "                        size=NUM   number of bytes of data per subblock\n"
 "                                   (1 - 256Mi; 4Ki)\n"
 "                        rle=NUM    run-length encoder chunk size (0-256; 0)"));
@@ -1149,19 +1150,16 @@ message_help(bool long_help)
 
 	if (long_help) {
 		printf(_(
-"On this system and configuration, the tool will use at maximum of\n"
-"  * roughly %'" PRIu64 " MiB RAM for compression;\n"
-"  * roughly %'" PRIu64 " MiB RAM for decompression; and\n"),
-				hardware_memlimit_encoder() / (1024 * 1024),
-				hardware_memlimit_decoder() / (1024 * 1024));
-		printf(N_("  * one thread for (de)compression.\n\n",
-			"  * %'" PRIu32 " threads for (de)compression.\n\n",
-			hardware_threadlimit_get()),
-			hardware_threadlimit_get());
+"On this system and configuration, this program will use at maximum of roughly\n"
+"%'" PRIu64 " MiB RAM and "), hardware_memlimit_get() / (1024 * 1024));
+		printf(N_("one thread.\n\n", "%'" PRIu32 " threads.\n\n",
+				hardware_threadlimit_get()),
+				hardware_threadlimit_get());
 	}
 
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
 			PACKAGE_BUGREPORT);
+	printf(_("XZ Utils home page: <http://tukaani.org/xz/>\n"));
 
 	my_exit(E_SUCCESS);
 }

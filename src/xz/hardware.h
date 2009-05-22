@@ -27,9 +27,9 @@ extern uint32_t hardware_threadlimit_get(void);
 /// decoding. Zero indicates resetting the limit back to defaults.
 extern void hardware_memlimit_set(uint64_t memlimit);
 
-/// Get the memory usage limit for encoding. By default this is 90 % of RAM.
-extern uint64_t hardware_memlimit_encoder(void);
+/// Set custom memory usage limit as a percentage of installed RAM.
+/// The percentage must be in the range [1, 100].
+extern void hardware_memlimit_set_percentage(uint32_t percentage);
 
-
-/// Get the memory usage limit for decoding. By default this is 30 % of RAM.
-extern uint64_t hardware_memlimit_decoder(void);
+/// Get the current memory usage limit.
+extern uint64_t hardware_memlimit_get(void);

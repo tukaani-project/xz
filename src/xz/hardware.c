@@ -17,37 +17,24 @@
 
 /// Maximum number of free *coder* threads. This can be set with
 /// the --threads=NUM command line option.
-static uint32_t threads_max;
+static uint32_t threadlimit;
 
-
-/// Memory usage limit for encoding
-static uint64_t memlimit_encoder;
-
-/// Memory usage limit for decoding
-static uint64_t memlimit_decoder;
-
-/// Memory usage limit given on the command line or environment variable.
-/// Zero indicates the default (memlimit_encoder or memlimit_decoder).
-static uint64_t memlimit_custom = 0;
-
-
-/// Get the number of CPU cores, and set opt_threads to default to that value.
-/// User can then override this with --threads command line option.
-static void
-hardware_threadlimit_init(void)
-{
-	threads_max = cpucores();
-	if (threads_max == 0)
-		threads_max = 1;
-
-	return;
-}
+/// Memory usage limit
+static uint64_t memlimit;
 
 
 extern void
-hardware_threadlimit_set(uint32_t threadlimit)
+hardware_threadlimit_set(uint32_t new_threadlimit)
 {
-	threads_max = threadlimit;
+	if (new_threadlimit == 0) {
+		// The default is the number of available CPU cores.
+		threadlimit = cpucores();
+		if (threadlimit == 0)
+			threadlimit = 1;
+	} else {
+		threadlimit = new_threadlimit;
+	}
+
 	return;
 }
 
@@ -55,13 +42,30 @@ hardware_threadlimit_set(uint32_t threadlimit)
 extern uint32_t
 hardware_threadlimit_get(void)
 {
-	return threads_max;
+	return threadlimit;
 }
 
 
-static void
-hardware_memlimit_init(void)
+extern void
+hardware_memlimit_set(uint64_t new_memlimit)
 {
+	if (new_memlimit == 0) {
+		// The default is 40 % of total installed physical RAM.
+		hardware_memlimit_set_percentage(40);
+	} else {
+		memlimit = new_memlimit;
+	}
+
+	return;
+}
+
+
+extern void
+hardware_memlimit_set_percentage(uint32_t percentage)
+{
+	assert(percentage > 0);
+	assert(percentage <= 100);
+
 	uint64_t mem = physmem();
 
 	// If we cannot determine the amount of RAM, assume 32 MiB. Maybe
@@ -70,40 +74,22 @@ hardware_memlimit_init(void)
 	if (mem == 0)
 		mem = UINT64_C(32) * 1024 * 1024;
 
-	// Use at maximum of 90 % of RAM when encoding and 33 % when decoding.
-	memlimit_encoder = mem - mem / 10;
-	memlimit_decoder = mem / 3;
-
-	return;
-}
-
-
-extern void
-hardware_memlimit_set(uint64_t memlimit)
-{
-	memlimit_custom = memlimit;
+	memlimit = percentage * mem / 100;
 	return;
 }
 
 
 extern uint64_t
-hardware_memlimit_encoder(void)
+hardware_memlimit_get(void)
 {
-	return memlimit_custom != 0 ? memlimit_custom : memlimit_encoder;
-}
-
-
-extern uint64_t
-hardware_memlimit_decoder(void)
-{
-	return memlimit_custom != 0 ? memlimit_custom : memlimit_decoder;
+	return memlimit;
 }
 
 
 extern void
 hardware_init(void)
 {
-	hardware_memlimit_init();
-	hardware_threadlimit_init();
+	hardware_memlimit_set(0);
+	hardware_threadlimit_set(0);
 	return;
 }

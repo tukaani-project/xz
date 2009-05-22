@@ -152,15 +152,12 @@ coder_set_compression_settings(void)
 	// If using --format=raw, we can be decoding. The memusage function
 	// also validates the filter chain and the options used for the
 	// filters.
+	const uint64_t memory_limit = hardware_memlimit_get();
 	uint64_t memory_usage;
-	uint64_t memory_limit;
-	if (opt_mode == MODE_COMPRESS) {
+	if (opt_mode == MODE_COMPRESS)
 		memory_usage = lzma_raw_encoder_memusage(filters);
-		memory_limit = hardware_memlimit_encoder();
-	} else {
+	else
 		memory_usage = lzma_raw_decoder_memusage(filters);
-		memory_limit = hardware_memlimit_decoder();
-	}
 
 	if (memory_usage == UINT64_MAX)
 		message_fatal("Unsupported filter chain or filter options");
@@ -286,17 +283,17 @@ coder_init(void)
 		switch (opt_format) {
 		case FORMAT_AUTO:
 			ret = lzma_auto_decoder(&strm,
-					hardware_memlimit_decoder(), flags);
+					hardware_memlimit_get(), flags);
 			break;
 
 		case FORMAT_XZ:
 			ret = lzma_stream_decoder(&strm,
-					hardware_memlimit_decoder(), flags);
+					hardware_memlimit_get(), flags);
 			break;
 
 		case FORMAT_LZMA:
 			ret = lzma_alone_decoder(&strm,
-					hardware_memlimit_decoder());
+					hardware_memlimit_get());
 			break;
 
 		case FORMAT_RAW:
@@ -436,8 +433,7 @@ coder_run(file_pair *pair)
 				// Figure out how much memory it would have
 				// actually needed.
 				uint64_t memusage = lzma_memusage(&strm);
-				uint64_t memlimit
-						= hardware_memlimit_decoder();
+				uint64_t memlimit = hardware_memlimit_get();
 
 				// Round the memory limit down and usage up.
 				// This way we don't display a ridiculous

@@ -13,6 +13,7 @@
 #include "sysdefs.h"
 #include "lzma.h"
 
+#include <stdarg.h>
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -36,8 +37,29 @@
 /// Number of bytes to use memory at maximum
 static uint64_t memlimit;
 
+/// Error messages are suppressed if this is zero, which is the case when
+/// --quiet has been given at least twice.
+static unsigned int display_errors = 2;
+
 /// Program name to be shown in error messages
 static const char *argv0;
+
+
+static void lzma_attribute((format(printf, 1, 2)))
+my_errorf(const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	if (display_errors) {
+		fprintf(stderr, "%s: ", argv0);
+		vfprintf(stderr, fmt, ap);
+		fprintf(stderr, "\n");
+	}
+
+	va_end(ap);
+	return;
+}
 
 
 static void lzma_attribute((noreturn))
@@ -54,9 +76,8 @@ my_exit(void)
 		// If it was fclose() that failed, we have the reason
 		// in errno. If only ferror() indicated an error,
 		// we have no idea what the reason was.
-		fprintf(stderr, "%s: Cannot write to standard output: %s\n",
-				argv0, fclose_err
-					? strerror(errno) : "Unknown error");
+		my_errorf("Cannot write to standard output: %s", fclose_err
+				? strerror(errno) : "Unknown error");
 		status = EXIT_FAILURE;
 	}
 
@@ -77,15 +98,18 @@ help(void)
 "  -f, --force        (ignored)\n"
 "  -M, --memory=NUM   use NUM bytes of memory at maximum (0 means default);\n"
 "                     the suffixes k, M, G, Ki, Mi, and Gi are supported.\n"
+"  -q, --quiet        specify *twice* to suppress errors\n"
+"  -Q, --no-warn      (ignored)\n"
 "  -h, --help         display this help and exit\n"
-"  -V, --version      display version and license information and exit\n"
+"  -V, --version      display the version number and exit\n"
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
 "\n"
 "On this system and configuration, this program will use at maximum of roughly\n"
 "%" PRIu64 " MiB RAM.\n"
 "\n"
-"Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n",
+"Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n"
+"XZ Utils home page: <http://tukaani.org/xz/>\n",
 		argv0, memlimit / (1024 * 1024));
 	my_exit();
 }
@@ -133,7 +157,7 @@ str_to_uint64(const char *value)
 		return UINT64_MAX;
 
 	if (*value < '0' || *value > '9') {
-		fprintf(stderr, "%s: %s: Not a number\n", argv0, value);
+		my_errorf("%s: Not a number", value);
 		exit(EXIT_FAILURE);
 	}
 
@@ -176,8 +200,7 @@ str_to_uint64(const char *value)
 		}
 
 		if (multiplier == 0) {
-			fprintf(stderr, "%s: %s: Invalid suffix\n",
-					argv0, value);
+			my_errorf("%s: Invalid suffix", value);
 			exit(EXIT_FAILURE);
 		}
 
@@ -196,7 +219,7 @@ str_to_uint64(const char *value)
 static void
 parse_options(int argc, char **argv)
 {
-	static const char short_opts[] = "cdkfM:hV";
+	static const char short_opts[] = "cdkfM:hqQV";
 	static const struct option long_opts[] = {
 		{ "stdout",       no_argument,         NULL, 'c' },
 		{ "to-stdout",    no_argument,         NULL, 'c' },
@@ -205,6 +228,8 @@ parse_options(int argc, char **argv)
 		{ "force",        no_argument,         NULL, 'f' },
 		{ "keep",         no_argument,         NULL, 'k' },
 		{ "memory",       required_argument,   NULL, 'M' },
+		{ "quiet",        no_argument,         NULL, 'q' },
+		{ "no-warn",      no_argument,         NULL, 'Q' },
 		{ "help",         no_argument,         NULL, 'h' },
 		{ "version",      no_argument,         NULL, 'V' },
 		{ NULL,           0,                   NULL, 0   }
@@ -219,12 +244,19 @@ parse_options(int argc, char **argv)
 		case 'd':
 		case 'f':
 		case 'k':
+		case 'Q':
 			break;
 
 		case 'M':
 			memlimit = str_to_uint64(optarg);
 			if (memlimit == 0)
 				set_default_memlimit();
+
+			break;
+
+		case 'q':
+			if (display_errors > 0)
+				--display_errors;
 
 			break;
 
@@ -258,13 +290,8 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 	// The only reasonable error here is LZMA_MEM_ERROR.
 	// FIXME: Maybe also LZMA_MEMLIMIT_ERROR in future?
 	if (ret != LZMA_OK) {
-		fprintf(stderr, "%s: ", argv0);
-
-		if (ret == LZMA_MEM_ERROR)
-			fprintf(stderr, "%s\n", strerror(ENOMEM));
-		else
-			fprintf(stderr, "Internal program error (bug)\n");
-
+		my_errorf("%s", ret == LZMA_MEM_ERROR ? strerror(ENOMEM)
+				: "Internal program error (bug)");
 		exit(EXIT_FAILURE);
 	}
 
@@ -287,10 +314,8 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				// POSIX says that fread() sets errno if
 				// an error occurred. ferror() doesn't
 				// touch errno.
-				fprintf(stderr, "%s: %s: Error reading "
-						"input file: %s\n",
-						argv0, filename,
-						strerror(errno));
+				my_errorf("%s: Error reading input file: %s",
+						filename, strerror(errno));
 				exit(EXIT_FAILURE);
 			}
 
@@ -315,9 +340,8 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				// Wouldn't be a surprise if writing to stderr
 				// would fail too but at least try to show an
 				// error message.
-				fprintf(stderr, "%s: Cannot write to "
-						"standard output: %s\n", argv0,
-						strerror(errno));
+				my_errorf("Cannot write to standard output: "
+						"%s", strerror(errno));
 				exit(EXIT_FAILURE);
 			}
 
@@ -378,8 +402,7 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				break;
 			}
 
-			fprintf(stderr, "%s: %s: %s\n", argv0, filename, msg);
-
+			my_errorf("%s: %s", filename, msg);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -423,8 +446,7 @@ main(int argc, char **argv)
 			} else {
 				FILE *file = fopen(argv[optind], "rb");
 				if (file == NULL) {
-					fprintf(stderr, "%s: %s: %s\n",
-							argv0, argv[optind],
+					my_errorf("%s: %s", argv[optind],
 							strerror(errno));
 					exit(EXIT_FAILURE);
 				}

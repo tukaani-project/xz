@@ -17,6 +17,10 @@
 /// Exit status to use. This can be changed with set_exit_status().
 static enum exit_status_type exit_status = E_SUCCESS;
 
+/// True if --no-warn is specified. When this is true, we don't set
+/// the exit status to E_WARNING when something worth a warning happens.
+static bool no_warn = false;
+
 
 extern void
 set_exit_status(enum exit_status_type new_status)
@@ -26,6 +30,14 @@ set_exit_status(enum exit_status_type new_status)
 	if (exit_status != E_ERROR)
 		exit_status = new_status;
 
+	return;
+}
+
+
+extern void
+set_exit_no_warn(void)
+{
+	no_warn = true;
 	return;
 }
 
@@ -58,6 +70,11 @@ my_exit(enum exit_status_type status)
 		if (fclose_err || ferror_err)
 			status = E_ERROR;
 	}
+
+	// Suppress the exit status indicating a warning if --no-warn
+	// was specified.
+	if (status == E_WARNING && no_warn)
+		status = E_SUCCESS;
 
 	// If we have got a signal, raise it to kill the program.
 	// Otherwise we just call exit().

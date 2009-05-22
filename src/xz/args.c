@@ -46,7 +46,8 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_FILES0,
 	};
 
-	static const char short_opts[] = "cC:defF:hHlkM:qrS:tT:vVz0123456789";
+	static const char short_opts[]
+			= "cC:defF:hHlkM:qQrS:tT:vVz0123456789";
 
 	static const struct option long_opts[] = {
 		// Operation mode
@@ -94,6 +95,7 @@ parse_real(args_info *args, int argc, char **argv)
 		// Other options
 		{ "quiet",          no_argument,       NULL,  'q' },
 		{ "verbose",        no_argument,       NULL,  'v' },
+		{ "no-warn",        no_argument,       NULL,  'Q' },
 		{ "help",           no_argument,       NULL,  'h' },
 		{ "long-help",      no_argument,       NULL,  'H' },
 		{ "version",        no_argument,       NULL,  'V' },
@@ -193,6 +195,10 @@ parse_real(args_info *args, int argc, char **argv)
 		// --quiet
 		case 'q':
 			message_verbosity_decrease();
+			break;
+
+		case 'Q':
+			set_exit_no_warn();
 			break;
 
 		case 't':

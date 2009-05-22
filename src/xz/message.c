@@ -1135,6 +1135,10 @@ message_help(bool long_help)
 
 	if (long_help)
 		puts(_(
+"  -Q, --no-warn       make warnings not affect the exit status"));
+
+	if (long_help)
+		puts(_(
 "\n"
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help"));

@@ -24,6 +24,12 @@ enum exit_status_type {
 extern void set_exit_status(enum exit_status_type new_status);
 
 
+/// Use E_SUCCESS instead of E_WARNING if something worth a warning occurs
+/// but nothing worth an error has occurred. This is called when --no-warn
+/// is specified.
+extern void set_exit_no_warn(void);
+
+
 /// Exits the program using the given status. This takes care of closing
 /// stdin, stdout, and stderr and catches possible errors. If we had got
 /// a signal, this function will raise it so that to the parent process it

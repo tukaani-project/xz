@@ -19,7 +19,7 @@ enum exit_status_type {
 
 
 /// Sets the exit status after a warning or error has occurred. If new_status
-/// is EX_WARNING and the old exit status was already EX_ERROR, the exit
+/// is E_WARNING and the old exit status was already E_ERROR, the exit
 /// status is not changed.
 extern void set_exit_status(enum exit_status_type new_status);
 

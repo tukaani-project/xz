@@ -1101,12 +1101,14 @@ message_help(bool long_help)
 
 		puts(_(
 "\n"
-"  --x86               x86 filter (sometimes called BCJ filter)\n"
-"  --powerpc           PowerPC (big endian) filter\n"
-"  --ia64              IA64 (Itanium) filter\n"
-"  --arm               ARM filter\n"
-"  --armthumb          ARM-Thumb filter\n"
-"  --sparc             SPARC filter"));
+"  --x86[=OPTS]        x86 BCJ filter\n"
+"  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
+"  --ia64[=OPTS]       IA64 (Itanium) BCJ filter\n"
+"  --arm[=OPTS]        ARM BCJ filter (little endian only)\n"
+"  --armthumb[=OPTS]   ARM-Thumb BCJ filter (little endian only)\n"
+"  --sparc[=OPTS]      SPARC BCJ filter\n"
+"                      Valid OPTS for all BCJ filters:\n"
+"                        start=NUM  start offset for conversions (default=0)"));
 
 #if defined(HAVE_ENCODER_DELTA) || defined(HAVE_DECODER_DELTA)
 		puts(_(

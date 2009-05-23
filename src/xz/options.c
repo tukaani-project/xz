@@ -225,6 +225,46 @@ options_delta(const char *str)
 }
 
 
+/////////
+// BCJ //
+/////////
+
+enum {
+	OPT_START_OFFSET,
+};
+
+
+static void
+set_bcj(void *options, uint32_t key, uint64_t value)
+{
+	lzma_options_bcj *opt = options;
+	switch (key) {
+	case OPT_START_OFFSET:
+		opt->start_offset = value;
+		break;
+	}
+}
+
+
+extern lzma_options_bcj *
+options_bcj(const char *str)
+{
+	static const option_map opts[] = {
+		{ "start",    NULL,  0, UINT32_MAX },
+		{ NULL,       NULL,  0, 0 }
+	};
+
+	lzma_options_bcj *options = xmalloc(sizeof(lzma_options_bcj));
+	*options = (lzma_options_bcj){
+		.start_offset = 0,
+	};
+
+	parse_options(str, opts, &set_bcj, options);
+
+	return options;
+}
+
+
 //////////
 // LZMA //
 //////////

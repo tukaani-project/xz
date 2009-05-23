@@ -80,15 +80,15 @@ parse_real(args_info *args, int argc, char **argv)
 		// Filters
 		{ "lzma1",          optional_argument, NULL,  OPT_LZMA1 },
 		{ "lzma2",          optional_argument, NULL,  OPT_LZMA2 },
-		{ "x86",            no_argument,       NULL,  OPT_X86 },
-		{ "bcj",            no_argument,       NULL,  OPT_X86 },
-		{ "powerpc",        no_argument,       NULL,  OPT_POWERPC },
-		{ "ppc",            no_argument,       NULL,  OPT_POWERPC },
-		{ "ia64",           no_argument,       NULL,  OPT_IA64 },
-		{ "itanium",        no_argument,       NULL,  OPT_IA64 },
-		{ "arm",            no_argument,       NULL,  OPT_ARM },
-		{ "armthumb",       no_argument,       NULL,  OPT_ARMTHUMB },
-		{ "sparc",          no_argument,       NULL,  OPT_SPARC },
+		{ "x86",            optional_argument, NULL,  OPT_X86 },
+		{ "bcj",            optional_argument, NULL,  OPT_X86 },
+		{ "powerpc",        optional_argument, NULL,  OPT_POWERPC },
+		{ "ppc",            optional_argument, NULL,  OPT_POWERPC },
+		{ "ia64",           optional_argument, NULL,  OPT_IA64 },
+		{ "itanium",        optional_argument, NULL,  OPT_IA64 },
+		{ "arm",            optional_argument, NULL,  OPT_ARM },
+		{ "armthumb",       optional_argument, NULL,  OPT_ARMTHUMB },
+		{ "sparc",          optional_argument, NULL,  OPT_SPARC },
 		{ "delta",          optional_argument, NULL,  OPT_DELTA },
 		{ "subblock",       optional_argument, NULL,  OPT_SUBBLOCK },
 
@@ -222,27 +222,33 @@ parse_real(args_info *args, int argc, char **argv)
 			break;
 
 		case OPT_X86:
-			coder_add_filter(LZMA_FILTER_X86, NULL);
+			coder_add_filter(LZMA_FILTER_X86,
+					options_bcj(optarg));
 			break;
 
 		case OPT_POWERPC:
-			coder_add_filter(LZMA_FILTER_POWERPC, NULL);
+			coder_add_filter(LZMA_FILTER_POWERPC,
+					options_bcj(optarg));
 			break;
 
 		case OPT_IA64:
-			coder_add_filter(LZMA_FILTER_IA64, NULL);
+			coder_add_filter(LZMA_FILTER_IA64,
+					options_bcj(optarg));
 			break;
 
 		case OPT_ARM:
-			coder_add_filter(LZMA_FILTER_ARM, NULL);
+			coder_add_filter(LZMA_FILTER_ARM,
+					options_bcj(optarg));
 			break;
 
 		case OPT_ARMTHUMB:
-			coder_add_filter(LZMA_FILTER_ARMTHUMB, NULL);
+			coder_add_filter(LZMA_FILTER_ARMTHUMB,
+					options_bcj(optarg));
 			break;
 
 		case OPT_SPARC:
-			coder_add_filter(LZMA_FILTER_SPARC, NULL);
+			coder_add_filter(LZMA_FILTER_SPARC,
+					options_bcj(optarg));
 			break;
 
 		case OPT_DELTA:

@@ -117,18 +117,15 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 	// Fall through
 
 	case SEQ_CHECK: {
-		const uint32_t check_size
-				= lzma_check_size(coder->block->check);
+		const size_t check_size = lzma_check_size(coder->block->check);
+		lzma_bufcpy(coder->check.buffer.u8, &coder->pos, check_size,
+				out, out_pos, out_size);
+		if (coder->pos < check_size)
+			return LZMA_OK;
 
-		while (*out_pos < out_size) {
-			out[*out_pos] = coder->check.buffer.u8[coder->pos];
-			++*out_pos;
-
-			if (++coder->pos == check_size)
-				return LZMA_STREAM_END;
-		}
-
-		return LZMA_OK;
+		memcpy(coder->block->raw_check, coder->check.buffer.u8,
+				check_size);
+		return LZMA_STREAM_END;
 	}
 	}
 

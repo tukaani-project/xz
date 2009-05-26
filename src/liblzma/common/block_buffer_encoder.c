@@ -290,6 +290,7 @@ lzma_block_buffer_encode(lzma_block *block, lzma_allocator *allocator,
 		lzma_check_update(&check, block->check, in, in_size);
 		lzma_check_finish(&check, block->check);
 
+		memcpy(block->raw_check, check.buffer.u8, check_size);
 		memcpy(out + *out_pos, check.buffer.u8, check_size);
 		*out_pos += check_size;
 	}

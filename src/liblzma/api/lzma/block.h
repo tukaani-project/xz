@@ -207,6 +207,23 @@ typedef struct {
 	 */
 	lzma_filter *filters;
 
+	/**
+	 * \brief       Raw value stored in the Check field
+	 *
+	 * After successful coding, the first lzma_check_size(check) bytes
+	 * of this array contain the raw value stored in the Check field.
+	 *
+	 * Note that CRC32 and CRC64 are stored in little endian byte order.
+	 * Take it into account if you display the Check values to the user.
+	 *
+	 * Written by:
+	 *  - lzma_block_encoder()
+	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_buffer_decode()
+	 */
+	uint8_t raw_check[64];
+
 	/*
 	 * Reserved space to allow possible future extensions without
 	 * breaking the ABI. You should not touch these, because the names

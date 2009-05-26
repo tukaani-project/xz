@@ -146,26 +146,22 @@ block_decode(lzma_coder *coder, lzma_allocator *allocator,
 	// Fall through
 
 	case SEQ_CHECK: {
-		const bool chksup = lzma_check_is_supported(
-				coder->block->check);
+		const size_t check_size = lzma_check_size(coder->block->check);
+		lzma_bufcpy(in, in_pos, in_size, coder->block->raw_check,
+				&coder->check_pos, check_size);
+		if (coder->check_pos < check_size)
+			return LZMA_OK;
 
-		while (*in_pos < in_size) {
-			// coder->check.buffer[] may be uninitialized when
-			// the Check ID is not supported.
-			if (chksup && coder->check.buffer.u8[coder->check_pos]
-					!= in[*in_pos]) {
-				++*in_pos;
-				return LZMA_DATA_ERROR;
-			}
+		// Validate the Check only if we support it.
+		// coder->check.buffer may be uninitialized
+		// when the Check ID is not supported.
+		if (lzma_check_is_supported(coder->block->check)
+				&& memcmp(coder->block->raw_check,
+					coder->check.buffer.u8,
+					check_size) != 0)
+			return LZMA_DATA_ERROR;
 
-			++*in_pos;
-
-			if (++coder->check_pos == lzma_check_size(
-					coder->block->check))
-				return LZMA_STREAM_END;
-		}
-
-		return LZMA_OK;
+		return LZMA_STREAM_END;
 	}
 	}
 

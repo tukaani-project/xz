@@ -2,7 +2,7 @@
 The .xz File Format
 ===================
 
-Version 1.0.0 (2009-01-14)
+Version 1.0.1 (2009-06-01)
 
 
         0. Preface
@@ -92,7 +92,12 @@ Version 1.0.0 (2009-01-14)
 0.3. Version History
 
         Version   Date          Description
-        1.0.0     2008-01-14    The first official version
+
+        1.0.1     2009-06-01    Typo fix in Section 0.3 and minor
+                                clarifications to Sections 2, 2.2,
+                                3.3, 4.4, and 5.3.2
+
+        1.0.0     2009-01-14    The first official version
 
 
 1. Conventions
@@ -232,6 +237,10 @@ Version 1.0.0 (2009-01-14)
             +========+================+========+================+
             | Stream | Stream Padding | Stream | Stream Padding | ...
             +========+================+========+================+
+
+        The sizes of Stream and Stream Padding are always multiples
+        of four bytes, thus the size of every valid .xz file MUST be
+        a multiple of four bytes.
 
         While a typical file contains only one Stream and no Stream
         Padding, a decoder handling standalone .xz files SHOULD support
@@ -431,7 +440,8 @@ Version 1.0.0 (2009-01-14)
         Stream Padding MUST contain only null bytes. To preserve the
         four-byte alignment of consecutive Streams, the size of Stream
         Padding MUST be a multiple of four bytes. Empty Stream Padding
-        is allowed.
+        is allowed. If these requirements are not met, the decoder MUST
+        indicate an error.
 
         Note that non-empty Stream Padding is allowed at the end of the
         file; there doesn't need to be a new Stream after non-empty
@@ -597,7 +607,9 @@ Version 1.0.0 (2009-01-14)
 
         Block Padding MUST contain 0-3 null bytes to make the size of
         the Block a multiple of four bytes. This can be needed when
-        the size of Compressed Data is not a multiple of four.
+        the size of Compressed Data is not a multiple of four. If any
+        of the bytes in Block Padding are not null bytes, the decoder
+        MUST indicate an error.
 
 
 3.4. Check
@@ -709,7 +721,8 @@ Version 1.0.0 (2009-01-14)
 4.4. Index Padding
 
         This field MUST contain 0-3 null bytes to pad the Index to
-        a multiple of four bytes.
+        a multiple of four bytes. If any of the bytes are not null
+        bytes, the decoder MUST indicate an error.
 
 
 4.5. CRC32
@@ -901,8 +914,10 @@ Version 1.0.0 (2009-01-14)
         If the size of Filter Properties is four bytes, the Filter
         Properties field contains the start offset used for address
         conversions. It is stored as an unsigned 32-bit little endian
-        integer. If the size of Filter Properties is zero, the start
-        offset is zero.
+        integer. The start offset MUST be a multiple of the alignment
+        of the filter as listed in the table above; if it isn't, the
+        decoder MUST indicate an error. If the size of Filter
+        Properties is zero, the start offset is zero.
 
         Setting the start offset may be useful if an executable has
         multiple sections, and there are many cross-section calls.

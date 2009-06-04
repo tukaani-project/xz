@@ -26,3 +26,14 @@ lzmadec_SOURCES = $(xzdec_SOURCES)
 lzmadec_CPPFLAGS = $(xzdec_CPPFLAGS) -DLZMADEC
 lzmadec_LDFLAGS = $(xzdec_LDFLAGS)
 lzmadec_LDADD = $(xzdec_LDADD)
+
+dist_man_MANS = xzdec.1
+
+install-data-hook:
+	cd $(DESTDIR)$(mandir)/man1 && \
+	rm -f lzmadec.1 && \
+	$(LN_S) xzdec.1 lzmadec.1
+
+uninstall-hook:
+	cd $(DESTDIR)$(mandir)/man1 && \
+	rm -f lzmadec.1

@@ -96,8 +96,7 @@ help(void)
 "  -d, --decompress   (ignored)\n"
 "  -k, --keep         (ignored)\n"
 "  -f, --force        (ignored)\n"
-"  -M, --memory=NUM   use NUM bytes of memory at maximum (0 means default);\n"
-"                     the suffixes k, M, G, Ki, Mi, and Gi are supported.\n"
+"  -M, --memory=NUM   use NUM bytes of memory at maximum (0 means default)\n"
 "  -q, --quiet        specify *twice* to suppress errors\n"
 "  -Q, --no-warn      (ignored)\n"
 "  -h, --help         display this help and exit\n"
@@ -125,39 +124,54 @@ version(void)
 }
 
 
-/// Finds out the amount of physical memory in the system, and sets
-/// a default memory usage limit.
+/// Find out the amount of physical memory (RAM) in the system, and set
+/// the memory usage limit to the given percentage of RAM.
 static void
-set_default_memlimit(void)
+memlimit_set_percentage(uint32_t percentage)
 {
-	const uint64_t mem = physmem();
+	uint64_t mem = physmem();
 
+	// If we cannot determine the amount of RAM, assume 32 MiB.
 	if (mem == 0)
-		// Cannot autodetect, use 10 MiB as the default limit.
-		memlimit = UINT64_C(10) * 1024 * 1024;
+		mem = UINT64_C(32) * 1024 * 1024;
+
+	memlimit = percentage * mem / 100;
+	return;
+}
+
+
+/// Set the memory usage limit to give number of bytes. Zero is a special
+/// value to indicate the default limit.
+static void
+memlimit_set(uint64_t new_memlimit)
+{
+	if (new_memlimit == 0)
+		memlimit_set_percentage(40);
 	else
-		// Limit is 40 % of RAM.
-		memlimit = mem * 2 / 5;
+		memlimit = new_memlimit;
 
 	return;
 }
 
 
-/// \brief      Converts a string to uint64_t
+/// \brief      Convert a string to uint64_t
 ///
 /// This is rudely copied from src/xz/util.c and modified a little. :-(
 ///
+/// \param      max     Return value when the string "max" was specified.
+///
 static uint64_t
-str_to_uint64(const char *value)
+str_to_uint64(const char *value, uint64_t max)
 {
 	uint64_t result = 0;
 
 	// Accept special value "max".
 	if (strcmp(value, "max") == 0)
-		return UINT64_MAX;
+		return max;
 
 	if (*value < '0' || *value > '9') {
-		my_errorf("%s: Not a number", value);
+		my_errorf("%s: Value is not a non-negative decimal integer",
+				value);
 		exit(EXIT_FAILURE);
 	}
 
@@ -247,12 +261,30 @@ parse_options(int argc, char **argv)
 		case 'Q':
 			break;
 
-		case 'M':
-			memlimit = str_to_uint64(optarg);
-			if (memlimit == 0)
-				set_default_memlimit();
+		case 'M': {
+			// Support specifying the limit as a percentage of
+			// installed physical RAM.
+			const size_t len = strlen(optarg);
+			if (len > 0 && optarg[len - 1] == '%') {
+				// Memory limit is a percentage of total
+				// installed RAM.
+				optarg[len - 1] = '\0';
+				const uint64_t percentage
+						= str_to_uint64(optarg, 100);
+				if (percentage < 1 || percentage > 100) {
+					my_errorf("Percentage must be in "
+							"the range [1, 100]");
+					exit(EXIT_FAILURE);
+				}
+
+				memlimit_set_percentage(percentage);
+			} else {
+				memlimit_set(str_to_uint64(
+						optarg, UINT64_MAX));
+			}
 
 			break;
+		}
 
 		case 'q':
 			if (display_errors > 0)
@@ -416,9 +448,9 @@ main(int argc, char **argv)
 	// error and help messages.
 	argv0 = argv[0];
 
-	// Detect amount of installed RAM and set the memory usage limit.
-	// This is needed before parsing the command line arguments.
-	set_default_memlimit();
+	// Set the default memory usage limit. This is needed before parsing
+	// the command line arguments.
+	memlimit_set(0);
 
 	// Parse the command line options.
 	parse_options(argc, argv);

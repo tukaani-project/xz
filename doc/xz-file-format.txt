@@ -2,7 +2,7 @@
 The .xz File Format
 ===================
 
-Version 1.0.1 (2009-06-01)
+Version 1.0.2 (2009-06-04)
 
 
         0. Preface
@@ -92,6 +92,8 @@ Version 1.0.1 (2009-06-01)
 0.3. Version History
 
         Version   Date          Description
+
+        1.0.2     2009-06-04    Typo fixes in Sections 4 and 5.3.1
 
         1.0.1     2009-06-01    Typo fix in Section 0.3 and minor
                                 clarifications to Sections 2, 2.2,
@@ -634,7 +636,7 @@ Version 1.0.1 (2009-06-01)
         ---> | List of Records | Index Padding | CRC32 |
              +=================+===============+-+-+-+-+
 
-        Index serves several purporses. Using it, one can
+        Index serves several purposes. Using it, one can
           - verify that all Blocks in a Stream have been processed;
           - find out the uncompressed size of a Stream; and
           - quickly access the beginning of any Block (random access).
@@ -824,7 +826,7 @@ Version 1.0.1 (2009-06-01)
 
 5.3.1. LZMA2
 
-        LZMA (Lempel-Ziv-Markov chain-Algorithm) is a general-purporse
+        LZMA (Lempel-Ziv-Markov chain-Algorithm) is a general-purpose
         compression algorithm with high compression ratio and fast
         decompression. LZMA is based on LZ77 and range coding
         algorithms.

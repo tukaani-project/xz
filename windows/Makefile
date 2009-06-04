@@ -80,7 +80,7 @@ endif
 endif
 
 ifdef DEBUG
-# Use echo since it works for this purporse on both Windows and POSIX.
+# Use echo since it works for this purpose on both Windows and POSIX.
 STRIP := echo Skipping strip
 else
 ALL_CPPFLAGS += -DNDEBUG

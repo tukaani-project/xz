@@ -2,7 +2,7 @@
 The .xz File Format
 ===================
 
-Version 1.0.2 (2009-06-04)
+Version 1.0.3 (2009-06-05)
 
 
         0. Preface
@@ -92,6 +92,8 @@ Version 1.0.2 (2009-06-04)
 0.3. Version History
 
         Version   Date          Description
+
+        1.0.3     2009-06-05    Spelling fixes in Sections 5.1 and 5.4
 
         1.0.2     2009-06-04    Typo fixes in Sections 4 and 5.3.1
 
@@ -760,13 +762,13 @@ Version 1.0.2 (2009-06-04)
 
         Some filters, for example LZMA2, can be configured to take
         advantage of specified alignment of input data. Note that
-        taking advantage of aligned input can be benefical also when
+        taking advantage of aligned input can be beneficial also when
         a filter is not the first filter in the chain. For example,
         if you compress PowerPC executables, you may want to use the
         PowerPC filter and chain that with the LZMA2 filter. Because
         not only the input but also the output alignment of the PowerPC
-        filter is four bytes, it is now benefical to set LZMA2 settings
-        so that the LZMA2 encoder can take advantage of its
+        filter is four bytes, it is now beneficial to set LZMA2
+        settings so that the LZMA2 encoder can take advantage of its
         four-byte-aligned input data.
 
         The output of the last filter in the chain is stored to the
@@ -987,7 +989,7 @@ Version 1.0.2 (2009-06-04)
 
         The second choice is to generate a 40-bit random integer,
         which the developer can use as his personal Developer ID.
-        To minimalize the risk of collisions, Developer ID has to be
+        To minimize the risk of collisions, Developer ID has to be
         a randomly generated integer, not manually selected "hex word".
         The following command, which works on many free operating
         systems, can be used to generate Developer ID:

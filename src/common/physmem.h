@@ -59,19 +59,27 @@ physmem(void)
 		ret = (uint64_t)(pagesize) * (uint64_t)(pages);
 
 #elif defined(HAVE_PHYSMEM_SYSCTL)
-	int name[2] = { CTL_HW, HW_PHYSMEM };
+	int name[2] = {
+		CTL_HW,
+#ifdef HW_PHYSMEM64
+		HW_PHYSMEM64
+#else
+		HW_PHYSMEM
+#endif
+	};
 	union {
-		unsigned long ul;
-		unsigned int ui;
+		uint32_t u32;
+		uint64_t u64;
 	} mem;
-	size_t mem_ptr_size = sizeof(mem.ul);
-	if (!sysctl(name, 2, &mem.ul, &mem_ptr_size, NULL, NULL)) {
-		// Some systems use unsigned int as the "return value".
-		// This makes a difference on 64-bit boxes.
-		if (mem_ptr_size == sizeof(mem.ul))
-			ret = mem.ul;
-		else if (mem_ptr_size == sizeof(mem.ui))
-			ret = mem.ui;
+	size_t mem_ptr_size = sizeof(mem.u64);
+	if (!sysctl(name, 2, &mem.u64, &mem_ptr_size, NULL, NULL)) {
+		// IIRC, 64-bit "return value" is possible on some 64-bit
+		// BSD systems even with HW_PHYSMEM (instead of HW_PHYSMEM64),
+		// so support both.
+		if (mem_ptr_size == sizeof(mem.u64))
+			ret = mem.u64;
+		else if (mem_ptr_size == sizeof(mem.u32))
+			ret = mem.u32;
 	}
 
 #elif defined(HAVE_PHYSMEM_SYSINFO)

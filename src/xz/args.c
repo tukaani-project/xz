@@ -374,7 +374,14 @@ parse_environment(args_info *args, char *argv0)
 	int argc = 1;
 	bool prev_was_space = true;
 	for (size_t i = 0; env[i] != '\0'; ++i) {
-		if (isspace(env[i])) {
+		// NOTE: Cast to unsigned char is needed so that correct
+		// value gets passed to isspace(), which expects
+		// unsigned char cast to int. Casting to int is done
+		// automatically due to integer promotion, but we need to
+		// force char to unsigned char manually. Otherwise 8-bit
+		// characters would get promoted to wrong value if
+		// char is signed.
+		if (isspace((unsigned char)env[i])) {
 			prev_was_space = true;
 		} else if (prev_was_space) {
 			prev_was_space = false;
@@ -399,7 +406,7 @@ parse_environment(args_info *args, char *argv0)
 	argc = 1;
 	prev_was_space = true;
 	for (size_t i = 0; env[i] != '\0'; ++i) {
-		if (isspace(env[i])) {
+		if (isspace((unsigned char)env[i])) {
 			prev_was_space = true;
 			env[i] = '\0';
 		} else if (prev_was_space) {

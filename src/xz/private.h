@@ -44,11 +44,11 @@
 #endif
 
 #include "main.h"
-#include "process.h"
+#include "coder.h"
 #include "message.h"
 #include "args.h"
 #include "hardware.h"
-#include "io.h"
+#include "file_io.h"
 #include "options.h"
 #include "signals.h"
 #include "suffix.h"

@@ -10,10 +10,12 @@ bin_PROGRAMS = xz
 xz_SOURCES = \
 	args.c \
 	args.h \
+	coder.c \
+	coder.h \
+	file_io.c \
+	file_io.h \
 	hardware.c \
 	hardware.h \
-	io.c \
-	io.h \
 	main.c \
 	main.h \
 	message.c \
@@ -21,8 +23,6 @@ xz_SOURCES = \
 	options.c \
 	options.h \
 	private.h \
-	process.c \
-	process.h \
 	signals.c \
 	signals.h \
 	suffix.c \

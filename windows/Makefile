@@ -273,12 +273,12 @@ xz: xz-dynamic.exe xz.exe
 
 XZ_SRCS = \
 	../src/xz/args.c \
+	../src/xz/coder.c \
+	../src/xz/file_io.c \
 	../src/xz/hardware.c \
-	../src/xz/io.c \
 	../src/xz/main.c \
 	../src/xz/message.c \
 	../src/xz/options.c \
-	../src/xz/process.c \
 	../src/xz/signals.c \
 	../src/xz/suffix.c \
 	../src/xz/util.c

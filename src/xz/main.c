@@ -277,7 +277,7 @@ main(int argc, char **argv)
 			}
 
 			// Replace the "-" with a special pointer, which is
-			// recognized by process_file() and other things.
+			// recognized by coder_run() and other things.
 			// This way error messages get a proper filename
 			// string and the code still knows that it is
 			// handling the special case of stdin.
@@ -285,7 +285,7 @@ main(int argc, char **argv)
 		}
 
 		// Do the actual compression or uncompression.
-		process_file(args.arg_names[i]);
+		coder_run(args.arg_names[i]);
 	}
 
 	// If --files or --files0 was used, process the filenames from the
@@ -301,7 +301,7 @@ main(int argc, char **argv)
 
 			// read_name() doesn't return empty names.
 			assert(name[0] != '\0');
-			process_file(name);
+			coder_run(name);
 		}
 
 		if (args.files_name != stdin_filename)

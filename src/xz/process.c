@@ -317,7 +317,7 @@ coder_init(void)
 
 
 static bool
-coder_run(file_pair *pair)
+coder_main(file_pair *pair)
 {
 	// Buffers to hold input and output data.
 	uint8_t in_buf[IO_BUFFER_SIZE];
@@ -464,7 +464,7 @@ coder_run(file_pair *pair)
 
 
 extern void
-process_file(const char *filename)
+coder_run(const char *filename)
 {
 	// First try initializing the coder. If it fails, it's useless to try
 	// opening the file. Check also for user_abort just in case if we had
@@ -478,7 +478,7 @@ process_file(const char *filename)
 		return;
 
 	// Do the actual coding.
-	const bool success = coder_run(pair);
+	const bool success = coder_main(pair);
 
 	// Close the file pair. It needs to know if coding was successful to
 	// know if the source or target file should be unlinked.

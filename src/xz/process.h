@@ -53,6 +53,5 @@ extern void coder_add_filter(lzma_vli id, void *options);
 ///
 extern void coder_set_compression_settings(void);
 
-extern void process_init(void);
-
-extern void process_file(const char *filename);
+/// Compress or decompress the given file
+extern void coder_run(const char *filename);

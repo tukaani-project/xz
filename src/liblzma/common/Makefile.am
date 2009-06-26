@@ -7,14 +7,14 @@
 
 noinst_LTLIBRARIES = libcommon.la
 libcommon_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/check \
-	-I@top_srcdir@/src/liblzma/rangecoder \
-	-I@top_srcdir@/src/liblzma/lz \
-	-I@top_srcdir@/src/liblzma/lzma \
-	-I@top_srcdir@/src/liblzma/subblock \
-	-I@top_srcdir@/src/liblzma/delta \
-	-I@top_srcdir@/src/liblzma/simple
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/check \
+	-I$(top_srcdir)/src/liblzma/rangecoder \
+	-I$(top_srcdir)/src/liblzma/lz \
+	-I$(top_srcdir)/src/liblzma/lzma \
+	-I$(top_srcdir)/src/liblzma/subblock \
+	-I$(top_srcdir)/src/liblzma/delta \
+	-I$(top_srcdir)/src/liblzma/simple
 
 libcommon_la_SOURCES = \
 	common.c \

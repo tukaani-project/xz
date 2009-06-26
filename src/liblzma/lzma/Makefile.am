@@ -10,10 +10,10 @@ EXTRA_DIST = fastpos_tablegen.c
 ## Using liblzma2 since liblzma is already used for the final library.
 noinst_LTLIBRARIES = liblzma2.la
 liblzma2_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common \
-	-I@top_srcdir@/src/liblzma/lz \
-	-I@top_srcdir@/src/liblzma/rangecoder
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common \
+	-I$(top_srcdir)/src/liblzma/lz \
+	-I$(top_srcdir)/src/liblzma/rangecoder
 
 liblzma2_la_SOURCES = lzma_common.h
 

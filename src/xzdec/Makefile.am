@@ -9,18 +9,19 @@ bin_PROGRAMS = xzdec lzmadec
 
 xzdec_SOURCES = xzdec.c
 xzdec_CPPFLAGS = \
-	-I@top_srcdir@/src/common \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_builddir@/lib \
-	@STATIC_CPPFLAGS@
-xzdec_LDFLAGS = @STATIC_LDFLAGS@
-xzdec_LDADD = \
-	@top_builddir@/src/liblzma/liblzma.la \
-	@LTLIBINTL@
+	-I$(top_srcdir)/src/common \
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_builddir)/lib \
+	$(STATIC_CPPFLAGS)
+xzdec_LDFLAGS = $(STATIC_LDFLAGS)
+xzdec_LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB
-xzdec_LDADD += @top_builddir@/lib/libgnu.a
+xzdec_LDADD += $(top_builddir)/lib/libgnu.a
 endif
+
+xzdec_LDADD += $(LTLIBINTL)
+
 
 lzmadec_SOURCES = $(xzdec_SOURCES)
 lzmadec_CPPFLAGS = $(xzdec_CPPFLAGS) -DLZMADEC

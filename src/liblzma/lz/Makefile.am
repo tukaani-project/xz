@@ -7,9 +7,9 @@
 
 noinst_LTLIBRARIES = liblz.la
 liblz_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common \
-	-I@top_srcdir@/src/liblzma/check
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common \
+	-I$(top_srcdir)/src/liblzma/check
 liblz_la_SOURCES =
 
 

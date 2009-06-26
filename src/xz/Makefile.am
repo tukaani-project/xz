@@ -32,20 +32,21 @@ xz_SOURCES = \
 
 xz_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
-	-I@top_srcdir@/src/common \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_builddir@/lib \
-	-I@top_srcdir@/lib \
-	@STATIC_CPPFLAGS@
+	-I$(top_srcdir)/src/common \
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_builddir)/lib \
+	-I$(top_srcdir)/lib \
+	$(STATIC_CPPFLAGS)
 
-xz_LDFLAGS = @STATIC_LDFLAGS@
-xz_LDADD = \
-	@top_builddir@/src/liblzma/liblzma.la \
-	@LTLIBINTL@
+xz_LDFLAGS = $(STATIC_LDFLAGS)
+xz_LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB
-xz_LDADD += @top_builddir@/lib/libgnu.a
+xz_LDADD += $(top_builddir)/lib/libgnu.a
 endif
+
+# libgnu.a may need these libs, so this must be after libgnu.a.
+xz_LDADD += $(LTLIBINTL)
 
 
 ## Create symlinks for unxz and xzcat for convenicen. Create symlinks also

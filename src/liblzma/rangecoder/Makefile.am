@@ -11,8 +11,8 @@ noinst_LTLIBRARIES = librangecoder.la
 
 librangecoder_la_SOURCES = range_common.h
 librangecoder_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common
 
 if COND_ENCODER_LZMA1
 librangecoder_la_SOURCES += \

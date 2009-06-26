@@ -7,8 +7,8 @@
 
 noinst_LTLIBRARIES = libsimple.la
 libsimple_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common
 libsimple_la_SOURCES = \
 	simple_coder.c \
 	simple_coder.h \

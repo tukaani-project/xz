@@ -13,8 +13,8 @@ libcheck_la_SOURCES = \
 	check.h \
 	crc_macros.h
 libcheck_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common
 
 if COND_CHECK_CRC32
 if COND_SMALL

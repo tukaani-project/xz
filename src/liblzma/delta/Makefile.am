@@ -7,8 +7,8 @@
 
 noinst_LTLIBRARIES = libdelta.la
 libdelta_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common
 
 libdelta_la_SOURCES = \
 	delta_common.c \

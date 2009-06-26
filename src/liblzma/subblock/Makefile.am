@@ -8,8 +8,8 @@
 noinst_LTLIBRARIES = libsubblock.la
 libsubblock_la_SOURCES =
 libsubblock_la_CPPFLAGS = \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_srcdir@/src/liblzma/common
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_srcdir)/src/liblzma/common
 
 if COND_ENCODER_SUBBLOCK
 libsubblock_la_SOURCES += \

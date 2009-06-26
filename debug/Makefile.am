@@ -15,15 +15,15 @@ noinst_PROGRAMS = \
 	hex2bin
 
 AM_CPPFLAGS = \
-	-I@top_srcdir@/src/common \
-	-I@top_srcdir@/src/liblzma/api
+	-I$(top_srcdir)/src/common \
+	-I$(top_srcdir)/src/liblzma/api
 
 AM_LDFLAGS = -static
 
-LDADD = \
-	@top_builddir@/src/liblzma/liblzma.la \
-	@LTLIBINTL@
+LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB
-LDADD += @top_builddir@/lib/libgnu.a
+LDADD += $(top_builddir)/lib/libgnu.a
 endif
+
+LDADD += $(LTLIBINTL)

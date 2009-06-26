@@ -15,15 +15,17 @@ EXTRA_DIST = \
 	compress_prepared_bcj_x86
 
 AM_CPPFLAGS = \
-	-I@top_srcdir@/src/common \
-	-I@top_srcdir@/src/liblzma/api \
-	-I@top_builddir@/lib
+	-I$(top_srcdir)/src/common \
+	-I$(top_srcdir)/src/liblzma/api \
+	-I$(top_builddir)/lib
 
-LDADD = @top_builddir@/src/liblzma/liblzma.la
+LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB
-LDADD += @top_builddir@/lib/libgnu.a
+LDADD += $(top_builddir)/lib/libgnu.a
 endif
+
+LDADD += $(LTLIBINTL)
 
 check_PROGRAMS = \
 	create_compress_files \

@@ -17,7 +17,7 @@
 #include "../../common/mythread.h"
 #include "../../common/integer.h"
 
-#if !defined(LZMA_API_STATIC) && defined(_WIN32)
+#if defined(DLL_EXPORT) && (defined(_WIN32) || defined(__CYGWIN__))
 #	define LZMA_API_EXPORT __declspec(dllexport)
 // Don't use ifdef or defined() below.
 #elif HAVE_VISIBILITY

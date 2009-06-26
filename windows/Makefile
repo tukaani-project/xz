@@ -62,8 +62,6 @@ ALL_CPPFLAGS = \
 
 ALL_CPPFLAGS += -DHAVE_CONFIG_H
 
-STATIC_CPPFLAGS = -DLZMA_API_STATIC
-
 # This works with Wine too while using native GNU make, sed, and rm.
 ifdef WINE
 ifdef W64
@@ -213,10 +211,10 @@ liblzma.dll: $(LIBLZMA_OBJS)
 	$(STRIP) --strip-all liblzma.dll
 
 $(LIBLZMA_OBJS_C): %.o: %.c
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+	$(CC) -DDLL_EXPORT $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 $(LIBLZMA_OBJS_ASM): %.o: %.S
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+	$(CC) -DDLL_EXPORT $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 liblzma_static.lib: $(LIBLZMA_OBJS_STATIC)
 	$(RM) $@
@@ -224,10 +222,10 @@ liblzma_static.lib: $(LIBLZMA_OBJS_STATIC)
 	$(STRIP) --strip-unneeded $@
 
 $(LIBLZMA_OBJS_STATIC_C): %-static.o: %.c
-	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 $(LIBLZMA_OBJS_STATIC_ASM): %-static.o: %.S
-	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 .PHONY: liblzma-clean
 liblzma-clean:
@@ -252,11 +250,11 @@ lzmadec-dynamic.exe: liblzma.dll $(XZDEC_SRCS) lzmadec_rc.o
 	$(STRIP) --strip-all $@
 
 xzdec.exe: liblzma_static.lib $(XZDEC_SRCS) xzdec_rc.o
-	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) xzdec_rc.o -o $@ liblzma_static.lib
+	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) xzdec_rc.o -o $@ liblzma_static.lib
 	$(STRIP) --strip-all $@
 
 lzmadec.exe: liblzma_static.lib $(XZDEC_SRCS) lzmadec_rc.o
-	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) lzmadec_rc.o -o $@ liblzma_static.lib
+	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) lzmadec_rc.o -o $@ liblzma_static.lib
 	$(STRIP) --strip-all $@
 
 .PHONY: xzdec-clean
@@ -301,7 +299,7 @@ xz-dynamic.exe: liblzma.dll $(XZ_OBJS) xz_rc.o
 	$(STRIP) --strip-all $@
 
 $(XZ_OBJS_STATIC): %-static.o: %-fixed.c
-	$(CC) $(STATIC_CPPFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 xz.exe: liblzma_static.lib $(XZ_OBJS_STATIC) xz_rc.o
 	$(CC) $(ALL_CFLAGS) $(XZ_OBJS_STATIC) xz_rc.o -o $@ liblzma_static.lib

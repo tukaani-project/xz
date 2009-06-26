@@ -173,9 +173,12 @@
  * to operating systems like Windows, or at least don't care about linking
  * against static liblzma on them, don't worry about LZMA_API_STATIC. That
  * is, most developers will never need to use LZMA_API_STATIC.
+ *
+ * Cygwin is a special case on Windows. We rely on GCC doing the right thing
+ * and thus don't use dllimport and don't specify the calling convention.
  */
 #ifndef LZMA_API_IMPORT
-#	if !defined(LZMA_API_STATIC) && defined(_WIN32)
+#	if !defined(LZMA_API_STATIC) && defined(_WIN32) && !defined(__CYGWIN__)
 #		define LZMA_API_IMPORT __declspec(dllimport)
 #	else
 #		define LZMA_API_IMPORT
@@ -183,7 +186,7 @@
 #endif
 
 #ifndef LZMA_API_CALL
-#	ifdef _WIN32
+#	if defined(_WIN32) && !defined(__CYGWIN__)
 #		define LZMA_API_CALL __cdecl
 #	else
 #		define LZMA_API_CALL

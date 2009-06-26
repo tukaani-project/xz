@@ -66,7 +66,8 @@ init_table(void)
 	.text
 	.globl	LZMA_CRC64
 
-#if !defined(__MACH__) && !defined(_WIN32) && !defined(__MSDOS__)
+#if !defined(__MACH__) && !defined(_WIN32) && !defined(__CYGWIN__) \
+		&& !defined(__MSDOS__)
 	.type	LZMA_CRC64, @function
 #endif
 
@@ -258,8 +259,8 @@ LZMA_CRC64:
 	.indirect_symbol LZMA_CRC64_TABLE
 	.long 0
 
-#elif defined(_WIN32)
-#	ifndef LZMA_API_STATIC
+#elif defined(_WIN32) || defined(__CYGWIN__)
+#	ifdef DLL_EXPORT
 	/* This is equivalent of __declspec(dllexport). */
 	.section .drectve
 	.ascii " -export:lzma_crc64"

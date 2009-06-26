@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       io.c
+/// \file       file_io.c
 /// \brief      File opening, unlinking, and closing
 //
 //  Author:     Lasse Collin

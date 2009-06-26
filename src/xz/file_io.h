@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       io.h
+/// \file       file_io.h
 /// \brief      I/O types and functions
 //
 //  Author:     Lasse Collin

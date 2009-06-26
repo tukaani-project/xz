@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       process.h
+/// \file       coder.h
 /// \brief      Compresses or uncompresses a file
 //
 //  Author:     Lasse Collin

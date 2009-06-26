@@ -11,9 +11,9 @@
 
 set -e -x
 
-autopoint -f
-libtoolize -c -f || glibtoolize -c -f
-aclocal -I m4
-autoconf
-autoheader
-automake -acf --foreign
+${AUTOPOINT:-autopoint} -f
+${LIBTOOLIZE:-libtoolize} -c -f || glibtoolize -c -f
+${ACLOCAL:-aclocal} -I m4
+${AUTOCONF:-autoconf}
+${AUTOHEADER:-autoheader}
+${AUTOMAKE:-automake} -acf --foreign

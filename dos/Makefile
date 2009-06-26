@@ -184,7 +184,7 @@ $(GETOPT_OBJS): %.o: %.c $(GETOPT_H)
 getopt.a: $(GETOPT_OBJS)
 	$(RM) $@
 	$(AR) rcs $@ $(GETOPT_OBJS)
-	$(STRIP) --strip-unneeded $@	
+	$(STRIP) --strip-unneeded $@
 
 getopt-clean:
 	$(RM) $(GETOPT_H) $(GETOPT_OBJS) getopt.a
@@ -233,16 +233,9 @@ XZ_SRCS = \
 	../src/xz/suffix.c \
 	../src/xz/util.c
 
-XZ_SRCS_FIXED = $(XZ_SRCS:.c=-fixed.c)
 XZ_OBJS = $(XZ_SRCS:.c=.o)
 
-$(XZ_SRCS_FIXED): %-fixed.c: %.c
-	$(SED) "s/%'/%/g" $< > $@
-
-# We need to "fix" the source files which use ' as format character
-# in printf() to get thousand separators. DJGPP doesn't support it.
-# It's not in C89 or C99, but it is in POSIX.
-$(XZ_OBJS): %.o: %-fixed.c
+$(XZ_OBJS): %.o: %.c
 	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 xz.exe: getopt.a liblzma.a $(XZ_OBJS)
@@ -258,8 +251,5 @@ xz.exe: getopt.a liblzma.a $(XZ_OBJS)
 xz-clean: $(XZ_OBJS:.o=-clean)
 	-$(RM) xz.exe xz
 
-# FIXME: Deleting hardware-fixed.c may actually delete hardware.c
-# on Dosemu 1.4.0 with its FreeDOS 1.0. Maybe it tries with
-# truncated 8.3 name first.
 $(XZ_OBJS:.o=-clean):
-	-$(RM) $(@:-clean=.o) $(@:-clean=-fixed.c)
+	-$(RM) $(@:-clean=.o)

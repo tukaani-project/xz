@@ -363,21 +363,22 @@ progress_sizes_helper(char **pos, size_t *left, uint64_t value, bool final)
 	if (final) {
 		// At maximum of four digits is allowed for exact byte count.
 		if (value < 10000) {
-			my_snprintf(pos, left, "%'" PRIu64 " B", value);
+			my_snprintf(pos, left, "%s B",
+					uint64_to_str(value, 0));
 			return;
 		}
 
 		// At maximum of five significant digits is allowed for KiB.
 		if (value < UINT64_C(10239900)) {
-			my_snprintf(pos, left, "%'.1f KiB",
-					(double)(value) / 1024.0);
+			my_snprintf(pos, left, "%s KiB", double_to_str(
+					(double)(value) / 1024.0));
 			return;
 		}
 	}
 
 	// Otherwise we use MiB.
-	my_snprintf(pos, left, "%'.1f MiB",
-			(double)(value) / (1024.0 * 1024.0));
+	my_snprintf(pos, left, "%s MiB",
+			double_to_str((double)(value) / (1024.0 * 1024.0)));
 
 	return;
 }
@@ -1157,10 +1158,10 @@ message_help(bool long_help)
 	if (long_help) {
 		printf(_(
 "On this system and configuration, this program will use at maximum of roughly\n"
-"%'" PRIu64 " MiB RAM and "), hardware_memlimit_get() / (1024 * 1024));
-		printf(N_("one thread.\n\n", "%'" PRIu32 " threads.\n\n",
+"%s MiB RAM and "), uint64_to_str(hardware_memlimit_get() / (1024 * 1024), 0));
+		printf(N_("one thread.\n\n", "%s threads.\n\n",
 				hardware_threadlimit_get()),
-				hardware_threadlimit_get());
+				uint64_to_str(hardware_threadlimit_get(), 0));
 	}
 
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),

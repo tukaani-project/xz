@@ -41,6 +41,26 @@ extern uint64_t str_to_uint64(const char *name, const char *value,
 		uint64_t min, uint64_t max);
 
 
+/// \brief      Convert uint64_t to a string
+///
+/// Convert the given value to a string with locale-specific thousand
+/// separators, if supported by the snprintf() implementation. The string
+/// is stored into an internal static buffer indicated by the slot argument.
+/// A pointer to the selected buffer is returned.
+///
+/// This function exists, because non-POSIX systems don't support thousand
+/// separator in format strings. Solving the problem in a simple way doesn't
+/// work, because it breaks gettext (specifically, the xgettext tool).
+extern const char *uint64_to_str(uint64_t value, uint32_t slot);
+
+
+/// \brief      Convert double to a string with one decimal place
+///
+/// This is like uint64_to_str() except that this converts a double and
+/// uses exactly one decimal place.
+extern const char *double_to_str(double value);
+
+
 /// \brief      Check if filename is empty and print an error message
 extern bool is_empty_filename(const char *filename);
 

@@ -163,11 +163,12 @@ coder_set_compression_settings(void)
 		message_fatal("Unsupported filter chain or filter options");
 
 	// Print memory usage info.
-	message(V_DEBUG, _("%'" PRIu64 " MiB (%'" PRIu64 " B) of memory is "
-			"required per thread, "
-			"limit is %'" PRIu64 " MiB (%'" PRIu64 " B)"),
-			memory_usage >> 20, memory_usage,
-			memory_limit >> 20, memory_limit);
+	message(V_DEBUG, _("%s MiB (%s B) of memory is required per thread, "
+			"limit is %s MiB (%s B)"),
+			uint64_to_str(memory_usage >> 20, 0),
+			uint64_to_str(memory_usage, 1),
+			uint64_to_str(memory_limit >> 20, 2),
+			uint64_to_str(memory_limit, 3));
 
 	if (memory_usage > memory_limit) {
 		// If --no-auto-adjust was used or we didn't find LZMA1 or
@@ -225,15 +226,13 @@ coder_set_compression_settings(void)
 		// was given. FIXME: Always warn?
 		if (!preset_default)
 			message(V_WARNING, "Adjusted LZMA%c dictionary size "
-					"from %'" PRIu32 " MiB to "
-					"%'" PRIu32 " MiB to not exceed "
-					"the memory usage limit of "
-					"%'" PRIu64 " MiB",
+					"from %s MiB to %s MiB to not exceed "
+					"the memory usage limit of %s MiB",
 					filters[i].id == LZMA_FILTER_LZMA2
 						? '2' : '1',
-					orig_dict_size >> 20,
-					opt->dict_size >> 20,
-					memory_limit >> 20);
+					uint64_to_str(orig_dict_size >> 20, 0),
+					uint64_to_str(opt->dict_size >> 20, 1),
+					uint64_to_str(memory_limit >> 20, 2));
 	}
 
 /*
@@ -443,10 +442,11 @@ coder_run(file_pair *pair)
 						/ (1024 * 1024);
 				memlimit /= 1024 * 1024;
 
-				message_error(_("Limit was %'" PRIu64 " MiB, "
-						"but %'" PRIu64 " MiB would "
+				message_error(_("Limit was %s MiB, "
+						"but %s MiB would "
 						"have been needed"),
-						memlimit, memusage);
+						uint64_to_str(memlimit, 0),
+						uint64_to_str(memusage, 1));
 			}
 
 			if (stop)

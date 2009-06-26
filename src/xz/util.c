@@ -13,6 +13,15 @@
 #include "private.h"
 
 
+// Thousand separator for format strings is not supported outside POSIX.
+// This is used in uint64_to_str() and double_to_str().
+#ifdef DOSLIKE
+#	define THOUSAND ""
+#else
+#	define THOUSAND "'"
+#endif
+
+
 extern void *
 xrealloc(void *ptr, size_t size)
 {
@@ -115,6 +124,31 @@ error:
 	message_fatal(_("Value of the option `%s' must be in the range "
 				"[%" PRIu64 ", %" PRIu64 "]"),
 				name, min, max);
+}
+
+
+extern const char *
+uint64_to_str(uint64_t value, uint32_t slot)
+{
+	// 2^64 with thousand separators is 26 bytes plus trailing '\0'.
+	static char bufs[4][32];
+
+	assert(slot < ARRAY_SIZE(bufs));
+
+	snprintf(bufs[slot], sizeof(bufs[slot]), "%" THOUSAND PRIu64, value);
+	return bufs[slot];
+}
+
+
+extern const char *
+double_to_str(double value)
+{
+	// 64 bytes is surely enough, since it won't fit in some other
+	// fields anyway.
+	static char buf[64];
+
+	snprintf(buf, sizeof(buf), "%" THOUSAND ".1f", value);
+	return buf;
 }
 
 

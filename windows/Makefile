@@ -283,24 +283,17 @@ XZ_SRCS = \
 	../src/xz/suffix.c \
 	../src/xz/util.c
 
-XZ_SRCS_FIXED = $(XZ_SRCS:.c=-fixed.c)
 XZ_OBJS = $(XZ_SRCS:.c=.o)
 XZ_OBJS_STATIC = $(XZ_SRCS:.c=-static.o)
 
-$(XZ_SRCS_FIXED): %-fixed.c: %.c
-	$(SED) "s/%'/%/g" $< > $@
-
-# We need to "fix" the source files which use ' as format character
-# in printf() to get thousand separators. Windows doesn't support it.
-# It's not in C89 or C99, but it is in POSIX.
-$(XZ_OBJS): %.o: %-fixed.c
+$(XZ_OBJS): %.o: %.c
 	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 xz-dynamic.exe: liblzma.dll $(XZ_OBJS) xz_rc.o
 	$(CC) $(ALL_CFLAGS) $(XZ_OBJS) xz_rc.o -o $@ liblzma.a
 	$(STRIP) --strip-all $@
 
-$(XZ_OBJS_STATIC): %-static.o: %-fixed.c
+$(XZ_OBJS_STATIC): %-static.o: %.c
 	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
 xz.exe: liblzma_static.lib $(XZ_OBJS_STATIC) xz_rc.o
@@ -309,4 +302,4 @@ xz.exe: liblzma_static.lib $(XZ_OBJS_STATIC) xz_rc.o
 
 .PHONY: xz-clean
 xz-clean:
-	-$(RM) $(XZ_OBJS) $(XZ_OBJS_STATIC) $(XZ_SRCS_FIXED) xz_rc.o xz-dynamic.exe xz.exe
+	-$(RM) $(XZ_OBJS) $(XZ_OBJS_STATIC) xz_rc.o xz-dynamic.exe xz.exe

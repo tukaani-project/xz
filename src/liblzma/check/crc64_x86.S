@@ -100,8 +100,14 @@ LZMA_CRC64:
 	 * by GCC but only on some systems. Testing for both makes it simpler
 	 * to test this code without libtool, and keeps the code working also
 	 * when built with libtool but using something else than GCC.
+	 *
+	 * I understood that libtool may define PIC on Windows even though
+	 * the code in Windows DLLs is not PIC in sense that it is in ELF
+	 * binaries, so we need a separate check to always use the non-PIC
+	 * code on Windows.
 	 */
-#if !defined(PIC) && !defined(__PIC__)
+#if (!defined(PIC) && !defined(__PIC__)) \
+		|| (defined(_WIN32) || defined(__CYGWIN__))
 	/* Not PIC */
 	movl	$LZMA_CRC64_TABLE, %ebx
 #elif defined(__MACH__)

@@ -49,17 +49,22 @@ endif
 xz_LDADD += $(LTLIBINTL)
 
 
-## Create symlinks for unxz and xzcat for convenicen. Create symlinks also
+## Create symlinks for unxz and xzcat for convenience. Create symlinks also
 ## for lzma, unlzma, and lzcat for compatibility with LZMA Utils 4.32.x.
+xzlinks = unxz xzcat lzma unlzma lzcat
+
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
-	rm -f unxz xzcat lzma unlzma lzcat && \
-	$(LN_S) xz unxz && \
-	$(LN_S) xz xzcat && \
-	$(LN_S) xz lzma && \
-	$(LN_S) xz unlzma && \
-	$(LN_S) xz lzcat
+	target=`echo xz | $(SED) '$(transform)'` && \
+	for name in $(xzlinks); do \
+		link=`echo $$name | $(SED) '$(transform)'` && \
+		rm -f $$link && \
+		$(LN_S) $$target $$link; \
+	done
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
-	rm -f unxz xzcat lzma unlzma lzcat
+	for name in $(xzlinks); do \
+		link=`echo $$name | $(SED) '$(transform)'` && \
+		rm -f $$link; \
+	done

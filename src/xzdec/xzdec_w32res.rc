@@ -2,4 +2,4 @@
 #define MY_NAME "xzdec"
 #define MY_SUFFIX ".exe"
 #define MY_DESC "xzdec uncompression tool for .xz files"
-#include "common.rc"
+#include "common_w32res.rc"

@@ -104,7 +104,7 @@ pkg: all
 	$(CP) ../src/liblzma/api/lzma.h pkg/include
 	$(CP) ../src/liblzma/api/lzma/*.h pkg/include/lzma
 
-%_rc.o: %.rc
+%.o: %.rc
 	$(WINDRES) $(ALL_CPPFLAGS) $< $@
 
 
@@ -196,7 +196,10 @@ endif
 
 LIBLZMA_OBJS_C = $(LIBLZMA_SRCS_C:.c=.o)
 LIBLZMA_OBJS_ASM = $(LIBLZMA_SRCS_ASM:.S=.o)
-LIBLZMA_OBJS = $(LIBLZMA_OBJS_C) $(LIBLZMA_OBJS_ASM) liblzma_rc.o
+LIBLZMA_OBJS = \
+	$(LIBLZMA_OBJS_C) \
+	$(LIBLZMA_OBJS_ASM) \
+	../src/liblzma/liblzma_w32res.o
 
 LIBLZMA_OBJS_STATIC_C = $(LIBLZMA_SRCS_C:.c=-static.o)
 LIBLZMA_OBJS_STATIC_ASM = $(LIBLZMA_SRCS_ASM:.S=-static.o)
@@ -243,25 +246,25 @@ xzdec: xzdec-dynamic.exe lzmadec-dynamic.exe xzdec.exe lzmadec.exe
 
 XZDEC_SRCS = ../src/xzdec/xzdec.c
 
-xzdec-dynamic.exe: liblzma.dll $(XZDEC_SRCS) xzdec_rc.o
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) xzdec_rc.o -o $@ liblzma.a
+xzdec-dynamic.exe: liblzma.dll $(XZDEC_SRCS) ../src/xzdec/xzdec_w32res.o
+	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) ../src/xzdec/xzdec_w32res.o -o $@ liblzma.a
 	$(STRIP) --strip-all $@
 
-lzmadec-dynamic.exe: liblzma.dll $(XZDEC_SRCS) lzmadec_rc.o
-	$(CC) $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) lzmadec_rc.o -o $@ liblzma.a
+lzmadec-dynamic.exe: liblzma.dll $(XZDEC_SRCS) ../src/xzdec/lzmadec_w32res.o
+	$(CC) $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) ../src/xzdec/lzmadec_w32res.o -o $@ liblzma.a
 	$(STRIP) --strip-all $@
 
-xzdec.exe: liblzma_static.lib $(XZDEC_SRCS) xzdec_rc.o
-	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) xzdec_rc.o -o $@ liblzma_static.lib
+xzdec.exe: liblzma_static.lib $(XZDEC_SRCS) ../src/xzdec/xzdec_w32res.o
+	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) ../src/xzdec/xzdec_w32res.o -o $@ liblzma_static.lib
 	$(STRIP) --strip-all $@
 
-lzmadec.exe: liblzma_static.lib $(XZDEC_SRCS) lzmadec_rc.o
-	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) lzmadec_rc.o -o $@ liblzma_static.lib
+lzmadec.exe: liblzma_static.lib $(XZDEC_SRCS) ../src/xzdec/lzmadec_w32res.o
+	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) -DLZMADEC $(ALL_CFLAGS) $(XZDEC_SRCS) ../src/xzdec/lzmadec_w32res.o -o $@ liblzma_static.lib
 	$(STRIP) --strip-all $@
 
 .PHONY: xzdec-clean
 xzdec-clean:
-	-$(RM) xzdec-dynamic.exe lzmadec-dynamic.exe xzdec.exe lzmadec.exe xzdec_rc.o lzmadec_rc.o
+	-$(RM) xzdec-dynamic.exe lzmadec-dynamic.exe xzdec.exe lzmadec.exe ../src/xzdec/xzdec_w32res.o ../src/xzdec/lzmadec_w32res.o
 
 
 ##########
@@ -289,17 +292,17 @@ XZ_OBJS_STATIC = $(XZ_SRCS:.c=-static.o)
 $(XZ_OBJS): %.o: %.c
 	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
-xz-dynamic.exe: liblzma.dll $(XZ_OBJS) xz_rc.o
-	$(CC) $(ALL_CFLAGS) $(XZ_OBJS) xz_rc.o -o $@ liblzma.a
+xz-dynamic.exe: liblzma.dll $(XZ_OBJS) ../src/xz/xz_w32res.o
+	$(CC) $(ALL_CFLAGS) $(XZ_OBJS) ../src/xz/xz_w32res.o -o $@ liblzma.a
 	$(STRIP) --strip-all $@
 
 $(XZ_OBJS_STATIC): %-static.o: %.c
 	$(CC) -DLZMA_API_STATIC $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
 
-xz.exe: liblzma_static.lib $(XZ_OBJS_STATIC) xz_rc.o
-	$(CC) $(ALL_CFLAGS) $(XZ_OBJS_STATIC) xz_rc.o -o $@ liblzma_static.lib
+xz.exe: liblzma_static.lib $(XZ_OBJS_STATIC) ../src/xz/xz_w32res.o
+	$(CC) $(ALL_CFLAGS) $(XZ_OBJS_STATIC) ../src/xz/xz_w32res.o -o $@ liblzma_static.lib
 	$(STRIP) --strip-all $@
 
 .PHONY: xz-clean
 xz-clean:
-	-$(RM) $(XZ_OBJS) $(XZ_OBJS_STATIC) xz_rc.o xz-dynamic.exe xz.exe
+	-$(RM) $(XZ_OBJS) $(XZ_OBJS_STATIC) ../src/xz/xz_w32res.o xz-dynamic.exe xz.exe

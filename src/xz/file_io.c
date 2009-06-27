@@ -73,8 +73,11 @@ io_init(void)
 static void
 io_unlink(const char *name, const struct stat *known_st)
 {
+#ifdef DOSLIKE
 	// On Windows, st_ino is meaningless, so don't bother testing it.
-#ifndef DOSLIKE
+	// Just silence a compiler warning.
+	(void)known_st;
+#else
 	struct stat new_st;
 
 	if (lstat(name, &new_st)

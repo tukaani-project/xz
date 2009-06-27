@@ -55,7 +55,7 @@ xzlinks = unxz xzcat lzma unlzma lzcat
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
-	target=`echo xz | $(SED) '$(transform)'` && \
+	target=`echo xz | $(SED) '$(transform)'`$(EXEEXT) && \
 	for name in $(xzlinks); do \
 		link=`echo $$name | $(SED) '$(transform)'` && \
 		rm -f $$link && \

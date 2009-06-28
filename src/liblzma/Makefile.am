@@ -9,7 +9,7 @@ SUBDIRS = api common check
 
 lib_LTLIBRARIES = liblzma.la
 liblzma_la_SOURCES =
-liblzma_la_LDFLAGS = -version-info 0:0:0
+liblzma_la_LDFLAGS = -no-undefined -version-info 0:0:0
 
 liblzma_la_LIBADD = \
 	common/libcommon.la \

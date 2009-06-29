@@ -9,6 +9,9 @@
 #
 ###############################################################################
 
+# The result of using "autoreconf -fi" should be identical to using this
+# script. I'm leaving this script here just in case someone finds it useful.
+
 set -e -x
 
 ${AUTOPOINT:-autopoint} -f

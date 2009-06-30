@@ -17,7 +17,10 @@ EXTRA_DIST = \
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
-	-I$(top_builddir)/lib
+	-I$(top_builddir)/lib \
+	$(STATIC_CPPFLAGS)
+
+AM_LDFLAGS = $(STATIC_LDFLAGS)
 
 LDADD = $(top_builddir)/src/liblzma/liblzma.la
 

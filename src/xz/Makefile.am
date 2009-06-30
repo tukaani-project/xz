@@ -30,12 +30,15 @@ xz_SOURCES = \
 	util.c \
 	util.h
 
+if COND_W32
+xz_SOURCES += xz_w32res.rc
+endif
+
 xz_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
 	-I$(top_builddir)/lib \
-	-I$(top_srcdir)/lib \
 	$(STATIC_CPPFLAGS)
 
 xz_LDFLAGS = $(STATIC_LDFLAGS)
@@ -47,6 +50,12 @@ endif
 
 # libgnu.a may need these libs, so this must be after libgnu.a.
 xz_LDADD += $(LTLIBINTL)
+
+
+# Windows resource compiler support
+.rc.o:
+	$(RC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+		$(xz_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) -i $< -o $@
 
 
 ## Create symlinks for unxz and xzcat for convenience. Create symlinks also

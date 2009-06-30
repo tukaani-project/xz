@@ -13,12 +13,16 @@
 #ifndef LZMA_COMMON_H
 #define LZMA_COMMON_H
 
-#include "../../common/sysdefs.h"
-#include "../../common/mythread.h"
-#include "../../common/integer.h"
+#include "sysdefs.h"
+#include "mythread.h"
+#include "integer.h"
 
-#if defined(DLL_EXPORT) && (defined(_WIN32) || defined(__CYGWIN__))
-#	define LZMA_API_EXPORT __declspec(dllexport)
+#if defined(_WIN32) || defined(__CYGWIN__)
+#	ifdef DLL_EXPORT
+#		define LZMA_API_EXPORT __declspec(dllexport)
+#	else
+#		define LZMA_API_EXPORT
+#	endif
 // Don't use ifdef or defined() below.
 #elif HAVE_VISIBILITY
 #	define LZMA_API_EXPORT __attribute__((__visibility__("default")))

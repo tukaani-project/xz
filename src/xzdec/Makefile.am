@@ -5,9 +5,21 @@
 ## You can do whatever you want with this file.
 ##
 
+# Windows resource compiler support. It's fine to use xz_CPPFLAGS
+# also for lzmadec.
+.rc.o:
+	$(RC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+		$(xzdec_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) -i $< -o $@
+
+
 bin_PROGRAMS = xzdec lzmadec
 
 xzdec_SOURCES = xzdec.c
+
+if COND_W32
+xzdec_SOURCES += xzdec_w32res.rc
+endif
+
 xzdec_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
@@ -23,10 +35,16 @@ endif
 xzdec_LDADD += $(LTLIBINTL)
 
 
-lzmadec_SOURCES = $(xzdec_SOURCES)
+lzmadec_SOURCES = xzdec.c
+
+if COND_W32
+lzmadec_SOURCES += lzmadec_w32res.rc
+endif
+
 lzmadec_CPPFLAGS = $(xzdec_CPPFLAGS) -DLZMADEC
 lzmadec_LDFLAGS = $(xzdec_LDFLAGS)
 lzmadec_LDADD = $(xzdec_LDADD)
+
 
 dist_man_MANS = xzdec.1
 

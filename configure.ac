@@ -31,6 +31,13 @@ echo "System type:"
 # This is needed to know if assembler optimizations can be used.
 AC_CANONICAL_HOST
 
+# We do some special things on Windows (32-bit or 64-bit) builds.
+case $host_os in
+	mingw* | cygwin*) is_w32=yes ;;
+	*)                is_w32=no ;;
+esac
+AM_CONDITIONAL([COND_W32], [test "$is_w32" = yes])
+
 
 echo
 echo "Configure options:"
@@ -436,6 +443,12 @@ dnl lines can be replaced with these:
 dnl LT_INIT([win32-dll])
 dnl LT_LANG([Windows Resource])
 
+# This is a bit wrong since it is possible to request that only some libs
+# are built as shared. Using that feature isn't so common though, and this
+# breaks only on Windows (at least for now) if the user enables only some
+# libs as shared.
+AM_CONDITIONAL([COND_SHARED], [test "x$enable_shared" != xno])
+
 
 ###############################################################################
 # Checks for libraries.
@@ -544,9 +557,16 @@ lc_CPUCORES
 if test "x$GCC" = xyes ; then
 	echo
 	echo "GCC extensions:"
-	gl_VISIBILITY
-	if test -n "$CFLAG_VISIBILITY" ; then
-		AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
+
+	# Avoid checking for visibility support on Windows, because the test
+	# may succeed even though visibility isn't supported. Windows has
+	# a different way to export only the required symbols from the
+	# libraries.
+	if test "$is_w32" = no; then
+		gl_VISIBILITY
+		if test -n "$CFLAG_VISIBILITY" ; then
+			AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
+		fi
 	fi
 
 	# Enable as much warnings as possible. These commented warnings won't
@@ -627,14 +647,6 @@ AC_CONFIG_FILES([
 	src/liblzma/liblzma.pc
 	src/liblzma/Makefile
 	src/liblzma/api/Makefile
-	src/liblzma/common/Makefile
-	src/liblzma/check/Makefile
-	src/liblzma/rangecoder/Makefile
-	src/liblzma/lz/Makefile
-	src/liblzma/lzma/Makefile
-	src/liblzma/subblock/Makefile
-	src/liblzma/delta/Makefile
-	src/liblzma/simple/Makefile
 	src/xz/Makefile
 	src/xzdec/Makefile
 	src/scripts/Makefile

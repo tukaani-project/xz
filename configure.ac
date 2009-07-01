@@ -554,21 +554,19 @@ lc_CPUCORES
 # If using GCC, set some additional AM_CFLAGS:
 ###############################################################################
 
-if test "x$GCC" = xyes ; then
+if test "$GCC" = yes ; then
 	echo
 	echo "GCC extensions:"
+fi
 
-	# Avoid checking for visibility support on Windows, because the test
-	# may succeed even though visibility isn't supported. Windows has
-	# a different way to export only the required symbols from the
-	# libraries.
-	if test "$is_w32" = no; then
-		gl_VISIBILITY
-		if test -n "$CFLAG_VISIBILITY" ; then
-			AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
-		fi
-	fi
+# Always do the visibility check but don't set AM_CFLAGS on Windows.
+# This way things get set properly even on Windows.
+gl_VISIBILITY
+if test -n "$CFLAG_VISIBILITY" && test "$is_w32" = no; then
+	AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
+fi
 
+if test "$GCC" = yes ; then
 	# Enable as much warnings as possible. These commented warnings won't
 	# work for this package though:
 	#   * -Wunreachable-code breaks several assert(0) cases, which are

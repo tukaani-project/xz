@@ -1015,7 +1015,7 @@ message_version(void)
 {
 	// It is possible that liblzma version is different than the command
 	// line tool version, so print both.
-	printf("xz " LZMA_VERSION_STRING "\n");
+	printf("xz (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n");
 	printf("liblzma %s\n", lzma_version_string());
 	my_exit(E_SUCCESS);
 }
@@ -1166,7 +1166,7 @@ message_help(bool long_help)
 
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
 			PACKAGE_BUGREPORT);
-	printf(_("XZ Utils home page: <http://tukaani.org/xz/>\n"));
+	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_HOMEPAGE);
 
 	my_exit(E_SUCCESS);
 }

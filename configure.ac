@@ -23,6 +23,11 @@ AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
+PACKAGE_HOMEPAGE=http://tukaani.org/xz/
+AC_DEFINE_UNQUOTED([PACKAGE_HOMEPAGE], ["$PACKAGE_HOMEPAGE"],
+	[Define to the URL of the home page of this package.])
+AC_SUBST([PACKAGE_HOMEPAGE])
+
 echo
 echo "$PACKAGE_STRING"
 

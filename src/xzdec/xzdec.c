@@ -108,7 +108,7 @@ help(void)
 "%" PRIu64 " MiB RAM.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n"
-"XZ Utils home page: <http://tukaani.org/xz/>\n",
+PACKAGE_NAME " home page: <" PACKAGE_HOMEPAGE ">\n",
 		argv0, memlimit / (1024 * 1024));
 	my_exit();
 }
@@ -117,7 +117,7 @@ help(void)
 static void lzma_attribute((noreturn))
 version(void)
 {
-	printf(TOOL_FORMAT "dec " LZMA_VERSION_STRING "\n"
+	printf(TOOL_FORMAT "dec (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n"
 			"liblzma %s\n", lzma_version_string());
 
 	my_exit();

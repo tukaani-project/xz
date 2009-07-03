@@ -13,6 +13,14 @@
 #include "private.h"
 
 
+/// Return value type for coder_init().
+enum coder_init_ret {
+	CODER_INIT_NORMAL,
+	CODER_INIT_PASSTHRU,
+	CODER_INIT_ERROR,
+};
+
+
 enum operation_mode opt_mode = MODE_COMPRESS;
 
 enum format_type opt_format = FORMAT_AUTO;
@@ -23,6 +31,10 @@ static lzma_stream strm = LZMA_STREAM_INIT;
 
 /// Filters needed for all encoding all formats, and also decoding in raw data
 static lzma_filter filters[LZMA_FILTERS_MAX + 1];
+
+/// Input and output buffers
+static uint8_t in_buf[IO_BUFFER_SIZE];
+static uint8_t out_buf[IO_BUFFER_SIZE];
 
 /// Number of filters. Zero indicates that we are using a preset.
 static size_t filters_count = 0;
@@ -251,8 +263,69 @@ coder_set_compression_settings(void)
 }
 
 
+/// Return true if the data in in_buf seems to be in the .xz format.
 static bool
-coder_init(void)
+is_format_xz(void)
+{
+	return strm.avail_in >= 6 && memcmp(in_buf, "\3757zXZ", 6) == 0;
+}
+
+
+/// Return true if the data in in_buf seems to be in the .lzma format.
+static bool
+is_format_lzma(void)
+{
+	// The .lzma header is 13 bytes.
+	if (strm.avail_in < 13)
+		return false;
+
+	// Decode the LZMA1 properties.
+	lzma_filter filter = { .id = LZMA_FILTER_LZMA1 };
+	if (lzma_properties_decode(&filter, NULL, in_buf, 5) != LZMA_OK)
+		return false;
+
+	// A hack to ditch tons of false positives: We allow only dictionary
+	// sizes that are 2^n or 2^n + 2^(n-1) or UINT32_MAX. LZMA_Alone
+	// created only files with 2^n, but accepts any dictionary size.
+	// If someone complains, this will be reconsidered.
+	lzma_options_lzma *opt = filter.options;
+	const uint32_t dict_size = opt->dict_size;
+	free(opt);
+
+	if (dict_size != UINT32_MAX) {
+		uint32_t d = dict_size - 1;
+		d |= d >> 2;
+		d |= d >> 3;
+		d |= d >> 4;
+		d |= d >> 8;
+		d |= d >> 16;
+		++d;
+		if (d != dict_size || dict_size == 0)
+			return false;
+	}
+
+	// Another hack to ditch false positives: Assume that if the
+	// uncompressed size is known, it must be less than 256 GiB.
+	// Again, if someone complains, this will be reconsidered.
+	uint64_t uncompressed_size = 0;
+	for (size_t i = 0; i < 8; ++i)
+		uncompressed_size |= (uint64_t)(in_buf[5 + i]) << (i * 8);
+
+	if (uncompressed_size != UINT64_MAX
+			&& uncompressed_size > (UINT64_C(1) << 38))
+		return false;
+
+	return true;
+}
+
+
+/// Detect the input file type (for now, this done only when decompressing),
+/// and initialize an appropriate coder. Return value indicates if a normal
+/// liblzma-based coder was initialized (CODER_INIT_NORMAL), if passthru
+/// mode should be used (CODER_INIT_PASSTHRU), or if an error occurred
+/// (CODER_INIT_ERROR).
+static enum coder_init_ret
+coder_init(file_pair *pair)
 {
 	lzma_ret ret = LZMA_PROG_ERROR;
 
@@ -279,10 +352,45 @@ coder_init(void)
 		const uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK
 				| LZMA_CONCATENATED;
 
+		// We abuse FORMAT_AUTO to indicate unknown file format,
+		// for which we may consider passthru mode.
+		enum format_type init_format = FORMAT_AUTO;
+
 		switch (opt_format) {
 		case FORMAT_AUTO:
-			ret = lzma_auto_decoder(&strm,
-					hardware_memlimit_get(), flags);
+			if (is_format_xz())
+				init_format = FORMAT_XZ;
+			else if (is_format_lzma())
+				init_format = FORMAT_LZMA;
+			break;
+
+		case FORMAT_XZ:
+			if (is_format_xz())
+				init_format = FORMAT_XZ;
+			break;
+
+		case FORMAT_LZMA:
+			if (is_format_lzma())
+				init_format = FORMAT_LZMA;
+			break;
+
+		case FORMAT_RAW:
+			init_format = FORMAT_RAW;
+			break;
+		}
+
+		switch (init_format) {
+		case FORMAT_AUTO:
+			// Uknown file format. If --decompress --stdout
+			// --force have been given, then we copy the input
+			// as is to stdout. Checking for MODE_DECOMPRESS
+			// is needed, because we don't want to do use
+			// passthru mode with --test.
+			if (opt_mode == MODE_DECOMPRESS
+					&& opt_stdout && opt_force)
+				return CODER_INIT_PASSTHRU;
+
+			ret = LZMA_FORMAT_ERROR;
 			break;
 
 		case FORMAT_XZ:
@@ -304,35 +412,30 @@ coder_init(void)
 	}
 
 	if (ret != LZMA_OK) {
-		if (ret == LZMA_MEM_ERROR)
-			message_error("%s", message_strm(LZMA_MEM_ERROR));
-		else
-			message_bug();
-
-		return true;
+		message_error("%s: %s", pair->src_name, message_strm(ret));
+		return CODER_INIT_ERROR;
 	}
 
-	return false;
+	return CODER_INIT_NORMAL;
 }
 
 
+/// Compress or decompress using liblzma.
 static bool
-coder_main(file_pair *pair)
+coder_normal(file_pair *pair)
 {
-	// Buffers to hold input and output data.
-	uint8_t in_buf[IO_BUFFER_SIZE];
-	uint8_t out_buf[IO_BUFFER_SIZE];
+	// Encoder needs to know when we have given all the input to it.
+	// The decoders need to know it too when we are using
+	// LZMA_CONCATENATED. We need to check for src_eof here, because
+	// the first input chunk has been already read, and that may
+	// have been the only chunk we will read.
+	lzma_action action = pair->src_eof ? LZMA_FINISH : LZMA_RUN;
 
-	// Initialize the progress indicator.
-	const uint64_t in_size = pair->src_st.st_size <= (off_t)(0)
-			? 0 : (uint64_t)(pair->src_st.st_size);
-	message_progress_start(&strm, pair->src_name, in_size);
-
-	lzma_action action = LZMA_RUN;
 	lzma_ret ret;
-	bool success = false; // Assume that something goes wrong.
 
-	strm.avail_in = 0;
+	// Assume that something goes wrong.
+	bool success = false;
+
 	strm.next_out = out_buf;
 	strm.avail_out = IO_BUFFER_SIZE;
 
@@ -346,9 +449,6 @@ coder_main(file_pair *pair)
 			if (strm.avail_in == SIZE_MAX)
 				break;
 
-			// Encoder needs to know when we have given all the
-			// input to it. The decoders need to know it too when
-			// we are using LZMA_CONCATENATED.
 			if (pair->src_eof)
 				action = LZMA_FINISH;
 		}
@@ -457,28 +557,71 @@ coder_main(file_pair *pair)
 		message_progress_update();
 	}
 
-	message_progress_end(success);
-
 	return success;
+}
+
+
+/// Copy from input file to output file without processing the data in any
+/// way. This is used only when trying to decompress unrecognized files
+/// with --decompress --stdout --force, so the output is always stdout.
+static bool
+coder_passthru(file_pair *pair)
+{
+	while (strm.avail_in != 0) {
+		if (user_abort)
+			return false;
+
+		if (io_write(pair, in_buf, strm.avail_in))
+			return false;
+
+		strm.total_in += strm.avail_in;
+		strm.total_out = strm.total_in;
+		message_progress_update();
+
+		strm.avail_in = io_read(pair, in_buf, IO_BUFFER_SIZE);
+		if (strm.avail_in == SIZE_MAX)
+			return false;
+	}
+
+	return true;
 }
 
 
 extern void
 coder_run(const char *filename)
 {
-	// First try initializing the coder. If it fails, it's useless to try
-	// opening the file. Check also for user_abort just in case if we had
-	// got a signal while initializing the coder.
-	if (coder_init() || user_abort)
-		return;
-
 	// Try to open the input and output files.
 	file_pair *pair = io_open(filename);
 	if (pair == NULL)
 		return;
 
-	// Do the actual coding.
-	const bool success = coder_main(pair);
+	// Initialize the progress indicator.
+	const uint64_t in_size = pair->src_st.st_size <= (off_t)(0)
+			? 0 : (uint64_t)(pair->src_st.st_size);
+	message_progress_start(&strm, pair->src_name, in_size);
+
+	// Assume that something goes wrong.
+	bool success = false;
+
+	// Read the first chunk of input data. This is needed to detect
+	// the input file type (for now, only for decompression).
+	strm.next_in = in_buf;
+	strm.avail_in = io_read(pair, in_buf, IO_BUFFER_SIZE);
+
+	switch (coder_init(pair)) {
+	case CODER_INIT_NORMAL:
+		success = coder_normal(pair);
+		break;
+
+	case CODER_INIT_PASSTHRU:
+		success = coder_passthru(pair);
+		break;
+
+	case CODER_INIT_ERROR:
+		break;
+	}
+
+	message_progress_end(success);
 
 	// Close the file pair. It needs to know if coding was successful to
 	// know if the source or target file should be unlinked.

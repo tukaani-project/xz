@@ -1,7 +1,14 @@
-.\" Original file was take from gzip, thus this man page is under GNU GPLv2+.
-.TH XZDIFF 1 "2009-04-13" "XZ Utils"
+.\"
+.\" Original zdiff.1 for gzip: Jean-loup Gailly
+.\"
+.\" Modifications for XZ Utils: Lasse Collin
+.\"                             Andrew Dudman
+.\"
+.\" License: GNU GPLv2+
+.\"
+.TH XZDIFF 1 "2009-07-05" "Tukaani" "XZ Utils"
 .SH NAME
-xzcmp, xzdiff, lzcmp, lzdiff \- compare .xz and .lzma compressed files
+xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .SH SYNOPSIS
 .B xzcmp
 .RI [ cmp_options "] " file1 " [" file2 ]
@@ -18,41 +25,50 @@ xzcmp, xzdiff, lzcmp, lzdiff \- compare .xz and .lzma compressed files
 .B  xzcmp
 and
 .B xdiff
-are used to invoke the
+invoke
 .BR cmp (1)
-or the
+or
 .BR diff (1)
-program on compressed files.  All options specified are passed directly to
+on files compressed with
+.BR xz (1),
+.BR lzma (1),
+.BR gzip (1),
+or
+.BR bzip2 (1).
+All options specified are passed directly to
 .B cmp
 or
-.BR diff "."
-If only 1 file is specified, then the files compared are
+.BR diff .
+If only one file is specified, then the files compared are
 .I file1
-(which must have .xz or .lzma suffix) and
+(which must have a suffix of a supported compression format) and
 .I file1
-from which the .xz or .lzma suffix has been stripped.
+from which the compression format suffix has been stripped.
 If two files are specified, then they are uncompressed if necessary and fed to
-.B cmp
+.BR cmp (1)
 or
-.BR diff "."
+.BR diff (1).
 The exit status from
 .B cmp
 or
 .B diff
 is preserved.
-.SH AUTHORS
-This manual page was ripped from
-.BR zdiff (1)
-shipped in gzip package.
+.PP
+The names
+.B lzcmp
+and
+.B lzdiff
+are provided for backward compatibility with LZMA Utils.
 .SH "SEE ALSO"
 .BR cmp (1),
 .BR diff (1),
-.BR xzmore(1),
-.BR xzgrep(1),
-.BR xz (1)
+.BR xz (1),
+.BR gzip (1),
+.BR bzip2 (1),
+.BR zdiff (1)
 .SH BUGS
 Messages from the
-.B cmp
+.BR cmp (1)
 or
-.B diff
+.BR diff (1)
 programs refer to temporary filenames instead of those specified.

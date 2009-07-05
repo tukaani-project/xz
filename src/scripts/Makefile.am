@@ -5,8 +5,8 @@
 ## You can do whatever you want with this file.
 ##
 
-dist_bin_SCRIPTS = xzdiff xzgrep xzmore
-dist_man_MANS = xzdiff.1 xzgrep.1 xzmore.1
+nodist_bin_SCRIPTS = xzdiff xzgrep xzmore xzless
+dist_man_MANS = xzdiff.1 xzgrep.1 xzmore.1 xzless.1
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
@@ -22,9 +22,9 @@ install-exec-hook:
 		rm -f $$link && \
 		$(LN_S) $$target $$link; \
 	done && \
-	target=`echo xzmore | $(SED) '$(transform)'` && \
-	for name in xzless lzmore lzless; do \
-		link=`echo $$name | $(SED) '$(transform)'` && \
+	for name in xzmore xzless; do \
+		target=`echo $$name | $(SED) '$(transform)'` && \
+		link=`echo $$name | $(SED) 's/xz/lz/;$(transform)'` && \
 		rm -f $$link && \
 		$(LN_S) $$target $$link; \
 	done
@@ -43,23 +43,23 @@ install-data-hook:
 		rm -f $$link.1 && \
 		$(LN_S) $$target.1 $$link.1; \
 	done && \
-	target=`echo xzmore | $(SED) '$(transform)'` && \
-	for name in xzless lzmore lzless; do \
-		link=`echo $$name | $(SED) '$(transform)'` && \
+	for name in xzmore xzless; do \
+		target=`echo $$name | $(SED) '$(transform)'` && \
+		link=`echo $$name | $(SED) 's/xz/lz/;$(transform)'` && \
 		rm -f $$link.1 && \
 		$(LN_S) $$target.1 $$link.1; \
 	done
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
-	for name in xzcmp lzdiff lzcmp xzgrep xzegrep xzfgrep \
-			lzgrep lzegrep lzfgrep xzless lzmore lzless; do \
+	for name in xzcmp lzdiff lzcmp xzegrep xzfgrep \
+			lzgrep lzegrep lzfgrep lzmore lzless; do \
 		link=`echo $$name | $(SED) '$(transform)'` && \
 		rm -f $$link; \
 	done
 	cd $(DESTDIR)$(mandir)/man1 && \
-	for name in xzcmp lzdiff lzcmp xzgrep xzegrep xzfgrep \
-			lzgrep lzegrep lzfgrep xzless lzmore lzless; do \
+	for name in xzcmp lzdiff lzcmp xzegrep xzfgrep \
+			lzgrep lzegrep lzfgrep lzmore lzless; do \
 		link=`echo $$name | $(SED) '$(transform)'` && \
 		rm -f $$link.1; \
 	done

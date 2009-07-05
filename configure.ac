@@ -412,6 +412,12 @@ AC_SUBST([STATIC_LDFLAGS])
 ###############################################################################
 
 echo
+gl_POSIX_SHELL
+if test -z "$POSIX_SHELL" ; then
+	AC_MSG_ERROR([No POSIX conforming shell (sh) was found.])
+fi
+
+echo
 echo "Initializing Automake:"
 
 AM_INIT_AUTOMAKE([1.10 foreign tar-v7 filename-length-max=99])
@@ -641,6 +647,10 @@ AM_CONDITIONAL([COND_GNULIB], test -n "$LIBOBJS")
 # Add default AM_CFLAGS.
 AC_SUBST([AM_CFLAGS])
 
+# This is needed for src/scripts.
+xz=`echo xz | sed "$program_transform_name"`
+AC_SUBST([xz])
+
 AC_CONFIG_FILES([
 	Doxyfile
 	Makefile
@@ -653,6 +663,10 @@ AC_CONFIG_FILES([
 	src/xz/Makefile
 	src/xzdec/Makefile
 	src/scripts/Makefile
+	src/scripts/xzdiff
+	src/scripts/xzgrep
+	src/scripts/xzmore
+	src/scripts/xzless
 	tests/Makefile
 	debug/Makefile
 ])

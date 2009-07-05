@@ -1,66 +1,54 @@
-.\" Original file was take from gzip, thus this man page is under GNU GPLv2+.
-.TH XZMORE 1 "2009-04-13" "XZ Utils"
+.\"
+.\" Original zdiff.1 for gzip: Jean-loup Gailly
+.\" Modifications for XZ Utils: Lasse Collin
+.\"
+.\" License: GNU GPLv2+
+.\"
+.TH XZMORE 1 "2009-07-05" "Tukaani" "XZ Utils"
 .SH NAME
-xzmore, xzless, lzmore, lzless \- view .xz or .lzma compressed (text) files
+xzmore, lzmore \- view xz or lzma compressed (text) files
 .SH SYNOPSIS
 .B xzmore
 .RI [ "filename ..."  ]
 .br
-.B xzless
-.RI [ "filename ..."  ]
-.br
 .B lzmore
-.RI [ "filename ..."  ]
-.br
-.B lzless
 .RI [ "filename ..."  ]
 .SH DESCRIPTION
 .B  xzmore
-is a filter which allows examination of .xz or .lzma compressed text files
-one screenful at a time on a soft-copy terminal.
+is a filter which allows examination of
+.BR xz (1)
+or
+.BR lzma (1)
+compressed text files one screenful at a time on a soft-copy terminal.
 .PP
 To use a pager other than the default
 .B more,
 set environment variable
 .B PAGER
-to the name of the desired program, such as
-.BR less .
-If
-.B xzmore
-is called as
-.B xzless
-then
-.B less
-is used as the
-.BR PAGER .
-The names
+to the name of the desired program.
+The name
 .B lzmore
-and
-.B lzless
-are provided for backward compatibility with LZMA Utils.
+is provided for backward compatibility with LZMA Utils.
 .TP
 .BR e " or " q
 When the prompt --More--(Next file:
 .IR file )
-is printed, this command causes xzmore to exit.
+is printed, this command causes
+.B xzmore
+to exit.
 .TP
 .B s
 When the prompt --More--(Next file:
 .IR file )
-is printed, this command causes zmore to skip the next file and continue.
+is printed, this command causes
+.B xzmore
+to skip the next file and continue.
 .PP
 For list of keyboard commands supported while actually viewing the
 content of a file, refer to manual of the pager you use, usually
-.BR more (1)
-or
-.BR less (1).
-.SH AUTHORS
-This manual page was ripped from
-.BR zmore (1)
-shipped in gzip package.
+.BR more (1).
 .SH "SEE ALSO"
 .BR more (1),
-.BR zmore (1),
-.BR xzdiff (1),
-.BR xzgrep (1),
-.BR xz (1)
+.BR xz (1),
+.BR xzless (1),
+.BR zmore (1)

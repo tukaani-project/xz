@@ -64,9 +64,9 @@ xzlinks = unxz xzcat lzma unlzma lzcat
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
-	target=`echo xz | $(SED) '$(transform)'`$(EXEEXT) && \
+	target=`echo xz | sed '$(transform)'`$(EXEEXT) && \
 	for name in $(xzlinks); do \
-		link=`echo $$name | $(SED) '$(transform)'` && \
+		link=`echo $$name | sed '$(transform)'` && \
 		rm -f $$link && \
 		$(LN_S) $$target $$link; \
 	done
@@ -74,6 +74,6 @@ install-exec-hook:
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
 	for name in $(xzlinks); do \
-		link=`echo $$name | $(SED) '$(transform)'` && \
+		link=`echo $$name | sed '$(transform)'` && \
 		rm -f $$link; \
 	done

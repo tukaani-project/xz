@@ -70,7 +70,7 @@ endif
 # Remove ordinals from the generated .def file. People must link by name,
 # not by ordinal, because no one is going to track the ordinal numbers.
 liblzma.def: liblzma.la liblzma.def.in
-	$(SED) 's/ \+@ *[0-9]\+//' liblzma.def.in > liblzma.def
+	sed 's/ \+@ *[0-9]\+//' liblzma.def.in > liblzma.def
 
 # Creating liblzma.def.in is a side effect of linking the library.
 liblzma.def.in: liblzma.la

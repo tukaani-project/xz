@@ -50,12 +50,12 @@ dist_man_MANS = xzdec.1
 
 install-data-hook:
 	cd $(DESTDIR)$(mandir)/man1 && \
-	target=`echo xzdec | $(SED) '$(transform)'` && \
-	link=`echo lzmadec | $(SED) '$(transform)'` && \
+	target=`echo xzdec | sed '$(transform)'` && \
+	link=`echo lzmadec | sed '$(transform)'` && \
 	rm -f $$link.1 && \
 	$(LN_S) $$target.1 $$link.1
 
 uninstall-hook:
 	cd $(DESTDIR)$(mandir)/man1 && \
-	link=`echo lzmadec | $(SED) '$(transform)'` && \
+	link=`echo lzmadec | sed '$(transform)'` && \
 	rm -f $$link.1

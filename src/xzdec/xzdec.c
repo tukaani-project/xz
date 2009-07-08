@@ -95,7 +95,6 @@ help(void)
 "  -c, --stdout       (ignored)\n"
 "  -d, --decompress   (ignored)\n"
 "  -k, --keep         (ignored)\n"
-"  -f, --force        (ignored)\n"
 "  -M, --memory=NUM   use NUM bytes of memory at maximum (0 means default)\n"
 "  -q, --quiet        specify *twice* to suppress errors\n"
 "  -Q, --no-warn      (ignored)\n"
@@ -233,13 +232,12 @@ str_to_uint64(const char *value, uint64_t max)
 static void
 parse_options(int argc, char **argv)
 {
-	static const char short_opts[] = "cdkfM:hqQV";
+	static const char short_opts[] = "cdkM:hqQV";
 	static const struct option long_opts[] = {
 		{ "stdout",       no_argument,         NULL, 'c' },
 		{ "to-stdout",    no_argument,         NULL, 'c' },
 		{ "decompress",   no_argument,         NULL, 'd' },
 		{ "uncompress",   no_argument,         NULL, 'd' },
-		{ "force",        no_argument,         NULL, 'f' },
 		{ "keep",         no_argument,         NULL, 'k' },
 		{ "memory",       required_argument,   NULL, 'M' },
 		{ "quiet",        no_argument,         NULL, 'q' },
@@ -256,7 +254,6 @@ parse_options(int argc, char **argv)
 		switch (c) {
 		case 'c':
 		case 'd':
-		case 'f':
 		case 'k':
 		case 'Q':
 			break;

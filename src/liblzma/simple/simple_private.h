@@ -70,6 +70,7 @@ extern lzma_ret lzma_simple_coder_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters,
 		size_t (*filter)(lzma_simple *simple, uint32_t now_pos,
 			bool is_encoder, uint8_t *buffer, size_t size),
-		size_t simple_size, size_t unfiltered_max, bool is_encoder);
+		size_t simple_size, size_t unfiltered_max,
+		uint32_t alignment, bool is_encoder);
 
 #endif

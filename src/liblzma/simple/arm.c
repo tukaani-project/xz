@@ -49,7 +49,7 @@ arm_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters, bool is_encoder)
 {
 	return lzma_simple_coder_init(next, allocator, filters,
-			&arm_code, 0, 4, is_encoder);
+			&arm_code, 0, 4, 4, is_encoder);
 }
 
 

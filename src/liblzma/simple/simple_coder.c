@@ -215,7 +215,8 @@ lzma_simple_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters,
 		size_t (*filter)(lzma_simple *simple, uint32_t now_pos,
 			bool is_encoder, uint8_t *buffer, size_t size),
-		size_t simple_size, size_t unfiltered_max, bool is_encoder)
+		size_t simple_size, size_t unfiltered_max,
+		uint32_t alignment, bool is_encoder)
 {
 	// Allocate memory for the lzma_coder structure if needed.
 	if (next->coder == NULL) {
@@ -249,6 +250,8 @@ lzma_simple_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	if (filters[0].options != NULL) {
 		const lzma_options_bcj *simple = filters[0].options;
 		next->coder->now_pos = simple->start_offset;
+		if (next->coder->now_pos & (alignment - 1))
+			return LZMA_OPTIONS_ERROR;
 	} else {
 		next->coder->now_pos = 0;
 	}

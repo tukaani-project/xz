@@ -465,19 +465,23 @@ args_parse(args_info *args, int argc, char **argv)
 		// NOTE: It's possible that name[0] is now '\0' if argv[0]
 		// is weird, but it doesn't matter here.
 
-		// If the command name contains "lz",
-		// it implies --format=lzma.
-		if (strstr(name, "lz") != NULL)
-			opt_format = FORMAT_LZMA;
-
-		// Operation mode
-		if (strstr(name, "cat") != NULL) {
-			// Imply --decompress --stdout
+		// Look for full command names instead of substrings like
+		// "un", "cat", and "lz" to reduce possibility of false
+		// positives when the programs have been renamed.
+		if (strstr(name, "xzcat") != NULL) {
 			opt_mode = MODE_DECOMPRESS;
 			opt_stdout = true;
-		} else if (strstr(name, "un") != NULL) {
-			// Imply --decompress
+		} else if (strstr(name, "unxz") != NULL) {
 			opt_mode = MODE_DECOMPRESS;
+		} else if (strstr(name, "lzcat") != NULL) {
+			opt_format = FORMAT_LZMA;
+			opt_mode = MODE_DECOMPRESS;
+			opt_stdout = true;
+		} else if (strstr(name, "unlzma") != NULL) {
+			opt_format = FORMAT_LZMA;
+			opt_mode = MODE_DECOMPRESS;
+		} else if (strstr(name, "lzma") != NULL) {
+			opt_format = FORMAT_LZMA;
 		}
 	}
 

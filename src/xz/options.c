@@ -37,8 +37,13 @@ typedef struct {
 /// Each option is a string, that is converted to an integer using the
 /// index where the option string is in the array.
 ///
-/// Value can be either a number with minimum and maximum value limit, or
-/// a string-id map mapping a list of possible string values to integers.
+/// Value can be
+///  - a string-id map mapping a list of possible string values to integers
+///    (opts[i].map != NULL, opts[i].min and opts[i].max are ignored);
+///  - a number with minimum and maximum value limit
+///    (opts[i].map == NULL && opts[i].min != UINT64_MAX);
+///  - a string that will be parsed by the filter-specific code
+///    (opts[i].map == NULL && opts[i].min == UINT64_MAX, opts[i].max ignored)
 ///
 /// When parsing both option and value succeed, a filter-specific function
 /// is called, which should update the given value to filter-specific
@@ -54,7 +59,7 @@ typedef struct {
 static void
 parse_options(const char *str, const option_map *opts,
 		void (*set)(void *filter_options,
-			uint32_t key, uint64_t value),
+			uint32_t key, uint64_t value, const char *valuestr),
 		void *filter_options)
 {
 	if (str == NULL || str[0] == '\0')
@@ -82,12 +87,7 @@ parse_options(const char *str, const option_map *opts,
 			if (strcmp(name, opts[i].name) != 0)
 				continue;
 
-			if (opts[i].map == NULL) {
-				// value is an integer.
-				const uint64_t v = str_to_uint64(name, value,
-						opts[i].min, opts[i].max);
-				set(filter_options, i, v);
-			} else {
+			if (opts[i].map != NULL) {
 				// value is a string which we should map
 				// to an integer.
 				size_t j;
@@ -101,7 +101,19 @@ parse_options(const char *str, const option_map *opts,
 					message_fatal(_("%s: Invalid option "
 							"value"), value);
 
-				set(filter_options, i, opts[i].map[j].id);
+				set(filter_options, i, opts[i].map[j].id,
+						value);
+
+			} else if (opts[i].min == UINT64_MAX) {
+				// value is a special string that will be
+				// parsed by set().
+				set(filter_options, i, 0, value);
+
+			} else {
+				// value is an integer.
+				const uint64_t v = str_to_uint64(name, value,
+						opts[i].min, opts[i].max);
+				set(filter_options, i, v, value);
 			}
 
 			found = true;
@@ -134,7 +146,8 @@ enum {
 
 
 static void
-set_subblock(void *options, uint32_t key, uint64_t value)
+set_subblock(void *options, uint32_t key, uint64_t value,
+		const char *valuestr lzma_attribute((unused)))
 {
 	lzma_options_subblock *opt = options;
 
@@ -192,7 +205,8 @@ enum {
 
 
 static void
-set_delta(void *options, uint32_t key, uint64_t value)
+set_delta(void *options, uint32_t key, uint64_t value,
+		const char *valuestr lzma_attribute((unused)))
 {
 	lzma_options_delta *opt = options;
 	switch (key) {
@@ -235,7 +249,8 @@ enum {
 
 
 static void
-set_bcj(void *options, uint32_t key, uint64_t value)
+set_bcj(void *options, uint32_t key, uint64_t value,
+		const char *valuestr lzma_attribute((unused)))
 {
 	lzma_options_bcj *opt = options;
 	switch (key) {
@@ -282,17 +297,42 @@ enum {
 };
 
 
+static void lzma_attribute((noreturn))
+error_lzma_preset(const char *valuestr)
+{
+	message_fatal(_("Unsupported LZMA1/LZMA2 preset: %s"), valuestr);
+}
+
+
 static void
-set_lzma(void *options, uint32_t key, uint64_t value)
+set_lzma(void *options, uint32_t key, uint64_t value, const char *valuestr)
 {
 	lzma_options_lzma *opt = options;
 
 	switch (key) {
-	case OPT_PRESET:
-		if (lzma_lzma_preset(options, (uint32_t)(value)))
-			message_fatal("LZMA1/LZMA2 preset %u is not supported",
-					(unsigned int)(value));
+	case OPT_PRESET: {
+		if (valuestr[0] < '0' || valuestr[0] > '9')
+			error_lzma_preset(valuestr);
+
+		uint32_t preset = valuestr[0] - '0';
+
+		// Currently only "e" is supported as a modifier,
+		// so keep this simple for now.
+		if (valuestr[1] != '\0') {
+			if (valuestr[1] == 'e')
+				preset |= LZMA_PRESET_EXTREME;
+			else
+				error_lzma_preset(valuestr);
+
+			if (valuestr[2] != '\0')
+				error_lzma_preset(valuestr);
+		}
+
+		if (lzma_lzma_preset(options, preset))
+			error_lzma_preset(valuestr);
+
 		break;
+	}
 
 	case OPT_DICT:
 		opt->dict_size = value;
@@ -348,7 +388,7 @@ options_lzma(const char *str)
 	};
 
 	static const option_map opts[] = {
-		{ "preset", NULL,   0, 9 },
+		{ "preset", NULL,   UINT64_MAX, 0 },
 		{ "dict",   NULL,   LZMA_DICT_SIZE_MIN,
 				(UINT32_C(1) << 30) + (UINT32_C(1) << 29) },
 		{ "lc",     NULL,   LZMA_LCLP_MIN, LZMA_LCLP_MAX },
@@ -361,8 +401,6 @@ options_lzma(const char *str)
 		{ NULL,     NULL,   0, 0 }
 	};
 
-	// TODO There should be a way to take some preset as the base for
-	// custom settings.
 	lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
 	*options = (lzma_options_lzma){
 		.dict_size = LZMA_DICT_SIZE_DEFAULT,

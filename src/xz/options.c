@@ -69,6 +69,13 @@ parse_options(const char *str, const option_map *opts,
 	char *name = s;
 
 	while (true) {
+		if (*name == ',') {
+			if (*++name == '\0')
+				break;
+
+			continue;
+		}
+
 		char *split = strchr(name, ',');
 		if (split != NULL)
 			*split = '\0';

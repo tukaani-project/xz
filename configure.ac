@@ -20,8 +20,9 @@ AC_PREREQ([2.61])
 AC_INIT([XZ Utils], m4_esyscmd([/bin/sh version.sh]),
 	[lasse.collin@tukaani.org], [xz])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADER([config.h])
 
 PACKAGE_HOMEPAGE=http://tukaani.org/xz/
 AC_DEFINE_UNQUOTED([PACKAGE_HOMEPAGE], ["$PACKAGE_HOMEPAGE"],

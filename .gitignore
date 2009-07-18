@@ -9,6 +9,7 @@ Makefile.in
 /autom4te.cache
 /Doxyfile
 /aclocal.m4
+/build-aux
 /compile
 /config.guess
 /config.h

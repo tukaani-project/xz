@@ -16,7 +16,6 @@ SUBDIRS += src po tests
 
 EXTRA_DIST = \
 	version.sh \
-	config.rpath \
 	Doxyfile.in \
 	extra \
 	doc \

@@ -1,3 +1,10 @@
+/*
+ * Author: Lasse Collin
+ *
+ * This file has been put into the public domain.
+ * You can do whatever you want with this file.
+ */
+
 #include <winresrc.h>
 #include "config.h"
 #define LZMA_H_INTERNAL
@@ -25,7 +32,7 @@ VS_VERSION_INFO VERSIONINFO
   FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
-    BEGIN 
+    BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "Comments", MY_COMMENTS

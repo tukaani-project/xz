@@ -2,6 +2,7 @@
 
 # Copyright (C) 1998, 2002, 2006, 2007 Free Software Foundation
 
+# The original version for gzip was written by Paul Eggert.
 # Modified for XZ Utils by Andrew Dudman and Lasse Collin.
 
 # This program is free software; you can redistribute it and/or modify

@@ -2,89 +2,121 @@
 XZ Utils
 ========
 
-Important
-
-    This is a beta version. The .xz file format is now stable though,
-    which means that files created with the beta version will be
-    decompressible with all future XZ Utils versions too (assuming
-    that there are no catastrophic bugs).
-
-    liblzma API is pretty stable now, although minor tweaks may still
-    be done if really needed. The ABI is not stable yet. The major
-    soname will be bumped right before the first stable release.
-    Probably it will be bumped to something like .so.5.0.0 because
-    some distributions using the alpha versions already had to use
-    other versions than .so.0.0.0.
-
-    Excluding the Doxygen style docs in liblzma API headers, the
-    documentation in this package (including the rest of this
-    README) is not very up to date, and may contain incorrect or
-    misleading information.
+    0. Overview
+    1. Documentation
+       1.1. Overall documentation
+       1.2. Documentation for command line tools
+       1.3. Documentation for liblzma
+    2. Version numbering
+    3. Other implementations of the .xz format
+    4. Contact information
 
 
-Overview
+0. Overview
+-----------
 
-    LZMA is a general purpose compression algorithm designed by
-    Igor Pavlov as part of 7-Zip. It provides high compression ratio
-    while keeping the decompression speed fast.
+    XZ Utils provide a general purporse data compression library and
+    command line tools. The native file format is the .xz format, but
+    also the legacy .lzma format is supported. The .xz format supports
+    multiple compression algorithms, which are called "filters" in
+    context of XZ Utils. The primary filter is currently LZMA2. With
+    typical files, XZ Utils create about 30 % smaller files than gzip.
 
-    XZ Utils are an attempt to make LZMA compression easy to use
-    on free (as in freedom) operating systems. This is achieved by
-    providing tools and libraries which are similar to use than the
-    equivalents of the most popular existing compression algorithms.
+    To ease adapting support for the .xz format into existing applications
+    and scripts, the API of liblzma is somewhat similar to the API of the
+    popular zlib library. For the same reason, the command line tool xz
+    has similar command line syntax than that of gzip.
 
-    XZ Utils consist of a few relatively separate parts:
-      * liblzma is an encoder/decoder library with support for several
-        filters (algorithm implementations). The primary filter is LZMA.
-      * libzfile (or whatever the name will be) enables reading from and
-        writing to gzip, bzip2 and LZMA compressed and uncompressed files
-        with an API similar to the standard ANSI-C file I/O.
-        [ NOTE: libzfile is not implemented yet. ]
-      * xz command line tool has almost identical syntax than gzip
-        and bzip2. It makes LZMA easy for average users, but also
-        provides advanced options to finetune the compression settings.
-      * A few shell scripts make diffing and grepping LZMA compressed
-        files easy. The scripts were adapted from gzip and bzip2.
+    When aiming for the highest compression ratio, LZMA2 encoder uses
+    a lot of CPU time and may use, depending on the settings, even
+    hundreds of megabytes of RAM. However, in fast modes, LZMA2 encoder
+    competes with bzip2 in compression speed, RAM usage, and compression
+    ratio.
 
+    LZMA2 is reasonably fast to decompress. It is a little slower than
+    gzip, but a lot faster than bzip2. Being fast to decompress means
+    that the .xz format is especially nice when the same file will be
+    decompressed very many times (usually on different computers), which
+    is the case e.g. when distributing software packages. In such
+    situations, it's not too bad if the compression takes some time,
+    since that needs to be done only once to benefit many people.
 
-Supported platforms
+    With some file types, combining (or "chaining") LZMA2 with an
+    additional filter can improve compression ratio. A filter chain may
+    contain up to four filters, although usually only one two is used.
+    For example, putting a BCJ (Branch/Call/Jump) filter before LZMA2
+    in the filter chain can improve compression ratio of executable files.
 
-    XZ Utils are developed on GNU+Linux, but they should work at
-    least on *BSDs and Solaris. They probably work on some other
-    POSIX-like operating systems too.
+    Since the .xz format allows adding new filter IDs, it is possible that
+    some day there will be a filter that is, for example, much faster to
+    compress than LZMA2 (but probably with worse compression ratio).
+    Similarly, it is possible that some day there is a filter that will
+    compress better than LZMA2.
 
-    If you use GCC to compile XZ Utils, you need at least version
-    3.x.x. GCC version 2.xx.x doesn't support some C99 features used
-    in XZ Utils source code, thus GCC 2 won't compile XZ Utils.
-
-    If you have written patches to make XZ Utils to work on previously
-    unsupported platform, please send the patches to me! I will consider
-    including them to the official version. It's nice to minimize the
-    need of third-party patching.
-
-    One exception: Don't request or send patches to change the whole
-    source package to C89. I find C99 substantially nicer to write and
-    maintain. However, the public library headers must be in C89 to
-    avoid frustrating those who maintain programs, which are strictly
-    in C89 or C++.
-
-
-Platform-specific notes
-
-    On some Tru64 systems using the native C99 compiler, the configure
-    script may reject the compiler as non-C99 compiler. This may happen
-    if there is no stdbool.h available. You can still compile XZ Utils
-    on such a system by passing ac_cv_prog_cc_c99= to configure script.
-    Fixing this bug seems to be non-trivial since if the configure
-    doesn't check for stdbool.h, it runs into problems at least on
-    Solaris.
+    XZ Utils doesn't support multithreaded compression or decompression
+    yet. It has been planned though and taken into account when designing
+    the .xz file format.
 
 
-Version numbering
+1. Documentation
+----------------
 
-    The version number of XZ Utils has absolutely nothing to do with
-    the version number of LZMA SDK or 7-Zip. The new version number
-    format of XZ Utils is X.Y.ZS:
+1.1. Overall documentation
+
+    README              This file
+
+    INSTALL.generic     Generic install instructions for those not familiar
+                        with packages using GNU Autotools
+    INSTALL             Installation instructions specific to XZ Utils
+    PACKAGERS           Information to packagers of XZ Utils
+
+    COPYING             XZ Utils copyright and license information
+    COPYING.GPLv2       GNU General Public License version 2
+    COPYING.GPLv3       GNU General Public License version 3
+    COPYING.LGPLv2.1    GNU Lesser General Public License version 2.1
+
+    AUTHORS             The main authors of XZ Utils
+    THANKS              Incomplete list of people who have helped making
+                        this software
+    NEWS                User-visible changes between XZ Utils releases
+    ChangeLog           Detailed list of changes (commit log)
+
+    Note that only some of the above files are included in binary
+    packages.
+
+
+1.2. Documentation for command line tools
+
+    The command line tools are documented as man pages. In source code
+    releases (and possibly also in some binary packages), the man pages
+    are also provided in plain text (ASCII only) and PDF formats in the
+    directory "doc/man" to make the man pages more accessible to those
+    whose operating system doesn't provide an easy way to view man pages.
+
+
+1.3. Documentation for liblzma
+
+    The liblzma API headers include short docs about each function
+    and data type as Doxygen tags. These docs should be quite OK as
+    a quick reference.
+
+    I have planned to write a bunch of very well documented example
+    programs, which (due to comments) should work as a tutorial to
+    various features of liblzma. No such example programs have been
+    written yet.
+
+    For now, if you have never used liblzma, libbzip2, or zlib, I
+    recommend learning *basics* of zlib API. Once you know that, it
+    should be easier to learn liblzma.
+
+        http://zlib.net/manual.html
+        http://zlib.net/zlib_how.html
+
+
+2. Version numbering
+--------------------
+
+    The version number format of XZ Utils is X.Y.ZS:
 
       - X is the major version. When this is incremented, the library
         API and ABI break.
@@ -109,97 +141,32 @@ Version numbering
         the next version can be X.Y.(Z+1)beta but not X.Y.Zbeta.
 
 
-configure options
+3. Other implementations of the .xz format
+------------------------------------------
 
-    If you are not familiar with `configure' scripts, read the file
-    INSTALL first.
+    7-Zip and the p7zip port of 7-Zip support the .xz format starting
+    from the version 9.00alpha.
 
-    In most cases, the default --enable/--disable/--with/--without options
-    are what you want. Don't touch them if you are unsure.
+        http://7-zip.org/
+        http://p7zip.sourceforge.net/
 
-    --disable-encoder
-                Do not compile the encoder component of liblzma. This
-                implies --disable-match-finders. If you need only
-                the decoder, you can decrease the library size
-                dramatically with this option.
+    XZ Embedded is a limited implementation written for use in the Linux
+    kernel, but it is also suitable for other embedded use.
 
-                The default is to build the encoder.
-
-    --disable-decoder
-                Do not compile the decoder component of liblzma.
-
-                The default is to build the decoder.
-
-    --enable-filters=
-                liblzma supports several filters. See liblzma-intro.txt
-                for a little more information about these.
-
-                The default is to build all the filters.
-
-    --enable-match-finders=
-                liblzma includes two categories of match finders:
-                hash chains and binary trees. Hash chains (hc3 and hc4)
-                are quite fast but they don't provide the best compression
-                ratio. Binary trees (bt2, bt3 and bt4) give excellent
-                compression ratio, but they are slower and need more
-                memory than hash chains.
-
-                You need to enable at least one match finder to build the
-                LZMA filter encoder. Usually hash chains are used only in
-                the fast mode, while binary trees are used to when the best
-                compression ratio is wanted.
-
-                The default is to build all the match finders.
-
-    --enable-checks=
-                liblzma support multiple integrity checks. CRC32 is
-                mandatory, and cannot be omitted. See liblzma-intro.txt
-                for more information about usage of the integrity checks.
-
-    --disable-assembler
-                liblzma includes some assembler optimizations. Currently
-                there is only assembler code for CRC32 and CRC64 for
-                32-bit x86.
-
-                All the assembler code in liblzma is position-independent
-                code, which is suitable for use in shared libraries and
-                position-independent executables. So far only i386
-                instructions are used, but the code is optimized for i686
-                class CPUs. If you are compiling liblzma exclusively for
-                pre-i686 systems, you may want to disable the assembler
-                code.
-
-    --enable-small
-                Omits precomputed tables. This makes liblzma a few KiB
-                smaller. Startup time increases, because the tables need
-                to be computed first.
-
-    --enable-debug
-                This enables the assert() macro and possibly some other
-                run-time consistency checks. It slows down things somewhat,
-                so you normally don't want to have this enabled.
-
-    --enable-werror
-                Makes all compiler warnings an error, that abort the
-                compilation. This may help catching bugs, and should work
-                on most systems. This has no effect on the resulting
-                binaries.
+        http://tukaani.org/xz-embedded/
 
 
-Static vs. dynamic linking of the command line tools
+4. Contact information
+----------------------
 
-    By default, the command line tools are linked statically against
-    liblzma. There a are a few reasons:
+    If you have questions, bug reports, patches etc. related to XZ Utils,
+    contact Lasse Collin <lasse.collin@tukaani.org>. tukaani.org uses
+    greylisting to reduce spam, thus when you send your first email, it
+    may get delayed by a few hours. In addition to that, I'm sometimes
+    slow at replying. If you haven't got a reply within two weeks, assume
+    that your email has got lost and resend it or use IRC.
 
-      - The executable(s) can be in /bin while the shared liblzma can still
-        be in /usr/lib (if the distro uses such file system hierarchy).
-
-      - It's easier to copy the executables to other systems, since they
-        depend only on libc.
-
-      - It's slightly faster on some architectures like x86.
-
-    If you don't like this, you can get the command line tools linked
-    against the shared liblzma by specifying --disable-static to configure.
-    This disables building static liblzma completely.
+    You can find me also from #tukaani on Freenode; my nick is Larhzu.
+    The channel tends to be pretty quiet, so just ask your question and
+    someone may wake up.
 

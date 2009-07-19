@@ -14,6 +14,17 @@ endif
 
 SUBDIRS += src po tests
 
+doc_DATA = \
+	AUTHORS \
+	COPYING \
+	COPYING.GPLv2 \
+	NEWS \
+	README \
+	THANKS \
+	TODO \
+	doc/xz-file-format.txt \
+	doc/lzma-file-format.txt
+
 EXTRA_DIST = \
 	version.sh \
 	Doxyfile.in \

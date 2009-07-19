@@ -1,11 +1,11 @@
 
 Thanks
-------
+======
 
-Some people have helped more, some less, some don't even know they have
-been helpful, but nevertheless everyone's help has been important. :-)
-In alphabetical order:
+Some people have helped more, some less, but nevertheless everyone's help
+has been important. :-) In alphabetical order:
   - Mark Adler
+  - H. Peter Anvin
   - Nelson H. F. Beebe
   - Anders F. Björklund
   - Emmanuel Blot
@@ -13,7 +13,6 @@ In alphabetical order:
   - Andrew Dudman
   - İsmail Dönmez
   - Mike Frysinger
-  - Jean-loup Gailly
   - Per Øyvind Karlsen
   - Ville Koskinen
   - Stephan Kulow
@@ -26,7 +25,6 @@ In alphabetical order:
   - Bernhard Reutner-Fischer
   - Alexandre Sauvé
   - Andreas Schwab
-  - Julian Seward
   - Dan Shechter
   - Paul Townsend
   - Mohammed Adnène Trojette
@@ -34,8 +32,11 @@ In alphabetical order:
   - Bert Wesarg
   - Ralf Wildenhues
   - Charles Wilson
+  - Lars Wirzenius
   - Andreas Zieringer
 
-Also thanks to all the people who have participated the Tukaani project
-and others who I have forgot.
+Also thanks to all the people who have participated in the Tukaani project.
+
+I have probably forgot to add some names to the above list. Sorry about
+that and thanks for your help.
 

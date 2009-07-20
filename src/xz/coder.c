@@ -151,12 +151,20 @@ coder_set_compression_settings(void)
 	// Terminate the filter options array.
 	filters[filters_count].id = LZMA_VLI_UNKNOWN;
 
-	// If we are using the LZMA_Alone format, allow exactly one filter
-	// which has to be LZMA.
+	// If we are using the .lzma format, allow exactly one filter
+	// which has to be LZMA1.
 	if (opt_format == FORMAT_LZMA && (filters_count != 1
 			|| filters[0].id != LZMA_FILTER_LZMA1))
-		message_fatal(_("With --format=lzma only the LZMA1 filter "
-				"is supported"));
+		message_fatal(_("The .lzma format supports only "
+				"the LZMA1 filter"));
+
+	// If we are using the .xz format, make sure that there is no LZMA1
+	// filter to prevent LZMA_PROG_ERROR.
+	if (opt_format == FORMAT_XZ)
+		for (size_t i = 0; i < filters_count; ++i)
+			if (filters[i].id == LZMA_FILTER_LZMA1)
+				message_fatal(_("LZMA1 cannot be used "
+						"with the .xz format"));
 
 	// Print the selected filter chain.
 	message_filters(V_DEBUG, filters);

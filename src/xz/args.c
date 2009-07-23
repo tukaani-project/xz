@@ -489,7 +489,6 @@ args_parse(args_info *args, int argc, char **argv)
 	parse_environment(args, argv[0]);
 
 	// Then from the command line
-	optind = 1;
 	parse_real(args, argc, argv);
 
 	// Never remove the source file when the destination is not on disk.

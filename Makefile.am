@@ -22,6 +22,7 @@ doc_DATA = \
 	README \
 	THANKS \
 	TODO \
+	doc/history.txt \
 	doc/xz-file-format.txt \
 	doc/lzma-file-format.txt
 

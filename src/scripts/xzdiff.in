@@ -118,7 +118,7 @@ elif test $# -eq 2; then
               exec 4>&1
               ($xz1 -cdfq -- "$1" 4>&-; echo $? >&4) 3>&- |
                 ( ($xz2 -cdfq -- "$2" 4>&-; echo $? >&4) 3>&- 5<&- </dev/null |
-                eval "$cmp" /dev/fd/5 -) 5<&0
+                eval "$cmp" /dev/fd/5 - >&3) 5<&0
             )
             case $xz_status in
               *[1-9]*) xz_status=1;;

@@ -58,6 +58,9 @@ xz_LDADD += $(LTLIBINTL)
 		$(xz_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) -i $< -o $@
 
 
+dist_man_MANS = xz.1
+
+
 ## Create symlinks for unxz and xzcat for convenience. Create symlinks also
 ## for lzma, unlzma, and lzcat for compatibility with LZMA Utils 4.32.x.
 xzlinks = unxz xzcat lzma unlzma lzcat
@@ -70,10 +73,22 @@ install-exec-hook:
 		rm -f $$link && \
 		$(LN_S) $$target $$link; \
 	done
+	cd $(DESTDIR)$(mandir)/man1 && \
+	target=`echo xz | sed '$(transform)'` && \
+	for name in $(xzlinks); do \
+		link=`echo $$name | sed '$(transform)'` && \
+		rm -f $$link.1 && \
+		$(LN_S) $$target.1 $$link.1; \
+	done
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
 	for name in $(xzlinks); do \
 		link=`echo $$name | sed '$(transform)'` && \
 		rm -f $$link; \
+	done
+	cd $(DESTDIR)$(mandir)/man1 && \
+	for name in $(xzlinks); do \
+		link=`echo $$name | sed '$(transform)'` && \
+		rm -f $$link.1; \
 	done

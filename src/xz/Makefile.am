@@ -73,6 +73,8 @@ install-exec-hook:
 		rm -f $$link && \
 		$(LN_S) $$target $$link; \
 	done
+
+install-data-hook:
 	cd $(DESTDIR)$(mandir)/man1 && \
 	target=`echo xz | sed '$(transform)'` && \
 	for name in $(xzlinks); do \

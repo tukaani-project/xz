@@ -375,37 +375,35 @@ AC_MSG_RESULT([$enable_threads])
 # xz/xzdec/lzmadec linkage against liblzma #
 ############################################
 
-# Link the command line tool statically against liblzma unless using
-# --enable-dynamic. Using static liblzma gives a little bit faster executable
-# on x86, because no register is wasted for PIC. We also have one dependency
-# less, which allows users to more freely copy the xz binary to other boxes.
-# However, I wouldn't be surprised if distro maintainers still prefer dynamic
-# linking, so let's make it easy for them.
+# Link the xz, xzdec, and lzmadec command line tools against static liblzma
+# unless using --enable-dynamic. Using static liblzma gives a little bit
+# faster executable on x86, because no register is wasted for PIC. We also
+# have one dependency less, which allows users to more freely copy the xz
+# binary to other boxes. However, I wouldn't be surprised if distro
+# maintainers still prefer dynamic linking, so let's make it easy for them.
 
-AC_MSG_CHECKING([how command line tools should be linked against liblzma])
-AC_ARG_ENABLE([dynamic], [AC_HELP_STRING([--enable-dynamic],
-			[Link command line tools dynamically against liblzma.
-			The default is to use static liblzma if it was
-			built.])],
-		[], [enable_dynamic=no])
+AC_MSG_CHECKING([how programs should be linked against liblzma])
+AC_ARG_ENABLE([dynamic], [AC_HELP_STRING([--enable-dynamic=TYPE],
+			[Set how command line tools are linked against liblzma.
+			TYPE can be mixed, yes, or no. The default is mixed.])],
+		[], [enable_dynamic=mixed])
 case $enable_dynamic in
+	mixed)
+		AC_MSG_RESULT([mixed (some dynamically, some statically)])
+		;;
 	yes)
-		STATIC_CPPFLAGS=
-		STATIC_LDFLAGS=
 		AC_MSG_RESULT([dynamically])
 		;;
 	no)
-		STATIC_CPPFLAGS="-DLZMA_API_STATIC"
-		STATIC_LDFLAGS="-static"
 		AC_MSG_RESULT([statically])
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-dynamic accepts only \`yes' or \`no'])
+		AC_MSG_ERROR([--enable-dynamic accepts only \`mixed', \`yes', or \`no'])
 		;;
 esac
-AC_SUBST([STATIC_CPPFLAGS])
-AC_SUBST([STATIC_LDFLAGS])
+# We use the actual results later, because we don't know yet
+# if --disable-shared or --disable-static was used.
 
 
 ###############################################################################
@@ -647,6 +645,45 @@ AM_CONDITIONAL([COND_GNULIB], test -n "$LIBOBJS")
 
 # Add default AM_CFLAGS.
 AC_SUBST([AM_CFLAGS])
+
+# Set additional flags for static/dynamic linking. The idea is that every
+# program (not library) being built will use either STATIC_{CPPFLAGS,LDFLAGS}
+# or DYNAMIC_{CPPFLAGS,LDFLAGS} depending on which type of linkage is
+# preferred. These preferences get overriden by use of --disable-static,
+# --disable-shared, or --enable-dynamic.
+#
+# This is quite messy, because we want to use LZMA_API_STATIC when linking
+# against static liblzma. It's needed on Windows.
+if test "x$enable_static" = xno; then
+	enable_dynamic=yes
+fi
+if test "x$enable_shared" = xno; then
+	enable_dynamic=no
+fi
+case $enable_dynamic in
+	yes)
+		STATIC_CPPFLAGS=
+		STATIC_LDFLAGS=
+		DYNAMIC_CPPFLAGS=
+		DYNAMIC_LDFLAGS=
+		;;
+	mixed)
+		STATIC_CPPFLAGS="-DLZMA_API_STATIC"
+		STATIC_LDFLAGS="-static"
+		DYNAMIC_CPPFLAGS=
+		DYNAMIC_LDFLAGS=
+		;;
+	no)
+		STATIC_CPPFLAGS="-DLZMA_API_STATIC"
+		STATIC_LDFLAGS="-static"
+		DYNAMIC_CPPFLAGS="-DLZMA_API_STATIC"
+		DYNAMIC_LDFLAGS="-static"
+		;;
+esac
+AC_SUBST([STATIC_CPPFLAGS])
+AC_SUBST([STATIC_LDFLAGS])
+AC_SUBST([DYNAMIC_CPPFLAGS])
+AC_SUBST([DYNAMIC_LDFLAGS])
 
 # This is needed for src/scripts.
 xz=`echo xz | sed "$program_transform_name"`

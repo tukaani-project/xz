@@ -663,6 +663,7 @@ AC_CONFIG_FILES([
 	src/liblzma/api/Makefile
 	src/xz/Makefile
 	src/xzdec/Makefile
+	src/lzmainfo/Makefile
 	src/scripts/Makefile
 	src/scripts/xzdiff
 	src/scripts/xzgrep

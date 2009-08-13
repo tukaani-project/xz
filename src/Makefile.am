@@ -5,5 +5,5 @@
 ## You can do whatever you want with this file.
 ##
 
-SUBDIRS = liblzma xz xzdec scripts
+SUBDIRS = liblzma xz xzdec lzmainfo scripts
 EXTRA_DIST = common

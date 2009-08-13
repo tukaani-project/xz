@@ -54,8 +54,8 @@ my_exit(enum exit_status_type status)
 			// If it was fclose() that failed, we have the reason
 			// in errno. If only ferror() indicated an error,
 			// we have no idea what the reason was.
-			message(V_ERROR, _("Writing to standard output "
-					"failed: %s"),
+			message(V_ERROR, "%s: %s", _("Writing to standard "
+						"output failed"),
 					fclose_err ? strerror(errno)
 						: _("Unknown error"));
 			status = E_ERROR;

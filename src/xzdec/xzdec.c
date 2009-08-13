@@ -76,7 +76,7 @@ my_exit(void)
 		// If it was fclose() that failed, we have the reason
 		// in errno. If only ferror() indicated an error,
 		// we have no idea what the reason was.
-		my_errorf("Cannot write to standard output: %s", fclose_err
+		my_errorf("Writing to standard output failed: %s", fclose_err
 				? strerror(errno) : "Unknown error");
 		status = EXIT_FAILURE;
 	}
@@ -320,7 +320,7 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 	// FIXME: Maybe also LZMA_MEMLIMIT_ERROR in future?
 	if (ret != LZMA_OK) {
 		my_errorf("%s", ret == LZMA_MEM_ERROR ? strerror(ENOMEM)
-				: "Internal program error (bug)");
+				: "Internal error (bug)");
 		exit(EXIT_FAILURE);
 	}
 
@@ -427,7 +427,7 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				break;
 
 			default:
-				msg = "Internal program error (bug)";
+				msg = "Internal error (bug)";
 				break;
 			}
 

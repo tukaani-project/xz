@@ -150,12 +150,13 @@ Information to packagers of XZ Utils
 
 4.1. Static vs. dynamic linking of liblzma
 
-    The default is to link the command line tools against static liblzma.
+    The default is to link the most important command line tools against
+    static liblzma, and the less important tools against shared liblzma.
     This can be changed by passing --enable-dynamic to configure, or by
-    not building static libraries at all by passing --disable-static to
-    configure. It is mildly recommended that you use the default and link
-    the command line tools against static liblzma, but the configure
-    options make it easy to do otherwise if the distro policy so requires.
+    not building static libraries at all by passing --disable-static
+    to configure. It is mildly recommended that you use the default, but
+    the configure options make it easy to do otherwise if the distro policy
+    so requires.
 
     On 32-bit x86, linking against static liblzma can give a minor
     speed improvement. Static libraries on x86 are usually compiled as

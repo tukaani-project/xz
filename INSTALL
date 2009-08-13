@@ -228,10 +228,22 @@ XZ Utils Installation
                 single-threaded applications and want to avoid dependency
                 on libpthread.
 
-    --enable-dynamic
-                Link the command line tools against shared liblzma. The
-                default (and recommended way) is to link the command line
-                tools against static liblzma.
+    --enable-dynamic=TYPE
+                Specify how command line tools should be linked against
+                liblzma. Possible TYPES:
+
+                    yes     All command line tools are linked against
+                            shared liblzma (if shared liblzma was built).
+                            This is equivalent to --enable-dynamic (i.e.
+                            no =TYPE).
+
+                    mixed   Some tools are linked against static liblzma
+                            and some against shared liblzma. This is the
+                            default and recommended way.
+
+                    no      All command line tools are linked against
+                            static liblzma (if static liblzma was built).
+                            This is equivalent to --disable-dynamic.
 
                 This option is mostly useful for packagers, if distro
                 policy requires linking against shared libaries. See the

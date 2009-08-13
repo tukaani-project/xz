@@ -14,9 +14,9 @@ lzmainfo_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
 	-I$(top_builddir)/lib \
-	$(STATIC_CPPFLAGS)
+	$(DYNAMIC_CPPFLAGS)
 
-lzmainfo_LDFLAGS = $(STATIC_LDFLAGS)
+lzmainfo_LDFLAGS = $(DYNAMIC_LDFLAGS)
 lzmainfo_LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB

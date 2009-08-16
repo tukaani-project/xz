@@ -234,7 +234,7 @@ mf_avail(const lzma_mf *mf)
 static inline uint32_t
 mf_unencoded(const lzma_mf *mf)
 {
-	return mf->write_pos - mf->read_pos - mf->read_ahead;
+	return mf->write_pos - mf->read_pos + mf->read_ahead;
 }
 
 

@@ -638,20 +638,22 @@ compressing.
 .PP
 Filters take filter-specific
 .I options
-as a comma-separated list. Unneeded commas in
+as a comma-separated list. Extra commas in
 .I options
 are ignored. Every option has a default value, so you need to
 specify only those you want to change.
 .TP
 \fB\-\-lzma1\fR[\fB=\fIoptions\fR], \fB\-\-lzma2\fR[\fB=\fIoptions\fR]
-Add LZMA1 or LZMA2 filter to the filter chain. LZMA1 is a legacy filter,
-which is supported almost solely due to the legacy
+Add LZMA1 or LZMA2 filter to the filter chain. These filter can be used
+only as the last filter in the chain.
+.IP
+LZMA1 is a legacy filter, which is supported almost solely due to the legacy
 .B .lzma
-file format, which supports only LZMA1. The
+file format, which supports only LZMA1. LZMA2 is an updated
+version of LZMA1 to fix some practical issues of LZMA1. The
 .B .xz
-format uses LZMA2, and doesn't support LZMA1 at all. LZMA2 is an updated
-version of LZMA1 to fix some practical issues. Compression speed and ratios
-of LZMA1 and LZMA2 are practically the same.
+format uses LZMA2, and doesn't support LZMA1 at all. Compression speed and
+ratios of LZMA1 and LZMA2 are practically the same.
 .IP
 LZMA1 and LZMA2 share the same set of
 .IR options :
@@ -683,24 +685,23 @@ from which the default values for the rest of the LZMA1 or LZMA2
 are taken.
 .TP
 .BI dict= size
-Specify the dictionary (history buffer) size. This option has the biggest
-effect on compression ratio and memory usage.
-.IP
-Dictionary size indicates how many bytes of the recently processed
-uncompressed data is kept in memory. One method to reduce size of
+Dictionary (history buffer) size indicates how many bytes of the recently
+processed uncompressed data is kept in memory. One method to reduce size of
 the uncompressed data is to store distance-length pairs, which
-indicate what data to repeat from the dictionary buffer. Thus,
-the bigger the dictionary, the better the compression ratio usually is.
+indicate what data to repeat from the dictionary buffer. The bigger
+the dictionary, the better the compression ratio usually is,
+but dictionaries bigger than the uncompressed data are waste of RAM.
 .IP
 Typical dictionary size is from 64 KiB to 64 MiB. The minimum is 4 KiB.
 The maximum for compression is currently 1.5 GiB. The decompressor already
-supports dictionaries up to 4 GiB (actually one byte less than 4 GiB).
+supports dictionaries up to one byte less than 4 GiB, which is the
+maximum for LZMA1 and LZMA2 stream formats.
 .IP
 Dictionary size has the biggest effect on compression ratio.
 Dictionary size and match finder together determine the memory usage of
 the LZMA1 or LZMA2 encoder. The same dictionary size is required
-when decompress that was used when compressing, thus the memory usage of the
-decoder is determined by the dictionary size used when compressing.
+for decompressing that was used when compressing, thus the memory usage of
+the decoder is determined by the dictionary size used when compressing.
 .TP
 .BI lc= lc
 Specify the number of literal context bits.
@@ -731,29 +732,6 @@ and
 for
 .I presets
 .BR 3 \- 9 .
-.TP
-.BI nice= nice
-Specify what is considered to be a nice length for a match. Once a match
-of at least
-.I nice
-bytes is found, the algorithm stops looking for possibly better matches.
-.IP
-.I nice
-can be 2\-273 bytes. Higher values tend to give better compression ratio
-at expense of speed. The default is
-.B 8
-for
-.I preset
-.BR 0 ,
-.B 32
-for
-.I presets
-.BR 1\-5 ,
-and
-.B 64
-for
-.I presets
-.BR 6\-9 .
 .TP
 .BI mf= mf
 Match finder has a major effect on encoder speed, memory usage, and
@@ -836,6 +814,18 @@ Memory usage:
 * 11.5
 .RE
 .TP
+.BI nice= nice
+Specify what is considered to be a nice length for a match. Once a match
+of at least
+.I nice
+bytes is found, the algorithm stops looking for possibly better matches.
+.IP
+.I nice
+can be 2\-273 bytes. Higher values tend to give better compression ratio
+at expense of speed. The default depends on the
+.I preset
+level.
+.TP
 .BI depth= depth
 Specify the maximum search depth in the match finder. The default is the
 special value
@@ -877,7 +867,9 @@ and
 \fB\-\-armthumb\fR[\fB=\fIoptions\fR]
 .TP
 \fB\-\-sparc\fR[\fB=\fIoptions\fR]
-Add a branch/call/jump (BCJ) filter to the filter chain.
+Add a branch/call/jump (BCJ) filter to the filter chain. These filters
+can be used only as non-last filter in the filter chain.
+.IP
 A BCJ filter converts relative addresses in the machine code to their
 absolute counterparts. This doesn't change the size of the data, but
 it increases redundancy, which allows e.g. LZMA2 to get better
@@ -942,8 +934,14 @@ for the whole executable.
 .RE
 .TP
 \fB\-\-delta\fR[\fB=\fIoptions\fR]
-Add Delta filter to the filter chain. Currently only simple byte-wise
-delta calculation is supported.
+Add Delta filter to the filter chain. The Delta filter
+can be used only as non-last filter in the filter chain.
+.IP
+Currently only simple byte-wise delta calculation is supported. It can
+be useful when compressing e.g. uncompressed bitmap images or uncompressed
+PCM audio. However, special purpose algorithms may give significantly better
+results than Delta + LZMA2. This is true especially with audio, which
+compresses faster and better e.g. with FLAC.
 .IP
 Supported
 .IR options :
@@ -1104,7 +1102,7 @@ and
 .I lp
 is possible with
 .B xz
-and with LZMA SDK <http://7-zip.org/sdk.html>.
+and with LZMA SDK.
 .PP
 The implementation of the LZMA1 filter in liblzma requires
 that the sum of
@@ -1201,6 +1199,6 @@ XZ Embedded supports BCJ filters, but only with the default start offset.
 .PP
 XZ Utils: <http://tukaani.org/xz/>
 .br
-XZ Embedded: <http://tukaani.org/xz/embedded.html> FIXME
+XZ Embedded: <http://tukaani.org/xz/embedded.html>
 .br
 LZMA SDK: <http://7-zip.org/sdk.html>

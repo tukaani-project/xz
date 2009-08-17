@@ -2,185 +2,96 @@
 XZ Utils FAQ
 ============
 
-Q:  What are LZMA, LZMA Utils, lzma, .lzma, liblzma, LZMA SDK, LZMA_Alone,
-    7-Zip and p7zip?
+Q:  What do the letters XZ mean?
 
-A:  LZMA stands for Lempel-Ziv-Markov chain-Algorithm. LZMA is the name
-    of the compression algorithm designed by Igor Pavlov. He is the author
-    of 7-Zip, which is a great LGPL'd compression tool for Microsoft
-    Windows operating systems. In addition to 7-Zip itself, also LZMA SDK
-    is available on the website of 7-Zip. LZMA SDK contains LZMA
-    implementations in C++, Java and C#. The C++ version is the original
-    implementation which is used also in 7-Zip itself.
-
-    Excluding the unrar plugin, 7-Zip is free software (free as in
-    freedom). Thanks to this, it was possible to port it to POSIX
-    platforms. The port was done and is maintained by myspace (TODO:
-    myspace's real name?). p7zip is a port of 7-Zip's command line version;
-    p7zip doesn't include the 7-Zip's GUI.
-
-    In POSIX world, users are used to gzip and bzip2 command line tools.
-    Developers know APIs of zlib and libbzip2. LZMA Utils try to ease
-    adoption of LZMA on free operating systems by providing a compression
-    library and a set of command line tools. The library is called liblzma.
-    It provides a zlib-like API making it easy to adapt LZMA compression in
-    existing applications. The main command line tool is known as lzma,
-    whose command line syntax is very similar to that of gzip and bzip2.
-
-    The original command line tool from LZMA SDK (lzma.exe) was found from
-    a directory called LZMA_Alone in the LZMA SDK. It used a simple header
-    format in .lzma files. This format was also used by LZMA Utils up to
-    and including 4.32.x. In LZMA Utils documentation, LZMA_Alone refers
-    to both the file format and the command line tool from LZMA SDK.
-
-    Because of various limitations of the LZMA_Alone file format, a new
-    file format was developed. Extending some existing format such as .gz
-    used by gzip was considered, but these formats were found to be too
-    limited. The filename suffix for the new .lzma format is `.lzma'. The
-    same suffix is also used for files in the LZMA_Alone format. To make
-    the transition to the new format as transparent as possible, LZMA Utils
-    support both the new and old formats transparently.
-
-    7-Zip and LZMA SDK: <http://7-zip.org/>
-    p7zip: <http://p7zip.sourceforge.net/>
-    LZMA Utils: <http://tukaani.org/lzma/>
+A:  Nothing. They are just two letters, which come from the file format
+    suffix .xz. The .xz suffix was selected, because it seemed to be
+    pretty much unused. It is no deeper meaning.
 
 
-Q:  What LZMA implementations there are available?
+Q:  What are LZMA and LZMA2?
 
-A:  LZMA SDK contains implementations in C++, Java and C#. The C++ version
-    is the original implementation which is part of 7-Zip. LZMA SDK
-    contains also a small LZMA decoder in C.
+A:  LZMA stands for Lempel-Ziv-Markov chain-Algorithm. It is the name
+    of the compression algorithm designed by Igor Pavlov for 7-Zip.
+    LZMA is based on LZ77 and range encoding.
 
-    A port of LZMA SDK to Pascal was made by Alan Birtles
-    <http://www.birtles.org.uk/programming/>. It should work with
-    multiple Pascal programming language implementations.
-
-    LZMA Utils includes liblzma, which is directly based on LZMA SDK.
-    liblzma is written in C (C99, not C89). In contrast to C++ callback
-    API used by LZMA SDK, liblzma uses zlib-like stateful C API. I do not
-    want to comment whether both/former/latter/neither API(s) are good or
-    bad. The only reason to implement a zlib-like API was, that many
-    developers are already familiar with zlib, and very many applications
-    already use zlib. Having a similar API makes it easier to include LZMA
-    support in existing applications.
-
-    See also <http://en.wikipedia.org/wiki/LZMA#External_links>.
+    LZMA2 is an updated version of the original LZMA to fix a couple of
+    practical issues. In context of XZ Utils, LZMA is called LZMA1 to
+    emphasize that LZMA is not the same thing as LZMA2. LZMA2 is the
+    primary compression algorithm in the .xz file format.
 
 
-Q:  Which file formats are supported by LZMA Utils?
+Q:  There are many LZMA related projects. How does XZ Utils relate to them?
 
-A:  Even when the raw LZMA stream is always the same, it can be wrapped
-    in different container formats. The preferred format is the new .lzma
-    format. It has magic bytes (the first six bytes: 0xFF 'L' 'Z' 'M'
-    'A' 0x00). The format supports chaining up to seven filters, splitting
-    data to multiple blocks for easier multi-threading and rough
-    random-access reading. The file integrity is verified using CRC32,
-    CRC64, or SHA256, and by verifying the uncompressed size of the file.
+A:  7-Zip and LZMA SDK are the original projects. LZMA SDK is roughly
+    a subset of the 7-Zip source tree.
 
-    LZMA SDK includes a tool called LZMA_Alone. It supports uses a
-    primitive header which includes only the mandatory stream information
-    required by the LZMA decoder. This format can be both read and
-    written by liblzma and the command line tool (use --format=alone to
-    create such files).
+    p7zip is 7-Zip's command line tools ported to POSIX-like systems.
 
-    .7z is the native archive format used by 7-Zip. This format is not
-    supported by liblzma, and probably will never be supported. You
-    should use e.g. p7zip to extract .7z files.
+    LZMA Utils provide a gzip-like lzma tool for POSIX-like systems.
+    LZMA Utils are based on LZMA SDK. XZ Utils are the successor to
+    LZMA Utils.
 
-    It is possible to implement custom file formats by using raw filter
-    mode in liblzma. In this mode the application needs to store the filter
-    properties and provide them to liblzma before starting to uncompress
-    the data.
+    There are several other projects using LZMA. Most are more or less
+    based on LZMA SDK.
 
 
-Q:  How can I identify files containing LZMA compressed data?
+Q:  Do XZ Utils support the .7z format?
 
-A:  The preferred filename suffix for .lzma files is `.lzma'. `.tar.lzma'
-    may be abbreviated to `.tlz'. The same suffixes are used for files in
-    LZMA_Alone format. In practice this should be no problem since tools
-    included in LZMA Utils support both formats transparently.
-
-    Checking the magic bytes is easy way to detect files in the new .lzma
-    format (the first six bytes: 0xFF 'L' 'Z' 'M' 'A' 0x00). The "file"
-    command version FIXME contains magic strings for this format.
-
-    The old LZMA_Alone format has no magic bytes. Its header cannot contain
-    arbitrary bytes, thus it is possible to make a guess. Unfortunately the
-    guessing is usually too hard to be reliable, so don't try it unless you
-    are desperate.
+A:  No. Use 7-Zip (Windows) or p7zip (POSIX-like systems) to handle .7z
+    files.
 
 
-Q:  Does the lzma command line tool support sparse files?
+Q:  I have many .tar.7z files. Can I convert them to .tar.xz without
+    spending hours recompressing the data?
 
-A:  Sparse files can (of course) be compressed like normal files, but
-    uncompression will not restore sparseness of the file. Use an archiver
-    tool to take care of sparseness before compressing the data with lzma.
-
-    The reason for this is that archiver tools handle files, while
-    compression tools handle streams or buffers. Being a sparse file is
-    a property of the file on the disk, not a property of the stream or
-    buffer.
-
-
-Q:  Can I recover parts of a broken LZMA file (e.g. corrupted CD-R)?
-
-A:  With LZMA_Alone and single-block .lzma files, you can uncompress the
-    file until you hit the first broken byte. The data after the broken
-    position is lost. LZMA relies on the uncompression history, and if
-    bytes are missing in the middle of the file, it is impossible to
-    reliably continue after the broken section.
-
-    With multi-block .lzma files it may be possible to locale the next
-    block in the file and continue decoding there. A limited recovery
-    tool for this kind of situations is planned.
+A:  In the "extra" directory, there is a script named 7z2lzma.bash which
+    is able to convert some .7z files to the .lzma format (not .xz). It
+    needs the 7za (or 7z) command from p7zip. The script may silently
+    produce corrupt output if certain assumptions are not met, so
+    decompress the resulting .lzma file and compare it against the
+    original before deleting the original file!
 
 
-Q:  Is LZMA patented?
+Q:  I have many .lzma files. Can I quickly convert them to the .xz format?
 
-A:  No, the authors are not aware of any patents that could affect LZMA.
-    However, due to nature of software patents, the authors cannot
-    guarantee, that LZMA isn't affected by any third party patent.
+A:  For now, no. Since XZ Utils supports the .lzma format, it's usually
+    not too bad to keep the old files in the old format. If you want to
+    do the conversion anyway, you need to decompress the .lzma files and
+    then recompress to the .xz format.
 
-
-Q:  Where can I find documentation about how LZMA works as an algorithm?
-
-A:  Read the source code, Luke. There is no documentation about LZMA
-    internals. It is possible that Igor Pavlov is the only person on
-    the Earth that completely knows and understands the algorithm.
-
-    You could begin by downloading LZMA SDK, and start reading from
-    the LZMA decoder to get some idea about the bitstream format.
-    Before you begin, you should know the basics of LZ77 and
-    range coding algorithms. LZMA is based on LZ77, but LZMA is
-    *a lot* more complex. Range coding is used to compress the
-    final bitstream like Huffman coding is used in Deflate.
+    Technically, there is a way to make the conversion relatively fast
+    (roughly twice the time that normal decompression takes). Writing
+    such a tool would take quite a bit time though, and would probably
+    be useful to only a few people. If you really want such a conversion
+    tool, contact Lasse Collin and offer some money.
 
 
-Q:  What are filters?
+Q:  Can I recover parts of a broken .xz file (e.g. corrupted CD-R)?
 
-A:  In context of .lzma files, a filter means an implementation of a
-    compression algorithm. The primary filter is LZMA, which is why
-    the names of the tools contain the letters LZMA.
+A:  It may be possible if the file consist of multiple blocks, which
+    typically is not the case if the file was created in single-threaded
+    mode. There is no recovery program yet.
 
-    liblzma and the new .lzma format support also other filters than LZMA.
-    There are different types of filters, which are suitable for different
-    types of data. Thus, to select the optimal filter and settings, the
-    type of the input data being compressed needs to be known.
 
-    Some filters are most useful when combined with another filter like
-    LZMA. These filters increase redundancy in the data, without changing
-    the size of the data, by taking advantage of properties specific to
-    the data being compressed.
+Q:  Is (some part of) XZ Utils patented?
 
-    So far, all the filters are always reversible. That is, no matter what
-    data you pass to a filter encoder, it can be always defiltered back to
-    the original form. Because of this, it is safe to compress for example
-    a software package that contains other file types than executables
-    using a filter specific to the architechture of the package being
-    compressed.
+A:  Lasse Collin is not aware of any patents that could affect XZ Utils.
+    However, due to nature of software patents, it's not possible to
+    guarantee that XZ Utils isn't affected by any third party patent(s).
 
-    The old LZMA_Alone format supports only the LZMA filter.
+
+Q:  Where can I find documentation about the file format and algorithms?
+
+A:  The .xz format is documented in xz-file-format.txt. It is a container
+    format only, and doesn't include descriptions of any non-trivial
+    filters.
+
+    Documenting LZMA and LZMA2 is planned, but for now, there is no other
+    documentation that the source code. Before you begin, you should know
+    the basics of LZ77 and range coding algorithms. LZMA is based on LZ77,
+    but LZMA is *a lot* more complex. Range coding is used to compress
+    the final bitstream like Huffman coding is used in Deflate.
 
 
 Q:  I cannot find BCJ and BCJ2 filters. Don't they exist in liblzma?
@@ -189,27 +100,23 @@ A:  BCJ filter is called "x86" in liblzma. BCJ2 is not included,
     because it requires using more than one encoded output stream.
 
 
-Q:  Can I use LZMA in proprietary, non-free applications?
+Q:  How do I build a program that needs liblzmadec (lzmadec.h)?
 
-A:  Yes. See the file COPYING for details.
-
-
-Q:  I would like to help. What can I do?
-
-A:  See the TODO file. Please contact Lasse Collin before starting to do
-    anything, because it is possible that someone else is already working
-    on the same thing.
+A:  liblzmadec is part of LZMA Utils. XZ Utils has liblzma, but no
+    liblzmadec. The code using liblzmadec should be ported to use
+    liblzma instead. If you cannot or don't want to do that, download
+    LZMA Utils from <http://tukaani.org/lzma/>.
 
 
-Q:  How can I contact the authors?
+Q:  The default build of liblzma is too big. How can I make it smaller?
 
-A:  Lasse Collin is the maintainer of LZMA Utils. You can contact him
-    either via IRC (Larhzu on #tukaani at Freenode or IRCnet). Email
-    should work too, <lasse.collin@tukaani.org>.
+A:  Give --enable-small to the configure script. Use also appropriate
+    --enable or --disable options to include only those filter encoders
+    and decoders and integrity checks that you actually need. Use
+    CFLAGS=-Os (with GCC) or equivalent to tell your compiler to optimize
+    for size. See INSTALL for information about configure options.
 
-    Igor Pavlov is the father of LZMA. He is the author of 7-Zip
-    and LZMA SDK. <http://7-zip.org/>
-
-    NOTE: Please don't bother Igor Pavlov with questions specific
-    to LZMA Utils.
+    If the result is still too big, take a look at XZ Embedded. It is
+    a separate project, which provides a limited but signinificantly
+    smaller XZ decoder implementation than XZ Utils.
 

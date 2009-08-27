@@ -32,6 +32,7 @@ EXTRA_DIST = \
 	Doxyfile.in \
 	extra \
 	doc \
+	dos \
 	windows \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \

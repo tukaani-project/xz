@@ -8,8 +8,9 @@ XZ Utils
        1.2. Documentation for command line tools
        1.3. Documentation for liblzma
     2. Version numbering
-    3. Other implementations of the .xz format
-    4. Contact information
+    3. Reporting bugs
+    4. Other implementations of the .xz format
+    5. Contact information
 
 
 0. Overview
@@ -141,7 +142,51 @@ XZ Utils
         the next version can be X.Y.(Z+1)beta but not X.Y.Zbeta.
 
 
-3. Other implementations of the .xz format
+3. Reporting bugs
+-----------------
+
+    Naturally it is easiest for me if you already know what causes the
+    unexpected behavior. Even better if you have a patch to propose.
+    However, quite often the reason for unexpected behavior is unknown,
+    so here are a few things to do before sending a bug report:
+
+      1. Try to create a small example how to reprocude the issue.
+
+      2. Compile XZ Utils with debugging code using configure switches
+         --enable-debug and, if possible, --disable-shared. If you are
+         using GCC, use CFLAGS='-O0 -ggdb3'. Don't strip the resulting
+         binaries.
+
+      3. Turn on core dumps. The exact command depends on your shell;
+         for example in GNU bash it is done with "ulimit -c unlimited",
+         and in tcsh with "limit coredumpsize unlimited".
+
+      4. Try to reproduce the suspected bug. If you get "assertion failed"
+         message, be sure to include the complete message in your bug
+         report. If the application leaves a coredump, get a backtrace
+         using gdb:
+           $ gdb /path/to/app-binary   # Load the app to the debugger.
+           (gdb) core core   # Open the coredump.
+           (gdb) bt   # Print the backtrace. Copy & paste to bug report.
+           (gdb) quit   # Quit gdb.
+
+    Report your bug via email or IRC (see Contact information below).
+    Don't send core dump files or any executables. If you have a small
+    example file(s) (total size less than 256 KiB), please include
+    it/them as an attachment. If you have bigger test files, put them
+    online somewhere and include an URL to the file(s) in the bug report.
+
+    Always include the exact version number of XZ Utils in the bug report.
+    If you are using a snapshot from the git repository, use "git describe"
+    to get the exact snapshot version. If you are using XZ Utils shipped
+    in an operating system distribution, mention the distribution name,
+    distribution version, and exact xz package version; if you cannot
+    repeat the bug with the code compiled from unpatched source code,
+    you probably need to report a bug to your distribution's bug tracking
+    system.
+
+
+4. Other implementations of the .xz format
 ------------------------------------------
 
     7-Zip and the p7zip port of 7-Zip support the .xz format starting
@@ -153,18 +198,18 @@ XZ Utils
     XZ Embedded is a limited implementation written for use in the Linux
     kernel, but it is also suitable for other embedded use.
 
-        http://tukaani.org/xz-embedded/
+        http://tukaani.org/xz/embedded.html
 
 
-4. Contact information
+5. Contact information
 ----------------------
 
     If you have questions, bug reports, patches etc. related to XZ Utils,
-    contact Lasse Collin <lasse.collin@tukaani.org>. tukaani.org uses
-    greylisting to reduce spam, thus when you send your first email, it
-    may get delayed by a few hours. In addition to that, I'm sometimes
-    slow at replying. If you haven't got a reply within two weeks, assume
-    that your email has got lost and resend it or use IRC.
+    contact Lasse Collin <lasse.collin@tukaani.org> (in Finnish or English).
+    tukaani.org uses greylisting to reduce spam, thus when you send your
+    first email, it may get delayed by a few hours. In addition to that,
+    I'm sometimes slow at replying. If you haven't got a reply within two
+    weeks, assume that your email has got lost and resend it or use IRC.
 
     You can find me also from #tukaani on Freenode; my nick is Larhzu.
     The channel tends to be pretty quiet, so just ask your question and

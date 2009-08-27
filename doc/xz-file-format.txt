@@ -2,7 +2,7 @@
 The .xz File Format
 ===================
 
-Version 1.0.3 (2009-06-05)
+Version 1.0.4 (2009-08-27)
 
 
         0. Preface
@@ -92,6 +92,9 @@ Version 1.0.3 (2009-06-05)
 0.3. Version History
 
         Version   Date          Description
+
+        1.0.4     2009-08-27    Language improvements in Sections 1.2,
+                                2.1.1.2, 3.1.1, 3.1.2, and 5.3.1
 
         1.0.3     2009-06-05    Spelling fixes in Sections 5.1 and 5.4
 
@@ -183,7 +186,8 @@ Version 1.0.3 (2009-06-05)
 
         For now, the value of the variable-length integers is limited
         to 63 bits, which limits the encoded size of the integer to
-        nine bytes. These limits may be increased in future if needed.
+        nine bytes. These limits may be increased in the future if
+        needed.
 
         The following C code illustrates encoding and decoding of
         variable-length integers. The functions return the number of
@@ -319,9 +323,9 @@ Version 1.0.3 (2009-06-05)
 
 2.1.1.2. Stream Flags
 
-        The first byte of Stream Flags is always a null byte. In future
-        this byte may be used to indicate new Stream version or other
-        Stream properties.
+        The first byte of Stream Flags is always a null byte. In the
+        future, this byte may be used to indicate a new Stream version
+        or other Stream properties.
 
         The second byte of Stream Flags is a bit field:
 
@@ -492,15 +496,15 @@ Version 1.0.3 (2009-06-05)
 
             real_header_size = (encoded_header_size + 1) * 4;
 
-        If bigger Block Header is needed in future, a new field can be
-        added between the current Block Header and Compressed Data
-        fields. The presence of this new field would be indicated in
-        the Block Header.
+        If a Block Header bigger than 1024 bytes is needed in the
+        future, a new field can be added between the Block Header and
+        Compressed Data fields. The presence of this new field would
+        be indicated in the Block Header field.
 
 
 3.1.2. Block Flags
 
-        The first byte of the Block Flags field is a bit field:
+        The Block Flags field is a bit field:
 
             Bit(s)  Mask  Description
              0-1    0x03  Number of filters (1-4)
@@ -833,7 +837,7 @@ Version 1.0.3 (2009-06-05)
         decompression. LZMA is based on LZ77 and range coding
         algorithms.
 
-        LZMA2 is an extensions on top of the original LZMA. LZMA2 uses
+        LZMA2 is an extension on top of the original LZMA. LZMA2 uses
         LZMA internally, but adds support for flushing the encoder,
         uncompressed chunks, eases stateful decoder implementations,
         and improves support for multithreading. Thus, the plain LZMA

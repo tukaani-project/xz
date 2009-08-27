@@ -704,13 +704,34 @@ for decompressing that was used when compressing, thus the memory usage of
 the decoder is determined by the dictionary size used when compressing.
 .TP
 .BI lc= lc
-Specify the number of literal context bits.
+Specify the number of literal context bits. The minimum is
+.B 0
+and the maximum is
+.BR 4 ;
+the default is
+.BR 3 .
+In addition, the sum of
+.I lc
+and
+.I lp
+must not exceed
+.BR 4 .
 .TP
 .BI lp= lp
-Specify the number of literal position bits.
+Specify the number of literal position bits. The minimum is
+.B 0
+and the maximum is
+.BR 4 ;
+the default is
+.BR 0 .
 .TP
 .BI pb= pb
-Specify the number of position bits.
+Specify the number of position bits. The minimum is
+.B 0
+and the maximum is
+.BR 4 ;
+the default is
+.BR 2 .
 .TP
 .BI mode= mode
 Compression
@@ -736,12 +757,14 @@ for
 .BI mf= mf
 Match finder has a major effect on encoder speed, memory usage, and
 compression ratio. Usually Hash Chain match finders are faster than
-Binary Tree match finders. The memory usage formulas are only rough
-estimates, which are closest to reality when
+Binary Tree match finders. Hash Chains are usually used together with
+.B mode=fast
+and Binary Trees with
+.BR mode=normal .
+The memory usage formulas are only rough estimates,
+which are closest to reality when
 .I dict
 is a power of two.
-.IP
-FIXME Defaults
 .RS
 .TP
 .B hc3
@@ -1035,9 +1058,30 @@ incompatibilities though, which may sometimes cause problems.
 .SS "Compression preset levels"
 The numbering of the compression level presets is not identical in
 .B xz
-and LZMA Utils. Compressor memory usage:
+and LZMA Utils.
+The most important difference is how dictionary sizes are mapped to different
+presets. Dictionary size is roughly equal to the decompressor memory usage.
+.RS
+.TS
+tab(;);
+c c c
+c n n.
+Level;xz;LZMA Utils
+\-1;64 KiB;64 KiB
+\-2;512 KiB;1 MiB
+\-3;1 MiB;512 KiB
+\-4;2 MiB;1 MiB
+\-5;4 MiB;2 MiB
+\-6;8 MiB;4 MiB
+\-7;16 MiB;8 MiB
+\-8;32 MiB;16 MiB
+\-9;64 MiB;32 MiB
+.TE
+.RE
 .PP
-.B FIXME
+The dictionary size differences affect the compressor memory usage too,
+but there are some other differences between LZMA Utils and XZ Utils, which
+make the difference even bigger:
 .RS
 .TS
 tab(;);
@@ -1055,6 +1099,12 @@ Level;xz;LZMA Utils 4.32.x
 \-9;674 MiB;311 MiB
 .TE
 .RE
+.PP
+The default preset level in LZMA Utils is
+.B \-7
+while in XZ Utils it is
+.BR \-6 ,
+so both use 8 MiB dictionary by default.
 .SS "Streamed vs. non-streamed .lzma files"
 Uncompressed size of the file can be stored in the
 .B .lzma
@@ -1147,17 +1197,13 @@ stream,
 considers the file to be corrupt. This may break obscure scripts which have
 assumed that trailing garbage is ignored.
 .SH NOTES
-.SS Builds with disabled features
-.B xz
-can be built with some features disabled, which can make some features
-unavailable. This is never the case with normal non-embedded builds.
-.SS FIXME
+.SS Compressed output may vary
 The exact compressed output produced from the same uncompressed input file
 may vary between XZ Utils versions even if compression options are identical.
 This is because the encoder can be improved (faster or better compression)
 without affecting the file format. The output can vary even between different
-builds of XZ Utils, if different build options are used or if the endianness
-of the hardware is different for different builds.
+builds of the same XZ Utils version, if different build options are used or
+if the endianness of the hardware is different for different builds.
 .PP
 The above means that implementing
 .B \-\-rsyncable

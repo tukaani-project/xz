@@ -28,15 +28,18 @@ doc_DATA = \
 	doc/lzma-file-format.txt
 
 EXTRA_DIST = \
-	version.sh \
-	Doxyfile.in \
-	extra \
 	doc \
+	extra \
 	dos \
 	windows \
+	autogen.sh \
+	version.sh \
+	Doxyfile.in \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
-	COPYING.LGPLv2.1
+	COPYING.LGPLv2.1 \
+	INSTALL.generic \
+	PACKAGERS
 
 ACLOCAL_AMFLAGS = -I m4
 

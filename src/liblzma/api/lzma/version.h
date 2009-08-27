@@ -95,17 +95,18 @@
 		LZMA_VERSION_COMMIT)
 
 
-/* #ifndef is needed for use with MinGW's windres. */
+/* #ifndef is needed for use with windres (MinGW or Cygwin). */
 #ifndef LZMA_H_INTERNAL_RC
 
 /**
  * \brief       Run-time version number as an integer
  *
- * Returns the value of LZMA_VERSION macro at the compile time of liblzma.
+ * Return the value of LZMA_VERSION macro at the compile time of liblzma.
  * This allows the application to compare if it was built against the same,
  * older, or newer version of liblzma that is currently running.
  */
-extern LZMA_API(uint32_t) lzma_version_number(void) lzma_attr_const;
+extern LZMA_API(uint32_t) lzma_version_number(void)
+		lzma_nothrow lzma_attr_const;
 
 
 /**
@@ -114,6 +115,7 @@ extern LZMA_API(uint32_t) lzma_version_number(void) lzma_attr_const;
  * This function may be useful if you want to display which version of
  * liblzma your application is currently using.
  */
-extern LZMA_API(const char *) lzma_version_string(void) lzma_attr_const;
+extern LZMA_API(const char *) lzma_version_string(void)
+		lzma_nothrow lzma_attr_const;
 
 #endif

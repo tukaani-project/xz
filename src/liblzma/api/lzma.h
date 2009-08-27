@@ -198,6 +198,26 @@
 #endif
 
 
+/***********
+ * nothrow *
+ ***********/
+
+/*
+ * None of the functions in liblzma may throw an exception. Even
+ * the functions that use callback functions won't throw exceptions,
+ * because liblzma would break if a callback function threw an exception.
+ */
+#ifndef lzma_nothrow
+#	if defined(__cplusplus)
+#		define lzma_nothrow throw()
+#	elif __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+#		define lzma_nothrow __attribute__((__nothrow__))
+#	else
+#		define lzma_nothrow
+#	endif
+#endif
+
+
 /********************
  * GNU C extensions *
  ********************/

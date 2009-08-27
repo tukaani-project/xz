@@ -115,7 +115,7 @@ typedef uint64_t lzma_vli;
  */
 extern LZMA_API(lzma_ret) lzma_vli_encode(lzma_vli vli,
 		size_t *lzma_restrict vli_pos, uint8_t *lzma_restrict out,
-		size_t *lzma_restrict out_pos, size_t out_size);
+		size_t *lzma_restrict out_pos, size_t out_size) lzma_nothrow;
 
 
 /**
@@ -155,7 +155,7 @@ extern LZMA_API(lzma_ret) lzma_vli_encode(lzma_vli vli,
  */
 extern LZMA_API(lzma_ret) lzma_vli_decode(lzma_vli *lzma_restrict vli,
 		size_t *lzma_restrict vli_pos, const uint8_t *lzma_restrict in,
-		size_t *lzma_restrict in_pos, size_t in_size);
+		size_t *lzma_restrict in_pos, size_t in_size) lzma_nothrow;
 
 
 /**
@@ -164,4 +164,5 @@ extern LZMA_API(lzma_ret) lzma_vli_decode(lzma_vli *lzma_restrict vli,
  * \return      Number of bytes on success (1-9). If vli isn't valid,
  *              zero is returned.
  */
-extern LZMA_API(uint32_t) lzma_vli_size(lzma_vli vli) lzma_attr_pure;
+extern LZMA_API(uint32_t) lzma_vli_size(lzma_vli vli)
+		lzma_nothrow lzma_attr_pure;

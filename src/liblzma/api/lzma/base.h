@@ -144,7 +144,7 @@ typedef enum {
 		 * Decoder would need more memory than allowed by the
 		 * specified memory usage limit. To continue decoding,
 		 * the memory usage limit has to be increased with
-		 * lzma_memlimit().
+		 * lzma_memlimit_set().
 		 */
 
 	LZMA_FORMAT_ERROR       = 7,
@@ -181,8 +181,7 @@ typedef enum {
 		 * format would be exceeded. These limits are huge, thus
 		 * getting this error from an encoder is mostly theoretical.
 		 * For example, the maximum compressed and uncompressed
-		 * size of a .xz Stream created with lzma_stream_encoder is
-		 * 2^63 - 1 bytes (one byte less than 8 EiB).
+		 * size of a .xz Stream is roughly 8 EiB (2^63 bytes).
 		 *
 		 * Decoders return this error if the input data is corrupt.
 		 * This can mean, for example, invalid CRC32 in headers
@@ -208,7 +207,8 @@ typedef enum {
 		 * LZMA_BUF_ERROR. This is intentional.
 		 *
 		 * With zlib, Z_BUF_ERROR may be returned even if the
-		 * application is doing nothing wrong. The above hack
+		 * application is doing nothing wrong, so apps will need
+		 * to handle Z_BUF_ERROR specially. The above hack
 		 * guarantees that liblzma never returns LZMA_BUF_ERROR
 		 * to properly written applications unless the input file
 		 * is truncated or corrupt. This should simplify the
@@ -329,7 +329,8 @@ typedef enum {
  * to liblzma, and some advanced functions take a pointer to lzma_allocator
  * as a separate function argument. The library will use the functions
  * specified in lzma_allocator for memory handling instead of the default
- * malloc() and free().
+ * malloc() and free(). C++ users should note that the custom memory
+ * handling functions must not throw exceptions.
  *
  * liblzma doesn't make an internal copy of lzma_allocator. Thus, it is
  * OK to change these function pointers in the middle of the coding
@@ -359,12 +360,12 @@ typedef struct {
 	 *              for some reason. When allocation fails, functions
 	 *              of liblzma return LZMA_MEM_ERROR.
 	 *
-	 * For performance reasons, the allocator should not waste time
-	 * zeroing the allocated buffers. This is not only about speed, but
-	 * also memory usage, since the operating system kernel doesn't
-	 * necessarily allocate the requested memory in physical memory until
-	 * it is actually used. With small input files liblzma may actually
-	 * need only a fraction of the memory that it requested for allocation.
+	 * The allocator should not waste time zeroing the allocated buffers.
+	 * This is not only about speed, but also memory usage, since the
+	 * operating system kernel doesn't necessarily allocate the requested
+	 * memory in physical memory until it is actually used. With small
+	 * input files, liblzma may actually need only a fraction of the
+	 * memory that it requested for allocation.
 	 *
 	 * \note        LZMA_MEM_ERROR is also used when the size of the
 	 *              allocation would be greater than SIZE_MAX. Thus,
@@ -414,9 +415,9 @@ typedef struct lzma_internal_s lzma_internal;
  * \brief       Passing data to and from liblzma
  *
  * The lzma_stream structure is used for
- *   - passing pointers to input and output buffers to liblzma;
- *   - defining custom memory hander functions; and
- *   - holding a pointer to coder-specific internal data structures.
+ *  - passing pointers to input and output buffers to liblzma;
+ *  - defining custom memory hander functions; and
+ *  - holding a pointer to coder-specific internal data structures.
  *
  * Typical usage:
  *
@@ -459,7 +460,9 @@ typedef struct {
 	uint64_t total_out; /**< Total number of bytes written by liblzma. */
 
 	/**
-	 * Custom memory allocation functions. Set to NULL to use
+	 * \brief       Custom memory allocation functions
+	 *
+	 * In most cases this is NULL which makes liblzma use
 	 * the standard malloc() and free().
 	 */
 	lzma_allocator *allocator;
@@ -516,11 +519,10 @@ typedef struct {
  * to and get output from liblzma.
  *
  * See the description of the coder-specific initialization function to find
- * out what `action' values are supported by the coder. See documentation of
- * lzma_ret for the possible return values.
+ * out what `action' values are supported by the coder.
  */
 extern LZMA_API(lzma_ret) lzma_code(lzma_stream *strm, lzma_action action)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -536,7 +538,7 @@ extern LZMA_API(lzma_ret) lzma_code(lzma_stream *strm, lzma_action action)
  *              stream structure. liblzma doesn't do this, and assumes that
  *              application knows what it is doing.
  */
-extern LZMA_API(void) lzma_end(lzma_stream *strm);
+extern LZMA_API(void) lzma_end(lzma_stream *strm) lzma_nothrow;
 
 
 /**
@@ -561,7 +563,8 @@ extern LZMA_API(void) lzma_end(lzma_stream *strm);
  *              If this function isn't supported by *strm or some other error
  *              occurs, zero is returned.
  */
-extern LZMA_API(uint64_t) lzma_memusage(const lzma_stream *strm);
+extern LZMA_API(uint64_t) lzma_memusage(const lzma_stream *strm)
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -573,7 +576,8 @@ extern LZMA_API(uint64_t) lzma_memusage(const lzma_stream *strm);
  * \return      On success, the current memory usage limit is returned
  *              (always non-zero). On error, zero is returned.
  */
-extern LZMA_API(uint64_t) lzma_memlimit_get(const lzma_stream *strm);
+extern LZMA_API(uint64_t) lzma_memlimit_get(const lzma_stream *strm)
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -589,4 +593,4 @@ extern LZMA_API(uint64_t) lzma_memlimit_get(const lzma_stream *strm);
  *                support memory usage limit or memlimit was zero.
  */
 extern LZMA_API(lzma_ret) lzma_memlimit_set(
-		lzma_stream *strm, uint64_t memlimit);
+		lzma_stream *strm, uint64_t memlimit) lzma_nothrow;

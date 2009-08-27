@@ -50,14 +50,24 @@ typedef struct {
 	lzma_vli uncompressed_size;
 
 	/**
-	 * Offset of the first byte of a Block relative to the beginning
-	 * of the Stream, or if there are multiple Indexes combined,
-	 * relative to the beginning of the first Stream.
+	 * \brief       Compressed offset in the Stream(s)
+	 *
+	 * This is the offset of the first byte of the Block, that is,
+	 * where you need to seek to decode the Block. The offset
+	 * is relative to the beginning of the Stream, or if there are
+	 * multiple Indexes combined, relative to the beginning of the
+	 * first Stream.
 	 */
 	lzma_vli stream_offset;
 
 	/**
-	 * Uncompressed offset
+	 * \brief       Uncompressed offset
+	 *
+	 * When doing random-access reading, it is possible that the target
+	 * offset is not exactly at Block boundary. One will need to compare
+	 * the target offset against uncompressed_offset, and possibly decode
+	 * and throw away some amount of data before reaching the target
+	 * offset.
 	 */
 	lzma_vli uncompressed_offset;
 
@@ -80,7 +90,8 @@ typedef struct {
  * If you want to know how much memory an existing lzma_index structure is
  * using, use lzma_index_memusage(lzma_index_count(i)).
  */
-extern LZMA_API(uint64_t) lzma_index_memusage(lzma_vli record_count);
+extern LZMA_API(uint64_t) lzma_index_memusage(lzma_vli record_count)
+		lzma_nothrow;
 
 
 /**
@@ -94,8 +105,7 @@ extern LZMA_API(uint64_t) lzma_index_memusage(lzma_vli record_count);
  * the i that was given as an argument.
  */
 extern LZMA_API(lzma_index *) lzma_index_init(
-		lzma_index *i, lzma_allocator *allocator)
-		lzma_attr_warn_unused_result;
+		lzma_index *i, lzma_allocator *allocator) lzma_nothrow;
 
 
 /**
@@ -103,7 +113,8 @@ extern LZMA_API(lzma_index *) lzma_index_init(
  *
  * If i is NULL, this does nothing.
  */
-extern LZMA_API(void) lzma_index_end(lzma_index *i, lzma_allocator *allocator);
+extern LZMA_API(void) lzma_index_end(lzma_index *i, lzma_allocator *allocator)
+		lzma_nothrow;
 
 
 /**
@@ -130,13 +141,14 @@ extern LZMA_API(void) lzma_index_end(lzma_index *i, lzma_allocator *allocator);
 extern LZMA_API(lzma_ret) lzma_index_append(
 		lzma_index *i, lzma_allocator *allocator,
 		lzma_vli unpadded_size, lzma_vli uncompressed_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Get the number of Records
  */
-extern LZMA_API(lzma_vli) lzma_index_count(const lzma_index *i) lzma_attr_pure;
+extern LZMA_API(lzma_vli) lzma_index_count(const lzma_index *i)
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -144,7 +156,8 @@ extern LZMA_API(lzma_vli) lzma_index_count(const lzma_index *i) lzma_attr_pure;
  *
  * This is needed to verify the Backward Size field in the Stream Footer.
  */
-extern LZMA_API(lzma_vli) lzma_index_size(const lzma_index *i) lzma_attr_pure;
+extern LZMA_API(lzma_vli) lzma_index_size(const lzma_index *i)
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -154,7 +167,7 @@ extern LZMA_API(lzma_vli) lzma_index_size(const lzma_index *i) lzma_attr_pure;
  * or Index fields.
  */
 extern LZMA_API(lzma_vli) lzma_index_total_size(const lzma_index *i)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -164,7 +177,7 @@ extern LZMA_API(lzma_vli) lzma_index_total_size(const lzma_index *i)
  * were in a single Stream.
  */
 extern LZMA_API(lzma_vli) lzma_index_stream_size(const lzma_index *i)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -176,14 +189,14 @@ extern LZMA_API(lzma_vli) lzma_index_stream_size(const lzma_index *i)
  * possible Stream Padding fields.
  */
 extern LZMA_API(lzma_vli) lzma_index_file_size(const lzma_index *i)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
  * \brief       Get the uncompressed size of the Stream
  */
 extern LZMA_API(lzma_vli) lzma_index_uncompressed_size(const lzma_index *i)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -191,7 +204,7 @@ extern LZMA_API(lzma_vli) lzma_index_uncompressed_size(const lzma_index *i)
  */
 extern LZMA_API(lzma_bool) lzma_index_read(
 		lzma_index *i, lzma_index_record *record)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -200,7 +213,7 @@ extern LZMA_API(lzma_bool) lzma_index_read(
  * Rewind the Index so that next call to lzma_index_read() will return the
  * first Record.
  */
-extern LZMA_API(void) lzma_index_rewind(lzma_index *i);
+extern LZMA_API(void) lzma_index_rewind(lzma_index *i) lzma_nothrow;
 
 
 /**
@@ -227,25 +240,27 @@ extern LZMA_API(void) lzma_index_rewind(lzma_index *i);
  */
 extern LZMA_API(lzma_bool) lzma_index_locate(
 		lzma_index *i, lzma_index_record *record, lzma_vli target)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow;
 
 
 /**
  * \brief       Concatenate Indexes of two Streams
  *
- *
+ * Concatenating Indexes is useful when doing random-access reading in
+ * multi-Stream .xz file, or when combining multiple Streams into single
+ * Stream.
  *
  * \param       dest      Destination Index after which src is appended
- * \param       src       Source Index. The memory allocated for this is
- *                        either moved to be part of *dest or freed if and
- *                        only if the function call succeeds, and src will
- *                        be an invalid pointer.
+ * \param       src       Source Index. If this function succeeds, the
+ *                        memory allocated for src is freed or moved to
+ *                        be part of dest.
  * \param       allocator Custom memory allocator; can be NULL to use
  *                        malloc() and free().
  * \param       padding   Size of the Stream Padding field between Streams.
  *                        This must be a multiple of four.
  *
- * \return      - LZMA_OK: Indexes concatenated successfully.
+ * \return      - LZMA_OK: Indexes concatenated successfully. src is now
+ *                a dangling pointer.
  *              - LZMA_DATA_ERROR: *dest would grow too big.
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
@@ -253,7 +268,7 @@ extern LZMA_API(lzma_bool) lzma_index_locate(
 extern LZMA_API(lzma_ret) lzma_index_cat(lzma_index *lzma_restrict dest,
 		lzma_index *lzma_restrict src,
 		lzma_allocator *allocator, lzma_vli padding)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -265,21 +280,23 @@ extern LZMA_API(lzma_ret) lzma_index_cat(lzma_index *lzma_restrict dest,
  */
 extern LZMA_API(lzma_index *) lzma_index_dup(
 		const lzma_index *i, lzma_allocator *allocator)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Compare if two Index lists are identical
  *
+ * Read positions are not compared.
+ *
  * \return      True if *a and *b are equal, false otherwise.
  */
 extern LZMA_API(lzma_bool) lzma_index_equal(
 		const lzma_index *a, const lzma_index *b)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
- * \brief       Initialize Index encoder
+ * \brief       Initialize .xz Index encoder
  *
  * \param       strm        Pointer to properly prepared lzma_stream
  * \param       i           Pointer to lzma_index which should be encoded.
@@ -293,11 +310,11 @@ extern LZMA_API(lzma_bool) lzma_index_equal(
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_index_encoder(lzma_stream *strm, lzma_index *i)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Initialize Index decoder
+ * \brief       Initialize .xz Index decoder
  *
  * \param       strm        Pointer to properly prepared lzma_stream
  * \param       i           Pointer to a pointer that will be made to point
@@ -319,16 +336,17 @@ extern LZMA_API(lzma_ret) lzma_index_encoder(lzma_stream *strm, lzma_index *i)
  * \note        The memory usage limit is checked early in the decoding
  *              (within the first dozen input bytes or so). The actual memory
  *              is allocated later in smaller pieces. If the memory usage
- *              limit is modified after decoding a part of the Index already,
- *              the new limit may be ignored.
+ *              limit is modified with lzma_memlimit_set() after a part
+ *              of the Index has already been decoded, the new limit may
+ *              get ignored.
  */
 extern LZMA_API(lzma_ret) lzma_index_decoder(
 		lzma_stream *strm, lzma_index **i, uint64_t memlimit)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Single-call Index encoder
+ * \brief       Single-call .xz Index encoder
  *
  * \param       i         Index to be encoded. The read position will be at
  *                        the end of the Index if encoding succeeds, or at
@@ -349,11 +367,11 @@ extern LZMA_API(lzma_ret) lzma_index_decoder(
  *              the internal data is allocated on stack.
  */
 extern LZMA_API(lzma_ret) lzma_index_buffer_encode(lzma_index *i,
-		uint8_t *out, size_t *out_pos, size_t out_size);
+		uint8_t *out, size_t *out_pos, size_t out_size) lzma_nothrow;
 
 
 /**
- * \brief       Single-call Index decoder
+ * \brief       Single-call .xz Index decoder
  *
  * \param       i           Pointer to a pointer that will be made to point
  *                          to the final decoded Index if decoding is
@@ -379,6 +397,7 @@ extern LZMA_API(lzma_ret) lzma_index_buffer_encode(lzma_index *i,
  *              - LZMA_DATA_ERROR
  *              - LZMA_PROG_ERROR
  */
-extern LZMA_API(lzma_ret) lzma_index_buffer_decode(
-		lzma_index **i,  uint64_t *memlimit, lzma_allocator *allocator,
-		const uint8_t *in, size_t *in_pos, size_t in_size);
+extern LZMA_API(lzma_ret) lzma_index_buffer_decode(lzma_index **i,
+		uint64_t *memlimit, lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size)
+		lzma_nothrow;

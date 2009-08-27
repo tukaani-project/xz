@@ -1,6 +1,9 @@
 /**
  * \file        lzma/index_hash.h
  * \brief       Validates Index by using a hash function
+ *
+ * Hashing makes it possible to use constant amount of memory to validate
+ * Index of arbitrary size.
  */
 
 /*
@@ -35,14 +38,15 @@ typedef struct lzma_index_hash_s lzma_index_hash;
  */
 extern LZMA_API(lzma_index_hash *) lzma_index_hash_init(
 		lzma_index_hash *index_hash, lzma_allocator *allocator)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Deallocate lzma_index_hash structure
  */
 extern LZMA_API(void) lzma_index_hash_end(
-		lzma_index_hash *index_hash, lzma_allocator *allocator);
+		lzma_index_hash *index_hash, lzma_allocator *allocator)
+		lzma_nothrow;
 
 
 /**
@@ -60,7 +64,7 @@ extern LZMA_API(void) lzma_index_hash_end(
  */
 extern LZMA_API(lzma_ret) lzma_index_hash_append(lzma_index_hash *index_hash,
 		lzma_vli unpadded_size, lzma_vli uncompressed_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -90,7 +94,7 @@ extern LZMA_API(lzma_ret) lzma_index_hash_append(lzma_index_hash *index_hash,
  */
 extern LZMA_API(lzma_ret) lzma_index_hash_decode(lzma_index_hash *index_hash,
 		const uint8_t *in, size_t *in_pos, size_t in_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -100,4 +104,4 @@ extern LZMA_API(lzma_ret) lzma_index_hash_decode(lzma_index_hash *index_hash,
  */
 extern LZMA_API(lzma_vli) lzma_index_hash_size(
 		const lzma_index_hash *index_hash)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;

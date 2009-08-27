@@ -29,16 +29,16 @@
 /**
  * \brief       Filter options
  *
- * This structure is used to pass Filter ID and a pointer filter's options
- * to liblzma. An array of lzma_filter structures is used to define a filter
- * chain.
+ * This structure is used to pass Filter ID and a pointer filter's
+ * options to liblzma. A few functions work with a single lzma_filter
+ * structure, while most functions expect a filter chain.
  *
  * A filter chain is indicated with an array of lzma_filter structures.
- * The array is terminated with .id = LZMA_VLI_UNKNOWN. Thus, the filter array
- * must have LZMA_FILTERS_MAX + 1 elements (that is, five) to be able to hold
- * any arbitrary filter chain. This is important when using
- * lzma_block_header_decode() from block.h, because too small array would
- * make liblzma write past the end of the filters array.
+ * The array is terminated with .id = LZMA_VLI_UNKNOWN. Thus, the filter
+ * array must have LZMA_FILTERS_MAX + 1 elements (that is, five) to
+ * be able to hold any arbitrary filter chain. This is important when
+ * using lzma_block_header_decode() from block.h, because too small
+ * array would make liblzma write past the end of the filters array.
  */
 typedef struct {
 	/**
@@ -47,6 +47,9 @@ typedef struct {
 	 * Use constants whose name begin with `LZMA_FILTER_' to specify
 	 * different filters. In an array of lzma_filter structures, use
 	 * LZMA_VLI_UNKNOWN to indicate end of filters.
+	 *
+	 * \note        This is not an enum, because on some systems enums
+	 *              cannot be 64-bit.
 	 */
 	lzma_vli id;
 
@@ -70,49 +73,57 @@ typedef struct {
 /**
  * \brief       Test if the given Filter ID is supported for encoding
  *
- * Returns true if the give Filter ID  is supported for encoding by this
+ * Return true if the give Filter ID is supported for encoding by this
  * liblzma build. Otherwise false is returned.
  *
  * There is no way to list which filters are available in this particular
  * liblzma version and build. It would be useless, because the application
  * couldn't know what kind of options the filter would need.
  */
-extern LZMA_API(lzma_bool) lzma_filter_encoder_is_supported(lzma_vli id);
+extern LZMA_API(lzma_bool) lzma_filter_encoder_is_supported(lzma_vli id)
+		lzma_nothrow lzma_attr_const;
 
 
 /**
  * \brief       Test if the given Filter ID is supported for decoding
  *
- * Returns true if the give Filter ID  is supported for decoding by this
+ * Return true if the give Filter ID is supported for decoding by this
  * liblzma build. Otherwise false is returned.
  */
-extern LZMA_API(lzma_bool) lzma_filter_decoder_is_supported(lzma_vli id);
+extern LZMA_API(lzma_bool) lzma_filter_decoder_is_supported(lzma_vli id)
+		lzma_nothrow lzma_attr_const;
 
 
 /**
  * \brief       Calculate rough memory requirements for raw encoder
  *
+ * Because the calculation is rough, this function can be used to calculate
+ * the memory requirements for Block and Stream encoders too.
+ *
  * \param       filters     Array of filters terminated with
  *                          .id == LZMA_VLI_UNKNOWN.
  *
- * \return      Rough number of bytes required for the given filter chain
- *              when encoding.
+ * \return      Rough number of bytes of memory required for the given
+ *              filter chain when encoding.
  */
 extern LZMA_API(uint64_t) lzma_raw_encoder_memusage(const lzma_filter *filters)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
  * \brief       Calculate rough memory requirements for raw decoder
  *
+ * Because the calculation is rough, this function can be used to calculate
+ * the memory requirements for Block and Stream decoders too.
+ *
  * \param       filters     Array of filters terminated with
  *                          .id == LZMA_VLI_UNKNOWN.
  *
- * \return      Rough number of bytes required for the given filter chain
- *              when decoding.
+ * \return      Rough number of bytes of memory required for the given
+ *              filter chain when decoding.
  */
 extern LZMA_API(uint64_t) lzma_raw_decoder_memusage(const lzma_filter *filters)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -121,10 +132,8 @@ extern LZMA_API(uint64_t) lzma_raw_decoder_memusage(const lzma_filter *filters)
  * This function may be useful when implementing custom file formats.
  *
  * \param       strm    Pointer to properly prepared lzma_stream
- * \param       filters Array of lzma_filter structures.
- *                      The end of the array must be marked with
- *                      .id = LZMA_VLI_UNKNOWN. The minimum
- *                      number of filters is one and the maximum is four.
+ * \param       filters Array of lzma_filter structures. The end of the
+ *                      array must be marked with .id = LZMA_VLI_UNKNOWN.
  *
  * The `action' with lzma_code() can be LZMA_RUN, LZMA_SYNC_FLUSH (if the
  * filter chain supports it), or LZMA_FINISH.
@@ -136,7 +145,7 @@ extern LZMA_API(uint64_t) lzma_raw_decoder_memusage(const lzma_filter *filters)
  */
 extern LZMA_API(lzma_ret) lzma_raw_encoder(
 		lzma_stream *strm, const lzma_filter *filters)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -154,12 +163,14 @@ extern LZMA_API(lzma_ret) lzma_raw_encoder(
  */
 extern LZMA_API(lzma_ret) lzma_raw_decoder(
 		lzma_stream *strm, const lzma_filter *filters)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Single-call raw encoder
  *
+ * \param       filters     Array of lzma_filter structures. The end of the
+ *                          array must be marked with .id = LZMA_VLI_UNKNOWN.
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
@@ -176,16 +187,22 @@ extern LZMA_API(lzma_ret) lzma_raw_decoder(
  *              - LZMA_MEM_ERROR
  *              - LZMA_DATA_ERROR
  *              - LZMA_PROG_ERROR
+ *
+ * \note        There is no function to calculate how big output buffer
+ *              would surely be big enough. (lzma_stream_buffer_bound()
+ *              works only for lzma_stream_buffer_encode().)
  */
 extern LZMA_API(lzma_ret) lzma_raw_buffer_encode(
 		const lzma_filter *filters, lzma_allocator *allocator,
 		const uint8_t *in, size_t in_size, uint8_t *out,
-		size_t *out_pos, size_t out_size);
+		size_t *out_pos, size_t out_size) lzma_nothrow;
 
 
 /**
  * \brief       Single-call raw decoder
  *
+ * \param       filters     Array of lzma_filter structures. The end of the
+ *                          array must be marked with .id = LZMA_VLI_UNKNOWN.
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
@@ -202,7 +219,7 @@ extern LZMA_API(lzma_ret) lzma_raw_buffer_encode(
 extern LZMA_API(lzma_ret) lzma_raw_buffer_decode(
 		const lzma_filter *filters, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size,
-		uint8_t *out, size_t *out_pos, size_t out_size);
+		uint8_t *out, size_t *out_pos, size_t out_size) lzma_nothrow;
 
 
 /**
@@ -225,7 +242,7 @@ extern LZMA_API(lzma_ret) lzma_raw_buffer_decode(
  *              lzma_properties_encode() returns LZMA_OPTIONS_ERROR.
  */
 extern LZMA_API(lzma_ret) lzma_properties_size(
-		uint32_t *size, const lzma_filter *filter);
+		uint32_t *size, const lzma_filter *filter) lzma_nothrow;
 
 
 /**
@@ -250,7 +267,7 @@ extern LZMA_API(lzma_ret) lzma_properties_size(
  *              of the Filter Properties field is zero.
  */
 extern LZMA_API(lzma_ret) lzma_properties_encode(
-		const lzma_filter *filter, uint8_t *props);
+		const lzma_filter *filter, uint8_t *props) lzma_nothrow;
 
 
 /**
@@ -276,7 +293,7 @@ extern LZMA_API(lzma_ret) lzma_properties_encode(
  */
 extern LZMA_API(lzma_ret) lzma_properties_decode(
 		lzma_filter *filter, lzma_allocator *allocator,
-		const uint8_t *props, size_t props_size);
+		const uint8_t *props, size_t props_size) lzma_nothrow;
 
 
 /**
@@ -300,7 +317,7 @@ extern LZMA_API(lzma_ret) lzma_properties_decode(
  */
 extern LZMA_API(lzma_ret) lzma_filter_flags_size(
 		uint32_t *size, const lzma_filter *filters)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -323,7 +340,7 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_size(
  */
 extern LZMA_API(lzma_ret) lzma_filter_flags_encode(const lzma_filter *filters,
 		uint8_t *out, size_t *out_pos, size_t out_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -340,4 +357,4 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_encode(const lzma_filter *filters,
 extern LZMA_API(lzma_ret) lzma_filter_flags_decode(
 		lzma_filter *filters, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;

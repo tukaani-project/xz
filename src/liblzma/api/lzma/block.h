@@ -160,9 +160,9 @@ typedef struct {
 	 *
 	 * This is handled very similarly to compressed_size above.
 	 *
-	 * Unlike compressed_size, uncompressed_size is needed by fewer
-	 * functions. This is because uncompressed_size isn't needed to
-	 * validate that Block stays within proper limits.
+	 * uncompressed_size is needed by fewer functions than
+	 * compressed_size. This is because uncompressed_size isn't
+	 * needed to validate that Block stays within proper limits.
 	 *
 	 * Read by:
 	 *  - lzma_block_header_size()
@@ -222,7 +222,7 @@ typedef struct {
 	 *  - lzma_block_buffer_encode()
 	 *  - lzma_block_buffer_decode()
 	 */
-	uint8_t raw_check[64];
+	uint8_t raw_check[LZMA_CHECK_SIZE_MAX];
 
 	/*
 	 * Reserved space to allow possible future extensions without
@@ -294,14 +294,14 @@ typedef struct {
  *              a side-effect validates the filter chain.
  */
 extern LZMA_API(lzma_ret) lzma_block_header_size(lzma_block *block)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
  * \brief       Encode Block Header
  *
  * The caller must have calculated the size of the Block Header already with
- * lzma_block_header_size(). If larger value than the one calculated by
+ * lzma_block_header_size(). If a value larger than the one calculated by
  * lzma_block_header_size() is used, the Block Header will be padded to the
  * specified size.
  *
@@ -317,7 +317,7 @@ extern LZMA_API(lzma_ret) lzma_block_header_size(lzma_block *block)
  */
 extern LZMA_API(lzma_ret) lzma_block_header_encode(
 		const lzma_block *block, uint8_t *out)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -347,7 +347,7 @@ extern LZMA_API(lzma_ret) lzma_block_header_encode(
  */
 extern LZMA_API(lzma_ret) lzma_block_header_decode(lzma_block *block,
 		lzma_allocator *allocator, const uint8_t *in)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -379,7 +379,7 @@ extern LZMA_API(lzma_ret) lzma_block_header_decode(lzma_block *block,
  */
 extern LZMA_API(lzma_ret) lzma_block_compressed_size(
 		lzma_block *block, lzma_vli unpadded_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -394,7 +394,7 @@ extern LZMA_API(lzma_ret) lzma_block_compressed_size(
  * \return      Unpadded Size on success, or zero on error.
  */
 extern LZMA_API(lzma_vli) lzma_block_unpadded_size(const lzma_block *block)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -407,7 +407,7 @@ extern LZMA_API(lzma_vli) lzma_block_unpadded_size(const lzma_block *block)
  *              zero is returned.
  */
 extern LZMA_API(lzma_vli) lzma_block_total_size(const lzma_block *block)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -426,7 +426,7 @@ extern LZMA_API(lzma_vli) lzma_block_total_size(const lzma_block *block)
  */
 extern LZMA_API(lzma_ret) lzma_block_encoder(
 		lzma_stream *strm, lzma_block *block)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -444,16 +444,17 @@ extern LZMA_API(lzma_ret) lzma_block_encoder(
  */
 extern LZMA_API(lzma_ret) lzma_block_decoder(
 		lzma_stream *strm, lzma_block *block)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
- * \brief       Calculate maximum output buffer size for single-call encoding
+ * \brief       Calculate maximum output size for single-call Block encoding
  *
  * This is equivalent to lzma_stream_buffer_bound() but for .xz Blocks.
  * See the documentation of lzma_stream_buffer_bound().
  */
-extern LZMA_API(size_t) lzma_block_buffer_bound(size_t uncompressed_size);
+extern LZMA_API(size_t) lzma_block_buffer_bound(size_t uncompressed_size)
+		lzma_nothrow;
 
 
 /**
@@ -474,7 +475,7 @@ extern LZMA_API(size_t) lzma_block_buffer_bound(size_t uncompressed_size);
  * still works normally, because it doesn't read the filters array.
  *
  * \param       block       Block options: block->version, block->check,
- *                          and block->filters must be initialized.
+ *                          and block->filters must have been initialized.
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
@@ -496,7 +497,7 @@ extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
 		lzma_block *block, lzma_allocator *allocator,
 		const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -529,4 +530,5 @@ extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
 extern LZMA_API(lzma_ret) lzma_block_buffer_decode(
 		lzma_block *block, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size,
-		uint8_t *out, size_t *out_pos, size_t out_size);
+		uint8_t *out, size_t *out_pos, size_t out_size)
+		lzma_nothrow;

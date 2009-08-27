@@ -21,7 +21,7 @@
  * \brief       Type of the integrity check (Check ID)
  *
  * The .xz format supports multiple types of checks that are calculated
- * from the uncompressed data. They very in both speed and ability to
+ * from the uncompressed data. They vary in both speed and ability to
  * detect errors.
  */
 typedef enum {
@@ -71,7 +71,7 @@ typedef enum {
 /**
  * \brief       Test if the given Check ID is supported
  *
- * Returns true if the given Check ID is supported by this liblzma build.
+ * Return true if the given Check ID is supported by this liblzma build.
  * Otherwise false is returned. It is safe to call this with a value that
  * is not in the range [0, 15]; in that case the return value is always false.
  *
@@ -79,7 +79,7 @@ typedef enum {
  * supported (even if liblzma is built with limited features).
  */
 extern LZMA_API(lzma_bool) lzma_check_is_supported(lzma_check check)
-		lzma_attr_const;
+		lzma_nothrow lzma_attr_const;
 
 
 /**
@@ -92,7 +92,8 @@ extern LZMA_API(lzma_bool) lzma_check_is_supported(lzma_check check)
  *
  * If the argument is not in the range [0, 15], UINT32_MAX is returned.
  */
-extern LZMA_API(uint32_t) lzma_check_size(lzma_check check) lzma_attr_const;
+extern LZMA_API(uint32_t) lzma_check_size(lzma_check check)
+		lzma_nothrow lzma_attr_const;
 
 
 /**
@@ -104,32 +105,32 @@ extern LZMA_API(uint32_t) lzma_check_size(lzma_check check) lzma_attr_const;
 /**
  * \brief       Calculate CRC32
  *
- * Calculates CRC32 using the polynomial from the IEEE 802.3 standard.
+ * Calculate CRC32 using the polynomial from the IEEE 802.3 standard.
  *
  * \param       buf     Pointer to the input buffer
  * \param       size    Size of the input buffer
  * \param       crc     Previously returned CRC value. This is used to
  *                      calculate the CRC of a big buffer in smaller chunks.
- *                      Set to zero when there is no previous value.
+ *                      Set to zero when starting a new calculation.
  *
  * \return      Updated CRC value, which can be passed to this function
  *              again to continue CRC calculation.
  */
 extern LZMA_API(uint32_t) lzma_crc32(
 		const uint8_t *buf, size_t size, uint32_t crc)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
  * \brief       Calculate CRC64
  *
- * Calculates CRC64 using the polynomial from the ECMA-182 standard.
+ * Calculate CRC64 using the polynomial from the ECMA-182 standard.
  *
  * This function is used similarly to lzma_crc32(). See its documentation.
  */
 extern LZMA_API(uint64_t) lzma_crc64(
 		const uint8_t *buf, size_t size, uint64_t crc)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /*
@@ -145,4 +146,5 @@ extern LZMA_API(uint64_t) lzma_crc64(
  * returned LZMA_NO_CHECK, LZMA_UNSUPPORTED_CHECK, or LZMA_GET_CHECK.
  * Calling this function in any other situation has undefined behavior.
  */
-extern LZMA_API(lzma_check) lzma_get_check(const lzma_stream *strm);
+extern LZMA_API(lzma_check) lzma_get_check(const lzma_stream *strm)
+		lzma_nothrow;

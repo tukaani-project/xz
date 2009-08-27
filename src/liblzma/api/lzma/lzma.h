@@ -20,9 +20,12 @@
 /**
  * \brief       LZMA1 Filter ID
  *
- * LZMA1 is the very same thing as what was called just LZMA in earlier
- * LZMA Utils, 7-Zip, and LZMA SDK. It's called LZMA1 here to prevent
- * developers from accidentally using LZMA when they actually want LZMA2.
+ * LZMA1 is the very same thing as what was called just LZMA in LZMA Utils,
+ * 7-Zip, and LZMA SDK. It's called LZMA1 here to prevent developers from
+ * accidentally using LZMA when they actually want LZMA2.
+ *
+ * LZMA1 shouldn't be used for new applications unless you _really_ know
+ * what you are doing. LZMA2 is almost always a better choice.
  */
 #define LZMA_FILTER_LZMA1       LZMA_VLI_C(0x4000000000000001)
 
@@ -30,9 +33,9 @@
  * \brief       LZMA2 Filter ID
  *
  * Usually you want this instead of LZMA1. Compared to LZMA1, LZMA2 adds
- * support for LZMA_SYNC_FLUSH, uncompressed chunks (expands uncompressible
- * data less), possibility to change lc/lp/pb in the middle of encoding, and
- * some other internal improvements.
+ * support for LZMA_SYNC_FLUSH, uncompressed chunks (smaller expansion
+ * when trying to compress uncompressible data), possibility to change
+ * lc/lp/pb in the middle of encoding, and some other internal improvements.
  */
 #define LZMA_FILTER_LZMA2       LZMA_VLI_C(0x21)
 
@@ -103,7 +106,7 @@ typedef enum {
 /**
  * \brief       Test if given match finder is supported
  *
- * Returns true if the given match finder is supported by this liblzma build.
+ * Return true if the given match finder is supported by this liblzma build.
  * Otherwise false is returned. It is safe to call this with a value that
  * isn't listed in lzma_match_finder enumeration; the return value will be
  * false.
@@ -115,11 +118,11 @@ typedef enum {
  * match finders don't need.
  */
 extern LZMA_API(lzma_bool) lzma_mf_is_supported(lzma_match_finder match_finder)
-		lzma_attr_const;
+		lzma_nothrow lzma_attr_const;
 
 
 /**
- * \brief       LZMA compression modes
+ * \brief       Compression modes
  *
  * This selects the function used to analyze the data produced by the match
  * finder.
@@ -139,7 +142,7 @@ typedef enum {
 		 *
 		 * This is usually notably slower than fast mode. Use this
 		 * together with binary tree match finders to expose the
-		 * full potential of the LZMA encoder.
+		 * full potential of the LZMA1 or LZMA2 encoder.
 		 */
 } lzma_mode;
 
@@ -147,7 +150,7 @@ typedef enum {
 /**
  * \brief       Test if given compression mode is supported
  *
- * Returns true if the given compression mode is supported by this liblzma
+ * Return true if the given compression mode is supported by this liblzma
  * build. Otherwise false is returned. It is safe to call this with a value
  * that isn't listed in lzma_mode enumeration; the return value will be false.
  *
@@ -157,7 +160,7 @@ typedef enum {
  * additional options to the encoder that the older modes don't need.
  */
 extern LZMA_API(lzma_bool) lzma_mode_is_supported(lzma_mode mode)
-		lzma_attr_const;
+		lzma_nothrow lzma_attr_const;
 
 
 /**
@@ -178,7 +181,8 @@ typedef struct {
 	 * uncompressed data is kept in memory. One method to reduce size of
 	 * the uncompressed data is to store distance-length pairs, which
 	 * indicate what data to repeat from the dictionary buffer. Thus,
-	 * the bigger the dictionary, the better compression ratio usually is.
+	 * the bigger the dictionary, the better the compression ratio
+	 * usually is.
 	 *
 	 * Maximum size of the dictionary depends on multiple things:
 	 *  - Memory usage limit
@@ -187,9 +191,9 @@ typedef struct {
 	 *
 	 * Currently the maximum dictionary size for encoding is 1.5 GiB
 	 * (i.e. (UINT32_C(1) << 30) + (UINT32_C(1) << 29)) even on 64-bit
-	 * systems for certain match finder implementation reasons. In future,
-	 * there may be match finders that support bigger dictionaries (3 GiB
-	 * will probably be the maximum).
+	 * systems for certain match finder implementation reasons. In the
+	 * future, there may be match finders that support bigger
+	 * dictionaries.
 	 *
 	 * Decoder already supports dictionaries up to 4 GiB - 1 B (i.e.
 	 * UINT32_MAX), so increasing the maximum dictionary size of the
@@ -209,26 +213,20 @@ typedef struct {
 	 * \brief       Pointer to an initial dictionary
 	 *
 	 * It is possible to initialize the LZ77 history window using
-	 * a preset dictionary. Here is a good quote from zlib's
-	 * documentation; this applies to LZMA as is:
+	 * a preset dictionary. It is useful when compressing many
+	 * similar, relatively small chunks of data independently from
+	 * each other. The preset dictionary should contain typical
+	 * strings that occur in the files being compressed. The most
+	 * probable strings should be near the end of the preset dictionary.
 	 *
-	 * "The dictionary should consist of strings (byte sequences) that
-	 * are likely to be encountered later in the data to be compressed,
-	 * with the most commonly used strings preferably put towards the
-	 * end of the dictionary. Using a dictionary is most useful when
-	 * the data to be compressed is short and can be predicted with
-	 * good accuracy; the data can then be compressed better than
-	 * with the default empty dictionary."
-	 * (From deflateSetDictionary() in zlib.h of zlib version 1.2.3)
-	 *
-	 * This feature should be used only in special situations.
-	 * It works correctly only with raw encoding and decoding.
+	 * This feature should be used only in special situations. For
+	 * now, it works correctly only with raw encoding and decoding.
 	 * Currently none of the container formats supported by
 	 * liblzma allow preset dictionary when decoding, thus if
-	 * you create a .lzma file with preset dictionary, it cannot
-	 * be decoded with the regular .lzma decoder functions.
-	 *
-	 * \todo        This feature is not implemented yet.
+	 * you create a .xz or .lzma file with preset dictionary, it
+	 * cannot be decoded with the regular decoder functions. In the
+	 * future, the .xz format will likely get support for preset
+	 * dictionary though.
 	 */
 	const uint8_t *preset_dict;
 
@@ -236,9 +234,13 @@ typedef struct {
 	 * \brief       Size of the preset dictionary
 	 *
 	 * Specifies the size of the preset dictionary. If the size is
-	 * bigger than dict_size, only the last dict_size bytes are processed.
+	 * bigger than dict_size, only the last dict_size bytes are
+	 * processed.
 	 *
 	 * This variable is read only when preset_dict is not NULL.
+	 * If preset_dict is not NULL but preset_dict_size is zero,
+	 * no preset dictionary is used (identical to only setting
+	 * preset_dict to NULL).
 	 */
 	uint32_t preset_dict_size;
 
@@ -257,9 +259,9 @@ typedef struct {
 	 * results in some cases like email servers doing virus scanning.
 	 * This limit also simplifies the internal implementation in liblzma.
 	 *
-	 * There may be LZMA streams that have lc + lp > 4 (maximum lc
-	 * possible would be 8). It is not possible to decode such streams
-	 * with liblzma.
+	 * There may be LZMA1 streams that have lc + lp > 4 (maximum possible
+	 * lc would be 8). It is not possible to decode such streams with
+	 * liblzma.
 	 */
 	uint32_t lc;
 #	define LZMA_LCLP_MIN    0
@@ -309,7 +311,7 @@ typedef struct {
 	 */
 	lzma_bool persistent;
 
-	/** LZMA compression mode */
+	/** Compression mode */
 	lzma_mode mode;
 
 	/**
@@ -323,11 +325,12 @@ typedef struct {
 	 * encoded; it's not truncated to nice_len.)
 	 *
 	 * Bigger values usually increase the compression ratio and
-	 * compression time. For most files, 30 to 100 is a good value,
+	 * compression time. For most files, 32 to 128 is a good value,
 	 * which gives very good compression ratio at good speed.
 	 *
-	 * The exact minimum value depends on the match finder. The maximum is
-	 * 273, which is the maximum length of a match that LZMA can encode.
+	 * The exact minimum value depends on the match finder. The maximum
+	 * is 273, which is the maximum length of a match that LZMA1 and
+	 * LZMA2 can encode.
 	 */
 	uint32_t nice_len;
 
@@ -404,4 +407,4 @@ typedef struct {
  * when building liblzma.
  */
 extern LZMA_API(lzma_bool) lzma_lzma_preset(
-		lzma_options_lzma *options, uint32_t preset);
+		lzma_options_lzma *options, uint32_t preset) lzma_nothrow;

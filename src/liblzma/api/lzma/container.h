@@ -55,7 +55,7 @@
  *
  * This flag doesn't affect the memory usage requirements of the decoder (at
  * least not significantly). The memory usage of the encoder may be increased
- * a little but only at the lowest preset levels (0-4 or so).
+ * a little but only at the lowest preset levels (0-2).
  */
 #define LZMA_PRESET_EXTREME       (UINT32_C(1) << 31)
 
@@ -68,7 +68,7 @@
  * \param       preset  Compression preset (level and possible flags)
  */
 extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -79,7 +79,7 @@ extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
  * \param       preset  Compression preset (level and possible flags)
  */
 extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;
 
 
 /**
@@ -101,14 +101,17 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  *
  * \return      - LZMA_OK: Initialization succeeded. Use lzma_code() to
  *                encode your data.
- *              - LZMA_MEM_ERROR: Memory allocation failed. All memory
- *                previously allocated for *strm is now freed.
+ *              - LZMA_MEM_ERROR: Memory allocation failed.
  *              - LZMA_OPTIONS_ERROR: The given compression level is not
  *                supported by this build of liblzma.
  *              - LZMA_UNSUPPORTED_CHECK: The given check type is not
  *                supported by this liblzma build.
  *              - LZMA_PROG_ERROR: One or more of the parameters have values
  *                that will never be valid. For example, strm == NULL.
+ *
+ * If initialization fails (return value is not LZMA_OK), all the memory
+ * allocated for *strm by liblzma is always freed. Thus, there is no need
+ * to call lzma_end() after failed initialization.
  *
  * If initialization succeeds, use lzma_code() to do the actual encoding.
  * Valid values for `action' (the second argument of lzma_code()) are
@@ -117,7 +120,7 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  */
 extern LZMA_API(lzma_ret) lzma_easy_encoder(
 		lzma_stream *strm, uint32_t preset, lzma_check check)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -150,7 +153,7 @@ extern LZMA_API(lzma_ret) lzma_easy_encoder(
 extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
 		uint32_t preset, lzma_check check,
 		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
-		uint8_t *out, size_t *out_pos, size_t out_size);
+		uint8_t *out, size_t *out_pos, size_t out_size) lzma_nothrow;
 
 
 /**
@@ -170,7 +173,7 @@ extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
  */
 extern LZMA_API(lzma_ret) lzma_stream_encoder(lzma_stream *strm,
 		const lzma_filter *filters, lzma_check check)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -195,7 +198,7 @@ extern LZMA_API(lzma_ret) lzma_stream_encoder(lzma_stream *strm,
  */
 extern LZMA_API(lzma_ret) lzma_alone_encoder(
 		lzma_stream *strm, const lzma_options_lzma *options)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -220,11 +223,12 @@ extern LZMA_API(lzma_ret) lzma_alone_encoder(
  *              uncompressible data. Currently there is no function to
  *              calculate the maximum expansion of multi-call encoding.
  */
-extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size);
+extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size)
+		lzma_nothrow;
 
 
 /**
- * \brief       Single-call Stream encoder
+ * \brief       Single-call .xz Stream encoder
  *
  * \param       filters     Array of filters. This must be terminated with
  *                          filters[n].id = LZMA_VLI_UNKNOWN. See filter.h
@@ -252,7 +256,7 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(
 		lzma_filter *filters, lzma_check check,
 		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /************
@@ -317,7 +321,7 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(
  */
 extern LZMA_API(lzma_ret) lzma_stream_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -337,7 +341,7 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder(
  */
 extern LZMA_API(lzma_ret) lzma_auto_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -352,7 +356,7 @@ extern LZMA_API(lzma_ret) lzma_auto_decoder(
  */
 extern LZMA_API(lzma_ret) lzma_alone_decoder(
 		lzma_stream *strm, uint64_t memlimit)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -397,4 +401,4 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
 		uint64_t *memlimit, uint32_t flags, lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;

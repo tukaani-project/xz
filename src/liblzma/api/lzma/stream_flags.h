@@ -28,7 +28,7 @@
 
 
 /**
- * Options for encoding and decoding Stream Header and Stream Footer
+ * \brief       Options for encoding/decoding Stream Header and Stream Footer
  */
 typedef struct {
 	/**
@@ -125,7 +125,7 @@ typedef struct {
  */
 extern LZMA_API(lzma_ret) lzma_stream_header_encode(
 		const lzma_stream_flags *options, uint8_t *out)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -142,7 +142,7 @@ extern LZMA_API(lzma_ret) lzma_stream_header_encode(
  */
 extern LZMA_API(lzma_ret) lzma_stream_footer_encode(
 		const lzma_stream_flags *options, uint8_t *out)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -177,7 +177,7 @@ extern LZMA_API(lzma_ret) lzma_stream_footer_encode(
  */
 extern LZMA_API(lzma_ret) lzma_stream_header_decode(
 		lzma_stream_flags *options, const uint8_t *in)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -204,7 +204,7 @@ extern LZMA_API(lzma_ret) lzma_stream_header_decode(
  */
 extern LZMA_API(lzma_ret) lzma_stream_footer_decode(
 		lzma_stream_flags *options, const uint8_t *in)
-		lzma_attr_warn_unused_result;
+		lzma_nothrow lzma_attr_warn_unused_result;
 
 
 /**
@@ -224,4 +224,4 @@ extern LZMA_API(lzma_ret) lzma_stream_footer_decode(
  */
 extern LZMA_API(lzma_ret) lzma_stream_flags_compare(
 		const lzma_stream_flags *a, const lzma_stream_flags *b)
-		lzma_attr_pure;
+		lzma_nothrow lzma_attr_pure;

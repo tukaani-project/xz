@@ -69,7 +69,7 @@ A:  For now, no. Since XZ Utils supports the .lzma format, it's usually
 
 Q:  Can I recover parts of a broken .xz file (e.g. corrupted CD-R)?
 
-A:  It may be possible if the file consist of multiple blocks, which
+A:  It may be possible if the file consists of multiple blocks, which
     typically is not the case if the file was created in single-threaded
     mode. There is no recovery program yet.
 

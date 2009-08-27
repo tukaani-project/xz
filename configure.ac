@@ -442,16 +442,9 @@ fi
 
 echo
 echo "Initializing Libtool:"
-CXX=no
-F77=no
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
-AC_LIBTOOL_RC
-
-dnl Some day we can drop support for libtool 1.5.x. Then the above five
-dnl lines can be replaced with these:
-dnl LT_INIT([win32-dll])
-dnl LT_LANG([Windows Resource])
+LT_PREREQ([2.2])
+LT_INIT([win32-dll])
+LT_LANG([Windows Resource])
 
 # This is a bit wrong since it is possible to request that only some libs
 # are built as shared. Using that feature isn't so common though, and this

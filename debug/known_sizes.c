@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "sysdefs.h"
+#include "lzma.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/unistd.h>

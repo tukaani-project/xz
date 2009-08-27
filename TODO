@@ -16,6 +16,12 @@ Known bugs
     as multiple cores. In context of xz, it probably should.
     Hyperthreading is good at least with p7zip.
 
+    XZ Utils compress some files significantly worse than LZMA Utils.
+    This is due to faster compression presets used by XZ Utils, and
+    can be worked around by using "xz --extreme". However, the presets
+    need some tweaking and maybe this issue can be minimized without
+    making the typical case too much slower.
+
 
 Missing features
 ----------------

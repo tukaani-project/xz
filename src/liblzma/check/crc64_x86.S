@@ -108,8 +108,11 @@ LZMA_CRC64:
 	 */
 #if (!defined(PIC) && !defined(__PIC__)) \
 		|| (defined(_WIN32) || defined(__CYGWIN__))
-	/* Not PIC */
-	movl	$LZMA_CRC64_TABLE, %ebx
+	/*
+	 * Not PIC.
+	 * Using MAKE_SYM since $LZMA_CRC64_TABLE breaks with GCC 3.
+	 */
+	movl	MAKE_SYM($, LZMA_CRC64_TABLE), %ebx
 #elif defined(__MACH__)
 	/* Mach-O */
 	call	.L_get_pc

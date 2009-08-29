@@ -43,7 +43,7 @@ main(void)
 	int name[2] = { CTL_HW, HW_NCPU };
 	int cpus;
 	size_t cpus_size = sizeof(cpus);
-	sysctl(name, 2, &cpus, &cpus_size, NULL, NULL);
+	sysctl(name, 2, &cpus, &cpus_size, NULL, 0);
 	return 0;
 }
 ]])], [

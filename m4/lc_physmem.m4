@@ -45,7 +45,7 @@ main(void)
 	int name[2] = { CTL_HW, HW_PHYSMEM };
 	unsigned long mem;
 	size_t mem_ptr_size = sizeof(mem);
-	sysctl(name, 2, &mem, &mem_ptr_size, NULL, NULL);
+	sysctl(name, 2, &mem, &mem_ptr_size, NULL, 0);
 	return 0;
 }
 ]])], [

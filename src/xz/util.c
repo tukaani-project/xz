@@ -13,15 +13,6 @@
 #include "private.h"
 
 
-// Thousand separator for format strings is not supported outside POSIX.
-// This is used in uint64_to_str() and double_to_str().
-#ifdef DOSLIKE
-#	define THOUSAND ""
-#else
-#	define THOUSAND "'"
-#endif
-
-
 extern void *
 xrealloc(void *ptr, size_t size)
 {
@@ -135,7 +126,19 @@ uint64_to_str(uint64_t value, uint32_t slot)
 
 	assert(slot < ARRAY_SIZE(bufs));
 
-	snprintf(bufs[slot], sizeof(bufs[slot]), "%" THOUSAND PRIu64, value);
+	static enum { UNKNOWN, WORKS, BROKEN } thousand = UNKNOWN;
+	if (thousand == UNKNOWN) {
+		bufs[slot][0] = '\0';
+		snprintf(bufs[slot], sizeof(bufs[slot]), "%'" PRIu64,
+				UINT64_C(1));
+		thousand = bufs[slot][0] == '1' ? WORKS : BROKEN;
+	}
+
+	if (thousand == WORKS)
+		snprintf(bufs[slot], sizeof(bufs[slot]), "%'" PRIu64, value);
+	else
+		snprintf(bufs[slot], sizeof(bufs[slot]), "%" PRIu64, value);
+
 	return bufs[slot];
 }
 
@@ -147,7 +150,18 @@ double_to_str(double value)
 	// fields anyway.
 	static char buf[64];
 
-	snprintf(buf, sizeof(buf), "%" THOUSAND ".1f", value);
+	static enum { UNKNOWN, WORKS, BROKEN } thousand = UNKNOWN;
+	if (thousand == UNKNOWN) {
+		buf[0] = '\0';
+		snprintf(buf, sizeof(buf), "%'.1f", 2.0);
+		thousand = buf[0] == '2' ? WORKS : BROKEN;
+	}
+
+	if (thousand == WORKS)
+		snprintf(buf, sizeof(buf), "%'.1f", value);
+	else
+		snprintf(buf, sizeof(buf), "%.1f", value);
+
 	return buf;
 }
 

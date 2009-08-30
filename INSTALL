@@ -110,6 +110,11 @@ XZ Utils Installation
     You will need to pass --disable-assembler to configure when building
     on OS/2.
 
+    To omit large number of harmless warnings about visibility support,
+    pass gl_cv_cc_visibility=no as an argument to the configure script.
+    This isn't mandatory since it should have no effect on the resulting
+    binaries.
+
 
 1.3. Adding support for new platforms
 

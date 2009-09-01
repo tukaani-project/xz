@@ -87,47 +87,47 @@ parse_options(const char *str, const option_map *opts,
 					"pairs separated with commas"), str);
 
 		// Look for the option name from the option map.
-		bool found = false;
-		for (size_t i = 0; opts[i].name != NULL; ++i) {
-			if (strcmp(name, opts[i].name) != 0)
-				continue;
+		size_t i = 0;
+		while (true) {
+			if (opts[i].name == NULL)
+				message_fatal(_("%s: Invalid option name"),
+						name);
 
-			if (opts[i].map != NULL) {
-				// value is a string which we should map
-				// to an integer.
-				size_t j;
-				for (j = 0; opts[i].map[j].name != NULL; ++j) {
-					if (strcmp(opts[i].map[j].name, value)
-							== 0)
-						break;
-				}
+			if (strcmp(name, opts[i].name) == 0)
+				break;
 
-				if (opts[i].map[j].name == NULL)
-					message_fatal(_("%s: Invalid option "
-							"value"), value);
-
-				set(filter_options, i, opts[i].map[j].id,
-						value);
-
-			} else if (opts[i].min == UINT64_MAX) {
-				// value is a special string that will be
-				// parsed by set().
-				set(filter_options, i, 0, value);
-
-			} else {
-				// value is an integer.
-				const uint64_t v = str_to_uint64(name, value,
-						opts[i].min, opts[i].max);
-				set(filter_options, i, v, value);
-			}
-
-			found = true;
-			break;
+			++i;
 		}
 
-		if (!found)
-			message_fatal(_("%s: Invalid option name"), name);
+		// Option was found from the map. See how we should handle it.
+		if (opts[i].map != NULL) {
+			// value is a string which we should map
+			// to an integer.
+			size_t j;
+			for (j = 0; opts[i].map[j].name != NULL; ++j) {
+				if (strcmp(opts[i].map[j].name, value) == 0)
+					break;
+			}
 
+			if (opts[i].map[j].name == NULL)
+				message_fatal(_("%s: Invalid option value"),
+						value);
+
+			set(filter_options, i, opts[i].map[j].id, value);
+
+		} else if (opts[i].min == UINT64_MAX) {
+			// value is a special string that will be
+			// parsed by set().
+			set(filter_options, i, 0, value);
+
+		} else {
+			// value is an integer.
+			const uint64_t v = str_to_uint64(name, value,
+					opts[i].min, opts[i].max);
+			set(filter_options, i, v, value);
+		}
+
+		// Check if it was the last option.
 		if (split == NULL)
 			break;
 

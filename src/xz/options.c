@@ -68,11 +68,9 @@ parse_options(const char *str, const option_map *opts,
 	char *s = xstrdup(str);
 	char *name = s;
 
-	while (true) {
+	while (*name != '\0') {
 		if (*name == ',') {
-			if (*++name == '\0')
-				break;
-
+			++name;
 			continue;
 		}
 

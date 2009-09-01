@@ -22,6 +22,9 @@ Known bugs
     need some tweaking and maybe this issue can be minimized without
     making the typical case too much slower.
 
+    xz doesn't quote unprintable characters when it displays file names
+    given on the command line.
+
 
 Missing features
 ----------------

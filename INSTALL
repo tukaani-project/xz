@@ -222,6 +222,10 @@ XZ Utils Installation
                 means that the RAM holding the tables won't be shared
                 between applications linked against shared liblzma.
 
+                This option doesn't modify CFLAGS to tell the compiler
+                to optimize for size. You need to add -Os or equivalent
+                flag(s) to CFLAGS manually.
+
     --disable-threads
                 Disable threading support. This makes some things
                 thread-unsafe, meaning that if multithreaded application

@@ -104,7 +104,7 @@ physmem(void)
 		uint64_t u64;
 	} mem;
 	size_t mem_ptr_size = sizeof(mem.u64);
-	if (!sysctl(name, 2, &mem.u64, &mem_ptr_size, NULL, 0)) {
+	if (sysctl(name, 2, &mem.u64, &mem_ptr_size, NULL, 0) != -1) {
 		// IIRC, 64-bit "return value" is possible on some 64-bit
 		// BSD systems even with HW_PHYSMEM (instead of HW_PHYSMEM64),
 		// so support both.

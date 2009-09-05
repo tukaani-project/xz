@@ -22,6 +22,13 @@
 #	endif
 #	include <windows.h>
 
+#elif defined(__OS2__)
+#	define INCL_DOSMISC
+#	include <os2.h>
+
+#elif defined(__DJGPP__)
+#	include <dpmi.h>
+
 #elif defined(HAVE_PHYSMEM_SYSCONF)
 #	include <unistd.h>
 
@@ -35,9 +42,6 @@
 
 #elif defined(HAVE_PHYSMEM_SYSINFO)
 #	include <sys/sysinfo.h>
-
-#elif defined(__DJGPP__)
-#	include <dpmi.h>
 #endif
 
 
@@ -79,6 +83,20 @@ physmem(void)
 		ret = meminfo.dwTotalPhys;
 	}
 
+#elif defined(__OS2__)
+	unsigned long mem;
+	if (DosQuerySysInfo(QSV_TOTPHYSMEM, QSV_TOTPHYSMEM,
+			&mem, sizeof(mem)) == 0)
+		ret = mem;
+
+#elif defined(__DJGPP__)
+	__dpmi_free_mem_info meminfo;
+	if (__dpmi_get_free_memory_information(&meminfo) == 0
+			&& meminfo.total_number_of_physical_pages
+				!= (unsigned long)(-1))
+		ret = (uint64_t)(meminfo.total_number_of_physical_pages)
+				* 4096;
+
 #elif defined(HAVE_PHYSMEM_SYSCONF)
 	const long pagesize = sysconf(_SC_PAGESIZE);
 	const long pages = sysconf(_SC_PHYS_PAGES);
@@ -118,14 +136,6 @@ physmem(void)
 	struct sysinfo si;
 	if (sysinfo(&si) == 0)
 		ret = (uint64_t)(si.totalram) * si.mem_unit;
-
-#elif defined(__DJGPP__)
-	__dpmi_free_mem_info meminfo;
-	if (__dpmi_get_free_memory_information(&meminfo) == 0
-			&& meminfo.total_number_of_physical_pages
-				!= (unsigned long)(-1))
-		ret = (uint64_t)(meminfo.total_number_of_physical_pages)
-				* 4096;
 #endif
 
 	return ret;

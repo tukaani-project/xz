@@ -486,7 +486,7 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 	rc_reset(&coder->rc);
 
 	// State
-	coder->state = 0;
+	coder->state = STATE_LIT_LIT;
 	for (size_t i = 0; i < REP_DISTANCES; ++i)
 		coder->reps[i] = 0;
 

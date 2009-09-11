@@ -455,7 +455,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 	uint32_t matches_count = coder->matches_count;
 	uint32_t new_len = coder->longest_match_length;
 	uint32_t pos_prev = coder->opts[cur].pos_prev;
-	uint32_t state;
+	lzma_lzma_state state;
 
 	if (coder->opts[cur].prev_1_is_literal) {
 		--pos_prev;
@@ -579,7 +579,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 		--len_test;
 
 		if (len_test >= 2) {
-			uint32_t state_2 = state;
+			lzma_lzma_state state_2 = state;
 			update_literal(state_2);
 
 			const uint32_t pos_state_next = (position + 1) & coder->pos_mask;
@@ -657,7 +657,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 		len_test_2 -= len_test + 1;
 
 		if (len_test_2 >= 2) {
-			uint32_t state_2 = state;
+			lzma_lzma_state state_2 = state;
 			update_long_rep(state_2);
 
 			uint32_t pos_state_next = (position + len_test) & coder->pos_mask;
@@ -753,7 +753,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 				len_test_2 -= len_test + 1;
 
 				if (len_test_2 >= 2) {
-					uint32_t state_2 = state;
+					lzma_lzma_state state_2 = state;
 					update_match(state_2);
 					uint32_t pos_state_next
 							= (position + len_test) & coder->pos_mask;

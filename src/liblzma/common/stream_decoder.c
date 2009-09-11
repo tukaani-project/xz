@@ -358,7 +358,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 		return LZMA_PROG_ERROR;
 	}
 
-	return LZMA_OK;
+	// Never reached
 }
 
 

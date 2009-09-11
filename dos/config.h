@@ -140,6 +140,9 @@
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT "lasse.collin@tukaani.org"
 
+/* Define to the URL of the home page of this package. */
+#define PACKAGE_HOMEPAGE "http://tukaani.org/xz/"
+
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "XZ Utils"
 

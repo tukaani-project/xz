@@ -44,6 +44,15 @@ case $host_os in
 esac
 AM_CONDITIONAL([COND_W32], [test "$is_w32" = yes])
 
+# We need to use $EXEEXT with $(LN_S) when creating symlinks to
+# executables. Cygwin is an exception to this, since it is recommended
+# that symlinks don't have the .exe suffix. To make this work, we
+# define LN_EXEEXT.
+case $host_os in
+	cygwin)  LN_EXEEXT= ;;
+	*)       LN_EXEEXT='$(EXEEXT)' ;;
+esac
+AC_SUBST([LN_EXEEXT])
 
 echo
 echo "Configure options:"

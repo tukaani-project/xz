@@ -69,7 +69,7 @@ install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
 	target=`echo xz | sed '$(transform)'`$(EXEEXT) && \
 	for name in $(xzlinks); do \
-		link=`echo $$name | sed '$(transform)'` && \
+		link=`echo $$name | sed '$(transform)'`$(LN_EXEEXT) && \
 		rm -f $$link && \
 		$(LN_S) $$target $$link; \
 	done
@@ -86,7 +86,7 @@ install-data-hook:
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && \
 	for name in $(xzlinks); do \
-		link=`echo $$name | sed '$(transform)'` && \
+		link=`echo $$name | sed '$(transform)'`$(LN_EXEEXT) && \
 		rm -f $$link; \
 	done
 	cd $(DESTDIR)$(mandir)/man1 && \

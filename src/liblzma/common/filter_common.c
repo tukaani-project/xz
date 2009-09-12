@@ -155,7 +155,7 @@ validate_chain(const lzma_filter *filters, size_t *count)
 	} while (filters[++i].id != LZMA_VLI_UNKNOWN);
 
 	// There must be 1-4 filters. The last filter must be usable as
-	// the last filter in the chain. At maximum of three filters are
+	// the last filter in the chain. A maximum of three filters are
 	// allowed to change the size of the data.
 	if (i > LZMA_FILTERS_MAX || !last_ok || changes_size_count > 3)
 		return LZMA_OPTIONS_ERROR;

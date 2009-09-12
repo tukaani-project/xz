@@ -103,7 +103,7 @@ help(void)
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
 "\n"
-"On this system and configuration, this program will use at maximum of roughly\n"
+"On this system and configuration, this program will use a maximum of roughly\n"
 "%" PRIu64 " MiB RAM.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n"

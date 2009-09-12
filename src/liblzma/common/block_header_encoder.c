@@ -110,7 +110,7 @@ lzma_block_header_encode(const lzma_block *block, uint8_t *out)
 
 	size_t filter_count = 0;
 	do {
-		// There can be at maximum of four filters.
+		// There can be a maximum of four filters.
 		if (filter_count == LZMA_FILTERS_MAX)
 			return LZMA_PROG_ERROR;
 

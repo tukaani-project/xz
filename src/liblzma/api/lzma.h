@@ -95,8 +95,8 @@
 			/* Use the standard inttypes.h. */
 #			ifdef __cplusplus
 				/*
-				 * C99 sections 7.18.2 and 7.18.4 specify that
-				 * in C++ implementations define the limit
+				 * C99 sections 7.18.2 and 7.18.4 specify
+				 * that C++ implementations define the limit
 				 * and constant macros only if specifically
 				 * requested. Note that if you want the
 				 * format macros (PRIu64 etc.) too, you need

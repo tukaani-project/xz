@@ -143,7 +143,7 @@ typedef struct {
 	/// maximum possible length.
 	size_t match_len_max;
 
-	/// Match finder will search matches of at maximum of this length.
+	/// Match finder will search matches up to this length.
 	/// This must be less than or equal to match_len_max.
 	size_t nice_len;
 
@@ -170,9 +170,9 @@ typedef struct {
 // also take longer.
 //
 // A single encoder loop in the LZ-based encoder may call the match finder
-// (mf_find() or mf_skip()) at maximum of after_size times.
-// In other words, a single encoder loop may advance lzma_mf.read_pos at
-// maximum of after_size times. Since matches are looked up to
+// (mf_find() or mf_skip()) at most after_size times. In other words,
+// a single encoder loop may increment lzma_mf.read_pos at most after_size
+// times. Since matches are looked up to
 // lzma_mf.buffer[lzma_mf.read_pos + match_len_max - 1], the total
 // amount of extra buffer needed after dict_size becomes
 // after_size + match_len_max.
@@ -270,7 +270,7 @@ mf_skip(lzma_mf *mf, uint32_t amount)
 }
 
 
-/// Copies at maximum of *left amount of bytes from the history buffer
+/// Copies at most *left number of bytes from the history buffer
 /// to out[]. This is needed by LZMA2 to encode uncompressed chunks.
 static inline void
 mf_read(lzma_mf *mf, uint8_t *out, size_t *out_pos, size_t out_size,

@@ -10,8 +10,8 @@
  * number of bytes required to represent the given value. Encodings that use
  * non-minimum number of bytes are invalid, thus every integer has exactly
  * one encoded representation. The maximum number of bits in a VLI is 63,
- * thus the vli argument must be at maximum of UINT64_MAX / 2. You should
- * use LZMA_VLI_MAX for clarity.
+ * thus the vli argument must be less than or equal to UINT64_MAX / 2. You
+ * should use LZMA_VLI_MAX for clarity.
  */
 
 /*

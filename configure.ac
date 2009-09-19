@@ -485,12 +485,7 @@ AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
 	[AC_MSG_ERROR([Required header file(s) are missing.])])
 
 # If any of these headers are missing, things should still work correctly:
-AC_CHECK_HEADERS([sys/param.h sys/sysctl.h byteswap.h],
-	[], [], [
-#ifdef HAVE_SYS_PARAM_H
-#	include <sys/param.h>
-#endif
-])
+AC_CHECK_HEADERS([byteswap.h])
 
 # Even if we have byteswap.h, we may lack the specific macros/functions.
 if test x$ac_cv_header_byteswap_h = xyes ; then
@@ -558,8 +553,9 @@ gl_GETOPT
 # Find the best function to set timestamps.
 AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 
-lc_PHYSMEM
-lc_CPUCORES
+TUKLIB_PROGNAME
+TUKLIB_PHYSMEM
+TUKLIB_CPUCORES
 
 
 ###############################################################################

@@ -23,39 +23,9 @@
 
 #include "lzma.h"
 #include "getopt.h"
-
-
-/// Name of the program from argv[0]
-static const char *argv0;
-
-
-/// Close stdout unless we are already going to exit with EXIT_FAILURE.
-/// If closing stdout fails, set exit status to EXIT_FAILURE and print
-/// an error message to stderr. We don't care about closing stderr,
-/// because we don't print anything to stderr unless we are going to
-/// use EXIT_FAILURE anyway.
-static void lzma_attribute((noreturn))
-my_exit(int status)
-{
-	if (status != EXIT_FAILURE) {
-		const int ferror_err = ferror(stdout);
-		const int fclose_err = fclose(stdout);
-
-		if (ferror_err || fclose_err) {
-			// If it was fclose() that failed, we have the reason
-			// in errno. If only ferror() indicated an error,
-			// we have no idea what the reason was.
-			fprintf(stderr, "%s: %s: %s\n", argv0,
-					_("Writing to standard output "
-						"failed"),
-					fclose_err ? strerror(errno)
-						: _("Unknown error"));
-			status = EXIT_FAILURE;
-		}
-	}
-
-	exit(status);
-}
+#include "tuklib_gettext.h"
+#include "tuklib_progname.h"
+#include "tuklib_exit.h"
 
 
 static void lzma_attribute((noreturn))
@@ -63,7 +33,7 @@ help(void)
 {
 	printf(
 _("Usage: %s [--help] [--version] [FILE]...\n"
-"Show information stored in the .lzma file header"), argv0);
+"Show information stored in the .lzma file header"), progname);
 
 	printf(_(
 "\nWith no FILE, or when FILE is -, read standard input.\n"));
@@ -73,7 +43,7 @@ _("Usage: %s [--help] [--version] [FILE]...\n"
 			PACKAGE_BUGREPORT);
 	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_HOMEPAGE);
 
-	my_exit(EXIT_SUCCESS);
+	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }
 
 
@@ -81,7 +51,7 @@ static void lzma_attribute((noreturn))
 version(void)
 {
 	puts("lzmainfo (" PACKAGE_NAME ") " PACKAGE_VERSION);
-	my_exit(EXIT_SUCCESS);
+	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }
 
 
@@ -135,7 +105,7 @@ lzmainfo(const char *name, FILE *f)
 	uint8_t buf[13];
 	const size_t size = fread(buf, 1, sizeof(buf), f);
 	if (size != 13) {
-		fprintf(stderr, "%s: %s: %s\n", argv0, name,
+		fprintf(stderr, "%s: %s: %s\n", progname, name,
 				ferror(f) ? strerror(errno)
 				: _("File is too small to be a .lzma file"));
 		return true;
@@ -149,16 +119,17 @@ lzmainfo(const char *name, FILE *f)
 		break;
 
 	case LZMA_OPTIONS_ERROR:
-		fprintf(stderr, "%s: %s: %s\n", argv0, name,
+		fprintf(stderr, "%s: %s: %s\n", progname, name,
 				_("Not a .lzma file"));
 		return true;
 
 	case LZMA_MEM_ERROR:
-		fprintf(stderr, "%s: %s\n", argv0, strerror(ENOMEM));
+		fprintf(stderr, "%s: %s\n", progname, strerror(ENOMEM));
 		exit(EXIT_FAILURE);
 
 	default:
-		fprintf(stderr, "%s: %s\n", argv0, _("Internal error (bug)"));
+		fprintf(stderr, "%s: %s\n", progname,
+				_("Internal error (bug)"));
 		exit(EXIT_FAILURE);
 	}
 
@@ -202,16 +173,19 @@ lzmainfo(const char *name, FILE *f)
 extern int
 main(int argc, char **argv)
 {
-	int ret = EXIT_SUCCESS;
-	argv0 = argv[0];
+	tuklib_progname_init(argv);
+	tuklib_gettext_init(PACKAGE, LOCALEDIR);
 
 	parse_args(argc, argv);
+
+	int ret = EXIT_SUCCESS;
 
 	// We print empty lines around the output only when reading from
 	// files specified on the command line. This is due to how
 	// LZMA Utils did it.
 	if (optind == argc) {
-		lzmainfo("(stdin)", stdin);
+		if (lzmainfo("(stdin)", stdin))
+			ret = EXIT_FAILURE;
 	} else {
 		printf("\n");
 
@@ -224,7 +198,8 @@ main(int argc, char **argv)
 				if (f == NULL) {
 					ret = EXIT_FAILURE;
 					fprintf(stderr, "%s: %s: %s\n",
-							argv0, argv[optind],
+							progname,
+							argv[optind],
 							strerror(errno));
 					continue;
 				}
@@ -238,5 +213,5 @@ main(int argc, char **argv)
 		} while (++optind < argc);
 	}
 
-	my_exit(ret);
+	tuklib_exit(ret, EXIT_FAILURE, true);
 }

@@ -95,6 +95,7 @@ signals_init(void)
 }
 
 
+#ifndef __VMS
 extern void
 signals_block(void)
 {
@@ -121,6 +122,7 @@ signals_unblock(void)
 
 	return;
 }
+#endif
 
 
 extern void

@@ -18,13 +18,15 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#ifdef DOSLIKE
+#include "getopt.h"
+#include "tuklib_progname.h"
+#include "tuklib_exit.h"
+#include "tuklib_physmem.h"
+
+#ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
 #	include <io.h>
 #endif
-
-#include "getopt.h"
-#include "physmem.h"
 
 
 #ifdef LZMADEC
@@ -41,9 +43,6 @@ static uint64_t memlimit;
 /// --quiet has been given at least twice.
 static unsigned int display_errors = 2;
 
-/// Program name to be shown in error messages
-static const char *argv0;
-
 
 static void lzma_attribute((format(printf, 1, 2)))
 my_errorf(const char *fmt, ...)
@@ -52,36 +51,13 @@ my_errorf(const char *fmt, ...)
 	va_start(ap, fmt);
 
 	if (display_errors) {
-		fprintf(stderr, "%s: ", argv0);
+		fprintf(stderr, "%s: ", progname);
 		vfprintf(stderr, fmt, ap);
 		fprintf(stderr, "\n");
 	}
 
 	va_end(ap);
 	return;
-}
-
-
-static void lzma_attribute((noreturn))
-my_exit(void)
-{
-	int status = EXIT_SUCCESS;
-
-	// Close stdout. We don't care about stderr, because we write to it
-	// only when an error has already occurred.
-	const int ferror_err = ferror(stdout);
-	const int fclose_err = fclose(stdout);
-
-	if (ferror_err || fclose_err) {
-		// If it was fclose() that failed, we have the reason
-		// in errno. If only ferror() indicated an error,
-		// we have no idea what the reason was.
-		my_errorf("Writing to standard output failed: %s", fclose_err
-				? strerror(errno) : "Unknown error");
-		status = EXIT_FAILURE;
-	}
-
-	exit(status);
 }
 
 
@@ -108,8 +84,8 @@ help(void)
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n"
 PACKAGE_NAME " home page: <" PACKAGE_HOMEPAGE ">\n",
-		argv0, memlimit / (1024 * 1024));
-	my_exit();
+		progname, memlimit / (1024 * 1024));
+	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);
 }
 
 
@@ -119,7 +95,7 @@ version(void)
 	printf(TOOL_FORMAT "dec (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n"
 			"liblzma %s\n", lzma_version_string());
 
-	my_exit();
+	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);
 }
 
 
@@ -128,7 +104,7 @@ version(void)
 static void
 memlimit_set_percentage(uint32_t percentage)
 {
-	uint64_t mem = physmem();
+	uint64_t mem = tuklib_physmem();
 
 	// If we cannot determine the amount of RAM, assume 32 MiB.
 	if (mem == 0)
@@ -441,9 +417,8 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 int
 main(int argc, char **argv)
 {
-	// Set the argv0 global so that we can print the command name in
-	// error and help messages.
-	argv0 = argv[0];
+	// Initialize progname which we will be used in error messages.
+	tuklib_progname_init(argv);
 
 	// Set the default memory usage limit. This is needed before parsing
 	// the command line arguments.
@@ -458,7 +433,7 @@ main(int argc, char **argv)
 	lzma_stream strm = LZMA_STREAM_INIT;
 
 	// Some systems require setting stdin and stdout to binary mode.
-#ifdef DOSLIKE
+#ifdef TUKLIB_DOSLIKE
 	setmode(fileno(stdin), O_BINARY);
 	setmode(fileno(stdout), O_BINARY);
 #endif
@@ -492,5 +467,5 @@ main(int argc, char **argv)
 	lzma_end(&strm);
 #endif
 
-	my_exit();
+	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);
 }

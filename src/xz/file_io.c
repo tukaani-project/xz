@@ -14,8 +14,10 @@
 
 #include <fcntl.h>
 
-#ifdef DOSLIKE
+#ifdef TUKLIB_DOSLIKE
 #	include <io.h>
+#else
+static bool warn_fchown;
 #endif
 
 #if defined(HAVE_FUTIMES) || defined(HAVE_FUTIMESAT) || defined(HAVE_UTIMES)
@@ -23,6 +25,8 @@
 #elif defined(HAVE_UTIME)
 #	include <utime.h>
 #endif
+
+#include "tuklib_open_stdxxx.h"
 
 #ifndef O_BINARY
 #	define O_BINARY 0
@@ -32,22 +36,17 @@
 #	define O_NOCTTY 0
 #endif
 
-#ifndef DOSLIKE
-#	include "open_stdxxx.h"
-static bool warn_fchown;
-#endif
-
 
 extern void
 io_init(void)
 {
-#ifndef DOSLIKE
 	// Make sure that stdin, stdout, and and stderr are connected to
 	// a valid file descriptor. Exit immediatelly with exit code ERROR
 	// if we cannot make the file descriptors valid. Maybe we should
 	// print an error message, but our stderr could be screwed anyway.
-	open_stdxxx(E_ERROR);
+	tuklib_open_stdxxx(E_ERROR);
 
+#ifndef TUKLIB_DOSLIKE
 	// If fchown() fails setting the owner, we warn about it only if
 	// we are root.
 	warn_fchown = geteuid() == 0;
@@ -64,7 +63,7 @@ io_init(void)
 }
 
 
-/// \brief      Unlinks a file
+/// \brief      Unlink a file
 ///
 /// This tries to verify that the file being unlinked really is the file that
 /// we want to unlink by verifying device and inode numbers. There's still
@@ -73,9 +72,9 @@ io_init(void)
 static void
 io_unlink(const char *name, const struct stat *known_st)
 {
-#ifdef DOSLIKE
-	// On Windows, st_ino is meaningless, so don't bother testing it.
-	// Just silence a compiler warning.
+#if defined(TUKLIB_DOSLIKE) || defined(__VMS)
+	// On DOS-like systems, st_ino is meaningless, so don't bother
+	// testing it. Just silence a compiler warning.
 	(void)known_st;
 #else
 	struct stat new_st;
@@ -105,7 +104,7 @@ static void
 io_copy_attrs(const file_pair *pair)
 {
 	// Skip chown and chmod on Windows.
-#ifndef DOSLIKE
+#ifndef TUKLIB_DOSLIKE
 	// This function is more tricky than you may think at first.
 	// Blindly copying permissions may permit users to access the
 	// destination file who didn't have permission to access the
@@ -240,7 +239,7 @@ io_open_src(file_pair *pair)
 	// There's nothing to open when reading from stdin.
 	if (pair->src_name == stdin_filename) {
 		pair->src_fd = STDIN_FILENO;
-#ifdef DOSLIKE
+#ifdef TUKLIB_DOSLIKE
 		setmode(STDIN_FILENO, O_BINARY);
 #endif
 		return false;
@@ -253,7 +252,7 @@ io_open_src(file_pair *pair)
 	// Flags for open()
 	int flags = O_RDONLY | O_BINARY | O_NOCTTY;
 
-#ifndef DOSLIKE
+#ifndef TUKLIB_DOSLIKE
 	// If we accept only regular files, we need to be careful to avoid
 	// problems with special files like devices and FIFOs. O_NONBLOCK
 	// prevents blocking when opening such files. When we want to accept
@@ -266,7 +265,7 @@ io_open_src(file_pair *pair)
 #if defined(O_NOFOLLOW)
 	if (reg_files_only)
 		flags |= O_NOFOLLOW;
-#elif !defined(DOSLIKE)
+#elif !defined(TUKLIB_DOSLIKE)
 	// Some POSIX-like systems lack O_NOFOLLOW (it's not required
 	// by POSIX). Check for symlinks with a separate lstat() on
 	// these systems.
@@ -370,7 +369,7 @@ io_open_src(file_pair *pair)
 		return true;
 	}
 
-#ifndef DOSLIKE
+#ifndef TUKLIB_DOSLIKE
 	// Drop O_NONBLOCK, which is used only when we are accepting only
 	// regular files. After the open() call, we want things to block
 	// instead of giving EAGAIN.
@@ -405,7 +404,7 @@ io_open_src(file_pair *pair)
 		}
 
 		// These are meaningless on Windows.
-#ifndef DOSLIKE
+#ifndef TUKLIB_DOSLIKE
 		if (pair->src_st.st_mode & (S_ISUID | S_ISGID)) {
 			// gzip rejects setuid and setgid files even
 			// when --force was used. bzip2 doesn't check
@@ -457,7 +456,7 @@ static void
 io_close_src(file_pair *pair, bool success)
 {
 	if (pair->src_fd != STDIN_FILENO && pair->src_fd != -1) {
-#ifdef DOSLIKE
+#ifdef TUKLIB_DOSLIKE
 		(void)close(pair->src_fd);
 #endif
 
@@ -471,7 +470,7 @@ io_close_src(file_pair *pair, bool success)
 		if (success && !opt_keep_original)
 			io_unlink(pair->src_name, &pair->src_st);
 
-#ifndef DOSLIKE
+#ifndef TUKLIB_DOSLIKE
 		(void)close(pair->src_fd);
 #endif
 	}
@@ -487,7 +486,7 @@ io_open_dest(file_pair *pair)
 		// We don't modify or free() this.
 		pair->dest_name = (char *)"(stdout)";
 		pair->dest_fd = STDOUT_FILENO;
-#ifdef DOSLIKE
+#ifdef TUKLIB_DOSLIKE
 		setmode(STDOUT_FILENO, O_BINARY);
 #endif
 		return false;
@@ -531,7 +530,9 @@ io_open_dest(file_pair *pair)
 	// If this really fails... well, we have a safe fallback.
 	if (fstat(pair->dest_fd, &pair->dest_st)) {
 		pair->dest_st.st_dev = 0;
+#ifndef __VMS
 		pair->dest_st.st_ino = 0;
+#endif
 	}
 
 	return false;

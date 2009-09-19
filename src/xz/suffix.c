@@ -13,7 +13,7 @@
 #include "private.h"
 
 // For case-insensitive filename suffix on case-insensitive systems
-#ifdef DOSLIKE
+#if defined(TUKLIB_DOSLIKE) || defined(__VMS)
 #	define strcmp strcasecmp
 #endif
 

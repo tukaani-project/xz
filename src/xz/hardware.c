@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
-#include "physmem.h"
-#include "cpucores.h"
+#include "tuklib_physmem.h"
+#include "tuklib_cpucores.h"
 
 
 /// Maximum number of free *coder* threads. This can be set with
@@ -28,7 +28,7 @@ hardware_threadlimit_set(uint32_t new_threadlimit)
 {
 	if (new_threadlimit == 0) {
 		// The default is the number of available CPU cores.
-		threadlimit = cpucores();
+		threadlimit = tuklib_cpucores();
 		if (threadlimit == 0)
 			threadlimit = 1;
 	} else {
@@ -66,7 +66,7 @@ hardware_memlimit_set_percentage(uint32_t percentage)
 	assert(percentage > 0);
 	assert(percentage <= 100);
 
-	uint64_t mem = physmem();
+	uint64_t mem = tuklib_physmem();
 
 	// If we cannot determine the amount of RAM, assume 32 MiB. Maybe
 	// even that is too much on some systems. But on most systems it's

@@ -19,9 +19,6 @@
 #include <stdarg.h>
 
 
-/// Name of the program which is prefixed to the error messages.
-static const char *argv0;
-
 /// Number of the current file
 static unsigned int files_pos = 0;
 
@@ -138,11 +135,8 @@ my_snprintf(char **pos, size_t *left, const char *fmt, ...)
 
 
 extern void
-message_init(const char *given_argv0)
+message_init(void)
 {
-	// Name of the program
-	argv0 = given_argv0;
-
 	// If --verbose is used, we use a progress indicator if and only
 	// if stderr is a terminal. If stderr is not a terminal, we print
 	// verbose information only after finishing the file. As a special
@@ -223,6 +217,13 @@ message_verbosity_decrease(void)
 		--verbosity;
 
 	return;
+}
+
+
+extern enum message_verbosity
+message_verbosity_get(void)
+{
+	return verbosity;
 }
 
 
@@ -774,7 +775,7 @@ vmessage(enum message_verbosity v, const char *fmt, va_list ap)
 
 		progress_flush(false);
 
-		fprintf(stderr, "%s: ", argv0);
+		fprintf(stderr, "%s: ", progname);
 		vfprintf(stderr, fmt, ap);
 		fputc('\n', stderr);
 
@@ -830,7 +831,7 @@ message_fatal(const char *fmt, ...)
 	vmessage(V_ERROR, fmt, ap);
 	va_end(ap);
 
-	my_exit(E_ERROR);
+	tuklib_exit(E_ERROR, E_ERROR, false);
 }
 
 
@@ -894,7 +895,7 @@ message_filters(enum message_verbosity v, const lzma_filter *filters)
 	if (v > verbosity)
 		return;
 
-	fprintf(stderr, _("%s: Filter chain:"), argv0);
+	fprintf(stderr, _("%s: Filter chain:"), progname);
 
 	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
 		fprintf(stderr, " --");
@@ -1005,7 +1006,8 @@ message_try_help(void)
 {
 	// Print this with V_WARNING instead of V_ERROR to prevent it from
 	// showing up when --quiet has been specified.
-	message(V_WARNING, _("Try `%s --help' for more information."), argv0);
+	message(V_WARNING, _("Try `%s --help' for more information."),
+			progname);
 	return;
 }
 
@@ -1017,7 +1019,7 @@ message_version(void)
 	// line tool version, so print both.
 	printf("xz (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n");
 	printf("liblzma %s\n", lzma_version_string());
-	my_exit(E_SUCCESS);
+	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }
 
 
@@ -1026,7 +1028,7 @@ message_help(bool long_help)
 {
 	printf(_("Usage: %s [OPTION]... [FILE]...\n"
 			"Compress or decompress FILEs in the .xz format.\n\n"),
-			argv0);
+			progname);
 
 	puts(_("Mandatory arguments to long options are mandatory for "
 			"short options too.\n"));
@@ -1168,5 +1170,5 @@ message_help(bool long_help)
 			PACKAGE_BUGREPORT);
 	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_HOMEPAGE);
 
-	my_exit(E_SUCCESS);
+	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }

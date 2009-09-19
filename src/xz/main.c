@@ -42,47 +42,6 @@ set_exit_no_warn(void)
 }
 
 
-extern void
-my_exit(enum exit_status_type status)
-{
-	// Close stdout. If something goes wrong, print an error message
-	// to stderr.
-	{
-		const int ferror_err = ferror(stdout);
-		const int fclose_err = fclose(stdout);
-		if (ferror_err || fclose_err) {
-			// If it was fclose() that failed, we have the reason
-			// in errno. If only ferror() indicated an error,
-			// we have no idea what the reason was.
-			message(V_ERROR, "%s: %s", _("Writing to standard "
-						"output failed"),
-					fclose_err ? strerror(errno)
-						: _("Unknown error"));
-			status = E_ERROR;
-		}
-	}
-
-	// Close stderr. If something goes wrong, there's nothing where we
-	// could print an error message. Just set the exit status.
-	{
-		const int ferror_err = ferror(stderr);
-		const int fclose_err = fclose(stderr);
-		if (fclose_err || ferror_err)
-			status = E_ERROR;
-	}
-
-	// Suppress the exit status indicating a warning if --no-warn
-	// was specified.
-	if (status == E_WARNING && no_warn)
-		status = E_SUCCESS;
-
-	// If we have got a signal, raise it to kill the program.
-	// Otherwise we just call exit().
-	signals_exit();
-	exit(status);
-}
-
-
 static const char *
 read_name(const args_info *args)
 {
@@ -170,45 +129,18 @@ read_name(const args_info *args)
 int
 main(int argc, char **argv)
 {
-	// Initialize the file I/O as the very first step. This makes sure
-	// that stdin, stdout, and stderr are something valid.
+	// Set up the progname variable.
+	tuklib_progname_init(argv);
+
+	// Initialize the file I/O. This makes sure that
+	// stdin, stdout, and stderr are something valid.
 	io_init();
 
-#ifdef DOSLIKE
-	// Adjust argv[0] to make it look nicer in messages, and also to
-	// help the code in args.c.
-	{
-		// Strip the leading path.
-		char *p = argv[0] + strlen(argv[0]);
-		while (argv[0] < p && p[-1] != '/' && p[-1] != '\\')
-			--p;
+	// Set up the locale and message translations.
+	tuklib_gettext_init(PACKAGE, LOCALEDIR);
 
-		argv[0] = p;
-
-		// Strip the .exe suffix.
-		p = strrchr(p, '.');
-		if (p != NULL)
-			*p = '\0';
-
-		// Make it lowercase.
-		for (p = argv[0]; *p != '\0'; ++p)
-			if (*p >= 'A' && *p <= 'Z')
-				*p = *p - 'A' + 'a';
-	}
-#endif
-
-	// Set up the locale.
-	setlocale(LC_ALL, "");
-
-#ifdef ENABLE_NLS
-	// Set up the message translations too.
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	textdomain(PACKAGE);
-#endif
-
-	// Set the program invocation name used in various messages, and
-	// do other message handling related initializations.
-	message_init(argv[0]);
+	// Initialize handling of error/warning/other messages.
+	message_init();
 
 	// Set hardware-dependent default values. These can be overriden
 	// on the command line, thus this must be done before parse_args().
@@ -235,7 +167,7 @@ main(int argc, char **argv)
 				&& strcmp(args.arg_names[0], "-") == 0)) {
 			if (is_tty_stdout()) {
 				message_try_help();
-				my_exit(E_ERROR);
+				tuklib_exit(E_ERROR, E_ERROR, false);
 			}
 		}
 	}
@@ -308,5 +240,15 @@ main(int argc, char **argv)
 			(void)fclose(args.files_file);
 	}
 
-	my_exit(exit_status);
+	// If we have got a signal, raise it to kill the program instead
+	// of calling tuklib_exit().
+	signals_exit();
+
+	// Suppress the exit status indicating a warning if --no-warn
+	// was specified.
+	if (exit_status == E_WARNING && no_warn)
+		exit_status = E_SUCCESS;
+
+	tuklib_exit(exit_status, E_ERROR,
+			message_verbosity_get() != V_SILENT);
 }

@@ -22,12 +22,9 @@ enum message_verbosity {
 
 /// \brief      Initializes the message functions
 ///
-/// \param      argv0       Name of the program i.e. argv[0] from main()
-/// \param      verbosity   Verbosity level
-///
 /// If an error occurs, this function doesn't return.
 ///
-extern void message_init(const char *argv0);
+extern void message_init(void);
 
 
 /// Increase verbosity level by one step unless it was at maximum.
@@ -35,6 +32,9 @@ extern void message_verbosity_increase(void);
 
 /// Decrease verbosity level by one step unless it was at minimum.
 extern void message_verbosity_decrease(void);
+
+/// Get the current verbosity level.
+extern enum message_verbosity message_verbosity_get(void);
 
 
 /// Set the total number of files to be processed (stdin is counted as a file

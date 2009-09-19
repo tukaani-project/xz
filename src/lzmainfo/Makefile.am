@@ -7,7 +7,10 @@
 
 bin_PROGRAMS = lzmainfo
 
-lzmainfo_SOURCES = lzmainfo.c
+lzmainfo_SOURCES = \
+	lzmainfo.c \
+	$(top_srcdir)/src/common/tuklib_progname.c \
+	$(top_srcdir)/src/common/tuklib_exit.c
 
 lzmainfo_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \

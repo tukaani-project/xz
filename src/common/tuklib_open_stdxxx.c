@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       open_stdxxx.h
+/// \file       tuklib_open_stdxxx.c
 /// \brief      Make sure that file descriptors 0, 1, and 2 are open
 //
 //  Author:     Lasse Collin
@@ -10,17 +10,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef OPEN_STDXXX_H
-#define OPEN_STDXXX_H
+#include "tuklib_open_stdxxx.h"
 
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
+#ifndef TUKLIB_DOSLIKE
+#	include <stdlib.h>
+#	include <errno.h>
+#	include <fcntl.h>
+#	include <unistd.h>
+#endif
 
 
-static void
-open_stdxxx(int status)
+extern void
+tuklib_open_stdxxx(int err_status)
 {
+#ifndef TUKLIB_DOSLIKE
 	for (int i = 0; i <= 2; ++i) {
 		// We use fcntl() to check if the file descriptor is open.
 		if (fcntl(i, F_GETFD) == -1 && errno == EBADF) {
@@ -38,12 +41,11 @@ open_stdxxx(int status)
 				// may very well be non-existent. This
 				// error should be extremely rare.
 				(void)close(fd);
-				exit(status);
+				exit(err_status);
 			}
 		}
 	}
+#endif
 
 	return;
 }
-
-#endif

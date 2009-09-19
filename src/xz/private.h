@@ -22,14 +22,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#ifdef ENABLE_NLS
-#	include <libintl.h>
-#	define _(msgid) gettext(msgid)
-#	define N_(msgid1, msgid2, n) ngettext(msgid1, msgid2, n)
-#else
-#	define _(msgid) (msgid)
-#	define N_(msgid1, msgid2, n) ((n) == 1 ? (msgid1) : (msgid2))
-#endif
+#include "tuklib_gettext.h"
+#include "tuklib_progname.h"
+#include "tuklib_exit.h"
 
 #ifndef STDIN_FILENO
 #	define STDIN_FILENO (fileno(stdin))

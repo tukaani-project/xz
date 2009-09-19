@@ -351,7 +351,7 @@ parse_real(args_info *args, int argc, char **argv)
 
 		default:
 			message_try_help();
-			my_exit(E_ERROR);
+			tuklib_exit(E_ERROR, E_ERROR, false);
 		}
 	}
 
@@ -449,18 +449,12 @@ args_parse(args_info *args, int argc, char **argv)
 
 	// Check how we were called.
 	{
-#ifdef DOSLIKE
-		// We adjusted argv[0] in the beginning of main() so we don't
-		// need to do anything here.
-		const char *name = argv[0];
-#else
 		// Remove the leading path name, if any.
 		const char *name = strrchr(argv[0], '/');
 		if (name == NULL)
 			name = argv[0];
 		else
 			++name;
-#endif
 
 		// NOTE: It's possible that name[0] is now '\0' if argv[0]
 		// is weird, but it doesn't matter here.

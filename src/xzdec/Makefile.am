@@ -14,13 +14,18 @@
 
 bin_PROGRAMS = xzdec lzmadec
 
-xzdec_SOURCES = xzdec.c
+xzdec_SOURCES = \
+	xzdec.c \
+	$(top_srcdir)/src/common/tuklib_progname.c \
+	$(top_srcdir)/src/common/tuklib_exit.c \
+	$(top_srcdir)/src/common/tuklib_physmem.c
 
 if COND_W32
 xzdec_SOURCES += xzdec_w32res.rc
 endif
 
 xzdec_CPPFLAGS = \
+	-DTUKLIB_GETTEXT=0 \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
 	-I$(top_builddir)/lib \
@@ -35,7 +40,11 @@ endif
 xzdec_LDADD += $(LTLIBINTL)
 
 
-lzmadec_SOURCES = xzdec.c
+lzmadec_SOURCES = \
+	xzdec.c \
+	$(top_srcdir)/src/common/tuklib_progname.c \
+	$(top_srcdir)/src/common/tuklib_exit.c \
+	$(top_srcdir)/src/common/tuklib_physmem.c
 
 if COND_W32
 lzmadec_SOURCES += lzmadec_w32res.rc

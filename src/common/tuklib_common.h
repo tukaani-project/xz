@@ -60,7 +60,8 @@
 #	define tuklib_attr_noreturn
 #endif
 
-#if defined(_WIN32) || defined(__OS2__) || defined(__MSDOS__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) \
+		|| defined(__OS2__) || defined(__MSDOS__)
 #	define TUKLIB_DOSLIKE 1
 #endif
 

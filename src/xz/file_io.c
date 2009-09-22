@@ -72,7 +72,7 @@ io_init(void)
 static void
 io_unlink(const char *name, const struct stat *known_st)
 {
-#if defined(TUKLIB_DOSLIKE) || defined(__VMS)
+#if defined(TUKLIB_DOSLIKE)
 	// On DOS-like systems, st_ino is meaningless, so don't bother
 	// testing it. Just silence a compiler warning.
 	(void)known_st;
@@ -80,8 +80,17 @@ io_unlink(const char *name, const struct stat *known_st)
 	struct stat new_st;
 
 	if (lstat(name, &new_st)
+#	ifdef __VMS
+			// st_ino is an array, and we don't want to
+			// compare st_dev at all.
+			|| memcmp(&new_st.st_ino, &known_st.st_ino,
+				sizeof(new_st.st_ino)) != 0
+#	else
+			// Typical POSIX-like system
 			|| new_st.st_dev != known_st->st_dev
-			|| new_st.st_ino != known_st->st_ino)
+			|| new_st.st_ino != known_st->st_ino
+#	endif
+			)
 		message_error(_("%s: File seems to be moved, not removing"),
 				name);
 	else
@@ -529,8 +538,12 @@ io_open_dest(file_pair *pair)
 
 	// If this really fails... well, we have a safe fallback.
 	if (fstat(pair->dest_fd, &pair->dest_st)) {
+#if defined(__VMS)
+		pair->dest_st.st_ino[0] = 0;
+		pair->dest_st.st_ino[1] = 0;
+		pair->dest_st.st_ino[2] = 0;
+#elif !defined(TUKLIB_DOSLIKE)
 		pair->dest_st.st_dev = 0;
-#ifndef __VMS
 		pair->dest_st.st_ino = 0;
 #endif
 	}

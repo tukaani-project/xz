@@ -11,6 +11,7 @@ XZ Utils Installation
             1.2.3. Windows
             1.2.4. DOS
             1.2.5. OS/2
+            1.2.6. OpenVMS
        1.3. Adding support for new platforms
     2. configure options
     3. xzgrep and other scripts
@@ -114,6 +115,16 @@ XZ Utils Installation
     pass gl_cv_cc_visibility=no as an argument to the configure script.
     This isn't mandatory since it should have no effect on the resulting
     binaries.
+
+
+1.2.6. OpenVMS
+
+    XZ Utils can be built for OpenVMS, but the build system files are
+    currently not included in the XZ Utils source package. The required
+    OpenVMS-specific files are maintained by Jouk Jansen and can be
+    downloaded here:
+
+        http://nchrem.tnw.tudelft.nl/openvms/software2.html#xzutils
 
 
 1.3. Adding support for new platforms

@@ -49,10 +49,13 @@
 #	endif
 #endif
 
-#define TUKLIB_GNUC_REQ(major, minor) \
-	(defined(__GNUC__) && defined(__GNUC_MINOR__) \
-		&& ((__GNUC__ == (major) && __GNUC_MINOR__ >= (minor)) \
-			|| __GNUC__ > (major)))
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#	define TUKLIB_GNUC_REQ(major, minor) \
+		((__GNUC__ == (major) && __GNUC_MINOR__ >= (minor)) \
+			|| __GNUC__ > (major))
+#else
+#	define TUKLIB_GNUC_REQ(major, minor) 0
+#endif
 
 #if TUKLIB_GNUC_REQ(2, 5)
 #	define tuklib_attr_noreturn __attribute__((__noreturn__))

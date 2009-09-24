@@ -83,7 +83,7 @@ io_unlink(const char *name, const struct stat *known_st)
 #	ifdef __VMS
 			// st_ino is an array, and we don't want to
 			// compare st_dev at all.
-			|| memcmp(&new_st.st_ino, &known_st.st_ino,
+			|| memcmp(&new_st.st_ino, &known_st->st_ino,
 				sizeof(new_st.st_ino)) != 0
 #	else
 			// Typical POSIX-like system

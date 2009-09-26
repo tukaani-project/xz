@@ -23,6 +23,7 @@ Makefile.in
 /stamp-h1
 
 /src/liblzma/liblzma.pc
+/src/lzmainfo/lzmainfo
 /src/xz/xz
 /src/xzdec/lzmadec
 /src/xzdec/xzdec
@@ -51,4 +52,5 @@ Makefile.in
 /src/Makefile
 /src/liblzma/Makefile
 /src/liblzma/api/Makefile
+/src/lzmainfo/Makefile
 /src/xzdec/Makefile

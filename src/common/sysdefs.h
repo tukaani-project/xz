@@ -89,6 +89,12 @@
 #	define UINT64_MAX UINT64_C(18446744073709551615)
 #endif
 
+// Interix has broken header files, which typedef size_t to unsigned long,
+// but a few lines later define SIZE_MAX to INT32_MAX.
+#ifdef __INTERIX
+#	undef SIZE_MAX
+#endif
+
 // The code currently assumes that size_t is either 32-bit or 64-bit.
 #ifndef SIZE_MAX
 #	if SIZEOF_SIZE_T == 4

@@ -106,9 +106,10 @@ memlimit_set_percentage(uint32_t percentage)
 {
 	uint64_t mem = tuklib_physmem();
 
-	// If we cannot determine the amount of RAM, assume 32 MiB.
+	// If we cannot determine the amount of RAM, use the assumption
+	// set by the configure script.
 	if (mem == 0)
-		mem = UINT64_C(32) * 1024 * 1024;
+		mem = (uint64_t)(ASSUME_RAM) * 1024 * 1024;
 
 	memlimit = percentage * mem / 100;
 	return;

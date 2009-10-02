@@ -380,6 +380,30 @@ AC_MSG_RESULT([$enable_threads])
 # We use the actual result a little later.
 
 
+#########################
+# Assumed amount of RAM #
+#########################
+
+# We use 32 MiB as default, because it should be small enough for most
+# cases and allows decompressing files compressed with the default settings.
+# Probably it is too small for most systems, but it's safer to guess too low.
+AC_MSG_CHECKING([how much RAM to assume if the real amount is unknown])
+AC_ARG_ENABLE([assume-ram], AC_HELP_STRING([--enable-assume-ram=SIZE],
+		[If and only if the real amount of RAM cannot be determined,
+		assume SIZE MiB. The default is 32 MiB. This affects the
+		default memory usage limit.]),
+	[], [enable_assume_ram=32])
+assume_ram_check=`echo "$enable_assume_ram" | tr -d 0123456789`
+if test -z "$enable_assume_ram" || test -n "$assume_ram_check"; then
+	AC_MSG_RESULT([])
+	AC_MSG_ERROR([--enable-assume-ram accepts only an integer argument])
+fi
+AC_MSG_RESULT([$enable_assume_ram MiB])
+AC_DEFINE_UNQUOTED([ASSUME_RAM], [$enable_assume_ram],
+		[How many MiB of RAM to assume if the real amount cannot
+		be determined.])
+
+
 ############################################
 # xz/xzdec/lzmadec linkage against liblzma #
 ############################################

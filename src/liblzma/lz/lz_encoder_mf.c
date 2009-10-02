@@ -13,7 +13,6 @@
 
 #include "lz_encoder.h"
 #include "lz_encoder_hash.h"
-#include "check.h"
 
 
 /// \brief      Find matches starting from the current byte

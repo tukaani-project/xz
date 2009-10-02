@@ -10,6 +10,7 @@ liblzma_la_SOURCES += \
 	lz/lz_encoder.c \
 	lz/lz_encoder.h \
 	lz/lz_encoder_hash.h \
+	lz/lz_encoder_hash_table.h \
 	lz/lz_encoder_mf.c
 endif
 

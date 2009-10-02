@@ -13,7 +13,12 @@
 
 #include "lz_encoder.h"
 #include "lz_encoder_hash.h"
-#include "check.h"
+
+// See lz_encoder_hash.h. This is a bit hackish but avoids making
+// endianness a conditional in makefiles.
+#if defined(WORDS_BIGENDIAN) && !defined(HAVE_SMALL)
+#	include "lz_encoder_hash_table.h"
+#endif
 
 
 struct lzma_coder_s {

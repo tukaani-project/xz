@@ -315,35 +315,6 @@ AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
 AM_CONDITIONAL(COND_ASM_X86_64, test "x$enable_assembler" = xx86_64)
 
 
-################################
-# Fast unaligned memory access #
-################################
-
-AC_MSG_CHECKING([if unaligned memory access should be used])
-AC_ARG_ENABLE([unaligned-access], AC_HELP_STRING([--enable-unaligned-access],
-		[Enable if the system supports *fast* unaligned memory access
-		with 16-bit and 32-bit integers. By default, this is enabled
-		only on x86, x86_64, and big endian PowerPC.]),
-	[], [enable_unaligned_access=auto])
-if test "x$enable_unaligned_access" = xauto ; then
-	case $host_cpu in
-		i?86|x86_64|powerpc|powerpc64)
-			enable_unaligned_access=yes
-			;;
-		*)
-			enable_unaligned_access=no
-			;;
-	esac
-fi
-if test "x$enable_unaligned_access" = xyes ; then
-	AC_DEFINE([HAVE_FAST_UNALIGNED_ACCESS], [1], [Define to 1 if
-		the system supports fast unaligned memory access.])
-	AC_MSG_RESULT([yes])
-else
-	AC_MSG_RESULT([no])
-fi
-
-
 #####################
 # Size optimization #
 #####################
@@ -508,30 +479,6 @@ AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
 	[],
 	[AC_MSG_ERROR([Required header file(s) are missing.])])
 
-# If any of these headers are missing, things should still work correctly:
-AC_CHECK_HEADERS([byteswap.h])
-
-# Even if we have byteswap.h, we may lack the specific macros/functions.
-if test x$ac_cv_header_byteswap_h = xyes ; then
-	m4_foreach([FUNC], [bswap_16,bswap_32,bswap_64], [
-		AC_MSG_CHECKING([if FUNC is available])
-		AC_LINK_IFELSE([AC_LANG_SOURCE([
-#include <byteswap.h>
-int
-main(void)
-{
-	FUNC[](42);
-	return 0;
-}
-		])], [
-			AC_DEFINE(HAVE_[]m4_toupper(FUNC), [1],
-					[Define to 1 if] FUNC [is available.])
-			AC_MSG_RESULT([yes])
-		], [AC_MSG_RESULT([no])])
-
-	])dnl
-fi
-
 
 ###############################################################################
 # Checks for typedefs, structures, and compiler characteristics.
@@ -578,6 +525,7 @@ gl_GETOPT
 AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 
 TUKLIB_PROGNAME
+TUKLIB_INTEGER
 TUKLIB_PHYSMEM
 TUKLIB_CPUCORES
 

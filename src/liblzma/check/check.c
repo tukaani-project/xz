@@ -150,13 +150,13 @@ lzma_check_finish(lzma_check_state *check, lzma_check type)
 	switch (type) {
 #ifdef HAVE_CHECK_CRC32
 	case LZMA_CHECK_CRC32:
-		check->buffer.u32[0] = integer_le_32(check->state.crc32);
+		check->buffer.u32[0] = conv32le(check->state.crc32);
 		break;
 #endif
 
 #ifdef HAVE_CHECK_CRC64
 	case LZMA_CHECK_CRC64:
-		check->buffer.u64[0] = integer_le_64(check->state.crc64);
+		check->buffer.u64[0] = conv64le(check->state.crc64);
 		break;
 #endif
 

@@ -15,7 +15,7 @@
 
 #include "sysdefs.h"
 #include "mythread.h"
-#include "integer.h"
+#include "tuklib_integer.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #	ifdef DLL_EXPORT

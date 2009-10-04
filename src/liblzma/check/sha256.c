@@ -29,10 +29,6 @@
 
 #include "check.h"
 
-#ifndef WORDS_BIGENDIAN
-#	include "../../common/bswap.h"
-#endif
-
 // At least on x86, GCC is able to optimize this to a rotate instruction.
 #define rotr_32(num, amount) ((num) >> (amount) | (num) << (32 - (amount)))
 
@@ -123,7 +119,7 @@ process(lzma_check_state *check)
 	uint32_t data[16];
 
 	for (size_t i = 0; i < 16; ++i)
-		data[i] = bswap_32(check->buffer.u32[i]);
+		data[i] = bswap32(check->buffer.u32[i]);
 
 	transform(check->state.sha256.state, data);
 #endif
@@ -194,20 +190,12 @@ lzma_sha256_finish(lzma_check_state *check)
 	// Convert the message size from bytes to bits.
 	check->state.sha256.size *= 8;
 
-#ifdef WORDS_BIGENDIAN
-	check->buffer.u64[(64 - 8) / 8] = check->state.sha256.size;
-#else
-	check->buffer.u64[(64 - 8) / 8] = bswap_64(check->state.sha256.size);
-#endif
+	check->buffer.u64[(64 - 8) / 8] = conv64be(check->state.sha256.size);
 
 	process(check);
 
 	for (size_t i = 0; i < 8; ++i)
-#ifdef WORDS_BIGENDIAN
-		check->buffer.u32[i] = check->state.sha256.state[i];
-#else
-		check->buffer.u32[i] = bswap_32(check->state.sha256.state[i]);
-#endif
+		check->buffer.u32[i] = conv32be(check->state.sha256.state[i]);
 
 	return;
 }

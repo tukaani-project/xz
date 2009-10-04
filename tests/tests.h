@@ -14,7 +14,7 @@
 #define LZMA_TESTS_H
 
 #include "sysdefs.h"
-#include "integer.h"
+#include "tuklib_integer.h"
 #include "lzma.h"
 
 #include <stdio.h>

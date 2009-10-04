@@ -29,7 +29,7 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 	crc = ~crc;
 
 #ifdef WORDS_BIGENDIAN
-	crc = bswap_32(crc);
+	crc = bswap32(crc);
 #endif
 
 	if (size > 8) {
@@ -75,7 +75,7 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 		crc = lzma_crc32_table[0][*buf++ ^ A(crc)] ^ S8(crc);
 
 #ifdef WORDS_BIGENDIAN
-	crc = bswap_32(crc);
+	crc = bswap32(crc);
 #endif
 
 	return ~crc;

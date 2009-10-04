@@ -14,12 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <inttypes.h>
 #include <stdio.h>
-
-#ifdef WORDS_BIGENDIAN
-#	include "../../common/bswap.h"
-#endif
+#include "../../common/tuklib_integer.h"
 
 
 static uint32_t crc32_table[8][256];
@@ -48,7 +44,7 @@ init_crc32_table(void)
 #ifdef WORDS_BIGENDIAN
 	for (size_t s = 0; s < 8; ++s)
 		for (size_t b = 0; b < 256; ++b)
-			crc32_table[s][b] = bswap_32(crc32_table[s][b]);
+			crc32_table[s][b] = bswap32(crc32_table[s][b]);
 #endif
 
 	return;

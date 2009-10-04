@@ -211,7 +211,7 @@ test3(void)
 	// Unsupported filter
 	// NOTE: This may need updating when new IDs become supported.
 	buf[2] ^= 0x1F;
-	integer_write_32(buf + known_options.header_size - 4,
+	unaligned_write32le(buf + known_options.header_size - 4,
 			lzma_crc32(buf, known_options.header_size - 4, 0));
 	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
 			== LZMA_OPTIONS_ERROR);
@@ -219,7 +219,7 @@ test3(void)
 
 	// Non-nul Padding
 	buf[known_options.header_size - 4 - 1] ^= 1;
-	integer_write_32(buf + known_options.header_size - 4,
+	unaligned_write32le(buf + known_options.header_size - 4,
 			lzma_crc32(buf, known_options.header_size - 4, 0));
 	expect(lzma_block_header_decode(&decoded_options, NULL, buf)
 			== LZMA_OPTIONS_ERROR);

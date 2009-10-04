@@ -1042,7 +1042,7 @@ lzma_lzma_props_decode(void **options, lzma_allocator *allocator,
 	// All dictionary sizes are accepted, including zero. LZ decoder
 	// will automatically use a dictionary at least a few KiB even if
 	// a smaller dictionary is requested.
-	opt->dict_size = integer_read_32(props + 1);
+	opt->dict_size = unaligned_read32le(props + 1);
 
 	opt->preset_dict = NULL;
 	opt->preset_dict_size = 0;

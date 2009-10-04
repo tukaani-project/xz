@@ -13,12 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <inttypes.h>
 #include <stdio.h>
-
-#ifdef WORDS_BIGENDIAN
-#	include "../../common/bswap.h"
-#endif
+#include "../../common/tuklib_integer.h"
 
 
 static uint64_t crc64_table[4][256];
@@ -47,7 +43,7 @@ init_crc64_table(void)
 #ifdef WORDS_BIGENDIAN
 	for (size_t s = 0; s < 4; ++s)
 		for (size_t b = 0; b < 256; ++b)
-			crc64_table[s][b] = bswap_64(crc64_table[s][b]);
+			crc64_table[s][b] = bswap64(crc64_table[s][b]);
 #endif
 
 	return;

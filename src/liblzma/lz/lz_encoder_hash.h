@@ -37,7 +37,7 @@
 #define FIX_5_HASH_SIZE (HASH_2_SIZE + HASH_3_SIZE + HASH_4_SIZE)
 
 // Endianness doesn't matter in hash_2_calc() (no effect on the output).
-#ifdef HAVE_FAST_UNALIGNED_ACCESS
+#ifdef TUKLIB_FAST_UNALIGNED_ACCESS
 #	define hash_2_calc() \
 		const uint32_t hash_value = *(const uint16_t *)(cur);
 #else

@@ -1064,7 +1064,7 @@ message_help(bool long_help)
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      `auto' (default), `xz', `lzma', and `raw'\n"
 "  -C, --check=CHECK   integrity check type: `crc32', `crc64' (default),\n"
-"                      or `sha256'"));
+"                      `sha256', or `none' (use with caution)"));
 	}
 
 	puts(_(

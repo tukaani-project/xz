@@ -95,6 +95,37 @@ extern LZMA_API(lzma_bool) lzma_filter_decoder_is_supported(lzma_vli id)
 
 
 /**
+ * \brief       Copy the filters array
+ *
+ * Copy the Filter IDs and filter-specific options from src to dest.
+ * Up to LZMA_FILTERS_MAX filters are copied, plus the terminating
+ * .id == LZMA_VLI_UNKNOWN. Thus, dest should have at least
+ * LZMA_FILTERS_MAX + 1 elements space unless the caller knows that
+ * src is smaller than that.
+ *
+ * Unless the filter-specific options is NULL, the Filter ID has to be
+ * supported by liblzma, because liblzma needs to know the size of every
+ * filter-specific options structure. The filter-specific options are not
+ * validated. If options is NULL, any unsupported Filter IDs are copied
+ * without returning an error.
+ *
+ * Old filter-specific options in dest are not freed, so dest doesn't
+ * need to be initialized by the caller in any way.
+ *
+ * If an error occurs, memory possibly already allocated by this function
+ * is always freed.
+ *
+ * \return      - LZMA_OK
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_OPTIONS_ERROR: Unsupported Filter ID and its options
+ *                is not NULL.
+ *              - LZMA_PROG_ERROR: src or dest is NULL.
+ */
+extern LZMA_API(lzma_ret) lzma_filters_dup(const lzma_filter *src,
+		lzma_filter *dest, lzma_allocator *allocator);
+
+
+/**
  * \brief       Calculate rough memory requirements for raw encoder
  *
  * Because the calculation is rough, this function can be used to calculate

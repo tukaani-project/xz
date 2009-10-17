@@ -131,7 +131,7 @@ static const struct {
 
 
 extern LZMA_API(lzma_ret)
-lzma_filters_dup(const lzma_filter *src, lzma_filter *dest,
+lzma_filters_copy(const lzma_filter *src, lzma_filter *dest,
 		lzma_allocator *allocator)
 {
 	if (src == NULL || dest == NULL)

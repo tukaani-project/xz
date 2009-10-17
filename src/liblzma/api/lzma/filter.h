@@ -121,7 +121,7 @@ extern LZMA_API(lzma_bool) lzma_filter_decoder_is_supported(lzma_vli id)
  *                is not NULL.
  *              - LZMA_PROG_ERROR: src or dest is NULL.
  */
-extern LZMA_API(lzma_ret) lzma_filters_dup(const lzma_filter *src,
+extern LZMA_API(lzma_ret) lzma_filters_copy(const lzma_filter *src,
 		lzma_filter *dest, lzma_allocator *allocator);
 
 

@@ -33,7 +33,6 @@ lzma_lzma_preset(lzma_options_lzma *options, uint32_t preset)
 	options->lp = LZMA_LP_DEFAULT;
 	options->pb = LZMA_PB_DEFAULT;
 
-	options->persistent = false;
 	options->mode = level <= 2 ? LZMA_MODE_FAST : LZMA_MODE_NORMAL;
 
 	options->nice_len = level == 0 ? 8 : level <= 5 ? 32 : 64;

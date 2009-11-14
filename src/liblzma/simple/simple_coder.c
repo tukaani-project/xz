@@ -210,6 +210,17 @@ simple_coder_end(lzma_coder *coder, lzma_allocator *allocator)
 }
 
 
+static lzma_ret
+simple_coder_update(lzma_coder *coder, lzma_allocator *allocator,
+		const lzma_filter *filters_null lzma_attribute((unused)),
+		const lzma_filter *reversed_filters)
+{
+	// No update support, just call the next filter in the chain.
+	return lzma_next_filter_update(
+			&coder->next, allocator, reversed_filters + 1);
+}
+
+
 extern lzma_ret
 lzma_simple_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters,
@@ -231,6 +242,7 @@ lzma_simple_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &simple_code;
 		next->end = &simple_coder_end;
+		next->update = &simple_coder_update;
 
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 		next->coder->filter = filter;

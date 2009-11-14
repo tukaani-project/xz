@@ -414,7 +414,6 @@ options_lzma(const char *str)
 		.lc = LZMA_LC_DEFAULT,
 		.lp = LZMA_LP_DEFAULT,
 		.pb = LZMA_PB_DEFAULT,
-		.persistent = false,
 		.mode = LZMA_MODE_NORMAL,
 		.nice_len = 64,
 		.mf = LZMA_MF_BT4,

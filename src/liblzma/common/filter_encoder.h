@@ -22,6 +22,6 @@ extern lzma_vli lzma_chunk_size(const lzma_filter *filters);
 
 extern lzma_ret lzma_raw_encoder_init(
 		lzma_next_coder *next, lzma_allocator *allocator,
-		const lzma_filter *options);
+		const lzma_filter *filters);
 
 #endif

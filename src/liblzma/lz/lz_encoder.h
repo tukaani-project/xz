@@ -201,6 +201,10 @@ typedef struct {
 	/// Free allocated resources
 	void (*end)(lzma_coder *coder, lzma_allocator *allocator);
 
+	/// Update the options in the middle of the encoding.
+	lzma_ret (*options_update)(lzma_coder *coder,
+			const lzma_filter *filter);
+
 } lzma_lz_encoder;
 
 

@@ -29,10 +29,6 @@ struct lzma_coder_s {
 	/// LZMA encoder
 	lzma_coder *lzma;
 
-	/// If this is not NULL, we will check new options from this
-	/// structure when starting a new chunk.
-	const lzma_options_lzma *opt_new;
-
 	/// LZMA options currently in use.
 	lzma_options_lzma opt_cur;
 
@@ -155,25 +151,6 @@ lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 					? LZMA_OK : LZMA_STREAM_END;
 		}
 
-		// Look if there are new options. At least for now,
-		// only lc/lp/pb can be changed.
-		if (coder->opt_new != NULL
-				&& (coder->opt_cur.lc != coder->opt_new->lc
-				|| coder->opt_cur.lp != coder->opt_new->lp
-				|| coder->opt_cur.pb != coder->opt_new->pb)) {
-			// Options have been changed, copy them to opt_cur.
-			// These get validated as part of
-			// lzma_lzma_encoder_reset() below.
-			coder->opt_cur.lc = coder->opt_new->lc;
-			coder->opt_cur.lp = coder->opt_new->lp;
-			coder->opt_cur.pb = coder->opt_new->pb;
-
-			// We need to write the new options and reset
-			// the encoder state.
-			coder->need_properties = true;
-			coder->need_state_reset = true;
-		}
-
 		if (coder->need_state_reset)
 			return_if_error(lzma_lzma_encoder_reset(
 					coder->lzma, &coder->opt_cur));
@@ -294,6 +271,39 @@ lzma2_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
+lzma2_encoder_options_update(lzma_coder *coder, const lzma_filter *filter)
+{
+	// New options can be set only when there is no incomplete chunk.
+        // This is the case at the beginning of the raw stream and right
+        // after LZMA_SYNC_FLUSH.
+        if (filter->options == NULL || coder->sequence != SEQ_INIT)
+		return LZMA_PROG_ERROR;
+
+	// Look if there are new options. At least for now,
+	// only lc/lp/pb can be changed.
+	const lzma_options_lzma *opt = filter->options;
+	if (coder->opt_cur.lc != opt->lc || coder->opt_cur.lp != opt->lp
+			|| coder->opt_cur.pb != opt->pb) {
+		// Validate the options.
+		if (opt->lc > LZMA_LCLP_MAX || opt->lp > LZMA_LCLP_MAX
+				|| opt->lc + opt->lp > LZMA_LCLP_MAX
+				|| opt->pb > LZMA_PB_MAX)
+			return LZMA_OPTIONS_ERROR;
+
+		// The new options will be used when the encoder starts
+		// a new LZMA2 chunk.
+		coder->opt_cur.lc = opt->lc;
+		coder->opt_cur.lp = opt->lp;
+		coder->opt_cur.pb = opt->pb;
+		coder->need_properties = true;
+		coder->need_state_reset = true;
+	}
+
+	return LZMA_OK;
+}
+
+
+static lzma_ret
 lzma2_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
 		const void *options, lzma_lz_options *lz_options)
 {
@@ -307,13 +317,12 @@ lzma2_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
 
 		lz->code = &lzma2_encode;
 		lz->end = &lzma2_encoder_end;
+		lz->options_update = &lzma2_encoder_options_update;
 
 		lz->coder->lzma = NULL;
 	}
 
 	lz->coder->opt_cur = *(const lzma_options_lzma *)(options);
-	lz->coder->opt_new = lz->coder->opt_cur.persistent
-				? options : NULL;
 
 	lz->coder->sequence = SEQ_INIT;
 	lz->coder->need_properties = true;

@@ -270,6 +270,7 @@ lzma_raw_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			if (fc == NULL || fc->init == NULL)
 				return LZMA_OPTIONS_ERROR;
 
+			filters[j].id = options[i].id;
 			filters[j].init = fc->init;
 			filters[j].options = options[i].options;
 		}
@@ -280,12 +281,14 @@ lzma_raw_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 			if (fc == NULL || fc->init == NULL)
 				return LZMA_OPTIONS_ERROR;
 
+			filters[i].id = options[i].id;
 			filters[i].init = fc->init;
 			filters[i].options = options[i].options;
 		}
 	}
 
 	// Terminate the array.
+	filters[count].id = LZMA_VLI_UNKNOWN;
 	filters[count].init = NULL;
 
 	// Initialize the filters.

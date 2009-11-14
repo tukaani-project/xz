@@ -25,11 +25,19 @@ struct lzma_coder_s {
 		SEQ_STREAM_FOOTER,
 	} sequence;
 
+	/// True if Block encoder has been initialized by
+	/// lzma_stream_encoder_init() or stream_encoder_update()
+	/// and thus doesn't need to be initialized in stream_encode().
+	bool block_encoder_is_initialized;
+
 	/// Block
 	lzma_next_coder block_encoder;
 
 	/// Options for the Block encoder
 	lzma_block block_options;
+
+	/// The filter chain currently in use
+	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 
 	/// Index encoder. This is separate from Block encoder, because this
 	/// doesn't take much memory, and when encoding multiple Streams
@@ -117,11 +125,15 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 			break;
 		}
 
-		// Initialize the Block encoder except if this is the first
-		// Block, because stream_encoder_init() has already
-		// initialized it.
-		if (lzma_index_count(coder->index) != 0)
+		// Initialize the Block encoder unless it was already
+		// initialized by lzma_stream_encoder_init() or
+		// stream_encoder_update().
+		if (!coder->block_encoder_is_initialized)
 			return_if_error(block_encoder_init(coder, allocator));
+
+		// Make it false so that we don't skip the initialization
+		// with the next Block.
+		coder->block_encoder_is_initialized = false;
 
 		// Encode the Block Header. This shouldn't fail since we have
 		// already initialized the Block encoder.
@@ -202,8 +214,51 @@ stream_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 	lzma_next_end(&coder->block_encoder, allocator);
 	lzma_next_end(&coder->index_encoder, allocator);
 	lzma_index_end(coder->index, allocator);
+
+	for (size_t i = 0; coder->filters[i].id != LZMA_VLI_UNKNOWN; ++i)
+		lzma_free(coder->filters[i].options, allocator);
+
 	lzma_free(coder, allocator);
 	return;
+}
+
+
+static lzma_ret
+stream_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
+		const lzma_filter *filters,
+		const lzma_filter *reversed_filters)
+{
+	if (coder->sequence <= SEQ_BLOCK_INIT) {
+		// There is no incomplete Block waiting to be finished,
+		// thus we can change the whole filter chain. Start by
+		// trying to initialize the Block encoder with the new
+		// chain. This way we detect if the chain is valid.
+		coder->block_encoder_is_initialized = false;
+		coder->block_options.filters = (lzma_filter *)(filters);
+		const lzma_ret ret = block_encoder_init(coder, allocator);
+		coder->block_options.filters = coder->filters;
+		if (ret != LZMA_OK)
+			return ret;
+
+		coder->block_encoder_is_initialized = true;
+
+	} else if (coder->sequence <= SEQ_BLOCK_ENCODE) {
+		// We are in the middle of a Block. Try to update only
+		// the filter-specific options.
+		return_if_error(coder->block_encoder.update(
+				coder->block_encoder.coder, allocator,
+				filters, reversed_filters));
+	} else {
+		// Trying to update the filter chain when we are already
+		// encoding Index or Stream Footer.
+		return LZMA_PROG_ERROR;
+	}
+
+	// Free the copy of the old chain and make a copy of the new chain.
+	for (size_t i = 0; coder->filters[i].id != LZMA_VLI_UNKNOWN; ++i)
+		lzma_free(coder->filters[i].options, allocator);
+
+	return lzma_filters_copy(filters, coder->filters, allocator);
 }
 
 
@@ -223,6 +278,7 @@ lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->code = &stream_encode;
 		next->end = &stream_encoder_end;
+		next->update = &stream_encoder_update;
 
 		next->coder->block_encoder = LZMA_NEXT_CODER_INIT;
 		next->coder->index_encoder = LZMA_NEXT_CODER_INIT;
@@ -233,7 +289,7 @@ lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->sequence = SEQ_STREAM_HEADER;
 	next->coder->block_options.version = 0;
 	next->coder->block_options.check = check;
-	next->coder->block_options.filters = (lzma_filter *)(filters);
+	next->coder->filters[0].id = LZMA_VLI_UNKNOWN;
 
 	// Initialize the Index
 	next->coder->index = lzma_index_init(next->coder->index, allocator);
@@ -251,11 +307,11 @@ lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->buffer_pos = 0;
 	next->coder->buffer_size = LZMA_STREAM_HEADER_SIZE;
 
-	// Initialize the Block encoder. This way we detect if the given
-	// filters are supported by the current liblzma build, and the
-	// application doesn't need to keep the filters structure available
-	// unless it is going to use LZMA_FULL_FLUSH.
-	return block_encoder_init(next->coder, allocator);
+	// Initialize the Block encoder. This way we detect unsupported
+	// filter chains when initializing the Stream encoder instead of
+	// giving an error after Stream Header has already written out.
+	return stream_encoder_update(
+			next->coder, allocator, filters, NULL);
 }
 
 

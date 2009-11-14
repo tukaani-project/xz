@@ -25,7 +25,7 @@ delta_coder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 extern lzma_ret
 lzma_delta_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		const lzma_filter_info *filters, lzma_code_function code)
+		const lzma_filter_info *filters)
 {
 	// Allocate memory for the decoder if needed.
 	if (next->coder == NULL) {
@@ -37,9 +37,6 @@ lzma_delta_coder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		next->end = &delta_coder_end;
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}
-
-	// Coding function is different for encoder and decoder.
-	next->code = code;
 
 	// Validate the options.
 	if (lzma_delta_coder_memusage(filters[0].options) == UINT64_MAX)

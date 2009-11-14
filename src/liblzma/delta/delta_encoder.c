@@ -83,11 +83,26 @@ delta_encode(lzma_coder *coder, lzma_allocator *allocator,
 }
 
 
+static lzma_ret
+delta_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
+		const lzma_filter *filters_null lzma_attribute((unused)),
+		const lzma_filter *reversed_filters)
+{
+	// Delta doesn't and will never support changing the options in
+	// the middle of encoding. If the app tries to change them, we
+	// simply ignore them.
+	return lzma_next_filter_update(
+			&coder->next, allocator, reversed_filters + 1);
+}
+
+
 extern lzma_ret
 lzma_delta_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
-	return lzma_delta_coder_init(next, allocator, filters, &delta_encode);
+	next->code = &delta_encode;
+	next->update = &delta_encoder_update;
+	return lzma_delta_coder_init(next, allocator, filters);
 }
 
 

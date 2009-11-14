@@ -92,9 +92,27 @@ lzma_next_filter_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
 	lzma_next_coder_init(filters[0].init, next, allocator);
-
+	next->id = filters[0].id;
 	return filters[0].init == NULL
 			? LZMA_OK : filters[0].init(next, allocator, filters);
+}
+
+
+extern lzma_ret
+lzma_next_filter_update(lzma_next_coder *next, lzma_allocator *allocator,
+		const lzma_filter *reversed_filters)
+{
+	// Check that the application isn't trying to change the Filter ID.
+	// End of filters is indicated with LZMA_VLI_UNKNOWN in both
+	// reversed_filters[0].id and next->id.
+	if (reversed_filters[0].id != next->id)
+		return LZMA_PROG_ERROR;
+
+	if (reversed_filters[0].id == LZMA_VLI_UNKNOWN)
+		return LZMA_OK;
+
+	assert(next->update != NULL);
+	return next->update(next->coder, allocator, NULL, reversed_filters);
 }
 
 

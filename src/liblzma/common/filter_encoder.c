@@ -180,6 +180,33 @@ lzma_filter_encoder_is_supported(lzma_vli id)
 }
 
 
+extern LZMA_API(lzma_ret)
+lzma_filters_update(lzma_stream *strm, const lzma_filter *filters)
+{
+	if (strm->internal->next.update == NULL)
+		return LZMA_PROG_ERROR;
+
+	// Validate the filter chain.
+	if (lzma_raw_encoder_memusage(filters) == UINT64_MAX)
+		return LZMA_OPTIONS_ERROR;
+
+	// The actual filter chain in the encoder is reversed. Some things
+	// still want the normal order chain, so we provide both.
+	size_t count = 1;
+	while (filters[count].id != LZMA_VLI_UNKNOWN)
+		++count;
+
+	lzma_filter reversed_filters[LZMA_FILTERS_MAX + 1];
+	for (size_t i = 0; i < count; ++i)
+		reversed_filters[count - i - 1] = filters[i];
+
+	reversed_filters[count].id = LZMA_VLI_UNKNOWN;
+
+	return strm->internal->next.update(strm->internal->next.coder,
+			strm->allocator, filters, reversed_filters);
+}
+
+
 extern lzma_ret
 lzma_raw_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter *options)

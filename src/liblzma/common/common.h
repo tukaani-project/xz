@@ -109,6 +109,10 @@ typedef void (*lzma_end_function)(
 /// an array of lzma_filter_info structures. This array is used with
 /// lzma_next_filter_init to initialize the filter chain.
 struct lzma_filter_info_s {
+	/// Filter ID. This is used only by the encoder
+	/// with lzma_filters_update().
+	lzma_vli id;
+
 	/// Pointer to function used to initialize the filter.
 	/// This is NULL to indicate end of array.
 	lzma_init_function init;
@@ -122,6 +126,10 @@ struct lzma_filter_info_s {
 struct lzma_next_coder_s {
 	/// Pointer to coder-specific data
 	lzma_coder *coder;
+
+	/// Filter ID. This is LZMA_VLI_UNKNOWN when this structure doesn't
+	/// point to a filter coder.
+	lzma_vli id;
 
 	/// "Pointer" to init function. This is never called here.
 	/// We need only to detect if we are initializing a coder
@@ -145,6 +153,12 @@ struct lzma_next_coder_s {
 	/// If new_memlimit == 0, the limit is not changed.
 	lzma_ret (*memconfig)(lzma_coder *coder, uint64_t *memusage,
 			uint64_t *old_memlimit, uint64_t new_memlimit);
+
+	/// Update the filter-specific options or the whole filter chain
+	/// in the encoder.
+	lzma_ret (*update)(lzma_coder *coder, lzma_allocator *allocator,
+			const lzma_filter *filters,
+			const lzma_filter *reversed_filters);
 };
 
 
@@ -153,10 +167,12 @@ struct lzma_next_coder_s {
 	(lzma_next_coder){ \
 		.coder = NULL, \
 		.init = (uintptr_t)(NULL), \
+		.id = LZMA_VLI_UNKNOWN, \
 		.code = NULL, \
 		.end = NULL, \
 		.get_check = NULL, \
 		.memconfig = NULL, \
+		.update = NULL, \
 	}
 
 
@@ -211,6 +227,12 @@ extern lzma_ret lzma_strm_init(lzma_stream *strm);
 /// initialization functions don't need to use lzma_next_coder_init macro.
 extern lzma_ret lzma_next_filter_init(lzma_next_coder *next,
 		lzma_allocator *allocator, const lzma_filter_info *filters);
+
+/// Update the next filter in the chain, if any. This checks that
+/// the application is not trying to change the Filter IDs.
+extern lzma_ret lzma_next_filter_update(
+		lzma_next_coder *next, lzma_allocator *allocator,
+		const lzma_filter *reversed_filters);
 
 /// Frees the memory allocated for next->coder either using next->end or,
 /// if next->end is NULL, using lzma_free.

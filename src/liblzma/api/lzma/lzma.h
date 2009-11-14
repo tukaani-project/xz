@@ -298,19 +298,6 @@ typedef struct {
 #	define LZMA_PB_MAX      4
 #	define LZMA_PB_DEFAULT  2
 
-	/**
-	 * \brief       Indicate if the options structure is persistent
-	 *
-	 * If this is true, the application must keep this options structure
-	 * available after the LZMA2 encoder has been initialized. With
-	 * persistent structure it is possible to change some encoder options
-	 * in the middle of the encoding process without resetting the encoder.
-	 *
-	 * This option is used only by LZMA2. LZMA1 ignores this and it is
-	 * safe to not initialize this when encoding with LZMA1.
-	 */
-	lzma_bool persistent;
-
 	/** Compression mode */
 	lzma_mode mode;
 

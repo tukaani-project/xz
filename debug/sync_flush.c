@@ -71,7 +71,6 @@ main(int argc, char **argv)
 		.lp = LZMA_LP_DEFAULT,
 		.pb = LZMA_PB_DEFAULT,
 		.preset_dict = NULL,
-		.persistent = true,
 		.mode = LZMA_MODE_NORMAL,
 		.nice_len = 32,
 		.mf = LZMA_MF_HC3,
@@ -106,20 +105,25 @@ main(int argc, char **argv)
 	}
 
 	// Encoding
-
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(6, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(7, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_SYNC_FLUSH);
 	encode(0, LZMA_FINISH);
+
 /*
 	encode(53, LZMA_SYNC_FLUSH);
-// 	opt_lzma.literal_context_bits = 2;
-// 	opt_lzma.literal_pos_bits = 1;
-// 	opt_lzma.pos_bits = 0;
+	opt_lzma.lc = 2;
+	opt_lzma.lp = 1;
+	opt_lzma.pb = 0;
+	if (lzma_filters_update(&strm, filters) != LZMA_OK) {
+		fprintf(stderr, "update failed\n");
+		exit(1);
+	}
 	encode(404, LZMA_FINISH);
 */
+
 	// Clean up
 	lzma_end(&strm);
 

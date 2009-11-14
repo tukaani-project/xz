@@ -42,8 +42,10 @@ main(void)
 		{ UINT64_MAX, NULL }
 	};
 
-	printf("Encoder: %10" PRIu64 " B\n", lzma_memusage_encoder(filters));
-	printf("Decoder: %10" PRIu64 " B\n", lzma_memusage_decoder(filters));
+	printf("Encoder: %10" PRIu64 " B\n",
+			lzma_raw_encoder_memusage(filters));
+	printf("Decoder: %10" PRIu64 " B\n",
+			lzma_raw_decoder_memusage(filters));
 
 	return 0;
 }

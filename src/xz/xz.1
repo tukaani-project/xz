@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2009-08-27" "Tukaani" "XZ Utils"
+.TH XZ 1 "2009-11-14" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -369,8 +369,11 @@ Read the filenames to process from
 if
 .I file
 is omitted, filenames are read from standard input. Filenames must be
-terminated with the newline character. If filenames are given also as
-command line arguments, they are processed before the filenames read from
+terminated with the newline character. A dash
+.RB ( \- )
+is taken as a regular filename; it doesn't mean standard input.
+If filenames are given also as command line arguments, they are
+processed before the filenames read from
 .IR file .
 .TP
 \fB\-\-files0\fR[\fB=\fIfile\fR]
@@ -996,6 +999,48 @@ will display a progress indicator.
 Specifying
 .B \-\-verbose
 twice will give even more verbose output (useful mostly for debugging).
+.IP
+The progress indicator shows the following information:
+.RS
+.IP \(bu 3
+Completion percentage is shown if the size of the input file is known.
+That is, percentage cannot be shown in pipes.
+.IP \(bu 3
+Amount of compressed data produced (compressing) or consumed (decompressing).
+.IP \(bu 3
+Amount of uncompressed data consumed (compressing) or produced
+(decompressing).
+.IP \(bu 3
+Compression ratio, which is calculated by dividing the amount of
+compressed data processed so far by the amount of uncompressed data
+processed so far.
+.IP \(bu 3
+Compression or decompression speed. This is measured as the amount of
+uncompressed data consumed (compression) or produced (decompression)
+per second. It is shown once a few seconds have passed since
+.B xz
+started processing the file.
+.IP \(bu 3
+Elapsed time or estimated time remaining.
+Elapsed time is displayed in the format M:SS or H:MM:SS.
+The estimated remaining time is displayed in a less precise format
+which never has colons, for example, 2 min 30 s. The estimate can
+be shown only when the size of the input file is known and a couple of
+seconds have already passed since
+.B xz
+started processing the file.
+.RE
+.IP
+When standard error is not a terminal,
+.B \-\-verbose
+will make
+.B xz
+print the filename, compressed size, uncompressed size, compression ratio,
+speed, and elapsed time on a single line to standard error after
+compressing or decompressing the file. If operating took at least a few
+seconds, also the speed and elapsed time are printed. If the operation
+didn't finish, for example due to user interruption, also the completion
+percentage is printed if the size of the input file is known.
 .TP
 .BR \-Q ", " \-\-no\-warn
 Don't set the exit status to
@@ -1202,8 +1247,7 @@ The exact compressed output produced from the same uncompressed input file
 may vary between XZ Utils versions even if compression options are identical.
 This is because the encoder can be improved (faster or better compression)
 without affecting the file format. The output can vary even between different
-builds of the same XZ Utils version, if different build options are used or
-if the endianness of the hardware is different for different builds.
+builds of the same XZ Utils version, if different build options are used.
 .PP
 The above means that implementing
 .B \-\-rsyncable

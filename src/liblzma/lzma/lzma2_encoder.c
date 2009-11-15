@@ -274,9 +274,9 @@ static lzma_ret
 lzma2_encoder_options_update(lzma_coder *coder, const lzma_filter *filter)
 {
 	// New options can be set only when there is no incomplete chunk.
-        // This is the case at the beginning of the raw stream and right
-        // after LZMA_SYNC_FLUSH.
-        if (filter->options == NULL || coder->sequence != SEQ_INIT)
+	// This is the case at the beginning of the raw stream and right
+	// after LZMA_SYNC_FLUSH.
+	if (filter->options == NULL || coder->sequence != SEQ_INIT)
 		return LZMA_PROG_ERROR;
 
 	// Look if there are new options. At least for now,

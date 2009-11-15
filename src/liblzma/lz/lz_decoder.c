@@ -39,15 +39,15 @@ struct lzma_coder_s {
 	/// marker. This may become true before next_finished becomes true.
 	bool this_finished;
 
-        /// Temporary buffer needed when the LZ-based filter is not the last
-        /// filter in the chain. The output of the next filter is first
-        /// decoded into buffer[], which is then used as input for the actual
-        /// LZ-based decoder.
-        struct {
-                size_t pos;
-                size_t size;
-                uint8_t buffer[LZMA_BUFFER_SIZE];
-        } temp;
+	/// Temporary buffer needed when the LZ-based filter is not the last
+	/// filter in the chain. The output of the next filter is first
+	/// decoded into buffer[], which is then used as input for the actual
+	/// LZ-based decoder.
+	struct {
+		size_t pos;
+		size_t size;
+		uint8_t buffer[LZMA_BUFFER_SIZE];
+	} temp;
 };
 
 

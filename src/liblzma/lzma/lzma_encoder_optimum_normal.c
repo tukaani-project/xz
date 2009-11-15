@@ -531,7 +531,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 	const uint32_t cur_and_1_price = cur_price
 			+ rc_bit_0_price(coder->is_match[state][pos_state])
 			+ get_literal_price(coder, position, buf[-1],
-        		!is_literal_state(state), match_byte, current_byte);
+			!is_literal_state(state), match_byte, current_byte);
 
 	bool next_is_literal = false;
 

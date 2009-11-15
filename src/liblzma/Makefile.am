@@ -12,7 +12,7 @@ CLEANFILES =
 doc_DATA =
 
 lib_LTLIBRARIES = liblzma.la
-liblzma_la_SOURCES =
+liblzma_la_SOURCES = $(top_srcdir)/src/common/tuklib_physmem.c
 liblzma_la_CPPFLAGS = \
 	-I$(top_srcdir)/src/liblzma/api \
 	-I$(top_srcdir)/src/liblzma/common \
@@ -23,7 +23,8 @@ liblzma_la_CPPFLAGS = \
 	-I$(top_srcdir)/src/liblzma/subblock \
 	-I$(top_srcdir)/src/liblzma/delta \
 	-I$(top_srcdir)/src/liblzma/simple \
-	-I$(top_srcdir)/src/common
+	-I$(top_srcdir)/src/common \
+	-DTUKLIB_SYMBOL_PREFIX=lzma_
 liblzma_la_LDFLAGS = -no-undefined -version-info 0:0:0
 
 include $(srcdir)/common/Makefile.inc

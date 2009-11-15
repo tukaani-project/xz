@@ -11,7 +11,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
-#include "tuklib_physmem.h"
 #include "tuklib_cpucores.h"
 
 
@@ -66,7 +65,7 @@ hardware_memlimit_set_percentage(uint32_t percentage)
 	assert(percentage > 0);
 	assert(percentage <= 100);
 
-	uint64_t mem = tuklib_physmem();
+	uint64_t mem = lzma_physmem();
 
 	// If we cannot determine the amount of RAM, use the assumption
 	// defined by the configure script.

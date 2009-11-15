@@ -14,6 +14,7 @@ nobase_include_HEADERS = \
 	lzma/container.h \
 	lzma/delta.h \
 	lzma/filter.h \
+	lzma/hardware.h \
 	lzma/index.h \
 	lzma/index_hash.h \
 	lzma/lzma.h \

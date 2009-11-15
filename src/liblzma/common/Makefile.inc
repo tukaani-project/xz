@@ -14,6 +14,7 @@ liblzma_la_SOURCES += \
 	common/easy_preset.h \
 	common/filter_common.c \
 	common/filter_common.h \
+	common/hardware_physmem.c \
 	common/index.c \
 	common/index.h \
 	common/stream_flags_common.c \

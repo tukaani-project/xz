@@ -308,6 +308,9 @@ extern "C" {
 #include "lzma/index.h"
 #include "lzma/index_hash.h"
 
+/* Hardware information */
+#include "lzma/hardware.h"
+
 /*
  * All subheaders included. Undefine LZMA_H_INTERNAL to prevent applications
  * re-including the subheaders.

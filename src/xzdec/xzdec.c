@@ -21,7 +21,6 @@
 #include "getopt.h"
 #include "tuklib_progname.h"
 #include "tuklib_exit.h"
-#include "tuklib_physmem.h"
 
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
@@ -104,7 +103,7 @@ version(void)
 static void
 memlimit_set_percentage(uint32_t percentage)
 {
-	uint64_t mem = tuklib_physmem();
+	uint64_t mem = lzma_physmem();
 
 	// If we cannot determine the amount of RAM, use the assumption
 	// set by the configure script.

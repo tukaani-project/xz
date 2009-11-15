@@ -32,7 +32,6 @@ xz_SOURCES = \
 	$(top_srcdir)/src/common/tuklib_open_stdxxx.c \
 	$(top_srcdir)/src/common/tuklib_progname.c \
 	$(top_srcdir)/src/common/tuklib_exit.c \
-	$(top_srcdir)/src/common/tuklib_physmem.c \
 	$(top_srcdir)/src/common/tuklib_cpucores.c
 
 if COND_W32

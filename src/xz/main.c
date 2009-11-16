@@ -153,6 +153,13 @@ main(int argc, char **argv)
 	args_info args;
 	args_parse(&args, argc, argv);
 
+	if (opt_mode == MODE_LIST)
+		message_fatal("--list is not implemented yet.");
+
+	if (opt_robot)
+		message_fatal(_("Compression and decompression with --robot "
+			"are not supported yet."));
+
 	// Tell the message handling code how many input files there are if
 	// we know it. This way the progress indicator can show it.
 	if (args.files_name != NULL)
@@ -170,10 +177,6 @@ main(int argc, char **argv)
 				tuklib_exit(E_ERROR, E_ERROR, false);
 			}
 		}
-	}
-
-	if (opt_mode == MODE_LIST) {
-		message_fatal("--list is not implemented yet.");
 	}
 
 	// Hook the signal handlers. We don't need these before we start

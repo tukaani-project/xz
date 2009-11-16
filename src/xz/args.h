@@ -35,6 +35,7 @@ extern bool opt_stdout;
 extern bool opt_force;
 extern bool opt_keep_original;
 // extern bool opt_recursive;
+extern bool opt_robot;
 
 extern const char *stdin_filename;
 

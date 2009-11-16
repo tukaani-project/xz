@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       message.c
-/// \brief      Printing messages to stderr
+/// \brief      Printing messages
 //
 //  Author:     Lasse Collin
 //
@@ -152,7 +152,7 @@ message_init(void)
 	if (progress_automatic) {
 		// stderr is a terminal. Check the COLUMNS environment
 		// variable to see if the terminal is wide enough. If COLUMNS
-		// doesn't exist or it has some unparseable value, we assume
+		// doesn't exist or it has some unparsable value, we assume
 		// that the terminal is wide enough.
 		const char *columns_str = getenv("COLUMNS");
 		if (columns_str != NULL) {
@@ -1013,12 +1013,32 @@ message_try_help(void)
 
 
 extern void
+message_memlimit(void)
+{
+	if (opt_robot)
+		printf("%" PRIu64 "\n", hardware_memlimit_get());
+	else
+		printf(_("%s MiB (%s bytes)\n"),
+			uint64_to_str(hardware_memlimit_get() >> 20, 0),
+			uint64_to_str(hardware_memlimit_get(), 1));
+
+	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
+}
+
+
+extern void
 message_version(void)
 {
 	// It is possible that liblzma version is different than the command
 	// line tool version, so print both.
-	printf("xz (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n");
-	printf("liblzma %s\n", lzma_version_string());
+	if (opt_robot) {
+		printf("XZ_VERSION=%d\nLIBLZMA_VERSION=%d\n",
+				LZMA_VERSION, lzma_version_number());
+	} else {
+		printf("xz (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n");
+		printf("liblzma %s\n", lzma_version_string());
+	}
+
 	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }
 
@@ -1137,22 +1157,25 @@ message_help(bool long_help)
 "  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
 "  -v, --verbose       be verbose; specify twice for even more verbose"));
 
-	if (long_help)
+	if (long_help) {
 		puts(_(
 "  -Q, --no-warn       make warnings not affect the exit status"));
-
-	if (long_help)
 		puts(_(
-"\n"
+"      --robot         use machine-parsable messages (useful for scripts)"));
+		puts("");
+		puts(_(
+"      --info-memory   display the memory usage limit and exit"));
+		puts(_(
 "  -h, --help          display the short help (lists only the basic options)\n"
-"  -H, --long-help     display this long help"));
-	else
+"  -H, --long-help     display this long help and exit"));
+	} else {
 		puts(_(
-"  -h, --help          display this short help\n"
+"  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"));
+	}
 
 	puts(_(
-"  -V, --version       display the version number"));
+"  -V, --version       display the version number and exit"));
 
 	puts(_("\nWith no FILE, or when FILE is -, read standard input.\n"));
 

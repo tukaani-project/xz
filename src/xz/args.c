@@ -21,6 +21,7 @@
 bool opt_stdout = false;
 bool opt_force = false;
 bool opt_keep_original = false;
+bool opt_robot = false;
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
@@ -44,6 +45,8 @@ parse_real(args_info *args, int argc, char **argv)
 
 		OPT_FILES,
 		OPT_FILES0,
+		OPT_INFO_MEMORY,
+		OPT_ROBOT,
 	};
 
 	static const char short_opts[]
@@ -51,51 +54,53 @@ parse_real(args_info *args, int argc, char **argv)
 
 	static const struct option long_opts[] = {
 		// Operation mode
-		{ "compress",       no_argument,       NULL,  'z' },
-		{ "decompress",     no_argument,       NULL,  'd' },
-		{ "uncompress",     no_argument,       NULL,  'd' },
-		{ "test",           no_argument,       NULL,  't' },
-		{ "list",           no_argument,       NULL,  'l' },
+		{ "compress",     no_argument,       NULL,  'z' },
+		{ "decompress",   no_argument,       NULL,  'd' },
+		{ "uncompress",   no_argument,       NULL,  'd' },
+		{ "test",         no_argument,       NULL,  't' },
+		{ "list",         no_argument,       NULL,  'l' },
 
 		// Operation modifiers
-		{ "keep",           no_argument,       NULL,  'k' },
-		{ "force",          no_argument,       NULL,  'f' },
-		{ "stdout",         no_argument,       NULL,  'c' },
-		{ "to-stdout",      no_argument,       NULL,  'c' },
-		{ "suffix",         required_argument, NULL,  'S' },
+		{ "keep",         no_argument,       NULL,  'k' },
+		{ "force",        no_argument,       NULL,  'f' },
+		{ "stdout",       no_argument,       NULL,  'c' },
+		{ "to-stdout",    no_argument,       NULL,  'c' },
+		{ "suffix",       required_argument, NULL,  'S' },
 		// { "recursive",      no_argument,       NULL,  'r' }, // TODO
-		{ "files",          optional_argument, NULL,  OPT_FILES },
-		{ "files0",         optional_argument, NULL,  OPT_FILES0 },
+		{ "files",        optional_argument, NULL,  OPT_FILES },
+		{ "files0",       optional_argument, NULL,  OPT_FILES0 },
 
 		// Basic compression settings
-		{ "format",         required_argument, NULL,  'F' },
-		{ "check",          required_argument, NULL,  'C' },
-		{ "memory",         required_argument, NULL,  'M' },
-		{ "threads",        required_argument, NULL,  'T' },
+		{ "format",       required_argument, NULL,  'F' },
+		{ "check",        required_argument, NULL,  'C' },
+		{ "memory",       required_argument, NULL,  'M' },
+		{ "threads",      required_argument, NULL,  'T' },
 
-		{ "extreme",        no_argument,       NULL,  'e' },
-		{ "fast",           no_argument,       NULL,  '0' },
-		{ "best",           no_argument,       NULL,  '9' },
+		{ "extreme",      no_argument,       NULL,  'e' },
+		{ "fast",         no_argument,       NULL,  '0' },
+		{ "best",         no_argument,       NULL,  '9' },
 
 		// Filters
-		{ "lzma1",          optional_argument, NULL,  OPT_LZMA1 },
-		{ "lzma2",          optional_argument, NULL,  OPT_LZMA2 },
-		{ "x86",            optional_argument, NULL,  OPT_X86 },
-		{ "powerpc",        optional_argument, NULL,  OPT_POWERPC },
-		{ "ia64",           optional_argument, NULL,  OPT_IA64 },
-		{ "arm",            optional_argument, NULL,  OPT_ARM },
-		{ "armthumb",       optional_argument, NULL,  OPT_ARMTHUMB },
-		{ "sparc",          optional_argument, NULL,  OPT_SPARC },
-		{ "delta",          optional_argument, NULL,  OPT_DELTA },
-		{ "subblock",       optional_argument, NULL,  OPT_SUBBLOCK },
+		{ "lzma1",        optional_argument, NULL,  OPT_LZMA1 },
+		{ "lzma2",        optional_argument, NULL,  OPT_LZMA2 },
+		{ "x86",          optional_argument, NULL,  OPT_X86 },
+		{ "powerpc",      optional_argument, NULL,  OPT_POWERPC },
+		{ "ia64",         optional_argument, NULL,  OPT_IA64 },
+		{ "arm",          optional_argument, NULL,  OPT_ARM },
+		{ "armthumb",     optional_argument, NULL,  OPT_ARMTHUMB },
+		{ "sparc",        optional_argument, NULL,  OPT_SPARC },
+		{ "delta",        optional_argument, NULL,  OPT_DELTA },
+		{ "subblock",     optional_argument, NULL,  OPT_SUBBLOCK },
 
 		// Other options
-		{ "quiet",          no_argument,       NULL,  'q' },
-		{ "verbose",        no_argument,       NULL,  'v' },
-		{ "no-warn",        no_argument,       NULL,  'Q' },
-		{ "help",           no_argument,       NULL,  'h' },
-		{ "long-help",      no_argument,       NULL,  'H' },
-		{ "version",        no_argument,       NULL,  'V' },
+		{ "quiet",        no_argument,       NULL,  'q' },
+		{ "verbose",      no_argument,       NULL,  'v' },
+		{ "no-warn",      no_argument,       NULL,  'Q' },
+		{ "robot",        no_argument,       NULL,  OPT_ROBOT },
+		{ "info-memory",  no_argument,       NULL,  OPT_INFO_MEMORY },
+		{ "help",         no_argument,       NULL,  'h' },
+		{ "long-help",    no_argument,       NULL,  'H' },
+		{ "version",      no_argument,       NULL,  'V' },
 
 		{ NULL,                 0,                 NULL,   0 }
 	};
@@ -169,6 +174,11 @@ parse_real(args_info *args, int argc, char **argv)
 			opt_force = true;
 			break;
 
+		// --info-memory
+		case OPT_INFO_MEMORY:
+			// This doesn't return.
+			message_memlimit();
+
 		// --help
 		case 'h':
 			// This doesn't return.
@@ -205,6 +215,11 @@ parse_real(args_info *args, int argc, char **argv)
 		// --verbose
 		case 'v':
 			message_verbosity_increase();
+			break;
+
+		// --robot
+		case OPT_ROBOT:
+			opt_robot = true;
 			break;
 
 		case 'z':

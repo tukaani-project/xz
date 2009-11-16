@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2009-11-14" "Tukaani" "XZ Utils"
+.TH XZ 1 "2009-11-16" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -219,8 +219,9 @@ but it is possible that a block later in the file will exceed the memory usage
 limit, and an error about too low memory usage limit gets displayed after some
 data has already been decompressed.
 .PP
-The absolute value of the active memory usage limit can be seen near
-the bottom of the output of
+The absolute value of the active memory usage limit can be seen with
+.B \-\-info-memory
+or near the bottom of the output of
 .BR \-\-long\-help .
 The default limit can be overriden with
 \fB\-\-memory=\fIlimit\fR.
@@ -1052,6 +1053,34 @@ and
 .B \-\-no\-warn
 have to be used to not display warnings and to not alter the exit status.
 .TP
+.B \-\-robot
+Print messages in a machine-parsable format. This is intended to ease
+writing frontends that want to use
+.B xz
+instead of liblzma, which may be the case with various scripts. The output
+with this option enabled is meant to be stable across
+.B xz
+releases. Currently
+.B \-\-robot
+is implemented only for
+.B \-\-info\-memory
+and
+.BR \-\-version ,
+but the idea is to make it usable for actual compression
+and decompression too.
+.TP
+.BR \-\-info-memory
+Display the current memory usage limit in human-readable format on
+a single line, and exit successfully. To see how much RAM
+.B xz
+thinks your system has, use
+.BR "\-\-memory=100% \-\-info\-memory" .
+To get machine-parsable output
+(memory usage limit as bytes without thousand separators), specify
+.B \-\-robot
+before
+.BR \-\-info-memory .
+.TP
 .BR \-h ", " \-\-help
 Display a help message describing the most commonly used options,
 and exit successfully.
@@ -1064,7 +1093,10 @@ and exit successfully
 .BR \-V ", " \-\-version
 Display the version number of
 .B xz
-and liblzma.
+and liblzma in human readable format. To get machine-parsable output, specify
+.B \-\-robot
+before
+.BR \-\-version .
 .SH "EXIT STATUS"
 .TP
 .B 0

@@ -35,7 +35,8 @@ AC_REQUIRE([TUKLIB_COMMON])
 # sys/param.h might be needed by sys/sysctl.h.
 AC_CHECK_HEADERS([sys/param.h])
 
-AC_MSG_CHECKING([how to detect the amount of physical memory])
+AC_CACHE_CHECK([how to detect the amount of physical memory],
+	[tuklib_cv_physmem_method], [
 
 # Maybe checking $host_os would be enough but this matches what
 # tuklib_physmem.c does.
@@ -46,9 +47,7 @@ int main(void) { return 0; }
 #else
 #error
 #endif
-]])], [
-	AC_MSG_RESULT([special])
-], [
+]])], [tuklib_cv_physmem_method=special], [
 
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
@@ -60,12 +59,7 @@ main(void)
 	i = sysconf(_SC_PHYS_PAGES);
 	return 0;
 }
-]])], [
-	AC_DEFINE([TUKLIB_PHYSMEM_SYSCONF], [1],
-		[Define to 1 if the amount of physical memory can be detected
-		with sysconf(_SC_PAGESIZE) and sysconf(_SC_PHYS_PAGES).])
-	AC_MSG_RESULT([sysconf])
-], [
+]])], [tuklib_cv_physmem_method=sysconf], [
 
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
@@ -82,12 +76,7 @@ main(void)
 	sysctl(name, 2, &mem, &mem_ptr_size, NULL, 0);
 	return 0;
 }
-]])], [
-	AC_DEFINE([TUKLIB_PHYSMEM_SYSCTL], [1],
-		[Define to 1 if the amount of physical memory can be detected
-		with sysctl().])
-	AC_MSG_RESULT([sysctl])
-], [
+]])], [tuklib_cv_physmem_method=sysctl], [
 
 # This version of sysinfo() is Linux-specific. Some non-Linux systems have
 # different sysinfo() so we must check $host_os.
@@ -103,17 +92,32 @@ main(void)
 	return 0;
 }
 		]])], [
-			AC_DEFINE([TUKLIB_PHYSMEM_SYSINFO], [1],
-				[Define to 1 if the amount of physical memory
-				can be detected with Linux sysinfo().])
-			AC_MSG_RESULT([sysinfo])
+			tuklib_cv_physmem_method=sysinfo
 		], [
-			AC_MSG_RESULT([unknown])
+			tuklib_cv_physmem_method=unknown
 		])
 		;;
 	*)
-		AC_MSG_RESULT([unknown])
+		tuklib_cv_physmem_method=unknown
 		;;
 esac
-])])])
+])])])])
+case $tuklib_cv_physmem_method in
+	sysconf)
+		AC_DEFINE([TUKLIB_PHYSMEM_SYSCONF], [1],
+			[Define to 1 if the amount of physical memory can
+			be detected with sysconf(_SC_PAGESIZE) and
+			sysconf(_SC_PHYS_PAGES).])
+		;;
+	sysctl)
+		AC_DEFINE([TUKLIB_PHYSMEM_SYSCTL], [1],
+			[Define to 1 if the amount of physical memory can
+			be detected with sysctl().])
+		;;
+	sysinfo)
+		AC_DEFINE([TUKLIB_PHYSMEM_SYSINFO], [1],
+			[Define to 1 if the amount of physical memory
+			can be detected with Linux sysinfo().])
+		;;
+esac
 ])dnl

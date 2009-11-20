@@ -25,7 +25,8 @@ AC_REQUIRE([TUKLIB_COMMON])
 # sys/param.h might be needed by sys/sysctl.h.
 AC_CHECK_HEADERS([sys/param.h])
 
-AC_MSG_CHECKING([how to detect the number of available CPU cores])
+AC_CACHE_CHECK([how to detect the number of available CPU cores],
+	[tuklib_cv_cpucores_method], [
 
 # Look for sysctl() solution first, because on OS/2, both sysconf()
 # and sysctl() pass the tests in this file, but only sysctl()
@@ -45,12 +46,7 @@ main(void)
 	sysctl(name, 2, &cpus, &cpus_size, NULL, 0);
 	return 0;
 }
-]])], [
-	AC_DEFINE([TUKLIB_CPUCORES_SYSCTL], [1],
-		[Define to 1 if the number of available CPU cores can be
-		detected with sysctl().])
-	AC_MSG_RESULT([sysctl])
-], [
+]])], [tuklib_cv_cpucores_method=sysctl], [
 
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
@@ -62,11 +58,20 @@ main(void)
 	return 0;
 }
 ]])], [
-	AC_DEFINE([TUKLIB_CPUCORES_SYSCONF], [1],
-		[Define to 1 if the number of available CPU cores can be
-		detected with sysconf(_SC_NPROCESSORS_ONLN).])
-	AC_MSG_RESULT([sysconf])
+	tuklib_cv_cpucores_method=sysconf
 ], [
-	AC_MSG_RESULT([unknown])
-])])
+	tuklib_cv_cpucores_method=unknown
+])])])
+case $tuklib_cv_cpucores_method in
+	sysctl)
+		AC_DEFINE([TUKLIB_CPUCORES_SYSCTL], [1],
+			[Define to 1 if the number of available CPU cores
+			can be detected with sysctl().])
+		;;
+	sysconf)
+		AC_DEFINE([TUKLIB_CPUCORES_SYSCONF], [1],
+			[Define to 1 if the number of available CPU cores
+			can be detected with sysconf(_SC_NPROCESSORS_ONLN).])
+		;;
+esac
 ])dnl

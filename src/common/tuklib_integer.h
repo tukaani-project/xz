@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       tuklib_integer.h
-/// \brief      Byte swapping and endianness related macros and functions
+/// \brief      Various integer and bit operations
 ///
-/// This file provides macros or functions to do basic endianness related
-/// integer operations (XX = 16, 32, or 64; Y = b or l):
+/// This file provides macros or functions to do some basic integer and bit
+/// operations.
+///
+/// Endianness related integer operations (XX = 16, 32, or 64; Y = b or l):
 ///   - Byte swapping: bswapXX(num)
 ///   - Byte order conversions to/from native: convXXYe(num)
 ///   - Aligned reads: readXXYe(ptr)
@@ -18,8 +20,18 @@
 /// \todo       PowerPC and possibly some other architectures support
 ///             byte swapping load and store instructions. This file
 ///             doesn't take advantage of those instructions.
+///
+/// Bit scan operations for non-zero 32-bit integers:
+///   - Bit scan reverse (find highest non-zero bit): bsr32(num)
+///   - Count leading zeros: clz32(num)
+///   - Count trailing zeros: ctz32(num)
+///   - Bit scan forward (simply an alias for ctz32()): bsf32(num)
+///
+/// The above bit scan operations return 0-31. If num is zero,
+/// the result is undefined.
 //
-//  Author:     Lasse Collin
+//  Authors:    Lasse Collin
+//              Joachim Henke
 //
 //  This file has been put into the public domain.
 //  You can do whatever you want with this file.
@@ -213,8 +225,7 @@ read64le(const uint8_t *buf)
 // to optimize byte swapping of constants when using glibc's or *BSD's
 // byte swapping macros. The actual write is done in an inline function
 // to make type checking of the buf pointer possible similarly to readXXYe()
-// functions. This also seems to silence a probably bogus GCC warning about
-// strict aliasing when buf points to the beginning of an uint8_t array.
+// functions.
 
 #define write16be(buf, num) write16ne((buf), conv16be(num))
 #define write16le(buf, num) write16ne((buf), conv16le(num))
@@ -272,7 +283,7 @@ write64ne(uint8_t *buf, uint64_t num)
 static inline uint16_t
 unaligned_read16be(const uint8_t *buf)
 {
-	uint16_t num = ((uint16_t)buf[0] << 8) | buf[1];
+	uint16_t num = ((uint16_t)buf[0] << 8) | (uint16_t)buf[1];
 	return num;
 }
 
@@ -280,7 +291,7 @@ unaligned_read16be(const uint8_t *buf)
 static inline uint16_t
 unaligned_read16le(const uint8_t *buf)
 {
-	uint16_t num = ((uint32_t)buf[0]) | ((uint16_t)buf[1] << 8);
+	uint16_t num = ((uint16_t)buf[0]) | ((uint16_t)buf[1] << 8);
 	return num;
 }
 
@@ -347,4 +358,166 @@ unaligned_write32le(uint8_t *buf, uint32_t num)
 }
 
 #endif
+
+
+static inline uint32_t
+bsr32(uint32_t n)
+{
+	// Check for ICC first, since it tends to define __GNUC__ too.
+#if defined(__INTEL_COMPILER)
+	return _bit_scan_reverse(n);
+
+#elif TUKLIB_GNUC_REQ(3, 4) && UINT_MAX == UINT32_MAX
+	// GCC >= 3.4 has __builtin_clz(), which gives good results on
+	// multiple architectures. On x86, __builtin_clz() ^ 31U becomes
+	// either plain BSR (so the XOR gets optimized away) or LZCNT and
+	// XOR (if -march indicates that SSE4a instructions are supported).
+	return __builtin_clz(n) ^ 31U;
+
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+	uint32_t i;
+	__asm__("bsrl %1, %0" : "=r" (i) : "rm" (n));
+	return i;
+
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
+	// MSVC isn't supported by tuklib, but since this code exists,
+	// it doesn't hurt to have it here anyway.
+	uint32_t i;
+	_BitScanReverse((DWORD *)&i, n);
+	return i;
+
+#else
+	uint32_t i = 31;
+
+	if ((n & UINT32_C(0xFFFF0000)) == 0) {
+		n <<= 16;
+		i = 15;
+	}
+
+	if ((n & UINT32_C(0xFF000000)) == 0) {
+		n <<= 8;
+		i -= 8;
+	}
+
+	if ((n & UINT32_C(0xF0000000)) == 0) {
+		n <<= 4;
+		i -= 4;
+	}
+
+	if ((n & UINT32_C(0xC0000000)) == 0) {
+		n <<= 2;
+		i -= 2;
+	}
+
+	if ((n & UINT32_C(0x80000000)) == 0)
+		--i;
+
+	return i;
+#endif
+}
+
+
+static inline uint32_t
+clz32(uint32_t n)
+{
+#if defined(__INTEL_COMPILER)
+	return _bit_scan_reverse(n) ^ 31U;
+
+#elif TUKLIB_GNUC_REQ(3, 4) && UINT_MAX == UINT32_MAX
+	return __builtin_clz(n);
+
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+	uint32_t i;
+	__asm__("bsrl %1, %0\n\t"
+		"xorl $31, %0"
+		: "=r" (i) : "rm" (n));
+	return i;
+
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
+	uint32_t i;
+	_BitScanReverse((DWORD *)&i, n);
+	return i ^ 31U;
+
+#else
+	uint32_t i = 0;
+
+	if ((n & UINT32_C(0xFFFF0000)) == 0) {
+		n <<= 16;
+		i = 16;
+	}
+
+	if ((n & UINT32_C(0xFF000000)) == 0) {
+		n <<= 8;
+		i += 8;
+	}
+
+	if ((n & UINT32_C(0xF0000000)) == 0) {
+		n <<= 4;
+		i += 4;
+	}
+
+	if ((n & UINT32_C(0xC0000000)) == 0) {
+		n <<= 2;
+		i += 2;
+	}
+
+	if ((n & UINT32_C(0x80000000)) == 0)
+		++i;
+
+	return i;
+#endif
+}
+
+
+static inline uint32_t
+ctz32(uint32_t n)
+{
+#if defined(__INTEL_COMPILER)
+	return _bit_scan_forward(n);
+
+#elif TUKLIB_GNUC_REQ(3, 4) && UINT_MAX >= UINT32_MAX
+	return __builtin_ctz(n);
+
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+	uint32_t i;
+	__asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
+	return i;
+
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
+	uint32_t i;
+	_BitScanForward((DWORD *)&i, n);
+	return i;
+
+#else
+	uint32_t i = 0;
+
+	if ((n & UINT32_C(0x0000FFFF)) == 0) {
+		n >>= 16;
+		i = 16;
+	}
+
+	if ((n & UINT32_C(0x000000FF)) == 0) {
+		n >>= 8;
+		i += 8;
+	}
+
+	if ((n & UINT32_C(0x0000000F)) == 0) {
+		n >>= 4;
+		i += 4;
+	}
+
+	if ((n & UINT32_C(0x00000003)) == 0) {
+		n >>= 2;
+		i += 2;
+	}
+
+	if ((n & UINT32_C(0x00000001)) == 0)
+		++i;
+
+	return i;
+#endif
+}
+
+#define bsf32 ctz32
+
 #endif

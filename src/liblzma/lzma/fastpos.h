@@ -76,15 +76,12 @@
 // slightly faster, but sometimes it is a lot slower.
 
 #ifdef HAVE_SMALL
-#	include "bsr.h"
-
 #	define get_pos_slot(pos) ((pos) <= 4 ? (pos) : get_pos_slot_2(pos))
 
 static inline uint32_t
 get_pos_slot_2(uint32_t pos)
 {
-	uint32_t i;
-	lzma_bsr(i, pos);
+	const uint32_t i = bsr32(pos);
 	return (i + i) + ((pos >> (i - 1)) & 1);
 }
 

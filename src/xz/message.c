@@ -1072,6 +1072,7 @@ message_help(bool long_help)
 
 	if (long_help)
 		puts(_(
+"      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
 "      --files=[FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"

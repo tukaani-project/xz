@@ -11,11 +11,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // Some systems have suboptimal BUFSIZ. Use a bit bigger value on them.
+// We also need that IO_BUFFER_SIZE is a multiple of 8 (sizeof(uint64_t))
 #if BUFSIZ <= 1024
 #	define IO_BUFFER_SIZE 8192
 #else
-#	define IO_BUFFER_SIZE BUFSIZ
+#	define IO_BUFFER_SIZE (BUFSIZ & ~7U)
 #endif
+
+
+/// is_sparse() accesses the buffer as uint64_t for maximum speed.
+/// Use an union to make sure that the buffer is properly aligned.
+typedef union {
+	uint8_t u8[IO_BUFFER_SIZE];
+	uint64_t u64[IO_BUFFER_SIZE / sizeof(uint64_t)];
+} io_buf;
 
 
 typedef struct {
@@ -33,20 +42,33 @@ typedef struct {
 	/// File descriptor of the target file
 	int dest_fd;
 
+	/// True once end of the source file has been detected.
+	bool src_eof;
+
+	/// If true, we look for long chunks of zeros and try to create
+	/// a sparse file.
+	bool dest_try_sparse;
+
+	/// This is used only if dest_try_sparse is true. This holds the
+	/// number of zero bytes we haven't written out, because we plan
+	/// to make that byte range a sparse chunk.
+	off_t dest_pending_sparse;
+
 	/// Stat of the source file.
 	struct stat src_st;
 
 	/// Stat of the destination file.
 	struct stat dest_st;
 
-	/// True once end of the source file has been detected.
-	bool src_eof;
-
 } file_pair;
 
 
 /// \brief      Initialize the I/O module
 extern void io_init(void);
+
+
+/// \brief      Disable creation of sparse files when decompressing
+extern void io_no_sparse(void);
 
 
 /// \brief      Opens a file pair
@@ -72,7 +94,7 @@ extern void io_close(file_pair *pair, bool success);
 /// \return     On success, number of bytes read is returned. On end of
 ///             file zero is returned and pair->src_eof set to true.
 ///             On error, SIZE_MAX is returned and error message printed.
-extern size_t io_read(file_pair *pair, uint8_t *buf, size_t size);
+extern size_t io_read(file_pair *pair, io_buf *buf, size_t size);
 
 
 /// \brief      Writes a buffer to the destination file
@@ -83,4 +105,4 @@ extern size_t io_read(file_pair *pair, uint8_t *buf, size_t size);
 ///
 /// \return     On success, zero is returned. On error, -1 is returned
 ///             and error message printed.
-extern bool io_write(const file_pair *pair, const uint8_t *buf, size_t size);
+extern bool io_write(file_pair *pair, const io_buf *buf, size_t size);

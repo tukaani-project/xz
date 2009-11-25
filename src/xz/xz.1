@@ -336,6 +336,17 @@ Write the compressed or decompressed data to standard output instead of
 a file. This implies
 .BR \-\-keep .
 .TP
+.B \-\-no\-sparse
+Disable creation of sparse files. By default, if decompressing into
+a regular file,
+.B xz
+tries to make the file sparse if the decompressed data contains long
+sequences of binary zeros. It works also when writing to standard output
+as long as standard output is connected to a regular file, and certain
+additional conditions are met to make it safe. Creating sparse files may
+save disk space and speed up the decompression by reducing the amount of
+disk I/O.
+.TP
 \fB\-S\fR \fI.suf\fR, \fB\-\-suffix=\fI.suf
 When compressing, use
 .I .suf

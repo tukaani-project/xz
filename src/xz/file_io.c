@@ -37,6 +37,17 @@ static bool warn_fchown;
 #endif
 
 
+/// If true, try to create sparse files when decompressing.
+static bool try_sparse = true;
+
+/// File status flags of standard output. This is used by io_open_dest()
+/// and io_close_dest().
+static int stdout_flags = 0;
+
+
+static bool io_write_buf(file_pair *pair, const uint8_t *buf, size_t size);
+
+
 extern void
 io_init(void)
 {
@@ -59,6 +70,14 @@ io_init(void)
 			| _STAT_EXEC_MAGIC | _STAT_DIRSIZE;
 #endif
 
+	return;
+}
+
+
+extern void
+io_no_sparse(void)
+{
+	try_sparse = false;
 	return;
 }
 
@@ -498,42 +517,42 @@ io_open_dest(file_pair *pair)
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDOUT_FILENO, O_BINARY);
 #endif
-		return false;
-	}
+	} else {
+		pair->dest_name = suffix_get_dest_name(pair->src_name);
+		if (pair->dest_name == NULL)
+			return true;
 
-	pair->dest_name = suffix_get_dest_name(pair->src_name);
-	if (pair->dest_name == NULL)
-		return true;
+		// If --force was used, unlink the target file first.
+		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
+			message_error("%s: Cannot unlink: %s",
+					pair->dest_name, strerror(errno));
+			free(pair->dest_name);
+			return true;
+		}
 
-	// If --force was used, unlink the target file first.
-	if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
-		message_error("%s: Cannot unlink: %s",
-				pair->dest_name, strerror(errno));
-		free(pair->dest_name);
-		return true;
-	}
+		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
+			message_error("%s: Cannot unlink: %s",
+					pair->dest_name, strerror(errno));
+			free(pair->dest_name);
+			return true;
+		}
 
-	if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
-		message_error("%s: Cannot unlink: %s", pair->dest_name,
-				strerror(errno));
-		free(pair->dest_name);
-		return true;
-	}
+		// Open the file.
+		const int flags = O_WRONLY | O_BINARY | O_NOCTTY
+				| O_CREAT | O_EXCL;
+		const mode_t mode = S_IRUSR | S_IWUSR;
+		pair->dest_fd = open(pair->dest_name, flags, mode);
 
-	// Open the file.
-	const int flags = O_WRONLY | O_BINARY | O_NOCTTY | O_CREAT | O_EXCL;
-	const mode_t mode = S_IRUSR | S_IWUSR;
-	pair->dest_fd = open(pair->dest_name, flags, mode);
+		if (pair->dest_fd == -1) {
+			// Don't bother with error message if user requested
+			// us to exit anyway.
+			if (!user_abort)
+				message_error("%s: %s", pair->dest_name,
+						strerror(errno));
 
-	if (pair->dest_fd == -1) {
-		// Don't bother with error message if user requested
-		// us to exit anyway.
-		if (!user_abort)
-			message_error("%s: %s", pair->dest_name,
-					strerror(errno));
-
-		free(pair->dest_name);
-		return true;
+			free(pair->dest_name);
+			return true;
+		}
 	}
 
 	// If this really fails... well, we have a safe fallback.
@@ -545,6 +564,65 @@ io_open_dest(file_pair *pair)
 #elif !defined(TUKLIB_DOSLIKE)
 		pair->dest_st.st_dev = 0;
 		pair->dest_st.st_ino = 0;
+#endif
+#ifndef TUKLIB_DOSLIKE
+	} else if (try_sparse && opt_mode == MODE_DECOMPRESS) {
+		// When writing to standard output, we need to be extra
+		// careful:
+		//  - It may be connected to something else than
+		//    a regular file.
+		//  - We aren't necessarily writing to a new empty file
+		//    or to the end of an existing file.
+		//  - O_APPEND may be active.
+		//
+		// TODO: I'm keeping this disabled for DOS-like systems
+		// for now. FAT doesn't support sparse files, but NTFS
+		// does, so maybe this should be enabled on Windows after
+		// some testing.
+		if (pair->dest_fd == STDOUT_FILENO) {
+			if (!S_ISREG(pair->dest_st.st_mode))
+				return false;
+
+			const int flags = fcntl(STDOUT_FILENO, F_GETFL);
+			if (flags == -1)
+				return false;
+
+			if (flags & O_APPEND) {
+				// Creating a sparse file is not possible
+				// when O_APPEND is active (it's used by
+				// shell's >> redirection). As I understand
+				// it, it is safe to temporarily disable
+				// O_APPEND in xz, because if someone
+				// happened to write to the same file at the
+				// same time, results would be bad anyway
+				// (users shouldn't assume that xz uses any
+				// specific block size when writing data).
+				//
+				// The write position may be something else
+				// than the end of the file, so we must fix
+				// it to start writing at the end of the file
+				// to imitate O_APPEND.
+				if (lseek(STDOUT_FILENO, 0, SEEK_END) == -1)
+					return false;
+
+				if (fcntl(STDOUT_FILENO, F_SETFL,
+						stdout_flags & ~O_APPEND))
+					return false;
+
+				// Remember the flags so that io_close_dest()
+				// can restore them.
+				stdout_flags = flags;
+
+			} else if (lseek(STDOUT_FILENO, 0, SEEK_CUR)
+					!= pair->dest_st.st_size) {
+				// Writing won't start exactly at the end
+				// of the file. We cannot use sparse output,
+				// because it would probably corrupt the file.
+				return false;
+			}
+		}
+
+		pair->dest_try_sparse = true;
 #endif
 	}
 
@@ -562,6 +640,21 @@ io_open_dest(file_pair *pair)
 static int
 io_close_dest(file_pair *pair, bool success)
 {
+	// If io_open_dest() has disabled O_APPEND, restore it here.
+	if (stdout_flags != 0) {
+		assert(pair->dest_fd == STDOUT_FILENO);
+
+		const int fail = fcntl(STDOUT_FILENO, F_SETFL, stdout_flags);
+		stdout_flags = 0;
+
+		if (fail) {
+			message_error(_("Error restoring the O_APPEND flag "
+					"to standard output: %s"),
+					strerror(errno));
+			return -1;
+		}
+	}
+
 	if (pair->dest_fd == -1 || pair->dest_fd == STDOUT_FILENO)
 		return 0;
 
@@ -603,6 +696,8 @@ io_open(const char *src_name)
 		.src_fd = -1,
 		.dest_fd = -1,
 		.src_eof = false,
+		.dest_try_sparse = false,
+		.dest_pending_sparse = 0,
 	};
 
 	// Block the signals, for which we have a custom signal handler, so
@@ -629,6 +724,29 @@ io_open(const char *src_name)
 extern void
 io_close(file_pair *pair, bool success)
 {
+	// Take care of sparseness at the end of the output file.
+	if (success && pair->dest_try_sparse
+			&& pair->dest_pending_sparse > 0) {
+		// Seek forward one byte less than the size of the pending
+		// hole, then write one zero-byte. This way the file grows
+		// to its correct size. An alternative would be to use
+		// ftruncate() but that isn't portable enough (e.g. it
+		// doesn't work with FAT on Linux; FAT isn't that important
+		// since it doesn't support sparse files anyway, but we don't
+		// want to create corrupt files on it).
+		if (lseek(pair->dest_fd, pair->dest_pending_sparse - 1,
+				SEEK_CUR) == -1) {
+			message_error(_("%s: Seeking failed when trying "
+					"to create a sparse file: %s"),
+					pair->dest_name, strerror(errno));
+			success = false;
+		} else {
+			const uint8_t zero[1] = { '\0' };
+			if (io_write_buf(pair, zero, 1))
+				success = false;
+		}
+	}
+
 	signals_block();
 
 	if (success && pair->dest_fd != STDOUT_FILENO)
@@ -651,11 +769,12 @@ io_close(file_pair *pair, bool success)
 
 
 extern size_t
-io_read(file_pair *pair, uint8_t *buf, size_t size)
+io_read(file_pair *pair, io_buf *buf_union, size_t size)
 {
 	// We use small buffers here.
 	assert(size < SSIZE_MAX);
 
+	uint8_t *buf = buf_union->u8;
 	size_t left = size;
 
 	while (left > 0) {
@@ -691,8 +810,21 @@ io_read(file_pair *pair, uint8_t *buf, size_t size)
 }
 
 
-extern bool
-io_write(const file_pair *pair, const uint8_t *buf, size_t size)
+static bool
+is_sparse(const io_buf *buf)
+{
+	assert(IO_BUFFER_SIZE % sizeof(uint64_t) == 0);
+
+	for (size_t i = 0; i < ARRAY_SIZE(buf->u64); ++i)
+		if (buf->u64[i] != 0)
+			return false;
+
+	return true;
+}
+
+
+static bool
+io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 {
 	assert(size < SSIZE_MAX);
 
@@ -730,4 +862,47 @@ io_write(const file_pair *pair, const uint8_t *buf, size_t size)
 	}
 
 	return false;
+}
+
+
+extern bool
+io_write(file_pair *pair, const io_buf *buf, size_t size)
+{
+	assert(size <= IO_BUFFER_SIZE);
+
+	if (pair->dest_try_sparse) {
+		// Check if the block is sparse (contains only zeros). If it
+		// sparse, we just store the amount and return. We will take
+		// care of actually skipping over the hole when we hit the
+		// next data block or close the file.
+		//
+		// Since io_close() requires that dest_pending_sparse > 0
+		// if the file ends with sparse block, we must also return
+		// if size == 0 to avoid doing the lseek().
+		if (size == IO_BUFFER_SIZE) {
+			if (is_sparse(buf)) {
+				pair->dest_pending_sparse += size;
+				return false;
+			}
+		} else if (size == 0) {
+			return false;
+		}
+
+		// This is not a sparse block. If we have a pending hole,
+		// skip it now.
+		if (pair->dest_pending_sparse > 0) {
+			if (lseek(pair->dest_fd, pair->dest_pending_sparse,
+					SEEK_CUR) == -1) {
+				message_error(_("%s: Seeking failed when "
+						"trying to create a sparse "
+						"file: %s"), pair->dest_name,
+						strerror(errno));
+				return true;
+			}
+
+			pair->dest_pending_sparse = 0;
+		}
+	}
+
+	return io_write_buf(pair, buf->u8, size);
 }

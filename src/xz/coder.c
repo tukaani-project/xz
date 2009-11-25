@@ -33,8 +33,8 @@ static lzma_stream strm = LZMA_STREAM_INIT;
 static lzma_filter filters[LZMA_FILTERS_MAX + 1];
 
 /// Input and output buffers
-static uint8_t in_buf[IO_BUFFER_SIZE];
-static uint8_t out_buf[IO_BUFFER_SIZE];
+static io_buf in_buf;
+static io_buf out_buf;
 
 /// Number of filters. Zero indicates that we are using a preset.
 static size_t filters_count = 0;
@@ -275,7 +275,7 @@ coder_set_compression_settings(void)
 static bool
 is_format_xz(void)
 {
-	return strm.avail_in >= 6 && memcmp(in_buf, "\3757zXZ", 6) == 0;
+	return strm.avail_in >= 6 && memcmp(in_buf.u8, "\3757zXZ", 6) == 0;
 }
 
 
@@ -289,7 +289,7 @@ is_format_lzma(void)
 
 	// Decode the LZMA1 properties.
 	lzma_filter filter = { .id = LZMA_FILTER_LZMA1 };
-	if (lzma_properties_decode(&filter, NULL, in_buf, 5) != LZMA_OK)
+	if (lzma_properties_decode(&filter, NULL, in_buf.u8, 5) != LZMA_OK)
 		return false;
 
 	// A hack to ditch tons of false positives: We allow only dictionary
@@ -317,7 +317,7 @@ is_format_lzma(void)
 	// Again, if someone complains, this will be reconsidered.
 	uint64_t uncompressed_size = 0;
 	for (size_t i = 0; i < 8; ++i)
-		uncompressed_size |= (uint64_t)(in_buf[5 + i]) << (i * 8);
+		uncompressed_size |= (uint64_t)(in_buf.u8[5 + i]) << (i * 8);
 
 	if (uncompressed_size != UINT64_MAX
 			&& uncompressed_size > (UINT64_C(1) << 38))
@@ -444,15 +444,16 @@ coder_normal(file_pair *pair)
 	// Assume that something goes wrong.
 	bool success = false;
 
-	strm.next_out = out_buf;
+	strm.next_out = out_buf.u8;
 	strm.avail_out = IO_BUFFER_SIZE;
 
 	while (!user_abort) {
 		// Fill the input buffer if it is empty and we haven't reached
 		// end of file yet.
 		if (strm.avail_in == 0 && !pair->src_eof) {
-			strm.next_in = in_buf;
-			strm.avail_in = io_read(pair, in_buf, IO_BUFFER_SIZE);
+			strm.next_in = in_buf.u8;
+			strm.avail_in = io_read(
+					pair, &in_buf, IO_BUFFER_SIZE);
 
 			if (strm.avail_in == SIZE_MAX)
 				break;
@@ -466,11 +467,11 @@ coder_normal(file_pair *pair)
 
 		// Write out if the output buffer became full.
 		if (strm.avail_out == 0) {
-			if (opt_mode != MODE_TEST && io_write(pair, out_buf,
+			if (opt_mode != MODE_TEST && io_write(pair, &out_buf,
 					IO_BUFFER_SIZE - strm.avail_out))
 				break;
 
-			strm.next_out = out_buf;
+			strm.next_out = out_buf.u8;
 			strm.avail_out = IO_BUFFER_SIZE;
 		}
 
@@ -487,7 +488,7 @@ coder_normal(file_pair *pair)
 				// when trying to get at least some useful
 				// data out of damaged files.
 				if (opt_mode != MODE_TEST && io_write(pair,
-						out_buf, IO_BUFFER_SIZE
+						&out_buf, IO_BUFFER_SIZE
 							- strm.avail_out))
 					break;
 			}
@@ -502,7 +503,7 @@ coder_normal(file_pair *pair)
 					// input, and thus pair->src_eof
 					// becomes true.
 					strm.avail_in = io_read(
-							pair, in_buf, 1);
+							pair, &in_buf, 1);
 					if (strm.avail_in == SIZE_MAX)
 						break;
 
@@ -579,14 +580,14 @@ coder_passthru(file_pair *pair)
 		if (user_abort)
 			return false;
 
-		if (io_write(pair, in_buf, strm.avail_in))
+		if (io_write(pair, &in_buf, strm.avail_in))
 			return false;
 
 		strm.total_in += strm.avail_in;
 		strm.total_out = strm.total_in;
 		message_progress_update();
 
-		strm.avail_in = io_read(pair, in_buf, IO_BUFFER_SIZE);
+		strm.avail_in = io_read(pair, &in_buf, IO_BUFFER_SIZE);
 		if (strm.avail_in == SIZE_MAX)
 			return false;
 	}
@@ -613,8 +614,8 @@ coder_run(const char *filename)
 
 	// Read the first chunk of input data. This is needed to detect
 	// the input file type (for now, only for decompression).
-	strm.next_in = in_buf;
-	strm.avail_in = io_read(pair, in_buf, IO_BUFFER_SIZE);
+	strm.next_in = in_buf.u8;
+	strm.avail_in = io_read(pair, &in_buf, IO_BUFFER_SIZE);
 
 	switch (coder_init(pair)) {
 	case CODER_INIT_NORMAL:

@@ -617,17 +617,19 @@ coder_run(const char *filename)
 	strm.next_in = in_buf.u8;
 	strm.avail_in = io_read(pair, &in_buf, IO_BUFFER_SIZE);
 
-	switch (coder_init(pair)) {
-	case CODER_INIT_NORMAL:
-		success = coder_normal(pair);
-		break;
+	if (strm.avail_in != SIZE_MAX) {
+		switch (coder_init(pair)) {
+		case CODER_INIT_NORMAL:
+			success = coder_normal(pair);
+			break;
 
-	case CODER_INIT_PASSTHRU:
-		success = coder_passthru(pair);
-		break;
+		case CODER_INIT_PASSTHRU:
+			success = coder_passthru(pair);
+			break;
 
-	case CODER_INIT_ERROR:
-		break;
+		case CODER_INIT_ERROR:
+			break;
+		}
 	}
 
 	message_progress_end(success);

@@ -317,12 +317,13 @@ extern LZMA_API(lzma_ret) lzma_index_encoder(lzma_stream *strm, lzma_index *i)
  * \brief       Initialize .xz Index decoder
  *
  * \param       strm        Pointer to properly prepared lzma_stream
- * \param       i           Pointer to a pointer that will be made to point
- *                          to the final decoded Index once lzma_code() has
- *                          returned LZMA_STREAM_END. That is,
- *                          lzma_index_decoder() always takes care of
- *                          allocating a new lzma_index structure, and *i
- *                          doesn't need to be initialized by the caller.
+ * \param       i           The decoded Index will be made available via
+ *                          this pointer. Initially this function will
+ *                          set *i to NULL (the old value is ignored). If
+ *                          decoding succeeds (lzma_code() returns
+ *                          LZMA_STREAM_END), *i will be set to point
+ *                          to the decoded Index, which the application
+ *                          has to later free with lzma_index_end().
  * \param       memlimit    How much memory the resulting Index is allowed
  *                          to require.
  *
@@ -373,11 +374,11 @@ extern LZMA_API(lzma_ret) lzma_index_buffer_encode(lzma_index *i,
 /**
  * \brief       Single-call .xz Index decoder
  *
- * \param       i           Pointer to a pointer that will be made to point
- *                          to the final decoded Index if decoding is
- *                          successful. That is, lzma_index_buffer_decode()
- *                          always takes care of allocating a new
- *                          lzma_index structure, and *i doesn't need to be
+ * \param       i           If decoding succeeds, *i will point to the
+ *                          decoded Index, which the application has to
+ *                          later free with lzma_index_end(). If an error
+ *                          occurs, *i will be NULL. The old value of *i
+ *                          is always ignored and thus doesn't need to be
  *                          initialized by the caller.
  * \param       memlimit    Pointer to how much memory the resulting Index
  *                          is allowed to require. The value pointed by

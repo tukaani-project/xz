@@ -32,6 +32,10 @@ struct lzma_coder_s {
 	/// Target Index
 	lzma_index *index;
 
+	/// Pointer give by the application, which is set after
+	/// successful decoding.
+	lzma_index **index_ptr;
+
 	/// Number of Records left to decode.
 	lzma_vli count;
 
@@ -174,6 +178,10 @@ index_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		} while (++coder->pos < 4);
 
+		// Decoding was successful, now we can let the application
+		// see the decoded Index.
+		*coder->index_ptr = coder->index;
+
 		// Make index NULL so we don't free it unintentionally.
 		coder->index = NULL;
 
@@ -222,15 +230,21 @@ static lzma_ret
 index_decoder_reset(lzma_coder *coder, lzma_allocator *allocator,
 		lzma_index **i, uint64_t memlimit)
 {
+	// Remember the pointer given by the application. We will set it
+	// to point to the decoded Index only if decoding is successful.
+	// Before that, keep it NULL so that applications can always safely
+	// pass it to lzma_index_end() no matter did decoding succeed or not.
+	coder->index_ptr = i;
+	*i = NULL;
+
 	// We always allocate a new lzma_index.
-	*i = lzma_index_init(NULL, allocator);
-	if (*i == NULL)
+	coder->index = lzma_index_init(NULL, allocator);
+	if (coder->index == NULL)
 		return LZMA_MEM_ERROR;
 
 	// Initialize the rest.
 	coder->sequence = SEQ_INDICATOR;
 	coder->memlimit = memlimit;
-	coder->index = *i;
 	coder->count = 0; // Needs to be initialized due to _memconfig().
 	coder->pos = 0;
 	coder->crc32 = 0;
@@ -282,7 +296,8 @@ lzma_index_buffer_decode(
 		const uint8_t *in, size_t *in_pos, size_t in_size)
 {
 	// Sanity checks
-	if (i == NULL || in == NULL || in_pos == NULL || *in_pos > in_size)
+	if (i == NULL || memlimit == NULL
+			|| in == NULL || in_pos == NULL || *in_pos > in_size)
 		return LZMA_PROG_ERROR;
 
 	// Initialize the decoder.
@@ -302,8 +317,7 @@ lzma_index_buffer_decode(
 	} else {
 		// Something went wrong, free the Index structure and restore
 		// the input position.
-		lzma_index_end(*i, allocator);
-		*i = NULL;
+		lzma_index_end(coder.index, allocator);
 		*in_pos = in_start;
 
 		if (ret == LZMA_OK) {

@@ -327,16 +327,14 @@ lzma_index_append(lzma_index *i, lzma_allocator *allocator,
 
 
 /// Initialize i->current to point to the first Record.
+/// Return true if there are no Records.
 static bool
 init_current(lzma_index *i)
 {
-	if (i->head == NULL) {
-		assert(i->count == 0);
+	if (i->count == 0)
 		return true;
-	}
 
-	assert(i->count > 0);
-
+	assert(i->head != NULL);
 	i->current.group = i->head;
 	i->current.record = 0;
 	i->current.stream_offset = LZMA_STREAM_HEADER_SIZE;
@@ -432,21 +430,31 @@ set_info(const lzma_index *i, lzma_index_record *info)
 extern LZMA_API(lzma_bool)
 lzma_index_read(lzma_index *i, lzma_index_record *info)
 {
+	bool get_next = true;
+
 	if (i->current.group == NULL) {
 		// We are at the beginning of the Record list. Set up
-		// i->current point at the first Record. Return if there
-		// are no Records.
+		// i->current to point at the first Record. Return if
+		// there are no Records.
 		if (init_current(i))
 			return true;
-	} else do {
-		// Try to go the next Record.
+
+		// This is the first Record. We don't need to look for the
+		// next Record unless this one is Stream Padding.
+		get_next = false;
+	}
+
+	// Find the next Record that isn't Stream Padding.
+	while (get_next || i->current.group->paddings[i->current.record]) {
+		get_next = false;
+
 		if (i->current.record < i->current.group->last)
 			++i->current.record;
 		else if (i->current.group->next == NULL)
 			return true;
 		else
 			next_group(i);
-	} while (i->current.group->paddings[i->current.record]);
+	}
 
 	// We found a new Record. Set the information to *info.
 	set_info(i, info);
@@ -623,7 +631,7 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 		++dest->tail->last;
 
 		// Copy the rest.
-		for (size_t i = 1; i < src->head->last; ++i) {
+		for (size_t i = 0; i < src->head->last; ++i) {
 			dest->tail->unpadded_sums[dest->tail->last + 1]
 				= vli_ceil4(dest->tail->unpadded_sums[
 						dest->tail->last])

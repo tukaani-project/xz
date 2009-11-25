@@ -14,6 +14,9 @@
 
 #define MEMLIMIT (LZMA_VLI_C(1) << 20)
 
+#define SMALL_COUNT 3
+#define BIG_COUNT 5555
+
 
 static lzma_index *
 create_empty(void)
@@ -46,9 +49,8 @@ create_big(void)
 	lzma_vli uncompressed_size = 0;
 
 	// Add pseudo-random sizes (but always the same size values).
-	const size_t count = 5555;
 	uint32_t n = 11;
-	for (size_t j = 0; j < count; ++j) {
+	for (size_t j = 0; j < BIG_COUNT; ++j) {
 		n = 7019 * n + 7607;
 		const uint32_t t = n * 3011;
 		expect(lzma_index_append(i, NULL, t, n) == LZMA_OK);
@@ -56,7 +58,7 @@ create_big(void)
 		uncompressed_size += n;
 	}
 
-	expect(lzma_index_count(i) == count);
+	expect(lzma_index_count(i) == BIG_COUNT);
 	expect(lzma_index_total_size(i) == total_size);
 	expect(lzma_index_uncompressed_size(i) == uncompressed_size);
 	expect(lzma_index_total_size(i) + lzma_index_size(i)
@@ -166,6 +168,7 @@ test_code(lzma_index *i)
 	// Decode
 	lzma_index *d;
 	expect(lzma_index_decoder(&strm, &d, MEMLIMIT) == LZMA_OK);
+	expect(d == NULL);
 	succeed(decoder_loop(&strm, buf, index_size));
 
 	expect(lzma_index_equal(i, d));
@@ -231,6 +234,7 @@ static void
 test_cat(void)
 {
 	lzma_index *a, *b, *c;
+	lzma_index_record r;
 
 	// Empty Indexes
 	a = create_empty();
@@ -240,6 +244,7 @@ test_cat(void)
 	expect(lzma_index_stream_size(a) == 2 * LZMA_STREAM_HEADER_SIZE + 8);
 	expect(lzma_index_file_size(a)
 			== 2 * (2 * LZMA_STREAM_HEADER_SIZE + 8));
+	expect(lzma_index_read(a, &r));
 
 	b = create_empty();
 	expect(lzma_index_cat(a, b, NULL, 0) == LZMA_OK);
@@ -262,6 +267,9 @@ test_cat(void)
 	expect(lzma_index_file_size(a)
 			== 5 * (2 * LZMA_STREAM_HEADER_SIZE + 8) + 4 + 8);
 
+	expect(lzma_index_read(a, &r));
+	lzma_index_rewind(a);
+	expect(lzma_index_read(a, &r));
 	lzma_index_end(a, NULL);
 
 	// Small Indexes
@@ -279,7 +287,18 @@ test_cat(void)
 	expect(lzma_index_cat(a, b, NULL, 12) == LZMA_OK);
 	expect(lzma_index_file_size(a) == stream_size * 4 + 4 + 8 + 12);
 
+	expect(lzma_index_count(a) == SMALL_COUNT * 4);
+	for (int i = SMALL_COUNT * 4; i >= 0; --i)
+		expect(!lzma_index_read(a, &r) ^ (i == 0));
+
 	lzma_index_end(a, NULL);
+
+	// Mix of empty and small
+	a = create_empty();
+	b = create_small();
+	expect(lzma_index_cat(a, b, NULL, 4) == LZMA_OK);
+	for (int i = SMALL_COUNT; i >= 0; --i)
+		expect(!lzma_index_read(a, &r) ^ (i == 0));
 
 	// Big Indexes
 	a = create_big();
@@ -295,6 +314,9 @@ test_cat(void)
 	expect(lzma_index_cat(b, c, NULL, 8) == LZMA_OK);
 	expect(lzma_index_cat(a, b, NULL, 12) == LZMA_OK);
 	expect(lzma_index_file_size(a) == stream_size * 4 + 4 + 8 + 12);
+
+	for (int i = BIG_COUNT * 4; i >= 0; --i)
+		expect(!lzma_index_read(a, &r) ^ (i == 0));
 
 	lzma_index_end(a, NULL);
 }

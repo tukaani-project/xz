@@ -300,6 +300,8 @@ test_cat(void)
 	for (int i = SMALL_COUNT; i >= 0; --i)
 		expect(!lzma_index_read(a, &r) ^ (i == 0));
 
+	lzma_index_end(a, NULL);
+
 	// Big Indexes
 	a = create_big();
 	stream_size = lzma_index_stream_size(a);

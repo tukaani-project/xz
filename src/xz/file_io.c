@@ -524,14 +524,7 @@ io_open_dest(file_pair *pair)
 
 		// If --force was used, unlink the target file first.
 		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
-			message_error("%s: Cannot unlink: %s",
-					pair->dest_name, strerror(errno));
-			free(pair->dest_name);
-			return true;
-		}
-
-		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
-			message_error("%s: Cannot unlink: %s",
+			message_error(_("%s: Cannot remove: %s"),
 					pair->dest_name, strerror(errno));
 			free(pair->dest_name);
 			return true;

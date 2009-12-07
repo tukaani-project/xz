@@ -40,9 +40,11 @@ static bool warn_fchown;
 /// If true, try to create sparse files when decompressing.
 static bool try_sparse = true;
 
+#ifndef TUKLIB_DOSLIKE
 /// File status flags of standard output. This is used by io_open_dest()
 /// and io_close_dest().
 static int stdout_flags = 0;
+#endif
 
 
 static bool io_write_buf(file_pair *pair, const uint8_t *buf, size_t size);
@@ -633,6 +635,7 @@ io_open_dest(file_pair *pair)
 static int
 io_close_dest(file_pair *pair, bool success)
 {
+#ifndef TUKLIB_DOSLIKE
 	// If io_open_dest() has disabled O_APPEND, restore it here.
 	if (stdout_flags != 0) {
 		assert(pair->dest_fd == STDOUT_FILENO);
@@ -647,6 +650,7 @@ io_close_dest(file_pair *pair, bool success)
 			return -1;
 		}
 	}
+#endif
 
 	if (pair->dest_fd == -1 || pair->dest_fd == STDOUT_FILENO)
 		return 0;

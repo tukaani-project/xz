@@ -1097,7 +1097,7 @@ message_help(bool long_help)
 "                      ratio without increasing memory usage of the decoder"));
 
 	if (long_help)
-		puts(_(
+		puts(_( // xgettext:no-c-format
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"
 "                      the default setting, which is 40 % of total RAM"));
 

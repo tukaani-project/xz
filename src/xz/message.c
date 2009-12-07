@@ -1189,6 +1189,10 @@ message_help(bool long_help)
 				uint64_to_str(hardware_threadlimit_get(), 0));
 	}
 
+	// TRANSLATORS: This message indicates the bug reporting address
+	// for this package. Please add _another line_ saying
+	// "Report translation bugs to <...>\n" with the email or WWW
+	// address for translation bugs. Thanks.
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
 			PACKAGE_BUGREPORT);
 	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_HOMEPAGE);

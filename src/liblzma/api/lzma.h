@@ -162,10 +162,9 @@
  ******************/
 
 /*
- * Some systems require (or at least recommend) that the functions and
- * function pointers are declared specially in the headers. LZMA_API_IMPORT
- * is for importing symbols and LZMA_API_CALL is to specify calling
- * convention.
+ * Some systems require that the functions and function pointers are
+ * declared specially in the headers. LZMA_API_IMPORT is for importing
+ * symbols and LZMA_API_CALL is to specify the calling convention.
  *
  * By default it is assumed that the application will link dynamically
  * against liblzma. #define LZMA_API_STATIC in your application if you
@@ -174,11 +173,14 @@
  * against static liblzma on them, don't worry about LZMA_API_STATIC. That
  * is, most developers will never need to use LZMA_API_STATIC.
  *
- * Cygwin is a special case on Windows. We rely on GCC doing the right thing
- * and thus don't use dllimport and don't specify the calling convention.
+ * The GCC variants are a special case on Windows (Cygwin and MinGW).
+ * We rely on GCC doing the right thing with its auto-import feature,
+ * and thus don't use __declspec(dllimport). This way developers don't
+ * need to worry about LZMA_API_STATIC. Also the calling convention is
+ * omitted on Cygwin but not on MinGW.
  */
 #ifndef LZMA_API_IMPORT
-#	if !defined(LZMA_API_STATIC) && defined(_WIN32) && !defined(__CYGWIN__)
+#	if !defined(LZMA_API_STATIC) && defined(_WIN32) && !defined(__GNUC__)
 #		define LZMA_API_IMPORT __declspec(dllimport)
 #	else
 #		define LZMA_API_IMPORT

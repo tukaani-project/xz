@@ -14,13 +14,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifdef ENABLE_NLS
-#	include <libintl.h>
-#	define _(msgid) gettext(msgid)
-#else
-#	define _(msgid) msgid
-#endif
-
 #include "lzma.h"
 #include "getopt.h"
 #include "tuklib_gettext.h"

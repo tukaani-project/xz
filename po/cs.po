@@ -350,7 +350,6 @@ msgstr ""
 "kodérem"
 
 #: src/xz/message.c:1101
-#, c-format
 msgid ""
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 "
 "indicates\n"

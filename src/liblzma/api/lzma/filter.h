@@ -122,7 +122,7 @@ extern LZMA_API(lzma_bool) lzma_filter_decoder_is_supported(lzma_vli id)
  *              - LZMA_PROG_ERROR: src or dest is NULL.
  */
 extern LZMA_API(lzma_ret) lzma_filters_copy(const lzma_filter *src,
-		lzma_filter *dest, lzma_allocator *allocator);
+		lzma_filter *dest, lzma_allocator *allocator) lzma_nothrow;
 
 
 /**
@@ -224,7 +224,7 @@ extern LZMA_API(lzma_ret) lzma_raw_decoder(
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_filters_update(
-		lzma_stream *strm, const lzma_filter *filters);
+		lzma_stream *strm, const lzma_filter *filters) lzma_nothrow;
 
 
 /**

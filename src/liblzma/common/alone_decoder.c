@@ -173,12 +173,15 @@ static lzma_ret
 alone_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
 		uint64_t *old_memlimit, uint64_t new_memlimit)
 {
-	if (new_memlimit != 0 && new_memlimit < coder->memusage)
-		return LZMA_MEMLIMIT_ERROR;
-
 	*memusage = coder->memusage;
 	*old_memlimit = coder->memlimit;
-	coder->memlimit = new_memlimit;
+
+	if (new_memlimit != 0) {
+		if (new_memlimit < coder->memusage)
+			return LZMA_MEMLIMIT_ERROR;
+
+		coder->memlimit = new_memlimit;
+	}
 
 	return LZMA_OK;
 }

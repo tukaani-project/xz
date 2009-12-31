@@ -219,12 +219,14 @@ index_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
 		uint64_t *old_memlimit, uint64_t new_memlimit)
 {
 	*memusage = lzma_index_memusage(1, coder->count);
-
-	if (new_memlimit != 0 && new_memlimit < *memusage)
-		return LZMA_MEMLIMIT_ERROR;
-
 	*old_memlimit = coder->memlimit;
-	coder->memlimit = new_memlimit;
+
+	if (new_memlimit != 0) {
+		if (new_memlimit < *memusage)
+			return LZMA_MEMLIMIT_ERROR;
+
+		coder->memlimit = new_memlimit;
+	}
 
 	return LZMA_OK;
 }

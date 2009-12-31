@@ -615,13 +615,6 @@ extern LZMA_API(lzma_ret) lzma_index_encoder(
  *              - LZMA_MEM_ERROR
  *              - LZMA_MEMLIMIT_ERROR
  *              - LZMA_PROG_ERROR
- *
- * \note        The memory usage limit is checked early in the decoding
- *              (within the first dozen input bytes or so). The actual memory
- *              is allocated later in smaller pieces. If the memory usage
- *              limit is modified with lzma_memlimit_set() after a part
- *              of the Index has already been decoded, the new limit may
- *              get ignored.
  */
 extern LZMA_API(lzma_ret) lzma_index_decoder(
 		lzma_stream *strm, lzma_index **i, uint64_t memlimit)

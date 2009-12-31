@@ -95,10 +95,14 @@ index_decode(lzma_coder *coder, lzma_allocator *allocator,
 	// Fall through
 
 	case SEQ_MEMUSAGE:
-		if (lzma_index_memusage(coder->count) > coder->memlimit) {
+		if (lzma_index_memusage(1, coder->count) > coder->memlimit) {
 			ret = LZMA_MEMLIMIT_ERROR;
 			goto out;
 		}
+
+		// Tell the Index handling code how many Records this
+		// Index has to allow it to allocate memory more efficiently.
+		lzma_index_prealloc(coder->index, coder->count);
 
 		ret = LZMA_OK;
 		coder->sequence = coder->count == 0
@@ -214,7 +218,7 @@ static lzma_ret
 index_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
 		uint64_t *old_memlimit, uint64_t new_memlimit)
 {
-	*memusage = lzma_index_memusage(coder->count);
+	*memusage = lzma_index_memusage(1, coder->count);
 
 	if (new_memlimit != 0 && new_memlimit < *memusage)
 		return LZMA_MEMLIMIT_ERROR;
@@ -238,7 +242,7 @@ index_decoder_reset(lzma_coder *coder, lzma_allocator *allocator,
 	*i = NULL;
 
 	// We always allocate a new lzma_index.
-	coder->index = lzma_index_init(NULL, allocator);
+	coder->index = lzma_index_init(allocator);
 	if (coder->index == NULL)
 		return LZMA_MEM_ERROR;
 
@@ -329,7 +333,7 @@ lzma_index_buffer_decode(
 		} else if (ret == LZMA_MEMLIMIT_ERROR) {
 			// Tell the caller how much memory would have
 			// been needed.
-			*memlimit = lzma_index_memusage(coder.count);
+			*memlimit = lzma_index_memusage(1, coder.count);
 		}
 	}
 

@@ -292,7 +292,8 @@ lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 	next->coder->filters[0].id = LZMA_VLI_UNKNOWN;
 
 	// Initialize the Index
-	next->coder->index = lzma_index_init(next->coder->index, allocator);
+	lzma_index_end(next->coder->index, allocator);
+	next->coder->index = lzma_index_init(allocator);
 	if (next->coder->index == NULL)
 		return LZMA_MEM_ERROR;
 

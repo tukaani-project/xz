@@ -94,11 +94,11 @@ lzma_stream_buffer_encode(lzma_filter *filters, lzma_check check,
 	// Index
 	{
 		// Create an Index with one Record.
-		lzma_index *i = lzma_index_init(NULL, NULL);
+		lzma_index *i = lzma_index_init(allocator);
 		if (i == NULL)
 			return LZMA_MEM_ERROR;
 
-		lzma_ret ret = lzma_index_append(i, NULL,
+		lzma_ret ret = lzma_index_append(i, allocator,
 				lzma_block_unpadded_size(&block),
 				block.uncompressed_size);
 
@@ -111,7 +111,7 @@ lzma_stream_buffer_encode(lzma_filter *filters, lzma_check check,
 			stream_flags.backward_size = lzma_index_size(i);
 		}
 
-		lzma_index_end(i, NULL);
+		lzma_index_end(i, allocator);
 
 		if (ret != LZMA_OK)
 			return ret;

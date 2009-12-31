@@ -26,12 +26,11 @@ struct lzma_coder_s {
 		SEQ_CRC32,
 	} sequence;
 
-	/// Index given to us to encode. Note that we modify it in sense that
-	/// we read it, and read position is tracked in lzma_index structure.
-	lzma_index *index;
+	/// Index being encoded
+	const lzma_index *index;
 
-	/// The current Index Record being encoded
-	lzma_index_record record;
+	/// Iterator for the Index being encoded
+	lzma_index_iter iter;
 
 	/// Position in integers
 	size_t pos;
@@ -69,8 +68,8 @@ index_encode(lzma_coder *coder,
 		break;
 
 	case SEQ_COUNT: {
-		const lzma_vli index_count = lzma_index_count(coder->index);
-		ret = lzma_vli_encode(index_count, &coder->pos,
+		const lzma_vli count = lzma_index_block_count(coder->index);
+		ret = lzma_vli_encode(count, &coder->pos,
 				out, out_pos, out_size);
 		if (ret != LZMA_STREAM_END)
 			goto out;
@@ -82,19 +81,14 @@ index_encode(lzma_coder *coder,
 	}
 
 	case SEQ_NEXT:
-		if (lzma_index_read(coder->index, &coder->record)) {
+		if (lzma_index_iter_next(
+				&coder->iter, LZMA_INDEX_ITER_BLOCK)) {
 			// Get the size of the Index Padding field.
 			coder->pos = lzma_index_padding_size(coder->index);
 			assert(coder->pos <= 3);
 			coder->sequence = SEQ_PADDING;
 			break;
 		}
-
-		// Unpadded Size must be within valid limits.
-		if (coder->record.unpadded_size < UNPADDED_SIZE_MIN
-				|| coder->record.unpadded_size
-					> UNPADDED_SIZE_MAX)
-			return LZMA_PROG_ERROR;
 
 		coder->sequence = SEQ_UNPADDED;
 
@@ -103,8 +97,8 @@ index_encode(lzma_coder *coder,
 	case SEQ_UNPADDED:
 	case SEQ_UNCOMPRESSED: {
 		const lzma_vli size = coder->sequence == SEQ_UNPADDED
-				? coder->record.unpadded_size
-				: coder->record.uncompressed_size;
+				? coder->iter.block.unpadded_size
+				: coder->iter.block.uncompressed_size;
 
 		ret = lzma_vli_encode(size, &coder->pos,
 				out, out_pos, out_size);
@@ -172,9 +166,9 @@ index_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static void
-index_encoder_reset(lzma_coder *coder, lzma_index *i)
+index_encoder_reset(lzma_coder *coder, const lzma_index *i)
 {
-	lzma_index_rewind(i);
+	lzma_index_iter_init(&coder->iter, i);
 
 	coder->sequence = SEQ_INDICATOR;
 	coder->index = i;
@@ -187,7 +181,7 @@ index_encoder_reset(lzma_coder *coder, lzma_index *i)
 
 extern lzma_ret
 lzma_index_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
-		lzma_index *i)
+		const lzma_index *i)
 {
 	lzma_next_coder_init(&lzma_index_encoder_init, next, allocator);
 
@@ -210,7 +204,7 @@ lzma_index_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern LZMA_API(lzma_ret)
-lzma_index_encoder(lzma_stream *strm, lzma_index *i)
+lzma_index_encoder(lzma_stream *strm, const lzma_index *i)
 {
 	lzma_next_strm_init(lzma_index_encoder_init, strm, i);
 
@@ -221,7 +215,7 @@ lzma_index_encoder(lzma_stream *strm, lzma_index *i)
 
 
 extern LZMA_API(lzma_ret)
-lzma_index_buffer_encode(lzma_index *i,
+lzma_index_buffer_encode(const lzma_index *i,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 {
 	// Validate the arugments.

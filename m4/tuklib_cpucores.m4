@@ -9,7 +9,7 @@
 #   This information is used by tuklib_cpucores.c.
 #
 #   Currently this supports sysctl() (BSDs, OS/2) and sysconf() (GNU/Linux,
-#   Solaris, Cygwin).
+#   Solaris, IRIX, Cygwin).
 #
 # COPYING
 #
@@ -54,7 +54,13 @@ int
 main(void)
 {
 	long i;
+#ifdef _SC_NPROCESSORS_ONLN
+	/* Many systems using sysconf() */
 	i = sysconf(_SC_NPROCESSORS_ONLN);
+#else
+	/* IRIX */
+	i = sysconf(_SC_NPROC_ONLN);
+#endif
 	return 0;
 }
 ]])], [
@@ -71,7 +77,8 @@ case $tuklib_cv_cpucores_method in
 	sysconf)
 		AC_DEFINE([TUKLIB_CPUCORES_SYSCONF], [1],
 			[Define to 1 if the number of available CPU cores
-			can be detected with sysconf(_SC_NPROCESSORS_ONLN).])
+			can be detected with sysconf(_SC_NPROCESSORS_ONLN)
+			or sysconf(_SC_NPROC_ONLN).])
 		;;
 esac
 ])dnl

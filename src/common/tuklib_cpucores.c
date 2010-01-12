@@ -37,7 +37,13 @@ tuklib_cpucores(void)
 		ret = (uint32_t)cpus;
 
 #elif defined(TUKLIB_CPUCORES_SYSCONF)
+#	ifdef _SC_NPROCESSORS_ONLN
+	// Most systems
 	const long cpus = sysconf(_SC_NPROCESSORS_ONLN);
+#	else
+	// IRIX
+	const long cpus = sysconf(_SC_NPROC_ONLN);
+#	endif
 	if (cpus > 0)
 		ret = (uint32_t)cpus;
 #endif

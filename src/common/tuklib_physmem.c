@@ -42,6 +42,10 @@
 #	endif
 #	include <sys/sysctl.h>
 
+// IRIX
+#elif defined(TUKLIB_PHYSMEM_GETINVENT_R)
+#	include <invent.h>
+
 // This sysinfo() is Linux-specific.
 #elif defined(TUKLIB_PHYSMEM_SYSINFO)
 #	include <sys/sysinfo.h>
@@ -134,6 +138,21 @@ tuklib_physmem(void)
 			ret = mem.u64;
 		else if (mem_ptr_size == sizeof(mem.u32))
 			ret = mem.u32;
+	}
+
+#elif defined(TUKLIB_PHYSMEM_GETINVENT_R)
+	inv_state_t *st = NULL;
+	if (setinvent_r(&st) != -1) {
+		inventory_t *i;
+		while ((i = getinvent_r(st)) != NULL) {
+			if (i->inv_class == INV_MEMORY
+					&& i->inv_type == INV_MAIN_MB) {
+				ret = (uint64_t)i->inv_state << 20;
+				break;
+			}
+		}
+
+		endinvent_r(st);
 	}
 
 #elif defined(TUKLIB_PHYSMEM_SYSINFO)

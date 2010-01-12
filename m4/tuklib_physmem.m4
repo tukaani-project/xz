@@ -18,6 +18,8 @@
 #
 #     - BSDs use sysctl().
 #
+#     - IRIX has setinvent_r(), getinvent_r(), and endinvent_r().
+#
 #     - sysinfo() works on Linux/dietlibc and probably on other Linux
 #       systems whose libc may lack sysconf().
 #
@@ -78,6 +80,19 @@ main(void)
 }
 ]])], [tuklib_cv_physmem_method=sysctl], [
 
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <invent.h>
+int
+main(void)
+{
+	inv_state_t *st = NULL;
+	setinvent_r(&st);
+	getinvent_r(st);
+	endinvent_r(st);
+	return 0;
+}
+]])], [tuklib_cv_physmem_method=getinvent_r], [
+
 # This version of sysinfo() is Linux-specific. Some non-Linux systems have
 # different sysinfo() so we must check $host_os.
 case $host_os in
@@ -101,7 +116,7 @@ main(void)
 		tuklib_cv_physmem_method=unknown
 		;;
 esac
-])])])])
+])])])])])
 case $tuklib_cv_physmem_method in
 	sysconf)
 		AC_DEFINE([TUKLIB_PHYSMEM_SYSCONF], [1],
@@ -113,6 +128,11 @@ case $tuklib_cv_physmem_method in
 		AC_DEFINE([TUKLIB_PHYSMEM_SYSCTL], [1],
 			[Define to 1 if the amount of physical memory can
 			be detected with sysctl().])
+		;;
+	getinvent_r)
+		AC_DEFINE([TUKLIB_PHYSMEM_GETINVENT_R], [1],
+			[Define to 1 if the amount of physical memory
+			can be detected with getinvent_r().])
 		;;
 	sysinfo)
 		AC_DEFINE([TUKLIB_PHYSMEM_SYSINFO], [1],

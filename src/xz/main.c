@@ -168,8 +168,8 @@ main(int argc, char **argv)
 		message_set_files(args.arg_count);
 
 	// Refuse to write compressed data to standard output if it is
-	// a terminal and --force wasn't used.
-	if (opt_mode == MODE_COMPRESS && !opt_force) {
+	// a terminal.
+	if (opt_mode == MODE_COMPRESS) {
 		if (opt_stdout || (args.arg_count == 1
 				&& strcmp(args.arg_names[0], "-") == 0)) {
 			if (is_tty_stdout()) {
@@ -188,16 +188,14 @@ main(int argc, char **argv)
 	// were given, parse_args() gave us a fake "-" filename.
 	for (size_t i = 0; i < args.arg_count && !user_abort; ++i) {
 		if (strcmp("-", args.arg_names[i]) == 0) {
-			// Processing from stdin to stdout. Unless --force
-			// was used, check that we aren't writing compressed
-			// data to a terminal or reading it from terminal.
-			if (!opt_force) {
-				if (opt_mode == MODE_COMPRESS) {
-					if (is_tty_stdout())
-						continue;
-				} else if (is_tty_stdin()) {
+			// Processing from stdin to stdout. Check that we
+			// aren't writing compressed data to a terminal or
+			// reading it from a terminal.
+			if (opt_mode == MODE_COMPRESS) {
+				if (is_tty_stdout())
 					continue;
-				}
+			} else if (is_tty_stdin()) {
+				continue;
 			}
 
 			// It doesn't make sense to compress data from stdin

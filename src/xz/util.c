@@ -223,8 +223,8 @@ is_tty_stdin(void)
 	const bool ret = isatty(STDIN_FILENO);
 
 	if (ret)
-		message_error(_("Compressed data not read from a terminal "
-				"unless `--force' is used."));
+		message_error(_("Compressed data cannot be read from "
+				"a terminal"));
 
 	return ret;
 }
@@ -236,8 +236,8 @@ is_tty_stdout(void)
 	const bool ret = isatty(STDOUT_FILENO);
 
 	if (ret)
-		message_error(_("Compressed data not written to a terminal "
-				"unless `--force' is used."));
+		message_error(_("Compressed data cannot be written to "
+				"a terminal"));
 
 	return ret;
 }

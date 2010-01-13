@@ -275,9 +275,14 @@ io_open_src(file_pair *pair)
 		return false;
 	}
 
+	// Symlinks are not followed unless writing to stdout or --force
+	// was used.
+	const bool follow_symlinks = opt_stdout || opt_force;
+
 	// We accept only regular files if we are writing the output
-	// to disk too, and if --force was not given.
-	const bool reg_files_only = !opt_stdout && !opt_force;
+	// to disk too. bzip2 allows overriding this with --force but
+	// gzip and xz don't.
+	const bool reg_files_only = !opt_stdout;
 
 	// Flags for open()
 	int flags = O_RDONLY | O_BINARY | O_NOCTTY;
@@ -293,13 +298,13 @@ io_open_src(file_pair *pair)
 #endif
 
 #if defined(O_NOFOLLOW)
-	if (reg_files_only)
+	if (!follow_symlinks)
 		flags |= O_NOFOLLOW;
 #elif !defined(TUKLIB_DOSLIKE)
 	// Some POSIX-like systems lack O_NOFOLLOW (it's not required
 	// by POSIX). Check for symlinks with a separate lstat() on
 	// these systems.
-	if (reg_files_only) {
+	if (!follow_symlinks) {
 		struct stat st;
 		if (lstat(pair->src_name, &st)) {
 			message_error("%s: %s", pair->src_name,
@@ -374,7 +379,7 @@ io_open_src(file_pair *pair)
 			was_symlink = true;
 
 #	else
-		if (errno == ELOOP && reg_files_only) {
+		if (errno == ELOOP && !follow_symlinks) {
 			const int saved_errno = errno;
 			struct stat st;
 			if (lstat(pair->src_name, &st) == 0

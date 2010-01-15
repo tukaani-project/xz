@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2009-11-16" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-01-15" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -118,7 +118,7 @@ if any of the following applies:
 .IP \(bu 3
 .I File
 is not a regular file. Symbolic links are not followed, thus they
-are never considered to be regular files.
+are not considered to be regular files.
 .IP \(bu 3
 .I File
 has more than one hardlink.
@@ -298,7 +298,7 @@ This option has several effects:
 If the target file already exists, delete it before compressing or
 decompressing.
 .IP \(bu 3
-Compress or decompress even if the input is not a regular file,
+Compress or decompress even if the input is a symbolic link to a regular file,
 has more than one hardlink, or has setuid, setgid, or sticky bit set.
 The setuid, setgid, and sticky bits are not copied to the target file.
 .IP \(bu 3
@@ -326,9 +326,6 @@ standard output.
 can be used to restrict
 .B xz
 to decompress only a single file format.
-.IP \(bu 3
-Allow writing compressed data to a terminal, and reading compressed data
-from a terminal.
 .RE
 .TP
 .BR \-c ", " \-\-stdout ", " \-\-to-stdout

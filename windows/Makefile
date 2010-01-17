@@ -26,15 +26,18 @@
 ###############################################################################
 
 ifdef W64
-CC = x86_64-pc-mingw32-gcc
-WINDRES = x86_64-pc-mingw32-windres
-AR = x86_64-pc-mingw32-ar
-STRIP = x86_64-pc-mingw32-strip
+MING_PFX = x86_64-w64-mingw32-
+CC = $(MING_PFX)gcc
+WINDRES = $(MING_PFX)windres
+AR = $(MING_PFX)ar
+STRIP = $(MING_PFX)strip
+PKG_DIR=pkg-x64
 else
 CC = mingw32-gcc
 WINDRES = windres
 AR = ar
 STRIP = strip
+PKG_DIR=pkg-x86
 endif
 
 SED = sed
@@ -97,12 +100,12 @@ all: liblzma xzdec xz
 clean: liblzma-clean xzdec-clean xz-clean
 
 pkg: all
-	$(RM) -r pkg
-	$(MKDIR) -p pkg/lib pkg/include/lzma
-	$(CP) liblzma.dll xz-dynamic.exe xz.exe xzdec-dynamic.exe xzdec.exe lzmadec-dynamic.exe lzmadec.exe pkg
-	$(CP) liblzma.a liblzma.def liblzma_static.lib pkg/lib
-	$(CP) ../src/liblzma/api/lzma.h pkg/include
-	$(CP) ../src/liblzma/api/lzma/*.h pkg/include/lzma
+	$(RM) -r $(PKG_DIR)
+	$(MKDIR) -p $(PKG_DIR)/lib $(PKG_DIR)/include/lzma
+	$(CP) liblzma.dll xz-dynamic.exe xz.exe xzdec-dynamic.exe xzdec.exe lzmadec-dynamic.exe lzmadec.exe $(PKG_DIR)
+	$(CP) liblzma.a liblzma.def liblzma_static.lib $(PKG_DIR)/lib
+	$(CP) ../src/liblzma/api/lzma.h $(PKG_DIR)/include
+	$(CP) ../src/liblzma/api/lzma/*.h $(PKG_DIR)/include/lzma
 
 %.o: %.rc
 	$(WINDRES) $(ALL_CPPFLAGS) $< $@
@@ -139,6 +142,7 @@ LIBLZMA_SRCS_C = \
 	../src/liblzma/common/filter_encoder.c \
 	../src/liblzma/common/filter_flags_decoder.c \
 	../src/liblzma/common/filter_flags_encoder.c \
+	../src/liblzma/common/hardware_physmem.c \
 	../src/liblzma/common/index.c \
 	../src/liblzma/common/index_decoder.c \
 	../src/liblzma/common/index_encoder.c \
@@ -180,7 +184,8 @@ LIBLZMA_SRCS_C = \
 	../src/liblzma/simple/simple_decoder.c \
 	../src/liblzma/simple/simple_encoder.c \
 	../src/liblzma/simple/sparc.c \
-	../src/liblzma/simple/x86.c
+	../src/liblzma/simple/x86.c \
+	../src/common/tuklib_physmem.c
 
 LIBLZMA_SRCS_ASM =
 
@@ -244,7 +249,9 @@ liblzma-clean:
 .PHONY: xzdec
 xzdec: xzdec-dynamic.exe lzmadec-dynamic.exe xzdec.exe lzmadec.exe
 
-XZDEC_SRCS = ../src/xzdec/xzdec.c
+XZDEC_SRCS = ../src/xzdec/xzdec.c \
+	     ../src/common/tuklib_progname.c \
+	     ../src/common/tuklib_exit.c
 
 xzdec-dynamic.exe: liblzma.dll $(XZDEC_SRCS) ../src/xzdec/xzdec_w32res.o
 	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) $(XZDEC_SRCS) ../src/xzdec/xzdec_w32res.o -o $@ liblzma.a
@@ -284,7 +291,12 @@ XZ_SRCS = \
 	../src/xz/options.c \
 	../src/xz/signals.c \
 	../src/xz/suffix.c \
-	../src/xz/util.c
+	../src/xz/util.c \
+	../src/common/tuklib_open_stdxxx.c \
+	../src/common/tuklib_progname.c \
+	../src/common/tuklib_exit.c \
+	../src/common/tuklib_cpucores.c
+
 
 XZ_OBJS = $(XZ_SRCS:.c=.o)
 XZ_OBJS_STATIC = $(XZ_SRCS:.c=-static.o)

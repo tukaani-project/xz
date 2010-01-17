@@ -166,3 +166,5 @@
 #elif ! defined __LITTLE_ENDIAN__
 /* # undef WORDS_BIGENDIAN */
 #endif
+
+#define ASSUME_RAM 32

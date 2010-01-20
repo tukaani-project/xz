@@ -150,7 +150,7 @@ XZ Utils
     However, quite often the reason for unexpected behavior is unknown,
     so here are a few things to do before sending a bug report:
 
-      1. Try to create a small example how to reprocude the issue.
+      1. Try to create a small example how to reproduce the issue.
 
       2. Compile XZ Utils with debugging code using configure switches
          --enable-debug and, if possible, --disable-shared. If you are

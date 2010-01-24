@@ -48,3 +48,4 @@
 #include "signals.h"
 #include "suffix.h"
 #include "util.h"
+#include "list.h"

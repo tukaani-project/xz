@@ -153,10 +153,7 @@ main(int argc, char **argv)
 	args_info args;
 	args_parse(&args, argc, argv);
 
-	if (opt_mode == MODE_LIST)
-		message_fatal("--list is not implemented yet.");
-
-	if (opt_robot)
+	if (opt_mode != MODE_LIST && opt_robot)
 		message_fatal(_("Compression and decompression with --robot "
 			"are not supported yet."));
 
@@ -183,6 +180,11 @@ main(int argc, char **argv)
 	// the actual action, so this is done after parsing the command
 	// line arguments.
 	signals_init();
+
+	// coder_run() handles compression, decopmression, and testing.
+	// list_file() is for --list.
+	void (*run)(const char *filename) = opt_mode == MODE_LIST
+			 ? &list_file : &coder_run;
 
 	// Process the files given on the command line. Note that if no names
 	// were given, parse_args() gave us a fake "-" filename.
@@ -218,7 +220,7 @@ main(int argc, char **argv)
 		}
 
 		// Do the actual compression or uncompression.
-		coder_run(args.arg_names[i]);
+		run(args.arg_names[i]);
 	}
 
 	// If --files or --files0 was used, process the filenames from the
@@ -234,12 +236,17 @@ main(int argc, char **argv)
 
 			// read_name() doesn't return empty names.
 			assert(name[0] != '\0');
-			coder_run(name);
+			run(name);
 		}
 
 		if (args.files_name != stdin_filename)
 			(void)fclose(args.files_file);
 	}
+
+	// All files have now been handled. If in --list mode, display
+	// the totals before exiting.
+	if (opt_mode == MODE_LIST)
+		list_totals();
 
 	// If we have got a signal, raise it to kill the program instead
 	// of calling tuklib_exit().

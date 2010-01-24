@@ -87,6 +87,10 @@ extern void message_signal_handler(void) lzma_attribute((noreturn));
 extern const char *message_strm(lzma_ret code);
 
 
+/// Display how much memory was needed and how much the limit was.
+extern void message_mem_needed(enum message_verbosity v, uint64_t memusage);
+
+
 /// Print the filter chain.
 extern void message_filters(
 		enum message_verbosity v, const lzma_filter *filters);

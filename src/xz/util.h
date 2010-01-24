@@ -54,11 +54,55 @@ extern uint64_t str_to_uint64(const char *name, const char *value,
 extern const char *uint64_to_str(uint64_t value, uint32_t slot);
 
 
+enum nicestr_unit {
+	NICESTR_B,
+	NICESTR_KIB,
+	NICESTR_MIB,
+	NICESTR_GIB,
+	NICESTR_TIB,
+};
+
+
+/// \brief      Convert uint64_t to a nice human readable string
+///
+/// This is like uint64_to_str() but uses B, KiB, MiB, GiB, or TiB suffix
+/// and optionally includes the exact size in parenthesis.
+///
+/// \param      value     Value to be printed
+/// \param      unit_min  Smallest unit to use. This and unit_max are used
+///                       e.g. when showing the progress indicator to force
+///                       the unit to MiB.
+/// \param      unit_max  Biggest unit to use. assert(unit_min <= unit_max).
+/// \param      always_also_bytes
+///                       Show also the exact byte value in parenthesis
+///                       if the nicely formatted string uses bigger unit
+///                       than bytes.
+/// \param      slot      Which static buffer to use to hold the string.
+///                       This is shared with uint64_to_str().
+///
+/// \return     Pointer to statically allocated buffer containing the string.
+///
+/// \note       This uses double_to_str() internally so the static buffer
+///             in double_to_str() will be overwritten.
+///
+extern const char *uint64_to_nicestr(uint64_t value,
+		enum nicestr_unit unit_min, enum nicestr_unit unit_max,
+		bool always_also_bytes, uint32_t slot);
+
+
 /// \brief      Convert double to a string with one decimal place
 ///
 /// This is like uint64_to_str() except that this converts a double and
 /// uses exactly one decimal place.
 extern const char *double_to_str(double value);
+
+
+/// \brief      Wrapper for snprintf() to help constructing a string in pieces
+///
+/// A maximum of *left bytes is written starting from *pos. *pos and *left
+/// are updated accordingly.
+extern void my_snprintf(char **pos, size_t *left, const char *fmt, ...)
+		lzma_attribute((format(printf, 3, 4)));
 
 
 /// \brief      Check if filename is empty and print an error message

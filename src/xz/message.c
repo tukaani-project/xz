@@ -111,29 +111,6 @@ my_time(void)
 }
 
 
-/// Wrapper for snprintf() to help constructing a string in pieces.
-static void lzma_attribute((format(printf, 3, 4)))
-my_snprintf(char **pos, size_t *left, const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	const int len = vsnprintf(*pos, *left, fmt, ap);
-	va_end(ap);
-
-	// If an error occurred, we want the caller to think that the whole
-	// buffer was used. This way no more data will be written to the
-	// buffer. We don't need better error handling here.
-	if (len < 0 || (size_t)(len) >= *left) {
-		*left = 0;
-	} else {
-		*pos += len;
-		*left -= len;
-	}
-
-	return;
-}
-
-
 extern void
 message_init(void)
 {
@@ -356,35 +333,6 @@ progress_percentage(uint64_t in_pos, bool final)
 }
 
 
-static void
-progress_sizes_helper(char **pos, size_t *left, uint64_t value, bool final)
-{
-	// Allow high precision only for the final message, since it looks
-	// stupid for in-progress information.
-	if (final) {
-		// A maximum of four digits are allowed for exact byte count.
-		if (value < 10000) {
-			my_snprintf(pos, left, "%s B",
-					uint64_to_str(value, 0));
-			return;
-		}
-
-		// A maximum of five significant digits are allowed for KiB.
-		if (value < UINT64_C(10239900)) {
-			my_snprintf(pos, left, "%s KiB", double_to_str(
-					(double)(value) / 1024.0));
-			return;
-		}
-	}
-
-	// Otherwise we use MiB.
-	my_snprintf(pos, left, "%s MiB",
-			double_to_str((double)(value) / (1024.0 * 1024.0)));
-
-	return;
-}
-
-
 /// Make the string containing the amount of input processed, amount of
 /// output produced, and the compression ratio.
 static const char *
@@ -401,9 +349,12 @@ progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 
 	// Print the sizes. If this the final message, use more reasonable
 	// units than MiB if the file was small.
-	progress_sizes_helper(&pos, &left, compressed_pos, final);
-	my_snprintf(&pos, &left, " / ");
-	progress_sizes_helper(&pos, &left, uncompressed_pos, final);
+	const enum nicestr_unit unit_min = final ? NICESTR_B : NICESTR_MIB;
+	my_snprintf(&pos, &left, "%s / %s",
+			uint64_to_nicestr(compressed_pos,
+				unit_min, NICESTR_MIB, false, 0),
+			uint64_to_nicestr(uncompressed_pos,
+				unit_min, NICESTR_MIB, false, 1));
 
 	// Avoid division by zero. If we cannot calculate the ratio, set
 	// it to some nice number greater than 10.0 so that it gets caught
@@ -886,6 +837,25 @@ message_strm(lzma_ret code)
 	}
 
 	return NULL;
+}
+
+
+extern void
+message_mem_needed(enum message_verbosity v, uint64_t memusage)
+{
+	if (v > verbosity)
+		return;
+
+	// NOTE: With bad luck, the rounded values may be the same, which
+	// can be confusing to the user when this function is called to
+	// tell that the memory usage limit was too low.
+	message(v, _("%s of memory is required. The limit is %s."),
+			uint64_to_nicestr(memusage,
+				NICESTR_B, NICESTR_MIB, false, 0),
+			uint64_to_nicestr(hardware_memlimit_get(),
+				NICESTR_B, NICESTR_MIB, false, 1));
+
+	return;
 }
 
 

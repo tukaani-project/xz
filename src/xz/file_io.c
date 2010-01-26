@@ -112,8 +112,18 @@ io_unlink(const char *name, const struct stat *known_st)
 			|| new_st.st_ino != known_st->st_ino
 #	endif
 			)
-		message_error(_("%s: File seems to be moved, not removing"),
-				name);
+		// TRANSLATORS: When compression or decompression finishes,
+		// and xz is going to remove the source file, xz first checks
+		// if the source file still exists, and if it does, does its
+		// device and inode numbers match what xz saw when it opened
+		// the source file. If these checks fail, this message is
+		// shown, %s being the filename, and the file is not deleted.
+		// The check for device and inode numbers is there, because
+		// it is possible that the user has put a new file in place
+		// of the original file, and in that case it obviously
+		// shouldn't be removed.
+		message_error(_("%s: File seems to have been moved, "
+				"not removing"), name);
 	else
 #endif
 		// There's a race condition between lstat() and unlink()

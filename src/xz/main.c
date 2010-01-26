@@ -143,7 +143,7 @@ main(int argc, char **argv)
 	message_init();
 
 	// Set hardware-dependent default values. These can be overriden
-	// on the command line, thus this must be done before parse_args().
+	// on the command line, thus this must be done before args_parse().
 	hardware_init();
 
 	// Parse the command line arguments and get an array of filenames.
@@ -187,7 +187,7 @@ main(int argc, char **argv)
 			 ? &list_file : &coder_run;
 
 	// Process the files given on the command line. Note that if no names
-	// were given, parse_args() gave us a fake "-" filename.
+	// were given, args_parse() gave us a fake "-" filename.
 	for (size_t i = 0; i < args.arg_count && !user_abort; ++i) {
 		if (strcmp("-", args.arg_names[i]) == 0) {
 			// Processing from stdin to stdout. Check that we

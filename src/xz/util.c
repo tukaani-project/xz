@@ -175,13 +175,14 @@ uint64_to_nicestr(uint64_t value, enum nicestr_unit unit_min,
 	static const char suffix[5][4] = { "B", "KiB", "MiB", "GiB", "TiB" };
 
 	// Minimum buffer size:
-	// 11   "1,234.5 MiB"
+	// 26   2^64 with thousand separators
+	//  4   " KiB"
 	//  2   " ("
 	// 26   2^64 with thousand separators
 	//  3   " B)"
 	//  1   '\0'
-	// 43   Total
-	static char buf[4][44];
+	// 62   Total
+	static char buf[4][64];
 	char *pos = buf[slot];
 	size_t left = sizeof(buf[slot]);
 	my_snprintf(&pos, &left, "%s %s", str, suffix[unit]);
@@ -196,8 +197,6 @@ uint64_to_nicestr(uint64_t value, enum nicestr_unit unit_min,
 extern const char *
 double_to_str(double value)
 {
-	// 64 bytes is surely enough, since it won't fit in some other
-	// fields anyway.
 	static char buf[64];
 
 	static enum { UNKNOWN, WORKS, BROKEN } thousand = UNKNOWN;

@@ -23,7 +23,11 @@
 extern void
 tuklib_open_stdxxx(int err_status)
 {
-#ifndef TUKLIB_DOSLIKE
+#ifdef TUKLIB_DOSLIKE
+	// Do nothing, just silence warnings.
+	(void)err_status;
+
+#else
 	for (int i = 0; i <= 2; ++i) {
 		// We use fcntl() to check if the file descriptor is open.
 		if (fcntl(i, F_GETFD) == -1 && errno == EBADF) {

@@ -327,6 +327,9 @@ io_open_src(file_pair *pair)
 			return true;
 		}
 	}
+#else
+	// Avoid warnings.
+	(void)follow_symlinks;
 #endif
 
 	// Try to open the file. If we are accepting non-regular files,

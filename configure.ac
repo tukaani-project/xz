@@ -15,19 +15,14 @@
 # of malloc(), stat(), or lstat(), since we don't use those functions in
 # a way that would cause the problems the autoconf macros check.
 
-AC_PREREQ([2.61])
+AC_PREREQ([2.64])
 
 AC_INIT([XZ Utils], m4_esyscmd([/bin/sh version.sh]),
-	[lasse.collin@tukaani.org], [xz])
+	[lasse.collin@tukaani.org], [xz], [http://tukaani.org/xz/])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER([config.h])
-
-PACKAGE_HOMEPAGE=http://tukaani.org/xz/
-AC_DEFINE_UNQUOTED([PACKAGE_HOMEPAGE], ["$PACKAGE_HOMEPAGE"],
-	[Define to the URL of the home page of this package.])
-AC_SUBST([PACKAGE_HOMEPAGE])
 
 echo
 echo "$PACKAGE_STRING"

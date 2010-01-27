@@ -82,7 +82,7 @@ help(void)
 "%" PRIu64 " MiB RAM.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n"
-PACKAGE_NAME " home page: <" PACKAGE_HOMEPAGE ">\n",
+PACKAGE_NAME " home page: <" PACKAGE_URL ">\n",
 		progname, memlimit / (1024 * 1024));
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);
 }

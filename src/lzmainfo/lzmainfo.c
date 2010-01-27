@@ -34,7 +34,7 @@ _("Usage: %s [--help] [--version] [FILE]...\n"
 
 	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
 			PACKAGE_BUGREPORT);
-	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_HOMEPAGE);
+	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
 
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }

@@ -46,6 +46,7 @@ ACLOCAL_AMFLAGS = -I m4
 manfiles = \
 	src/xz/xz.1 \
 	src/xzdec/xzdec.1 \
+	src/lzmainfo/lzmainfo.1 \
 	src/scripts/xzdiff.1 \
 	src/scripts/xzgrep.1 \
 	src/scripts/xzless.1 \

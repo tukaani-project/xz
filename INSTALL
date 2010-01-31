@@ -6,7 +6,7 @@ XZ Utils Installation
     1. Supported platforms
        1.1. Compilers
        1.2. Platform-specific notes
-            1.2.1. Darwin (Mac OS X)
+            1.2.1. IRIX
             1.2.2. Tru64
             1.2.3. Windows
             1.2.4. DOS
@@ -59,14 +59,11 @@ XZ Utils Installation
 
 1.2. Platform-specific notes
 
-1.2.1. Darwin (Mac OS X)
+1.2.1. IRIX
 
-    You may need --disable-assembler if building universal binaries on
-    Darwin. This is because different files are built when assembler is
-    enabled, and there's no way to make it work with universal build.
-    If you want to keep the assembler code, consider building one
-    architecture at a time, and then combining the results to create
-    universal binaries (see lipo(1)).
+    MIPSpro 7.4.4m has been reported to produce broken code if using
+    the -O2 optimization flag ("make check" fails). Using -O1 should
+    work.
 
 
 1.2.2. Tru64
@@ -77,39 +74,42 @@ XZ Utils Installation
     C99. You can safely override the test for C99 compiler by passing
     ac_cv_prog_cc_c99= as the argument to the configure script.
 
+    There's no code to detect the amount of RAM on Tru64. It can be
+    added, but I currently don't know anyone who can test on Tru64.
+    For now, you may want to pass --enable-assume-ram=SIZE to the
+    configure script. See the section 2 in this file for details.
+
 
 1.2.3. Windows
 
-    Building XZ Utils on Windows is supported under MinGW and Cygwin.
-    If the Autotools based build gives you trouble with MinGW, you may
-    want try the alternative method found from the "windows" directory.
+    Building XZ Utils on Windows is supported under MinGW + MSYS and
+    Cygwin. There is windows/build.sh to ease packaging XZ Utils with
+    MinGW + MSYS into a redistributable .zip or .7z file. See
+    windows/INSTALL-Windows.txt for more information.
 
-    MSVC doesn't support C99, thus it is not possible to use MSVC to
-    compile XZ Utils. However, it is possible to use liblzma.dll from
-    MSVC once liblzma.dll has been built with MinGW. The required
-    import library for MSVC can be created from liblzma.def using the
-    "lib" command shipped in MSVC:
+    It might be possible to build liblzma with a non-GNU toolchain too,
+    but that will probably require writing a separate makefile. Building
+    the command line tools with non-GNU toolchains will be harder than
+    building only liblzma.
 
-        lib /def:liblzma.def /out:liblzma.lib /machine:ix86
-
-    On x86-64, the /machine argument has to naturally be changed:
-
-        lib /def:liblzma.def /out:liblzma.lib /machine:x64
+    Even if liblzma is built with MinGW, the resulting DLL or static
+    library can be used by other compilers and linkers, including MSVC.
+    Thus, it shouldn't be a problem to use MinGW to build liblzma even
+    if you cannot use MinGW to build the rest of your project. See
+    windows/README-Windows.txt for details.
 
 
 1.2.4. DOS
 
     There is an experimental Makefile in the "dos" directory to build
     XZ Utils on DOS using DJGPP. Support for long file names (LFN) is
-    needed.
+    needed. See dos/README for more information.
 
-    GNU Autotools based build hasn't been tried on DOS.
+    GNU Autotools based build hasn't been tried on DOS. If you try, I
+    would like to hear if it worked.
 
 
 1.2.5. OS/2
-
-    You will need to pass --disable-assembler to configure when building
-    on OS/2.
 
     To omit large number of harmless warnings about visibility support,
     pass gl_cv_cc_visibility=no as an argument to the configure script.

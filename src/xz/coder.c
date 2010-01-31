@@ -244,15 +244,13 @@ coder_set_compression_settings(void)
 		if (!preset_default)
 			message(V_WARNING, _("Adjusted LZMA%c dictionary size "
 					"from %s MiB to %s MiB to not exceed "
-					"the memory usage limit of %s"),
+					"the memory usage limit of %s MiB"),
 					filters[i].id == LZMA_FILTER_LZMA2
 						? '2' : '1',
 					uint64_to_str(orig_dict_size >> 20, 0),
 					uint64_to_str(opt->dict_size >> 20, 1),
-					uint64_to_nicestr(memory_limit,
-							NICESTR_B,
-							NICESTR_MIB,
-							false, 2));
+					uint64_to_str(round_up_to_mib(
+						memory_limit), 2));
 	}
 
 /*

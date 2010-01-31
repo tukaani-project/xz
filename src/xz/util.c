@@ -119,6 +119,13 @@ error:
 }
 
 
+extern uint64_t
+round_up_to_mib(uint64_t n)
+{
+	return (n >> 20) + ((n & ((UINT32_C(1) << 20) - 1)) != 0);
+}
+
+
 extern const char *
 uint64_to_str(uint64_t value, uint32_t slot)
 {

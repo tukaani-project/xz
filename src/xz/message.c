@@ -852,14 +852,35 @@ message_mem_needed(enum message_verbosity v, uint64_t memusage)
 	if (v > verbosity)
 		return;
 
-	// NOTE: With bad luck, the rounded values may be the same, which
-	// can be confusing to the user when this function is called to
-	// tell that the memory usage limit was too low.
-	message(v, _("%s of memory is required. The limit is %s."),
-			uint64_to_nicestr(memusage,
-				NICESTR_B, NICESTR_MIB, false, 0),
-			uint64_to_nicestr(hardware_memlimit_get(),
-				NICESTR_B, NICESTR_MIB, false, 1));
+	// Convert memusage to MiB, rounding up to the next full MiB.
+	// This way the user can always use the displayed usage as
+	// the new memory usage limit. (If we rounded to the nearest,
+	// the user might need to +1 MiB to get high enough limit.)
+	memusage = round_up_to_mib(memusage);
+
+	// 2^64 with thousand separators + " MiB" suffix + '\0' = 26 + 4 + 1
+	char memlimitstr[32];
+
+	// Show the memory usage limit as MiB unless it is less than 1 MiB.
+	// This way it's easy to notice errors where one has typed
+	// --memory=123 instead of --memory=123MiB.
+	uint64_t memlimit = hardware_memlimit_get();
+	if (memlimit < (UINT32_C(1) << 20)) {
+		snprintf(memlimitstr, sizeof(memlimitstr), "%s B",
+				uint64_to_str(memlimit, 1));
+	} else {
+		// Round up just like with memusage. If this function is
+		// called for informational purporse (to just show the
+		// current usage and limit), we will never show that
+		// the usage is higher than the limit, which would give
+		// a false impression that the memory usage limit isn't
+		// properly enforced.
+		snprintf(memlimitstr, sizeof(memlimitstr), "%s MiB",
+				uint64_to_str(round_up_to_mib(memlimit), 1));
+	}
+
+	message(v, _("%s MiB of memory is required. The limit is %s."),
+			uint64_to_str(memusage, 0), memlimitstr);
 
 	return;
 }

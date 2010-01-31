@@ -41,6 +41,12 @@ extern uint64_t str_to_uint64(const char *name, const char *value,
 		uint64_t min, uint64_t max);
 
 
+/// \brief      Round an integer up to the next full MiB and convert to MiB
+///
+/// This is used when printing memory usage and limit.
+extern uint64_t round_up_to_mib(uint64_t n);
+
+
 /// \brief      Convert uint64_t to a string
 ///
 /// Convert the given value to a string with locale-specific thousand

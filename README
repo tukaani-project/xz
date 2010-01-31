@@ -81,6 +81,7 @@ XZ Utils
                         this software
     NEWS                User-visible changes between XZ Utils releases
     ChangeLog           Detailed list of changes (commit log)
+    TODO                Known bugs and some sort of to-do list
 
     Note that only some of the above files are included in binary
     packages.

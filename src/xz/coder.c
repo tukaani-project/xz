@@ -417,10 +417,23 @@ coder_init(file_pair *pair)
 			ret = lzma_raw_decoder(&strm, filters);
 			break;
 		}
+
+		// Try to decode the headers. This will catch too low
+		// memory usage limit in case it happens in the first
+		// Block of the first Stream, which is where it very
+		// probably will happen if it is going to happen.
+		if (ret == LZMA_OK && init_format != FORMAT_RAW) {
+			strm.next_out = NULL;
+			strm.avail_out = 0;
+			ret = lzma_code(&strm, LZMA_RUN);
+		}
 	}
 
 	if (ret != LZMA_OK) {
 		message_error("%s: %s", pair->src_name, message_strm(ret));
+		if (ret == LZMA_MEMLIMIT_ERROR)
+			message_mem_needed(V_ERROR, lzma_memusage(&strm));
+
 		return CODER_INIT_ERROR;
 	}
 
@@ -585,15 +598,13 @@ coder_passthru(file_pair *pair)
 extern void
 coder_run(const char *filename)
 {
-	// Try to open the input and output files.
-	file_pair *pair = io_open(filename);
+	// Set and possibly print the filename for the progress message.
+	message_filename(filename);
+
+	// Try to open the input file.
+	file_pair *pair = io_open_src(filename);
 	if (pair == NULL)
 		return;
-
-	// Initialize the progress indicator.
-	const uint64_t in_size = pair->src_st.st_size <= (off_t)(0)
-			? 0 : (uint64_t)(pair->src_st.st_size);
-	message_progress_start(&strm, pair->src_name, in_size);
 
 	// Assume that something goes wrong.
 	bool success = false;
@@ -604,21 +615,34 @@ coder_run(const char *filename)
 	strm.avail_in = io_read(pair, &in_buf, IO_BUFFER_SIZE);
 
 	if (strm.avail_in != SIZE_MAX) {
-		switch (coder_init(pair)) {
-		case CODER_INIT_NORMAL:
-			success = coder_normal(pair);
-			break;
+		// Initialize the coder. This will detect the file format
+		// and, in decompression or testing mode, check the memory
+		// usage of the first Block too. This way we don't try to
+		// open the destination file if we see that coding wouldn't
+		// work at all anyway. This also avoids deleting the old
+		// "target" file if --force was used.
+		const enum coder_init_ret init_ret = coder_init(pair);
 
-		case CODER_INIT_PASSTHRU:
-			success = coder_passthru(pair);
-			break;
+		if (init_ret != CODER_INIT_ERROR && !user_abort) {
+			// Don't open the destination file when --test
+			// is used.
+			if (opt_mode == MODE_TEST || !io_open_dest(pair)) {
+				// Initialize the progress indicator.
+				const uint64_t in_size
+						= pair->src_st.st_size <= 0
+						? 0 : pair->src_st.st_size;
+				message_progress_start(&strm, in_size);
 
-		case CODER_INIT_ERROR:
-			break;
+				// Do the actual coding or passthru.
+				if (init_ret == CODER_INIT_NORMAL)
+					success = coder_normal(pair);
+				else
+					success = coder_passthru(pair);
+
+				message_progress_end(success);
+			}
 		}
 	}
-
-	message_progress_end(success);
 
 	// Close the file pair. It needs to know if coding was successful to
 	// know if the source or target file should be unlinked.

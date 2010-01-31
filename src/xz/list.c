@@ -444,15 +444,7 @@ print_adv_helper(uint64_t stream_count, uint64_t block_count,
 static void
 print_info_adv(const lzma_index *idx, file_pair *pair)
 {
-	// Print an empty line between files.
-	static bool first_filename_printed = false;
-	if (!first_filename_printed)
-		first_filename_printed = true;
-	else
-		putchar('\n');
-
-	// Print the filename and overall information.
-	printf("%s (%" PRIu64 "):\n", pair->src_name, totals.files);
+	// Print the overall information.
 	print_adv_helper(lzma_index_stream_count(idx),
 			lzma_index_block_count(idx),
 			lzma_index_file_size(idx),
@@ -708,21 +700,19 @@ list_file(const char *filename)
 		message_fatal(_("--list works only on .xz files "
 				"(--format=xz or --format=auto)"));
 
-	if (strcmp(filename, "-") == 0) {
+	message_filename(filename);
+
+	if (filename == stdin_filename) {
 		message_error(_("--list does not support reading from "
 				"standard input"));
 		return;
 	}
 
-	if (is_empty_filename(filename))
-		return;
-
-	// Set opt_stdout so that io_open() won't create a new file.
-	// Disable also sparse mode so that it doesn't remove O_APPEND
-	// from stdout.
-	opt_stdout = true;
-	io_no_sparse();
-	file_pair *pair = io_open(filename);
+	// Unset opt_stdout so that io_open_src() won't accept special files.
+	// Set opt_force so that io_open_src() will follow symlinks.
+	opt_stdout = false;
+	opt_force = true;
+	file_pair *pair = io_open_src(filename);
 	if (pair == NULL)
 		return;
 

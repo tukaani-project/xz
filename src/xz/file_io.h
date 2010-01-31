@@ -72,8 +72,12 @@ extern void io_init(void);
 extern void io_no_sparse(void);
 
 
-/// \brief      Opens a file pair
-extern file_pair *io_open(const char *src_name);
+/// \brief      Open the source file
+extern file_pair *io_open_src(const char *src_name);
+
+
+/// \brief      Open the destination file
+extern bool io_open_dest(file_pair *pair);
 
 
 /// \brief      Closes the file descriptors and frees possible allocated memory

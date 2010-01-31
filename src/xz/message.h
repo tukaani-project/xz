@@ -37,11 +37,6 @@ extern void message_verbosity_decrease(void);
 extern enum message_verbosity message_verbosity_get(void);
 
 
-/// Set the total number of files to be processed (stdin is counted as a file
-/// here). The default is one.
-extern void message_set_files(unsigned int files);
-
-
 /// \brief      Print a message if verbosity level is at least "verbosity"
 ///
 /// This doesn't touch the exit status.
@@ -112,18 +107,34 @@ extern void message_version(void) lzma_attribute((noreturn));
 extern void message_help(bool long_help) lzma_attribute((noreturn));
 
 
+/// \brief      Set the total number of files to be processed
+///
+/// Standard input is counted as a file here. This is used when printing
+/// the filename via message_filename().
+extern void message_set_files(unsigned int files);
+
+
+/// \brief      Set the name of the current file and possibly print it too
+///
+/// The name is printed immediatelly if --list was used or if --verbose
+/// was used and stderr is a terminal. Even when the filename isn't printed,
+/// it is stored so that it can be printed later if needed for progress
+/// messages.
+extern void message_filename(const char *src_name);
+
+
 /// \brief      Start progress info handling
+///
+/// message_filename() must be called before this function to set
+/// the filename.
 ///
 /// This must be paired with a call to message_progress_end() before the
 /// given *strm becomes invalid.
 ///
 /// \param      strm      Pointer to lzma_stream used for the coding.
-/// \param      filename  Name of the input file. stdin_filename is
-///                       handled specially.
 /// \param      in_size   Size of the input file, or zero if unknown.
 ///
-extern void message_progress_start(
-		lzma_stream *strm, const char *filename, uint64_t in_size);
+extern void message_progress_start(lzma_stream *strm, uint64_t in_size);
 
 
 /// Update the progress info if in verbose mode and enough time has passed

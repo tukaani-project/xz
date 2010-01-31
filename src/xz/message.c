@@ -219,14 +219,15 @@ message_set_files(unsigned int files)
 static void
 print_filename(void)
 {
-	if (!current_filename_printed
-			&& (files_total != 1 || filename != stdin_filename)) {
+	if (files_total != 1 || filename != stdin_filename) {
 		signals_block();
+
+		FILE *file = opt_mode == MODE_LIST ? stdout : stderr;
 
 		// If a file was already processed, put an empty line
 		// before the next filename to improve readability.
 		if (first_filename_printed)
-			fputc('\n', stderr);
+			fputc('\n', file);
 
 		first_filename_printed = true;
 		current_filename_printed = true;
@@ -234,10 +235,10 @@ print_filename(void)
 		// If we don't know how many files there will be due
 		// to usage of --files or --files0.
 		if (files_total == 0)
-			fprintf(stderr, "%s (%u)\n", filename,
+			fprintf(file, "%s (%u)\n", filename,
 					files_pos);
 		else
-			fprintf(stderr, "%s (%u/%u)\n", filename,
+			fprintf(file, "%s (%u/%u)\n", filename,
 					files_pos, files_total);
 
 		signals_unblock();
@@ -248,8 +249,24 @@ print_filename(void)
 
 
 extern void
-message_progress_start(
-		lzma_stream *strm, const char *src_name, uint64_t in_size)
+message_filename(const char *src_name)
+{
+	// Start numbering the files starting from one.
+	++files_pos;
+	filename = src_name;
+
+	if (verbosity >= V_VERBOSE
+			&& (progress_automatic || opt_mode == MODE_LIST))
+		print_filename();
+	else
+		current_filename_printed = false;
+
+	return;
+}
+
+
+extern void
+message_progress_start(lzma_stream *strm, uint64_t in_size)
 {
 	// Store the pointer to the lzma_stream used to do the coding.
 	// It is needed to find out the position in the stream.
@@ -260,27 +277,15 @@ message_progress_start(
 	// since it is possible that the user sends us a signal to show
 	// statistics, we need to have these available anyway.
 	start_time = my_time();
-	filename = src_name;
 	expected_in_size = in_size;
 
 	// Indicate that progress info may need to be printed before
 	// printing error messages.
 	progress_started = true;
 
-	// Indicate the name of this file hasn't been printed to
-	// stderr yet.
-	current_filename_printed = false;
-
-	// Start numbering the files starting from one.
-	++files_pos;
-
 	// If progress indicator is wanted, print the filename and possibly
 	// the file count now.
 	if (verbosity >= V_VERBOSE && progress_automatic) {
-		// Print the filename to stderr if that is appropriate with
-		// the current settings.
-		print_filename();
-
 		// Start the timer to display the first progress message
 		// after one second. An alternative would be to show the
 		// first message almost immediatelly, but delaying by one
@@ -588,7 +593,8 @@ message_progress_update(void)
 	signals_block();
 
 	// Print the filename if it hasn't been printed yet.
-	print_filename();
+	if (!current_filename_printed)
+		print_filename();
 
 	// Print the actual progress message. The idea is that there is at
 	// least three spaces between the fields in typical situations, but

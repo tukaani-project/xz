@@ -27,6 +27,11 @@ static volatile sig_atomic_t exit_signal = 0;
 /// user_abort to true.
 static sigset_t hooked_signals;
 
+/// True once signals_init() has finished. This is used to skip blocking
+/// signals (with uninitialized hooked_signals) if signals_block() and
+/// signals_unblock() are called before signals_init() has been called.
+static bool signals_are_initialized = false;
+
 /// signals_block() and signals_unblock() can be called recursively.
 static size_t signals_block_count = 0;
 
@@ -91,6 +96,8 @@ signals_init(void)
 			message_signal_handler();
 	}
 
+	signals_are_initialized = true;
+
 	return;
 }
 
@@ -99,10 +106,12 @@ signals_init(void)
 extern void
 signals_block(void)
 {
-	if (signals_block_count++ == 0) {
-		const int saved_errno = errno;
-		mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
-		errno = saved_errno;
+	if (signals_are_initialized) {
+		if (signals_block_count++ == 0) {
+			const int saved_errno = errno;
+			mythread_sigmask(SIG_BLOCK, &hooked_signals, NULL);
+			errno = saved_errno;
+		}
 	}
 
 	return;
@@ -112,12 +121,14 @@ signals_block(void)
 extern void
 signals_unblock(void)
 {
-	assert(signals_block_count > 0);
+	if (signals_are_initialized) {
+		assert(signals_block_count > 0);
 
-	if (--signals_block_count == 0) {
-		const int saved_errno = errno;
-		mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
-		errno = saved_errno;
+		if (--signals_block_count == 0) {
+			const int saved_errno = errno;
+			mythread_sigmask(SIG_UNBLOCK, &hooked_signals, NULL);
+			errno = saved_errno;
+		}
 	}
 
 	return;
@@ -157,6 +168,9 @@ signal_handler(DWORD type lzma_attribute((unused)))
 	// Since we don't get a signal number which we could raise() at
 	// signals_exit() like on POSIX, just set the exit status to
 	// indicate an error, so that we cannot return with zero exit status.
+	//
+	// FIXME: Since this function runs in its own thread,
+	// set_exit_status() should have a mutex.
 	set_exit_status(E_ERROR);
 	user_abort = true;
 	return TRUE;

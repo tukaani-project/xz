@@ -7,7 +7,7 @@ Known bugs
 
     The test suite is too incomplete.
 
-    If the memor usage limit is less than about 13 MiB, xz is unable to
+    If the memory usage limit is less than about 13 MiB, xz is unable to
     automatically scale down the compression settings enough even though
     it would be  possible by switching from BT2/BT3/BT4 match finder to
     HC3/HC4.
@@ -25,14 +25,15 @@ Known bugs
     xz doesn't quote unprintable characters when it displays file names
     given on the command line.
 
+    Show correct default operation mode in unxz.
+
+    Signal handling with xz --list is broken.
+
+    tuklib_exit() doesn't block signals => EINTR is possible.
+
 
 Missing features
 ----------------
-
-    "xz --list"
-
-    xz could create sparse files when decompressing. (Some prototyping
-    has been done.)
 
     xz doesn't support copying extended attributes, access control
     lists etc. from source to target file.
@@ -45,6 +46,10 @@ Missing features
     decompressing LZMA1 or LZMA2).
 
     I/O library is not implemented. It will possibly be named libzzf.
+
+    lzma_strerror() to convert lzma_ret to human readable form?
+    This is tricky, because the same error codes are used with
+    slightly different meanings.
 
 
 Documentation

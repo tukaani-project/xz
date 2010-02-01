@@ -169,9 +169,8 @@ txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
 cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
 txtcp pkg "" windows/README-Windows.txt
 
-# Create the package. This requires either 7z.exe from 7-Zip or zip.exe
-# from Info-ZIP. If neither are found, this is skipped and you have to
-# zip it yourself. 7-Zip tends to easily give the best compression ratio.
+# Create the package. This requires 7z.exe from 7-Zip. If it wasn't found,
+# this step is skipped and you have to zip it yourself.
 VER=$(sh version.sh)
 cd pkg
 if [ -x "$SEVENZ_EXE" ]; then

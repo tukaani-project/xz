@@ -176,10 +176,17 @@ main(int argc, char **argv)
 		}
 	}
 
-	// Hook the signal handlers. We don't need these before we start
-	// the actual action, so this is done after parsing the command
-	// line arguments.
-	signals_init();
+	// Set up the signal handlers. We don't need these before we
+	// start the actual action and not in --list mode, so this is
+	// done after parsing the command line arguments.
+	//
+	// It's good to keep signal handlers in normal compression and
+	// decompression modes even when only writing to stdout, because
+	// we might need to restore O_APPEND flag on stdout before exiting.
+	// In --test mode, signal handlers aren't really needed, but let's
+	// keep them there for consistency with normal decompression.
+	if (opt_mode != MODE_LIST)
+		signals_init();
 
 	// coder_run() handles compression, decopmression, and testing.
 	// list_file() is for --list.
@@ -244,7 +251,9 @@ main(int argc, char **argv)
 	}
 
 	// All files have now been handled. If in --list mode, display
-	// the totals before exiting.
+	// the totals before exiting. We don't have signal handlers
+	// enabled in --list mode, so we don't need to check user_abort.
+	assert(!user_abort);
 	if (opt_mode == MODE_LIST)
 		list_totals();
 

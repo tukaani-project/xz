@@ -25,10 +25,6 @@ Known bugs
     xz doesn't quote unprintable characters when it displays file names
     given on the command line.
 
-    Show correct default operation mode in unxz.
-
-    Signal handling with xz --list is broken.
-
     tuklib_exit() doesn't block signals => EINTR is possible.
 
 

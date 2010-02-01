@@ -724,7 +724,7 @@ list_file(const char *filename)
 
 		// We have three main modes:
 		//  - --robot, which has submodes if --verbose is specified
-		//     once or twice
+		//    once or twice
 		//  - Normal --list without --verbose
 		//  - --list with one or two --verbose
 		if (opt_robot)

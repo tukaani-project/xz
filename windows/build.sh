@@ -46,7 +46,7 @@ case $(pwd) in
 ') echo "Error: White space in the directory name" >&2; exit 1 ;;
 esac
 
-# This sciprt can be run either at the top-level directory of the package
+# This script can be run either at the top-level directory of the package
 # or in the same directory containing this script.
 if [ ! -f windows/build.sh ]; then
 	cd ..

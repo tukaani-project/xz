@@ -100,7 +100,19 @@ io_unlink(const char *name, const struct stat *known_st)
 #else
 	struct stat new_st;
 
-	if (lstat(name, &new_st)
+	// If --force was used, use stat() instead of lstat(). This way
+	// (de)compressing symlinks works correctly. However, it also means
+	// that xz cannot detect if a regular file foo is renamed to bar
+	// and then a symlink foo -> bar is created. Because of stat()
+	// instead of lstat(), xz will think that foo hasn't been replaced
+	// with another file. Thus, xz will remove foo even though it no
+	// longer is the same file that xz used when it started compressing.
+	// Probably it's not too bad though, so this doesn't need a more
+	// complex fix.
+	const int stat_ret = opt_force
+			? stat(name, &new_st) : lstat(name, &new_st);
+
+	if (stat_ret
 #	ifdef __VMS
 			// st_ino is an array, and we don't want to
 			// compare st_dev at all.

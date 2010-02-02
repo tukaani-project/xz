@@ -253,9 +253,10 @@ main(int argc, char **argv)
 	// All files have now been handled. If in --list mode, display
 	// the totals before exiting. We don't have signal handlers
 	// enabled in --list mode, so we don't need to check user_abort.
-	assert(!user_abort);
-	if (opt_mode == MODE_LIST)
+	if (opt_mode == MODE_LIST) {
+		assert(!user_abort);
 		list_totals();
+	}
 
 	// If we have got a signal, raise it to kill the program instead
 	// of calling tuklib_exit().

@@ -182,6 +182,9 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 		coder->pos = 0;
 
+		// Version 0 is currently the only possible version.
+		coder->block_options.version = 0;
+
 		// Set up a buffer to hold the filter chain. Block Header
 		// decoder will initialize all members of this array so
 		// we don't need to do it here.

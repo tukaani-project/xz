@@ -32,27 +32,14 @@ typedef struct {
 	 * \brief       Block format version
 	 *
 	 * To prevent API and ABI breakages if new features are needed in
-	 * Block, a version number is used to indicate which fields in this
-	 * structure are in use. For now, version must always be zero.
-	 * With non-zero version, most Block related functions will return
-	 * LZMA_OPTIONS_ERROR.
-	 *
-	 * The decoding functions will always set this to the lowest value
-	 * that supports all the features indicated by the Block Header field.
-	 * The application must check that the version number set by the
-	 * decoding functions is supported by the application. Otherwise it
-	 * is possible that the application will decode the Block incorrectly.
+	 * the Block field, a version number is used to indicate which
+	 * fields in this structure are in use. For now, version must always
+	 * be zero. With non-zero version, most Block related functions will
+	 * return LZMA_OPTIONS_ERROR.
 	 *
 	 * Read by:
-	 *  - lzma_block_header_size()
-	 *  - lzma_block_header_encode()
-	 *  - lzma_block_compressed_size()
-	 *  - lzma_block_unpadded_size()
-	 *  - lzma_block_total_size()
-	 *  - lzma_block_encoder()
-	 *  - lzma_block_decoder()
-	 *  - lzma_block_buffer_encode()
-	 *  - lzma_block_buffer_decode()
+	 *  - All functions that take pointer to lzma_block as argument,
+	 *    including lzma_block_header_decode().
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode()
@@ -323,13 +310,18 @@ extern LZMA_API(lzma_ret) lzma_block_header_encode(
 /**
  * \brief       Decode Block Header
  *
+ * block->version should be set to the highest value supported by the
+ * application; currently the only possible version is zero. This function
+ * will set version to the lowest value that still supports all the features
+ * required by the Block Header.
+ *
  * The size of the Block Header must have already been decoded with
  * lzma_block_header_size_decode() macro and stored to block->header_size.
+ *
  * block->filters must have been allocated, but not necessarily initialized.
  * Possible existing filter options are _not_ freed.
  *
- * \param       block       Destination for block options with header_size
- *                          properly initialized.
+ * \param       block       Destination for Block options.
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() (and also free()
  *                          if an error occurs).
@@ -339,7 +331,10 @@ extern LZMA_API(lzma_ret) lzma_block_header_encode(
  * \return      - LZMA_OK: Decoding was successful. block->header_size
  *                bytes were read from the input buffer.
  *              - LZMA_OPTIONS_ERROR: The Block Header specifies some
- *                unsupported options such as unsupported filters.
+ *                unsupported options such as unsupported filters. This can
+ *                happen also if block->version was set to a too low value
+ *                compared to what would be required to properly represent
+ *                the information stored in the Block Header.
  *              - LZMA_DATA_ERROR: Block Header is corrupt, for example,
  *                the CRC32 doesn't match.
  *              - LZMA_PROG_ERROR: Invalid arguments, for example

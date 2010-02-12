@@ -133,7 +133,7 @@ LZMA_CRC64:
 	 * We need eight bytes, because the loop pre-reads four bytes.
 	 */
 	cmpl	$8, %edi
-	jl	.L_rest
+	jb	.L_rest
 
 	/* Check if we have reached alignment of four bytes. */
 	testl	$3, %esi
@@ -197,7 +197,7 @@ LZMA_CRC64:
 	 * read it here than at the top of the loop.
 	 */
 	movl	(%esi), %ecx
-	jl	.L_loop
+	jb	.L_loop
 
 	/*
 	 * Process the remaining four bytes, which we have already

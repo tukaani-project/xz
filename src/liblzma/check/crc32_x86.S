@@ -142,7 +142,7 @@ LZMA_CRC32:
 	 * We need 16 bytes, because the loop pre-reads eight bytes.
 	 */
 	cmpl	$16, %edi
-	jl	.L_rest
+	jb	.L_rest
 
 	/* Check if we have reached alignment of eight bytes. */
 	testl	$7, %esi

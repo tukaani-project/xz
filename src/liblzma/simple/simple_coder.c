@@ -88,7 +88,7 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 				out, out_pos, out_size);
 
 		// If we couldn't flush all the filtered data, return to
-		// application immediatelly.
+		// application immediately.
 		if (coder->pos < coder->filtered)
 			return LZMA_OK;
 

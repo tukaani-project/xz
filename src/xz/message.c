@@ -288,7 +288,7 @@ message_progress_start(lzma_stream *strm, uint64_t in_size)
 	if (verbosity >= V_VERBOSE && progress_automatic) {
 		// Start the timer to display the first progress message
 		// after one second. An alternative would be to show the
-		// first message almost immediatelly, but delaying by one
+		// first message almost immediately, but delaying by one
 		// second looks better to me, since extremely early
 		// progress info is pretty much useless.
 #ifdef SIGALRM
@@ -383,8 +383,8 @@ progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 static const char *
 progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 {
-	// Don't print the speed immediatelly, since the early values look
-	// like somewhat random.
+	// Don't print the speed immediately, since the early values look
+	// somewhat random.
 	if (elapsed < 3000000)
 		return "";
 
@@ -870,8 +870,8 @@ message_mem_needed(enum message_verbosity v, uint64_t memusage)
 				uint64_to_str(memlimit, 1));
 	} else {
 		// Round up just like with memusage. If this function is
-		// called for informational purporse (to just show the
-		// current usage and limit), we will never show that
+		// called for informational purposes (to just show the
+		// current usage and limit), we should never show that
 		// the usage is higher than the limit, which would give
 		// a false impression that the memory usage limit isn't
 		// properly enforced.

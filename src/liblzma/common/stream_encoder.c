@@ -105,7 +105,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 	case SEQ_BLOCK_INIT: {
 		if (*in_pos == in_size) {
 			// If we are requested to flush or finish the current
-			// Block, return LZMA_STREAM_END immediatelly since
+			// Block, return LZMA_STREAM_END immediately since
 			// there's nothing to do.
 			if (action != LZMA_FINISH)
 				return action == LZMA_RUN

@@ -32,7 +32,7 @@ typedef struct {
 	uint64_t (*memusage)(const void *options);
 
 	/// Calculates the minimum sane size for Blocks (or other types of
-	/// chunks) to which the input data can be splitted to make
+	/// chunks) to which the input data can be split to make
 	/// multithreaded encoding possible. If this is NULL, it is assumed
 	/// that the encoder is fast enough with single thread.
 	lzma_vli (*chunk_size)(const void *options);
@@ -45,7 +45,7 @@ typedef struct {
 
 	/// Encodes Filter Properties.
 	///
-	/// \return     - LZMA_OK: Properties encoded sucessfully.
+	/// \return     - LZMA_OK: Properties encoded successfully.
 	///             - LZMA_OPTIONS_ERROR: Unsupported options
 	///             - LZMA_PROG_ERROR: Invalid options or not enough
 	///               output space

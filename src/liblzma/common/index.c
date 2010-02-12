@@ -737,7 +737,7 @@ typedef struct {
 
 /// Add the Stream nodes from the source index to dest using recursion.
 /// Simplest iterative traversal of the source tree wouldn't work, because
-/// we update the pointers in nodes when moving them to the destinatino tree.
+/// we update the pointers in nodes when moving them to the destination tree.
 static void
 index_cat_helper(const index_cat_info *info, index_stream *this)
 {
@@ -867,7 +867,7 @@ index_dup_stream(const index_stream *src, lzma_allocator *allocator)
 			src->node.uncompressed_base, src->number,
 			src->block_number_base, allocator);
 
-	// Return immediatelly if allocation failed or if there are
+	// Return immediately if allocation failed or if there are
 	// no groups to duplicate.
 	if (dest == NULL || src->groups.leftmost == NULL)
 		return dest;
@@ -1202,7 +1202,7 @@ lzma_index_iter_locate(lzma_index_iter *iter, lzma_vli target)
 {
 	const lzma_index *i = iter->internal[ITER_INDEX].p;
 
-	// If the target is past the end of the file, return immediatelly.
+	// If the target is past the end of the file, return immediately.
 	if (i->uncompressed_size <= target)
 		return true;
 

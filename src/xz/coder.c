@@ -189,7 +189,7 @@ coder_set_compression_settings(void)
 
 	if (memory_usage > memory_limit) {
 		// If --no-auto-adjust was used or we didn't find LZMA1 or
-		// LZMA2 as the last filter, give an error immediatelly.
+		// LZMA2 as the last filter, give an error immediately.
 		// --format=raw implies --no-auto-adjust.
 		if (!auto_adjust || opt_format == FORMAT_RAW)
 			memlimit_too_small(memory_usage);

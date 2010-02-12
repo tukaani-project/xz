@@ -57,7 +57,7 @@
  * [0, LZMA_VLI_MAX]. Unknown value is indicated with LZMA_VLI_UNKNOWN,
  * which is the maximum value of the underlaying integer type.
  *
- * In future, even if lzma_vli is typdefined to something else than uint64_t,
+ * In future, even if lzma_vli is defined to be something other than uint64_t,
  * it is guaranteed that 2 * LZMA_VLI_MAX will not overflow lzma_vli.
  * This simplifies integer overflow detection.
  */

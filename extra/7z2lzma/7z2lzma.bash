@@ -62,7 +62,7 @@ if printf '%s\n' "$INFO" | grep -q '^Block = 1'; then
 	exit 1
 fi
 
-# Get copmressed, uncompressed, and dictionary size.
+# Get compressed, uncompressed, and dictionary size.
 CSIZE=$(printf '%s\n' "$INFO" | sed -rn 's|^Packed Size = ([0-9]+$)|\1|p')
 USIZE=$(printf '%s\n' "$INFO" | sed -rn 's|^Size = ([0-9]+$)|\1|p')
 DICT=$(printf '%s\n' "$INFO" | sed -rn 's|^Method = LZMA:([0-9]+[bkm]?)$|\1|p')

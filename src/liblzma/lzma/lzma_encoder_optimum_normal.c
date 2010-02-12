@@ -838,7 +838,7 @@ lzma_lzma_optimum_normal(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	}
 
 	// TODO: This needs quite a bit of cleaning still. But splitting
-	// the oroginal function to two pieces makes it at least a little
+	// the original function into two pieces makes it at least a little
 	// more readable, since those two parts don't share many variables.
 
 	uint32_t len_end = helper1(coder, mf, back_res, len_res, position);

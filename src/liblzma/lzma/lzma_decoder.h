@@ -30,7 +30,7 @@ extern lzma_ret lzma_lzma_props_decode(
 
 /// \brief      Decodes the LZMA Properties byte (lc/lp/pb)
 ///
-/// \return     true if error occorred, false on success
+/// \return     true if error occurred, false on success
 ///
 extern bool lzma_lzma_lclppb_decode(
 		lzma_options_lzma *options, uint8_t byte);

@@ -117,6 +117,6 @@ A:  Give --enable-small to the configure script. Use also appropriate
     for size. See INSTALL for information about configure options.
 
     If the result is still too big, take a look at XZ Embedded. It is
-    a separate project, which provides a limited but signinificantly
+    a separate project, which provides a limited but significantly
     smaller XZ decoder implementation than XZ Utils.
 

@@ -18,7 +18,7 @@
 
 
 /*
- * Version number splitted in components
+ * Version number split into components
  */
 #define LZMA_VERSION_MAJOR 4
 #define LZMA_VERSION_MINOR 999

@@ -570,7 +570,7 @@ test_locate(void)
 		expect(r.block.uncompressed_file_offset == ubase + n * 4);
 	}
 
-	// Test locating in concatend Index.
+	// Test locating in concatenated Index.
 	lzma_index_end(i, NULL);
 	i = lzma_index_init(NULL);
 	expect(i != NULL);

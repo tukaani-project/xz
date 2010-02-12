@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       tuklib_progname.c
-/// \brief      Program name to be displayd in messages
+/// \brief      Program name to be displayed in messages
 //
 //  Author:     Lasse Collin
 //

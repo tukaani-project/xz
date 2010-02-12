@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       main.h
-/// \brief      Miscellanous declarations
+/// \brief      Miscellaneous declarations
 //
 //  Author:     Lasse Collin
 //

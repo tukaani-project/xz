@@ -169,7 +169,7 @@ lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		uint32_t limit;
 
 		if (left < mf->match_len_max) {
-			// Must flush immediatelly since the next LZMA symbol
+			// Must flush immediately since the next LZMA symbol
 			// could make the uncompressed size of the chunk too
 			// big.
 			limit = 0;

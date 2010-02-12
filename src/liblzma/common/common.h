@@ -50,7 +50,7 @@
 
 
 /// Starting value for memory usage estimates. Instead of calculating size
-/// of _every_ structure and taking into accont malloc() overhead etc. we
+/// of _every_ structure and taking into account malloc() overhead etc., we
 /// add a base size to all memory usage estimates. It's not very accurate
 /// but should be easily good enough.
 #define LZMA_MEMUSAGE_BASE (UINT64_C(1) << 15)
@@ -248,7 +248,7 @@ extern size_t lzma_bufcpy(const uint8_t *restrict in, size_t *restrict in_pos,
 
 /// \brief      Return if expression doesn't evaluate to LZMA_OK
 ///
-/// There are several situations where we want to return immediatelly
+/// There are several situations where we want to return immediately
 /// with the value of expr if it isn't LZMA_OK. This macro shortens
 /// the code a little.
 #define return_if_error(expr) \

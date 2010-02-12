@@ -290,7 +290,7 @@ extern LZMA_API(lzma_ret) lzma_raw_buffer_decode(
  * using the raw encoder and decoder.
  *
  * \param       size    Pointer to uint32_t to hold the size of the properties
- * \param       filter  Filter ID and options (the size of the propeties may
+ * \param       filter  Filter ID and options (the size of the properties may
  *                      vary depending on the options)
  *
  * \return      - LZMA_OK
@@ -365,7 +365,7 @@ extern LZMA_API(lzma_ret) lzma_properties_decode(
  *
  * \param       size    Pointer to integer to hold the calculated size
  * \param       filters Filter ID and associated options whose encoded
- *                      size is to be calculted
+ *                      size is to be calculated
  *
  * \return      - LZMA_OK: *size set successfully. Note that this doesn't
  *                guarantee that filters->options is valid, thus

@@ -77,7 +77,7 @@ typedef struct {
 	 * This setting is useful only when the same filter is used
 	 * _separately_ for multiple sections of the same executable file,
 	 * and the sections contain cross-section branch/call/jump
-	 * instructions. In that case it is benefical to set the start
+	 * instructions. In that case it is beneficial to set the start
 	 * offset of the non-first sections so that the relative addresses
 	 * of the cross-section branch/call/jump instructions will use the
 	 * same absolute addresses as in the first section.

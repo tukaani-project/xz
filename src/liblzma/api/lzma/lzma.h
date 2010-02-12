@@ -307,7 +307,7 @@ typedef struct {
 	 * This determines how many bytes the encoder compares from the match
 	 * candidates when looking for the best match. Once a match of at
 	 * least nice_len bytes long is found, the encoder stops looking for
-	 * better condidates and encodes the match. (Naturally, if the found
+	 * better candidates and encodes the match. (Naturally, if the found
 	 * match is actually longer than nice_len, the actual length is
 	 * encoded; it's not truncated to nice_len.)
 	 *

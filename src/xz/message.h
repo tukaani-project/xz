@@ -116,7 +116,7 @@ extern void message_set_files(unsigned int files);
 
 /// \brief      Set the name of the current file and possibly print it too
 ///
-/// The name is printed immediatelly if --list was used or if --verbose
+/// The name is printed immediately if --list was used or if --verbose
 /// was used and stderr is a terminal. Even when the filename isn't printed,
 /// it is stored so that it can be printed later if needed for progress
 /// messages.

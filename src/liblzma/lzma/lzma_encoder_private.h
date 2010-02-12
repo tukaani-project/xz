@@ -85,7 +85,7 @@ struct lzma_coder_s {
 	/// Number of match candidates in matches[]
 	uint32_t matches_count;
 
-	/// Varibale to hold the length of the longest match between calls
+	/// Variable to hold the length of the longest match between calls
 	/// to lzma_lzma_optimum_*().
 	uint32_t longest_match_length;
 

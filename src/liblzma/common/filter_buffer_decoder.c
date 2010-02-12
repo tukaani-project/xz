@@ -57,7 +57,7 @@ lzma_raw_buffer_decode(const lzma_filter *filters, lzma_allocator *allocator,
 
 			} else {
 				// All the input was consumed and output
-				// buffer is full. Now we don't immediatelly
+				// buffer is full. Now we don't immediately
 				// know the reason for the error. Try
 				// decoding one more byte. If it succeeds,
 				// then the output buffer was too small. If

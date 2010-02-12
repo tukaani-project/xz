@@ -20,7 +20,7 @@
  * doing multi-threaded encoding.
  *
  * When compressing a large file on a system having multiple CPUs or CPU
- * cores, the file can be splitted in smaller chunks, that are compressed
+ * cores, the file can be split into smaller chunks, that are compressed
  * independently into separate Blocks in the same .lzma Stream.
  *
  * \return      Minimum reasonable Uncompressed Size of a Block. The
@@ -45,7 +45,7 @@ lzma_chunk_size(const lzma_options_filter *filters)
 		case LZMA_FILTER_ARMTHUMB:
 		case LZMA_FILTER_SPARC:
 			// These are very fast, thus there is no point in
-			// splitting the data in smaller blocks.
+			// splitting the data into smaller blocks.
 			break;
 
 		case LZMA_FILTER_LZMA1:

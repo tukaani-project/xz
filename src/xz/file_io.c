@@ -54,7 +54,7 @@ extern void
 io_init(void)
 {
 	// Make sure that stdin, stdout, and and stderr are connected to
-	// a valid file descriptor. Exit immediatelly with exit code ERROR
+	// a valid file descriptor. Exit immediately with exit code ERROR
 	// if we cannot make the file descriptors valid. Maybe we should
 	// print an error message, but our stderr could be screwed anyway.
 	tuklib_open_stdxxx(E_ERROR);

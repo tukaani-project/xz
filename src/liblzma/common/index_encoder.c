@@ -218,7 +218,7 @@ extern LZMA_API(lzma_ret)
 lzma_index_buffer_encode(const lzma_index *i,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 {
-	// Validate the arugments.
+	// Validate the arguments.
 	if (i == NULL || out == NULL || out_pos == NULL || *out_pos > out_size)
 		return LZMA_PROG_ERROR;
 

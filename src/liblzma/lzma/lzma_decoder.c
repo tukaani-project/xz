@@ -195,7 +195,7 @@ struct lzma_coder_s {
 	/// 2 (i.e. MATCH_LEN_MIN), 3, 4, and [5, 273].
 	probability pos_slot[LEN_TO_POS_STATES][POS_SLOTS];
 
-	/// Probility trees for additional bits for match distance when the
+	/// Probability trees for additional bits for match distance when the
 	/// distance is in the range [4, 127].
 	probability pos_special[FULL_DISTANCES - END_POS_MODEL_INDEX];
 
@@ -600,7 +600,7 @@ lzma_decode(lzma_coder *restrict coder, lzma_dict *restrict dictptr,
 					}
 #endif
 				} else {
-					// The distace is >= 128. Decode the
+					// The distance is >= 128. Decode the
 					// lower bits without probabilities
 					// except the lowest four bits.
 					assert(symbol >= 14);

@@ -229,7 +229,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	mf->nice_len = lz_options->nice_len;
 
 	// cyclic_size has to stay smaller than 2 Gi. Note that this doesn't
-	// mean limitting dictionary size to less than 2 GiB. With a match
+	// mean limiting dictionary size to less than 2 GiB. With a match
 	// finder that uses multibyte resolution (hashes start at e.g. every
 	// fourth byte), cyclic_size would stay below 2 Gi even when
 	// dictionary size is greater than 2 GiB.

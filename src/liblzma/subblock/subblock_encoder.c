@@ -516,7 +516,7 @@ subblock_buffer(lzma_coder *coder, lzma_allocator *allocator,
 			// Run-length encoder
 			//
 			// First check if there is some data pending and we
-			// have an obvious need to flush it immediatelly.
+			// have an obvious need to flush it immediately.
 			if (coder->rle.count > 0
 					&& (coder->rle.size
 							!= coder->options->rle

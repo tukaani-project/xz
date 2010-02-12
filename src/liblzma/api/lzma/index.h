@@ -278,7 +278,7 @@ typedef enum {
  *
  * This function calculates an approximate amount of memory needed hold
  * the given number of Streams and Blocks in lzma_index structure. This
- * value may vary between CPU archtectures and also between liblzma versions
+ * value may vary between CPU architectures and also between liblzma versions
  * if the internal implementation is modified.
  */
 extern LZMA_API(uint64_t) lzma_index_memusage(
@@ -477,7 +477,7 @@ extern LZMA_API(lzma_vli) lzma_index_uncompressed_size(const lzma_index *i)
  * associated lzma_index is valid, that is, until lzma_index_end() or
  * using it as source in lzma_index_cat(). Specifically, lzma_index doesn't
  * become invalid if new Blocks are added to it with lzma_index_append() or
- * if it is used as the destionation in lzma_index_cat().
+ * if it is used as the destination in lzma_index_cat().
  *
  * It is safe to make copies of an initialized lzma_index_iter, for example,
  * to easily restart reading at some particular position.
@@ -549,7 +549,7 @@ extern LZMA_API(lzma_bool) lzma_index_iter_locate(
  * Stream.
  *
  * \param       dest      lzma_index after which src is appended
- * \param       src       lzma_index to be appeneded after dest. If this
+ * \param       src       lzma_index to be appended after dest. If this
  *                        function succeeds, the memory allocated for src
  *                        is freed or moved to be part of dest, and all
  *                        iterators pointing to src will become invalid.

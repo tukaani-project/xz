@@ -121,7 +121,7 @@ is not a regular file. Symbolic links are not followed, thus they
 are not considered to be regular files.
 .IP \(bu 3
 .I File
-has more than one hardlink.
+has more than one hard link.
 .IP \(bu 3
 .I File
 has setuid, setgid, or sticky bit set.
@@ -223,7 +223,7 @@ The absolute value of the active memory usage limit can be seen with
 .B \-\-info-memory
 or near the bottom of the output of
 .BR \-\-long\-help .
-The default limit can be overriden with
+The default limit can be overridden with
 \fB\-\-memory=\fIlimit\fR.
 .SH OPTIONS
 .SS "Integer suffixes and special values"
@@ -299,7 +299,7 @@ If the target file already exists, delete it before compressing or
 decompressing.
 .IP \(bu 3
 Compress or decompress even if the input is a symbolic link to a regular file,
-has more than one hardlink, or has setuid, setgid, or sticky bit set.
+has more than one hard link, or has setuid, setgid, or sticky bit set.
 The setuid, setgid, and sticky bits are not copied to the target file.
 .IP \(bu 3
 If combined with
@@ -399,10 +399,10 @@ This is the default. When compressing,
 .B auto
 is equivalent to
 .BR xz .
-When decompressing, the format of the input file is autodetected. Note that
-raw streams (created with
+When decompressing, the format of the input file is automatically detected.
+Note that raw streams (created with
 .BR \-\-format=raw )
-cannot be autodetected.
+cannot be auto-detected.
 .IP \(bu 3
 .BR xz :
 Compress to the
@@ -568,7 +568,7 @@ increase a little with presets \fB\-0\fR ... \fB\-2\fR). The downside is that
 the compression time will increase dramatically (it can easily double).
 .TP
 \fB\-M\fR \fIlimit\fR, \fB\-\-memory=\fIlimit
-Set the memory usage limit. If this option is specied multiple times,
+Set the memory usage limit. If this option is specified multiple times,
 the last one takes effect. The
 .I limit
 can be specified in multiple ways:
@@ -1260,7 +1260,7 @@ files which have dictionary size of
 .RI "2^" n
 or
 .RI "2^" n " + 2^(" n "\-1)."
-This is to decrease false positives when autodetecting
+This is to decrease false positives when detecting
 .B .lzma
 files.
 .PP

@@ -62,7 +62,7 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 				&& buf[len] == buf_back[len]; ++len) ;
 
 		// If we have found a repeated match that is at least
-		// nice_len long, return it immediatelly.
+		// nice_len long, return it immediately.
 		if (len >= nice_len) {
 			*back_res = i;
 			*len_res = len;

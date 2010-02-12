@@ -37,10 +37,10 @@ do
 done
 
 
-# Abort immediatelly if something goes wrong.
+# Abort immediately if something goes wrong.
 set -e
 
-# White spaces in directory names may break things so catch them immediatelly.
+# White spaces in directory names may break things so catch them immediately.
 case $(pwd) in
 	' ' | '	' | '
 ') echo "Error: White space in the directory name" >&2; exit 1 ;;

@@ -73,7 +73,7 @@ lzma_block_header_size(lzma_block *block)
 extern LZMA_API(lzma_ret)
 lzma_block_header_encode(const lzma_block *block, uint8_t *out)
 {
-	// Valdidate everything but filters.
+	// Validate everything but filters.
 	if (lzma_block_unpadded_size(block) == 0
 			|| !lzma_vli_is_valid(block->uncompressed_size))
 		return LZMA_PROG_ERROR;

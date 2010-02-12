@@ -182,7 +182,7 @@ typedef struct {
 // TODO: Maybe this could be changed by making the LZ-based encoders to
 // store the actual literals as they do with length-distance pairs.
 //
-// Alrogithms such as LZMA2 first try to compress a chunk, and then check
+// Algorithms such as LZMA2 first try to compress a chunk, and then check
 // if the encoded result is smaller than the uncompressed one. If the chunk
 // was uncompressible, it is better to store it in uncompressed form in
 // the output stream. To do this, the whole uncompressed chunk has to be

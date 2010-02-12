@@ -142,7 +142,7 @@ extern LZMA_API(uint64_t) lzma_crc64(
 /**
  * \brief       Get the type of the integrity check
  *
- * This function can be called only immediatelly after lzma_code() has
+ * This function can be called only immediately after lzma_code() has
  * returned LZMA_NO_CHECK, LZMA_UNSUPPORTED_CHECK, or LZMA_GET_CHECK.
  * Calling this function in any other situation has undefined behavior.
  */

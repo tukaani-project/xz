@@ -81,7 +81,7 @@ typedef enum {
 		 * the decoder. LZMA_NO_CHECK is just a warning, and
 		 * the decoding can be continued normally.
 		 *
-		 * It is possible to call lzma_get_check() immediatelly after
+		 * It is possible to call lzma_get_check() immediately after
 		 * lzma_code has returned LZMA_NO_CHECK. The result will
 		 * naturally be LZMA_CHECK_NONE, but the possibility to call
 		 * lzma_get_check() may be convenient in some applications.
@@ -107,7 +107,7 @@ typedef enum {
 		 * errors may go undetected.
 		 *
 		 * With decoder, it is possible to call lzma_get_check()
-		 * immediatelly after lzma_code() has returned
+		 * immediately after lzma_code() has returned
 		 * LZMA_UNSUPPORTED_CHECK. This way it is possible to find
 		 * out what the unsupported Check ID was.
 		 */
@@ -280,7 +280,7 @@ typedef enum {
 		 *
 		 * Using LZMA_SYNC_FLUSH very often can dramatically reduce
 		 * the compression ratio. With some filters (for example,
-		 * LZMA2), finetuning the compression options may help
+		 * LZMA2), fine-tuning the compression options may help
 		 * mitigate this problem significantly.
 		 *
 		 * Decoders don't support LZMA_SYNC_FLUSH.
@@ -489,7 +489,7 @@ typedef struct {
 /**
  * \brief       Initialization for lzma_stream
  *
- * When you declare an instance of lzma_stream, you can immediatelly
+ * When you declare an instance of lzma_stream, you can immediately
  * initialize it so that initialization functions know that no memory
  * has been allocated yet:
  *

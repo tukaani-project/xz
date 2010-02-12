@@ -46,7 +46,7 @@ static const char *
 read_name(const args_info *args)
 {
 	// FIXME: Maybe we should have some kind of memory usage limit here
-	// like the tool has for the actual compression and uncompression.
+	// like the tool has for the actual compression and decompression.
 	// Giving some huge text file with --files0 makes us to read the
 	// whole file in RAM.
 	static char *name = NULL;
@@ -188,7 +188,7 @@ main(int argc, char **argv)
 	if (opt_mode != MODE_LIST)
 		signals_init();
 
-	// coder_run() handles compression, decopmression, and testing.
+	// coder_run() handles compression, decompression, and testing.
 	// list_file() is for --list.
 	void (*run)(const char *filename) = opt_mode == MODE_LIST
 			 ? &list_file : &coder_run;
@@ -226,7 +226,7 @@ main(int argc, char **argv)
 			args.arg_names[i] = (char *)stdin_filename;
 		}
 
-		// Do the actual compression or uncompression.
+		// Do the actual compression or decompression.
 		run(args.arg_names[i]);
 	}
 

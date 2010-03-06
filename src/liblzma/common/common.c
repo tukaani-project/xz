@@ -161,6 +161,7 @@ lzma_strm_init(lzma_stream *strm)
 	strm->internal->supported_actions[LZMA_FULL_FLUSH] = false;
 	strm->internal->supported_actions[LZMA_FINISH] = false;
 	strm->internal->sequence = ISEQ_RUN;
+	strm->internal->allow_buf_error = false;
 
 	strm->total_in = 0;
 	strm->total_out = 0;

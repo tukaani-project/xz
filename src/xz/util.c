@@ -65,39 +65,32 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 	} while (*value >= '0' && *value <= '9');
 
 	if (*value != '\0') {
-		// Look for suffix.
-		static const struct {
-			const char name[4];
-			uint64_t multiplier;
-		} suffixes[] = {
-			{ "k",   UINT64_C(1000) },
-			{ "kB",  UINT64_C(1000) },
-			{ "M",   UINT64_C(1000000) },
-			{ "MB",  UINT64_C(1000000) },
-			{ "G",   UINT64_C(1000000000) },
-			{ "GB",  UINT64_C(1000000000) },
-			{ "Ki",  UINT64_C(1024) },
-			{ "KiB", UINT64_C(1024) },
-			{ "Mi",  UINT64_C(1048576) },
-			{ "MiB", UINT64_C(1048576) },
-			{ "Gi",  UINT64_C(1073741824) },
-			{ "GiB", UINT64_C(1073741824) }
-		};
-
+		// Look for suffix. Originally this supported both base-2
+		// and base-10, but since there seems to be little need
+		// for base-10 in this program, treat everything as base-2
+		// and also be more relaxed about the case of the first
+		// letter of the suffix.
 		uint64_t multiplier = 0;
-		for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
-			if (strcmp(value, suffixes[i].name) == 0) {
-				multiplier = suffixes[i].multiplier;
-				break;
-			}
-		}
+		if (*value == 'k' || *value == 'K')
+			multiplier = UINT64_C(1) << 10;
+		else if (*value == 'm' || *value == 'M')
+			multiplier = UINT64_C(1) << 20;
+		else if (*value == 'g' || *value == 'G')
+			multiplier = UINT64_C(1) << 30;
+
+		++value;
+
+		// Allow also e.g. Ki, KiB, and KB.
+		if (*value != '\0' && strcmp(value, "i") != 0
+				&& strcmp(value, "iB") != 0
+				&& strcmp(value, "B") != 0)
+			multiplier = 0;
 
 		if (multiplier == 0) {
-			message(V_ERROR, _("%s: Invalid multiplier suffix. "
-					"Valid suffixes:"), value);
-			message_fatal("`k' (10^3), `M' (10^6), `G' (10^9) "
-					"`Ki' (2^10), `Mi' (2^20), "
-					"`Gi' (2^30)");
+			message(V_ERROR, _("%s: Invalid multiplier suffix"),
+					value - 1);
+			message_fatal(_("Valid suffixes are `KiB' (2^10), "
+					"`MiB' (2^20), and `GiB' (2^30)."));
 		}
 
 		// Don't overflow here either.

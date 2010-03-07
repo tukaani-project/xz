@@ -238,28 +238,36 @@ In most places where an integer argument is expected, an optional suffix
 is supported to easily indicate large integers. There must be no space
 between the integer and the suffix.
 .TP
-.BR k " or " kB
-The integer is multiplied by 1,000 (10^3). For example,
-.B "5k"
-or
-.B "5kB"
-equals
-.BR "5000" .
+.B KiB
+The integer is multiplied by 1,024 (2^10). Also
+.BR Ki ,
+.BR k ,
+.BR kB ,
+.BR K ,
+and
+.B KB
+are accepted as synonyms for
+.BR KiB .
 .TP
-.BR Ki " or " KiB
-The integer is multiplied by 1,024 (2^10).
+.B MiB
+The integer is multiplied by 1,048,576 (2^20). Also
+.BR Mi ,
+.BR m ,
+.BR M ,
+and
+.B MB
+are accepted as synonyms for
+.BR MiB .
 .TP
-.BR M " or " MB
-The integer is multiplied by 1,000,000 (10^6).
-.TP
-.BR Mi " or " MiB
-The integer is multiplied by 1,048,576 (2^20).
-.TP
-.BR G " or " GB
-The integer is multiplied by 1,000,000,000 (10^9).
-.TP
-.BR Gi " or " GiB
-The integer is multiplied by 1,073,741,824 (2^30).
+.B GiB
+The integer is multiplied by 1,073,741,824 (2^30). Also
+.BR Gi ,
+.BR g ,
+.BR G ,
+and
+.B GB
+are accepted as synonyms for
+.BR GiB .
 .PP
 A special value
 .B max

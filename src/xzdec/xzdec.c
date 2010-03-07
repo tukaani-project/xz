@@ -183,34 +183,24 @@ str_to_uint64(const char *value, uint64_t max)
 
 	if (*value != '\0') {
 		// Look for suffix.
-		static const struct {
-			const char name[4];
-			uint32_t multiplier;
-		} suffixes[] = {
-			{ "k",   1000 },
-			{ "kB",  1000 },
-			{ "M",   1000000 },
-			{ "MB",  1000000 },
-			{ "G",   1000000000 },
-			{ "GB",  1000000000 },
-			{ "Ki",  1024 },
-			{ "KiB", 1024 },
-			{ "Mi",  1048576 },
-			{ "MiB", 1048576 },
-			{ "Gi",  1073741824 },
-			{ "GiB", 1073741824 }
-		};
+		uint64_t multiplier = 0;
+		if (*value == 'k' || *value == 'K')
+			multiplier = UINT64_C(1) << 10;
+		else if (*value == 'm' || *value == 'M')
+			multiplier = UINT64_C(1) << 20;
+		else if (*value == 'g' || *value == 'G')
+			multiplier = UINT64_C(1) << 30;
 
-		uint32_t multiplier = 0;
-		for (size_t i = 0; i < ARRAY_SIZE(suffixes); ++i) {
-			if (strcmp(value, suffixes[i].name) == 0) {
-				multiplier = suffixes[i].multiplier;
-				break;
-			}
-		}
+		++value;
+
+		// Allow also e.g. Ki, KiB, and KB.
+		if (*value != '\0' && strcmp(value, "i") != 0
+				&& strcmp(value, "iB") != 0
+				&& strcmp(value, "B") != 0)
+			multiplier = 0;
 
 		if (multiplier == 0) {
-			my_errorf("%s: Invalid suffix", value);
+			my_errorf("%s: Invalid suffix", value - 1);
 			exit(EXIT_FAILURE);
 		}
 

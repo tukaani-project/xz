@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-01-15" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-03-07" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -195,9 +195,16 @@ is several gigabytes.
 .PP
 To prevent uncomfortable surprises caused by huge memory usage,
 .B xz
-has a built-in memory usage limiter. The default limit is 40 % of total
-physical RAM. While operating systems provide ways to limit the memory usage
-of processes, relying on it wasn't deemed to be flexible enough.
+has a built-in memory usage limiter. While some operating systems provide
+ways to limit the memory usage of processes, relying on it wasn't deemed
+to be flexible enough. The default limit depends on the total amount of
+physical RAM:
+.IP \(bu 3
+If 40\ % of RAM is at least 80 MiB, 40\ % of RAM is used as the limit.
+.IP \(bu 3
+If 80\ % of RAM is over 80 MiB, 80 MiB is used as the limit.
+.IP \(bu 3
+Otherwise 80\ % of RAM is used as the limit.
 .PP
 When compressing, if the selected compression settings exceed the memory
 usage limit, the settings are automatically adjusted downwards and a notice
@@ -588,9 +595,11 @@ can be specified as a percentage of physical RAM. Example:
 .IP \(bu 3
 The
 .I limit
-can be reset back to its default value (currently 40 % of physical RAM)
-by setting it to
+can be reset back to its default value by setting it to
 .BR 0 .
+See the section
+.B "Memory usage"
+for how the default limit is defined.
 .IP \(bu 3
 The memory usage limiting can be effectively disabled by setting
 .I limit

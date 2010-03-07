@@ -4,7 +4,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZDEC 1 "2009-06-04" "Tukaani" "XZ Utils"
+.TH XZDEC 1 "2010-03-07" "Tukaani" "XZ Utils"
 .SH NAME
 xzdec, lzmadec \- Small .xz and .lzma decompressors
 .SH SYNOPSIS
@@ -99,8 +99,7 @@ can be specified as a percentage of physical RAM. Example:
 .IP \(bu 3
 The
 .I limit
-can be reset back to its default value (currently 40 % of physical RAM)
-by setting it to
+can be reset back to its default value by setting it to
 .BR 0 .
 .IP \(bu 3
 The memory usage limiting can be effectively disabled by setting
@@ -163,6 +162,7 @@ for executables distributed in typical non-embedded operating system
 distributions. If you need a truly small
 .B .xz
 decompressor, consider using XZ Embedded.
-.\" TODO: Provide URL to XZ Embedded.
 .SH "SEE ALSO"
 .BR xz (1)
+.PP
+XZ Embedded: <http://tukaani.org/xz/embedded.html>

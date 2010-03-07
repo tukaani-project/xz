@@ -38,6 +38,9 @@
 /// Number of bytes to use memory at maximum
 static uint64_t memlimit;
 
+/// Total amount of physical RAM
+static uint64_t total_ram;
+
 /// Error messages are suppressed if this is zero, which is the case when
 /// --quiet has been given at least twice.
 static unsigned int display_errors = 2;
@@ -103,14 +106,7 @@ version(void)
 static void
 memlimit_set_percentage(uint32_t percentage)
 {
-	uint64_t mem = lzma_physmem();
-
-	// If we cannot determine the amount of RAM, use the assumption
-	// set by the configure script.
-	if (mem == 0)
-		mem = (uint64_t)(ASSUME_RAM) * 1024 * 1024;
-
-	memlimit = percentage * mem / 100;
+	memlimit = percentage * total_ram / 100;
 	return;
 }
 
@@ -120,11 +116,33 @@ memlimit_set_percentage(uint32_t percentage)
 static void
 memlimit_set(uint64_t new_memlimit)
 {
-	if (new_memlimit == 0)
-		memlimit_set_percentage(40);
-	else
+	if (new_memlimit != 0) {
 		memlimit = new_memlimit;
+	} else {
+		memlimit = 40 * total_ram / 100;
+		if (memlimit < UINT64_C(80) * 1024 * 1024) {
+			memlimit = 80 * total_ram / 100;
+			if (memlimit > UINT64_C(80) * 1024 * 1024)
+				memlimit = UINT64_C(80) * 1024 * 1024;
+		}
+	}
 
+	return;
+}
+
+
+/// Get the total amount of physical RAM and set the memory usage limit
+/// to the default value.
+static void
+memlimit_init(void)
+{
+	// If we cannot determine the amount of RAM, use the assumption
+	// defined by the configure script.
+	total_ram = lzma_physmem();
+	if (total_ram == 0)
+		total_ram = (uint64_t)(ASSUME_RAM) * 1024 * 1024;
+
+	memlimit_set(0);
 	return;
 }
 
@@ -422,7 +440,7 @@ main(int argc, char **argv)
 
 	// Set the default memory usage limit. This is needed before parsing
 	// the command line arguments.
-	memlimit_set(0);
+	memlimit_init();
 
 	// Parse the command line options.
 	parse_options(argc, argv);

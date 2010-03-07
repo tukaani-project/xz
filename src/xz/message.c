@@ -1016,7 +1016,8 @@ message_memlimit(void)
 		printf("%" PRIu64 "\n", hardware_memlimit_get());
 	else
 		printf(_("%s MiB (%s bytes)\n"),
-			uint64_to_str(hardware_memlimit_get() >> 20, 0),
+			uint64_to_str(
+				round_up_to_mib(hardware_memlimit_get()), 0),
 			uint64_to_str(hardware_memlimit_get(), 1));
 
 	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
@@ -1180,7 +1181,7 @@ message_help(bool long_help)
 	if (long_help) {
 		printf(_(
 "On this system and configuration, this program will use a maximum of roughly\n"
-"%s MiB RAM and "), uint64_to_str(hardware_memlimit_get() / (1024 * 1024), 0));
+"%s MiB RAM and "), uint64_to_str(round_up_to_mib(hardware_memlimit_get()), 0));
 		printf(N_("one thread.\n\n", "%s threads.\n\n",
 				hardware_threadlimit_get()),
 				uint64_to_str(hardware_threadlimit_get(), 0));

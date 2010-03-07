@@ -66,6 +66,10 @@ my_errorf(const char *fmt, ...)
 static void lzma_attribute((noreturn))
 help(void)
 {
+	// Round up to the next MiB and do it correctly also with UINT64_MAX.
+	const uint64_t mem_mib = (memlimit >> 20)
+			+ ((memlimit & ((UINT32_C(1) << 20) - 1)) != 0);
+
 	printf(
 "Usage: %s [OPTION]... [FILE]...\n"
 "Uncompress files in the ." TOOL_FORMAT " format to the standard output.\n"
@@ -85,8 +89,7 @@ help(void)
 "%" PRIu64 " MiB RAM.\n"
 "\n"
 "Report bugs to <" PACKAGE_BUGREPORT "> (in English or Finnish).\n"
-PACKAGE_NAME " home page: <" PACKAGE_URL ">\n",
-		progname, memlimit / (1024 * 1024));
+PACKAGE_NAME " home page: <" PACKAGE_URL ">\n", progname, mem_mib);
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);
 }
 

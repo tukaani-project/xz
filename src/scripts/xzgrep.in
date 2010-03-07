@@ -154,7 +154,7 @@ for i; do
   # Fail if xz or grep (or sed) fails.
   xz_status=$(
     exec 5>&1
-    (eval "$uncompress" -- "$i" 5>&-; echo $? >&5) 3>&- |
+    ($uncompress -- "$i" 5>&-; echo $? >&5) 3>&- |
     if test $files_with_matches -eq 1; then
       eval "$grep" -q && { printf '%s\n' "$i" || exit 2; }
     elif test $files_without_matches -eq 1; then

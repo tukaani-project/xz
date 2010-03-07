@@ -348,15 +348,16 @@ AC_MSG_RESULT([$enable_threads])
 # Assumed amount of RAM #
 #########################
 
-# We use 32 MiB as default, because it should be small enough for most
-# cases and allows decompressing files compressed with the default settings.
-# Probably it is too small for most systems, but it's safer to guess too low.
+# We use 128 MiB as default, because it will allow decompressing files
+# created with "xz -9". It would be slightly safer to guess a lower value,
+# but most systems, on which we don't have any way to determine the amount
+# of RAM, will probably have at least 128 MiB of RAM.
 AC_MSG_CHECKING([how much RAM to assume if the real amount is unknown])
 AC_ARG_ENABLE([assume-ram], AC_HELP_STRING([--enable-assume-ram=SIZE],
 		[If and only if the real amount of RAM cannot be determined,
-		assume SIZE MiB. The default is 32 MiB. This affects the
+		assume SIZE MiB. The default is 128 MiB. This affects the
 		default memory usage limit.]),
-	[], [enable_assume_ram=32])
+	[], [enable_assume_ram=128])
 assume_ram_check=`echo "$enable_assume_ram" | tr -d 0123456789`
 if test -z "$enable_assume_ram" || test -n "$assume_ram_check"; then
 	AC_MSG_RESULT([])

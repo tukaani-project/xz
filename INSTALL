@@ -245,9 +245,8 @@ XZ Utils Installation
                 On some systems, there is no code to detect the amount of
                 RAM though. Using --enable-assume-ram one can set how much
                 memory to assume on these systems. SIZE is given as MiB.
-                The default is 32 MiB, which is probably too low for most
-                systems, but it is enough to allow decompressing .xz files
-                created with the default settings.
+                The default is 128 MiB, which allows decompressing files
+                created with "xz -9".
 
                 Feel free to send patches to add support for detecting
                 the amount of RAM on the operating system you use. See

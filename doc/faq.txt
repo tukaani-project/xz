@@ -67,6 +67,12 @@ A:  For now, no. Since XZ Utils supports the .lzma format, it's usually
     tool, contact Lasse Collin and offer some money.
 
 
+Q:  I have installed xz, but my tar doesn't recognize .tar.xz files.
+    How can I extract .tar.xz files?
+
+A:  xz -dc foo.tar.xz | tar xf -
+
+
 Q:  Can I recover parts of a broken .xz file (e.g. corrupted CD-R)?
 
 A:  It may be possible if the file consists of multiple blocks, which

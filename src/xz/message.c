@@ -308,30 +308,20 @@ message_progress_start(lzma_stream *strm, uint64_t in_size)
 
 /// Make the string indicating completion percentage.
 static const char *
-progress_percentage(uint64_t in_pos, bool final)
+progress_percentage(uint64_t in_pos)
 {
-	static char buf[sizeof("100.0 %")];
+	// If the size of the input file is unknown or the size told us is
+	// clearly wrong since we have processed more data than the alleged
+	// size of the file, show a static string indicating that we have
+	// no idea of the completion percentage.
+	if (expected_in_size == 0 || in_pos > expected_in_size)
+		return "--- %";
 
-	double percentage;
+	// Never show 100.0 % before we actually are finished.
+	double percentage = (double)(in_pos) / (double)(expected_in_size)
+			* 99.9;
 
-	if (final) {
-		// Use floating point conversion of snprintf() also for
-		// 100.0 % instead of fixed string, because the decimal
-		// separator isn't a dot in all locales.
-		percentage = 100.0;
-	} else {
-		// If the size of the input file is unknown or the size told us is
-		// clearly wrong since we have processed more data than the alleged
-		// size of the file, show a static string indicating that we have
-		// no idea of the completion percentage.
-		if (expected_in_size == 0 || in_pos > expected_in_size)
-			return "--- %";
-
-		// Never show 100.0 % before we actually are finished.
-		percentage = (double)(in_pos) / (double)(expected_in_size)
-				* 99.9;
-	}
-
+	static char buf[sizeof("99.9 %")];
 	snprintf(buf, sizeof(buf), "%.1f %%", percentage);
 
 	return buf;
@@ -347,7 +337,7 @@ progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 	// separator is used, or about 1 PiB without thousand separator.
 	// After that the progress indicator will look a bit silly, since
 	// the compression ratio no longer fits with three decimal places.
-	static char buf[44];
+	static char buf[36];
 
 	char *pos = buf;
 	size_t left = sizeof(buf);
@@ -357,9 +347,9 @@ progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 	const enum nicestr_unit unit_min = final ? NICESTR_B : NICESTR_MIB;
 	my_snprintf(&pos, &left, "%s / %s",
 			uint64_to_nicestr(compressed_pos,
-				unit_min, NICESTR_MIB, false, 0),
+				unit_min, NICESTR_TIB, false, 0),
 			uint64_to_nicestr(uncompressed_pos,
-				unit_min, NICESTR_MIB, false, 1));
+				unit_min, NICESTR_TIB, false, 1));
 
 	// Avoid division by zero. If we cannot calculate the ratio, set
 	// it to some nice number greater than 10.0 so that it gets caught
@@ -451,13 +441,13 @@ progress_time(uint64_t useconds)
 }
 
 
-/// Make the string to contain the estimated remaining time, or if the amount
-/// of input isn't known, how much time has elapsed.
+/// Return a string containing estimated remaining time when
+/// reasonably possible.
 static const char *
 progress_remaining(uint64_t in_pos, uint64_t elapsed)
 {
-	// Show the amount of time spent so far when making an estimate of
-	// remaining time wouldn't be reasonable:
+	// Don't show the estimated remaining time when it wouldn't
+	// make sense:
 	//  - Input size is unknown.
 	//  - Input has grown bigger since we started (de)compressing.
 	//  - We haven't processed much data yet, so estimate would be
@@ -466,7 +456,7 @@ progress_remaining(uint64_t in_pos, uint64_t elapsed)
 	//    so estimate would be too inaccurate.
 	if (expected_in_size == 0 || in_pos > expected_in_size
 			|| in_pos < (UINT64_C(1) << 19) || elapsed < 8000000)
-		return progress_time(elapsed);
+		return "";
 
 	// Calculate the estimate. Don't give an estimate of zero seconds,
 	// since it is possible that all the input has been already passed
@@ -530,9 +520,8 @@ progress_remaining(uint64_t in_pos, uint64_t elapsed)
 		snprintf(buf, sizeof(buf), "%" PRIu32 " d", remaining);
 
 	} else {
-		// The estimated remaining time is so big that it's better
-		// that we just show the elapsed time.
-		return progress_time(elapsed);
+		// The estimated remaining time is too big. Don't show it.
+		return "";
 	}
 
 	return buf;
@@ -599,10 +588,11 @@ message_progress_update(void)
 	// Print the actual progress message. The idea is that there is at
 	// least three spaces between the fields in typical situations, but
 	// even in rare situations there is at least one space.
-	fprintf(stderr, "  %7s %43s   %9s   %10s\r",
-		progress_percentage(in_pos, false),
+	fprintf(stderr, "\r %6s %35s   %9s %10s   %10s\r",
+		progress_percentage(in_pos),
 		progress_sizes(compressed_pos, uncompressed_pos, false),
 		progress_speed(uncompressed_pos, elapsed),
+		progress_time(elapsed),
 		progress_remaining(in_pos, elapsed));
 
 #ifdef SIGALRM
@@ -666,7 +656,6 @@ progress_flush(bool finished)
 	progress_active = false;
 
 	const uint64_t elapsed = progress_elapsed();
-	const char *elapsed_str = progress_time(elapsed);
 
 	signals_block();
 
@@ -674,24 +663,24 @@ progress_flush(bool finished)
 	// statistics are printed in the same format as the progress
 	// indicator itself.
 	if (progress_automatic) {
-		// Using floating point conversion for the percentage instead
-		// of static "100.0 %" string, because the decimal separator
-		// isn't a dot in all locales.
-		fprintf(stderr, "  %7s %43s   %9s   %10s\n",
-			progress_percentage(in_pos, finished),
+		fprintf(stderr, "\r %6s %35s   %9s %10s   %10s\n",
+			finished ? "100 %" : progress_percentage(in_pos),
 			progress_sizes(compressed_pos, uncompressed_pos, true),
 			progress_speed(uncompressed_pos, elapsed),
-			elapsed_str);
+			progress_time(elapsed),
+			finished ? "" : progress_remaining(in_pos, elapsed));
 	} else {
 		// The filename is always printed.
 		fprintf(stderr, "%s: ", filename);
 
 		// Percentage is printed only if we didn't finish yet.
-		// FIXME: This may look weird when size of the input
-		// isn't known.
-		if (!finished)
-			fprintf(stderr, "%s, ",
-					progress_percentage(in_pos, false));
+		if (!finished) {
+			// Don't print the percentage when it isn't known
+			// (starts with a dash).
+			const char *percentage = progress_percentage(in_pos);
+			if (percentage[0] != '-')
+				fprintf(stderr, "%s, ", percentage);
+		}
 
 		// Size information is always printed.
 		fprintf(stderr, "%s", progress_sizes(
@@ -702,6 +691,7 @@ progress_flush(bool finished)
 		if (speed[0] != '\0')
 			fprintf(stderr, ", %s", speed);
 
+		const char *elapsed_str = progress_time(elapsed);
 		if (elapsed_str[0] != '\0')
 			fprintf(stderr, ", %s", elapsed_str);
 

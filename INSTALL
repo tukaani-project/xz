@@ -74,11 +74,6 @@ XZ Utils Installation
     C99. You can safely override the test for C99 compiler by passing
     ac_cv_prog_cc_c99= as the argument to the configure script.
 
-    There's no code to detect the amount of RAM on Tru64. It can be
-    added, but I currently don't know anyone who can test on Tru64.
-    For now, you may want to pass --enable-assume-ram=SIZE to the
-    configure script. See the section 2 in this file for details.
-
 
 1.2.3. Windows
 

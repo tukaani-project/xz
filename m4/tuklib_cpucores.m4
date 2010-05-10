@@ -8,8 +8,10 @@
 #   Check how to find out the number of available CPU cores in the system.
 #   This information is used by tuklib_cpucores.c.
 #
-#   Currently this supports sysctl() (BSDs, OS/2) and sysconf() (GNU/Linux,
-#   Solaris, IRIX, Cygwin).
+#   Supported methods:
+#     - sysctl(): BSDs, OS/2
+#     - sysconf(): GNU/Linux, Solaris, Tru64, IRIX, AIX, Cygwin
+#     - pstat_getdynamic(): HP-UX
 #
 # COPYING
 #
@@ -63,11 +65,25 @@ main(void)
 #endif
 	return 0;
 }
-]])], [
-	tuklib_cv_cpucores_method=sysconf
-], [
+]])], [tuklib_cv_cpucores_method=sysconf], [
+
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/param.h>
+#include <sys/pstat.h>
+
+int
+main(void)
+{
+	struct pst_dynamic pst;
+	pstat_getdynamic(&pst, sizeof(pst), 1, 0);
+	(void)pst.psd_proc_cnt;
+	return 0;
+}
+]])], [tuklib_cv_cpucores_method=pstat_getdynamic], [
+
 	tuklib_cv_cpucores_method=unknown
-])])])
+])])])])
+
 case $tuklib_cv_cpucores_method in
 	sysctl)
 		AC_DEFINE([TUKLIB_CPUCORES_SYSCTL], [1],
@@ -79,6 +95,11 @@ case $tuklib_cv_cpucores_method in
 			[Define to 1 if the number of available CPU cores
 			can be detected with sysconf(_SC_NPROCESSORS_ONLN)
 			or sysconf(_SC_NPROC_ONLN).])
+		;;
+	pstat_getdynamic)
+		AC_DEFINE([TUKLIB_CPUCORES_PSTAT_GETDYNAMIC], [1],
+			[Define to 1 if the number of available CPU cores
+			can be detected with pstat_getdynamic().])
 		;;
 esac
 ])dnl

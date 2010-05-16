@@ -86,8 +86,20 @@ extern const char *message_strm(lzma_ret code);
 extern void message_mem_needed(enum message_verbosity v, uint64_t memusage);
 
 
+/// \brief      Get the filter chain as a string
+///
+/// \param      filters     Pointer to the filter chain
+/// \param      all_known   If true, all filter options are printed.
+///                         If false, only the options that get stored
+///                         into .xz headers are printed.
+///
+/// \return     Pointer to a statically allocated buffer.
+extern const char *message_filters_get(
+		const lzma_filter *filters, bool all_known);
+
+
 /// Print the filter chain.
-extern void message_filters(
+extern void message_filters_show(
 		enum message_verbosity v, const lzma_filter *filters);
 
 

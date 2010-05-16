@@ -168,7 +168,7 @@ coder_set_compression_settings(void)
 						"with the .xz format"));
 
 	// Print the selected filter chain.
-	message_filters(V_DEBUG, filters);
+	message_filters_show(V_DEBUG, filters);
 
 	// If using --format=raw, we can be decoding. The memusage function
 	// also validates the filter chain and the options used for the

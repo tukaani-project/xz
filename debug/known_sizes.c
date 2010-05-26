@@ -87,7 +87,7 @@ main(void)
 			!= LZMA_OK)
 		return 1;
 
-	lzma_index *idx = lzma_index_init(NULL, NULL);
+	lzma_index *idx = lzma_index_init(NULL);
 	if (idx == NULL)
 		return 1;
 

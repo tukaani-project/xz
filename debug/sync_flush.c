@@ -81,18 +81,6 @@ main(int argc, char **argv)
 		.dist = 16
 	};
 
-	lzma_options_subblock opt_subblock = {
-		.allow_subfilters = true,
-		.alignment = 8, // LZMA_SUBBLOCK_ALIGNMENT_DEFAULT,
-		.subblock_data_size = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT,
-		.rle = 1, // LZMA_SUBBLOCK_RLE_OFF,
-		.subfilter_mode = LZMA_SUBFILTER_SET,
-	};
-	opt_subblock.subfilter_options.id = LZMA_FILTER_LZMA1;
-	opt_subblock.subfilter_options.options = &opt_lzma;
-	opt_subblock.subfilter_options.id = LZMA_FILTER_DELTA;
-	opt_subblock.subfilter_options.options = &opt_delta;
-
 	lzma_filter filters[LZMA_FILTERS_MAX + 1];
 	filters[0].id = LZMA_FILTER_LZMA2;
 	filters[0].options = &opt_lzma;
@@ -132,6 +120,5 @@ main(int argc, char **argv)
 	// Prevent useless warnings so we don't need to have special CFLAGS
 	// to disable -Werror.
 	(void)opt_lzma;
-	(void)opt_subblock;
 	(void)opt_delta;
 }

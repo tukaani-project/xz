@@ -156,13 +156,11 @@ typedef unsigned char _Bool;
 #undef memzero
 #define memzero(s, n) memset(s, 0, n)
 
-#ifndef MIN
-#	define MIN(x, y) ((x) < (y) ? (x) : (y))
-#endif
-
-#ifndef MAX
-#	define MAX(x, y) ((x) > (y) ? (x) : (y))
-#endif
+// NOTE: Avoid using MIN() and MAX(), because even conditionally defining
+// those macros can cause some portability trouble, since on some systems
+// the system headers insist defining their own versions.
+#define my_min(x, y) ((x) < (y) ? (x) : (y))
+#define my_max(x, y) ((x) > (y) ? (x) : (y))
 
 #ifndef ARRAY_SIZE
 #	define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))

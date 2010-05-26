@@ -406,7 +406,8 @@ parse_environment(args_info *args, char *argv0)
 
 			// Keep argc small enough to fit into a singed int
 			// and to keep it usable for memory allocation.
-			if (++argc == MIN(INT_MAX, SIZE_MAX / sizeof(char *)))
+			if (++argc == my_min(
+					INT_MAX, SIZE_MAX / sizeof(char *)))
 				message_fatal(_("The environment variable "
 						"XZ_OPT contains too many "
 						"arguments"));

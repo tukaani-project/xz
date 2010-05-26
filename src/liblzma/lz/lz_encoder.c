@@ -423,7 +423,7 @@ lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator,
 			&& lz_options->preset_dict_size > 0) {
 		// If the preset dictionary is bigger than the actual
 		// dictionary, use only the tail.
-		mf->write_pos = MIN(lz_options->preset_dict_size, mf->size);
+		mf->write_pos = my_min(lz_options->preset_dict_size, mf->size);
 		memcpy(mf->buffer, lz_options->preset_dict
 				+ lz_options->preset_dict_size - mf->write_pos,
 				mf->write_pos);

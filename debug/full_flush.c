@@ -29,7 +29,7 @@ encode(size_t size, lzma_action action)
 
 	do {
 		if (strm.avail_in == 0 && size > 0) {
-			const size_t amount = MIN(size, CHUNK);
+			const size_t amount = my_min(size, CHUNK);
 			strm.avail_in = fread(in, 1, amount, file_in);
 			strm.next_in = in;
 			size -= amount; // Intentionally not using avail_in.

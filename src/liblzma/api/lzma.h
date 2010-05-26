@@ -284,7 +284,6 @@ extern "C" {
 
 /* Filters */
 #include "lzma/filter.h"
-#include "lzma/subblock.h"
 #include "lzma/bcj.h"
 #include "lzma/delta.h"
 #include "lzma/lzma.h"

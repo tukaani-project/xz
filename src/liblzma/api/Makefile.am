@@ -19,6 +19,5 @@ nobase_include_HEADERS = \
 	lzma/index_hash.h \
 	lzma/lzma.h \
 	lzma/stream_flags.h \
-	lzma/subblock.h \
 	lzma/version.h \
 	lzma/vli.h

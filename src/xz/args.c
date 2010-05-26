@@ -32,8 +32,7 @@ static void
 parse_real(args_info *args, int argc, char **argv)
 {
 	enum {
-		OPT_SUBBLOCK = INT_MIN,
-		OPT_X86,
+		OPT_X86 = INT_MIN,
 		OPT_POWERPC,
 		OPT_IA64,
 		OPT_ARM,
@@ -92,7 +91,6 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "armthumb",     optional_argument, NULL,  OPT_ARMTHUMB },
 		{ "sparc",        optional_argument, NULL,  OPT_SPARC },
 		{ "delta",        optional_argument, NULL,  OPT_DELTA },
-		{ "subblock",     optional_argument, NULL,  OPT_SUBBLOCK },
 
 		// Other options
 		{ "quiet",        no_argument,       NULL,  'q' },
@@ -233,11 +231,6 @@ parse_real(args_info *args, int argc, char **argv)
 			break;
 
 		// Filter setup
-
-		case OPT_SUBBLOCK:
-			coder_add_filter(LZMA_FILTER_SUBBLOCK,
-					options_subblock(optarg));
-			break;
 
 		case OPT_X86:
 			coder_add_filter(LZMA_FILTER_X86,

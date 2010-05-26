@@ -73,7 +73,7 @@ fi
 # Filters #
 ###########
 
-m4_define([SUPPORTED_FILTERS], [lzma1,lzma2,subblock,delta,x86,powerpc,ia64,arm,armthumb,sparc])dnl
+m4_define([SUPPORTED_FILTERS], [lzma1,lzma2,delta,x86,powerpc,ia64,arm,armthumb,sparc])dnl
 m4_define([SIMPLE_FILTERS], [x86,powerpc,ia64,arm,armthumb,sparc])
 m4_define([LZ_FILTERS], [lzma1,lzma2])
 
@@ -89,7 +89,7 @@ AC_ARG_ENABLE([encoders], AC_HELP_STRING([--enable-encoders=LIST],
 		Available encoders:]
 			m4_translit(m4_defn([SUPPORTED_FILTERS]), [,], [ ])),
 	[], [enable_encoders=SUPPORTED_FILTERS])
-enable_encoders=`echo "$enable_encoders" | sed 's/,subblock//; s/,/ /g'`
+enable_encoders=`echo "$enable_encoders" | sed 's/,/ /g'`
 if test "x$enable_encoders" = xno || test "x$enable_encoders" = x; then
 	AC_MSG_RESULT([(none)])
 else
@@ -118,7 +118,7 @@ AC_ARG_ENABLE([decoders], AC_HELP_STRING([--enable-decoders=LIST],
 		[Comma-separated list of decoders to build. Default=all.
 		Available decoders are the same as available encoders.]),
 	[], [enable_decoders=SUPPORTED_FILTERS])
-enable_decoders=`echo "$enable_decoders" | sed 's/,subblock//; s/,/ /g'`
+enable_decoders=`echo "$enable_decoders" | sed 's/,/ /g'`
 if test "x$enable_decoders" = xno || test "x$enable_decoders" = x; then
 	AC_MSG_RESULT([(none)])
 else

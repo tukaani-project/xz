@@ -139,67 +139,6 @@ parse_options(const char *str, const option_map *opts,
 }
 
 
-//////////////
-// Subblock //
-//////////////
-
-enum {
-	OPT_SIZE,
-	OPT_RLE,
-	OPT_ALIGN,
-};
-
-
-static void
-set_subblock(void *options, uint32_t key, uint64_t value,
-		const char *valuestr lzma_attribute((unused)))
-{
-	lzma_options_subblock *opt = options;
-
-	switch (key) {
-	case OPT_SIZE:
-		opt->subblock_data_size = value;
-		break;
-
-	case OPT_RLE:
-		opt->rle = value;
-		break;
-
-	case OPT_ALIGN:
-		opt->alignment = value;
-		break;
-	}
-}
-
-
-extern lzma_options_subblock *
-options_subblock(const char *str)
-{
-	static const option_map opts[] = {
-		{ "size", NULL,   LZMA_SUBBLOCK_DATA_SIZE_MIN,
-		                  LZMA_SUBBLOCK_DATA_SIZE_MAX },
-		{ "rle",  NULL,   LZMA_SUBBLOCK_RLE_OFF,
-		                  LZMA_SUBBLOCK_RLE_MAX },
-		{ "align",NULL,   LZMA_SUBBLOCK_ALIGNMENT_MIN,
-		                  LZMA_SUBBLOCK_ALIGNMENT_MAX },
-		{ NULL,   NULL,   0, 0 }
-	};
-
-	lzma_options_subblock *options
-			= xmalloc(sizeof(lzma_options_subblock));
-	*options = (lzma_options_subblock){
-		.allow_subfilters = false,
-		.alignment = LZMA_SUBBLOCK_ALIGNMENT_DEFAULT,
-		.subblock_data_size = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT,
-		.rle = LZMA_SUBBLOCK_RLE_OFF,
-	};
-
-	parse_options(str, opts, &set_subblock, options);
-
-	return options;
-}
-
-
 ///////////
 // Delta //
 ///////////

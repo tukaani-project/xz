@@ -1181,15 +1181,6 @@ message_help(bool long_help)
 "                        dist=NUM   distance between bytes being subtracted\n"
 "                                   from each other (1-256; 1)"));
 #endif
-
-#if defined(HAVE_ENCODER_SUBBLOCK) || defined(HAVE_DECODER_SUBBLOCK)
-		puts(_(
-"\n"
-"  --subblock[=OPTS]   Subblock filter; valid OPTS (valid values; default):\n"
-"                        size=NUM   number of bytes of data per subblock\n"
-"                                   (1 - 256Mi; 4Ki)\n"
-"                        rle=NUM    run-length encoder chunk size (0-256; 0)"));
-#endif
 	}
 
 	if (long_help)

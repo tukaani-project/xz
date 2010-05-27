@@ -71,26 +71,6 @@ decode(uint32_t known_size)
 }
 
 
-#if defined(HAVE_ENCODER_SUBBLOCK) && defined(HAVE_DECODER_SUBBLOCK)
-static void
-test_subblock(void)
-{
-	// Test 1
-	known_flags.id = LZMA_FILTER_SUBBLOCK;
-	known_flags.options = NULL;
-	expect(!encode(2));
-	expect(!decode(2));
-	expect(decoded_flags.options == NULL);
-
-	// Test 2
-	buffer[0] = LZMA_FILTER_SUBBLOCK;
-	buffer[1] = 1;
-	buffer[2] = 0;
-	expect(!decode_ret(3, LZMA_OPTIONS_ERROR));
-}
-#endif
-
-
 #if defined(HAVE_ENCODER_X86) && defined(HAVE_DECODER_X86)
 static void
 test_bcj(void)
@@ -262,9 +242,6 @@ test_lzma(void)
 int
 main(void)
 {
-#if defined(HAVE_ENCODER_SUBBLOCK) && defined(HAVE_DECODER_SUBBLOCK)
-	test_subblock();
-#endif
 #if defined(HAVE_ENCODER_X86) && defined(HAVE_DECODER_X86)
 	test_bcj();
 #endif

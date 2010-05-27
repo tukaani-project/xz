@@ -16,7 +16,7 @@
 volatile sig_atomic_t user_abort = false;
 
 
-#ifndef _WIN32
+#if !(defined(_WIN32) && !defined(__CYGWIN__))
 
 /// If we were interrupted by a signal, we store the signal number so that
 /// we can raise that signal to kill the program when all cleanups have

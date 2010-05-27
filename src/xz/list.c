@@ -156,7 +156,7 @@ parse_indexes(lzma_index **idx, file_pair *pair)
 		do {
 			// Don't give the decoder more input than the
 			// Index size.
-			strm.avail_in = MIN(IO_BUFFER_SIZE, index_size);
+			strm.avail_in = my_min(IO_BUFFER_SIZE, index_size);
 			if (io_pread(pair, &buf, strm.avail_in, pos))
 				goto error;
 

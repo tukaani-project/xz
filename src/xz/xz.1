@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-03-07" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-06-01" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -232,6 +232,24 @@ or near the bottom of the output of
 .BR \-\-long\-help .
 The default limit can be overridden with
 \fB\-\-memory=\fIlimit\fR.
+.SS Concatenation and padding with .xz files
+It is possible to concatenate
+.B .xz
+files as is.
+.B xz
+will decompress such files as if they were a single
+.B .xz
+file.
+.PP
+It is possible to insert padding between the concenated parts
+or after the last part. The padding must be null bytes and the size
+of the padding must be a multiple of four bytes. This can be useful
+if the .xz file is stored on a medium that stores file sizes
+e.g. as 512-byte blocks.
+.PP
+Concatenation and padding are not allowed with
+.B .lzma
+files or raw streams.
 .SH OPTIONS
 .SS "Integer suffixes and special values"
 In most places where an integer argument is expected, an optional suffix
@@ -295,12 +313,29 @@ except that the decompressed data is discarded instead of being
 written to standard output.
 .TP
 .BR \-l ", " \-\-list
-View information about the compressed files. No uncompressed output is
-produced, and no files are created or removed. In list mode, the program
-cannot read the compressed data from standard input or from other
-unseekable sources.
+List information about compressed
+.IR files .
+No uncompressed output is produced, and no files are created or removed.
+In list mode, the program cannot read the compressed data from standard
+input or from other unseekable sources.
 .IP
-.B "This feature has not been implemented yet."
+The default listing shows basic information about
+.IR files ,
+one file per line. To get more detailed information, use also the
+.B \-\-verbose
+option. For even more information, use
+.B \-\-verbose
+twice, but note that it may be slow, because getting all the extra
+information requires many seeks. The width of verbose output exceeds
+80 characters, so piping the output to e.g.
+.B "less\ \-S"
+may be convenient if the terminal isn't wide enough.
+.IP
+The exact output may vary between
+.B xz
+versions and different locales. To get machine-readable output,
+.B \-\-robot \-\-list
+should be used.
 .SS "Operation modifiers"
 .TP
 .BR \-k ", " \-\-keep
@@ -1085,14 +1120,9 @@ writing frontends that want to use
 instead of liblzma, which may be the case with various scripts. The output
 with this option enabled is meant to be stable across
 .B xz
-releases. Currently
-.B \-\-robot
-is implemented only for
-.B \-\-info\-memory
-and
-.BR \-\-version ,
-but the idea is to make it usable for actual compression
-and decompression too.
+releases. See the section
+.B "ROBOT MODE"
+for details.
 .TP
 .BR \-\-info-memory
 Display the current memory usage limit in human-readable format on
@@ -1100,11 +1130,6 @@ a single line, and exit successfully. To see how much RAM
 .B xz
 thinks your system has, use
 .BR "\-\-memory=100% \-\-info\-memory" .
-To get machine-parsable output
-(memory usage limit as bytes without thousand separators), specify
-.B \-\-robot
-before
-.BR \-\-info-memory .
 .TP
 .BR \-h ", " \-\-help
 Display a help message describing the most commonly used options,
@@ -1122,6 +1147,291 @@ and liblzma in human readable format. To get machine-parsable output, specify
 .B \-\-robot
 before
 .BR \-\-version .
+.SH ROBOT MODE
+The robot mode is activated with the
+.B \-\-robot
+option. It makes the output of
+.B xz
+easier to parse by other programs. Currently
+.B \-\-robot
+is supported only together with
+.BR \-\-version ,
+.BR \-\-info-memory ,
+and
+.BR \-\-list .
+It will be supported for normal compression and decompression in the future.
+.PP
+.SS Version
+.B "xz \-\-robot \-\-version"
+will print the version number of
+.B xz
+and liblzma in the following format:
+.PP
+.BI XZ_VERSION= XYYYZZZS
+.br
+.BI LIBLZMA_VERSION= XYYYZZZS
+.TP
+.I X
+Major version.
+.TP
+.I YYY
+Minor version. Even numbers are stable.
+Odd numbers are alpha or beta versions.
+.TP
+.I ZZZ
+Patch level for stable releases or just a counter for development releases.
+.TP
+.I S
+Stability.
+.B 0
+is alpha,
+.B 1
+is beta, and
+.B 2
+is stable.
+.I S
+should be always
+.B 2
+when
+.I YYY
+is even.
+.PP
+.I XYYYZZZS
+are the same on both lines if
+.B xz
+and liblzma are from the same XZ Utils release.
+.PP
+Examples: 4.999.9beta is
+.B 49990091
+and
+5.0.0 is
+.BR 50000002 .
+.SS Memory limit information
+.B "xz \-\-robot \-\-info-memory"
+prints the current memory usage limit as bytes on a single line.
+To get the total amount of installed RAM, use
+.BR "xz \-\-robot \-\-memory=100% \-\-info-memory" .
+.SS List mode
+.B "xz \-\-robot \-\-list"
+uses tab-separated output. The first column of every line has a string
+that indicates the type of the information found on that line:
+.TP
+.B name
+This is always the first line when starting to list a file. The second
+column on the line is the filename.
+.TP
+.B file
+This line contains overall information about the
+.B .xz
+file. This line is always printed after the
+.B name
+line.
+.TP
+.B stream
+This line type is used only when
+.B \-\-verbose
+was specified. There are as many
+.B stream
+lines as there are streams in the
+.B .xz
+file.
+.TP
+.B block
+This line type is used only when
+.B \-\-verbose
+was specified. There are as many
+.B block
+lines as there are blocks in the
+.B .xz
+file. The
+.B block
+lines are shown after all the
+.B stream
+lines; different line types are not interleaved.
+.TP
+.B summary
+This line type is used only when
+.B \-\-verbose
+was specified twice. This line is printed after all
+.B block
+lines. Like the
+.B file
+line, the
+.B summary
+line contains overall information about the
+.B .xz
+file.
+.TP
+.B totals
+This line is always the very last line of the list output. It shows
+the total counts and sizes.
+.PP
+The columns of the
+.B file
+lines:
+.RS
+.IP 2. 4
+Number of streams in the file
+.IP 3. 4
+Total number of blocks in the stream(s)
+.IP 4. 4
+Compressed size of the file
+.IP 5. 4
+Uncompressed size of the file
+.IP 6. 4
+Compression ratio, for example
+.BR 0.123.
+If ratio is over 9.999, three dashes
+.RB ( \-\-\- )
+are displayed instead of the ratio.
+.IP 7. 4
+Comma-separated list of integrity check names. The following strings are
+used for the known check types:
+.BR None ,
+.BR CRC32 ,
+.BR CRC64 ,
+and
+.BR SHA\-256 .
+For unknown check types,
+.BI Unknown\- N
+is used, where
+.I N
+is the Check ID as a decimal number (one or two digits).
+.IP 8. 4
+Total size of stream padding in the file
+.RE
+.PP
+The columns of the
+.B stream
+lines:
+.RS
+.IP 2. 4
+Stream number (the first stream is 1)
+.IP 3. 4
+Number of blocks in the stream
+.IP 4. 4
+Compressed start offset
+.IP 5. 4
+Uncompressed start offset
+.IP 6. 4
+Compressed size (does not include stream padding)
+.IP 7. 4
+Uncompressed size
+.IP 8. 4
+Compression ratio
+.IP 9. 4
+Name of the integrity check
+.IP 10. 4
+Size of stream padding
+.RE
+.PP
+The columns of the
+.B block
+lines:
+.RS
+.IP 2. 4
+Number of the stream containing this block
+.IP 3. 4
+Block number relative to the beginning of the stream (the first block is 1)
+.IP 4. 4
+Block number relative to the beginning of the file
+.IP 5. 4
+Compressed start offset relative to the beginning of the file
+.IP 6. 4
+Uncompressed start offset relative to the beginning of the file
+.IP 7. 4
+Total compressed size of the block (includes headers)
+.IP 8. 4
+Uncompressed size
+.IP 9. 4
+Compression ratio
+.IP 10. 4
+Name of the integrity check
+.RE
+.PP
+If
+.B \-\-verbose
+was specified twice, additional columns are included on the
+.B block
+lines. These are not displayed with a single
+.BR \-\-verbose ,
+because getting this information requires many seeks and can thus be slow:
+.RS
+.IP 11. 4
+Value of the integrity check in hexadecimal
+.IP 12. 4
+Block header size
+.IP 13. 4
+Block flags:
+.B c
+indicates that compressed size is present, and
+.B u
+indicates that uncompressed size is present.
+If the flag is not set, a dash
+.RB ( \- )
+is shown instead to keep the string length fixed. New flags may be added
+to the end of the string in the future.
+.IP 14. 4
+Size of the actual compressed data in the block (this excludes
+the block header, block padding, and check fields)
+.IP 15. 4
+Amount of memory (as bytes) required to decompress this block with this
+.B xz
+version
+.IP 16. 4
+Filter chain. Note that most of the options used at compression time cannot
+be known, because only the options that are needed for decompression are
+stored in the
+.B .xz
+headers.
+.RE
+.PP
+The columns of the
+.B totals
+line:
+.RS
+.IP 2. 4
+Number of streams
+.IP 3. 4
+Number of blocks
+.IP 4. 4
+Compressed size
+.IP 5. 4
+Uncompressed size
+.IP 6. 4
+Average compression ratio
+.IP 7. 4
+Comma-separated list of integrity check names that were present in the files
+.IP 8. 4
+Stream padding size
+.IP 9. 4
+Number of files. This is here to keep the order of the earlier columns
+the same as on
+.B file
+lines.
+.RE
+.PP
+If
+.B \-\-verbose
+was specified twice, additional columns are included on the
+.B totals
+line:
+.RS
+.IP 10. 4
+Maximum amount of memory (as bytes) required to decompress the files
+with this
+.B xz
+version
+.IP 11. 4
+.B yes
+or
+.B no
+indicating if all block headers have both compressed size and
+uncompressed size stored in them
+.RE
+.PP
+Future versions may add new line types and new columns can be added to
+the existing line types, but the existing columns won't be changed.
 .SH "EXIT STATUS"
 .TP
 .B 0
@@ -1339,6 +1649,43 @@ integrity check if the particular
 is not supported.
 .PP
 XZ Embedded supports BCJ filters, but only with the default start offset.
+.SH EXAMPLES
+.SS Basics
+A mix of compressed and uncompressed files can be decompressed
+to standard output with a single command:
+.IP
+.B "xz -dcf a.txt b.txt.xz c.txt d.txt.xz > abcd.txt"
+.SS Parallel compression of many files
+On GNU and *BSD,
+.BR find (1)
+and
+.BR xargs (1)
+can be used to parallellize compression of many files:
+.PP
+.IP
+.B "find . \-type f \e! \-name '*.xz' \-print0 | xargs \-0r \-P4 \-n16 xz"
+.PP
+The
+.B \-P
+option sets the number of parallel
+.B xz
+processes. The best value for the
+.B \-n
+option depends on how many files there are to be compressed.
+If there are only a couple of files, the value should probably be
+.BR 1 ;
+with tens of thousands of files,
+.B 100
+or even more may be appropriate to reduce the number of
+.B xz
+processes that
+.BR xargs (1)
+will eventually create.
+.SS Robot mode examples
+Calculating how many bytes have been saved in total after compressing
+multiple files:
+.IP
+.B "xz --robot --list *.xz | awk '/^totals/{print $5\-$4}'"
 .SH "SEE ALSO"
 .BR xzdec (1),
 .BR gzip (1),

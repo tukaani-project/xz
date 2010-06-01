@@ -94,7 +94,7 @@ extern void message_mem_needed(enum message_verbosity v, uint64_t memusage);
 ///                         into .xz headers are printed.
 ///
 /// \return     Pointer to a statically allocated buffer.
-extern const char *message_filters_get(
+extern const char *message_filters_to_str(
 		const lzma_filter *filters, bool all_known);
 
 

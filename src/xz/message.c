@@ -896,7 +896,7 @@ uint32_to_optstr(uint32_t num)
 
 
 extern const char *
-message_filters_get(const lzma_filter *filters, bool all_known)
+message_filters_to_str(const lzma_filter *filters, bool all_known)
 {
 	static char buf[512];
 
@@ -1036,7 +1036,7 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 		return;
 
 	fprintf(stderr, _("%s: Filter chain: %s\n"), progname,
-			message_filters_get(filters, true));
+			message_filters_to_str(filters, true));
 	return;
 }
 

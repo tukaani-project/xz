@@ -912,8 +912,8 @@ message_filters_to_str(const lzma_filter *filters, bool all_known)
 		case LZMA_FILTER_LZMA1:
 		case LZMA_FILTER_LZMA2: {
 			const lzma_options_lzma *opt = filters[i].options;
-			const char *mode;
-			const char *mf;
+			const char *mode = NULL;
+			const char *mf = NULL;
 
 			if (all_known) {
 				switch (opt->mode) {

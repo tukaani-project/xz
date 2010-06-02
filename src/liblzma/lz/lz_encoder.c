@@ -341,7 +341,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 
 	// Deallocate the old hash array if it exists and has different size
 	// than what is needed now.
-	if (mf->hash != NULL && old_count != new_count) {
+	if (old_count != new_count) {
 		lzma_free(mf->hash, allocator);
 		mf->hash = NULL;
 	}
@@ -444,6 +444,8 @@ lzma_lz_encoder_memusage(const lzma_lz_options *lz_options)
 	lzma_mf mf = {
 		.buffer = NULL,
 		.hash = NULL,
+		.hash_size_sum = 0,
+		.sons_count = 0,
 	};
 
 	// Setup the size information into mf.
@@ -519,6 +521,8 @@ lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 		next->coder->mf.buffer = NULL;
 		next->coder->mf.hash = NULL;
+		next->coder->mf.hash_size_sum = 0;
+		next->coder->mf.sons_count = 0;
 
 		next->coder->next = LZMA_NEXT_CODER_INIT;
 	}

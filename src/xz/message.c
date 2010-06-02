@@ -142,19 +142,19 @@ message_init(void)
 */
 
 #ifdef SIGALRM
-	// At least DJGPP lacks SA_RESTART. It's not essential for us (the
-	// rest of the code can handle interrupted system calls), so just
-	// define it zero.
-#	ifndef SA_RESTART
+	// DJGPP lacks SA_RESTART, but it shouldn't give EINTR
+	// in most places either.
+#	if defined(__DJGPP__) && !defined(SA_RESTART)
 #		define SA_RESTART 0
 #	endif
+
 	// Establish the signal handlers which set a flag to tell us that
 	// progress info should be updated. Since these signals don't
-	// require any quick action, we set SA_RESTART.
+	// require any quick action, we set SA_RESTART. That way we don't
+	// need to block them either in signals_block() to keep stdio
+	// functions from getting EINTR.
 	static const int sigs[] = {
-#ifdef SIGALRM
 		SIGALRM,
-#endif
 #ifdef SIGINFO
 		SIGINFO,
 #endif

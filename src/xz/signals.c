@@ -156,11 +156,14 @@ signals_exit(void)
 #else
 
 // While Windows has some very basic signal handling functions as required
-// by C89, they are not really used, or so I understood. Instead, we use
-// SetConsoleCtrlHandler() to catch user pressing C-c.
-
-#include <windows.h>
-
+// by C89, they are not really used, and e.g. SIGINT doesn't work exactly
+// the way it does on POSIX (Windows creates a new thread for the signal
+// handler). Instead, we use SetConsoleCtrlHandler() to catch user
+// pressing C-c, because that seems to be the recommended way to do it.
+//
+// NOTE: This doesn't work under MSYS. Trying with SIGINT doesn't work
+// either even if it appeared to work at first. So test using Windows
+// console window.
 
 static BOOL WINAPI
 signal_handler(DWORD type lzma_attribute((unused)))
@@ -168,9 +171,6 @@ signal_handler(DWORD type lzma_attribute((unused)))
 	// Since we don't get a signal number which we could raise() at
 	// signals_exit() like on POSIX, just set the exit status to
 	// indicate an error, so that we cannot return with zero exit status.
-	//
-	// FIXME: Since this function runs in its own thread,
-	// set_exit_status() should have a mutex.
 	set_exit_status(E_ERROR);
 	user_abort = true;
 	return TRUE;

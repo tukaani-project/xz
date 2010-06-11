@@ -153,6 +153,9 @@ memlimit_init(void)
 /// \brief      Convert a string to uint64_t
 ///
 /// This is rudely copied from src/xz/util.c and modified a little. :-(
+/// Since this function is used only for parsing the memory usage limit,
+/// this cheats a little and saturates too big values to UINT64_MAX instead
+/// of giving an error.
 ///
 /// \param      max     Return value when the string "max" was specified.
 ///
@@ -173,11 +176,17 @@ str_to_uint64(const char *value, uint64_t max)
 
 	do {
 		// Don't overflow.
-		if (result > (UINT64_MAX - 9) / 10)
+		if (result > UINT64_MAX / 10)
 			return UINT64_MAX;
 
 		result *= 10;
-		result += *value - '0';
+
+		// Another overflow check
+		const uint32_t add = *value - '0';
+		if (UINT64_MAX - add < result)
+			return UINT64_MAX;
+
+		result += add;
 		++value;
 	} while (*value >= '0' && *value <= '9');
 

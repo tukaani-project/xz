@@ -56,11 +56,17 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 
 	do {
 		// Don't overflow.
-		if (result > (UINT64_MAX - 9) / 10)
+		if (result > UINT64_MAX / 10)
 			goto error;
 
 		result *= 10;
-		result += *value - '0';
+
+		// Another overflow check
+		const uint32_t add = *value - '0';
+		if (UINT64_MAX - add < result)
+			goto error;
+
+		result += add;
 		++value;
 	} while (*value >= '0' && *value <= '9');
 

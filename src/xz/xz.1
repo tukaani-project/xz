@@ -202,9 +202,9 @@ physical RAM:
 .IP \(bu 3
 If 40\ % of RAM is at least 80 MiB, 40\ % of RAM is used as the limit.
 .IP \(bu 3
-If 80\ % of RAM is over 80 MiB, 80 MiB is used as the limit.
+If 80\ % of RAM is less than 80 MiB, 80\ % of RAM is used as the limit.
 .IP \(bu 3
-Otherwise 80\ % of RAM is used as the limit.
+Otherwise 80 MiB is used as the limit.
 .PP
 When compressing, if the selected compression settings exceed the memory
 usage limit, the settings are automatically adjusted downwards and a notice

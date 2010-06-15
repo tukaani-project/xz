@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-06-01" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-06-15" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -210,7 +210,9 @@ When compressing, if the selected compression settings exceed the memory
 usage limit, the settings are automatically adjusted downwards and a notice
 about this is displayed. As an exception, if the memory usage limit is
 exceeded when compressing with
-.BR \-\-format=raw ,
+.B \-\-format=raw
+or
+.BR \-\-no\-adjust ,
 an error is displayed and
 .B xz
 will exit with exit status
@@ -616,6 +618,13 @@ better compression ratio can be achieved without increasing memory usage
 of the compressor or decompressor (exception: compressor memory usage may
 increase a little with presets \fB\-0\fR ... \fB\-2\fR). The downside is that
 the compression time will increase dramatically (it can easily double).
+.TP
+.B \-\-no\-adjust
+Display an error and exit if the compression settings exceed the
+the memory usage limit. The default is to adjust the settings downwards so
+that the memory usage limit is not exceeded. Automatic adjusting is
+always disabled when creating raw streams
+.RB ( \-\-format=raw ).
 .TP
 \fB\-M\fR \fIlimit\fR, \fB\-\-memory=\fIlimit
 Set the memory usage limit. If this option is specified multiple times,

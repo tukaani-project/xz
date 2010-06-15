@@ -45,6 +45,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_NO_SPARSE,
 		OPT_FILES,
 		OPT_FILES0,
+		OPT_NO_ADJUST,
 		OPT_INFO_MEMORY,
 		OPT_ROBOT,
 	};
@@ -74,6 +75,7 @@ parse_real(args_info *args, int argc, char **argv)
 		// Basic compression settings
 		{ "format",       required_argument, NULL,  'F' },
 		{ "check",        required_argument, NULL,  'C' },
+		{ "no-adjust",    no_argument,       NULL,  OPT_NO_ADJUST },
 		{ "memory",       required_argument, NULL,  'M' },
 		{ "threads",      required_argument, NULL,  'T' },
 
@@ -365,6 +367,10 @@ parse_real(args_info *args, int argc, char **argv)
 							strerror(errno));
 			}
 
+			break;
+
+		case OPT_NO_ADJUST:
+			opt_auto_adjust = false;
 			break;
 
 		default:

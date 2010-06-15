@@ -22,8 +22,8 @@ enum coder_init_ret {
 
 
 enum operation_mode opt_mode = MODE_COMPRESS;
-
 enum format_type opt_format = FORMAT_AUTO;
+bool opt_auto_adjust = true;
 
 
 /// Stream used to communicate with liblzma
@@ -41,10 +41,6 @@ static size_t filters_count = 0;
 
 /// Number of the preset (0-9)
 static size_t preset_number = 6;
-
-/// True if we should auto-adjust the compression settings to use less memory
-/// if memory usage limit is too low for the original settings.
-static bool auto_adjust = true;
 
 /// Indicate if no preset has been explicitly given. In that case, if we need
 /// to auto-adjust for lower memory usage, we won't print a warning.
@@ -191,7 +187,7 @@ coder_set_compression_settings(void)
 		// If --no-auto-adjust was used or we didn't find LZMA1 or
 		// LZMA2 as the last filter, give an error immediately.
 		// --format=raw implies --no-auto-adjust.
-		if (!auto_adjust || opt_format == FORMAT_RAW)
+		if (!opt_auto_adjust || opt_format == FORMAT_RAW)
 			memlimit_too_small(memory_usage);
 
 		assert(opt_mode == MODE_COMPRESS);

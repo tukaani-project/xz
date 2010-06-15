@@ -1137,10 +1137,14 @@ message_help(bool long_help)
 "  -e, --extreme       use more CPU time when encoding to increase compression\n"
 "                      ratio without increasing memory usage of the decoder"));
 
-	if (long_help)
+	if (long_help) {
+		puts(_(
+"      --no-adjust     if compression settings exceed the memory usage limit,\n"
+"                      give an error instead of adjusting the settings downwards"));
 		puts(_( // xgettext:no-c-format
 "  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"
 "                      the default setting, which is 40 % of total RAM"));
+	}
 
 	if (long_help) {
 		puts(_(

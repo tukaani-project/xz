@@ -118,13 +118,13 @@ Building XZ Utils
         cd /c/devel
         tar xzf xz-5.x.x.tar.gz
         cd xz-5.x.x
-        sh windows/build.sh
+        bash windows/build.bash
 
     If you used some other directory than C:\devel\tools for the build
-    tools, edit the variables near the beginning of build.sh first.
+    tools, edit the variables near the beginning of build.bash first.
 
     If you want to build manually, read the buildit() function in
-    build.sh. Look especially at the latter configure invocation.
+    build.bash. Look especially at the latter configure invocation.
 
     Be patient. Running configure and other scripts used by the build
     system is (very) slow under Windows.

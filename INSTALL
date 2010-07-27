@@ -78,7 +78,7 @@ XZ Utils Installation
 1.2.3. Windows
 
     Building XZ Utils on Windows is supported under MinGW + MSYS and
-    Cygwin. There is windows/build.sh to ease packaging XZ Utils with
+    Cygwin. There is windows/build.bash to ease packaging XZ Utils with
     MinGW + MSYS into a redistributable .zip or .7z file. See
     windows/INSTALL-Windows.txt for more information.
 

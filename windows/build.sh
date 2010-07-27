@@ -106,7 +106,8 @@ buildit()
 	cp -v src/xz/xz.exe src/liblzma/.libs/liblzma.a "$DESTDIR"
 	cp -v src/liblzma/.libs/liblzma-*.dll "$DESTDIR/liblzma.dll"
 
-	strip -v "$DESTDIR/"*
+	strip -v "$DESTDIR/"*.{exe,dll}
+	strip -vg "$DESTDIR/"*.a
 }
 
 # Copy files and convert newlines from LF to CR+LF. Optinally add a suffix

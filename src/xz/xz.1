@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-06-15" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-07-28" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -243,7 +243,7 @@ will decompress such files as if they were a single
 .B .xz
 file.
 .PP
-It is possible to insert padding between the concenated parts
+It is possible to insert padding between the concatenated parts
 or after the last part. The padding must be null bytes and the size
 of the padding must be a multiple of four bytes. This can be useful
 if the .xz file is stored on a medium that stores file sizes
@@ -1669,7 +1669,7 @@ On GNU and *BSD,
 .BR find (1)
 and
 .BR xargs (1)
-can be used to parallellize compression of many files:
+can be used to parallelize compression of many files:
 .PP
 .IP
 .B "find . \-type f \e! \-name '*.xz' \-print0 | xargs \-0r \-P4 \-n16 xz"

@@ -25,7 +25,7 @@ bool opt_robot = false;
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
-const char *stdin_filename = "(stdin)";
+const char *const stdin_filename = "(stdin)";
 
 
 static void

@@ -4,7 +4,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZDEC 1 "2010-03-07" "Tukaani" "XZ Utils"
+.TH XZDEC 1 "2010-08-07" "Tukaani" "XZ Utils"
 .SH NAME
 xzdec, lzmadec \- Small .xz and .lzma decompressors
 .SH SYNOPSIS
@@ -44,8 +44,10 @@ files.
 To reduce the size of the executable,
 .B xzdec
 doesn't support multithreading or localization, and doesn't read options from
+.B XZ_DEFAULTS
+and
 .B XZ_OPT
-environment variable.
+environment variables.
 .B xzdec
 doesn't support displaying intermediate progress information: sending
 .B SIGINFO
@@ -76,45 +78,6 @@ Ignored for
 compatibility.
 .B xzdec
 always writes the decompressed data to standard output.
-.TP
-\fB\-M\fR \fIlimit\fR, \fB\-\-memory=\fIlimit
-Set the memory usage
-.IR limit .
-If this option is specified multiple times, the last one takes effect. The
-.I limit
-can be specified in multiple ways:
-.RS
-.IP \(bu 3
-The
-.I limit
-can be an absolute value in bytes. Using an integer suffix like
-.B MiB
-can be useful. Example:
-.B "\-\-memory=80MiB"
-.IP \(bu 3
-The
-.I limit
-can be specified as a percentage of physical RAM. Example:
-.B "\-\-memory=70%"
-.IP \(bu 3
-The
-.I limit
-can be reset back to its default value by setting it to
-.BR 0 .
-.IP \(bu 3
-The memory usage limiting can be effectively disabled by setting
-.I limit
-to
-.BR max .
-This isn't recommended. It's usually better to use, for example,
-.BR \-\-memory=90% .
-.RE
-.IP
-The current
-.I limit
-can be seen near the bottom of the output of the
-.B \-\-help
-option.
 .TP
 .BR \-q ", " \-\-quiet
 Specifying this once does nothing since

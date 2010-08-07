@@ -107,10 +107,6 @@ extern void message_filters_show(
 extern void message_try_help(void);
 
 
-/// Print the memory usage limit and exit.
-extern void message_memlimit(void) lzma_attribute((noreturn));
-
-
 /// Prints the version number to stdout and exits with exit status SUCCESS.
 extern void message_version(void) lzma_attribute((noreturn));
 

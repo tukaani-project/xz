@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-07-28" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-08-07" "Tukaani" "XZ Utils"
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
 .SH SYNOPSIS
@@ -188,52 +188,56 @@ The memory usage of
 .B xz
 varies from a few hundred kilobytes to several gigabytes depending on
 the compression settings. The settings used when compressing a file
-affect also the memory usage of the decompressor. Typically the decompressor
-needs only 5\ % to 20\ % of the amount of RAM that the compressor needed when
-creating the file. Still, the worst-case memory usage of the decompressor
-is several gigabytes.
+determine the memory requirements of the decompressor. Typically the
+decompressor needs only 5\ % to 20\ % of the amount of memory that the
+compressor needed when creating the file. For example, decompressing a
+file created with
+.B xz \-9
+currently requires 65 MiB of memory. Still, it is possible to have
+.B .xz
+files that need several gigabytes of memory to decompress.
 .PP
-To prevent uncomfortable surprises caused by huge memory usage,
+Especially users of older systems may find the possibility of very large
+memory usage annoying. To prevent uncomfortable surprises,
 .B xz
-has a built-in memory usage limiter. While some operating systems provide
-ways to limit the memory usage of processes, relying on it wasn't deemed
-to be flexible enough. The default limit depends on the total amount of
-physical RAM:
-.IP \(bu 3
-If 40\ % of RAM is at least 80 MiB, 40\ % of RAM is used as the limit.
-.IP \(bu 3
-If 80\ % of RAM is less than 80 MiB, 80\ % of RAM is used as the limit.
-.IP \(bu 3
-Otherwise 80 MiB is used as the limit.
+has a built-in memory usage limiter, which is disabled by default.
+While some operating systems provide ways to limit the memory usage of
+processes, relying on it wasn't deemed to be flexible enough (e.g. using
+.BR ulimit (1)
+to limit virtual memory tends to cripple
+.BR mmap (2)).
 .PP
-When compressing, if the selected compression settings exceed the memory
-usage limit, the settings are automatically adjusted downwards and a notice
-about this is displayed. As an exception, if the memory usage limit is
-exceeded when compressing with
-.B \-\-format=raw
-or
-.BR \-\-no\-adjust ,
-an error is displayed and
+The memory usage limiter can be enabled with the command line option
+\fB\-\-memlimit=\fIlimit\fR, but often it is more convenient to enable
+the limiter by default by setting the environment variable
+.BR XZ_DEFAULTS ,
+e.g.
+.BR XZ_DEFAULTS=\-\-memlimit=150MiB .
+It is possible to set the limits separately for compression and decompression
+by using \fB\-\-memlimit\-compress=\fIlimit\fR and
+\fB\-\-memlimit\-decompress=\fIlimit\fR, respectively.
+Using these two options outside
+.B XZ_DEFAULTS
+is rarely useful, because a single run of
 .B xz
-will exit with exit status
-.BR 1 .
+cannot do both compression and decompression and
+.BI \-\-memlimit= limit
+(or \fB\-M\fR \fIlimit\fR)
+is shorter to type on the command line.
 .PP
-If source
-.I file
-cannot be decompressed without exceeding the memory usage limit, an error
-message is displayed and the file is skipped. Note that compressed files
-may contain many blocks, which may have been compressed with different
-settings. Typically all blocks will have roughly the same memory requirements,
-but it is possible that a block later in the file will exceed the memory usage
-limit, and an error about too low memory usage limit gets displayed after some
-data has already been decompressed.
-.PP
-The absolute value of the active memory usage limit can be seen with
-.B \-\-info-memory
-or near the bottom of the output of
-.BR \-\-long\-help .
-The default limit can be overridden with
-\fB\-\-memory=\fIlimit\fR.
+If the specified memory usage limit is exceeded when decompressing,
+.B xz
+will display an error and decompressing the file will fail.
+If the limit is exceeded when compressing,
+.B xz
+will try to scale the settings down so that the limit is no longer exceeded
+(except when using \fB\-\-format=raw\fR or \fB\-\-no\-adjust\fR).
+This way the operation won't fail unless the limit is very small. The scaling
+of the settings is done in steps that don't match the compression level
+presets, e.g. if the limit is only slightly less than the amount required for
+.BR "xz \-9" ,
+the settings will be scaled down only a little, not all the way down to
+.BR "xz \-8" .
 .SS Concatenation and padding with .xz files
 It is possible to concatenate
 .B .xz
@@ -363,7 +367,7 @@ doesn't recognize the type of the source file,
 .B xz
 will copy the source file as is to standard output. This allows using
 .B xzcat
-.B \--force
+.B \-\-force
 like
 .BR cat (1)
 for files that have not been compressed with
@@ -380,7 +384,7 @@ can be used to restrict
 to decompress only a single file format.
 .RE
 .TP
-.BR \-c ", " \-\-stdout ", " \-\-to-stdout
+.BR \-c ", " \-\-stdout ", " \-\-to\-stdout
 Write the compressed or decompressed data to standard output instead of
 a file. This implies
 .BR \-\-keep .
@@ -559,12 +563,8 @@ due to speed and memory usage.
 The exact compression settings (filter chain) used by each preset may
 vary between
 .B xz
-versions. The settings may also vary between files being compressed, if
-.B xz
-determines that modified settings will probably give better compression
-ratio without significantly affecting compression time or memory usage.
-.IP
-Because the settings may vary, the memory usage may vary too. The following
+versions. Because the settings may vary, the memory usage may vary
+slightly too. FIXME The following
 table lists the maximum memory usage of each preset level, which won't be
 exceeded even in future versions of
 .BR xz .
@@ -590,12 +590,6 @@ Preset;Compression;Decompression
 .TE
 .RE
 .RE
-.IP
-When compressing,
-.B xz
-automatically adjusts the compression settings downwards if
-the memory usage limit would be exceeded, so it is safe to specify
-a high preset level even on systems that don't have lots of RAM.
 .TP
 .BR \-\-fast " and " \-\-best
 These are somewhat misleading aliases for
@@ -619,16 +613,25 @@ of the compressor or decompressor (exception: compressor memory usage may
 increase a little with presets \fB\-0\fR ... \fB\-2\fR). The downside is that
 the compression time will increase dramatically (it can easily double).
 .TP
+.BI \-\-memlimit\-compress= limit
+Set a memory usage limit for compression. If this option is specified
+multiple times, the last one takes effect.
+.IP
+If the compression settings exceed the
+.IR limit ,
+.B xz
+will adjust the settings downwards so that the limit is no longer exceeded
+and display a notice that automatic adjustment was done. Adjustment is never
+done when compressing with
+.B \-\-format=raw
+or if
 .B \-\-no\-adjust
-Display an error and exit if the compression settings exceed the
-the memory usage limit. The default is to adjust the settings downwards so
-that the memory usage limit is not exceeded. Automatic adjusting is
-always disabled when creating raw streams
-.RB ( \-\-format=raw ).
-.TP
-\fB\-M\fR \fIlimit\fR, \fB\-\-memory=\fIlimit
-Set the memory usage limit. If this option is specified multiple times,
-the last one takes effect. The
+has been specified. In those cases, an error is displayed and
+.B xz
+will exit with exit status
+.BR 1 .
+.IP
+The
 .I limit
 can be specified in multiple ways:
 .RS
@@ -638,52 +641,80 @@ The
 can be an absolute value in bytes. Using an integer suffix like
 .B MiB
 can be useful. Example:
-.B "\-\-memory=80MiB"
+.B "\-\-memlimit\-compress=80MiB"
 .IP \(bu 3
 The
 .I limit
-can be specified as a percentage of physical RAM. Example:
-.B "\-\-memory=70%"
+can be specified as a percentage of total physical memory (RAM).
+This can be useful especially when setting the
+.B XZ_DEFAULTS
+environment variable in a shell initialization script that is shared
+between different computers. That way the limit is automatically bigger
+on systems with more memory. Example:
+.B "\-\-memlimit\-compress=70%"
 .IP \(bu 3
 The
 .I limit
 can be reset back to its default value by setting it to
 .BR 0 .
-See the section
-.B "Memory usage"
-for how the default limit is defined.
-.IP \(bu 3
-The memory usage limiting can be effectively disabled by setting
+This is currently equivalent to setting the
 .I limit
 to
-.BR max .
-This isn't recommended. It's usually better to use, for example,
-.BR \-\-memory=90% .
+.B max
+i.e. no memory usage limit. Once multithreading support has been implemented,
+there may be a difference between
+.B 0
+and
+.B max
+for the multithreaded case, so it is recommended to use
+.B 0
+instead of
+.B max
+at least until the details have been decided.
 .RE
 .IP
-The current
-.I limit
-can be seen near the bottom of the output of the
-.B \-\-long-help
-option.
+See also the section
+.BR "Memory usage" .
+.TP
+.BI \-\-memlimit\-decompress= limit
+Set a memory usage limit for decompression. This affects also the
+.B \-\-list
+mode. If the operation is not possible without exceeding the
+.IR limit ,
+.B xz
+will display an error and decompressing the file will fail. See
+.BI \-\-memlimit\-compress= limit
+for possible ways to specify the
+.IR limit .
+.TP
+\fB\-M\fR \fIlimit\fR, \fB\-\-memlimit=\fIlimit\fR, \fB\-\-memory=\fIlimit
+This is equivalent to specifying \fB\-\-memlimit\-compress=\fIlimit
+\fB\-\-memlimit\-decompress=\fIlimit\fR.
+.TP
+.B \-\-no\-adjust
+Display an error and exit if the compression settings exceed the
+the memory usage limit. The default is to adjust the settings downwards so
+that the memory usage limit is not exceeded. Automatic adjusting is
+always disabled when creating raw streams
+.RB ( \-\-format=raw ).
 .TP
 \fB\-T\fR \fIthreads\fR, \fB\-\-threads=\fIthreads
-Specify the maximum number of worker threads to use. The default is
-the number of available CPU cores. You can see the current value of
-.I threads
-near the end of the output of the
-.B \-\-long\-help
-option.
-.IP
-The actual number of worker threads can be less than
+Specify the number of worker threads to use. The actual number of threads
+can be less than
 .I threads
 if using more threads would exceed the memory usage limit.
-In addition to CPU-intensive worker threads,
-.B xz
-may use a few auxiliary threads, which don't use a lot of CPU time.
 .IP
 .B "Multithreaded compression and decompression are not implemented yet,"
 .B "so this option has no effect for now."
+.IP
+.B "As of writing (2010-08-07), it hasn't been decided if threads will be"
+.B "used by default on multicore systems once support for threading has"
+.B "been implemented. Comments are welcome."
+The complicating factor is that using many threads will increase the memory
+usage dramatically. Note that if multithreading will be the default,
+it will be done so that single-threaded and multithreaded modes produce
+the same output, so compression ratio won't be significantly affected if
+threading will be enabled by default.
 .SS Custom compressor filter chains
 A custom filter chain allows specifying the compression settings in detail
 instead of relying on the settings associated to the preset levels.
@@ -1037,7 +1068,8 @@ Currently only simple byte-wise delta calculation is supported. It can
 be useful when compressing e.g. uncompressed bitmap images or uncompressed
 PCM audio. However, special purpose algorithms may give significantly better
 results than Delta + LZMA2. This is true especially with audio, which
-compresses faster and better e.g. with FLAC.
+compresses faster and better e.g. with
+.BR flac (1).
 .IP
 Supported
 .IR options :
@@ -1087,18 +1119,17 @@ processed so far.
 .IP \(bu 3
 Compression or decompression speed. This is measured as the amount of
 uncompressed data consumed (compression) or produced (decompression)
-per second. It is shown once a few seconds have passed since
+per second. It is shown after a few seconds have passed since
 .B xz
 started processing the file.
 .IP \(bu 3
-Elapsed time or estimated time remaining.
-Elapsed time is displayed in the format M:SS or H:MM:SS.
-The estimated remaining time is displayed in a less precise format
-which never has colons, for example, 2 min 30 s. The estimate can
-be shown only when the size of the input file is known and a couple of
-seconds have already passed since
+Elapsed time in the format M:SS or H:MM:SS.
+.IP \(bu 3
+Estimated remaining time is shown only when the size of the input file is
+known and a couple of seconds have already passed since
 .B xz
-started processing the file.
+started processing the file. The time is shown in a less precise format which
+never has any colons, e.g. 2 min 30 s.
 .RE
 .IP
 When standard error is not a terminal,
@@ -1106,11 +1137,11 @@ When standard error is not a terminal,
 will make
 .B xz
 print the filename, compressed size, uncompressed size, compression ratio,
-speed, and elapsed time on a single line to standard error after
-compressing or decompressing the file. If operating took at least a few
-seconds, also the speed and elapsed time are printed. If the operation
-didn't finish, for example due to user interruption, also the completion
-percentage is printed if the size of the input file is known.
+and possibly also the speed and elapsed time on a single line to standard
+error after compressing or decompressing the file. The speed and elapsed
+time are included only when the operation took at least a few seconds.
+If the operation didn't finish, for example due to user interruption, also
+the completion percentage is printed if the size of the input file is known.
 .TP
 .BR \-Q ", " \-\-no\-warn
 Don't set the exit status to
@@ -1133,12 +1164,11 @@ releases. See the section
 .B "ROBOT MODE"
 for details.
 .TP
-.BR \-\-info-memory
-Display the current memory usage limit in human-readable format on
-a single line, and exit successfully. To see how much RAM
+.BR \-\-info\-memory
+Display, in human-readable format, how much physical memory (RAM)
 .B xz
-thinks your system has, use
-.BR "\-\-memory=100% \-\-info\-memory" .
+thinks the system has and the memory usage limits for compression
+and decompression, and exit successfully.
 .TP
 .BR \-h ", " \-\-help
 Display a help message describing the most commonly used options,
@@ -1165,7 +1195,7 @@ easier to parse by other programs. Currently
 .B \-\-robot
 is supported only together with
 .BR \-\-version ,
-.BR \-\-info-memory ,
+.BR \-\-info\-memory ,
 and
 .BR \-\-list .
 It will be supported for normal compression and decompression in the future.
@@ -1216,10 +1246,24 @@ and
 5.0.0 is
 .BR 50000002 .
 .SS Memory limit information
-.B "xz \-\-robot \-\-info-memory"
-prints the current memory usage limit as bytes on a single line.
-To get the total amount of installed RAM, use
-.BR "xz \-\-robot \-\-memory=100% \-\-info-memory" .
+.B "xz \-\-robot \-\-info\-memory"
+prints a single line with three tab-separated columns:
+.RS
+.IP 1. 4
+Total amount of physical memory (RAM) as bytes
+.IP 2. 4
+Memory usage limit for compression as bytes.
+A special value of zero indicates the default setting,
+which for single-threaded mode is the same as no limit.
+.IP 3. 4
+Memory usage limit for decompression as bytes.
+A special value of zero indicates the default setting,
+which for single-threaded mode is the same as no limit.
+.RE
+.PP
+In the future, the output of
+.B "xz \-\-robot \-\-info\-memory"
+may have more columns, but never more than a single line.
 .SS List mode
 .B "xz \-\-robot \-\-list"
 uses tab-separated output. The first column of every line has a string
@@ -1455,16 +1499,52 @@ Something worth a warning occurred, but no actual errors occurred.
 Notices (not warnings or errors) printed on standard error don't affect
 the exit status.
 .SH ENVIRONMENT
-.TP
-.B XZ_OPT
-A space-separated list of options is parsed from
-.B XZ_OPT
-before parsing the options given on the command line. Note that only
-options are parsed from
-.BR XZ_OPT ;
-all non-options are silently ignored. Parsing is done with
+.B xz
+parses space-separated lists of options from the environment variables
+.B XZ_DEFAULTS
+and
+.BR XZ_OPT ,
+in this order, before parsing the options from the command line. Note that
+only options are parsed from the environment variables; all non-options
+are silently ignored. Parsing is done with
 .BR getopt_long (3)
 which is used also for the command line arguments.
+.TP
+.B XZ_DEFAULTS
+User-specific or system-wide default options.
+Typically this is set in a shell initialization script to enable
+.BR xz 's
+memory usage limiter by default. Excluding shell initialization scripts
+and similar special cases, scripts must never set or unset
+.BR XZ_DEFAULTS .
+.TP
+.B XZ_OPT
+This is for passing options to
+.B xz
+when it is not possible to set the options directly on the
+.B xz
+command line. This is the case e.g. when
+.B xz
+is run by a script or tool, e.g. GNU
+.BR tar (1):
+.RS
+.IP
+\fBXZ_OPT=\-2v tar caf foo.tar.xz foo
+.RE
+.IP
+Scripts may use
+.B XZ_OPT
+e.g. to set script-specific default compression options.
+It is still recommended to allow users to override
+.B XZ_OPT
+if that is reasonable, e.g. in
+.BR sh (1)
+scripts one may use something like this:
+.RS
+.IP
+\fBXZ_OPT=${XZ_OPT\-"\-7e"}; export XZ_OPT
+.RE
+.IP
 .SH "LZMA UTILS COMPATIBILITY"
 The command line syntax of
 .B xz
@@ -1663,7 +1743,7 @@ XZ Embedded supports BCJ filters, but only with the default start offset.
 A mix of compressed and uncompressed files can be decompressed
 to standard output with a single command:
 .IP
-.B "xz -dcf a.txt b.txt.xz c.txt d.txt.xz > abcd.txt"
+.B "xz \-dcf a.txt b.txt.xz c.txt d.txt.xz > abcd.txt"
 .SS Parallel compression of many files
 On GNU and *BSD,
 .BR find (1)
@@ -1672,7 +1752,8 @@ and
 can be used to parallelize compression of many files:
 .PP
 .IP
-.B "find . \-type f \e! \-name '*.xz' \-print0 | xargs \-0r \-P4 \-n16 xz"
+.B "find . \-type f \e! \-name '*.xz' \-print0 |"
+.B "xargs \-0r \-P4 \-n16 xz \-T1"
 .PP
 The
 .B \-P
@@ -1690,11 +1771,19 @@ or even more may be appropriate to reduce the number of
 processes that
 .BR xargs (1)
 will eventually create.
+.PP
+The option
+.B \-T1
+for
+.B xz
+is there to force it to single-threaded mode, because
+.BR xargs (1)
+is used to control the amount of parallelization.
 .SS Robot mode examples
 Calculating how many bytes have been saved in total after compressing
 multiple files:
 .IP
-.B "xz --robot --list *.xz | awk '/^totals/{print $5\-$4}'"
+.B "xz \-\-robot \-\-list *.xz | awk '/^totals/{print $5\-$4}'"
 .SH "SEE ALSO"
 .BR xzdec (1),
 .BR gzip (1),

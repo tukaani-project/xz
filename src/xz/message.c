@@ -854,7 +854,7 @@ message_mem_needed(enum message_verbosity v, uint64_t memusage)
 	// Show the memory usage limit as MiB unless it is less than 1 MiB.
 	// This way it's easy to notice errors where one has typed
 	// --memory=123 instead of --memory=123MiB.
-	uint64_t memlimit = hardware_memlimit_get();
+	uint64_t memlimit = hardware_memlimit_get(opt_mode);
 	if (memlimit < (UINT32_C(1) << 20)) {
 		snprintf(memlimitstr, sizeof(memlimitstr), "%s B",
 				uint64_to_str(memlimit, 1));
@@ -1053,21 +1053,6 @@ message_try_help(void)
 
 
 extern void
-message_memlimit(void)
-{
-	if (opt_robot)
-		printf("%" PRIu64 "\n", hardware_memlimit_get());
-	else
-		printf(_("%s MiB (%s bytes)\n"),
-			uint64_to_str(
-				round_up_to_mib(hardware_memlimit_get()), 0),
-			uint64_to_str(hardware_memlimit_get(), 1));
-
-	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
-}
-
-
-extern void
 message_version(void)
 {
 	// It is possible that liblzma version is different than the command
@@ -1138,12 +1123,16 @@ message_help(bool long_help)
 "                      ratio without increasing memory usage of the decoder"));
 
 	if (long_help) {
+		puts(_( // xgettext:no-c-format
+"      --memlimit-compress=LIMIT\n"
+"      --memlimit-decompress=LIMIT\n"
+"  -M, --memlimit=LIMIT\n"
+"                      set memory usage limit for compression, decompression,\n"
+"                      or both; LIMIT is in bytes, % of RAM, or 0 for defaults"));
+
 		puts(_(
 "      --no-adjust     if compression settings exceed the memory usage limit,\n"
 "                      give an error instead of adjusting the settings downwards"));
-		puts(_( // xgettext:no-c-format
-"  -M, --memory=NUM    use roughly NUM bytes of memory at maximum; 0 indicates\n"
-"                      the default setting, which is 40 % of total RAM"));
 	}
 
 	if (long_help) {
@@ -1201,7 +1190,8 @@ message_help(bool long_help)
 "      --robot         use machine-parsable messages (useful for scripts)"));
 		puts("");
 		puts(_(
-"      --info-memory   display the memory usage limit and exit"));
+"      --info-memory   display the total amount of RAM and the currently active\n"
+"                      memory usage limits, and exit"));
 		puts(_(
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"));
@@ -1215,15 +1205,6 @@ message_help(bool long_help)
 "  -V, --version       display the version number and exit"));
 
 	puts(_("\nWith no FILE, or when FILE is -, read standard input.\n"));
-
-	if (long_help) {
-		printf(_(
-"On this system and configuration, this program will use a maximum of roughly\n"
-"%s MiB RAM and "), uint64_to_str(round_up_to_mib(hardware_memlimit_get()), 0));
-		printf(N_("one thread.\n\n", "%s threads.\n\n",
-				hardware_threadlimit_get()),
-				uint64_to_str(hardware_threadlimit_get(), 0));
-	}
 
 	// TRANSLATORS: This message indicates the bug reporting address
 	// for this package. Please add _another line_ saying

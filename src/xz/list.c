@@ -203,7 +203,7 @@ parse_indexes(xz_file_info *xfi, file_pair *pair)
 		pos -= index_size;
 
 		// See how much memory we can use for decoding this Index.
-		uint64_t memlimit = hardware_memlimit_get();
+		uint64_t memlimit = hardware_memlimit_get(MODE_LIST);
 		uint64_t memused = 0;
 		if (combined_index != NULL) {
 			memused = lzma_index_memused(combined_index);

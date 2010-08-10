@@ -62,9 +62,9 @@ test_xz() {
 	echo . | tr -d '\n\r'
 }
 
-XZ="../src/xz/xz --memory=28MiB --threads=1"
-XZDEC="../src/xzdec/xzdec --memory=4MiB"
-unset XZ_OPT
+XZ="../src/xz/xz --memlimit-compress=28MiB --memlimit-decompress=4MiB \
+		--no-adjust --threads=1 --check=crc64"
+XZDEC="../src/xzdec/xzdec" # No memory usage limiter available
 
 # Create the required input files.
 if ./create_compress_files ; then

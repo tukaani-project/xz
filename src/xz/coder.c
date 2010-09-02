@@ -67,6 +67,15 @@ extern void
 coder_set_preset(size_t new_preset)
 {
 	preset_number = new_preset;
+
+	// Setting a preset makes us forget a possibly defined custom
+	// filter chain.
+	while (filters_count > 0) {
+		--filters_count;
+		free(filters[filters_count].options);
+		filters[filters_count].options = NULL;
+	}
+
 	return;
 }
 

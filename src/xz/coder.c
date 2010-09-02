@@ -42,10 +42,6 @@ static size_t filters_count = 0;
 /// Number of the preset (0-9)
 static size_t preset_number = 6;
 
-/// Indicate if no preset has been explicitly given. In that case, if we need
-/// to auto-adjust for lower memory usage, we won't print a warning.
-static bool preset_default = true;
-
 /// If a preset is used (no custom filter chain) and preset_extreme is true,
 /// a significantly slower compression is used to achieve slightly better
 /// compression ratio.
@@ -71,7 +67,6 @@ extern void
 coder_set_preset(size_t new_preset)
 {
 	preset_number = new_preset;
-	preset_default = false;
 	return;
 }
 
@@ -141,8 +136,6 @@ coder_set_compression_settings(void)
 				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
 		filters[0].options = &opt_lzma;
 		filters_count = 1;
-	} else {
-		preset_default = false;
 	}
 
 	// Terminate the filter options array.
@@ -235,18 +228,15 @@ coder_set_compression_settings(void)
 		}
 
 		// Tell the user that we decreased the dictionary size.
-		// However, omit the message if no preset or custom chain
-		// was given. FIXME: Always warn?
-		if (!preset_default)
-			message(V_WARNING, _("Adjusted LZMA%c dictionary size "
-					"from %s MiB to %s MiB to not exceed "
-					"the memory usage limit of %s MiB"),
-					filters[i].id == LZMA_FILTER_LZMA2
-						? '2' : '1',
-					uint64_to_str(orig_dict_size >> 20, 0),
-					uint64_to_str(opt->dict_size >> 20, 1),
-					uint64_to_str(round_up_to_mib(
-						memory_limit), 2));
+		message(V_WARNING, _("Adjusted LZMA%c dictionary size "
+				"from %s MiB to %s MiB to not exceed "
+				"the memory usage limit of %s MiB"),
+				filters[i].id == LZMA_FILTER_LZMA2
+					? '2' : '1',
+				uint64_to_str(orig_dict_size >> 20, 0),
+				uint64_to_str(opt->dict_size >> 20, 1),
+				uint64_to_str(round_up_to_mib(
+					memory_limit), 2));
 	}
 
 /*

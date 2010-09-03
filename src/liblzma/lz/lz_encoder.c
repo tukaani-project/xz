@@ -349,9 +349,10 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 	// Maximum number of match finder cycles
 	mf->depth = lz_options->depth;
 	if (mf->depth == 0) {
-		mf->depth = 16 + (mf->nice_len / 2);
-		if (!is_bt)
-			mf->depth /= 2;
+		if (is_bt)
+			mf->depth = 16 + mf->nice_len / 2;
+		else
+			mf->depth = 4 + mf->nice_len / 4;
 	}
 
 	return false;

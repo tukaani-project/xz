@@ -184,6 +184,13 @@ coder_set_compression_settings(void)
 	// Print memory usage info before possible dictionary
 	// size auto-adjusting.
 	message_mem_needed(V_DEBUG, memory_usage);
+	if (opt_mode == MODE_COMPRESS) {
+		const uint64_t decmem = lzma_raw_decoder_memusage(filters);
+		if (decmem != UINT64_MAX)
+			message(V_DEBUG, _("Decompression will need "
+					"%s MiB of memory."), uint64_to_str(
+						round_up_to_mib(decmem), 0));
+	}
 
 	if (memory_usage > memory_limit) {
 		// If --no-auto-adjust was used or we didn't find LZMA1 or

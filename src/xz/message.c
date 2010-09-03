@@ -1076,8 +1076,11 @@ message_help(bool long_help)
 			"Compress or decompress FILEs in the .xz format.\n\n"),
 			progname);
 
-	puts(_("Mandatory arguments to long options are mandatory for "
-			"short options too.\n"));
+	// NOTE: The short help doesn't currently have options that
+	// take arguments.
+	if (long_help)
+		puts(_("Mandatory arguments to long options are mandatory "
+				"for short options too.\n"));
 
 	if (long_help)
 		puts(_(" Operation mode:\n"));

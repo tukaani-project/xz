@@ -46,7 +46,6 @@ lzma_lzma_preset(lzma_options_lzma *options, uint32_t preset)
 	}
 
 	if (flags & LZMA_PRESET_EXTREME) {
-		options->lc = 4; // FIXME?
 		options->mode = LZMA_MODE_NORMAL;
 		options->mf = LZMA_MF_BT4;
 		if (level == 3 || level == 5) {

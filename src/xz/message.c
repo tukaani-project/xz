@@ -1089,7 +1089,7 @@ message_help(bool long_help)
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
 "  -t, --test          test compressed file integrity\n"
-"  -l, --list          list information about files"));
+"  -l, --list          list information about .xz files"));
 
 	if (long_help)
 		puts(_("\n Operation modifiers:\n"));
@@ -1103,27 +1103,27 @@ message_help(bool long_help)
 		puts(_(
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
-"      --files=[FILE]  read filenames to process from FILE; if FILE is\n"
+"      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"
-"      --files0=[FILE] like --files but use the null character as terminator"));
+"      --files0[=FILE] like --files but use the null character as terminator"));
 
 	if (long_help) {
 		puts(_("\n Basic file format and compression options:\n"));
 		puts(_(
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      `auto' (default), `xz', `lzma', and `raw'\n"
-"  -C, --check=CHECK   integrity check type: `crc32', `crc64' (default),\n"
-"                      `sha256', or `none' (use with caution)"));
+"  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
+"                      `crc32', `crc64' (default), or `sha256'"));
 	}
 
 	puts(_(
-"  -0 .. -9            compression preset; 0-2 fast compression, 3-5 good\n"
-"                      compression, 6-9 excellent compression; default is 6"));
+"  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
+"                      decompressor memory usage into account before using 7-9!"));
 
 	puts(_(
-"  -e, --extreme       use more CPU time when encoding to increase compression\n"
-"                      ratio without increasing memory usage of the decoder"));
+"  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
+"                      does not affect decompressor memory requirements"));
 
 	if (long_help) {
 		puts(_( // xgettext:no-c-format
@@ -1148,7 +1148,7 @@ message_help(bool long_help)
 "\n"
 "  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
 "  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
-"                        preset=NUM reset options to preset number NUM (0-9)\n"
+"                        preset=PRE reset options to a preset (0-9[e])\n"
 "                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
 "                        lc=NUM     number of literal context bits (0-4; 3)\n"
 "                        lp=NUM     number of literal position bits (0-4; 0)\n"
@@ -1161,9 +1161,9 @@ message_help(bool long_help)
 
 		puts(_(
 "\n"
-"  --x86[=OPTS]        x86 BCJ filter\n"
+"  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
 "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-"  --ia64[=OPTS]       IA64 (Itanium) BCJ filter\n"
+"  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
 "  --arm[=OPTS]        ARM BCJ filter (little endian only)\n"
 "  --armthumb[=OPTS]   ARM-Thumb BCJ filter (little endian only)\n"
 "  --sparc[=OPTS]      SPARC BCJ filter\n"

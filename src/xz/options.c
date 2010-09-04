@@ -352,8 +352,7 @@ options_lzma(const char *str)
 	parse_options(str, opts, &set_lzma, options);
 
 	if (options->lc + options->lp > LZMA_LCLP_MAX)
-		message_fatal(_("The sum of lc and lp must be at "
-				"maximum of 4"));
+		message_fatal(_("The sum of lc and lp must not exceed 4"));
 
 	const uint32_t nice_len_min = options->mf & 0x0F;
 	if (options->nice_len < nice_len_min)

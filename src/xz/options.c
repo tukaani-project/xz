@@ -346,18 +346,8 @@ options_lzma(const char *str)
 	};
 
 	lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
-	*options = (lzma_options_lzma){
-		.dict_size = LZMA_DICT_SIZE_DEFAULT,
-		.preset_dict =  NULL,
-		.preset_dict_size = 0,
-		.lc = LZMA_LC_DEFAULT,
-		.lp = LZMA_LP_DEFAULT,
-		.pb = LZMA_PB_DEFAULT,
-		.mode = LZMA_MODE_NORMAL,
-		.nice_len = 64,
-		.mf = LZMA_MF_BT4,
-		.depth = 0,
-	};
+	if (lzma_lzma_preset(options, LZMA_PRESET_DEFAULT))
+		message_bug();
 
 	parse_options(str, opts, &set_lzma, options);
 

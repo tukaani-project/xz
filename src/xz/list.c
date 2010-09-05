@@ -588,10 +588,10 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 	static bool headings_displayed = false;
 	if (!headings_displayed) {
 		headings_displayed = true;
-		// TRANSLATORS: These are column titles. From Strms (Streams)
+		// TRANSLATORS: These are column headings. From Strms (Streams)
 		// to Ratio, the columns are right aligned. Check and Filename
 		// are left aligned. If you need longer words, it's OK to
-		// use two lines here. Test with xz --list.
+		// use two lines here. Test with "xz -l foo.xz".
 		puts(_("Strms  Blocks   Compressed Uncompressed  Ratio  "
 				"Check   Filename"));
 	}
@@ -656,6 +656,10 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	uint32_t check_max = 0;
 
 	// Print information about the Streams.
+	//
+	// TRANSLATORS: The second line is column headings. All except
+	// Check are right aligned; Check is left aligned. Test with
+	// "xz -lv foo.xz".
 	puts(_("  Streams:\n    Stream    Blocks"
 			"      CompOffset    UncompOffset"
 			"        CompSize      UncompSize  Ratio"
@@ -698,15 +702,24 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 		// Calculate the width of the CheckVal field.
 		const int checkval_width = my_max(8, 2 * check_max);
 
-		// Print the headings.
+		// TRANSLATORS: The second line is column headings. All
+		// except Check are right aligned; Check is left aligned.
 		printf(_("  Blocks:\n    Stream     Block"
 			"      CompOffset    UncompOffset"
 			"       TotalSize      UncompSize  Ratio  Check"));
 
-		if (detailed)
-			printf(_("      %-*s  Header  Flags        CompSize"
-					"    MemUsage  Filters"),
-					checkval_width, _("CheckVal"));
+		if (detailed) {
+			// TRANSLATORS: These are additional column headings
+			// for the most verbose listing mode. CheckVal
+			// (Check value), Flags, and Filters are left aligned.
+			// Header (Block Header Size), CompSize, and MemUsage
+			// are right aligned. %*s is replaced with 0-120
+			// spaces to make the CheckVal column wide enough.
+			// Test with "xz -lvv foo.xz".
+			printf(_("      CheckVal %*s Header  Flags        "
+					"CompSize    MemUsage  Filters"),
+					checkval_width - 8, "");
+		}
 
 		putchar('\n');
 
@@ -896,10 +909,10 @@ print_totals_basic(void)
 	// Since we print totals only when there are at least two files,
 	// the English message will always use "%s files". But some other
 	// languages need different forms for different plurals so we
-	// have to translate this string still.
+	// have to translate this with N_().
 	//
-	// TRANSLATORS: This simply indicates the number of files shown
-	// by --list even though the format string uses %s.
+	// TRANSLATORS: %s is an integer. Only the plural form of this
+	// message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
 	printf(N_("%s file", "%s files\n",
 			totals.files <= ULONG_MAX ? totals.files
 				: (totals.files % 1000000) + 1000000),

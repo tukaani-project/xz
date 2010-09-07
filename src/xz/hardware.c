@@ -114,6 +114,8 @@ hardware_memlimit_show(void)
 		printf("%" PRIu64 "\t%" PRIu64 "\t%" PRIu64 "\n", total_ram,
 				memlimit_compress, memlimit_decompress);
 	} else {
+		// TRANSLATORS: Test with "xz --info-memory" to see if
+		// the alignment looks nice.
 		memlimit_show(_("Total amount of physical memory (RAM): "),
 				total_ram);
 		memlimit_show(_("Memory usage limit for compression:    "),

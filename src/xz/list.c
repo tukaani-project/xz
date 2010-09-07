@@ -909,11 +909,11 @@ print_totals_basic(void)
 	// Since we print totals only when there are at least two files,
 	// the English message will always use "%s files". But some other
 	// languages need different forms for different plurals so we
-	// have to translate this with N_().
+	// have to translate this with ngettext().
 	//
 	// TRANSLATORS: %s is an integer. Only the plural form of this
 	// message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-	printf(N_("%s file", "%s files\n",
+	printf(ngettext("%s file\n", "%s files\n",
 			totals.files <= ULONG_MAX ? totals.files
 				: (totals.files % 1000000) + 1000000),
 			uint64_to_str(totals.files, 0));

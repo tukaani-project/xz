@@ -1158,6 +1158,10 @@ message_help(bool long_help)
 
 #if defined(HAVE_ENCODER_LZMA1) || defined(HAVE_DECODER_LZMA1) \
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
+		// TRANSLATORS: The word "literal" in "literal context bits"
+		// means how many "context bits" to use when encoding
+		// literals. A literal is a single 8-bit byte. It doesn't
+		// mean "literally" here.
 		puts(_(
 "\n"
 "  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"

@@ -235,13 +235,14 @@ XZ Utils Installation
     --enable-assume-ram=SIZE
                 On the most common operating systems, XZ Utils is able to
                 detect the amount of physical memory on the system. This
-                information is used to set the default memory usage limit.
+                information is used by the options --memlimit-compress,
+                --memlimit-decompress, and --memlimit when setting the
+                limit to a percentage of total RAM.
 
                 On some systems, there is no code to detect the amount of
                 RAM though. Using --enable-assume-ram one can set how much
                 memory to assume on these systems. SIZE is given as MiB.
-                The default is 128 MiB, which allows decompressing files
-                created with "xz -9".
+                The default is 128 MiB.
 
                 Feel free to send patches to add support for detecting
                 the amount of RAM on the operating system you use. See

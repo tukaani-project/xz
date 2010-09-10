@@ -1,6 +1,6 @@
 See the commit log in the git repository:
 
-    git://ctrl.tukaani.org/xz.git
+    git clone http://git.tukaani.org/xz.git
 
 Note that "make dist" doesn't put this tiny file into the package.
 Instead, the git commit log is used as ChangeLog. See dist-hook in

@@ -49,30 +49,42 @@ typedef struct {
 	uint64_t memusage;
 
 	/// The filter chain of this Block in human-readable form
-	const char *filter_chain;
+	char filter_chain[FILTERS_STR_SIZE];
 
 } block_header_info;
 
 
 /// Check ID to string mapping
 static const char check_names[LZMA_CHECK_ID_MAX + 1][12] = {
-	"None",
+	// TRANSLATORS: Indicates that there is no integrity check.
+	// This string is used in tables, so the width must not
+	// exceed ten columns with a fixed-width font.
+	N_("None"),
 	"CRC32",
-	"Unknown-2",
-	"Unknown-3",
+	// TRANSLATORS: Indicates that integrity check name is not known,
+	// but the Check ID is known (here 2). This and other "Unknown-N"
+	// strings are used in tables, so the width must not exceed ten
+	// columns with a fixed-width font. It's OK to omit the dash if
+	// you need space for one extra letter.
+	N_("Unknown-2"),
+	N_("Unknown-3"),
 	"CRC64",
-	"Unknown-5",
-	"Unknown-6",
-	"Unknown-7",
-	"Unknown-8",
-	"Unknown-9",
+	N_("Unknown-5"),
+	N_("Unknown-6"),
+	N_("Unknown-7"),
+	N_("Unknown-8"),
+	N_("Unknown-9"),
 	"SHA-256",
-	"Unknown-11",
-	"Unknown-12",
-	"Unknown-13",
-	"Unknown-14",
-	"Unknown-15",
+	N_("Unknown-11"),
+	N_("Unknown-12"),
+	N_("Unknown-13"),
+	N_("Unknown-14"),
+	N_("Unknown-15"),
 };
+
+/// Buffer size for get_check_names(). This may be a bit ridiculous,
+/// but at least it's enough if some language needs many multibyte chars.
+#define CHECKS_STR_SIZE 1024
 
 
 /// Value of the Check field as hexadecimal string.
@@ -442,7 +454,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 		xfi->memusage_max = bhi->memusage;
 
 	// Convert the filter chain to human readable form.
-	bhi->filter_chain = message_filters_to_str(filters, false);
+	message_filters_to_str(bhi->filter_chain, filters, false);
 
 	// Free the memory allocated by lzma_block_header_decode().
 	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i)
@@ -533,7 +545,7 @@ parse_details(file_pair *pair, const lzma_index_iter *iter,
 
 /// \brief      Get the compression ratio
 ///
-/// This has slightly different format than that is used by in message.c.
+/// This has slightly different format than that is used in message.c.
 static const char *
 get_ratio(uint64_t compressed_size, uint64_t uncompressed_size)
 {
@@ -545,7 +557,7 @@ get_ratio(uint64_t compressed_size, uint64_t uncompressed_size)
 	if (ratio > 9.999)
 		return "---";
 
-	static char buf[6];
+	static char buf[16];
 	snprintf(buf, sizeof(buf), "%.3f", ratio);
 	return buf;
 }
@@ -553,19 +565,22 @@ get_ratio(uint64_t compressed_size, uint64_t uncompressed_size)
 
 /// \brief      Get a comma-separated list of Check names
 ///
+/// The check names are translated with gettext except when in robot mode.
+///
+/// \param      buf     Buffer to hold the resulting string
 /// \param      checks  Bit mask of Checks to print
 /// \param      space_after_comma
 ///                     It's better to not use spaces in table-like listings,
 ///                     but in more verbose formats a space after a comma
 ///                     is good for readability.
-static const char *
-get_check_names(uint32_t checks, bool space_after_comma)
+static void
+get_check_names(char buf[CHECKS_STR_SIZE],
+		uint32_t checks, bool space_after_comma)
 {
 	assert(checks != 0);
 
-	static char buf[sizeof(check_names)];
 	char *pos = buf;
-	size_t left = sizeof(buf);
+	size_t left = CHECKS_STR_SIZE;
 
 	const char *sep = space_after_comma ? ", " : ",";
 	bool comma = false;
@@ -573,12 +588,14 @@ get_check_names(uint32_t checks, bool space_after_comma)
 	for (size_t i = 0; i <= LZMA_CHECK_ID_MAX; ++i) {
 		if (checks & (UINT32_C(1) << i)) {
 			my_snprintf(&pos, &left, "%s%s",
-					comma ? sep : "", check_names[i]);
+					comma ? sep : "",
+					opt_robot ? check_names[i]
+						: _(check_names[i]));
 			comma = true;
 		}
 	}
 
-	return buf;
+	return;
 }
 
 
@@ -596,18 +613,29 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 				"Check   Filename"));
 	}
 
-	printf("%5s %7s  %11s  %11s  %5s  %-7s %s\n",
-			uint64_to_str(lzma_index_stream_count(xfi->idx), 0),
-			uint64_to_str(lzma_index_block_count(xfi->idx), 1),
-			uint64_to_nicestr(lzma_index_file_size(xfi->idx),
-				NICESTR_B, NICESTR_TIB, false, 2),
-			uint64_to_nicestr(
-				lzma_index_uncompressed_size(xfi->idx),
-				NICESTR_B, NICESTR_TIB, false, 3),
-			get_ratio(lzma_index_file_size(xfi->idx),
-				lzma_index_uncompressed_size(xfi->idx)),
-			get_check_names(lzma_index_checks(xfi->idx), false),
-			pair->src_name);
+	char checks[CHECKS_STR_SIZE];
+	get_check_names(checks, lzma_index_checks(xfi->idx), false);
+
+	const char *cols[7] = {
+		uint64_to_str(lzma_index_stream_count(xfi->idx), 0),
+		uint64_to_str(lzma_index_block_count(xfi->idx), 1),
+		uint64_to_nicestr(lzma_index_file_size(xfi->idx),
+			NICESTR_B, NICESTR_TIB, false, 2),
+		uint64_to_nicestr(lzma_index_uncompressed_size(xfi->idx),
+			NICESTR_B, NICESTR_TIB, false, 3),
+		get_ratio(lzma_index_file_size(xfi->idx),
+			lzma_index_uncompressed_size(xfi->idx)),
+		checks,
+		pair->src_name,
+	};
+	printf("%*s %*s  %*s  %*s  %*s  %-*s %s\n",
+			tuklib_mbstr_fw(cols[0], 5), cols[0],
+			tuklib_mbstr_fw(cols[1], 7), cols[1],
+			tuklib_mbstr_fw(cols[2], 11), cols[2],
+			tuklib_mbstr_fw(cols[3], 11), cols[3],
+			tuklib_mbstr_fw(cols[4], 5), cols[4],
+			tuklib_mbstr_fw(cols[5], 7), cols[5],
+			cols[6]);
 
 	return false;
 }
@@ -618,6 +646,9 @@ print_adv_helper(uint64_t stream_count, uint64_t block_count,
 		uint64_t compressed_size, uint64_t uncompressed_size,
 		uint32_t checks, uint64_t stream_padding)
 {
+	char checks_str[CHECKS_STR_SIZE];
+	get_check_names(checks_str, checks, true);
+
 	printf(_("  Streams:            %s\n"),
 			uint64_to_str(stream_count, 0));
 	printf(_("  Blocks:             %s\n"),
@@ -630,8 +661,7 @@ print_adv_helper(uint64_t stream_count, uint64_t block_count,
 				NICESTR_B, NICESTR_TIB, true, 0));
 	printf(_("  Ratio:              %s\n"),
 			get_ratio(compressed_size, uncompressed_size));
-	printf(_("  Check:              %s\n"),
-			get_check_names(checks, true));
+	printf(_("  Check:              %s\n"), checks_str);
 	printf(_("  Stream padding:     %s\n"),
 			uint64_to_nicestr(stream_padding,
 				NICESTR_B, NICESTR_TIB, true, 0));
@@ -669,21 +699,32 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	lzma_index_iter_init(&iter, xfi->idx);
 
 	while (!lzma_index_iter_next(&iter, LZMA_INDEX_ITER_STREAM)) {
-		printf("    %6s %9s %15s %15s ",
-				uint64_to_str(iter.stream.number, 0),
-				uint64_to_str(iter.stream.block_count, 1),
-				uint64_to_str(
-					iter.stream.compressed_offset, 2),
-				uint64_to_str(
-					iter.stream.uncompressed_offset, 3));
-		printf("%15s %15s  %5s  %-10s %7s\n",
-				uint64_to_str(iter.stream.compressed_size, 0),
-				uint64_to_str(
-					iter.stream.uncompressed_size, 1),
-				get_ratio(iter.stream.compressed_size,
-					iter.stream.uncompressed_size),
-				check_names[iter.stream.flags->check],
-				uint64_to_str(iter.stream.padding, 2));
+		const char *cols1[4] = {
+			uint64_to_str(iter.stream.number, 0),
+			uint64_to_str(iter.stream.block_count, 1),
+			uint64_to_str(iter.stream.compressed_offset, 2),
+			uint64_to_str(iter.stream.uncompressed_offset, 3),
+		};
+		printf("    %*s %*s %*s %*s ",
+				tuklib_mbstr_fw(cols1[0], 6), cols1[0],
+				tuklib_mbstr_fw(cols1[1], 9), cols1[1],
+				tuklib_mbstr_fw(cols1[2], 15), cols1[2],
+				tuklib_mbstr_fw(cols1[3], 15), cols1[3]);
+
+		const char *cols2[5] = {
+			uint64_to_str(iter.stream.compressed_size, 0),
+			uint64_to_str(iter.stream.uncompressed_size, 1),
+			get_ratio(iter.stream.compressed_size,
+				iter.stream.uncompressed_size),
+			_(check_names[iter.stream.flags->check]),
+			uint64_to_str(iter.stream.padding, 2),
+		};
+		printf("%*s %*s  %*s  %-*s %*s\n",
+				tuklib_mbstr_fw(cols2[0], 15), cols2[0],
+				tuklib_mbstr_fw(cols2[1], 15), cols2[1],
+				tuklib_mbstr_fw(cols2[2], 5), cols2[2],
+				tuklib_mbstr_fw(cols2[3], 10), cols2[3],
+				tuklib_mbstr_fw(cols2[4], 7), cols2[4]);
 
 		// Update the maximum Check size.
 		if (lzma_check_size(iter.stream.flags->check) > check_max)
@@ -730,41 +771,63 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 			if (detailed && parse_details(pair, &iter, &bhi, xfi))
 					return true;
 
-			printf("    %6s %9s %15s %15s ",
+			const char *cols1[4] = {
 				uint64_to_str(iter.stream.number, 0),
 				uint64_to_str(
 					iter.block.number_in_stream, 1),
 				uint64_to_str(
 					iter.block.compressed_file_offset, 2),
 				uint64_to_str(
-					iter.block.uncompressed_file_offset,
-					3));
-			printf("%15s %15s  %5s  %-*s",
+					iter.block.uncompressed_file_offset, 3)
+			};
+			printf("    %*s %*s %*s %*s ",
+				tuklib_mbstr_fw(cols1[0], 6), cols1[0],
+				tuklib_mbstr_fw(cols1[1], 9), cols1[1],
+				tuklib_mbstr_fw(cols1[2], 15), cols1[2],
+				tuklib_mbstr_fw(cols1[3], 15), cols1[3]);
+
+			const char *cols2[4] = {
 				uint64_to_str(iter.block.total_size, 0),
 				uint64_to_str(iter.block.uncompressed_size,
 						1),
 				get_ratio(iter.block.total_size,
 					iter.block.uncompressed_size),
-				detailed ? 11 : 1,
-				check_names[iter.stream.flags->check]);
+				_(check_names[iter.stream.flags->check])
+			};
+			printf("%*s %*s  %*s  %-*s",
+				tuklib_mbstr_fw(cols2[0], 15), cols2[0],
+				tuklib_mbstr_fw(cols2[1], 15), cols2[1],
+				tuklib_mbstr_fw(cols2[2], 5), cols2[2],
+				tuklib_mbstr_fw(cols2[3], detailed ? 11 : 1),
+					cols2[3]);
 
 			if (detailed) {
-				// Show MiB for memory usage, because it
-				// is the only size which is not in bytes.
 				const lzma_vli compressed_size
 						= iter.block.unpadded_size
 						- bhi.header_size
 						- lzma_check_size(
 						iter.stream.flags->check);
-				printf("%-*s  %6s  %-5s %15s %7s MiB  %s",
-					checkval_width, check_value,
+
+				const char *cols3[6] = {
+					check_value,
 					uint64_to_str(bhi.header_size, 0),
 					bhi.flags,
 					uint64_to_str(compressed_size, 1),
 					uint64_to_str(
 						round_up_to_mib(bhi.memusage),
 						2),
-					bhi.filter_chain);
+					bhi.filter_chain
+				};
+				// Show MiB for memory usage, because it
+				// is the only size which is not in bytes.
+				printf("%-*s  %*s  %-5s %*s %*s MiB  %s",
+					checkval_width, cols3[0],
+					tuklib_mbstr_fw(cols3[1], 6), cols3[1],
+					cols3[2],
+					tuklib_mbstr_fw(cols3[3], 15),
+						cols3[3],
+					tuklib_mbstr_fw(cols3[4], 7), cols3[4],
+					cols3[5]);
 			}
 
 			putchar('\n');
@@ -785,6 +848,9 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 static bool
 print_info_robot(xz_file_info *xfi, file_pair *pair)
 {
+	char checks[CHECKS_STR_SIZE];
+	get_check_names(checks, lzma_index_checks(xfi->idx), false);
+
 	printf("name\t%s\n", pair->src_name);
 
 	printf("file\t%" PRIu64 "\t%" PRIu64 "\t%" PRIu64 "\t%" PRIu64
@@ -795,7 +861,7 @@ print_info_robot(xz_file_info *xfi, file_pair *pair)
 			lzma_index_uncompressed_size(xfi->idx),
 			get_ratio(lzma_index_file_size(xfi->idx),
 				lzma_index_uncompressed_size(xfi->idx)),
-			get_check_names(lzma_index_checks(xfi->idx), false),
+			checks,
 			xfi->stream_padding);
 
 	if (message_verbosity_get() >= V_VERBOSE) {
@@ -893,6 +959,10 @@ print_totals_basic(void)
 	line[sizeof(line) - 1] = '\0';
 	puts(line);
 
+	// Get the check names.
+	char checks[CHECKS_STR_SIZE];
+	get_check_names(checks, totals.checks, false);
+
 	// Print the totals except the file count, which needs
 	// special handling.
 	printf("%5s %7s  %11s  %11s  %5s  %-7s ",
@@ -904,7 +974,7 @@ print_totals_basic(void)
 				NICESTR_B, NICESTR_TIB, false, 3),
 			get_ratio(totals.compressed_size,
 				totals.uncompressed_size),
-			get_check_names(totals.checks, false));
+			checks);
 
 	// Since we print totals only when there are at least two files,
 	// the English message will always use "%s files". But some other
@@ -947,6 +1017,9 @@ print_totals_adv(void)
 static void
 print_totals_robot(void)
 {
+	char checks[CHECKS_STR_SIZE];
+	get_check_names(checks, totals.checks, false);
+
 	printf("totals\t%" PRIu64 "\t%" PRIu64 "\t%" PRIu64 "\t%" PRIu64
 			"\t%s\t%s\t%" PRIu64 "\t%" PRIu64,
 			totals.streams,
@@ -955,7 +1028,7 @@ print_totals_robot(void)
 			totals.uncompressed_size,
 			get_ratio(totals.compressed_size,
 				totals.uncompressed_size),
-			get_check_names(totals.checks, false),
+			checks,
 			totals.stream_padding,
 			totals.files);
 

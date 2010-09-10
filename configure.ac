@@ -522,6 +522,7 @@ TUKLIB_PROGNAME
 TUKLIB_INTEGER
 TUKLIB_PHYSMEM
 TUKLIB_CPUCORES
+TUKLIB_MBSTR
 
 
 ###############################################################################

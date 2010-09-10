@@ -321,7 +321,8 @@ progress_percentage(uint64_t in_pos)
 	double percentage = (double)(in_pos) / (double)(expected_in_size)
 			* 99.9;
 
-	static char buf[sizeof("99.9 %")];
+	// Use big enough buffer to hold e.g. a multibyte decimal point.
+	static char buf[16];
 	snprintf(buf, sizeof(buf), "%.1f %%", percentage);
 
 	return buf;
@@ -333,12 +334,8 @@ progress_percentage(uint64_t in_pos)
 static const char *
 progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 {
-	// This is enough to hold sizes up to about 99 TiB if thousand
-	// separator is used, or about 1 PiB without thousand separator.
-	// After that the progress indicator will look a bit silly, since
-	// the compression ratio no longer fits with three decimal places.
-	static char buf[36];
-
+	// Use big enough buffer to hold e.g. a multibyte thousand separators.
+	static char buf[128];
 	char *pos = buf;
 	size_t left = sizeof(buf);
 
@@ -402,7 +399,8 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 	//  - 9.9 KiB/s
 	//  - 99 KiB/s
 	//  - 999 KiB/s
-	static char buf[sizeof("999 GiB/s")];
+	// Use big enough buffer to hold e.g. a multibyte decimal point.
+	static char buf[16];
 	snprintf(buf, sizeof(buf), "%.*f %s",
 			speed > 9.9 ? 0 : 1, speed, unit[unit_index]);
 	return buf;
@@ -588,12 +586,19 @@ message_progress_update(void)
 	// Print the actual progress message. The idea is that there is at
 	// least three spaces between the fields in typical situations, but
 	// even in rare situations there is at least one space.
-	fprintf(stderr, "\r %6s %35s   %9s %10s   %10s\r",
+	const char *cols[5] = {
 		progress_percentage(in_pos),
 		progress_sizes(compressed_pos, uncompressed_pos, false),
 		progress_speed(uncompressed_pos, elapsed),
 		progress_time(elapsed),
-		progress_remaining(in_pos, elapsed));
+		progress_remaining(in_pos, elapsed),
+	};
+	fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\r",
+			tuklib_mbstr_fw(cols[0], 6), cols[0],
+			tuklib_mbstr_fw(cols[1], 35), cols[1],
+			tuklib_mbstr_fw(cols[2], 9), cols[2],
+			cols[3],
+			cols[4]);
 
 #ifdef SIGALRM
 	// Updating the progress info was finished. Reset
@@ -663,12 +668,19 @@ progress_flush(bool finished)
 	// statistics are printed in the same format as the progress
 	// indicator itself.
 	if (progress_automatic) {
-		fprintf(stderr, "\r %6s %35s   %9s %10s   %10s\n",
+		const char *cols[5] = {
 			finished ? "100 %" : progress_percentage(in_pos),
 			progress_sizes(compressed_pos, uncompressed_pos, true),
 			progress_speed(uncompressed_pos, elapsed),
 			progress_time(elapsed),
-			finished ? "" : progress_remaining(in_pos, elapsed));
+			finished ? "" : progress_remaining(in_pos, elapsed),
+		};
+		fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\n",
+				tuklib_mbstr_fw(cols[0], 6), cols[0],
+				tuklib_mbstr_fw(cols[1], 35), cols[1],
+				tuklib_mbstr_fw(cols[2], 9), cols[2],
+				cols[3],
+				cols[4]);
 	} else {
 		// The filename is always printed.
 		fprintf(stderr, "%s: ", filename);
@@ -848,8 +860,10 @@ message_mem_needed(enum message_verbosity v, uint64_t memusage)
 	// the user might need to +1 MiB to get high enough limit.)
 	memusage = round_up_to_mib(memusage);
 
+	// With US-ASCII:
 	// 2^64 with thousand separators + " MiB" suffix + '\0' = 26 + 4 + 1
-	char memlimitstr[32];
+	// But there may be multibyte chars so reserve enough space.
+	char memlimitstr[128];
 
 	// Show the memory usage limit as MiB unless it is less than 1 MiB.
 	// This way it's easy to notice errors where one has typed
@@ -895,13 +909,12 @@ uint32_to_optstr(uint32_t num)
 }
 
 
-extern const char *
-message_filters_to_str(const lzma_filter *filters, bool all_known)
+extern void
+message_filters_to_str(char buf[FILTERS_STR_SIZE],
+		const lzma_filter *filters, bool all_known)
 {
-	static char buf[512];
-
 	char *pos = buf;
-	size_t left = sizeof(buf);
+	size_t left = FILTERS_STR_SIZE;
 
 	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
 		// Add the dashes for the filter option. A space is
@@ -1025,7 +1038,7 @@ message_filters_to_str(const lzma_filter *filters, bool all_known)
 		}
 	}
 
-	return buf;
+	return;
 }
 
 
@@ -1035,8 +1048,9 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 	if (v > verbosity)
 		return;
 
-	fprintf(stderr, _("%s: Filter chain: %s\n"), progname,
-			message_filters_to_str(filters, true));
+	char buf[FILTERS_STR_SIZE];
+	message_filters_to_str(buf, filters, true);
+	fprintf(stderr, _("%s: Filter chain: %s\n"), progname, buf);
 	return;
 }
 

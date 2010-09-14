@@ -65,7 +65,7 @@ static const char check_names[LZMA_CHECK_ID_MAX + 1][12] = {
 	// but the Check ID is known (here 2). This and other "Unknown-N"
 	// strings are used in tables, so the width must not exceed ten
 	// columns with a fixed-width font. It's OK to omit the dash if
-	// you need space for one extra letter.
+	// you need space for one extra letter, but don't use spaces.
 	N_("Unknown-2"),
 	N_("Unknown-3"),
 	"CRC64",

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-utils\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2010-09-07 23:29+0200\n"
-"PO-Revision-Date: 2010-09-08 00:08+0200\n"
+"POT-Creation-Date: 2010-09-17 18:33+0200\n"
+"PO-Revision-Date: 2010-09-17 18:54+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <diskuze@lists.l10n.cz>\n"
 "Language: cs\n"
@@ -200,12 +200,72 @@ msgstr "Omezení použitelné paměti pro komprimaci:  "
 msgid "Memory usage limit for decompression:  "
 msgstr "Omezení použitelné paměti pro dekomprimaci:"
 
-#: src/xz/list.c:114
+#. TRANSLATORS: Indicates that there is no integrity check.
+#. This string is used in tables, so the width must not
+#. exceed ten columns with a fixed-width font.
+#: src/xz/list.c:62
+msgid "None"
+msgstr "žádná"
+
+#. TRANSLATORS: Indicates that integrity check name is not known,
+#. but the Check ID is known (here 2). This and other "Unknown-N"
+#. strings are used in tables, so the width must not exceed ten
+#. columns with a fixed-width font. It's OK to omit the dash if
+#. you need space for one extra letter, but don't use spaces.
+#: src/xz/list.c:69
+msgid "Unknown-2"
+msgstr "neznámá-2"
+
+#: src/xz/list.c:70
+msgid "Unknown-3"
+msgstr "neznámá-3"
+
+#: src/xz/list.c:72
+msgid "Unknown-5"
+msgstr "neznámá-5"
+
+#: src/xz/list.c:73
+msgid "Unknown-6"
+msgstr "neznámá-6"
+
+#: src/xz/list.c:74
+msgid "Unknown-7"
+msgstr "neznámá-7"
+
+#: src/xz/list.c:75
+msgid "Unknown-8"
+msgstr "neznámá-8"
+
+#: src/xz/list.c:76
+msgid "Unknown-9"
+msgstr "neznámá-9"
+
+#: src/xz/list.c:78
+msgid "Unknown-11"
+msgstr "neznámá-11"
+
+#: src/xz/list.c:79
+msgid "Unknown-12"
+msgstr "neznámá-12"
+
+#: src/xz/list.c:80
+msgid "Unknown-13"
+msgstr "neznámá-13"
+
+#: src/xz/list.c:81
+msgid "Unknown-14"
+msgstr "neznámá-14"
+
+#: src/xz/list.c:82
+msgid "Unknown-15"
+msgstr "neznámá-15"
+
+#: src/xz/list.c:126
 #, c-format
 msgid "%s: File is empty"
 msgstr "%s: Soubor je prázdný"
 
-#: src/xz/list.c:119
+#: src/xz/list.c:131
 #, c-format
 msgid "%s: Too small to be a valid .xz file"
 msgstr "%s: Je příliš malý na to, aby to mohl být platný soubor .xz"
@@ -214,41 +274,41 @@ msgstr "%s: Je příliš malý na to, aby to mohl být platný soubor .xz"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:595
+#: src/xz/list.c:612
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "Proud   Bloky      Komprim    Nekomprim  Poměr  Kontrl  Název souboru"
 
-#: src/xz/list.c:621
+#: src/xz/list.c:652
 #, c-format
 msgid "  Streams:            %s\n"
 msgstr "  Proudů:                  %s\n"
 
-#: src/xz/list.c:623
+#: src/xz/list.c:654
 #, c-format
 msgid "  Blocks:             %s\n"
 msgstr "  Bloků:                   %s\n"
 
-#: src/xz/list.c:625
+#: src/xz/list.c:656
 #, c-format
 msgid "  Compressed size:    %s\n"
 msgstr "  Komprimovaná velikost:   %s\n"
 
-#: src/xz/list.c:628
+#: src/xz/list.c:659
 #, c-format
 msgid "  Uncompressed size:  %s\n"
 msgstr "  Nekomprimovaná velikost: %s\n"
 
-#: src/xz/list.c:631
+#: src/xz/list.c:662
 #, c-format
 msgid "  Ratio:              %s\n"
 msgstr "  Poměr komprimace:        %s\n"
 
-#: src/xz/list.c:633
+#: src/xz/list.c:664
 #, c-format
 msgid "  Check:              %s\n"
 msgstr "  Typ kontroly:            %s\n"
 
-#: src/xz/list.c:635
+#: src/xz/list.c:665
 #, c-format
 msgid "  Stream padding:     %s\n"
 msgstr "  Zarovnání proudu:        %s\n"
@@ -256,7 +316,7 @@ msgstr "  Zarovnání proudu:        %s\n"
 #. TRANSLATORS: The second line is column headings. All except
 #. Check are right aligned; Check is left aligned. Test with
 #. "xz -lv foo.xz".
-#: src/xz/list.c:663
+#: src/xz/list.c:693
 msgid ""
 "  Streams:\n"
 "    Stream    Blocks      CompOffset    UncompOffset        CompSize      "
@@ -268,7 +328,7 @@ msgstr ""
 
 #. TRANSLATORS: The second line is column headings. All
 #. except Check are right aligned; Check is left aligned.
-#: src/xz/list.c:707
+#: src/xz/list.c:748
 #, c-format
 msgid ""
 "  Blocks:\n"
@@ -286,32 +346,32 @@ msgstr ""
 #. are right aligned. %*s is replaced with 0-120
 #. spaces to make the CheckVal column wide enough.
 #. Test with "xz -lvv foo.xz".
-#: src/xz/list.c:719
+#: src/xz/list.c:760
 #, c-format
 msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
 msgstr "   KontrHod %*s Hlavič  Příznaky     KomprVel    PoužiPam  Filtry"
 
-#: src/xz/list.c:775 src/xz/list.c:937
+#: src/xz/list.c:838 src/xz/list.c:1007
 #, c-format
 msgid "  Memory needed:      %s MiB\n"
 msgstr "  Potřebná paměť:          %s MiB\n"
 
-#: src/xz/list.c:777 src/xz/list.c:939
+#: src/xz/list.c:840 src/xz/list.c:1009
 #, c-format
 msgid "  Sizes in headers:   %s\n"
 msgstr "  Velikosti v hlavičkách:  %s\n"
 
-#: src/xz/list.c:778 src/xz/list.c:940
+#: src/xz/list.c:841 src/xz/list.c:1010
 msgid "Yes"
 msgstr "Ano"
 
-#: src/xz/list.c:778 src/xz/list.c:940
+#: src/xz/list.c:841 src/xz/list.c:1010
 msgid "No"
 msgstr "Ne"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:916
+#: src/xz/list.c:986
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
@@ -319,20 +379,20 @@ msgstr[0] "%s soubor\n"
 msgstr[1] "%s soubory\n"
 msgstr[2] "%s souborů\n"
 
-#: src/xz/list.c:929
+#: src/xz/list.c:999
 msgid "Totals:"
 msgstr "Celkem:"
 
-#: src/xz/list.c:930
+#: src/xz/list.c:1000
 #, c-format
 msgid "  Number of files:    %s\n"
 msgstr "  Počet souborů:           %s\n"
 
-#: src/xz/list.c:999
+#: src/xz/list.c:1072
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "--list pracuje pouze se soubory .xz (--format=xz nebo --format=auto)"
 
-#: src/xz/list.c:1005
+#: src/xz/list.c:1078
 msgid "--list does not support reading from standard input"
 msgstr "--list nepodporuje čtení ze standardního vstupu"
 
@@ -367,59 +427,59 @@ msgstr ""
 "Ze standardního vstupu nelze číst data, když se ze standardního vstupu "
 "načítají názvy souborů"
 
-#: src/xz/message.c:788 src/xz/message.c:832
+#: src/xz/message.c:800 src/xz/message.c:844
 msgid "Internal error (bug)"
 msgstr "Interní chyba"
 
-#: src/xz/message.c:795
+#: src/xz/message.c:807
 msgid "Cannot establish signal handlers"
 msgstr "Nelze ustanovit ovladač signálu"
 
-#: src/xz/message.c:804
+#: src/xz/message.c:816
 msgid "No integrity check; not verifying file integrity"
 msgstr "Žádná kontrola integrity; integrita souboru se nebude ověřovat"
 
-#: src/xz/message.c:807
+#: src/xz/message.c:819
 msgid "Unsupported type of integrity check; not verifying file integrity"
 msgstr ""
 "Nepodporovaný typ kontroly integrity; integrita souboru se nebude ověřovat"
 
-#: src/xz/message.c:814
+#: src/xz/message.c:826
 msgid "Memory usage limit reached"
 msgstr "Dosaženo omezení použitelné paměti"
 
-#: src/xz/message.c:817
+#: src/xz/message.c:829
 msgid "File format not recognized"
 msgstr "Formát souboru nebyl rozpoznán"
 
-#: src/xz/message.c:820
+#: src/xz/message.c:832
 msgid "Unsupported options"
 msgstr "Nepodporovaná volba"
 
-#: src/xz/message.c:823
+#: src/xz/message.c:835
 msgid "Compressed data is corrupt"
 msgstr "Komprimovaná data jsou poškozená"
 
-#: src/xz/message.c:826
+#: src/xz/message.c:838
 msgid "Unexpected end of input"
 msgstr "Neočekávaný konec vstupu"
 
-#: src/xz/message.c:872
+#: src/xz/message.c:886
 #, c-format
 msgid "%s MiB of memory is required. The limit is %s."
 msgstr "Je vyžadováno %s MiB paměti. Limit je %s."
 
-#: src/xz/message.c:1038
+#: src/xz/message.c:1053
 #, c-format
 msgid "%s: Filter chain: %s\n"
 msgstr "%s: Omezující filtr: %s\n"
 
-#: src/xz/message.c:1049
+#: src/xz/message.c:1063
 #, c-format
 msgid "Try `%s --help' for more information."
 msgstr "Zkuste „%s --help“ pro více informací"
 
-#: src/xz/message.c:1075
+#: src/xz/message.c:1089
 #, c-format
 msgid ""
 "Usage: %s [OPTION]... [FILE]...\n"
@@ -430,18 +490,18 @@ msgstr ""
 "Komprimuje nebo dekomprimuje SOUBORy ve formátu xz.\n"
 "\n"
 
-#: src/xz/message.c:1082
+#: src/xz/message.c:1096
 msgid ""
 "Mandatory arguments to long options are mandatory for short options too.\n"
 msgstr ""
 "Povinné argumenty pro dlouhé přepínače jsou povinné rovněž pro krátké "
 "přepínače.\n"
 
-#: src/xz/message.c:1086
+#: src/xz/message.c:1100
 msgid " Operation mode:\n"
 msgstr "Operační režim:\n"
 
-#: src/xz/message.c:1089
+#: src/xz/message.c:1103
 msgid ""
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
@@ -453,7 +513,7 @@ msgstr ""
 " -t, --test            testovat integritu komprimovaného souboru\n"
 " -l, --list            vypsat informace o souborech .xz"
 
-#: src/xz/message.c:1095
+#: src/xz/message.c:1109
 msgid ""
 "\n"
 " Operation modifiers:\n"
@@ -461,7 +521,7 @@ msgstr ""
 "\n"
 "Modifikátory operací:\n"
 
-#: src/xz/message.c:1098
+#: src/xz/message.c:1112
 msgid ""
 "  -k, --keep          keep (don't delete) input files\n"
 "  -f, --force         force overwrite of output file and (de)compress links\n"
@@ -473,7 +533,7 @@ msgstr ""
 " -c, --stdout          zapisovat na standardní výstup a nemazat vstupní "
 "soubory"
 
-#: src/xz/message.c:1104
+#: src/xz/message.c:1118
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
@@ -493,7 +553,7 @@ msgstr ""
 "     --files0[=SOUBOR] stejné jako --files, ale použít k zakončování nulový "
 "znak"
 
-#: src/xz/message.c:1112
+#: src/xz/message.c:1126
 msgid ""
 "\n"
 " Basic file format and compression options:\n"
@@ -501,7 +561,7 @@ msgstr ""
 "\n"
 "Základní přepínače pro formát souboru a komprimaci:\n"
 
-#: src/xz/message.c:1114
+#: src/xz/message.c:1128
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      `auto' (default), `xz', `lzma', and `raw'\n"
@@ -514,7 +574,7 @@ msgstr ""
 "rozmyslem),\n"
 "                       „crc32“, „crc64“ (výchozí) nebo „sha256“"
 
-#: src/xz/message.c:1121
+#: src/xz/message.c:1135
 msgid ""
 "  -0 ... -9           compression preset; default is 6; take compressor "
 "*and*\n"
@@ -526,7 +586,7 @@ msgstr ""
 "                       hodnoty 7 – 9, vezměte do úvahy množství použité "
 "paměti"
 
-#: src/xz/message.c:1125
+#: src/xz/message.c:1139
 msgid ""
 "  -e, --extreme       try to improve compression ratio by using more CPU "
 "time;\n"
@@ -535,7 +595,7 @@ msgstr ""
 " -e, --extreme         zkusit zlepšit poměr komprimace využitím více času\n"
 "                       procesoru; nemá vliv na paměťové nároky dekomprimace"
 
-#: src/xz/message.c:1130
+#: src/xz/message.c:1144
 #, no-c-format
 msgid ""
 "      --memlimit-compress=LIMIT\n"
@@ -553,7 +613,7 @@ msgstr ""
 "paměti\n"
 "                       RAM nebo 0 pro výchozí"
 
-#: src/xz/message.c:1137
+#: src/xz/message.c:1151
 msgid ""
 "      --no-adjust     if compression settings exceed the memory usage "
 "limit,\n"
@@ -564,7 +624,7 @@ msgstr ""
 "použitelné\n"
 "                       paměti, předat chybu namísto snížení nastavení"
 
-#: src/xz/message.c:1143
+#: src/xz/message.c:1157
 msgid ""
 "\n"
 " Custom filter chain for compression (alternative for using presets):"
@@ -573,7 +633,7 @@ msgstr ""
 "Vlastní omezující filtr pro komprimaci (alternativa k použití "
 "přednastavených):"
 
-#: src/xz/message.c:1148
+#: src/xz/message.c:1166
 msgid ""
 "\n"
 "  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero "
@@ -613,7 +673,7 @@ msgstr ""
 "                         depth=POČ  maximální hloubka prohledávání;\n"
 "                                    0 = automaticky (výchozí)"
 
-#: src/xz/message.c:1163
+#: src/xz/message.c:1181
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -635,7 +695,7 @@ msgstr ""
 "                       Platné volby pro všechny filtry BCJ:\n"
 "                         start=POČ  počáteční posun pro převody (výchozí=0)"
 
-#: src/xz/message.c:1175
+#: src/xz/message.c:1193
 msgid ""
 "\n"
 "  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
@@ -648,7 +708,7 @@ msgstr ""
 "odečítány\n"
 "                                    jeden od druhého (1 – 256; 1)"
 
-#: src/xz/message.c:1183
+#: src/xz/message.c:1201
 msgid ""
 "\n"
 " Other options:\n"
@@ -656,7 +716,7 @@ msgstr ""
 "\n"
 " Ostatní přepínače:\n"
 
-#: src/xz/message.c:1186
+#: src/xz/message.c:1204
 msgid ""
 "  -q, --quiet         suppress warnings; specify twice to suppress errors "
 "too\n"
@@ -667,18 +727,18 @@ msgstr ""
 " -v, --verbose         podrobnější zprávy; zadáním dvakrát, budou ještě\n"
 "                       podrobnější"
 
-#: src/xz/message.c:1191
+#: src/xz/message.c:1209
 msgid "  -Q, --no-warn       make warnings not affect the exit status"
 msgstr " -Q, --no-warn         způsobí, že varování neovlivní stav ukončení"
 
-#: src/xz/message.c:1193
+#: src/xz/message.c:1211
 msgid ""
 "      --robot         use machine-parsable messages (useful for scripts)"
 msgstr ""
 "     --robot           použít strojově analyzovatelné zprávy (užitečné pro\n"
 "                       skripty)"
 
-#: src/xz/message.c:1196
+#: src/xz/message.c:1214
 msgid ""
 "      --info-memory   display the total amount of RAM and the currently "
 "active\n"
@@ -688,7 +748,7 @@ msgstr ""
 "aktivní\n"
 "                       omezení použitelné paměti a skončit"
 
-#: src/xz/message.c:1199
+#: src/xz/message.c:1217
 msgid ""
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"
@@ -697,7 +757,7 @@ msgstr ""
 "přepínače)\n"
 " -H, --long-help       zobrazit tuto úplnou nápovědu a skončit"
 
-#: src/xz/message.c:1203
+#: src/xz/message.c:1221
 msgid ""
 "  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"
@@ -706,11 +766,11 @@ msgstr ""
 " -H, --long-help       zobrazit úplnou nápovědu (vypíše i pokročilé "
 "přepínače)"
 
-#: src/xz/message.c:1208
+#: src/xz/message.c:1226
 msgid "  -V, --version       display the version number and exit"
 msgstr " -V, --version         zobrazit číslo verze a skončit"
 
-#: src/xz/message.c:1210
+#: src/xz/message.c:1228
 msgid ""
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
@@ -723,12 +783,12 @@ msgstr ""
 #. for this package. Please add _another line_ saying
 #. "Report translation bugs to <...>\n" with the email or WWW
 #. address for translation bugs. Thanks.
-#: src/xz/message.c:1216
+#: src/xz/message.c:1234
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr "Chyby hlaste na <%s> (v angličtině nebo finštině).\n"
 
-#: src/xz/message.c:1218
+#: src/xz/message.c:1236
 #, c-format
 msgid "%s home page: <%s>\n"
 msgstr "Domovská stránka %s: <%s>\n"
@@ -785,36 +845,36 @@ msgstr "%s: Soubor již má příponu „%s“, vynechává se"
 msgid "%s: Invalid filename suffix"
 msgstr "%s: Neplatná přípona názvu souboru"
 
-#: src/xz/util.c:54
+#: src/xz/util.c:61
 #, c-format
 msgid "%s: Value is not a non-negative decimal integer"
 msgstr "%s: Hodnota není nezáporné desítkové číslo"
 
-#: src/xz/util.c:96
+#: src/xz/util.c:103
 #, c-format
 msgid "%s: Invalid multiplier suffix"
 msgstr "%s: Neplatná jednotka s předponou"
 
-#: src/xz/util.c:98
+#: src/xz/util.c:105
 msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
 msgstr ""
 "Platné jednotky s předponami jsou „KiB“ (2^10 B), „MiB“ (2^20 B) a "
 "„GiB“ (2^30 B)."
 
-#: src/xz/util.c:115
+#: src/xz/util.c:122
 #, c-format
 msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "Hodnota volby „%s“ musí být v rozsahu [%<PRIu64>, %<PRIu64>]"
 
-#: src/xz/util.c:289
+#: src/xz/util.c:247
 msgid "Empty filename, skipping"
 msgstr "Prázdný název souboru, vynechává se"
 
-#: src/xz/util.c:303
+#: src/xz/util.c:261
 msgid "Compressed data cannot be read from a terminal"
 msgstr "Z terminálu nelze číst komprimovaná data"
 
-#: src/xz/util.c:316
+#: src/xz/util.c:274
 msgid "Compressed data cannot be written to a terminal"
 msgstr "Do terminálu nelze zapisovat komprimovaná data"
 

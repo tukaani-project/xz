@@ -6,15 +6,15 @@
 .\"
 .\" License: GNU GPLv2+
 .\"
-.TH XZGREP 1 "2009-07-05" "Tukaani" "XZ Utils"
+.TH XZGREP 1 "2010-09-27" "Tukaani" "XZ Utils"
 .SH NAME
 xzgrep \- search compressed files for a regular expression
 .SH SYNOPSIS
 .B xzgrep
 .RI [ grep_options ]
-.RB  [ \-e ]
+.RB [ \-e ]
 .I pattern
-.IR file ".\|.\|."
+.IR file "..."
 .br
 .B xzegrep
 .RB ...
@@ -31,7 +31,7 @@ xzgrep \- search compressed files for a regular expression
 .B lzfgrep
 .RB ...
 .SH DESCRIPTION
-.B  xzgrep
+.B xzgrep
 invokes
 .BR grep (1)
 on
@@ -47,7 +47,8 @@ All options specified are passed directly to
 .PP
 If no
 .I file
-is specified, then the standard input is decompressed if necessary and fed to
+is specified, then standard input is decompressed if necessary
+and fed to
 .BR grep (1).
 When reading from standard input,
 .BR gzip (1)

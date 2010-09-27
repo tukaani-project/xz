@@ -7,7 +7,7 @@
 .\"
 .\" (Note that this file is not based on gzip's zless.1.)
 .\"
-.TH XZLESS 1 "2009-07-05" "Tukaani" "XZ Utils"
+.TH XZLESS 1 "2010-09-27" "Tukaani" "XZ Utils"
 .SH NAME
 xzless, lzless \- view xz or lzma compressed (text) files
 .SH SYNOPSIS
@@ -17,7 +17,7 @@ xzless, lzless \- view xz or lzma compressed (text) files
 .B lzless
 .RI [ file ...]
 .SH DESCRIPTION
-.B  xzless
+.B xzless
 is a filter that displays text from compressed files to a terminal.
 It works on files compressed with
 .BR xz (1)
@@ -32,9 +32,11 @@ reads from standard input.
 .B xzless
 uses
 .BR less (1)
-to present its output.  Unlike
+to present its output.
+Unlike
 .BR xzmore ,
-its choice of pager cannot be altered by setting an environment variable.
+its choice of pager cannot be altered by
+setting an environment variable.
 Commands are based on both
 .BR more (1)
 and
@@ -50,7 +52,8 @@ is provided for backward compatibility with LZMA Utils.
 .SH ENVIRONMENT
 .TP
 .B LESSMETACHARS
-A list of characters special to the shell.  Set by
+A list of characters special to the shell.
+Set by
 .B xzless
 unless it is already set in the environment.
 .TP

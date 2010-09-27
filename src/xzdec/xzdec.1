@@ -4,7 +4,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZDEC 1 "2010-08-07" "Tukaani" "XZ Utils"
+.TH XZDEC 1 "2010-09-27" "Tukaani" "XZ Utils"
 .SH NAME
 xzdec, lzmadec \- Small .xz and .lzma decompressors
 .SH SYNOPSIS
@@ -25,7 +25,8 @@ files.
 .B xzdec
 is intended to work as a drop-in replacement for
 .BR xz (1)
-in the most common situations where a script has been written to use
+in the most common situations where a script
+has been written to use
 .B "xz \-\-decompress \-\-stdout"
 (and possibly a few other commonly used options) to decompress
 .B .xz
@@ -43,7 +44,8 @@ files.
 .PP
 To reduce the size of the executable,
 .B xzdec
-doesn't support multithreading or localization, and doesn't read options from
+doesn't support multithreading or localization,
+and doesn't read options from
 .B XZ_DEFAULTS
 and
 .B XZ_OPT
@@ -90,8 +92,7 @@ Ignored for
 .BR xz (1)
 compatibility.
 .B xzdec
-never uses the exit status
-.BR "2" .
+never uses the exit status 2.
 .TP
 .BR \-h ", " \-\-help
 Display a help message and exit successfully.
@@ -111,18 +112,32 @@ An error occurred.
 .B xzdec
 doesn't have any warning messages like
 .BR xz (1)
-has, thus the exit status
-.B 2
-is not used by
+has, thus the exit status 2 is not used by
 .BR xzdec .
 .SH NOTES
+Use
+.BR xz (1)
+instead of
+.B xzdec
+or
+.B lzmadec
+for normal everyday use.
+.B xzdec
+or
+.B lzmadec
+are meant only for situations where it is important to have
+a smaller decompressor than the full-featured
+.BR xz (1).
+.PP
 .B xzdec
 and
 .B lzmadec
-are not really that small. The size can be reduced further by dropping
-features from liblzma at compile time, but that shouldn't usually be done
-for executables distributed in typical non-embedded operating system
-distributions. If you need a truly small
+are not really that small.
+The size can be reduced further by dropping
+features from liblzma at compile time,
+but that shouldn't usually be done for executables distributed
+in typical non-embedded operating system distributions.
+If you need a truly small
 .B .xz
 decompressor, consider using XZ Embedded.
 .SH "SEE ALSO"

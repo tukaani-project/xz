@@ -6,7 +6,7 @@
 .\"
 .\" License: GNU GPLv2+
 .\"
-.TH XZDIFF 1 "2009-07-05" "Tukaani" "XZ Utils"
+.TH XZDIFF 1 "2010-09-27" "Tukaani" "XZ Utils"
 .SH NAME
 xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .SH SYNOPSIS
@@ -22,7 +22,7 @@ xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .B lzdiff
 .RI [ diff_options "] " file1 " [" file2 ]
 .SH DESCRIPTION
-.B  xzcmp
+.B xzcmp
 and
 .B xzdiff
 invoke
@@ -36,22 +36,23 @@ on files compressed with
 or
 .BR bzip2 (1).
 All options specified are passed directly to
-.B cmp
+.BR cmp (1)
 or
-.BR diff .
+.BR diff (1).
 If only one file is specified, then the files compared are
 .I file1
 (which must have a suffix of a supported compression format) and
 .I file1
 from which the compression format suffix has been stripped.
-If two files are specified, then they are uncompressed if necessary and fed to
+If two files are specified,
+then they are uncompressed if necessary and fed to
 .BR cmp (1)
 or
 .BR diff (1).
 The exit status from
-.B cmp
+.BR cmp (1)
 or
-.B diff
+.BR diff (1)
 is preserved.
 .PP
 The names

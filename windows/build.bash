@@ -172,7 +172,7 @@ txtcp pkg "" windows/README-Windows.txt
 
 # Create the package. This requires 7z.exe from 7-Zip. If it wasn't found,
 # this step is skipped and you have to zip it yourself.
-VER=$(sh version.sh)
+VER=$(sh build-aux/version.sh)
 cd pkg
 if [ -x "$SEVENZ_EXE" ]; then
 	"$SEVENZ_EXE" a -tzip ../xz-$VER-windows.zip *

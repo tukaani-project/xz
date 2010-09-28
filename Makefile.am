@@ -32,13 +32,13 @@ EXTRA_DIST = \
 	dos \
 	windows \
 	autogen.sh \
-	version.sh \
 	Doxyfile.in \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
 	COPYING.LGPLv2.1 \
 	INSTALL.generic \
-	PACKAGERS
+	PACKAGERS \
+	build-aux/version.sh
 
 ACLOCAL_AMFLAGS = -I m4
 

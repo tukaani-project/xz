@@ -13,7 +13,6 @@ Makefile.in
 /autom4te.cache
 /Doxyfile
 /aclocal.m4
-/build-aux
 /config.h
 /config.h.in
 /config.log
@@ -21,6 +20,15 @@ Makefile.in
 /configure
 /libtool
 /stamp-h1
+
+build-aux/compile
+build-aux/config.guess
+build-aux/config.rpath
+build-aux/config.sub
+build-aux/depcomp
+build-aux/install-sh
+build-aux/ltmain.sh
+build-aux/missing
 
 /src/liblzma/liblzma.pc
 /src/lzmainfo/lzmainfo

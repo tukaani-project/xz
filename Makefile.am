@@ -38,6 +38,7 @@ EXTRA_DIST = \
 	COPYING.LGPLv2.1 \
 	INSTALL.generic \
 	PACKAGERS \
+	build-aux/manconv.sh \
 	build-aux/version.sh
 
 ACLOCAL_AMFLAGS = -I m4
@@ -64,14 +65,15 @@ dist-hook:
 		$(MKDIR_P) "$$dest/pdf-a4" "$$dest/pdf-letter" "$$dest/txt" && \
 		for FILE in $(manfiles); do \
 			BASE=`basename $$FILE .1` && \
-			groff -man -t -Tps -P-pa4 < "$(srcdir)/$$FILE" \
-				| ps2pdf - - \
+			sh "$(srcdir)/build-aux/manconv.sh" pdf a4 \
+				< "$(srcdir)/$$FILE" \
 				> "$$dest/pdf-a4/$$BASE-a4.pdf" && \
-			groff -man -t -Tps -P-pletter < "$(srcdir)/$$FILE" \
-				| ps2pdf - - \
+			sh "$(srcdir)/build-aux/manconv.sh" pdf letter \
+				< "$(srcdir)/$$FILE" \
 				> "$$dest/pdf-letter/$$BASE-letter.pdf" && \
-			groff -man -t -Tascii < "$(srcdir)/$$FILE" \
-				| col -bx > "$$dest/txt/$$BASE.txt"; \
+			sh "$(srcdir)/build-aux/manconv.sh" ascii \
+				< "$(srcdir)/$$FILE" \
+				> "$$dest/txt/$$BASE.txt"; \
 		done; \
 	fi
 

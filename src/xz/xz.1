@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-09-27" "Tukaani" "XZ Utils"
+.TH XZ 1 "2010-10-04" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -127,7 +127,7 @@ if any of the following applies:
 .I File
 is not a regular file.
 Symbolic links are not followed,
-thus they are not considered to be regular files.
+and thus they are not considered to be regular files.
 .IP \(bu 3
 .I File
 has more than one hard link.
@@ -135,7 +135,7 @@ has more than one hard link.
 .I File
 has setuid, setgid, or sticky bit set.
 .IP \(bu 3
-The operation mode is set to compress, and the
+The operation mode is set to compress and the
 .I file
 already has a suffix of the target file format
 .RB ( .xz
@@ -151,7 +151,7 @@ when compressing to the
 .B .lzma
 format).
 .IP \(bu 3
-The operation mode is set to decompress, and the
+The operation mode is set to decompress and the
 .I file
 doesn't have a suffix of any of the supported file formats
 .RB ( .xz ,
@@ -238,7 +238,7 @@ by using \fB\-\-memlimit\-compress=\fIlimit\fR and
 \fB\-\-memlimit\-decompress=\fIlimit\fR.
 Using these two options outside
 .B XZ_DEFAULTS
-is rarely useful, because a single run of
+is rarely useful because a single run of
 .B xz
 cannot do both compression and decompression and
 .BI \-\-memlimit= limit
@@ -334,7 +334,7 @@ the last one takes effect.
 .BR \-z ", " \-\-compress
 Compress.
 This is the default operation mode when no operation mode option
-is specified, and no other operation mode is implied from
+is specified and no other operation mode is implied from
 the command name (for example,
 .B unxz
 implies
@@ -369,7 +369,7 @@ To get more detailed information, use also the
 option.
 For even more information, use
 .B \-\-verbose
-twice, but note that it may be slow, because getting all the extra
+twice, but note that this may be slow, because getting all the extra
 information requires many seeks.
 The width of verbose output exceeds
 80 characters, so piping the output to e.g.\&
@@ -440,8 +440,8 @@ By default, if decompressing into a regular file,
 .B xz
 tries to make the file sparse if the decompressed data contains
 long sequences of binary zeros.
-It works also when writing to standard output
-as long as standard output is connected to a regular file,
+It also works when writing to standard output
+as long as standard output is connected to a regular file
 and certain additional conditions are met to make it safe.
 Creating sparse files may save disk space and speed up
 the decompression by reducing the amount of disk I/O.
@@ -542,8 +542,11 @@ which normally would have been stored in the container headers.
 .RE
 .TP
 \fB\-C\fR \fIcheck\fR, \fB\-\-check=\fIcheck
-Specify the type of the integrity check, which is calculated
-from the uncompressed data.
+Specify the type of the integrity check.
+The check is calculated from the uncompressed data and
+stored in the
+.B .xz
+file.
 This option has an effect only when compressing into the
 .B .xz
 format; the
@@ -785,7 +788,7 @@ If the compression settings exceed the
 will adjust the settings downwards so that
 the limit is no longer exceeded and display a notice that
 automatic adjustment was done.
-Adjustment is never done when compressing with
+Such adjustments are not made when compressing with
 .B \-\-format=raw
 or if
 .B \-\-no\-adjust
@@ -828,7 +831,7 @@ This is currently equivalent to setting the
 .I limit
 to
 .B max
-i.e. no memory usage limit.
+(no memory usage limit).
 Once multithreading support has been implemented,
 there may be a difference between
 .B 0
@@ -846,7 +849,7 @@ See also the section
 .TP
 .BI \-\-memlimit\-decompress= limit
 Set a memory usage limit for decompression.
-This affects also the
+This also affects the
 .B \-\-list
 mode.
 If the operation is not possible without exceeding the
@@ -907,7 +910,7 @@ The output of the last filter gets written to the compressed file.
 The maximum number of filters in the chain is four,
 but typically a filter chain has only one or two filters.
 .PP
-Many filters have limitations where they can be
+Many filters have limitations on where they can be
 in the filter chain:
 some filters can work only as the last filter in the chain,
 some only as a non-last filter, and some work in any position
@@ -1417,8 +1420,8 @@ is almost never useful.
 .RE
 .TP
 \fB\-\-delta\fR[\fB=\fIoptions\fR]
-Add Delta filter to the filter chain.
-The Delta filter can be used only as non-last filter
+Add the Delta filter to the filter chain.
+The Delta filter can be only used as a non-last filter
 in the filter chain.
 .IP ""
 Currently only simple byte-wise delta calculation is supported.
@@ -1471,7 +1474,7 @@ The progress indicator shows the following information:
 .IP \(bu 3
 Completion percentage is shown
 if the size of the input file is known.
-That is, percentage cannot be shown in pipes.
+That is, the percentage cannot be shown in pipes.
 .IP \(bu 3
 Amount of compressed data produced (compressing)
 or consumed (decompressing).
@@ -2043,7 +2046,7 @@ The uncompressed size of the file can be stored in the
 header.
 LZMA Utils does that when compressing regular files.
 The alternative is to mark that uncompressed size is unknown
-and use end of payload marker to indicate
+and use end-of-payload marker to indicate
 where the decompressor should stop.
 LZMA Utils uses this method when uncompressed size isn't known,
 which is the case for example in pipes.
@@ -2051,11 +2054,11 @@ which is the case for example in pipes.
 .B xz
 supports decompressing
 .B .lzma
-files with or without end of payload marker, but all
+files with or without end-of-payload marker, but all
 .B .lzma
 files created by
 .B xz
-will use end of payload marker and have uncompressed size
+will use end-of-payload marker and have uncompressed size
 marked as unknown in the
 .B .lzma
 header.

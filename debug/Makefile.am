@@ -16,10 +16,7 @@ noinst_PROGRAMS = \
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/liblzma/api \
-	$(STATIC_CPPFLAGS)
-
-AM_LDFLAGS = $(STATIC_LDFLAGS)
+	-I$(top_srcdir)/src/liblzma/api
 
 LDADD = $(top_builddir)/src/liblzma/liblzma.la
 

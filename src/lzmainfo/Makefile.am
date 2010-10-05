@@ -16,10 +16,8 @@ lzmainfo_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
-	-I$(top_builddir)/lib \
-	$(DYNAMIC_CPPFLAGS)
+	-I$(top_builddir)/lib
 
-lzmainfo_LDFLAGS = $(DYNAMIC_LDFLAGS)
 lzmainfo_LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB

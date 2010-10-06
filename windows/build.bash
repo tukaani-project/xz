@@ -98,9 +98,9 @@ buildit()
 		--prefix= \
 		--disable-nls \
 		--disable-threads \
-		--enable-dynamic=no \
 		--build="$BUILD" \
-		CFLAGS="$CFLAGS -O2"
+		CFLAGS="$CFLAGS -O2" \
+		LDFLAGS=-static
 	make check
 
 	cp -v src/xz/xz.exe src/liblzma/.libs/liblzma.a "$DESTDIR"

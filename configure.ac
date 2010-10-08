@@ -93,8 +93,6 @@ enable_encoders=`echo "$enable_encoders" | sed 's/,/ /g'`
 if test "x$enable_encoders" = xno || test "x$enable_encoders" = x; then
 	AC_MSG_RESULT([(none)])
 else
-	AC_DEFINE([HAVE_ENCODER], [1],
-		[Define to 1 if encoder components are enabled.])
 	for arg in $enable_encoders
 	do
 		case $arg in m4_foreach([NAME], [SUPPORTED_FILTERS], [
@@ -122,8 +120,6 @@ enable_decoders=`echo "$enable_decoders" | sed 's/,/ /g'`
 if test "x$enable_decoders" = xno || test "x$enable_decoders" = x; then
 	AC_MSG_RESULT([(none)])
 else
-	AC_DEFINE([HAVE_DECODER], [1],
-		[Define to 1 if decoder components are enabled.])
 	for arg in $enable_decoders
 	do
 		case $arg in m4_foreach([NAME], [SUPPORTED_FILTERS], [

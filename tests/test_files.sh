@@ -9,9 +9,27 @@
 #
 ###############################################################################
 
+# If both xz and xzdec were not build, skip this test.
+XZ=../src/xz/xz
+XZDEC=../src/xzdec/xzdec
+test -x "$XZ" || XZ=
+test -x "$XZDEC" || XZDEC=
+if test -z "$XZ$XZDEC"; then
+	(exit 77)
+	exit 77
+fi
+
 for I in "$srcdir"/files/good-*.xz
 do
-	if ../src/xzdec/xzdec "$I" > /dev/null 2> /dev/null ; then
+	if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null 2>&1; then
+		:
+	else
+		echo "Good file failed: $I"
+		(exit 1)
+		exit 1
+	fi
+
+	if test -z "$XZDEC" || "$XZDEC" "$I" > /dev/null 2>&1; then
 		:
 	else
 		echo "Good file failed: $I"
@@ -22,7 +40,13 @@ done
 
 for I in "$srcdir"/files/bad-*.xz
 do
-	if ../src/xzdec/xzdec "$I" > /dev/null 2> /dev/null ; then
+	if test -n "$XZ" && "$XZ" -dc "$I" > /dev/null 2>&1; then
+		echo "Bad file succeeded: $I"
+		(exit 1)
+		exit 1
+	fi
+
+	if test -n "$XZDEC" && "$XZDEC" "$I" > /dev/null 2>&1; then
 		echo "Bad file succeeded: $I"
 		(exit 1)
 		exit 1

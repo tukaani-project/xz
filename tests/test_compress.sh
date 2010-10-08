@@ -9,6 +9,14 @@
 #
 ###############################################################################
 
+# If xz wasn't built, this test is skipped.
+if test -x ../src/xz/xz ; then
+	:
+else
+	(exit 77)
+	exit 77
+fi
+
 # Find out if our shell supports functions.
 eval 'unset foo ; foo() { return 42; } ; foo'
 if test $? != 42 ; then
@@ -29,7 +37,7 @@ test_xz() {
 	if $XZ -cd tmp_compressed > tmp_uncompressed ; then
 		:
 	else
-		echo "Decoding failed: $* $FILE"
+		echo "Decompressing failed: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
@@ -37,25 +45,29 @@ test_xz() {
 	if cmp tmp_uncompressed "$FILE" ; then
 		:
 	else
-		echo "Decoded file does not match the original: $* $FILE"
+		echo "Decompressed file does not match" \
+				"the original: $* $FILE"
 		(exit 1)
 		exit 1
 	fi
 
-	if $XZDEC tmp_compressed > tmp_uncompressed ; then
-		:
-	else
-		echo "Decoding failed: $* $FILE"
-		(exit 1)
-		exit 1
-	fi
+	if test -n "$XZDEC" ; then
+		if $XZDEC tmp_compressed > tmp_uncompressed ; then
+			:
+		else
+			echo "Decompressing failed: $* $FILE"
+			(exit 1)
+			exit 1
+		fi
 
-	if cmp tmp_uncompressed "$FILE" ; then
-		:
-	else
-		echo "Decoded file does not match the original: $* $FILE"
-		(exit 1)
-		exit 1
+		if cmp tmp_uncompressed "$FILE" ; then
+			:
+		else
+			echo "Decompressed file does not match" \
+					"the original: $* $FILE"
+			(exit 1)
+			exit 1
+		fi
 	fi
 
 	# Show progress:
@@ -65,6 +77,7 @@ test_xz() {
 XZ="../src/xz/xz --memlimit-compress=48MiB --memlimit-decompress=5MiB \
 		--no-adjust --threads=1 --check=crc64"
 XZDEC="../src/xzdec/xzdec" # No memory usage limiter available
+test -x ../src/xzdec/xzdec || XZDEC=
 
 # Create the required input files.
 if ./create_compress_files ; then
@@ -80,7 +93,7 @@ fi
 rm -f tmp_compressed tmp_uncompressed
 trap 'rm -f tmp_compressed tmp_uncompressed' 0
 
-# Encode and decode each file with various filter configurations.
+# Compress and decompress each file with various filter configurations.
 # This takes quite a bit of time.
 echo "test_compress.sh:"
 for FILE in compress_generated_* "$srcdir"/compress_prepared_*

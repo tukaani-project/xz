@@ -369,6 +369,44 @@ AC_DEFINE_UNQUOTED([ASSUME_RAM], [$enable_assume_ram],
 		be determined.])
 
 
+#########################
+# Components to install #
+#########################
+
+AC_ARG_ENABLE([xz], [AC_HELP_STRING([--disable-xz],
+		[do not build the xz tool])],
+	[], [enable_xz=yes])
+AM_CONDITIONAL([COND_XZ], [test x$enable_xz != xno])
+
+AC_ARG_ENABLE([xzdec], [AC_HELP_STRING([--disable-xzdec],
+		[do not build xzdec])],
+	[], [enable_xzdec=yes])
+AM_CONDITIONAL([COND_XZDEC], [test x$enable_xzdec != xno])
+
+AC_ARG_ENABLE([lzmadec], [AC_HELP_STRING([--disable-lzmadec],
+		[do not build lzmadec
+		(it exists primarily for LZMA Utils compatibility)])],
+	[], [enable_lzmadec=yes])
+AM_CONDITIONAL([COND_LZMADEC], [test x$enable_lzmadec != xno])
+
+AC_ARG_ENABLE([lzmainfo], [AC_HELP_STRING([--disable-lzmainfo],
+		[do not build lzmainfo
+		(it exists primarily for LZMA Utils compatibility)])],
+	[], [enable_lzmainfo=yes])
+AM_CONDITIONAL([COND_LZMAINFO], [test x$enable_lzmainfo != xno])
+
+AC_ARG_ENABLE([lzma-links], [AC_HELP_STRING([--disable-lzma-links],
+		[do not create symlinks for LZMA Utils compatibility])],
+	[], [enable_lzma_links=yes])
+AM_CONDITIONAL([COND_LZMALINKS], [test x$enable_lzma_links != xno])
+
+AC_ARG_ENABLE([scripts], [AC_HELP_STRING([--disable-scripts],
+		[do not install the scripts xzdiff, xzgrep, xzless, xzmore,
+		and their symlinks])],
+	[], [enable_scripts=yes])
+AM_CONDITIONAL([COND_SCRIPTS], [test x$enable_scripts != xno])
+
+
 ###############################################################################
 # Checks for programs.
 ###############################################################################

@@ -43,7 +43,7 @@ _("Usage: %s [--help] [--version] [FILE]...\n"
 static void lzma_attribute((noreturn))
 version(void)
 {
-	puts("lzmainfo (" PACKAGE_NAME ") " PACKAGE_VERSION);
+	puts("lzmainfo (" PACKAGE_NAME ") " LZMA_VERSION_STRING);
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }
 

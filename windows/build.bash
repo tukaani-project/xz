@@ -99,9 +99,10 @@ buildit()
 		--disable-nls \
 		--disable-threads \
 		--build="$BUILD" \
-		CFLAGS="$CFLAGS -O2" \
-		LDFLAGS=-static
-	make check
+		CFLAGS="$CFLAGS -O2"
+	make -C src/liblzma
+	make -C src/xz LDFLAGS=-static
+	make -C tests check
 
 	cp -v src/xz/xz.exe src/liblzma/.libs/liblzma.a "$DESTDIR"
 	cp -v src/liblzma/.libs/liblzma-*.dll "$DESTDIR/liblzma.dll"

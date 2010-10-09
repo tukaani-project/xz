@@ -166,10 +166,13 @@ txtcp pkg/include "" src/liblzma/api/lzma.h
 txtcp pkg/include/lzma "" src/liblzma/api/lzma/*.h
 txtcp pkg/doc "" src/liblzma/liblzma.def
 txtcp pkg/doc .txt AUTHORS COPYING NEWS README THANKS TODO
-txtcp pkg/doc "" doc/*.txt
+txtcp pkg/doc "" doc/*.txt windows/README-Windows.txt
 txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
 cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
-txtcp pkg "" windows/README-Windows.txt
+
+if [ -f windows/COPYING-Windows.txt ]; then
+	txtcp pkg/doc "" windows/COPYING-Windows.txt
+fi
 
 # Create the package. This requires 7z.exe from 7-Zip. If it wasn't found,
 # this step is skipped and you have to zip it yourself.
@@ -183,6 +186,13 @@ else
 	echo "NOTE: 7z.exe was not found. xz-$VER-windows.zip"
 	echo "      and xz-$VER-windows.7z were not created."
 	echo "      You can create them yourself from the pkg directory."
+fi
+
+if [ ! -f windows/COPYING-Windows.txt ]; then
+	echo
+	echo "NOTE: windows/COPYING-Windows.txt doesn't exists."
+	echo "      MinGW(-w64) runtime copyright information"
+	echo "      is not included in the package."
 fi
 
 echo

@@ -5,7 +5,7 @@
 # Build a binary package on Windows with MinGW and MSYS
 #
 # Set the paths where MinGW, Mingw-w32, or MinGW-w64 are installed. If both
-# MinGW and MinGW-w32 are specified, MinGW will be used. If there is no
+# MinGW and MinGW-w32 are specified, MinGW-w32 will be used. If there is no
 # 32-bit or 64-bit compiler at all, it is simply skipped.
 #
 # Optionally, 7-Zip is used to create the final .zip and .7z packages.
@@ -134,19 +134,19 @@ txtcp()
 # support even Win95.
 #
 # FIXME: Using i486 in the configure triplet may be wrong.
-if [ -d "$MINGW_DIR" ]; then
-	# 32-bit x86, Win95 or later, using MinGW
-	PATH=$MINGW_DIR/bin:$PATH \
-			buildit \
-			pkg/bin_i486 \
-			i486-pc-mingw32 \
-			'-march=i486 -mtune=generic'
-elif [ -d "$MINGW_W32_DIR" ]; then
+if [ -d "$MINGW_W32_DIR" ]; then
 	# 32-bit x86, Win95 or later, using MinGW-w32
 	PATH=$MINGW_W32_DIR/bin:$MINGW_W32_DIR/i686-w64-mingw32/bin:$PATH \
 			buildit \
 			pkg/bin_i486 \
 			i486-w64-mingw32 \
+			'-march=i486 -mtune=generic'
+elif [ -d "$MINGW_DIR" ]; then
+	# 32-bit x86, Win95 or later, using MinGW
+	PATH=$MINGW_DIR/bin:$PATH \
+			buildit \
+			pkg/bin_i486 \
+			i486-pc-mingw32 \
 			'-march=i486 -mtune=generic'
 fi
 

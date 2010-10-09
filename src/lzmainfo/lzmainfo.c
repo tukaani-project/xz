@@ -20,6 +20,11 @@
 #include "tuklib_progname.h"
 #include "tuklib_exit.h"
 
+#ifdef TUKLIB_DOSLIKE
+#	include <fcntl.h>
+#	include <io.h>
+#endif
+
 
 static void lzma_attribute((noreturn))
 help(void)
@@ -170,6 +175,10 @@ main(int argc, char **argv)
 	tuklib_gettext_init(PACKAGE, LOCALEDIR);
 
 	parse_args(argc, argv);
+
+#ifdef TUKLIB_DOSLIKE
+	setmode(STDIN_FILENO, O_BINARY);
+#endif
 
 	int ret = EXIT_SUCCESS;
 

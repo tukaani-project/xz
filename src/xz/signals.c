@@ -142,12 +142,19 @@ signals_exit(void)
 	const int sig = exit_signal;
 
 	if (sig != 0) {
+#ifdef TUKLIB_DOSLIKE
+		// Don't raise(), set only exit status. This avoids
+		// printing unwanted message about SIGINT when the user
+		// presses C-c.
+		set_exit_status(E_ERROR);
+#else
 		struct sigaction sa;
 		sa.sa_handler = SIG_DFL;
 		sigfillset(&sa.sa_mask);
 		sa.sa_flags = 0;
 		sigaction(sig, &sa, NULL);
 		raise(exit_signal);
+#endif
 	}
 
 	return;

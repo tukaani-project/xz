@@ -17,9 +17,8 @@
 #define MY_VERSION LZMA_VERSION_MAJOR,LZMA_VERSION_MINOR,LZMA_VERSION_PATCH,MY_BUILD
 
 #define MY_FILENAME    MY_NAME MY_SUFFIX
-#define MY_COMPANY     "Lasse Collin and Igor Pavlov"
-#define MY_COPYRIGHT   "Public Domain by " MY_COMPANY
-#define MY_COMMENTS    "http://tukaani.org/xz/"
+#define MY_COMPANY     "The Tukaani Project <http://tukaani.org/>"
+#define MY_PRODUCT     PACKAGE_NAME " <" PACKAGE_URL ">"
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 VS_VERSION_INFO VERSIONINFO
@@ -35,14 +34,12 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", MY_COMMENTS
             VALUE "CompanyName", MY_COMPANY
             VALUE "FileDescription", MY_DESC
             VALUE "FileVersion", LZMA_VERSION_STRING
             VALUE "InternalName", MY_NAME
-            VALUE "LegalCopyright", MY_COPYRIGHT
             VALUE "OriginalFilename", MY_FILENAME
-            VALUE "ProductName", PACKAGE_NAME
+            VALUE "ProductName", MY_PRODUCT
             VALUE "ProductVersion", LZMA_VERSION_STRING
         END
     END

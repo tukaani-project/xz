@@ -188,7 +188,7 @@ else
 	echo "      You can create them yourself from the pkg directory."
 fi
 
-if [ ! -f windows/COPYING-Windows.txt ]; then
+if [ ! -f ../windows/COPYING-Windows.txt ]; then
 	echo
 	echo "NOTE: windows/COPYING-Windows.txt doesn't exists."
 	echo "      MinGW(-w64) runtime copyright information"

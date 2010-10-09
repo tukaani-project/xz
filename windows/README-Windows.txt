@@ -11,10 +11,10 @@ Introduction
 
     The parts of the XZ Utils source code, that are relevant to this
     binary package, are in the public domain. XZ Utils have been built
-    for this package with MinGW and linked statically against the MinGW
-    runtime and w32api packages.
-
-    FIXME: Add license info about MinGW runtime and w32api.
+    for this package with MinGW-w64 and linked statically against its
+    runtime libraries. See COPYING-Windows.txt for the copyright and
+    license information that applies to the MinGW-w64 runtime. You must
+    include it when redistributing these XZ Utils binaries.
 
 
 Package contents

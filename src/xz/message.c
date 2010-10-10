@@ -1072,7 +1072,7 @@ message_version(void)
 	// It is possible that liblzma version is different than the command
 	// line tool version, so print both.
 	if (opt_robot) {
-		printf("XZ_VERSION=%d\nLIBLZMA_VERSION=%d\n",
+		printf("XZ_VERSION=%" PRIu32 "\nLIBLZMA_VERSION=%" PRIu32 "\n",
 				LZMA_VERSION, lzma_version_number());
 	} else {
 		printf("xz (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n");

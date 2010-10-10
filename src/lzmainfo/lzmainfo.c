@@ -155,7 +155,7 @@ lzmainfo(const char *name, FILE *f)
 	lzma_options_lzma *opt = filter.options;
 
 	printf("\nDictionary size:               "
-			"%u MB (2^%u bytes)\n"
+			"%" PRIu32 " MB (2^%" PRIu32 " bytes)\n"
 			"Literal context bits (lc):     %" PRIu32 "\n"
 			"Literal pos bits (lp):         %" PRIu32 "\n"
 			"Number of pos bits (pb):       %" PRIu32 "\n",

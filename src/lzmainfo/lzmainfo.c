@@ -177,7 +177,7 @@ main(int argc, char **argv)
 	parse_args(argc, argv);
 
 #ifdef TUKLIB_DOSLIKE
-	setmode(STDIN_FILENO, O_BINARY);
+	setmode(fileno(stdin), O_BINARY);
 #endif
 
 	int ret = EXIT_SUCCESS;

@@ -20,6 +20,10 @@ enum message_verbosity {
 };
 
 
+/// \brief      Signals used for progress message handling
+extern const int message_progress_sigs[];
+
+
 /// \brief      Initializes the message functions
 ///
 /// If an error occurs, this function doesn't return.

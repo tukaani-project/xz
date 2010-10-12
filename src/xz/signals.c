@@ -148,7 +148,7 @@ signals_exit(void)
 	const int sig = exit_signal;
 
 	if (sig != 0) {
-#ifdef TUKLIB_DOSLIKE
+#if defined(TUKLIB_DOSLIKE) || defined(__VMS)
 		// Don't raise(), set only exit status. This avoids
 		// printing unwanted message about SIGINT when the user
 		// presses C-c.

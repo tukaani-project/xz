@@ -16,7 +16,7 @@ enum message_verbosity {
 	V_ERROR,    ///< Only error messages
 	V_WARNING,  ///< Errors and warnings
 	V_VERBOSE,  ///< Errors, warnings, and verbose statistics
-	V_DEBUG,    ///< Debugging, FIXME remove?
+	V_DEBUG,    ///< Very verbose
 };
 
 

@@ -84,5 +84,5 @@ Bugs
 
     Pressing Ctrl-c or Ctrl-Break won't remove the incomplete target file
     when running under Windows XP Command Prompt (something goes wrong
-    with SIGINT handling). Use the Windows build of XZ Utils on Windows.
+    with SIGINT handling). It works correctly under Windows 95/98/98SE/ME.
 

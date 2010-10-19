@@ -7,8 +7,6 @@ Information to packagers of XZ Utils
     2. Package description
     3. License
     4. configure options
-       4.1. Static vs. dynamic linking of liblzma
-       4.2. Optimizing xzdec and lzmadec
     5. Additional documentation
     6. Extra files
     7. Installing XZ Utils and LZMA Utils in parallel
@@ -141,77 +139,31 @@ Information to packagers of XZ Utils
         --enable-small (*)
         --disable-threads (*)
 
-    (*) These are OK when building xzdec and lzmadec as explained later.
+    (*) These are OK when building xzdec and lzmadec as described
+        in INSTALL.
 
-    You may use --enable-werror but be careful with it since it may break
-    the build due to some useless warning when the build environment
-    changes (like CPU architecture or compiler version).
-
-
-4.1. Static vs. dynamic linking of liblzma
-
-    The default is to link the most important command line tools against
-    static liblzma, and the less important tools against shared liblzma.
-    This can be changed by passing --enable-dynamic to configure, or by
-    not building static libraries at all by passing --disable-static
-    to configure. It is mildly recommended that you use the default, but
-    the configure options make it easy to do otherwise if the distro policy
-    so requires.
-
-    On 32-bit x86, linking against static liblzma can give a minor
-    speed improvement. Static libraries on x86 are usually compiled as
-    position-dependent code (non-PIC) and shared libraries are built as
-    position-independent code (PIC). PIC wastes one register, which can
-    make the code slightly slower compared to a non-PIC version. (Note
-    that this doesn't apply to x86-64.)
-
-    Linking against static liblzma avoids a dependency on liblzma shared
-    library, and makes it slightly easier to copy the command line tools
-    between systems (e.g. quick 'n' dirty emergency recovery of some
-    files). It also allows putting the command line tools to /bin while
-    leaving liblzma to /usr/lib (assuming that your distribution uses
-    such a file system hierarchy), if no other file in /bin would require
-    liblzma.
-
-    If you don't want to distribute static libraries but you still
-    want to link the command line tools against static liblzma, it is
-    probably easiest to build both static and shared liblzma, but after
-    "make DESTDIR=$PKG install" remove liblzma.a and modify liblzma.la
-    to not contain a reference to liblzma.a.
-
-
-4.2. Optimizing xzdec and lzmadec
-
-    xzdec and lzmadec are intended to be relatively small instead of
-    optimizing for the best speed. Thus, it is a good idea to build
-    xzdec and lzmadec separately:
-
-      - Only decoder code is needed, so you can speed up the build
-        slightly by passing --disable-encoders to configure. This
-        shouldn't affect the final size of the executables though,
-        because the linker is able to omit the encoder code anyway.
-
-      - xzdec and lzmadec will never use multithreading capabilities of
-        liblzma. You can avoid dependency on libpthread by passing
-        --disable-threads to configure.
-
-      - There are and will be no translated messages for xzdec and
-        lzmadec, so it is fine to pass also --disable-nls to configure.
-
-      - To select somewhat size-optimized variant of some things in
-        liblzma, pass --enable-small to configure.
-
-      - Tell the compiler to optimize for size instead of speed.
-        E.g. with GCC, put -Os into CFLAGS.
+    xzdec and lzmadec don't provide any functionality that isn't already
+    available in the xz tool. Shipping xzdec and lzmadec without size
+    optimization and statically-linked liblzma isn't very useful. Doing
+    that would give users the xzdec man page, which may make it easier
+    for people to find out that such tools exists, but the executables
+    wouldn't have any advantage over the full-featured xz.
 
 
 5. Additional documentation
 ---------------------------
 
     "make install" copies some additional documentation to $docdir
-    (--docdir in configure). These a copy of the GNU GPL v2, which can
-    be replaced with a symlink if your distro ships with shared copies
-    of the common license texts.
+    (--docdir in configure). There is a copy of the GNU GPL v2, which
+    can be replaced with a symlink if your distro ships with shared
+    copies of the common license texts.
+
+    liblzma API is currently only documented using Doxygen tags in the
+    API headers. It hasn't been tested much how good results Doxygen
+    is able to make from the tags (e.g. Doxyfile might need tweaking,
+    the tagging may need to be improved etc.), so it might be simpler
+    to just let people read docs directly from the .h files for now,
+    and also save quite a bit in package size at the same time.
 
 
 6. Extra files
@@ -246,32 +198,32 @@ Information to packagers of XZ Utils
 ----------
 
     Here is an example for i686 GNU/Linux that
-      - links xz against static liblzma;
-      - includes only shared liblzma in the final package;
-      - links xzdec and lzmadec against static liblzma while
-        avoiding libpthread dependency.
+      - links xz and lzmainfo against shared liblzma;
+      - links size-optimized xzdec and lzmadec against static liblzma
+        while avoiding libpthread dependency;
+      - includes only shared liblzma in the final package; and
+      - copies also the "extra" directory to the package.
 
     PKG=/tmp/xz-pkg
     tar xf xz-x.y.z.tar.gz
     cd xz-x.y.z
     ./configure \
             --prefix=/usr \
-            --sysconfdir=/etc \
-            CFLAGS='-march=i686 -O2'
+            --disable-static \
+            --disable-xzdec \
+            --disable-lzmadec \
+            CFLAGS='-march=i686 -mtune=generic -O2'
     make
     make DESTDIR=$PKG install-strip
-    rm -f $PKG/usr/lib/lib*.a
-    sed -i "s/^old_library=.*$/old_library=''/" $PKG/usr/lib/lib*.la
     make clean
     ./configure \
             --prefix=/usr \
-            --sysconfdir=/etc \
             --disable-shared \
             --disable-nls \
             --disable-encoders \
             --enable-small \
             --disable-threads \
-            CFLAGS='-march=i686 -Os'
+            CFLAGS='-march=i686 -mtune=generic -Os'
     make -C src/liblzma
     make -C src/xzdec
     make -C src/xzdec DESTDIR=$PKG install-strip

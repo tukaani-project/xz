@@ -148,7 +148,7 @@ extern LZMA_API(lzma_ret) lzma_stream_footer_encode(
 /**
  * \brief       Decode Stream Header
  *
- * \param       options     Stream Header options to be encoded.
+ * \param       options     Target for the decoded Stream Header options.
  * \param       in          Beginning of the input buffer of
  *                          LZMA_STREAM_HEADER_SIZE bytes.
  *
@@ -183,7 +183,7 @@ extern LZMA_API(lzma_ret) lzma_stream_header_decode(
 /**
  * \brief       Decode Stream Footer
  *
- * \param       options     Stream Header options to be encoded.
+ * \param       options     Target for the decoded Stream Header options.
  * \param       in          Beginning of the input buffer of
  *                          LZMA_STREAM_HEADER_SIZE bytes.
  *

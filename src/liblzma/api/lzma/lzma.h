@@ -381,8 +381,6 @@ typedef struct {
 	 * with the currently supported options, so it is safe to leave these
 	 * uninitialized.
 	 */
-	void *reserved_ptr1;
-	void *reserved_ptr2;
 	uint32_t reserved_int1;
 	uint32_t reserved_int2;
 	uint32_t reserved_int3;
@@ -395,6 +393,8 @@ typedef struct {
 	lzma_reserved_enum reserved_enum2;
 	lzma_reserved_enum reserved_enum3;
 	lzma_reserved_enum reserved_enum4;
+	void *reserved_ptr1;
+	void *reserved_ptr2;
 
 } lzma_options_lzma;
 

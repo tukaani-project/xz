@@ -91,8 +91,6 @@ typedef struct {
 	lzma_reserved_enum reserved_enum2;
 	lzma_reserved_enum reserved_enum3;
 	lzma_reserved_enum reserved_enum4;
-	lzma_reserved_enum reserved_enum5;
-	lzma_reserved_enum reserved_enum6;
 	lzma_bool reserved_bool1;
 	lzma_bool reserved_bool2;
 	lzma_bool reserved_bool3;
@@ -103,8 +101,6 @@ typedef struct {
 	lzma_bool reserved_bool8;
 	uint32_t reserved_int1;
 	uint32_t reserved_int2;
-	uint32_t reserved_int3;
-	uint32_t reserved_int4;
 
 } lzma_stream_flags;
 

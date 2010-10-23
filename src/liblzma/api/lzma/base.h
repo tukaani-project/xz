@@ -478,8 +478,12 @@ typedef struct {
 	 */
 	void *reserved_ptr1;
 	void *reserved_ptr2;
+	void *reserved_ptr3;
+	void *reserved_ptr4;
 	uint64_t reserved_int1;
 	uint64_t reserved_int2;
+	size_t reserved_int3;
+	size_t reserved_int4;
 	lzma_reserved_enum reserved_enum1;
 	lzma_reserved_enum reserved_enum2;
 
@@ -506,7 +510,8 @@ typedef struct {
  */
 #define LZMA_STREAM_INIT \
 	{ NULL, 0, 0, NULL, 0, 0, NULL, NULL, \
-	NULL, NULL, 0, 0, LZMA_RESERVED_ENUM, LZMA_RESERVED_ENUM }
+	NULL, NULL, NULL, NULL, 0, 0, 0, 0, \
+	LZMA_RESERVED_ENUM, LZMA_RESERVED_ENUM }
 
 
 /**

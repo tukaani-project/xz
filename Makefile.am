@@ -79,6 +79,7 @@ dist-hook:
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.
 mydist:
+	VERSION=$(VERSION); \
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
 		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=4 | cut -b2-`; \
 		test -n "$$SNAPSHOT" && VERSION=$$SNAPSHOT; \

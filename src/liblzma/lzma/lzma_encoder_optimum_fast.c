@@ -46,7 +46,7 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	uint32_t rep_len = 0;
 	uint32_t rep_index = 0;
 
-	for (uint32_t i = 0; i < REP_DISTANCES; ++i) {
+	for (uint32_t i = 0; i < REPS; ++i) {
 		// Pointer to the beginning of the match candidate
 		const uint8_t *const buf_back = buf - coder->reps[i] - 1;
 
@@ -79,8 +79,7 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	// We didn't find a long enough repeated match. Encode it as a normal
 	// match if the match length is at least nice_len.
 	if (len_main >= nice_len) {
-		*back_res = coder->matches[matches_count - 1].dist
-				+ REP_DISTANCES;
+		*back_res = coder->matches[matches_count - 1].dist + REPS;
 		*len_res = len_main;
 		mf_skip(mf, len_main - 1);
 		return;
@@ -155,7 +154,7 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 
 	const uint32_t limit = len_main - 1;
 
-	for (uint32_t i = 0; i < REP_DISTANCES; ++i) {
+	for (uint32_t i = 0; i < REPS; ++i) {
 		const uint8_t *const buf_back = buf - coder->reps[i] - 1;
 
 		if (not_equal_16(buf, buf_back))
@@ -172,7 +171,7 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 		}
 	}
 
-	*back_res = back_main + REP_DISTANCES;
+	*back_res = back_main + REPS;
 	*len_res = len_main;
 	mf_skip(mf, len_main - 2);
 	return;

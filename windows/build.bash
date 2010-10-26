@@ -161,7 +161,7 @@ fi
 
 # Copy the headers, the .def file, and the docs.
 # They are the same for all architectures and builds.
-mkdir -pv pkg/{include/lzma,doc/manuals}
+mkdir -pv pkg/{include/lzma,doc/{manuals,examples}}
 txtcp pkg/include "" src/liblzma/api/lzma.h
 txtcp pkg/include/lzma "" src/liblzma/api/lzma/*.h
 txtcp pkg/doc "" src/liblzma/liblzma.def
@@ -169,6 +169,7 @@ txtcp pkg/doc .txt AUTHORS COPYING NEWS README THANKS TODO
 txtcp pkg/doc "" doc/*.txt windows/README-Windows.txt
 txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
 cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
+txtcp pkg/doc/examples "" doc/examples/*
 
 if [ -f windows/COPYING-Windows.txt ]; then
 	txtcp pkg/doc "" windows/COPYING-Windows.txt

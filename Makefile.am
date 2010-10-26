@@ -27,6 +27,11 @@ dist_doc_DATA = \
 	doc/xz-file-format.txt \
 	doc/lzma-file-format.txt
 
+examplesdir = $(docdir)/examples
+dist_examples_DATA = \
+	doc/examples/xz_pipe_comp.c \
+	doc/examples/xz_pipe_decomp.c
+
 EXTRA_DIST = \
 	extra \
 	dos \

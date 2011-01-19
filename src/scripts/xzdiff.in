@@ -74,9 +74,9 @@ if test $# -eq 1; then
     *[-.]xz | *[-.]lzma | *.t[lx]z)
       ;;
     *[-.]bz2 | *.tbz | *.tbz2)
-      xz1=$bzip2;;
+      xz1=bzip2;;
     *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z)
-      xz1=$gzip;;
+      xz1=gzip;;
     *)
       echo >&2 "$0: $1: Unknown compressed file name suffix"
       exit 2;;
@@ -95,12 +95,12 @@ if test $# -eq 1; then
   )
 elif test $# -eq 2; then
   case $1 in
-    *[-.]bz2 | *.tbz | *.tbz2) xz1=$bzip2;;
-    *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) xz1=$gzip;;
+    *[-.]bz2 | *.tbz | *.tbz2) xz1=bzip2;;
+    *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) xz1=gzip;;
   esac
   case $2 in
-    *[-.]bz2 | *.tbz | *.tbz2) xz2=$bzip2;;
-    *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) xz2=$gzip;;
+    *[-.]bz2 | *.tbz | *.tbz2) xz2=bzip2;;
+    *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) xz2=gzip;;
   esac
   case $1 in
     *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | -)

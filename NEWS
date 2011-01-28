@@ -2,6 +2,20 @@
 XZ Utils User-Visible Changes
 =============================
 
+5.0.1 (2011-01-29)
+
+    * xz --force now (de)compresses files that have setuid, setgid,
+      or sticky bit set and files that have multiple hard links.
+      The man page had it documented this way already, but the code
+      had a bug.
+
+    * gzip and bzip2 support in xzdiff was fixed.
+
+    * Portability fixes
+
+    * Minor fix to Czech translation
+
+
 5.0.0 (2010-10-23)
 
     Only the most important changes compared to 4.999.9beta are listed

@@ -183,6 +183,15 @@ compressed_name(const char *src_name, const size_t src_len)
 		}
 	}
 
+	if (custom_suffix != NULL) {
+		if (test_suffix(custom_suffix, src_name, src_len) != 0) {
+			message_warning(_("%s: File already has `%s' "
+					"suffix, skipping"), src_name,
+					custom_suffix);
+			return NULL;
+		}
+	}
+
 	// TODO: Hmm, maybe it would be better to validate this in args.c,
 	// since the suffix handling when decoding is weird now.
 	if (opt_format == FORMAT_RAW && custom_suffix == NULL) {

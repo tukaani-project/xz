@@ -44,6 +44,9 @@ extern bool opt_auto_adjust;
 /// If true, stop after decoding the first stream.
 extern bool opt_single_stream;
 
+/// If non-zero, start a new .xz Block after every opt_block_size bytes
+/// of input. This has an effect only when compressing to the .xz format.
+extern uint64_t opt_block_size;
 
 /// Set the integrity check type used when compressing
 extern void coder_set_check(lzma_check check);

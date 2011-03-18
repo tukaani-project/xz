@@ -1128,6 +1128,10 @@ message_help(bool long_help)
 "                      `auto' (default), `xz', `lzma', and `raw'\n"
 "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
 "                      `crc32', `crc64' (default), or `sha256'"));
+		puts(_(
+"      --block-size=SIZE\n"
+"                      when compressing to the .xz format, start a new block\n"
+"                      after every SIZE bytes of input; 0=disabled (default)"));
 	}
 
 	puts(_(

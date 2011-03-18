@@ -41,6 +41,9 @@ extern enum format_type opt_format;
 /// they exceed the memory usage limit.
 extern bool opt_auto_adjust;
 
+/// If true, stop after decoding the first stream.
+extern bool opt_single_stream;
+
 
 /// Set the integrity check type used when compressing
 extern void coder_set_check(lzma_check check);

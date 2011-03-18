@@ -24,6 +24,7 @@ enum coder_init_ret {
 enum operation_mode opt_mode = MODE_COMPRESS;
 enum format_type opt_format = FORMAT_AUTO;
 bool opt_auto_adjust = true;
+bool opt_single_stream = false;
 
 
 /// Stream used to communicate with liblzma
@@ -366,8 +367,9 @@ coder_init(file_pair *pair)
 			break;
 		}
 	} else {
-		const uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK
-				| LZMA_CONCATENATED;
+		uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK;
+		if (!opt_single_stream)
+			flags |= LZMA_CONCATENATED;
 
 		// We abuse FORMAT_AUTO to indicate unknown file format,
 		// for which we may consider passthru mode.
@@ -518,6 +520,11 @@ coder_normal(file_pair *pair)
 			}
 
 			if (ret == LZMA_STREAM_END) {
+				if (opt_single_stream) {
+					success = true;
+					break;
+				}
+
 				// Check that there is no trailing garbage.
 				// This is needed for LZMA_Alone and raw
 				// streams.

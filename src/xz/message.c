@@ -1108,7 +1108,10 @@ message_help(bool long_help)
 "  -f, --force         force overwrite of output file and (de)compress links\n"
 "  -c, --stdout        write to standard output and don't delete input files"));
 
-	if (long_help)
+	if (long_help) {
+		puts(_(
+"      --single-stream decompress only the first stream, and silently\n"
+"                      ignore possible remaining input data"));
 		puts(_(
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
@@ -1116,6 +1119,7 @@ message_help(bool long_help)
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"
 "      --files0[=FILE] like --files but use the null character as terminator"));
+	}
 
 	if (long_help) {
 		puts(_("\n Basic file format and compression options:\n"));

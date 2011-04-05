@@ -431,7 +431,7 @@ AC_USE_SYSTEM_EXTENSIONS
 if test "x$enable_threads" = xyes; then
 	echo
 	echo "Threading support:"
-	ACX_PTHREAD
+	AX_PTHREAD
 	LIBS="$LIBS $PTHREAD_LIBS"
 	AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
 	CC="$PTHREAD_CC"

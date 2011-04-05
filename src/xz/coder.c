@@ -698,3 +698,13 @@ coder_run(const char *filename)
 
 	return;
 }
+
+
+#ifndef NDEBUG
+extern void
+coder_free(void)
+{
+	lzma_end(&strm);
+	return;
+}
+#endif

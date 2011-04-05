@@ -275,6 +275,10 @@ main(int argc, char **argv)
 		list_totals();
 	}
 
+#ifndef NDEBUG
+	coder_free();
+#endif
+
 	// If we have got a signal, raise it to kill the program instead
 	// of calling tuklib_exit().
 	signals_exit();

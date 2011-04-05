@@ -294,6 +294,10 @@ io_open_src_real(file_pair *pair)
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDIN_FILENO, O_BINARY);
 #endif
+#ifdef HAVE_POSIX_FADVISE
+		// It will fail if stdin is a pipe and that's fine.
+		(void)posix_fadvise(STDIN_FILENO, 0, 0, POSIX_FADV_SEQUENTIAL);
+#endif
 		return false;
 	}
 
@@ -495,6 +499,17 @@ io_open_src_real(file_pair *pair)
 			goto error;
 		}
 	}
+#endif
+
+#ifdef HAVE_POSIX_FADVISE
+	const int fadvise_ret = posix_fadvise(
+			pair->src_fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+
+	// It shouldn't fail, but if it does anyway, it doesn't matter.
+	// Check it with an assertion so that if something gets messed
+	// up in the future, it will get caught when debugging is enabled.
+	assert(fadvise_ret == 0);
+	(void)fadvise_ret;
 #endif
 
 	return false;

@@ -39,10 +39,10 @@ static io_buf in_buf;
 static io_buf out_buf;
 
 /// Number of filters. Zero indicates that we are using a preset.
-static size_t filters_count = 0;
+static uint32_t filters_count = 0;
 
 /// Number of the preset (0-9)
-static size_t preset_number = 6;
+static uint32_t preset_number = 6;
 
 /// If a preset is used (no custom filter chain) and preset_extreme is true,
 /// a significantly slower compression is used to achieve slightly better
@@ -66,7 +66,7 @@ coder_set_check(lzma_check new_check)
 
 
 extern void
-coder_set_preset(size_t new_preset)
+coder_set_preset(uint32_t new_preset)
 {
 	preset_number = new_preset;
 

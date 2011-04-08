@@ -401,7 +401,7 @@ coder_init(file_pair *pair)
 
 		switch (init_format) {
 		case FORMAT_AUTO:
-			// Uknown file format. If --decompress --stdout
+			// Unknown file format. If --decompress --stdout
 			// --force have been given, then we copy the input
 			// as is to stdout. Checking for MODE_DECOMPRESS
 			// is needed, because we don't want to do use

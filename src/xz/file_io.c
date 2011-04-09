@@ -621,17 +621,19 @@ io_open_dest_real(file_pair *pair)
 		}
 	}
 
-	// If this really fails... well, we have a safe fallback.
+#ifndef TUKLIB_DOSLIKE
+	// dest_st isn't used on DOS-like systems except as a dummy
+	// argument to io_unlink(), so don't fstat() on such systems.
 	if (fstat(pair->dest_fd, &pair->dest_st)) {
-#if defined(__VMS)
+		// If fstat() really fails, we have a safe fallback here.
+#	if defined(__VMS)
 		pair->dest_st.st_ino[0] = 0;
 		pair->dest_st.st_ino[1] = 0;
 		pair->dest_st.st_ino[2] = 0;
-#elif !defined(TUKLIB_DOSLIKE)
+#	else
 		pair->dest_st.st_dev = 0;
 		pair->dest_st.st_ino = 0;
-#endif
-#ifndef TUKLIB_DOSLIKE
+#	endif
 	} else if (try_sparse && opt_mode == MODE_DECOMPRESS) {
 		// When writing to standard output, we need to be extra
 		// careful:
@@ -689,8 +691,8 @@ io_open_dest_real(file_pair *pair)
 		}
 
 		pair->dest_try_sparse = true;
-#endif
 	}
+#endif
 
 	return false;
 }

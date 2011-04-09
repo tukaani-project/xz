@@ -14,9 +14,9 @@
 #include "tuklib_cpucores.h"
 
 
-/// Maximum number of free *coder* threads. This can be set with
+/// Maximum number of worker threads. This can be set with
 /// the --threads=NUM command line option.
-static uint32_t threadlimit;
+static uint32_t threads_max = 1;
 
 /// Memory usage limit for compression
 static uint64_t memlimit_compress;
@@ -29,15 +29,16 @@ static uint64_t total_ram;
 
 
 extern void
-hardware_threadlimit_set(uint32_t new_threadlimit)
+hardware_threads_set(uint32_t n)
 {
-	if (new_threadlimit == 0) {
-		// The default is the number of available CPU cores.
-		threadlimit = tuklib_cpucores();
-		if (threadlimit == 0)
-			threadlimit = 1;
+	if (n == 0) {
+		// Automatic number of threads was requested.
+		// Use the number of available CPU cores.
+		threads_max = tuklib_cpucores();
+		if (threads_max == 0)
+			threads_max = 1;
 	} else {
-		threadlimit = new_threadlimit;
+		threads_max = n;
 	}
 
 	return;
@@ -45,9 +46,9 @@ hardware_threadlimit_set(uint32_t new_threadlimit)
 
 
 extern uint32_t
-hardware_threadlimit_get(void)
+hardware_threads_get(void)
 {
-	return threadlimit;
+	return threads_max;
 }
 
 
@@ -139,6 +140,5 @@ hardware_init(void)
 
 	// Set the defaults.
 	hardware_memlimit_set(0, true, true, false);
-	hardware_threadlimit_set(0);
 	return;
 }

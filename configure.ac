@@ -435,6 +435,7 @@ if test "x$enable_threads" = xyes; then
 	LIBS="$LIBS $PTHREAD_LIBS"
 	AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
 	CC="$PTHREAD_CC"
+	AC_SEARCH_LIBS([clock_gettime], [rt])
 fi
 
 echo

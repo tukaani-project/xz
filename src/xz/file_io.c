@@ -68,8 +68,7 @@ io_init(void)
 #ifdef __DJGPP__
 	// Avoid doing useless things when statting files.
 	// This isn't important but doesn't hurt.
-	_djstat_flags = _STAT_INODE | _STAT_EXEC_EXT
-			| _STAT_EXEC_MAGIC | _STAT_DIRSIZE;
+	_djstat_flags = _STAT_EXEC_EXT | _STAT_EXEC_MAGIC | _STAT_DIRSIZE;
 #endif
 
 	return;
@@ -452,8 +451,18 @@ io_open_src_real(file_pair *pair)
 
 	// Stat the source file. We need the result also when we copy
 	// the permissions, and when unlinking.
+	//
+	// NOTE: Use stat() instead of fstat() with DJGPP, because
+	// then we have a better chance to get st_ino value that can
+	// be used in io_open_dest_real() to prevent overwriting the
+	// source file.
+#ifdef __DJGPP__
+	if (stat(pair->src_name, &pair->src_st))
+		goto error_msg;
+#else
 	if (fstat(pair->src_fd, &pair->src_st))
 		goto error_msg;
+#endif
 
 	if (S_ISDIR(pair->src_st.st_mode)) {
 		message_warning(_("%s: Is a directory, skipping"),
@@ -598,6 +607,28 @@ io_open_dest_real(file_pair *pair)
 		pair->dest_name = suffix_get_dest_name(pair->src_name);
 		if (pair->dest_name == NULL)
 			return true;
+
+#ifdef __DJGPP__
+		struct stat st;
+		if (stat(pair->dest_name, &st) == 0) {
+			// Check that it isn't a special file like "prn".
+			if (st.st_dev == -1) {
+				message_error("%s: Refusing to write to "
+						"a DOS special file",
+						pair->dest_name);
+				return true;
+			}
+
+			// Check that we aren't overwriting the source file.
+			if (st.st_dev == pair->src_st.st_dev
+					&& st.st_ino == pair->src_st.st_ino) {
+				message_error("%s: Output file is the same "
+						"as the input file",
+						pair->dest_name);
+				return true;
+			}
+		}
+#endif
 
 		// If --force was used, unlink the target file first.
 		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {

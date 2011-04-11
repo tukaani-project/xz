@@ -10,6 +10,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "stream_encoder.h"
 #include "block_encoder.h"
 #include "index_encoder.h"
 
@@ -261,11 +262,11 @@ stream_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
 }
 
 
-static lzma_ret
-stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+extern lzma_ret
+lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter *filters, lzma_check check)
 {
-	lzma_next_coder_init(&stream_encoder_init, next, allocator);
+	lzma_next_coder_init(&lzma_stream_encoder_init, next, allocator);
 
 	if (filters == NULL)
 		return LZMA_PROG_ERROR;
@@ -319,7 +320,7 @@ extern LZMA_API(lzma_ret)
 lzma_stream_encoder(lzma_stream *strm,
 		const lzma_filter *filters, lzma_check check)
 {
-	lzma_next_strm_init(stream_encoder_init, strm, filters, check);
+	lzma_next_strm_init(lzma_stream_encoder_init, strm, filters, check);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;

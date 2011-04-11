@@ -55,6 +55,14 @@ static lzma_check check;
 /// This becomes false if the --check=CHECK option is used.
 static bool check_default = true;
 
+#ifdef HAVE_PTHREAD
+static lzma_mt mt_options = {
+	.flags = 0,
+	.timeout = 300,
+	.filters = filters,
+};
+#endif
+
 
 extern void
 coder_set_check(lzma_check new_check)
@@ -117,6 +125,15 @@ memlimit_too_small(uint64_t memory_usage)
 extern void
 coder_set_compression_settings(void)
 {
+	// The default check type is CRC64, but fallback to CRC32
+	// if CRC64 isn't supported by the copy of liblzma we are
+	// using. CRC32 is always supported.
+	if (check_default) {
+		check = LZMA_CHECK_CRC64;
+		if (!lzma_check_is_supported(check))
+			check = LZMA_CHECK_CRC32;
+	}
+
 	// Options for LZMA1 or LZMA2 in case we are using a preset.
 	static lzma_options_lzma opt_lzma;
 
@@ -170,15 +187,26 @@ coder_set_compression_settings(void)
 	// Print the selected filter chain.
 	message_filters_show(V_DEBUG, filters);
 
-	// If using --format=raw, we can be decoding. The memusage function
-	// also validates the filter chain and the options used for the
-	// filters.
+	// Get the memory usage. Note that if --format=raw was used,
+	// we can be decompressing.
 	const uint64_t memory_limit = hardware_memlimit_get(opt_mode);
 	uint64_t memory_usage;
-	if (opt_mode == MODE_COMPRESS)
-		memory_usage = lzma_raw_encoder_memusage(filters);
-	else
+	if (opt_mode == MODE_COMPRESS) {
+#ifdef HAVE_PTHREAD
+		if (opt_format == FORMAT_XZ && hardware_threads_get() > 1) {
+			mt_options.threads = hardware_threads_get();
+			mt_options.block_size = opt_block_size;
+			mt_options.check = check;
+			memory_usage = lzma_stream_encoder_mt_memusage(
+					&mt_options);
+		} else
+#endif
+		{
+			memory_usage = lzma_raw_encoder_memusage(filters);
+		}
+	} else {
 		memory_usage = lzma_raw_decoder_memusage(filters);
+	}
 
 	if (memory_usage == UINT64_MAX)
 		message_fatal(_("Unsupported filter chain or filter options"));
@@ -194,89 +222,98 @@ coder_set_compression_settings(void)
 						round_up_to_mib(decmem), 0));
 	}
 
-	if (memory_usage > memory_limit) {
-		// If --no-auto-adjust was used or we didn't find LZMA1 or
-		// LZMA2 as the last filter, give an error immediately.
-		// --format=raw implies --no-auto-adjust.
-		if (!opt_auto_adjust || opt_format == FORMAT_RAW)
-			memlimit_too_small(memory_usage);
+	if (memory_usage <= memory_limit)
+		return;
 
-		assert(opt_mode == MODE_COMPRESS);
+	// If --no-auto-adjust was used or we didn't find LZMA1 or
+	// LZMA2 as the last filter, give an error immediately.
+	// --format=raw implies --no-auto-adjust.
+	if (!opt_auto_adjust || opt_format == FORMAT_RAW)
+		memlimit_too_small(memory_usage);
 
-		// Look for the last filter if it is LZMA2 or LZMA1, so
-		// we can make it use less RAM. With other filters we don't
-		// know what to do.
-		size_t i = 0;
-		while (filters[i].id != LZMA_FILTER_LZMA2
-				&& filters[i].id != LZMA_FILTER_LZMA1) {
-			if (filters[i].id == LZMA_VLI_UNKNOWN)
+	assert(opt_mode == MODE_COMPRESS);
+
+#ifdef HAVE_PTHREAD
+	if (opt_format == FORMAT_XZ && mt_options.threads > 1) {
+		// Try to reduce the number of threads before
+		// adjusting the compression settings down.
+		do {
+			// FIXME? The real single-threaded mode has
+			// lower memory usage, but it's not comparable
+			// because it doesn't write the size info
+			// into Block Headers.
+			if (--mt_options.threads == 0)
 				memlimit_too_small(memory_usage);
 
-			++i;
-		}
-
-		// Decrease the dictionary size until we meet the memory
-		// usage limit. First round down to full mebibytes.
-		lzma_options_lzma *opt = filters[i].options;
-		const uint32_t orig_dict_size = opt->dict_size;
-		opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
-		while (true) {
-			// If it is below 1 MiB, auto-adjusting failed. We
-			// could be more sophisticated and scale it down even
-			// more, but let's see if many complain about this
-			// version.
-			//
-			// FIXME: Displays the scaled memory usage instead
-			// of the original.
-			if (opt->dict_size < (UINT32_C(1) << 20))
-				memlimit_too_small(memory_usage);
-
-			memory_usage = lzma_raw_encoder_memusage(filters);
+			memory_usage = lzma_stream_encoder_mt_memusage(
+					&mt_options);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
 
-			// Accept it if it is low enough.
-			if (memory_usage <= memory_limit)
-				break;
+		} while (memory_usage > memory_limit);
 
-			// Otherwise 1 MiB down and try again. I hope this
-			// isn't too slow method for cases where the original
-			// dict_size is very big.
-			opt->dict_size -= UINT32_C(1) << 20;
-		}
+		message(V_WARNING, _("Adjusted the number of threads "
+			"from %s to %s to not exceed "
+			"the memory usage limit of %s MiB"),
+			uint64_to_str(hardware_threads_get(), 0),
+			uint64_to_str(mt_options.threads, 1),
+			uint64_to_str(round_up_to_mib(
+				memory_limit), 2));
+	}
+#endif
 
-		// Tell the user that we decreased the dictionary size.
-		message(V_WARNING, _("Adjusted LZMA%c dictionary size "
-				"from %s MiB to %s MiB to not exceed "
-				"the memory usage limit of %s MiB"),
-				filters[i].id == LZMA_FILTER_LZMA2
-					? '2' : '1',
-				uint64_to_str(orig_dict_size >> 20, 0),
-				uint64_to_str(opt->dict_size >> 20, 1),
-				uint64_to_str(round_up_to_mib(
-					memory_limit), 2));
+	if (memory_usage <= memory_limit)
+		return;
+
+	// Look for the last filter if it is LZMA2 or LZMA1, so we can make
+	// it use less RAM. With other filters we don't know what to do.
+	size_t i = 0;
+	while (filters[i].id != LZMA_FILTER_LZMA2
+			&& filters[i].id != LZMA_FILTER_LZMA1) {
+		if (filters[i].id == LZMA_VLI_UNKNOWN)
+			memlimit_too_small(memory_usage);
+
+		++i;
 	}
 
-/*
-	// Limit the number of worker threads so that memory usage
-	// limit isn't exceeded.
-	assert(memory_usage > 0);
-	size_t thread_limit = memory_limit / memory_usage;
-	if (thread_limit == 0)
-		thread_limit = 1;
+	// Decrease the dictionary size until we meet the memory
+	// usage limit. First round down to full mebibytes.
+	lzma_options_lzma *opt = filters[i].options;
+	const uint32_t orig_dict_size = opt->dict_size;
+	opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
+	while (true) {
+		// If it is below 1 MiB, auto-adjusting failed. We could be
+		// more sophisticated and scale it down even more, but let's
+		// see if many complain about this version.
+		//
+		// FIXME: Displays the scaled memory usage instead
+		// of the original.
+		if (opt->dict_size < (UINT32_C(1) << 20))
+			memlimit_too_small(memory_usage);
 
-	if (opt_threads > thread_limit)
-		opt_threads = thread_limit;
-*/
+		memory_usage = lzma_raw_encoder_memusage(filters);
+		if (memory_usage == UINT64_MAX)
+			message_bug();
 
-	if (check_default) {
-		// The default check type is CRC64, but fallback to CRC32
-		// if CRC64 isn't supported by the copy of liblzma we are
-		// using. CRC32 is always supported.
-		check = LZMA_CHECK_CRC64;
-		if (!lzma_check_is_supported(check))
-			check = LZMA_CHECK_CRC32;
+		// Accept it if it is low enough.
+		if (memory_usage <= memory_limit)
+			break;
+
+		// Otherwise 1 MiB down and try again. I hope this
+		// isn't too slow method for cases where the original
+		// dict_size is very big.
+		opt->dict_size -= UINT32_C(1) << 20;
 	}
+
+	// Tell the user that we decreased the dictionary size.
+	message(V_WARNING, _("Adjusted LZMA%c dictionary size "
+			"from %s MiB to %s MiB to not exceed "
+			"the memory usage limit of %s MiB"),
+			filters[i].id == LZMA_FILTER_LZMA2
+				? '2' : '1',
+			uint64_to_str(orig_dict_size >> 20, 0),
+			uint64_to_str(opt->dict_size >> 20, 1),
+			uint64_to_str(round_up_to_mib(memory_limit), 2));
 
 	return;
 }
@@ -356,7 +393,14 @@ coder_init(file_pair *pair)
 			break;
 
 		case FORMAT_XZ:
-			ret = lzma_stream_encoder(&strm, filters, check);
+#ifdef HAVE_PTHREAD
+			if (hardware_threads_get() > 1)
+				ret = lzma_stream_encoder_mt(
+						&strm, &mt_options);
+			else
+#endif
+				ret = lzma_stream_encoder(
+						&strm, filters, check);
 			break;
 
 		case FORMAT_LZMA:
@@ -477,8 +521,8 @@ coder_normal(file_pair *pair)
 	// to the .xz format. If block_remaining == UINT64_MAX, only
 	// a single block is created.
 	uint64_t block_remaining = UINT64_MAX;
-	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_XZ
-			&& opt_block_size > 0)
+	if (hardware_threads_get() == 1 && opt_mode == MODE_COMPRESS
+			&& opt_format == FORMAT_XZ && opt_block_size > 0)
 		block_remaining = opt_block_size;
 
 	strm.next_out = out_buf.u8;

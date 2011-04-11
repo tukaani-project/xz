@@ -66,6 +66,10 @@
  * This function is a wrapper for lzma_raw_encoder_memusage().
  *
  * \param       preset  Compression preset (level and possible flags)
+ *
+ * \return      Number of bytes of memory required for the given
+ *              preset when encoding. If an error occurs, for example
+ *              due to unsupported preset, UINT64_MAX is returned.
  */
 extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
 		lzma_nothrow lzma_attr_pure;
@@ -77,6 +81,11 @@ extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
  * This function is a wrapper for lzma_raw_decoder_memusage().
  *
  * \param       preset  Compression preset (level and possible flags)
+ *
+ * \return      Number of bytes of memory required to decompress a file
+ *              that was compressed using the given preset. If an error
+ *              occurs, for example due to unsupported preset, UINT64_MAX
+ *              is returned.
  */
 extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
 		lzma_nothrow lzma_attr_pure;

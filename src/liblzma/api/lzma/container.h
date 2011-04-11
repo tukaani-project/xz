@@ -148,6 +148,7 @@ extern LZMA_API(lzma_ret) lzma_easy_encoder(
  *
  * \return      - LZMA_OK: Encoding was successful.
  *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_MEM_ERROR
  *              - LZMA_DATA_ERROR
@@ -171,6 +172,7 @@ extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
  *
  * \return      - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR
+ *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
  */
@@ -250,6 +252,7 @@ extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size)
  *
  * \return      - LZMA_OK: Encoding was successful.
  *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_MEM_ERROR
  *              - LZMA_DATA_ERROR

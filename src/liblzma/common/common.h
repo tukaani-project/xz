@@ -49,6 +49,13 @@
 #define LZMA_BUFFER_SIZE 4096
 
 
+/// Maximum number of worker threads within one multithreaded component.
+/// The limit exists solely to make it simpler to prevent integer overflows
+/// when allocating structures etc. This should be big enough for now...
+/// the code won't scale anywhere close to this number anyway.
+#define LZMA_THREADS_MAX 16384
+
+
 /// Starting value for memory usage estimates. Instead of calculating size
 /// of _every_ structure and taking into account malloc() overhead etc., we
 /// add a base size to all memory usage estimates. It's not very accurate
@@ -67,6 +74,13 @@
 	| LZMA_TELL_UNSUPPORTED_CHECK \
 	| LZMA_TELL_ANY_CHECK \
 	| LZMA_CONCATENATED )
+
+
+/// Special return value (lzma_ret) to indicate that a timeout was reached
+/// and lzma_code() must not return LZMA_BUF_ERROR. This is converted to
+/// LZMA_OK in lzma_code(). This is not in the lzma_ret enumeration because
+/// there's no need to have it in the public API.
+#define LZMA_TIMED_OUT 32
 
 
 /// Type of encoder/decoder specific data; the actual structure is defined

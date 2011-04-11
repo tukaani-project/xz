@@ -437,6 +437,7 @@ if test "x$enable_threads" = xyes; then
 	CC="$PTHREAD_CC"
 	AC_SEARCH_LIBS([clock_gettime], [rt])
 fi
+AM_CONDITIONAL([COND_THREADS], [test "x$ax_pthread_ok" = xyes])
 
 echo
 echo "Initializing Libtool:"

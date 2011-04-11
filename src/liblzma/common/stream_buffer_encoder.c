@@ -84,26 +84,32 @@ lzma_stream_buffer_encode(lzma_filter *filters, lzma_check check,
 
 	out_pos += LZMA_STREAM_HEADER_SIZE;
 
-	// Block
+	// Encode a Block but only if there is at least one byte of input.
 	lzma_block block = {
 		.version = 0,
 		.check = check,
 		.filters = filters,
 	};
 
-	return_if_error(lzma_block_buffer_encode(&block, allocator,
-			in, in_size, out, &out_pos, out_size));
+	if (in_size > 0)
+		return_if_error(lzma_block_buffer_encode(&block, allocator,
+				in, in_size, out, &out_pos, out_size));
 
 	// Index
 	{
-		// Create an Index with one Record.
+		// Create an Index. It will have one Record if there was
+		// at least one byte of input to encode. Otherwise the
+		// Index will be empty.
 		lzma_index *i = lzma_index_init(allocator);
 		if (i == NULL)
 			return LZMA_MEM_ERROR;
 
-		lzma_ret ret = lzma_index_append(i, allocator,
-				lzma_block_unpadded_size(&block),
-				block.uncompressed_size);
+		lzma_ret ret = LZMA_OK;
+
+		if (in_size > 0)
+			ret = lzma_index_append(i, allocator,
+					lzma_block_unpadded_size(&block),
+					block.uncompressed_size);
 
 		// If adding the Record was successful, encode the Index
 		// and get its size which will be stored into Stream Footer.

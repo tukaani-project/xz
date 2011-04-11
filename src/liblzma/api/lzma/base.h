@@ -332,11 +332,19 @@ typedef enum {
  * malloc() and free(). C++ users should note that the custom memory
  * handling functions must not throw exceptions.
  *
- * liblzma doesn't make an internal copy of lzma_allocator. Thus, it is
- * OK to change these function pointers in the middle of the coding
- * process, but obviously it must be done carefully to make sure that the
- * replacement `free' can deallocate memory allocated by the earlier
- * `alloc' function(s).
+ * Single-threaded mode only: liblzma doesn't make an internal copy of
+ * lzma_allocator. Thus, it is OK to change these function pointers in
+ * the middle of the coding process, but obviously it must be done
+ * carefully to make sure that the replacement `free' can deallocate
+ * memory allocated by the earlier `alloc' function(s).
+ *
+ * Multithreaded mode: liblzma might internally store pointers to the
+ * lzma_allocator given via the lzma_stream structure. The application
+ * must not change the allocator pointer in lzma_stream or the contents
+ * of the pointed lzma_allocator structure until lzma_end() has been used
+ * to free the memory associated with that lzma_stream. The allocation
+ * functions might be called simultaneously from multiple threads, and
+ * thus they must be thread safe.
  */
 typedef struct {
 	/**

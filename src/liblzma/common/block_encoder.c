@@ -161,6 +161,11 @@ lzma_block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 {
 	lzma_next_coder_init(&lzma_block_encoder_init, next, allocator);
 
+	if (block == NULL)
+		return LZMA_PROG_ERROR;
+
+	// The contents of the structure may depend on the version so
+	// check the version first.
 	if (block->version != 0)
 		return LZMA_OPTIONS_ERROR;
 

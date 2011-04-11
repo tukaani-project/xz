@@ -51,6 +51,9 @@ lzma_stream_buffer_encode(lzma_filter *filters, lzma_check check,
 			|| out_pos_ptr == NULL || *out_pos_ptr > out_size)
 		return LZMA_PROG_ERROR;
 
+	if (!lzma_check_is_supported(check))
+		return LZMA_UNSUPPORTED_CHECK;
+
 	// Note for the paranoids: Index encoder prevents the Stream from
 	// getting too big and still being accepted with LZMA_OK, and Block
 	// encoder catches if the input is too big. So we don't need to

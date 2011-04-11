@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2010-10-04" "Tukaani" "XZ Utils"
+.TH XZ 1 "2011-04-11" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -434,6 +434,29 @@ standard output instead of a file.
 This implies
 .BR \-\-keep .
 .TP
+.B \-\-single\-stream
+Decompress only the first
+.B .xz
+stream, and
+silently ignore possible remaining input data following the stream.
+Normally such trailing garbage makes
+.B xz
+display an error.
+.IP ""
+.B xz
+never decompresses more than one stream from
+.B .lzma
+files or raw streams, but this option still makes
+.B xz
+ignore the possible trailing data after the
+.B .lzma
+file or raw stream.
+.IP ""
+This option has no effect if the operation mode is not
+.B \-\-decompress
+or
+.BR \-\-test .
+.TP
 .B \-\-no\-sparse
 Disable creation of sparse files.
 By default, if decompressing into a regular file,
@@ -776,6 +799,15 @@ respectively.
 These are provided only for backwards compatibility
 with LZMA Utils.
 Avoid using these options.
+.TP
+.BI \-\-block\-size= size
+When compressing to the
+.B .xz
+format, split the input data into blocks of
+.I size
+bytes.
+The blocks are compressed independently from each other.
+.\" FIXME: Explain how to his can be used for random access and threading.
 .TP
 .BI \-\-memlimit\-compress= limit
 Set a memory usage limit for compression.
@@ -2142,7 +2174,9 @@ If there is data left after the first
 .B .lzma
 stream,
 .B xz
-considers the file to be corrupt.
+considers the file to be corrupt unless
+.B \-\-single\-stream
+was used.
 This may break obscure scripts which have
 assumed that trailing garbage is ignored.
 .

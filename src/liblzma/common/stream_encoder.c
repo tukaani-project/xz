@@ -10,7 +10,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "stream_encoder.h"
 #include "block_encoder.h"
 #include "index_encoder.h"
 
@@ -26,7 +25,7 @@ struct lzma_coder_s {
 	} sequence;
 
 	/// True if Block encoder has been initialized by
-	/// lzma_stream_encoder_init() or stream_encoder_update()
+	/// stream_encoder_init() or stream_encoder_update()
 	/// and thus doesn't need to be initialized in stream_encode().
 	bool block_encoder_is_initialized;
 
@@ -126,7 +125,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 		}
 
 		// Initialize the Block encoder unless it was already
-		// initialized by lzma_stream_encoder_init() or
+		// initialized by stream_encoder_init() or
 		// stream_encoder_update().
 		if (!coder->block_encoder_is_initialized)
 			return_if_error(block_encoder_init(coder, allocator));
@@ -262,11 +261,11 @@ stream_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
 }
 
 
-extern lzma_ret
-lzma_stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+static lzma_ret
+stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
 		const lzma_filter *filters, lzma_check check)
 {
-	lzma_next_coder_init(&lzma_stream_encoder_init, next, allocator);
+	lzma_next_coder_init(&stream_encoder_init, next, allocator);
 
 	if (filters == NULL)
 		return LZMA_PROG_ERROR;
@@ -320,7 +319,7 @@ extern LZMA_API(lzma_ret)
 lzma_stream_encoder(lzma_stream *strm,
 		const lzma_filter *filters, lzma_check check)
 {
-	lzma_next_strm_init(lzma_stream_encoder_init, strm, filters, check);
+	lzma_next_strm_init(stream_encoder_init, strm, filters, check);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;

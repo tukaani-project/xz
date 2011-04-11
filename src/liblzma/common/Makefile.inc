@@ -38,7 +38,6 @@ liblzma_la_SOURCES += \
 	common/index_encoder.h \
 	common/stream_buffer_encoder.c \
 	common/stream_encoder.c \
-	common/stream_encoder.h \
 	common/stream_flags_encoder.c \
 	common/vli_encoder.c
 endif

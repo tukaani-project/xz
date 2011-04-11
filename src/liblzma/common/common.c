@@ -156,10 +156,8 @@ lzma_strm_init(lzma_stream *strm)
 		strm->internal->next = LZMA_NEXT_CODER_INIT;
 	}
 
-	strm->internal->supported_actions[LZMA_RUN] = false;
-	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = false;
-	strm->internal->supported_actions[LZMA_FULL_FLUSH] = false;
-	strm->internal->supported_actions[LZMA_FINISH] = false;
+	memzero(strm->internal->supported_actions,
+			sizeof(strm->internal->supported_actions));
 	strm->internal->sequence = ISEQ_RUN;
 	strm->internal->allow_buf_error = false;
 

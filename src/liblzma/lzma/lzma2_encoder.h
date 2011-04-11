@@ -38,4 +38,6 @@ extern uint64_t lzma_lzma2_encoder_memusage(const void *options);
 
 extern lzma_ret lzma_lzma2_props_encode(const void *options, uint8_t *out);
 
+extern uint64_t lzma_lzma2_block_size(const void *options);
+
 #endif

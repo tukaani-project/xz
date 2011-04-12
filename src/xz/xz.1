@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2011-04-11" "Tukaani" "XZ Utils"
+.TH XZ 1 "2011-04-12" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -907,24 +907,30 @@ Automatic adjusting is always disabled when creating raw streams
 .TP
 \fB\-T\fR \fIthreads\fR, \fB\-\-threads=\fIthreads
 Specify the number of worker threads to use.
+Setting
+.I threads
+to a special value
+.B 0
+makes
+.B xz
+use as many threads as there are CPU cores on the system.
 The actual number of threads can be less than
 .I threads
+if the input file is not big enough
+for threading with the given settings or
 if using more threads would exceed the memory usage limit.
 .IP ""
-.B "Multithreaded compression and decompression are not"
-.B "implemented yet, so this option has no effect for now."
+Currently the only threading method is to split the input into
+blocks and compress them independently from each other.
+The default block size depends on the compression level and
+can be overriden with the
+.BI \-\-block\-size= size
+option.
 .IP ""
-.B "As of writing (2010-09-27), it hasn't been decided"
-.B "if threads will be used by default on multicore systems"
-.B "once support for threading has been implemented."
-.B "Comments are welcome."
-The complicating factor is that using many threads
-will increase the memory usage dramatically.
-Note that if multithreading will be the default,
-it will probably be done so that single-threaded and
-multithreaded modes produce the same output,
-so compression ratio won't be significantly affected
-if threading will be enabled by default.
+.B "It is possible that the details of this option change before"
+.B "the next stable XZ Utils release."
+.B "This may include the meaning of the special value 0."
+.\" FIXME
 .
 .SS "Custom compressor filter chains"
 A custom filter chain allows specifying

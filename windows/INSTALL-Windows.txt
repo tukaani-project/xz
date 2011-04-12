@@ -133,7 +133,7 @@ Building XZ Utils
 Using a snapshot from the Git repository
 
     To use a snapshot, the build system files need to be generated with
-    autogen.sh or "autoreconf -fi" before trying to build using the the
+    autogen.sh or "autoreconf -fi" before trying to build using the
     above build instructions. You can install the relevant extra packages
     from MinGW or use Cygwin or use e.g. a GNU/Linux system to create a
     source package with the required build system files.

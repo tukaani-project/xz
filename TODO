@@ -39,7 +39,10 @@ Missing features
     xz doesn't support copying extended attributes, access control
     lists etc. from source to target file.
 
-    Multithreaded compression
+    Multithreaded compression:
+      - Reduce memory usage of the current method.
+      - Implement threaded match finders.
+      - Implement pigz-style threading in LZMA2.
 
     Multithreaded decompression
 
@@ -49,6 +52,13 @@ Missing features
     I/O library is not implemented (similar to gzopen() in zlib).
     It will be a separate library that supports uncompressed, .gz,
     .bz2, .lzma, and .xz files.
+
+    Check the first 0x00 byte of LZMA data.
+
+    Support changing lzma_options_lzma.mode with lzma_filters_update().
+
+    Support LZMA_FULL_FLUSH for lzma_stream_decoder() to stop at
+    Block and Stream boundaries.
 
     lzma_strerror() to convert lzma_ret to human readable form?
     This is tricky, because the same error codes are used with

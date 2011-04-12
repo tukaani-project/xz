@@ -1,6 +1,49 @@
 
-XZ Utils User-Visible Changes
-=============================
+XZ Utils Release Notes
+======================
+
+5.1.1alpha (2011-04-12)
+
+    * All fixes from 5.0.2
+
+    * liblzma fixes that will also be included in 5.0.3:
+
+        - A memory leak was fixed.
+
+        - lzma_stream_buffer_encode() no longer creates an empty .xz
+          Block if encoding an empty buffer. Such an empty Block with
+          LZMA2 data would trigger a bug in 5.0.1 and older (see the
+          first bullet point in 5.0.2 notes). When releasing 5.0.2,
+          I thought that no encoder creates this kind of files but
+          I was wrong.
+
+        - Validate function arguments better in a few functions. Most
+          importantly, specifying an unsupported integrity check to
+          lzma_stream_buffer_encode() no longer creates a corrupt .xz
+          file. Probably no application tries to do that, so this
+          shouldn't be a big problem in practice.
+
+        - Document that lzma_block_buffer_encode(),
+          lzma_easy_buffer_encode(), lzma_stream_encoder(), and
+          lzma_stream_buffer_encode() may return LZMA_UNSUPPORTED_CHECK.
+
+        - The return values of the _memusage() functions are now
+          documented better.
+
+    * Support for multithreaded compression was added using the simplest
+      method, which splits the input data into blocks and compresses
+      them independently. Other methods will be added in the future.
+      The current method has room for improvement, e.g. it is possible
+      to reduce the memory usage.
+
+    * Added the options --single-stream and --block-size=SIZE to xz.
+
+    * xzdiff and xzgrep now support .lzo files if lzop is installed.
+      The .tzo suffix is also recognized as a shorthand for .tar.lzo.
+
+    * Support for short 8.3 filenames under DOS was added to xz. It is
+      experimental and may change before it gets into a stable release.
+
 
 5.0.2 (2011-04-01)
 

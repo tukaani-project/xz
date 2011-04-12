@@ -12,6 +12,8 @@
 
 #include "sysdefs.h"
 #include "mythread.h"
+
+#define LZMA_UNSTABLE
 #include "lzma.h"
 
 #include <sys/types.h>

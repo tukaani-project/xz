@@ -658,9 +658,8 @@ if test x$tuklib_cv_physmem_method = xunknown; then
 	echo "or make a patch to add support for this operating system."
 fi
 
-# Not threading yet so don't warn.
-#if test x$tuklib_cv_cpucores_method = xunknown; then
-#	echo
-#	echo "WARNING:"
-#	echo "No supported method to detect the number of CPU cores."
-#fi
+if test x$tuklib_cv_cpucores_method = xunknown; then
+	echo
+	echo "WARNING:"
+	echo "No supported method to detect the number of CPU cores."
+fi

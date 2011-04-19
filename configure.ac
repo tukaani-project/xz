@@ -435,7 +435,14 @@ if test "x$enable_threads" = xyes; then
 	LIBS="$LIBS $PTHREAD_LIBS"
 	AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
 	CC="$PTHREAD_CC"
+
+	# These are nice to have but not mandatory.
+	OLD_CFLAGS=$CFLAGS
+	CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 	AC_SEARCH_LIBS([clock_gettime], [rt])
+	AC_CHECK_FUNCS([clock_gettime pthread_condattr_setclock])
+	AC_CHECK_DECLS([CLOCK_MONOTONIC], [], [], [[#include <time.h>]])
+	CFLAGS=$OLD_CFLAGS
 fi
 AM_CONDITIONAL([COND_THREADS], [test "x$ax_pthread_ok" = xyes])
 

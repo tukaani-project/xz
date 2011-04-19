@@ -10,6 +10,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef MYTHREAD_H
+#define MYTHREAD_H
+
 #include "sysdefs.h"
 
 
@@ -19,19 +22,23 @@
 // Using pthreads //
 ////////////////////
 
+#include <sys/time.h>
 #include <pthread.h>
 #include <signal.h>
 #include <time.h>
-#include <unistd.h>
 
 
+#ifdef __VMS
+// Do nothing on OpenVMS. It doesn't have pthread_sigmask().
+#define mythread_sigmask(how, set, oset) do { } while (0)
+#else
 /// \brief      Set the process signal mask
 ///
 /// If threads are disabled, sigprocmask() is used instead
 /// of pthread_sigmask().
 #define mythread_sigmask(how, set, oset) \
 	pthread_sigmask(how, set, oset)
-
+#endif
 
 /// \brief      Call the given function once
 ///
@@ -96,7 +103,9 @@ typedef struct {
 static inline int
 mythread_cond_init(mythread_cond *mycond)
 {
-#if defined(_POSIX_CLOCK_SELECTION) && defined(_POSIX_MONOTONIC_CLOCK)
+#ifdef HAVE_CLOCK_GETTIME
+	// NOTE: HAVE_DECL_CLOCK_MONOTONIC is always defined to 0 or 1.
+#	if defined(HAVE_PTHREAD_CONDATTR_SETCLOCK) && HAVE_DECL_CLOCK_MONOTONIC
 	struct timespec ts;
 	pthread_condattr_t condattr;
 
@@ -119,9 +128,11 @@ mythread_cond_init(mythread_cond *mycond)
 	}
 
 	// If anything above fails, fall back to the default CLOCK_REALTIME.
-#endif
+#	endif
 
 	mycond->clk_id = CLOCK_REALTIME;
+#endif
+
 	return pthread_cond_init(&mycond->cond, NULL);
 }
 
@@ -133,11 +144,21 @@ mythread_cond_init(mythread_cond *mycond)
 static inline void
 mythread_cond_abstime(const mythread_cond *mycond, struct timespec *ts)
 {
+#ifdef HAVE_CLOCK_GETTIME
 	struct timespec now;
 	clock_gettime(mycond->clk_id, &now);
 
 	ts->tv_sec += now.tv_sec;
 	ts->tv_nsec += now.tv_nsec;
+#else
+	(void)mycond;
+
+	struct timeval now;
+	gettimeofday(&now, NULL);
+
+	ts->tv_sec += now.tv_sec;
+	ts->tv_nsec += now.tv_usec * 1000L;
+#endif
 
 	// tv_nsec must stay in the range [0, 999_999_999].
 	if (ts->tv_nsec >= 1000000000L) {
@@ -198,5 +219,7 @@ do { \
 		once_ = true; \
 	} \
 } while (0)
+
+#endif
 
 #endif

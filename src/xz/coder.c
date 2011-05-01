@@ -199,6 +199,10 @@ coder_set_compression_settings(void)
 			mt_options.check = check;
 			memory_usage = lzma_stream_encoder_mt_memusage(
 					&mt_options);
+			if (memory_usage != UINT64_MAX)
+				message(V_DEBUG, _("Using up to %" PRIu32
+						" threads."),
+						mt_options.threads);
 		} else
 #endif
 		{

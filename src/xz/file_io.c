@@ -840,6 +840,21 @@ io_close(file_pair *pair, bool success)
 }
 
 
+extern void
+io_fix_src_pos(file_pair *pair, size_t rewind_size)
+{
+	assert(rewind_size <= IO_BUFFER_SIZE);
+
+	if (rewind_size > 0) {
+		// This doesn't need to work on unseekable file descriptors,
+		// so just ignore possible errors.
+		(void)lseek(pair->src_fd, -(off_t)(rewind_size), SEEK_CUR);
+	}
+
+	return;
+}
+
+
 extern size_t
 io_read(file_pair *pair, io_buf *buf_union, size_t size)
 {

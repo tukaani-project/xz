@@ -594,6 +594,7 @@ coder_normal(file_pair *pair)
 
 			if (ret == LZMA_STREAM_END) {
 				if (opt_single_stream) {
+					io_fix_src_pos(pair, strm.avail_in);
 					success = true;
 					break;
 				}

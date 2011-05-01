@@ -102,6 +102,19 @@ extern void io_close(file_pair *pair, bool success);
 extern size_t io_read(file_pair *pair, io_buf *buf, size_t size);
 
 
+/// \brief      Fix the position in src_fd
+///
+/// This is used when --single-thream has been specified and decompression
+/// is successful. If the input file descriptor supports seeking, this
+/// function fixes the input position to point to the next byte after the
+/// decompressed stream.
+///
+/// \param      pair        File pair having the source file open for reading
+/// \param      rewind_size How many bytes of extra have been read i.e.
+///                         how much to seek backwards.
+extern void io_fix_src_pos(file_pair *pair, size_t rewind_size);
+
+
 /// \brief      Read from source file from given offset to a buffer
 ///
 /// This is remotely similar to standard pread(). This uses lseek() though,

@@ -86,9 +86,11 @@ typedef struct {
 	/// Condition variable
 	pthread_cond_t cond;
 
+#ifdef HAVE_CLOCK_GETTIME
 	/// Clock ID (CLOCK_REALTIME or CLOCK_MONOTONIC) associated with
 	/// the condition variable
 	clockid_t clk_id;
+#endif
 
 } mythread_cond;
 

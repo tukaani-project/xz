@@ -94,7 +94,7 @@ static volatile sig_atomic_t progress_needs_updating = false;
 
 /// Signal handler for SIGALRM
 static void
-progress_signal_handler(int sig lzma_attribute((unused)))
+progress_signal_handler(int sig lzma_attribute((__unused__)))
 {
 	progress_needs_updating = true;
 	return;

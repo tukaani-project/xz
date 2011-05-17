@@ -229,7 +229,7 @@ fi
 
 m4_define([SUPPORTED_CHECKS], [crc32,crc64,sha256])
 
-m4_foreach([NAME], [SUPPORTED_FILTERS],
+m4_foreach([NAME], [SUPPORTED_CHECKS],
 [enable_check_[]NAME=no
 ])dnl
 

@@ -535,6 +535,60 @@ TUKLIB_PHYSMEM
 TUKLIB_CPUCORES
 TUKLIB_MBSTR
 
+# Check for system-provided SHA-256. At least the following is supported:
+#
+# OS       Headers                     Library  Type           Function
+# FreeBSD  sys/types.h + sha256.h      libmd    SHA256_CTX     SHA256_Init
+# NetBSD   sys/types.h + sha2.h                 SHA256_CTX     SHA256_Init
+# OpenBSD  sys/types.h + sha2.h                 SHA2_CTX       SHA256Init
+# Solaris  sys/types.h + sha2.h        libmd    SHA256_CTX     SHA256Init
+# MINIX 3  sys/types.h + minix/sha2.h  libutil  SHA256_CTX     SHA256_Init
+# Darwin   CommonCrypto/CommonDigest.h          CC_SHA256_CTX  CC_SHA256_Init
+#
+# Note that Darwin's CC_SHA256_Update takes buffer size as uint32_t instead
+# of size_t.
+#
+# We don't check for e.g. OpenSSL or libgcrypt because we don't want
+# to introduce dependencies to other packages by default. Maybe such
+# libraries could be supported via additional configure options though.
+#
+if test "x$enable_check_sha256" = "xyes"; then
+	# Test for Common Crypto before others, because Darwin has sha256.h
+	# too and we don't want to use that, because on older versions it
+	# uses OpenSSL functions, whose SHA256_Init is not guaranteed to
+	# succeed.
+	sha256_header_found=no
+	AC_CHECK_HEADERS(
+		[CommonCrypto/CommonDigest.h sha256.h sha2.h minix/sha2.h],
+		[sha256_header_found=yes ; break])
+	if test "x$sha256_header_found" = xyes; then
+		AC_CHECK_TYPES([CC_SHA256_CTX, SHA256_CTX, SHA2_CTX], [], [],
+			[[#ifdef HAVE_SYS_TYPES
+			  # include <sys/types.h>
+			  #endif
+			  #ifdef HAVE_COMMONCRYPTO_COMMONDIGEST_H
+			  # include <CommonCrypto/CommonDigest.h>
+			  #endif
+			  #ifdef HAVE_SHA256_H
+			  # include <sha256.h>
+			  #endif
+			  #ifdef HAVE_SHA2_H
+			  # include <sha2.h>
+			  #endif
+			  #ifdef HAVE_MINIX_SHA2_H
+			  # include <minix/sha2.h>
+			  #endif]])
+		AC_SEARCH_LIBS([SHA256_Init], [md util])
+		AC_SEARCH_LIBS([SHA256Init], [md])
+		AC_CHECK_FUNCS([CC_SHA256_Init SHA256_Init SHA256Init],
+			[break])
+	fi
+fi
+AM_CONDITIONAL([COND_INTERNAL_SHA256],
+	[test "x$ac_cv_func_SHA256_Init" != xyes \
+		&& test "x$ac_cv_func_SHA256Init" != xyes \
+		&& test "x$ac_cv_func_CC_SHA256_Init" != xyes])
+
 
 ###############################################################################
 # If using GCC, set some additional AM_CFLAGS:

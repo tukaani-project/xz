@@ -563,7 +563,7 @@ if test "x$enable_check_sha256" = "xyes"; then
 		[sha256_header_found=yes ; break])
 	if test "x$sha256_header_found" = xyes; then
 		AC_CHECK_TYPES([CC_SHA256_CTX, SHA256_CTX, SHA2_CTX], [], [],
-			[[#ifdef HAVE_SYS_TYPES
+			[[#ifdef HAVE_SYS_TYPES_H
 			  # include <sys/types.h>
 			  #endif
 			  #ifdef HAVE_COMMONCRYPTO_COMMONDIGEST_H

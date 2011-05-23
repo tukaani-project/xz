@@ -5,6 +5,9 @@
 ## You can do whatever you want with this file.
 ##
 
+# Use -n to prevent gzip from adding a timestamp to the .gz headers.
+GZIP_ENV = -9n
+
 DIST_SUBDIRS = lib src po tests debug
 SUBDIRS =
 

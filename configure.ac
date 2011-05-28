@@ -407,6 +407,7 @@ AM_CONDITIONAL([COND_SCRIPTS], [test x$enable_scripts != xno])
 # Symbol versioning #
 #####################
 
+AC_MSG_CHECKING([if library symbol versioning should be used])
 AC_ARG_ENABLE([symbol-versions], [AC_HELP_STRING([--enable-symbol-versions],
 		[Use symbol versioning for liblzma. Enabled by default on
 		GNU/Linux, other GNU-based systems, and FreeBSD.])],
@@ -421,6 +422,7 @@ if test "x$enable_symbol_versions" = xauto; then
 			;;
 	esac
 fi
+AC_MSG_RESULT([$enable_symbol_versions])
 AM_CONDITIONAL([COND_SYMVERS], [test "x$enable_symbol_versions" = xyes])
 
 

@@ -26,6 +26,12 @@ liblzma_la_CPPFLAGS = \
 	-DTUKLIB_SYMBOL_PREFIX=lzma_
 liblzma_la_LDFLAGS = -no-undefined -version-info 5:99:0
 
+if COND_SYMVERS
+EXTRA_DIST += liblzma.map
+liblzma_la_LDFLAGS += \
+	-Wl,--version-script=$(top_srcdir)/src/liblzma/liblzma.map
+endif
+
 include $(srcdir)/common/Makefile.inc
 include $(srcdir)/check/Makefile.inc
 

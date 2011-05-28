@@ -403,6 +403,27 @@ AC_ARG_ENABLE([scripts], [AC_HELP_STRING([--disable-scripts],
 AM_CONDITIONAL([COND_SCRIPTS], [test x$enable_scripts != xno])
 
 
+#####################
+# Symbol versioning #
+#####################
+
+AC_ARG_ENABLE([symbol-versions], [AC_HELP_STRING([--enable-symbol-versions],
+		[Use symbol versioning for liblzma. Enabled by default on
+		GNU/Linux, other GNU-based systems, and FreeBSD.])],
+	[], [enable_symbol_versions=auto])
+if test "x$enable_symbol_versions" = xauto; then
+	case $host_os in
+		gnu* | *-gnu* | freebsd*)
+			enable_symbol_versions=yes
+			;;
+		*)
+			enable_symbol_versions=no
+			;;
+	esac
+fi
+AM_CONDITIONAL([COND_SYMVERS], [test "x$enable_symbol_versions" = xyes])
+
+
 ###############################################################################
 # Checks for programs.
 ###############################################################################

@@ -126,10 +126,12 @@ elif test $# -eq 2; then
                 ( ($xz2 -cdfq -- "$2" 4>&-; echo $? >&4) 3>&- 5<&- </dev/null |
                 eval "$cmp" /dev/fd/5 - >&3) 5<&0
             )
+            cmp_status=$?
             case $xz_status in
               *[1-9]*) xz_status=1;;
               *) xz_status=0;;
             esac
+            (exit $cmp_status)
           else
             F=`expr "/$2" : '.*/\(.*\)[-.][ablmotxz2]*$'` || F=$prog
             tmp=

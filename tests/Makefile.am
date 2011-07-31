@@ -10,6 +10,7 @@ EXTRA_DIST = \
 	tests.h \
 	test_files.sh \
 	test_compress.sh \
+	test_scripts.sh \
 	bcj_test.c \
 	compress_prepared_bcj_sparc \
 	compress_prepared_bcj_x86
@@ -42,7 +43,8 @@ TESTS = \
 	test_block_header \
 	test_index \
 	test_files.sh \
-	test_compress.sh
+	test_compress.sh \
+	test_scripts.sh
 
 clean-local:
 	-rm -f compress_generated_*

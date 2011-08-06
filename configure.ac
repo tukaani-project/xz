@@ -627,13 +627,13 @@ AC_CONFIG_FILES([
 	src/xzdec/Makefile
 	src/lzmainfo/Makefile
 	src/scripts/Makefile
-	src/scripts/xzdiff
-	src/scripts/xzgrep
-	src/scripts/xzmore
-	src/scripts/xzless
 	tests/Makefile
 	debug/Makefile
 ])
+AC_CONFIG_FILES([src/scripts/xzdiff], [chmod +x src/scripts/xzdiff])
+AC_CONFIG_FILES([src/scripts/xzgrep], [chmod +x src/scripts/xzgrep])
+AC_CONFIG_FILES([src/scripts/xzmore], [chmod +x src/scripts/xzmore])
+AC_CONFIG_FILES([src/scripts/xzless], [chmod +x src/scripts/xzless])
 
 AC_OUTPUT
 

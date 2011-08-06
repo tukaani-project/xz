@@ -13,7 +13,7 @@
 XZ=../src/xz/xz
 XZDIFF=../src/scripts/xzdiff
 test -x "$XZ" || XZ=
-test -r "$XZDIFF" || XZDIFF=
+test -x "$XZDIFF" || XZDIFF=
 if test -z "$XZ" || test -z "$XZDIFF"; then
 	(exit 77)
 	exit 77
@@ -26,7 +26,7 @@ preimage=$srcdir/files/good-1-check-crc32.xz
 samepostimage=$srcdir/files/good-1-check-crc64.xz
 otherpostimage=$srcdir/files/good-1-lzma2-1.xz
 
-sh "$XZDIFF" "$preimage" "$samepostimage" >/dev/null
+"$XZDIFF" "$preimage" "$samepostimage" >/dev/null
 status=$?
 if test "$status" != 0 ; then
 	echo "xzdiff with no changes exited with status $status != 0"
@@ -34,7 +34,7 @@ if test "$status" != 0 ; then
 	exit 1
 fi
 
-sh "$XZDIFF" "$preimage" "$otherpostimage" >/dev/null
+"$XZDIFF" "$preimage" "$otherpostimage" >/dev/null
 status=$?
 if test "$status" != 1 ; then
 	echo "xzdiff with changes exited with status $status != 1"
@@ -42,7 +42,7 @@ if test "$status" != 1 ; then
 	exit 1
 fi
 
-sh "$XZDIFF" "$preimage" "$srcdir/files/missing.xz" >/dev/null 2>&1
+"$XZDIFF" "$preimage" "$srcdir/files/missing.xz" >/dev/null 2>&1
 status=$?
 if test "$status" != 2 ; then
 	echo "xzdiff with missing operand exited with status $status != 2"

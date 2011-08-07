@@ -13,14 +13,23 @@ mkdir -p Resources
 # Abort immediately if something goes wrong.
 set -e
 
+GCC="gcc-4.0"
+SDK="/Developer/SDKs/MacOSX10.4u.sdk"
+MDT="10.4"
+GTT=i686-apple-darwin8
+
+ARCHES1="-arch ppc -arch ppc64 -arch i386 -arch x86_64"
+ARCHES2="-arch ppc -arch i386"
+PKGFORMAT="10.4" # dir
+
 # Clean up if it was already configured.
 [ -f Makefile ] && make distclean
 
 # Build the regular fat program
 
-CC="gcc-4.0" \
-CFLAGS="-O2 -g -arch ppc -arch ppc64 -arch i386 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4" \
-../configure --disable-dependency-tracking --disable-xzdec --disable-lzmadec i686-apple-darwin8
+CC="$GCC" \
+CFLAGS="-O2 -g $ARCHES1 -isysroot $SDK -mmacosx-version-min=$MDT" \
+../configure --disable-dependency-tracking --disable-xzdec --disable-lzmadec $GTT
 
 make
 
@@ -32,9 +41,9 @@ make distclean
 
 # Build the size-optimized program
 
-CC="gcc-4.0" \
-CFLAGS="-Os -g -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4" \
-../configure --disable-dependency-tracking --disable-shared --disable-nls --disable-encoders --enable-small --disable-threads i686-apple-darwin8
+CC="$GCC" \
+CFLAGS="-Os -g $ARCHES2 -isysroot $SDK -mmacosx-version-min=$MDT" \
+../configure --disable-dependency-tracking --disable-shared --disable-nls --disable-encoders --enable-small --disable-threads $GTT
 
 make -C src/liblzma
 make -C src/xzdec
@@ -80,12 +89,14 @@ cp -p ../COPYING Resources/License.txt
 ID="org.tukaani.xz"
 VERSION=`cd ..; sh build-aux/version.sh`
 PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
-$PACKAGEMAKER -r Root/usr/local -l /usr/local -e Resources -i $ID -n $VERSION -t XZ -o XZ.pkg -g 10.4 --verbose
+$PACKAGEMAKER -r Root/usr/local -l /usr/local -e Resources -i $ID -n $VERSION -t XZ -o XZ.pkg -g $PKGFORMAT --verbose
 
 # Put the package in a disk image
 
+if [ "$PKGFORMAT" != "10.5" ]; then
 hdiutil create -fs HFS+ -format UDZO -quiet -srcfolder XZ.pkg -ov XZ.dmg
 hdiutil internet-enable -yes -quiet XZ.dmg
+fi
 
 echo
 echo "Build completed successfully."

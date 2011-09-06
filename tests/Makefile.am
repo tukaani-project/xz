@@ -43,8 +43,11 @@ TESTS = \
 	test_block_header \
 	test_index \
 	test_files.sh \
-	test_compress.sh \
-	test_scripts.sh
+	test_compress.sh
+
+if COND_SCRIPTS
+TESTS += test_scripts.sh
+endif
 
 clean-local:
 	-rm -f compress_generated_*

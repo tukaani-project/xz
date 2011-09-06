@@ -77,6 +77,7 @@ buildit()
 	./configure \
 		--prefix= \
 		--disable-nls \
+		--disable-scripts \
 		--disable-threads \
 		--disable-shared \
 		--enable-small \
@@ -97,6 +98,7 @@ buildit()
 	./configure \
 		--prefix= \
 		--disable-nls \
+		--disable-scripts \
 		--disable-threads \
 		--build="$BUILD" \
 		CFLAGS="$CFLAGS -O2"

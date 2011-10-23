@@ -295,8 +295,10 @@ worker_start(void *thr_ptr)
 			while (true) {
 				// The thread is already idle so if we are
 				// requested to stop, just set the state.
-				if (thr->state == THR_STOP)
+				if (thr->state == THR_STOP) {
 					thr->state = THR_IDLE;
+					pthread_cond_signal(&thr->cond);
+				}
 
 				state = thr->state;
 				if (state != THR_IDLE)

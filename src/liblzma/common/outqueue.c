@@ -101,7 +101,11 @@ extern void
 lzma_outq_end(lzma_outq *outq, lzma_allocator *allocator)
 {
 	lzma_free(outq->bufs, allocator);
+	outq->bufs = NULL;
+
 	lzma_free(outq->bufs_mem, allocator);
+	outq->bufs_mem = NULL;
+
 	return;
 }
 

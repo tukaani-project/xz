@@ -131,8 +131,12 @@ XZ Utils
 
       - Z is the revision. This has different meaning for stable and
         unstable releases:
+
           * Stable: Z is incremented when bugs get fixed without adding
-            any new features.
+            any new features. This is intended to be convenient for
+            downstream distributors that want bug fixes but don't want
+            any new features to minimize the risk of introducing new bugs.
+
           * Unstable: Z is just a counter. API or ABI of features added
             in earlier unstable releases having the same X.Y may break.
 

@@ -6,13 +6,14 @@ XZ Utils Installation
     1. Supported platforms
        1.1. Compilers
        1.2. Platform-specific notes
-            1.2.1. IRIX
-            1.2.2. MINIX 3
-            1.2.3. OpenVMS
-            1.2.4. Solaris, OpenSolaris, and derivatives
-            1.2.5. Tru64
-            1.2.6. Windows
-            1.2.7. DOS
+            1.2.1. AIX
+            1.2.2. IRIX
+            1.2.3. MINIX 3
+            1.2.4. OpenVMS
+            1.2.5. Solaris, OpenSolaris, and derivatives
+            1.2.6. Tru64
+            1.2.7. Windows
+            1.2.8. DOS
        1.3. Adding support for new platforms
     2. configure options
        2.1. Static vs. dynamic linking of liblzma
@@ -63,7 +64,14 @@ XZ Utils Installation
 
 1.2. Platform-specific notes
 
-1.2.1. IRIX
+1.2.1. AIX
+
+    If you use IBM XL C compiler, pass CC=xlc_r to configure. If
+    you use CC=xlc instead, you must disable threading support
+    with --disable-threads (usually not recommended).
+
+
+1.2.2. IRIX
 
     MIPSpro 7.4.4m has been reported to produce broken code if using
     the -O2 optimization flag ("make check" fails). Using -O1 should
@@ -74,7 +82,7 @@ XZ Utils Installation
     putting "-64" to CFLAGS to build a 64-bit version might help too.
 
 
-1.2.2. MINIX 3
+1.2.3. MINIX 3
 
     The default install of MINIX 3 includes Amsterdam Compiler Kit (ACK),
     which doesn't support C99. Install GCC to compile XZ Utils.
@@ -91,7 +99,7 @@ XZ Utils Installation
     may want to pass gl_cv_cc_visibility=no to configure).
 
 
-1.2.3. OpenVMS
+1.2.4. OpenVMS
 
     XZ Utils can be built for OpenVMS, but the build system files
     are not included in the XZ Utils source package. The required
@@ -101,7 +109,7 @@ XZ Utils Installation
         http://nchrem.tnw.tudelft.nl/openvms/software2.html#xzutils
 
 
-1.2.4. Solaris, OpenSolaris, and derivatives
+1.2.5. Solaris, OpenSolaris, and derivatives
 
     The following linker error has been reported on some x86 systems:
 
@@ -111,14 +119,14 @@ XZ Utils Installation
     as an argument to the configure script.
 
 
-1.2.5. Tru64
+1.2.6. Tru64
 
     If you try to use the native C compiler on Tru64 (passing CC=cc to
     configure), you may need the workaround mention in section 4.1 in
     this file (pass also ac_cv_prog_cc_c99= to configure).
 
 
-1.2.6. Windows
+1.2.7. Windows
 
     Building XZ Utils on Windows is supported under MinGW + MSYS,
     MinGW-w64 + MSYS, and Cygwin. There is windows/build.bash to
@@ -138,7 +146,7 @@ XZ Utils Installation
     windows/README-Windows.txt for details.
 
 
-1.2.7. DOS
+1.2.8. DOS
 
     There is an experimental Makefile in the "dos" directory to build
     XZ Utils on DOS using DJGPP. Support for long file names (LFN) is

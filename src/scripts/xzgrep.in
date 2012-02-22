@@ -194,7 +194,8 @@ for i; do
     fi >&3 5>&-
   )
   r=$?
-  test "$xz_status" -eq 0 || test "$xz_status" -eq 2 || r=2
+  test "$xz_status" -eq 0 || test "$xz_status" -eq 2 \
+      || test "$(kill -l "$xz_status" 2> /dev/null)" = "PIPE" || r=2
   test $res -lt $r && res=$r
 done
 exit $res

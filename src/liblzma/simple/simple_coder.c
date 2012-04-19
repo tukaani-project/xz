@@ -35,9 +35,6 @@ copy_or_code(lzma_coder *coder, lzma_allocator *allocator,
 
 	} else {
 		// Call the next coder in the chain to provide us some data.
-		// We don't care about uncompressed_size here, because
-		// the next filter in the chain will do it for us (since
-		// we don't change the size of the data).
 		const lzma_ret ret = coder->next.code(
 				coder->next.coder, allocator,
 				in, in_pos, in_size,

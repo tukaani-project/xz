@@ -90,10 +90,15 @@ Microsoft Visual C++
 
         lib /def:liblzma.def /out:liblzma.lib /machine:x64
 
-    Linking against static liblzma should work too. Rename liblzma.a
-    to e.g. liblzma_static.lib and tell MSVC to link against it. You
-    also need to tell lzma.h to not use __declspec(dllimport) by defining
-    the macro LZMA_API_STATIC. You can do it either in the C/C++ code
+    Linking against static liblzma might work too, but usually you
+    should use liblzma.dll if possible. (Or, if having a decompressor
+    is enough, consider using XZ Embedded or LZMA SDK which can be
+    compiled with MSVC.)
+
+    To try linking against static liblzma, rename liblzma.a to e.g.
+    liblzma_static.lib and tell MSVC to link against it. You also need
+    to tell lzma.h to not use __declspec(dllimport) by defining the
+    macro LZMA_API_STATIC. You can do it either in the C/C++ code
 
         #define LZMA_API_STATIC
         #include <lzma.h>

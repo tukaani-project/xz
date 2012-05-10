@@ -4,12 +4,12 @@ History of LZMA Utils and XZ Utils
 
 Tukaani distribution
 
-    In 2005, there was a small group working on the Tukaani distribution, which
-    was a Slackware fork. One of the project's goals was to fit the distro on
-    a single 700 MiB ISO-9660 image. Using LZMA instead of gzip helped a
-    lot. Roughly speaking, one could fit data that took 1000 MiB in gzipped
-    form into 700 MiB with LZMA. Naturally, the compression ratio varied across
-    packages, but this was what we got on average.
+    In 2005, there was a small group working on the Tukaani distribution,
+    which was a Slackware fork. One of the project's goals was to fit the
+    distro on a single 700 MiB ISO-9660 image. Using LZMA instead of gzip
+    helped a lot. Roughly speaking, one could fit data that took 1000 MiB
+    in gzipped form into 700 MiB with LZMA. Naturally, the compression
+    ratio varied across packages, but this was what we got on average.
 
     Slackware packages have traditionally had .tgz as the filename suffix,
     which is an abbreviation of .tar.gz. A logical naming for LZMA
@@ -50,9 +50,9 @@ Second generation
 
     LZMA Utils 4.32.0beta1 introduced a new lzma command-line tool written
     by Ville Koskinen. It was written in C++, and used the encoder and
-    decoder from C++ LZMA SDK with some little modifications. This tool replaced
-    both the lzmash script and the LZMA_Alone command-line tool in LZMA
-    Utils.
+    decoder from C++ LZMA SDK with some little modifications. This tool
+    replaced both the lzmash script and the LZMA_Alone command-line tool
+    in LZMA Utils.
 
     Introducing this new tool caused some temporary incompatibilities,
     because the LZMA_Alone executable was simply named lzma like the new
@@ -60,21 +60,22 @@ Second generation
     interface. The file format was still the same.
 
     Lasse wrote liblzmadec, which was a small decoder-only library based
-    on the C code found from LZMA SDK. liblzmadec had an API similar to zlib,
-    although there were some significant differences, which made it
+    on the C code found from LZMA SDK. liblzmadec had an API similar to
+    zlib, although there were some significant differences, which made it
     non-trivial to use it in some applications designed for zlib and
     libbzip2.
 
     The lzmadec command-line tool was converted to use liblzmadec.
 
-    Alexandre Sauvé helped converting the build system to use GNU Autotools.
-    This made it easier to test for certain less portable features needed
-    by the new command-line tool.
+    Alexandre Sauvé helped converting the build system to use GNU
+    Autotools. This made it easier to test for certain less portable
+    features needed by the new command-line tool.
 
     Since the new command-line tool never got completely finished (for
-    example, it didn't support the LZMA_OPT environment variable), the intent
-    was to not call 4.32.x stable. Similarly, liblzmadec wasn't polished,
-    but appeared to work well enough, so some people started using it too.
+    example, it didn't support the LZMA_OPT environment variable), the
+    intent was to not call 4.32.x stable. Similarly, liblzmadec wasn't
+    polished, but appeared to work well enough, so some people started
+    using it too.
 
     Because the development of the third generation of LZMA Utils was
     delayed considerably (3-4 years), the 4.32.x branch had to be kept
@@ -87,8 +88,8 @@ File format problems
 
     The file format used by LZMA_Alone was primitive. It was designed with
     embedded systems in mind, and thus provided only a minimal set of
-    features. The two biggest problems for non-embedded use were the lack of
-    magic bytes and an integrity check.
+    features. The two biggest problems for non-embedded use were the lack
+    of magic bytes and an integrity check.
 
     Igor and Lasse started developing a new file format with some help
     from Ville Koskinen. Also Mark Adler, Mikko Pouru, H. Peter Anvin,
@@ -125,13 +126,13 @@ Transition to XZ Utils
     The early versions of XZ Utils were called LZMA Utils. The first
     releases were 4.42.0alphas. They dropped the rest of the C++ LZMA SDK.
     The code was still directly based on LZMA SDK but ported to C and
-    converted from a callback API to a stateful API. Later, Igor Pavlov made
-    a C version of the LZMA encoder too; these ports from C++ to C were
-    independent in LZMA SDK and LZMA Utils.
+    converted from a callback API to a stateful API. Later, Igor Pavlov
+    made a C version of the LZMA encoder too; these ports from C++ to C
+    were independent in LZMA SDK and LZMA Utils.
 
     The core of the new LZMA Utils was liblzma, a compression library with
-    a zlib-like API. liblzma supported both the old and new file format. The
-    gzip-like lzma command-line tool was rewritten to use liblzma.
+    a zlib-like API. liblzma supported both the old and new file format.
+    The gzip-like lzma command-line tool was rewritten to use liblzma.
 
     The new LZMA Utils code base was renamed to XZ Utils when the name
     of the new file format had been decided. The liblzma compression

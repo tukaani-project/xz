@@ -109,8 +109,8 @@ XZ Utils
     written yet.
 
     For now, if you have never used liblzma, libbzip2, or zlib, I
-    recommend learning the *basics* of the zlib API. Once you know that, it
-    should be easier to learn liblzma.
+    recommend learning the *basics* of the zlib API. Once you know that,
+    it should be easier to learn liblzma.
 
         http://zlib.net/manual.html
         http://zlib.net/zlib_how.html
@@ -124,10 +124,10 @@ XZ Utils
       - X is the major version. When this is incremented, the library
         API and ABI break.
 
-      - Y is the minor version. It is incremented when new features are
-        added without breaking the existing API or ABI. An even Y indicates
-        a stable release and an odd Y indicates unstable (alpha or beta
-        version).
+      - Y is the minor version. It is incremented when new features
+        are added without breaking the existing API or ABI. An even Y
+        indicates a stable release and an odd Y indicates unstable
+        (alpha or beta version).
 
       - Z is the revision. This has a different meaning for stable and
         unstable releases:

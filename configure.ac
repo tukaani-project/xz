@@ -434,7 +434,11 @@ if test "x$enable_threads" = xyes; then
 	AX_PTHREAD
 	LIBS="$LIBS $PTHREAD_LIBS"
 	AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
-	CC="$PTHREAD_CC"
+
+	dnl NOTE: PTHREAD_CC is ignored. It would be useful on AIX, but
+	dnl it's tricky to get it right together with AC_PROG_CC_C99.
+	dnl Thus, this is handled by telling the user in INSTALL to set
+	dnl the correct CC manually.
 fi
 
 echo

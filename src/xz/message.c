@@ -211,7 +211,7 @@ message_set_files(unsigned int files)
 static void
 print_filename(void)
 {
-	if (files_total != 1 || filename != stdin_filename) {
+	if (!opt_robot && (files_total != 1 || filename != stdin_filename)) {
 		signals_block();
 
 		FILE *file = opt_mode == MODE_LIST ? stdout : stderr;

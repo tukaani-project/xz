@@ -34,7 +34,8 @@ check_PROGRAMS = \
 	test_stream_flags \
 	test_filter_flags \
 	test_block_header \
-	test_index
+	test_index \
+	test_bcj_exact_size
 
 TESTS = \
 	test_check \
@@ -42,6 +43,7 @@ TESTS = \
 	test_filter_flags \
 	test_block_header \
 	test_index \
+	test_bcj_exact_size \
 	test_files.sh \
 	test_compress.sh
 

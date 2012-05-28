@@ -107,7 +107,7 @@ simple_code(lzma_coder *coder, lzma_allocator *allocator,
 	// filtered if the buffer sizes used by the application are reasonable.
 	const size_t out_avail = out_size - *out_pos;
 	const size_t buf_avail = coder->size - coder->pos;
-	if (out_avail > buf_avail) {
+	if (out_avail > buf_avail || buf_avail == 0) {
 		// Store the old position so that we know from which byte
 		// to start filtering.
 		const size_t out_start = *out_pos;

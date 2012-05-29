@@ -2,6 +2,30 @@
 XZ Utils Release Notes
 ======================
 
+5.0.4 (xxxx-xx-xx)
+
+    * liblzma: Fix lzma_index_init(). It could crash if memory allocation
+      failed.
+
+    * liblzma: Fix the possibility of an incorrect LZMA_BUF_ERROR when
+      a BCJ filter is used and the application only provides exactly
+      as much output space as is the uncompressed size of the file.
+
+    * Fix "xz -lvv foo.xz". It could crash on some corrupted files.
+
+    * Fix output of "xz --robot -lv" and "xz --robot -lvv" which
+      incorrectly printed the filename also in the "foo (x/x)" format.
+
+    * Fix exit status of "xzdiff foo.xz bar.xz".
+
+    * Fix exit status of "xzgrep foo binary_file".
+
+    * Fix portability to EBCDIC systems.
+
+    * Fix a configure issue on AIX with the XL C compiler. See INSTALL
+      for details.
+
+
 5.0.3 (2011-05-21)
 
     * liblzma fixes:

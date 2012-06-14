@@ -1,7 +1,7 @@
 /*
  * xz_pipe_decomp.c
  * A simple example of pipe-only xz decompressor implementation.
- * version: 2010-07-12 - by Daniel Mealha Cabrita
+ * version: 2012-06-14 - by Daniel Mealha Cabrita
  * Not copyrighted -- provided to the public domain.
  *
  * Compiling:
@@ -99,6 +99,14 @@ int xz_decompress (FILE *in_file, FILE *out_file)
 				}
 			}
 		} while (strm.avail_out == 0);
+	}
+
+	/* Bug fix (2012-06-14): If no errors were detected, check
+	   that the last lzma_code() call returned LZMA_STREAM_END.
+	   If not, the file is probably truncated. */
+	if ((ret == RET_OK) && (ret_xz != LZMA_STREAM_END)) {
+		fprintf (stderr, "Input truncated or corrupt\n");
+		ret = RET_ERROR_DECOMPRESSION;
 	}
 
 	lzma_end (&strm);

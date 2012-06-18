@@ -27,7 +27,7 @@ show_usage_and_exit(const char *argv0)
 {
 	fprintf(stderr, "Usage: %s PRESET < INFILE > OUTFILE\n"
 			"PRESET is a number 0-9 and can optionally be "
-			"by `e' to indicate extreme preset\n",
+			"followed by `e' to indicate extreme preset\n",
 			argv0);
 	exit(EXIT_FAILURE);
 }

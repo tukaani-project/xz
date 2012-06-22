@@ -2,14 +2,25 @@
 XZ Utils Release Notes
 ======================
 
-5.0.4 (xxxx-xx-xx)
+5.0.4 (2012-06-22)
 
-    * liblzma: Fix lzma_index_init(). It could crash if memory allocation
-      failed.
+    * liblzma:
 
-    * liblzma: Fix the possibility of an incorrect LZMA_BUF_ERROR when
-      a BCJ filter is used and the application only provides exactly
-      as much output space as is the uncompressed size of the file.
+        - Fix lzma_index_init(). It could crash if memory allocation
+          failed.
+
+        - Fix the possibility of an incorrect LZMA_BUF_ERROR when a BCJ
+          filter is used and the application only provides exactly as
+          much output space as is the uncompressed size of the file.
+
+        - Fix a bug in doc/examples_old/xz_pipe_decompress.c. It didn't
+          check if the last call to lzma_code() really returned
+          LZMA_STREAM_END, which made the program think that truncated
+          files are valid.
+
+        - New example programs in doc/examples (old programs are now in
+          doc/examples_old). These have more comments and more detailed
+          error handling.
 
     * Fix "xz -lvv foo.xz". It could crash on some corrupted files.
 
@@ -24,6 +35,8 @@ XZ Utils Release Notes
 
     * Fix a configure issue on AIX with the XL C compiler. See INSTALL
       for details.
+
+    * Update French, German, Italian, and Polish translations.
 
 
 5.0.3 (2011-05-21)

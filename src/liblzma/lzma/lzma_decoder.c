@@ -289,8 +289,12 @@ lzma_decode(lzma_coder *restrict coder, lzma_dict *restrict dictptr,
 	// Initialization //
 	////////////////////
 
-	if (!rc_read_init(&coder->rc, in, in_pos, in_size))
-		return LZMA_OK;
+	{
+		const lzma_ret ret = rc_read_init(
+				&coder->rc, in, in_pos, in_size);
+		if (ret != LZMA_STREAM_END)
+			return ret;
+	}
 
 	///////////////
 	// Variables //

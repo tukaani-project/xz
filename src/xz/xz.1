@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2012-05-27" "Tukaani" "XZ Utils"
+.TH XZ 1 "2012-07-01" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -1889,6 +1889,14 @@ or
 .B no
 indicating if all block headers have both compressed size and
 uncompressed size stored in them
+.PP
+.I Since
+.B xz
+.I 5.1.2alpha:
+.IP 4. 4
+Minimum
+.B xz
+version required to decompress the file
 .RE
 .PD
 .PP
@@ -1939,6 +1947,14 @@ or
 .B no
 indicating if all block headers have both compressed size and
 uncompressed size stored in them
+.PP
+.I Since
+.B xz
+.I 5.1.2alpha:
+.IP 12. 4
+Minimum
+.B xz
+version required to decompress the file
 .RE
 .PD
 .PP

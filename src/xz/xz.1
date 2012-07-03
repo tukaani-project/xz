@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2012-07-01" "Tukaani" "XZ Utils"
+.TH XZ 1 "2012-07-03" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -807,7 +807,26 @@ format, split the input data into blocks of
 .I size
 bytes.
 The blocks are compressed independently from each other.
-.\" FIXME: Explain how to his can be used for random access and threading.
+.\" FIXME: Explain how to these can be used for random access and threading.
+.TP
+.BI \-\-block\-list= sizes
+When compressing to the
+.B .xz
+format, start a new block after
+the given intervals of uncompressed data.
+.IP ""
+The uncompressed
+.I sizes
+of the blocks are specified as a comma-separated list.
+Omitting a size (two or more consecutive commas) is a shorthand
+to use the size of the previous block.
+A special value of
+.B 0
+may be used as the last value to indicate that
+the rest of the file should be encoded as a single block.
+.IP ""
+.B "Currently this option is badly broken if used together with"
+.B "\-\-block\-size or with multithreading."
 .TP
 .BI \-\-memlimit\-compress= limit
 Set a memory usage limit for compression.

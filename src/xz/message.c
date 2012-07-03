@@ -1153,10 +1153,16 @@ message_help(bool long_help)
 "                      does not affect decompressor memory requirements"));
 
 	if (long_help) {
+		// FIXME? Mention something about threading?
 		puts(_(
 "      --block-size=SIZE\n"
 "                      when compressing to the .xz format, start a new block\n"
 "                      after every SIZE bytes of input; 0=disabled (default)"));
+		// FIXME
+		puts(_(
+"      --block-list=SIZES\n"
+"                      when compressing to the .xz format, start a new block\n"
+"                      after the given intervals of uncompressed data"));
 		puts(_( // xgettext:no-c-format
 "      --memlimit-compress=LIMIT\n"
 "      --memlimit-decompress=LIMIT\n"

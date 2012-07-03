@@ -48,6 +48,10 @@ extern bool opt_single_stream;
 /// of input. This has an effect only when compressing to the .xz format.
 extern uint64_t opt_block_size;
 
+/// This is non-NULL if --block-list was used. This contains the Block sizes
+/// as an array that is terminated with 0.
+extern uint64_t *opt_block_list;
+
 /// Set the integrity check type used when compressing
 extern void coder_set_check(lzma_check check);
 

@@ -40,3 +40,4 @@ extern bool opt_robot;
 extern const char stdin_filename[];
 
 extern void args_parse(args_info *args, int argc, char **argv);
+extern void args_free(void);

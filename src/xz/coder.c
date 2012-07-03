@@ -26,6 +26,7 @@ enum format_type opt_format = FORMAT_AUTO;
 bool opt_auto_adjust = true;
 bool opt_single_stream = false;
 uint64_t opt_block_size = 0;
+uint64_t *opt_block_list = NULL;
 
 
 /// Stream used to communicate with liblzma
@@ -522,15 +523,36 @@ coder_normal(file_pair *pair)
 	// Assume that something goes wrong.
 	bool success = false;
 
-	// block_remaining indicates how many input bytes to encode until
+	// block_remaining indicates how many input bytes to encode before
 	// finishing the current .xz Block. The Block size is set with
-	// --block-size=SIZE. It has an effect only when compressing
-	// to the .xz format. If block_remaining == UINT64_MAX, only
-	// a single block is created.
+	// --block-size=SIZE and --block-list. They have an effect only when
+	// compressing to the .xz format. If block_remaining == UINT64_MAX,
+	// only a single block is created.
 	uint64_t block_remaining = UINT64_MAX;
-	if (hardware_threads_get() == 1 && opt_mode == MODE_COMPRESS
-			&& opt_format == FORMAT_XZ && opt_block_size > 0)
-		block_remaining = opt_block_size;
+
+	// Position in opt_block_list. Unused if --block-list wasn't used.
+	size_t list_pos = 0;
+
+	// Handle --block-size for single-threaded mode and the first step
+	// of --block-list.
+	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_XZ) {
+		// --block-size doesn't do anything here in threaded mode,
+		// because the threaded encoder will take care of splitting
+		// to fixed-sized Blocks.
+		if (hardware_threads_get() == 1 && opt_block_size > 0)
+			block_remaining = opt_block_size;
+
+		// If --block-list was used, start with the first size.
+		//
+		// FIXME: Currently this overrides --block-size but this isn't
+		// good. For threaded case, we want --block-size to specify
+		// how big Blocks the encoder needs to be prepared to create
+		// at maximum and --block-list will simultaneously cause new
+		// Blocks to be started at specified intervals. To keep things
+		// logical, the same should be done in single-threaded mode.
+		if (opt_block_list != NULL)
+			block_remaining = opt_block_list[list_pos];
+	}
 
 	strm.next_out = out_buf.u8;
 	strm.avail_out = IO_BUFFER_SIZE;
@@ -575,7 +597,17 @@ coder_normal(file_pair *pair)
 		if (ret == LZMA_STREAM_END && action == LZMA_FULL_FLUSH) {
 			// Start a new Block.
 			action = LZMA_RUN;
-			block_remaining = opt_block_size;
+
+			if (opt_block_list == NULL) {
+				block_remaining = opt_block_size;
+			} else {
+				// FIXME: Make it work together with
+				// --block-size.
+				if (opt_block_list[list_pos + 1] != 0)
+					++list_pos;
+
+				block_remaining = opt_block_list[list_pos];
+			}
 
 		} else if (ret != LZMA_OK) {
 			// Determine if the return value indicates that we

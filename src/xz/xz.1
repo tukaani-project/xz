@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2012-07-03" "Tukaani" "XZ Utils"
+.TH XZ 1 "2012-07-04" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -820,6 +820,12 @@ The uncompressed
 of the blocks are specified as a comma-separated list.
 Omitting a size (two or more consecutive commas) is a shorthand
 to use the size of the previous block.
+.IP ""
+If the input file is bigger than the sum of
+.IR sizes ,
+the last value in
+.I sizes
+is repeated until the end of the file.
 A special value of
 .B 0
 may be used as the last value to indicate that

@@ -2,6 +2,47 @@
 XZ Utils Release Notes
 ======================
 
+5.1.2alpha (2012-07-04)
+
+    * All fixes from 5.0.3 and 5.0.4
+
+    * liblzma:
+
+        - Fixed a deadlock and an invalid free() in the threaded encoder.
+
+        - Added support for symbol versioning. It is enabled by default
+          on GNU/Linux, other GNU-based systems, and FreeBSD.
+
+        - Use SHA-256 implementation from the operating system if one is
+          available in libc, libmd, or libutil. liblzma won't use e.g.
+          OpenSSL or libgcrypt to avoid introducing new dependencies.
+
+        - Fixed liblzma.pc for static linking.
+
+        - Fixed a few portability bugs.
+
+    * xz --decompress --single-stream now fixes the input position after
+      successful decompression. Now the following works:
+
+          echo foo | xz > foo.xz
+          echo bar | xz >> foo.xz
+          ( xz -dc --single-stream ; xz -dc --single-stream ) < foo.xz
+
+      Note that it doesn't work if the input is not seekable
+      or if there is Stream Padding between the concatenated
+      .xz Streams.
+
+    * xz -lvv now shows the minimum xz version that is required to
+      decompress the file. Currently it is 5.0.0 for all supported .xz
+      files except files with empty LZMA2 streams require 5.0.2.
+
+    * Added an *incomplete* implementation of --block-list=SIZES to xz.
+      It only works correctly in single-threaded mode and when
+      --block-size isn't used at the same time. --block-list allows
+      specifying the sizes of Blocks which can be useful e.g. when
+      creating files for random-access reading.
+
+
 5.1.1alpha (2011-04-12)
 
     * All fixes from 5.0.2

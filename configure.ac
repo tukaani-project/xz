@@ -414,6 +414,10 @@ AC_ARG_ENABLE([symbol-versions], [AC_HELP_STRING([--enable-symbol-versions],
 	[], [enable_symbol_versions=auto])
 if test "x$enable_symbol_versions" = xauto; then
 	case $host_os in
+		# NOTE: Even if one omits -gnu on GNU/Linux (e.g.
+		# i486-slackware-linux), configure will (via config.sub)
+		# append -gnu (e.g. i486-slackware-linux-gnu), and this
+		# test will work correctly.
 		gnu* | *-gnu* | freebsd*)
 			enable_symbol_versions=yes
 			;;

@@ -318,6 +318,11 @@ XZ Utils Installation
                 single-threaded applications and want to avoid dependency
                 on libpthread.
 
+    --enable-symbol-versions
+                Use symbol versioning for liblzma. This is enabled by
+                default on GNU/Linux, other GNU-based systems, and
+                FreeBSD.
+
     --enable-debug
                 This enables the assert() macro and possibly some other
                 run-time consistency checks. It makes the code slower, so

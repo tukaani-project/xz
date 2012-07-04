@@ -482,7 +482,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 	// Determine the minimum XZ Utils version that supports this Block.
 	//
 	// Currently the only thing that 5.0.0 doesn't support is empty
-	// LZMA2 Block. This bug was fixed in 5.0.3.
+	// LZMA2 Block. This decoder bug was fixed in 5.0.2.
 	{
 		size_t i = 0;
 		while (filters[i + 1].id != LZMA_VLI_UNKNOWN)
@@ -490,8 +490,8 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 
 		if (filters[i].id == LZMA_FILTER_LZMA2
 				&& iter->block.uncompressed_size == 0
-				&& xfi->min_version < 50000032U)
-			xfi->min_version = 50000032U;
+				&& xfi->min_version < 50000022U)
+			xfi->min_version = 50000022U;
 	}
 
 	// Convert the filter chain to human readable form.

@@ -47,6 +47,7 @@ EXTRA_DIST = \
 	extra \
 	dos \
 	windows \
+	macosx \
 	autogen.sh \
 	Doxyfile.in \
 	COPYING.GPLv2 \

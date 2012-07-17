@@ -341,7 +341,7 @@ extern LZMA_API(lzma_ret) lzma_block_header_encode(
  *                block->header_size is invalid or block->filters is NULL.
  */
 extern LZMA_API(lzma_ret) lzma_block_header_decode(lzma_block *block,
-		lzma_allocator *allocator, const uint8_t *in)
+		const lzma_allocator *allocator, const uint8_t *in)
 		lzma_nothrow lzma_attr_warn_unused_result;
 
 
@@ -490,7 +490,7 @@ extern LZMA_API(size_t) lzma_block_buffer_bound(size_t uncompressed_size)
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
-		lzma_block *block, lzma_allocator *allocator,
+		lzma_block *block, const lzma_allocator *allocator,
 		const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_nothrow lzma_attr_warn_unused_result;
@@ -524,7 +524,7 @@ extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_block_buffer_decode(
-		lzma_block *block, lzma_allocator *allocator,
+		lzma_block *block, const lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_nothrow;

@@ -45,7 +45,7 @@ struct lzma_coder_s {
 
 
 static lzma_ret
-block_encode(lzma_coder *coder, lzma_allocator *allocator,
+block_encode(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
@@ -134,7 +134,7 @@ block_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 
 static void
-block_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
+block_encoder_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder, allocator);
@@ -143,7 +143,7 @@ block_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-block_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
+block_encoder_update(lzma_coder *coder, const lzma_allocator *allocator,
 		const lzma_filter *filters lzma_attribute((__unused__)),
 		const lzma_filter *reversed_filters)
 {
@@ -156,7 +156,7 @@ block_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
 
 
 extern lzma_ret
-lzma_block_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_block_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		lzma_block *block)
 {
 	lzma_next_coder_init(&lzma_block_encoder_init, next, allocator);

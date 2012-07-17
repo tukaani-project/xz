@@ -87,12 +87,13 @@ extern uint64_t lzma_outq_memusage(uint64_t buf_size_max, uint32_t threads);
 /// \return     - LZMA_OK
 ///             - LZMA_MEM_ERROR
 ///
-extern lzma_ret lzma_outq_init(lzma_outq *outq, lzma_allocator *allocator,
+extern lzma_ret lzma_outq_init(
+		lzma_outq *outq, const lzma_allocator *allocator,
 		uint64_t buf_size_max, uint32_t threads);
 
 
 /// \brief      Free the memory associated with the output queue
-extern void lzma_outq_end(lzma_outq *outq, lzma_allocator *allocator);
+extern void lzma_outq_end(lzma_outq *outq, const lzma_allocator *allocator);
 
 
 /// \brief      Get a new buffer

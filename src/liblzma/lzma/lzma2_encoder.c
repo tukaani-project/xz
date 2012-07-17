@@ -262,7 +262,7 @@ lzma2_encode(lzma_coder *restrict coder, lzma_mf *restrict mf,
 
 
 static void
-lzma2_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
+lzma2_encoder_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	lzma_free(coder->lzma, allocator);
 	lzma_free(coder, allocator);
@@ -304,7 +304,7 @@ lzma2_encoder_options_update(lzma_coder *coder, const lzma_filter *filter)
 
 
 static lzma_ret
-lzma2_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
+lzma2_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
 		const void *options, lzma_lz_options *lz_options)
 {
 	if (options == NULL)
@@ -349,7 +349,7 @@ lzma2_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
 
 
 extern lzma_ret
-lzma_lzma2_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_lzma2_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
 	return lzma_lz_encoder_init(

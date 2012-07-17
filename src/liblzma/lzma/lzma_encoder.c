@@ -545,7 +545,8 @@ lzma_lzma_encoder_reset(lzma_coder *coder, const lzma_options_lzma *options)
 
 
 extern lzma_ret
-lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
+lzma_lzma_encoder_create(lzma_coder **coder_ptr,
+		const lzma_allocator *allocator,
 		const lzma_options_lzma *options, lzma_lz_options *lz_options)
 {
 	// Allocate lzma_coder if it wasn't already allocated.
@@ -604,7 +605,7 @@ lzma_lzma_encoder_create(lzma_coder **coder_ptr, lzma_allocator *allocator,
 
 
 static lzma_ret
-lzma_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
+lzma_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
 		const void *options, lzma_lz_options *lz_options)
 {
 	lz->code = &lzma_encode;
@@ -614,7 +615,7 @@ lzma_encoder_init(lzma_lz_encoder *lz, lzma_allocator *allocator,
 
 
 extern lzma_ret
-lzma_lzma_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_lzma_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
 	return lzma_lz_encoder_init(

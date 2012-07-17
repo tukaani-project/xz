@@ -288,7 +288,8 @@ extern LZMA_API(lzma_ret) lzma_easy_encoder(
  */
 extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
 		uint32_t preset, lzma_check check,
-		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
+		const lzma_allocator *allocator,
+		const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size) lzma_nothrow;
 
 
@@ -436,7 +437,8 @@ extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size)
  */
 extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(
 		lzma_filter *filters, lzma_check check,
-		lzma_allocator *allocator, const uint8_t *in, size_t in_size,
+		const lzma_allocator *allocator,
+		const uint8_t *in, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_nothrow lzma_attr_warn_unused_result;
 
@@ -585,7 +587,8 @@ extern LZMA_API(lzma_ret) lzma_alone_decoder(
  *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
-		uint64_t *memlimit, uint32_t flags, lzma_allocator *allocator,
+		uint64_t *memlimit, uint32_t flags,
+		const lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 		lzma_nothrow lzma_attr_warn_unused_result;

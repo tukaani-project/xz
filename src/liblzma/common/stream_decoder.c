@@ -80,7 +80,7 @@ struct lzma_coder_s {
 
 
 static lzma_ret
-stream_decoder_reset(lzma_coder *coder, lzma_allocator *allocator)
+stream_decoder_reset(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	// Initialize the Index hash used to verify the Index.
 	coder->index_hash = lzma_index_hash_init(coder->index_hash, allocator);
@@ -96,7 +96,7 @@ stream_decoder_reset(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-stream_decode(lzma_coder *coder, lzma_allocator *allocator,
+stream_decode(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
@@ -366,7 +366,7 @@ stream_decode(lzma_coder *coder, lzma_allocator *allocator,
 
 
 static void
-stream_decoder_end(lzma_coder *coder, lzma_allocator *allocator)
+stream_decoder_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	lzma_next_end(&coder->block_decoder, allocator);
 	lzma_index_hash_end(coder->index_hash, allocator);
@@ -401,7 +401,8 @@ stream_decoder_memconfig(lzma_coder *coder, uint64_t *memusage,
 
 
 extern lzma_ret
-lzma_stream_decoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_stream_decoder_init(
+		lzma_next_coder *next, const lzma_allocator *allocator,
 		uint64_t memlimit, uint32_t flags)
 {
 	lzma_next_coder_init(&lzma_stream_decoder_init, next, allocator);

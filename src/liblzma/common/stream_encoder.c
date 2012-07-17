@@ -59,7 +59,7 @@ struct lzma_coder_s {
 
 
 static lzma_ret
-block_encoder_init(lzma_coder *coder, lzma_allocator *allocator)
+block_encoder_init(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	// Prepare the Block options. Even though Block encoder doesn't need
 	// compressed_size, uncompressed_size, and header_size to be
@@ -78,7 +78,7 @@ block_encoder_init(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-stream_encode(lzma_coder *coder, lzma_allocator *allocator,
+stream_encode(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
@@ -208,7 +208,7 @@ stream_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 
 static void
-stream_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
+stream_encoder_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	lzma_next_end(&coder->block_encoder, allocator);
 	lzma_next_end(&coder->index_encoder, allocator);
@@ -223,7 +223,7 @@ stream_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-stream_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
+stream_encoder_update(lzma_coder *coder, const lzma_allocator *allocator,
 		const lzma_filter *filters,
 		const lzma_filter *reversed_filters)
 {
@@ -262,7 +262,7 @@ stream_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
 
 
 static lzma_ret
-stream_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+stream_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter *filters, lzma_check check)
 {
 	lzma_next_coder_init(&stream_encoder_init, next, allocator);

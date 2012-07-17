@@ -96,7 +96,7 @@ typedef struct lzma_filter_info_s lzma_filter_info;
 
 /// Type of a function used to initialize a filter encoder or decoder
 typedef lzma_ret (*lzma_init_function)(
-		lzma_next_coder *next, lzma_allocator *allocator,
+		lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters);
 
 /// Type of a function to do some kind of coding work (filters, Stream,
@@ -104,7 +104,7 @@ typedef lzma_ret (*lzma_init_function)(
 /// input and output buffers, but for simplicity they still use this same
 /// function prototype.
 typedef lzma_ret (*lzma_code_function)(
-		lzma_coder *coder, lzma_allocator *allocator,
+		lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size,
@@ -112,7 +112,7 @@ typedef lzma_ret (*lzma_code_function)(
 
 /// Type of a function to free the memory allocated for the coder
 typedef void (*lzma_end_function)(
-		lzma_coder *coder, lzma_allocator *allocator);
+		lzma_coder *coder, const lzma_allocator *allocator);
 
 
 /// Raw coder validates and converts an array of lzma_filter structures to
@@ -166,7 +166,7 @@ struct lzma_next_coder_s {
 
 	/// Update the filter-specific options or the whole filter chain
 	/// in the encoder.
-	lzma_ret (*update)(lzma_coder *coder, lzma_allocator *allocator,
+	lzma_ret (*update)(lzma_coder *coder, const lzma_allocator *allocator,
 			const lzma_filter *filters,
 			const lzma_filter *reversed_filters);
 };
@@ -220,11 +220,11 @@ struct lzma_internal_s {
 
 
 /// Allocates memory
-extern void *lzma_alloc(size_t size, lzma_allocator *allocator)
+extern void *lzma_alloc(size_t size, const lzma_allocator *allocator)
 		lzma_attribute((__malloc__)) lzma_attr_alloc_size(1);
 
 /// Frees memory
-extern void lzma_free(void *ptr, lzma_allocator *allocator);
+extern void lzma_free(void *ptr, const lzma_allocator *allocator);
 
 
 /// Allocates strm->internal if it is NULL, and initializes *strm and
@@ -236,17 +236,19 @@ extern lzma_ret lzma_strm_init(lzma_stream *strm);
 /// than the filter being initialized now. This way the actual filter
 /// initialization functions don't need to use lzma_next_coder_init macro.
 extern lzma_ret lzma_next_filter_init(lzma_next_coder *next,
-		lzma_allocator *allocator, const lzma_filter_info *filters);
+		const lzma_allocator *allocator,
+		const lzma_filter_info *filters);
 
 /// Update the next filter in the chain, if any. This checks that
 /// the application is not trying to change the Filter IDs.
 extern lzma_ret lzma_next_filter_update(
-		lzma_next_coder *next, lzma_allocator *allocator,
+		lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter *reversed_filters);
 
 /// Frees the memory allocated for next->coder either using next->end or,
 /// if next->end is NULL, using lzma_free.
-extern void lzma_next_end(lzma_next_coder *next, lzma_allocator *allocator);
+extern void lzma_next_end(lzma_next_coder *next,
+		const lzma_allocator *allocator);
 
 
 /// Copy as much data as possible from in[] to out[] and update *in_pos

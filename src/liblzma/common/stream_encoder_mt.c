@@ -69,7 +69,7 @@ struct worker_thread_s {
 	/// The allocator is set by the main thread. Since a copy of the
 	/// pointer is kept here, the application must not change the
 	/// allocator before calling lzma_end().
-	lzma_allocator *allocator;
+	const lzma_allocator *allocator;
 
 	/// Block encoder
 	lzma_next_coder block_encoder;
@@ -378,7 +378,7 @@ threads_stop(lzma_coder *coder, bool wait)
 /// Stop the threads and free the resources associated with them.
 /// Wait until the threads have exited.
 static void
-threads_end(lzma_coder *coder, lzma_allocator *allocator)
+threads_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	for (uint32_t i = 0; i < coder->threads_initialized; ++i) {
 		mythread_sync(coder->threads[i].mutex) {
@@ -400,7 +400,7 @@ threads_end(lzma_coder *coder, lzma_allocator *allocator)
 
 /// Initialize a new worker_thread structure and create a new thread.
 static lzma_ret
-initialize_new_thread(lzma_coder *coder, lzma_allocator *allocator)
+initialize_new_thread(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	worker_thread *thr = &coder->threads[coder->threads_initialized];
 
@@ -440,7 +440,7 @@ error_mutex:
 
 
 static lzma_ret
-get_thread(lzma_coder *coder, lzma_allocator *allocator)
+get_thread(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	// If there are no free output subqueues, there is no
 	// point to try getting a thread.
@@ -478,7 +478,7 @@ get_thread(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-stream_encode_in(lzma_coder *coder, lzma_allocator *allocator,
+stream_encode_in(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, lzma_action action)
 {
@@ -593,7 +593,7 @@ wait_for_work(lzma_coder *coder, struct timespec *wait_abs,
 
 
 static lzma_ret
-stream_encode_mt(lzma_coder *coder, lzma_allocator *allocator,
+stream_encode_mt(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
@@ -735,7 +735,7 @@ stream_encode_mt(lzma_coder *coder, lzma_allocator *allocator,
 
 
 static void
-stream_encoder_mt_end(lzma_coder *coder, lzma_allocator *allocator)
+stream_encoder_mt_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	// Threads must be killed before the output queue can be freed.
 	threads_end(coder, allocator);
@@ -811,7 +811,7 @@ get_options(const lzma_mt *options, lzma_options_easy *opt_easy,
 
 
 static lzma_ret
-stream_encoder_mt_init(lzma_next_coder *next, lzma_allocator *allocator,
+stream_encoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_mt *options)
 {
 	lzma_next_coder_init(&stream_encoder_mt_init, next, allocator);

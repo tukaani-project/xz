@@ -472,8 +472,10 @@ typedef struct {
 	 *
 	 * In most cases this is NULL which makes liblzma use
 	 * the standard malloc() and free().
+	 *
+	 * \note        In 5.0.x this is not a const pointer.
 	 */
-	lzma_allocator *allocator;
+	const lzma_allocator *allocator;
 
 	/** Internal state is not visible to applications. */
 	lzma_internal *internal;

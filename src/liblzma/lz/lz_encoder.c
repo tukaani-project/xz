@@ -76,8 +76,9 @@ move_window(lzma_mf *mf)
 /// This function must not be called once it has returned LZMA_STREAM_END.
 ///
 static lzma_ret
-fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
-		size_t *in_pos, size_t in_size, lzma_action action)
+fill_window(lzma_coder *coder, const lzma_allocator *allocator,
+		const uint8_t *in, size_t *in_pos, size_t in_size,
+		lzma_action action)
 {
 	assert(coder->mf.read_pos <= coder->mf.write_pos);
 
@@ -148,7 +149,7 @@ fill_window(lzma_coder *coder, lzma_allocator *allocator, const uint8_t *in,
 
 
 static lzma_ret
-lz_encode(lzma_coder *coder, lzma_allocator *allocator,
+lz_encode(lzma_coder *coder, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size,
 		uint8_t *restrict out, size_t *restrict out_pos,
@@ -179,7 +180,7 @@ lz_encode(lzma_coder *coder, lzma_allocator *allocator,
 
 
 static bool
-lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
+lz_encoder_prepare(lzma_mf *mf, const lzma_allocator *allocator,
 		const lzma_lz_options *lz_options)
 {
 	// For now, the dictionary size is limited to 1.5 GiB. This may grow
@@ -360,7 +361,7 @@ lz_encoder_prepare(lzma_mf *mf, lzma_allocator *allocator,
 
 
 static bool
-lz_encoder_init(lzma_mf *mf, lzma_allocator *allocator,
+lz_encoder_init(lzma_mf *mf, const lzma_allocator *allocator,
 		const lzma_lz_options *lz_options)
 {
 	// Allocate the history buffer.
@@ -461,7 +462,7 @@ lzma_lz_encoder_memusage(const lzma_lz_options *lz_options)
 
 
 static void
-lz_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
+lz_encoder_end(lzma_coder *coder, const lzma_allocator *allocator)
 {
 	lzma_next_end(&coder->next, allocator);
 
@@ -479,7 +480,7 @@ lz_encoder_end(lzma_coder *coder, lzma_allocator *allocator)
 
 
 static lzma_ret
-lz_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
+lz_encoder_update(lzma_coder *coder, const lzma_allocator *allocator,
 		const lzma_filter *filters_null lzma_attribute((__unused__)),
 		const lzma_filter *reversed_filters)
 {
@@ -495,10 +496,10 @@ lz_encoder_update(lzma_coder *coder, lzma_allocator *allocator,
 
 
 extern lzma_ret
-lzma_lz_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters,
 		lzma_ret (*lz_init)(lzma_lz_encoder *lz,
-			lzma_allocator *allocator, const void *options,
+			const lzma_allocator *allocator, const void *options,
 			lzma_lz_options *lz_options))
 {
 #ifdef HAVE_SMALL

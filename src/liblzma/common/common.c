@@ -36,7 +36,7 @@ lzma_version_string(void)
 ///////////////////////
 
 extern void * lzma_attribute((__malloc__)) lzma_attr_alloc_size(1)
-lzma_alloc(size_t size, lzma_allocator *allocator)
+lzma_alloc(size_t size, const lzma_allocator *allocator)
 {
 	// Some malloc() variants return NULL if called with size == 0.
 	if (size == 0)
@@ -54,7 +54,7 @@ lzma_alloc(size_t size, lzma_allocator *allocator)
 
 
 extern void
-lzma_free(void *ptr, lzma_allocator *allocator)
+lzma_free(void *ptr, const lzma_allocator *allocator)
 {
 	if (allocator != NULL && allocator->free != NULL)
 		allocator->free(allocator->opaque, ptr);
@@ -88,7 +88,7 @@ lzma_bufcpy(const uint8_t *restrict in, size_t *restrict in_pos,
 
 
 extern lzma_ret
-lzma_next_filter_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_next_filter_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters)
 {
 	lzma_next_coder_init(filters[0].init, next, allocator);
@@ -99,7 +99,7 @@ lzma_next_filter_init(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern lzma_ret
-lzma_next_filter_update(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_next_filter_update(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter *reversed_filters)
 {
 	// Check that the application isn't trying to change the Filter ID.
@@ -117,7 +117,7 @@ lzma_next_filter_update(lzma_next_coder *next, lzma_allocator *allocator,
 
 
 extern void
-lzma_next_end(lzma_next_coder *next, lzma_allocator *allocator)
+lzma_next_end(lzma_next_coder *next, const lzma_allocator *allocator)
 {
 	if (next->init != (uintptr_t)(NULL)) {
 		// To avoid tiny end functions that simply call

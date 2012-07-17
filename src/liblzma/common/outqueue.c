@@ -54,7 +54,7 @@ lzma_outq_memusage(uint64_t buf_size_max, uint32_t threads)
 
 
 extern lzma_ret
-lzma_outq_init(lzma_outq *outq, lzma_allocator *allocator,
+lzma_outq_init(lzma_outq *outq, const lzma_allocator *allocator,
 		uint64_t buf_size_max, uint32_t threads)
 {
 	uint64_t bufs_alloc_size;
@@ -98,7 +98,7 @@ lzma_outq_init(lzma_outq *outq, lzma_allocator *allocator,
 
 
 extern void
-lzma_outq_end(lzma_outq *outq, lzma_allocator *allocator)
+lzma_outq_end(lzma_outq *outq, const lzma_allocator *allocator)
 {
 	lzma_free(outq->bufs, allocator);
 	outq->bufs = NULL;

@@ -196,7 +196,7 @@ lzma_filters_update(lzma_stream *strm, const lzma_filter *filters)
 
 
 extern lzma_ret
-lzma_raw_encoder_init(lzma_next_coder *next, lzma_allocator *allocator,
+lzma_raw_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter *options)
 {
 	return lzma_raw_coder_init(next, allocator,

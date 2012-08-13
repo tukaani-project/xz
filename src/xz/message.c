@@ -1258,5 +1258,10 @@ message_help(bool long_help)
 			PACKAGE_BUGREPORT);
 	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
 
+#if LZMA_VERSION_STABILITY != LZMA_VERSION_STABILITY_STABLE
+	puts(_(
+"THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."));
+#endif
+
 	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }

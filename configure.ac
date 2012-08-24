@@ -534,7 +534,7 @@ AC_TYPE_UINTPTR_T
 AC_CHECK_SIZEOF([size_t])
 
 # The command line tool can copy high resolution timestamps if such
-# information is availabe in struct stat. Otherwise one second accuracy
+# information is available in struct stat. Otherwise one second accuracy
 # is used.
 AC_CHECK_MEMBERS([
 	struct stat.st_atim.tv_nsec,

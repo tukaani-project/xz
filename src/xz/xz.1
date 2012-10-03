@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2012-08-24" "Tukaani" "XZ Utils"
+.TH XZ 1 "2012-10-03" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -2179,14 +2179,15 @@ The output can vary even between different
 builds of the same XZ Utils version,
 if different build options are used.
 .PP
-The above means that implementing
+The above means that once
 .B \-\-rsyncable
-to create rsyncable
-.B .xz
-files is not going to happen without
-freezing a part of the encoder
-implementation, which can then be used with
-.BR \-\-rsyncable .
+has been implemented,
+the resulting files won't necessarily be rsyncable
+unless both old and new files have been compressed
+with the same xz version.
+This problem can be fixed if a part of the encoder
+implementation is frozen to keep rsyncable output
+stable across xz versions.
 .
 .SS "Embedded .xz decompressors"
 Embedded

@@ -1152,6 +1152,10 @@ message_help(bool long_help)
 "  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
 "                      does not affect decompressor memory requirements"));
 
+	puts(_(
+"  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
+"                      to use the number of processor cores"));
+
 	if (long_help) {
 		// FIXME? Mention something about threading?
 		puts(_(

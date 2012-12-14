@@ -155,6 +155,11 @@ struct lzma_next_coder_s {
 	/// lzma_next_coder.coder.
 	lzma_end_function end;
 
+	/// Pointer to a function to get progress information. If this is NULL,
+	/// lzma_stream.total_in and .total_out are used instead.
+	void (*get_progress)(lzma_coder *coder,
+			uint64_t *progress_in, uint64_t *progress_out);
+
 	/// Pointer to function to return the type of the integrity check.
 	/// Most coders won't support this.
 	lzma_check (*get_check)(const lzma_coder *coder);
@@ -180,6 +185,7 @@ struct lzma_next_coder_s {
 		.id = LZMA_VLI_UNKNOWN, \
 		.code = NULL, \
 		.end = NULL, \
+		.get_progress = NULL, \
 		.get_check = NULL, \
 		.memconfig = NULL, \
 		.update = NULL, \

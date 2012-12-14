@@ -456,7 +456,8 @@ typedef struct lzma_internal_s lzma_internal;
  *
  * Application may modify the values of total_in and total_out as it wants.
  * They are updated by liblzma to match the amount of data read and
- * written, but aren't used for anything else.
+ * written but aren't used for anything else except as a possible return
+ * values from lzma_get_progress().
  */
 typedef struct {
 	const uint8_t *next_in; /**< Pointer to the next input byte. */
@@ -554,6 +555,25 @@ extern LZMA_API(lzma_ret) lzma_code(lzma_stream *strm, lzma_action action)
  *              application knows what it is doing.
  */
 extern LZMA_API(void) lzma_end(lzma_stream *strm) lzma_nothrow;
+
+
+/**
+ * \brief       Get progress information
+ *
+ * In single-threaded mode, applications can get progress information from
+ * strm->total_in and strm->total_out. In multi-threaded mode this is less
+ * useful because a significant amount of both input and output data gets
+ * buffered internally by liblzma. This makes total_in and total_out give
+ * misleading information and also makes the progress indicator updates
+ * non-smooth.
+ *
+ * This function gives realistic progress information also in multi-threaded
+ * mode by taking into account the progress made by each thread. In
+ * single-threaded mode *progress_in and *progress_out are set to
+ * strm->total_in and strm->total_out, respectively.
+ */
+extern LZMA_API(void) lzma_get_progress(lzma_stream *strm,
+		uint64_t *progress_in, uint64_t *progress_out) lzma_nothrow;
 
 
 /**

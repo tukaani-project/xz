@@ -328,6 +328,22 @@ lzma_end(lzma_stream *strm)
 }
 
 
+extern LZMA_API(void)
+lzma_get_progress(lzma_stream *strm,
+		uint64_t *progress_in, uint64_t *progress_out)
+{
+	if (strm->internal->next.get_progress != NULL) {
+		strm->internal->next.get_progress(strm->internal->next.coder,
+				progress_in, progress_out);
+	} else {
+		*progress_in = strm->total_in;
+		*progress_out = strm->total_out;
+	}
+
+	return;
+}
+
+
 extern LZMA_API(lzma_check)
 lzma_get_check(const lzma_stream *strm)
 {

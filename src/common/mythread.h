@@ -70,8 +70,9 @@ do { \
 /// things down at all compared to plain pthread_mutex_lock(&mutex)
 /// and pthread_mutex_unlock(&mutex) calls.
 ///
-#define mythread_sync(mutex) mythread_sync_helper(mutex, __LINE__)
-#define mythread_sync_helper(mutex, line) \
+#define mythread_sync(mutex) mythread_sync_helper1(mutex, __LINE__)
+#define mythread_sync_helper1(mutex, line) mythread_sync_helper2(mutex, line)
+#define mythread_sync_helper2(mutex, line) \
 	for (unsigned int mythread_i_ ## line = 0; \
 			mythread_i_ ## line \
 				? (pthread_mutex_unlock(&(mutex)), 0) \

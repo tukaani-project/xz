@@ -97,6 +97,7 @@ global:
 
 XZ_5.1.2alpha {
 global:
+	lzma_block_uncomp_encode;
 	lzma_get_progress;
 	lzma_stream_encoder_mt;
 	lzma_stream_encoder_mt_memusage;

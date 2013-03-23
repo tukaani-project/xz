@@ -497,6 +497,24 @@ extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
 
 
 /**
+ * \brief       Single-call uncompress .xz Block encoder
+ *
+ * This is like lzma_block_buffer_encode() except this doesn't try to
+ * compress the data and instead encodes the data using LZMA2 uncompressed
+ * chunks. The required output buffer size can be determined with
+ * lzma_block_buffer_bound().
+ *
+ * Since the data won't be compressed, this function ignores block->filters.
+ * This function doesn't take lzma_allocator because this function doesn't
+ * allocate any memory from the heap.
+ */
+extern LZMA_API(lzma_ret) lzma_block_uncomp_encode(lzma_block *block,
+		const uint8_t *in, size_t in_size,
+		uint8_t *out, size_t *out_pos, size_t out_size)
+		lzma_nothrow lzma_attr_warn_unused_result;
+
+
+/**
  * \brief       Single-call .xz Block decoder
  *
  * This is single-call equivalent of lzma_block_decoder(), and requires that

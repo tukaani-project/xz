@@ -13,6 +13,7 @@
 #include "filter_encoder.h"
 #include "easy_preset.h"
 #include "block_encoder.h"
+#include "block_buffer_encoder.h"
 #include "index_encoder.h"
 #include "outqueue.h"
 
@@ -279,19 +280,55 @@ worker_encode(worker_thread *thr, worker_state state)
 				thr->block_encoder.coder, thr->allocator,
 				thr->in, &in_pos, in_limit, thr->outbuf->buf,
 				&thr->outbuf->size, out_size, action);
-	} while (ret == LZMA_OK);
+	} while (ret == LZMA_OK && thr->outbuf->size < out_size);
 
-	if (ret != LZMA_STREAM_END) {
-		worker_error(thr, ret);
-		return THR_STOP;
-	}
+	switch (ret) {
+	case LZMA_STREAM_END:
+		assert(state == THR_FINISH);
 
-	assert(state == THR_FINISH);
+		// Encode the Block Header. By doing it after
+		// the compression, we can store the Compressed Size
+		// and Uncompressed Size fields.
+		ret = lzma_block_header_encode(&thr->block_options,
+				thr->outbuf->buf);
+		if (ret != LZMA_OK) {
+			worker_error(thr, ret);
+			return THR_STOP;
+		}
 
-	// Encode the Block Header. By doing it after the compression,
-	// we can store the Compressed Size and Uncompressed Size fields.
-	ret = lzma_block_header_encode(&thr->block_options, thr->outbuf->buf);
-	if (ret != LZMA_OK) {
+		break;
+
+	case LZMA_OK:
+		// The data was incompressible. Encode it using uncompressed
+		// LZMA2 chunks.
+		//
+		// First wait that we have gotten all the input.
+		mythread_sync(thr->mutex) {
+			while (thr->state == THR_RUN)
+				pthread_cond_wait(&thr->cond, &thr->mutex);
+
+			state = thr->state;
+			in_size = thr->in_size;
+		}
+
+		if (state >= THR_STOP)
+			return state;
+
+		// Do the encoding. This takes care of the Block Header too.
+		thr->outbuf->size = 0;
+		ret = lzma_block_uncomp_encode(&thr->block_options,
+				thr->in, in_size, thr->outbuf->buf,
+				&thr->outbuf->size, out_size);
+
+		// It shouldn't fail.
+		if (ret != LZMA_OK) {
+			worker_error(thr, LZMA_PROG_ERROR);
+			return THR_STOP;
+		}
+
+		break;
+
+	default:
 		worker_error(thr, ret);
 		return THR_STOP;
 	}
@@ -842,12 +879,9 @@ get_options(const lzma_mt *options, lzma_options_easy *opt_easy,
 	// Calculate the maximum amount output that a single output buffer
 	// may need to hold. This is the same as the maximum total size of
 	// a Block.
-	//
-	// FIXME: As long as the encoder keeps the whole input buffer
-	// available and doesn't start writing output before finishing
-	// the Block, it could use lzma_stream_buffer_bound() and use
-	// uncompressed LZMA2 chunks if the data doesn't compress.
-	*outbuf_size_max = *block_size + *block_size / 16 + 16384;
+	*outbuf_size_max = lzma_block_buffer_bound64(*block_size);
+	if (*outbuf_size_max == 0)
+		return LZMA_MEM_ERROR;
 
 	return LZMA_OK;
 }

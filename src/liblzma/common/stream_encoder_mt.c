@@ -341,11 +341,14 @@ worker_start(void *thr_ptr)
 		if (state == THR_EXIT)
 			break;
 
-		// Mark the thread as idle. Signal is needed for the case
+		// Mark the thread as idle unless the main thread has
+		// told us to exit. Signal is needed for the case
 		// where the main thread is waiting for the threads to stop.
 		mythread_sync(thr->mutex) {
-			thr->state = THR_IDLE;
-			pthread_cond_signal(&thr->cond);
+			if (thr->state != THR_EXIT) {
+				thr->state = THR_IDLE;
+				pthread_cond_signal(&thr->cond);
+			}
 		}
 
 		mythread_sync(thr->coder->mutex) {

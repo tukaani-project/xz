@@ -109,7 +109,7 @@ while test $# -ne 0; do
     files_with_matches=1;;
   (-L | --files-witho*)
     files_without_matches=1;;
-  (--no-f*)
+  (-h | --no-f*)
     no_filename=1;;
   (-V | --v | --ve | --ver | --vers | --versi | --versio | --version)
     echo "$version" || exit 2

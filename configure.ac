@@ -560,6 +560,7 @@ if test "$GCC" = yes ; then
 	for NEW_FLAG in \
 			-Wall \
 			-Wextra \
+			-Wvla \
 			-Wformat=2 \
 			-Winit-self \
 			-Wmissing-include-dirs \

@@ -420,7 +420,7 @@ worker_start(void *thr_ptr)
 
 /// Make the threads stop but not exit. Optionally wait for them to stop.
 static void
-threads_stop(lzma_coder *coder, bool wait)
+threads_stop(lzma_coder *coder, bool wait_for_threads)
 {
 	// Tell the threads to stop.
 	for (uint32_t i = 0; i < coder->threads_initialized; ++i) {
@@ -430,7 +430,7 @@ threads_stop(lzma_coder *coder, bool wait)
 		}
 	}
 
-	if (!wait)
+	if (!wait_for_threads)
 		return;
 
 	// Wait for the threads to settle in the idle state.

@@ -429,7 +429,19 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 	switch (lzma_block_compressed_size(&block,
 			iter->block.unpadded_size)) {
 	case LZMA_OK:
-		break;
+		// Validate also block.uncompressed_size if it is present.
+		// If it isn't present, there's no need to set it since
+		// we aren't going to actually decompress the Block; if
+		// we were decompressing, then we should set it so that
+		// the Block decoder could validate the Uncompressed Size
+		// that was stored in the Index.
+		if (block.uncompressed_size == LZMA_VLI_UNKNOWN
+				|| block.uncompressed_size
+					== iter->block.uncompressed_size)
+			break;
+
+		// If the above fails, the file is corrupt so
+		// LZMA_DATA_ERROR is a good error code.
 
 	case LZMA_DATA_ERROR:
 		// Free the memory allocated by lzma_block_header_decode().

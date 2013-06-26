@@ -230,6 +230,20 @@ parse_indexes(xz_file_info *xfi, file_pair *pair)
 			goto error;
 		}
 
+		// Check that the Stream Footer doesn't specify something
+		// that we don't support. This can only happen if the xz
+		// version is older than liblzma and liblzma supports
+		// something new.
+		//
+		// It is enough to check Stream Footer. Stream Header must
+		// match when it is compared against Stream Footer with
+		// lzma_stream_flags_compare().
+		if (footer_flags.version != 0) {
+			message_error("%s: %s", pair->src_name,
+					message_strm(LZMA_OPTIONS_ERROR));
+			goto error;
+		}
+
 		// Check that the size of the Index field looks sane.
 		lzma_vli index_size = footer_flags.backward_size;
 		if ((lzma_vli)(pos) < index_size + LZMA_STREAM_HEADER_SIZE) {

@@ -880,7 +880,7 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 		if (amount == -1) {
 			if (errno == EINTR) {
 				if (user_abort)
-					return -1;
+					return true;
 
 				continue;
 			}

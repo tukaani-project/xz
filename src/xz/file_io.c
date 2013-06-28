@@ -17,6 +17,7 @@
 #ifdef TUKLIB_DOSLIKE
 #	include <io.h>
 #else
+#	include <poll.h>
 static bool warn_fchown;
 #endif
 
@@ -41,6 +42,11 @@ static bool warn_fchown;
 static bool try_sparse = true;
 
 #ifndef TUKLIB_DOSLIKE
+/// File status flags of standard input. This is used by io_open_src()
+/// and io_close_src().
+static int stdin_flags;
+static bool restore_stdin_flags = false;
+
 /// Original file status flags of standard output. This is used by
 /// io_open_dest() and io_close_dest() to save and restore the flags.
 static int stdout_flags;
@@ -82,6 +88,47 @@ io_no_sparse(void)
 	try_sparse = false;
 	return;
 }
+
+
+#ifndef TUKLIB_DOSLIKE
+/// \brief      Waits for input or output to become available
+static bool
+io_wait(file_pair *pair, bool is_reading)
+{
+	struct pollfd pfd[1];
+
+	if (is_reading) {
+		pfd[0].fd = pair->src_fd;
+		pfd[0].events = POLLIN;
+	} else {
+		pfd[0].fd = pair->dest_fd;
+		pfd[0].events = POLLOUT;
+	}
+
+	while (true) {
+		const int ret = poll(pfd, 1, -1);
+
+		if (ret == -1) {
+			if (errno == EINTR) {
+				if (user_abort)
+					return true;
+
+				continue;
+			}
+
+			if (errno == EAGAIN)
+				continue;
+
+			message_error(_("%s: poll() failed: %s"),
+					is_reading ? pair->src_name
+						: pair->dest_name,
+					strerror(errno));
+		}
+
+		return false;
+	}
+}
+#endif
 
 
 /// \brief      Unlink a file
@@ -293,6 +340,27 @@ io_open_src_real(file_pair *pair)
 		pair->src_fd = STDIN_FILENO;
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDIN_FILENO, O_BINARY);
+#else
+		// Enable O_NONBLOCK for stdin.
+		stdin_flags = fcntl(STDIN_FILENO, F_GETFL);
+		if (stdin_flags == -1) {
+			message_error(_("Error getting the file status flags "
+					"from standard input: %s"),
+					strerror(errno));
+			return true;
+		}
+
+		if ((stdin_flags & O_NONBLOCK) == 0) {
+			if (fcntl(STDIN_FILENO, F_SETFL,
+					stdin_flags | O_NONBLOCK) == -1) {
+				message_error(_("Error setting O_NONBLOCK "
+						"on standard input: %s"),
+						strerror(errno));
+				return true;
+			}
+
+			restore_stdin_flags = true;
+		}
 #endif
 #ifdef HAVE_POSIX_FADVISE
 		// It will fail if stdin is a pipe and that's fine.
@@ -314,13 +382,12 @@ io_open_src_real(file_pair *pair)
 	int flags = O_RDONLY | O_BINARY | O_NOCTTY;
 
 #ifndef TUKLIB_DOSLIKE
-	// If we accept only regular files, we need to be careful to avoid
-	// problems with special files like devices and FIFOs. O_NONBLOCK
-	// prevents blocking when opening such files. When we want to accept
-	// special files, we must not use O_NONBLOCK, or otherwise we won't
-	// block waiting e.g. FIFOs to become readable.
-	if (reg_files_only)
-		flags |= O_NONBLOCK;
+	// Use non-blocking I/O:
+	//   - It prevents blocking when opening FIFOs and some other
+	//     special files, which is good if we want to accept only
+	//     regular files.
+	//   - It can help avoiding some race conditions with signal handling.
+	flags |= O_NONBLOCK;
 #endif
 
 #if defined(O_NOFOLLOW)
@@ -348,30 +415,13 @@ io_open_src_real(file_pair *pair)
 	(void)follow_symlinks;
 #endif
 
-	// Try to open the file. If we are accepting non-regular files,
-	// unblock the caught signals so that open() can be interrupted
-	// if it blocks e.g. due to a FIFO file.
-	if (!reg_files_only)
-		signals_unblock();
-
-	// Maybe this wouldn't need a loop, since all the signal handlers for
-	// which we don't use SA_RESTART set user_abort to true. But it
-	// doesn't hurt to have it just in case.
-	do {
-		pair->src_fd = open(pair->src_name, flags);
-	} while (pair->src_fd == -1 && errno == EINTR && !user_abort);
-
-	if (!reg_files_only)
-		signals_block();
+	// Try to open the file. Signals have been blocked so EINTR shouldn't
+	// be possible.
+	pair->src_fd = open(pair->src_name, flags);
 
 	if (pair->src_fd == -1) {
-		// If we were interrupted, don't display any error message.
-		if (errno == EINTR) {
-			// All the signals that don't have SA_RESTART
-			// set user_abort.
-			assert(user_abort);
-			return true;
-		}
+		// Signals (that have a signal handler) have been blocked.
+		assert(errno != EINTR);
 
 #ifdef O_NOFOLLOW
 		// Give an understandable error message if the reason
@@ -429,22 +479,6 @@ io_open_src_real(file_pair *pair)
 
 		return true;
 	}
-
-#ifndef TUKLIB_DOSLIKE
-	// Drop O_NONBLOCK, which is used only when we are accepting only
-	// regular files. After the open() call, we want things to block
-	// instead of giving EAGAIN.
-	if (reg_files_only) {
-		flags = fcntl(pair->src_fd, F_GETFL);
-		if (flags == -1)
-			goto error_msg;
-
-		flags &= ~O_NONBLOCK;
-
-		if (fcntl(pair->src_fd, F_SETFL, flags) == -1)
-			goto error_msg;
-	}
-#endif
 
 	// Stat the source file. We need the result also when we copy
 	// the permissions, and when unlinking.
@@ -505,6 +539,18 @@ io_open_src_real(file_pair *pair)
 			goto error;
 		}
 	}
+
+	// If it is something else than a regular file, wait until
+	// there is input available. This way reading from FIFOs
+	// will work when open() is used with O_NONBLOCK.
+	if (!S_ISREG(pair->src_st.st_mode)) {
+		signals_unblock();
+		const bool ret = io_wait(pair, true);
+		signals_block();
+
+		if (ret)
+			goto error;
+	}
 #endif
 
 #ifdef HAVE_POSIX_FADVISE
@@ -560,6 +606,17 @@ io_open_src(const char *src_name)
 static void
 io_close_src(file_pair *pair, bool success)
 {
+	if (restore_stdin_flags) {
+		assert(pair->src_fd == STDIN_FILENO);
+
+		restore_stdin_flags = false;
+
+		if (fcntl(STDIN_FILENO, F_SETFL, stdin_flags) == -1)
+			message_error(_("Error restoring the status flags "
+					"to standard input: %s"),
+					strerror(errno));
+	}
+
 	if (pair->src_fd != STDIN_FILENO && pair->src_fd != -1) {
 #ifdef TUKLIB_DOSLIKE
 		(void)close(pair->src_fd);
@@ -871,6 +928,15 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 
 				continue;
 			}
+
+#ifndef TUKLIB_DOSLIKE
+			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+				if (!io_wait(pair, true))
+					continue;
+
+				return SIZE_MAX;
+			}
+#endif
 
 			message_error(_("%s: Read error: %s"),
 					pair->src_name, strerror(errno));

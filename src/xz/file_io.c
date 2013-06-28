@@ -442,7 +442,7 @@ io_open_src_real(file_pair *pair)
 
 		flags &= ~O_NONBLOCK;
 
-		if (fcntl(pair->src_fd, F_SETFL, flags))
+		if (fcntl(pair->src_fd, F_SETFL, flags) == -1)
 			goto error_msg;
 	}
 #endif
@@ -658,7 +658,8 @@ io_open_dest_real(file_pair *pair)
 					return false;
 
 				if (fcntl(STDOUT_FILENO, F_SETFL,
-						stdout_flags & ~O_APPEND))
+						stdout_flags & ~O_APPEND)
+						== -1)
 					return false;
 
 				// Disabling O_APPEND succeeded. Mark
@@ -708,10 +709,9 @@ io_close_dest(file_pair *pair, bool success)
 	if (restore_stdout_flags) {
 		assert(pair->dest_fd == STDOUT_FILENO);
 
-		const int fail = fcntl(STDOUT_FILENO, F_SETFL, stdout_flags);
 		restore_stdout_flags = false;
 
-		if (fail) {
+		if (fcntl(STDOUT_FILENO, F_SETFL, stdout_flags) == -1) {
 			message_error(_("Error restoring the O_APPEND flag "
 					"to standard output: %s"),
 					strerror(errno));

@@ -398,10 +398,6 @@ io_open_src_real(file_pair *pair)
 			was_symlink = true;
 
 #	elif defined(__NetBSD__)
-		// As of 2010-09-05, NetBSD doesn't document what errno is
-		// used with O_NOFOLLOW. It is EFTYPE though, and I
-		// understood that is very unlikely to change even though
-		// it is undocumented.
 		if (errno == EFTYPE)
 			was_symlink = true;
 

@@ -68,6 +68,14 @@ typedef struct {
 extern void io_init(void);
 
 
+#ifndef TUKLIB_DOSLIKE
+/// \brief      Write a byte to user_abort_pipe[1]
+///
+/// This is called from a signal handler.
+extern void io_write_to_user_abort_pipe(void);
+#endif
+
+
 /// \brief      Disable creation of sparse files when decompressing
 extern void io_no_sparse(void);
 

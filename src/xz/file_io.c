@@ -51,6 +51,10 @@ static bool restore_stdin_flags = false;
 /// io_open_dest() and io_close_dest() to save and restore the flags.
 static int stdout_flags;
 static bool restore_stdout_flags = false;
+
+/// Self-pipe used together with the user_abort variable to avoid
+/// race conditions with signal handling.
+static int user_abort_pipe[2];
 #endif
 
 
@@ -70,6 +74,14 @@ io_init(void)
 	// If fchown() fails setting the owner, we warn about it only if
 	// we are root.
 	warn_fchown = geteuid() == 0;
+
+	if (pipe(user_abort_pipe)
+			|| fcntl(user_abort_pipe[0], F_SETFL, O_NONBLOCK)
+				== -1
+			|| fcntl(user_abort_pipe[1], F_SETFL, O_NONBLOCK)
+				== -1)
+		message_fatal(_("Error creating a pipe: %s"),
+				strerror(errno));
 #endif
 
 #ifdef __DJGPP__
@@ -82,6 +94,17 @@ io_init(void)
 }
 
 
+#ifndef TUKLIB_DOSLIKE
+extern void
+io_write_to_user_abort_pipe(void)
+{
+	uint8_t b = '\0';
+	(void)write(user_abort_pipe[1], &b, 1);
+	return;
+}
+#endif
+
+
 extern void
 io_no_sparse(void)
 {
@@ -91,11 +114,20 @@ io_no_sparse(void)
 
 
 #ifndef TUKLIB_DOSLIKE
-/// \brief      Waits for input or output to become available
+/// \brief      Waits for input or output to become available or for a signal
+///
+/// This uses the self-pipe trick to avoid a race condition that can occur
+/// if a signal is caught after user_abort has been checked but before e.g.
+/// read() has been called. In that situation read() could block unless
+/// non-blocking I/O is used. With non-blocking I/O something like select()
+/// or poll() is needed to avoid a busy-wait loop, and the same race condition
+/// pops up again. There are pselect() (POSIX-1.2001) and ppoll() (not in
+/// POSIX) but neither is portable enough in 2013. The self-pipe trick is
+/// old and very portable.
 static bool
 io_wait(file_pair *pair, bool is_reading)
 {
-	struct pollfd pfd[1];
+	struct pollfd pfd[2];
 
 	if (is_reading) {
 		pfd[0].fd = pair->src_fd;
@@ -105,18 +137,17 @@ io_wait(file_pair *pair, bool is_reading)
 		pfd[0].events = POLLOUT;
 	}
 
+	pfd[1].fd = user_abort_pipe[0];
+	pfd[1].events = POLLIN;
+
 	while (true) {
-		const int ret = poll(pfd, 1, -1);
+		const int ret = poll(pfd, 2, -1);
+
+		if (user_abort)
+			return true;
 
 		if (ret == -1) {
-			if (errno == EINTR) {
-				if (user_abort)
-					return true;
-
-				continue;
-			}
-
-			if (errno == EAGAIN)
+			if (errno == EINTR || errno == EAGAIN)
 				continue;
 
 			message_error(_("%s: poll() failed: %s"),
@@ -125,7 +156,8 @@ io_wait(file_pair *pair, bool is_reading)
 					strerror(errno));
 		}
 
-		return false;
+		if (pfd[0].revents != 0)
+			return false;
 	}
 }
 #endif

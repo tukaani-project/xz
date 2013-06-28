@@ -41,9 +41,10 @@ static bool warn_fchown;
 static bool try_sparse = true;
 
 #ifndef TUKLIB_DOSLIKE
-/// File status flags of standard output. This is used by io_open_dest()
-/// and io_close_dest().
-static int stdout_flags = 0;
+/// Original file status flags of standard output. This is used by
+/// io_open_dest() and io_close_dest() to save and restore the flags.
+static int stdout_flags;
+static bool restore_stdout_flags = false;
 #endif
 
 
@@ -634,11 +635,11 @@ io_open_dest_real(file_pair *pair)
 			if (!S_ISREG(pair->dest_st.st_mode))
 				return false;
 
-			const int flags = fcntl(STDOUT_FILENO, F_GETFL);
-			if (flags == -1)
+			stdout_flags = fcntl(STDOUT_FILENO, F_GETFL);
+			if (stdout_flags == -1)
 				return false;
 
-			if (flags & O_APPEND) {
+			if (stdout_flags & O_APPEND) {
 				// Creating a sparse file is not possible
 				// when O_APPEND is active (it's used by
 				// shell's >> redirection). As I understand
@@ -660,9 +661,10 @@ io_open_dest_real(file_pair *pair)
 						stdout_flags & ~O_APPEND))
 					return false;
 
-				// Remember the flags so that io_close_dest()
-				// can restore them.
-				stdout_flags = flags;
+				// Disabling O_APPEND succeeded. Mark
+				// that the flags should be restored
+				// in io_close_dest().
+				restore_stdout_flags = true;
 
 			} else if (lseek(STDOUT_FILENO, 0, SEEK_CUR)
 					!= pair->dest_st.st_size) {
@@ -703,11 +705,11 @@ io_close_dest(file_pair *pair, bool success)
 {
 #ifndef TUKLIB_DOSLIKE
 	// If io_open_dest() has disabled O_APPEND, restore it here.
-	if (stdout_flags != 0) {
+	if (restore_stdout_flags) {
 		assert(pair->dest_fd == STDOUT_FILENO);
 
 		const int fail = fcntl(STDOUT_FILENO, F_SETFL, stdout_flags);
-		stdout_flags = 0;
+		restore_stdout_flags = false;
 
 		if (fail) {
 			message_error(_("Error restoring the O_APPEND flag "

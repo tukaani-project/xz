@@ -682,6 +682,30 @@ io_open_dest_real(file_pair *pair)
 		pair->dest_fd = STDOUT_FILENO;
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDOUT_FILENO, O_BINARY);
+#else
+		// Set O_NONBLOCK if it isn't already set.
+		//
+		// NOTE: O_APPEND may be unset later in this function
+		// and it relies on stdout_flags being set here.
+		stdout_flags = fcntl(STDOUT_FILENO, F_GETFL);
+		if (stdout_flags == -1) {
+			message_error(_("Error getting the file status flags "
+					"from standard output: %s"),
+					strerror(errno));
+			return true;
+		}
+
+		if ((stdout_flags & O_NONBLOCK) == 0) {
+			if (fcntl(STDOUT_FILENO, F_SETFL,
+					stdout_flags | O_NONBLOCK) == -1) {
+				message_error(_("Error setting O_NONBLOCK "
+						"on standard output: %s"),
+						strerror(errno));
+				return true;
+			}
+
+			restore_stdout_flags = true;
+		}
 #endif
 	} else {
 		pair->dest_name = suffix_get_dest_name(pair->src_name);
@@ -719,8 +743,11 @@ io_open_dest_real(file_pair *pair)
 		}
 
 		// Open the file.
-		const int flags = O_WRONLY | O_BINARY | O_NOCTTY
+		int flags = O_WRONLY | O_BINARY | O_NOCTTY
 				| O_CREAT | O_EXCL;
+#ifndef TUKLIB_DOSLIKE
+		flags |= O_NONBLOCK;
+#endif
 		const mode_t mode = S_IRUSR | S_IWUSR;
 		pair->dest_fd = open(pair->dest_name, flags, mode);
 
@@ -762,10 +789,6 @@ io_open_dest_real(file_pair *pair)
 			if (!S_ISREG(pair->dest_st.st_mode))
 				return false;
 
-			stdout_flags = fcntl(STDOUT_FILENO, F_GETFL);
-			if (stdout_flags == -1)
-				return false;
-
 			if (stdout_flags & O_APPEND) {
 				// Creating a sparse file is not possible
 				// when O_APPEND is active (it's used by
@@ -784,14 +807,23 @@ io_open_dest_real(file_pair *pair)
 				if (lseek(STDOUT_FILENO, 0, SEEK_END) == -1)
 					return false;
 
+				// O_NONBLOCK was set earlier in this function
+				// so it must be kept here too. If this
+				// fcntl() call fails, we continue but won't
+				// try to create sparse output. The original
+				// flags will still be restored if needed (to
+				// unset O_NONBLOCK) when the file is finished.
 				if (fcntl(STDOUT_FILENO, F_SETFL,
-						stdout_flags & ~O_APPEND)
-						== -1)
+						(stdout_flags | O_NONBLOCK)
+						& ~O_APPEND) == -1)
 					return false;
 
 				// Disabling O_APPEND succeeded. Mark
 				// that the flags should be restored
-				// in io_close_dest().
+				// in io_close_dest(). This quite likely was
+				// already set when enabling O_NONBLOCK but
+				// just in case O_NONBLOCK was already set,
+				// set this again here.
 				restore_stdout_flags = true;
 
 			} else if (lseek(STDOUT_FILENO, 0, SEEK_CUR)
@@ -1039,6 +1071,15 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 
 				continue;
 			}
+
+#ifndef TUKLIB_DOSLIKE
+			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+				if (!io_wait(pair, false))
+					continue;
+
+				return true;
+			}
+#endif
 
 			// Handle broken pipe specially. gzip and bzip2
 			// don't print anything on SIGPIPE. In addition,

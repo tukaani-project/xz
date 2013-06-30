@@ -2,6 +2,58 @@
 XZ Utils Release Notes
 ======================
 
+5.0.5 (2013-06-30)
+
+    * lzmadec and liblzma's lzma_alone_decoder(): Support decompressing
+      .lzma files that have less common settings in the headers
+      (dictionary size other than 2^n or 2^n + 2^(n-1), or uncompressed
+      size greater than 256 GiB). The limitations existed to avoid false
+      positives when detecting .lzma files. The lc + lp <= 4 limitation
+      still remains since liblzma's LZMA decoder has that limitation.
+
+      NOTE: xz's .lzma support or liblzma's lzma_auto_decoder() are NOT
+      affected by this change. They still consider uncommon .lzma headers
+      as not being in the .lzma format. Changing this would give way too
+      many false positives.
+
+    * xz:
+
+        - Interaction of preset and custom filter chain options was
+          made less illogical. This affects only certain less typical
+          uses cases so few people are expected to notice this change.
+
+          Now when a custom filter chain option (e.g. --lzma2) is
+          specified, all preset options (-0 ... -9, -e) earlier are on
+          the command line are completely forgotten. Similarly, when
+          a preset option is specified, all custom filter chain options
+          earlier on the command line are completely forgotten.
+
+          Example 1: "xz -9 --lzma2=preset=5 -e" is equivalent to "xz -e"
+          which is equivalent to "xz -6e". Earlier -e didn't put xz back
+          into preset mode and thus the example command was equivalent
+          to "xz --lzma2=preset=5".
+
+          Example 2: "xz -9e --lzma2=preset=5 -7" is equivalent to
+          "xz -7". Earlier a custom filter chain option didn't make
+          xz forget the -e option so the example was equivalent to
+          "xz -7e".
+
+        - Fixes and improvements to error handling.
+
+        - Various fixes to the man page.
+
+    * xzless: Fixed to work with "less" versions 448 and later.
+
+    * xzgrep: Made -h an alias for --no-filename.
+
+    * Include the previously missing debug/translation.bash which can
+      be useful for translators.
+
+    * Include a build script for Mac OS X. This has been in the Git
+      repository since 2010 but due to a mistake in Makefile.am the
+      script hasn't been included in a release tarball before.
+
+
 5.0.4 (2012-06-22)
 
     * liblzma:

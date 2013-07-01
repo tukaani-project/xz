@@ -98,8 +98,14 @@ io_init(void)
 extern void
 io_write_to_user_abort_pipe(void)
 {
+	// If the write() fails, it's probably due to the pipe being full.
+	// Failing in that case is fine. If the reason is something else,
+	// there's not much we can do since this is called in a signal
+	// handler. So ignore the errors and try to avoid warnings with
+	// GCC and glibc when _FORTIFY_SOURCE=2 is used.
 	uint8_t b = '\0';
-	(void)write(user_abort_pipe[1], &b, 1);
+	const int ret = write(user_abort_pipe[1], &b, 1);
+	(void)ret;
 	return;
 }
 #endif

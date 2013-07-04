@@ -766,6 +766,11 @@ coder_run(const char *filename)
 			// Don't open the destination file when --test
 			// is used.
 			if (opt_mode == MODE_TEST || !io_open_dest(pair)) {
+				// Remember the current time. It is needed
+				// for progress indicator and for timed
+				// flushing.
+				mytime_set_start_time();
+
 				// Initialize the progress indicator.
 				const uint64_t in_size
 						= pair->src_st.st_size <= 0

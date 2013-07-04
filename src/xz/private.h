@@ -47,6 +47,7 @@
 #endif
 
 #include "main.h"
+#include "mytime.h"
 #include "coder.h"
 #include "message.h"
 #include "args.h"

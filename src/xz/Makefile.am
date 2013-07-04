@@ -22,6 +22,8 @@ xz_SOURCES = \
 	main.h \
 	message.c \
 	message.h \
+	mytime.c \
+	mytime.h \
 	options.c \
 	options.h \
 	private.h \

@@ -12,10 +12,6 @@
 
 #include "private.h"
 
-#ifdef HAVE_SYS_TIME_H
-#	include <sys/time.h>
-#endif
-
 #include <stdarg.h>
 
 
@@ -64,9 +60,6 @@ static lzma_stream *progress_strm;
 /// and estimate remaining time.
 static uint64_t expected_in_size;
 
-/// Time when we started processing the file
-static uint64_t start_time;
-
 
 // Use alarm() and SIGALRM when they are supported. This has two minor
 // advantages over the alternative of polling gettimeofday():
@@ -110,16 +103,6 @@ static bool progress_needs_updating = false;
 static uint64_t progress_next_update;
 
 #endif
-
-
-/// Get the current time as microseconds since epoch
-static uint64_t
-my_time(void)
-{
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return (uint64_t)(tv.tv_sec) * UINT64_C(1000000) + tv.tv_usec;
-}
 
 
 extern void
@@ -264,11 +247,10 @@ message_progress_start(lzma_stream *strm, uint64_t in_size)
 	// It is needed to find out the position in the stream.
 	progress_strm = strm;
 
-	// Store the processing start time of the file and its expected size.
-	// If we aren't printing any statistics, then these are unused. But
-	// since it is possible that the user sends us a signal to show
-	// statistics, we need to have these available anyway.
-	start_time = my_time();
+	// Store the expected size of the file. If we aren't printing any
+	// statistics, then is will be unused. But since it is possible
+	// that the user sends us a signal to show statistics, we need
+	// to have it available anyway.
 	expected_in_size = in_size;
 
 	// Indicate that progress info may need to be printed before
@@ -290,7 +272,7 @@ message_progress_start(lzma_stream *strm, uint64_t in_size)
 		alarm(1);
 #else
 		progress_needs_updating = true;
-		progress_next_update = 1000000;
+		progress_next_update = 1000;
 #endif
 	}
 
@@ -364,7 +346,7 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 {
 	// Don't print the speed immediately, since the early values look
 	// somewhat random.
-	if (elapsed < 3000000)
+	if (elapsed < 3000)
 		return "";
 
 	static const char unit[][8] = {
@@ -377,7 +359,7 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 
 	// Calculate the speed as KiB/s.
 	double speed = (double)(uncompressed_pos)
-			/ ((double)(elapsed) * (1024.0 / 1e6));
+			/ ((double)(elapsed) * (1024.0 / 1000.0));
 
 	// Adjust the unit of the speed if needed.
 	while (speed > 999.0) {
@@ -402,12 +384,12 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 /// Make a string indicating elapsed or remaining time. The format is either
 /// M:SS or H:MM:SS depending on if the time is an hour or more.
 static const char *
-progress_time(uint64_t useconds)
+progress_time(uint64_t mseconds)
 {
 	// 9999 hours = 416 days
 	static char buf[sizeof("9999:59:59")];
 
-	uint32_t seconds = useconds / 1000000;
+	uint32_t seconds = mseconds / 1000;
 
 	// Don't show anything if the time is zero or ridiculously big.
 	if (seconds == 0 || seconds > ((9999 * 60) + 59) * 60 + 59)
@@ -445,14 +427,14 @@ progress_remaining(uint64_t in_pos, uint64_t elapsed)
 	//  - Only a few seconds has passed since we started (de)compressing,
 	//    so estimate would be too inaccurate.
 	if (expected_in_size == 0 || in_pos > expected_in_size
-			|| in_pos < (UINT64_C(1) << 19) || elapsed < 8000000)
+			|| in_pos < (UINT64_C(1) << 19) || elapsed < 8000)
 		return "";
 
 	// Calculate the estimate. Don't give an estimate of zero seconds,
 	// since it is possible that all the input has been already passed
 	// to the library, but there is still quite a bit of output pending.
 	uint32_t remaining = (double)(expected_in_size - in_pos)
-			* ((double)(elapsed) / 1e6) / (double)(in_pos);
+			* ((double)(elapsed) / 1000.0) / (double)(in_pos);
 	if (remaining < 1)
 		remaining = 1;
 
@@ -518,14 +500,6 @@ progress_remaining(uint64_t in_pos, uint64_t elapsed)
 }
 
 
-/// Calculate the elapsed time as microseconds.
-static uint64_t
-progress_elapsed(void)
-{
-	return my_time() - start_time;
-}
-
-
 /// Get how much uncompressed and compressed data has been processed.
 static void
 progress_pos(uint64_t *in_pos,
@@ -559,13 +533,13 @@ message_progress_update(void)
 		return;
 
 	// Calculate how long we have been processing this file.
-	const uint64_t elapsed = progress_elapsed();
+	const uint64_t elapsed = mytime_get_elapsed();
 
 #ifndef SIGALRM
 	if (progress_next_update > elapsed)
 		return;
 
-	progress_next_update = elapsed + 1000000;
+	progress_next_update = elapsed + 1000;
 #endif
 
 	// Get our current position in the stream.
@@ -658,7 +632,7 @@ progress_flush(bool finished)
 
 	progress_active = false;
 
-	const uint64_t elapsed = progress_elapsed();
+	const uint64_t elapsed = mytime_get_elapsed();
 
 	signals_block();
 

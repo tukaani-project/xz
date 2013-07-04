@@ -565,9 +565,9 @@ coder_normal(file_pair *pair)
 	strm.avail_out = IO_BUFFER_SIZE;
 
 	while (!user_abort) {
-		// Fill the input buffer if it is empty and we haven't reached
-		// end of file yet.
-		if (strm.avail_in == 0 && !pair->src_eof) {
+		// Fill the input buffer if it is empty and we aren't
+		// flushing or finishing.
+		if (strm.avail_in == 0 && action == LZMA_RUN) {
 			strm.next_in = in_buf.u8;
 			strm.avail_in = io_read(pair, &in_buf,
 					my_min(block_remaining,

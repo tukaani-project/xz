@@ -38,6 +38,13 @@ static bool warn_fchown;
 #endif
 
 
+typedef enum {
+	IO_WAIT_MORE,    // Reading or writing is possible.
+	IO_WAIT_ERROR,   // Error or user_abort
+	IO_WAIT_TIMEOUT, // poll() timed out
+} io_wait_ret;
+
+
 /// If true, try to create sparse files when decompressing.
 static bool try_sparse = true;
 
@@ -130,8 +137,8 @@ io_no_sparse(void)
 /// pops up again. There are pselect() (POSIX-1.2001) and ppoll() (not in
 /// POSIX) but neither is portable enough in 2013. The self-pipe trick is
 /// old and very portable.
-static bool
-io_wait(file_pair *pair, bool is_reading)
+static io_wait_ret
+io_wait(file_pair *pair, int timeout, bool is_reading)
 {
 	struct pollfd pfd[2];
 
@@ -147,10 +154,10 @@ io_wait(file_pair *pair, bool is_reading)
 	pfd[1].events = POLLIN;
 
 	while (true) {
-		const int ret = poll(pfd, 2, -1);
+		const int ret = poll(pfd, 2, timeout);
 
 		if (user_abort)
-			return true;
+			return IO_WAIT_ERROR;
 
 		if (ret == -1) {
 			if (errno == EINTR || errno == EAGAIN)
@@ -160,10 +167,17 @@ io_wait(file_pair *pair, bool is_reading)
 					is_reading ? pair->src_name
 						: pair->dest_name,
 					strerror(errno));
+			return IO_WAIT_ERROR;
+		}
+
+		if (ret == 0) {
+			assert(opt_flush_timeout != 0);
+			flush_needed = true;
+			return IO_WAIT_TIMEOUT;
 		}
 
 		if (pfd[0].revents != 0)
-			return false;
+			return IO_WAIT_MORE;
 	}
 }
 #endif
@@ -583,10 +597,10 @@ io_open_src_real(file_pair *pair)
 	// will work when open() is used with O_NONBLOCK.
 	if (!S_ISREG(pair->src_st.st_mode)) {
 		signals_unblock();
-		const bool ret = io_wait(pair, true);
+		const io_wait_ret ret = io_wait(pair, -1, true);
 		signals_block();
 
-		if (ret)
+		if (ret != IO_WAIT_MORE)
 			goto error;
 	}
 #endif
@@ -1001,10 +1015,22 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 
 #ifndef TUKLIB_DOSLIKE
 			if (errno == EAGAIN || errno == EWOULDBLOCK) {
-				if (!io_wait(pair, true))
+				const io_wait_ret ret = io_wait(pair,
+						mytime_get_flush_timeout(),
+						true);
+				switch (ret) {
+				case IO_WAIT_MORE:
 					continue;
 
-				return SIZE_MAX;
+				case IO_WAIT_ERROR:
+					return SIZE_MAX;
+
+				case IO_WAIT_TIMEOUT:
+					return size - left;
+
+				default:
+					message_bug();
+				}
 			}
 #endif
 
@@ -1077,7 +1103,7 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 
 #ifndef TUKLIB_DOSLIKE
 			if (errno == EAGAIN || errno == EWOULDBLOCK) {
-				if (!io_wait(pair, false))
+				if (io_wait(pair, -1, false) == IO_WAIT_MORE)
 					continue;
 
 				return true;

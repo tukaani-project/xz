@@ -140,6 +140,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_NO_ADJUST,
 		OPT_INFO_MEMORY,
 		OPT_ROBOT,
+		OPT_FLUSH_TIMEOUT,
 	};
 
 	static const char short_opts[]
@@ -176,6 +177,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "memory",       required_argument, NULL,  'M' }, // Old alias
 		{ "no-adjust",    no_argument,       NULL,  OPT_NO_ADJUST },
 		{ "threads",      required_argument, NULL,  'T' },
+		{ "flush-timeout", required_argument, NULL, OPT_FLUSH_TIMEOUT },
 
 		{ "extreme",      no_argument,       NULL,  'e' },
 		{ "fast",         no_argument,       NULL,  '0' },
@@ -481,6 +483,11 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case OPT_NO_ADJUST:
 			opt_auto_adjust = false;
+			break;
+
+		case OPT_FLUSH_TIMEOUT:
+			opt_flush_timeout = str_to_uint64("flush-timeout",
+					optarg, 0, UINT64_MAX);
 			break;
 
 		default:

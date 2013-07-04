@@ -586,6 +586,9 @@ coder_normal(file_pair *pair)
 				if (block_remaining == 0)
 					action = LZMA_FULL_FLUSH;
 			}
+
+			if (action == LZMA_RUN && flush_needed)
+				action = LZMA_SYNC_FLUSH;
 		}
 
 		// Let liblzma do the actual work.
@@ -601,20 +604,41 @@ coder_normal(file_pair *pair)
 			strm.avail_out = IO_BUFFER_SIZE;
 		}
 
-		if (ret == LZMA_STREAM_END && action == LZMA_FULL_FLUSH) {
-			// Start a new Block.
-			action = LZMA_RUN;
+		if (ret == LZMA_STREAM_END && (action == LZMA_SYNC_FLUSH
+				|| action == LZMA_FULL_FLUSH)) {
+			// Flushing completed. Write the pending data out
+			// immediatelly so that the reading side can
+			// decompress everything compressed so far. Do this
+			// also with LZMA_FULL_FLUSH because if it is combined
+			// with timed LZMA_SYNC_FLUSH the same flushing
+			// timer can be used.
+			if (io_write(pair, &out_buf, IO_BUFFER_SIZE
+					- strm.avail_out))
+				break;
 
-			if (opt_block_list == NULL) {
-				block_remaining = opt_block_size;
-			} else {
-				// FIXME: Make it work together with
-				// --block-size.
-				if (opt_block_list[list_pos + 1] != 0)
-					++list_pos;
+			strm.next_out = out_buf.u8;
+			strm.avail_out = IO_BUFFER_SIZE;
 
-				block_remaining = opt_block_list[list_pos];
+			if (action == LZMA_FULL_FLUSH) {
+				if (opt_block_list == NULL) {
+					block_remaining = opt_block_size;
+				} else {
+					// FIXME: Make it work together with
+					// --block-size.
+					if (opt_block_list[list_pos + 1] != 0)
+						++list_pos;
+
+					block_remaining
+						= opt_block_list[list_pos];
+				}
 			}
+
+			// Set the time of the most recent flushing.
+			mytime_set_flush_time();
+
+			// Start a new Block after LZMA_FULL_FLUSH or continue
+			// the same block after LZMA_SYNC_FLUSH.
+			action = LZMA_RUN;
 
 		} else if (ret != LZMA_OK) {
 			// Determine if the return value indicates that we

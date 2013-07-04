@@ -1011,9 +1011,6 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 			message_error(_("%s: Read error: %s"),
 					pair->src_name, strerror(errno));
 
-			// FIXME Is this needed?
-			pair->src_eof = true;
-
 			return SIZE_MAX;
 		}
 

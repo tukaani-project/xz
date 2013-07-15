@@ -260,7 +260,7 @@ else
 	done
 	AC_MSG_RESULT([$enable_checks])
 fi
-if test "x$enable_checks_crc32" = xno ; then
+if test "x$enable_check_crc32" = xno ; then
 	AC_MSG_ERROR([For now, the CRC32 check must always be enabled.])
 fi
 

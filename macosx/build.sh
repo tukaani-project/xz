@@ -56,6 +56,19 @@ cp -a ../extra Root/usr/local/share/doc/xz
 
 make distclean
 
+# Move development files to different package
+
+test -d liblzma && rm -r liblzma
+mkdir -p liblzma/usr/local
+
+mv Root/usr/local/include liblzma/usr/local
+mv Root/usr/local/lib liblzma/usr/local
+
+mkdir -p Root/usr/local/lib
+cp -p liblzma/usr/local/lib/liblzma.5.dylib Root/usr/local/lib
+mkdir -p liblzma/usr/local/share/doc/xz
+mv Root/usr/local/share/doc/xz/examples* liblzma/usr/local/share/doc/xz
+
 # Strip debugging symbols and make relocatable
 
 for bin in xz lzmainfo xzdec lzmadec; do
@@ -68,19 +81,12 @@ for lib in liblzma.5.dylib; do
     install_name_tool -id @executable_path/../lib/liblzma.5.dylib Root/usr/local/lib/$lib
 done
 
-strip -S  Root/usr/local/lib/liblzma.a
-rm -f Root/usr/local/lib/liblzma.la
-
-# Include pkg-config while making relocatable
-
-sed -e 's|prefix=/usr/local|prefix=${pcfiledir}/../..|' < Root/usr/local/lib/pkgconfig/liblzma.pc > Root/liblzma.pc
-mv Root/liblzma.pc Root/usr/local/lib/pkgconfig/liblzma.pc
-
 # Create tarball, but without the HFS+ attrib
 
 rmdir debug lib po src/liblzma/api src/liblzma src/lzmainfo src/scripts src/xz src/xzdec src tests
 
 ( cd Root/usr/local; COPY_EXTENDED_ATTRIBUTES_DISABLE=true COPYFILE_DISABLE=true tar cvjf ../../../XZ.tbz * )
+( cd liblzma; COPY_EXTENDED_ATTRIBUTES_DISABLE=true COPYFILE_DISABLE=true tar cvjf ../liblzma.tbz ./usr/local )
 
 # Include documentation files for package
 
@@ -93,6 +99,7 @@ ID="org.tukaani.xz"
 VERSION=`cd ..; sh build-aux/version.sh`
 PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 $PACKAGEMAKER -r Root/usr/local -l /usr/local -e Resources -i $ID -n $VERSION -t XZ -o XZ.pkg -g $PKGFORMAT --verbose
+$PACKAGEMAKER -r liblzma -w -k -i $ID.liblzma -n $VERSION -o liblzma.pkg -g $PKGFORMAT --verbose
 
 # Put the package in a disk image
 

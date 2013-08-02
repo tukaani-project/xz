@@ -13,14 +13,17 @@ mkdir -p Resources
 # Abort immediately if something goes wrong.
 set -e
 
-GCC="gcc-4.0"
-SDK="/Developer/SDKs/MacOSX10.4u.sdk"
-MDT="10.4"
-GTT=i686-apple-darwin8
+GCC="gcc-4.2"
+SDK="/Developer/SDKs/MacOSX10.5.sdk"
+MDT="10.5"
+GTT=i686-apple-darwin9
 
 ARCHES1="-arch ppc -arch ppc64 -arch i386 -arch x86_64"
 ARCHES2="-arch ppc -arch i386"
-PKGFORMAT="10.4" # dir
+PKGFORMAT="10.5" # xar
+
+# avoid "unknown required load command: 0x80000022" from linking on Snow Leopard
+uname -r | grep ^1 >/dev/null && LDFLAGS="$LDFLAGS -Wl,-no_compact_linkedit"
 
 # Clean up if it was already configured.
 [ -f Makefile ] && make distclean

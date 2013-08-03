@@ -9,8 +9,10 @@
 #   This information is used by tuklib_cpucores.c.
 #
 #   Supported methods:
+#     - GetSystemInfo(): Windows (including Cygwin)
 #     - sysctl(): BSDs, OS/2
-#     - sysconf(): GNU/Linux, Solaris, Tru64, IRIX, AIX, Cygwin
+#     - sysconf(): GNU/Linux, Solaris, Tru64, IRIX, AIX, Cygwin (but
+#       GetSystemInfo() is used on Cygwin)
 #     - pstat_getdynamic(): HP-UX
 #
 # COPYING
@@ -29,6 +31,19 @@ AC_CHECK_HEADERS([sys/param.h])
 
 AC_CACHE_CHECK([how to detect the number of available CPU cores],
 	[tuklib_cv_cpucores_method], [
+
+# Maybe checking $host_os would be enough but this matches what
+# tuklib_cpucores.c does.
+#
+# NOTE: IRIX has a compiler that doesn't error out with #error, so use
+# a non-compilable text instead of #error to generate an error.
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if defined(_WIN32) || defined(__CYGWIN__)
+int main(void) { return 0; }
+#else
+compile error
+#endif
+]])], [tuklib_cv_cpucores_method=special], [
 
 # Look for sysctl() solution first, because on OS/2, both sysconf()
 # and sysctl() pass the tests in this file, but only sysctl()
@@ -82,7 +97,7 @@ main(void)
 ]])], [tuklib_cv_cpucores_method=pstat_getdynamic], [
 
 	tuklib_cv_cpucores_method=unknown
-])])])])
+])])])])])
 
 case $tuklib_cv_cpucores_method in
 	sysctl)

@@ -18,7 +18,7 @@
 #	endif
 #	include <windows.h>
 
-#if defined(TUKLIB_CPUCORES_SYSCTL)
+#elif defined(TUKLIB_CPUCORES_SYSCTL)
 #	ifdef HAVE_SYS_PARAM_H
 #		include <sys/param.h>
 #	endif

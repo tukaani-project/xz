@@ -720,7 +720,6 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	lib/Makefile
 	src/Makefile
-	src/liblzma/liblzma.pc
 	src/liblzma/Makefile
 	src/liblzma/api/Makefile
 	src/xz/Makefile

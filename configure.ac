@@ -443,8 +443,6 @@ fi
 echo
 echo "Initializing Automake:"
 
-# Automake 1.10 should still be enough but you need to omit serial-tests.
-dnl AM_INIT_AUTOMAKE([1.10 foreign tar-v7 filename-length-max=99])
 AM_INIT_AUTOMAKE([1.12 foreign tar-v7 filename-length-max=99 serial-tests])
 AC_PROG_LN_S
 

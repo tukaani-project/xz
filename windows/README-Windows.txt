@@ -29,7 +29,7 @@ Package contents
     There is one directory for each type of binaries:
 
         bin_i486        32-bit x86 (i486 and up), Windows 95 and later
-        bin_x86-64      64-bit x86-64, Windows XP and later
+        bin_x86-64      64-bit x86-64, Windows Vista and later
 
     Each of the above directories have the following files:
 

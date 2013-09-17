@@ -51,7 +51,7 @@ static lzma_check check;
 /// This becomes false if the --check=CHECK option is used.
 static bool check_default = true;
 
-#ifdef HAVE_PTHREAD
+#ifdef MYTHREAD_ENABLED
 static lzma_mt mt_options = {
 	.flags = 0,
 	.timeout = 300,
@@ -200,7 +200,7 @@ coder_set_compression_settings(void)
 	const uint64_t memory_limit = hardware_memlimit_get(opt_mode);
 	uint64_t memory_usage;
 	if (opt_mode == MODE_COMPRESS) {
-#ifdef HAVE_PTHREAD
+#ifdef MYTHREAD_ENABLED
 		if (opt_format == FORMAT_XZ && hardware_threads_get() > 1) {
 			mt_options.threads = hardware_threads_get();
 			mt_options.block_size = opt_block_size;
@@ -245,7 +245,7 @@ coder_set_compression_settings(void)
 
 	assert(opt_mode == MODE_COMPRESS);
 
-#ifdef HAVE_PTHREAD
+#ifdef MYTHREAD_ENABLED
 	if (opt_format == FORMAT_XZ && mt_options.threads > 1) {
 		// Try to reduce the number of threads before
 		// adjusting the compression settings down.
@@ -408,7 +408,7 @@ coder_init(file_pair *pair)
 			break;
 
 		case FORMAT_XZ:
-#ifdef HAVE_PTHREAD
+#ifdef MYTHREAD_ENABLED
 			if (hardware_threads_get() > 1)
 				ret = lzma_stream_encoder_mt(
 						&strm, &mt_options);

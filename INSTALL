@@ -307,16 +307,37 @@ XZ Utils Installation
                 the amount of RAM on the operating system you use. See
                 src/common/tuklib_physmem.c for details.
 
-    --disable-threads
-                Disable threading support. This makes some things
-                thread-unsafe, meaning that if multithreaded application
-                calls liblzma functions from more than one thread,
-                something bad may happen.
+    --enable-threads=METHOD
+                Threading support is enabled by default so normally there
+                is no need to specify this option.
 
-                Use this option if threading support causes you trouble,
-                or if you know that you will use liblzma only from
-                single-threaded applications and want to avoid dependency
-                on libpthread.
+                Supported values for METHOD:
+
+                        yes     Autodetect the threading method. If none
+                                is found, configure will give an error.
+
+                        posix   Use POSIX pthreads. This is the default
+                                except on Windows outside Cygwin.
+
+                        win95   Use Windows 95 compatible threads. This
+                                is compatible with Windows XP and later
+                                too. This is the default for 32-bit x86
+                                Windows builds. The `win95' threading is
+                                incompatible with --enable-small.
+
+                        vista   Use Windows Vista compatible threads. The
+                                resulting binaries won't run on Windows XP
+                                or older. This is the default for Windows
+                                excluding 32-bit x86 builds (that is, on
+                                x86-64 the default is `vista').
+
+                        no      Disable threading support. This is the
+                                same as using --disable-threads.
+                                NOTE: If combined with --enable-small, the
+                                resulting liblzma won't be thread safe,
+                                that is, if a multi-threaded application
+                                calls any liblzma functions from more than
+                                one thread, something bad may happen.
 
     --enable-symbol-versions
                 Use symbol versioning for liblzma. This is enabled by

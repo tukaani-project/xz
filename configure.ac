@@ -328,15 +328,48 @@ AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
 #############
 
 AC_MSG_CHECKING([if threading support is wanted])
-AC_ARG_ENABLE([threads], AC_HELP_STRING([--disable-threads],
-		[Disable threading support.
-		This makes some things thread-unsafe.]),
+AC_ARG_ENABLE([threads], AC_HELP_STRING([--enable-threads=METHOD],
+		[Supported METHODS are `yes', `no', `posix', `win95', and
+		`vista'. The default is `yes'. Using `no' together with
+		--enable-small makes liblzma thread unsafe.]),
 	[], [enable_threads=yes])
-if test "x$enable_threads" != xyes && test "x$enable_threads" != xno; then
-	AC_MSG_RESULT([])
-	AC_MSG_ERROR([--enable-threads accepts only \`yes' or \`no'])
+
+if test "x$enable_threads" = xyes; then
+	case $host_os in
+		mingw*)
+			case $host_cpu in
+				i?86)   enable_threads=win95 ;;
+				*)      enable_threads=vista ;;
+			esac
+			;;
+		*)
+			enable_threads=posix
+			;;
+	esac
 fi
-AC_MSG_RESULT([$enable_threads])
+
+case $enable_threads in
+	posix | win95 | vista)
+		AC_MSG_RESULT([yes, $enable_threads])
+		;;
+	no)
+		AC_MSG_RESULT([no])
+		;;
+	*)
+		AC_MSG_RESULT([])
+		AC_MSG_ERROR([--enable-threads only accepts
+			\`yes', \`no', \`posix', \`win95', or \`vista'])
+		;;
+esac
+
+# The Win95 threading lacks thread-safe one-time initialization function.
+# It's better to disallow it instead of allowing threaded but thread-unsafe
+# build.
+if test "x$enable_small$enable_threads" = xyeswin95; then
+	AC_MSG_ERROR([--enable-threads=win95 and --enable-small cannot be
+		used at the same time])
+fi
+
 # We use the actual result a little later.
 
 
@@ -455,27 +488,49 @@ AM_PROG_CC_C_O
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
 
-if test "x$enable_threads" = xyes; then
-	echo
-	echo "Threading support:"
-	AX_PTHREAD
-	LIBS="$LIBS $PTHREAD_LIBS"
-	AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
+case $enable_threads in
+	posix)
+		echo
+		echo "POSIX threading support:"
+		AX_PTHREAD([:]) dnl We don't need the HAVE_PTHREAD macro.
+		LIBS="$LIBS $PTHREAD_LIBS"
+		AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
 
-	dnl NOTE: PTHREAD_CC is ignored. It would be useful on AIX, but
-	dnl it's tricky to get it right together with AC_PROG_CC_C99.
-	dnl Thus, this is handled by telling the user in INSTALL to set
-	dnl the correct CC manually.
+		dnl NOTE: PTHREAD_CC is ignored. It would be useful on AIX,
+		dnl but it's tricky to get it right together with
+		dnl AC_PROG_CC_C99. Thus, this is handled by telling the
+		dnl user in INSTALL to set the correct CC manually.
 
-	# These are nice to have but not mandatory.
-	OLD_CFLAGS=$CFLAGS
-	CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-	AC_SEARCH_LIBS([clock_gettime], [rt])
-	AC_CHECK_FUNCS([clock_gettime pthread_condattr_setclock])
-	AC_CHECK_DECLS([CLOCK_MONOTONIC], [], [], [[#include <time.h>]])
-	CFLAGS=$OLD_CFLAGS
-fi
-AM_CONDITIONAL([COND_THREADS], [test "x$ax_pthread_ok" = xyes])
+		AC_DEFINE([MYTHREAD_POSIX], [1],
+			[Define to 1 when using POSIX threads (pthreads).])
+
+		# These are nice to have but not mandatory.
+		#
+		# FIXME: xz uses clock_gettime if it is available and can do
+		# it even when threading is disabled. Moving this outside
+		# of pthread detection may be undesirable because then
+		# liblzma may get linked against librt even when librt isn't
+		# needed by liblzma.
+		OLD_CFLAGS=$CFLAGS
+		CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+		AC_SEARCH_LIBS([clock_gettime], [rt])
+		AC_CHECK_FUNCS([clock_gettime pthread_condattr_setclock])
+		AC_CHECK_DECLS([CLOCK_MONOTONIC], [], [], [[#include <time.h>]])
+		CFLAGS=$OLD_CFLAGS
+		;;
+	win95)
+		AC_DEFINE([MYTHREAD_WIN95], [1], [Define to 1 when using
+			Windows 95 (and thus XP) compatible threads.
+			This avoids use of features that were added in
+			Windows Vista.])
+		;;
+	vista)
+		AC_DEFINE([MYTHREAD_VISTA], [1], [Define to 1 when using
+			Windows Vista compatible threads. This uses
+			features that are not available on Windows XP.])
+		;;
+esac
+AM_CONDITIONAL([COND_THREADS], [test "x$enable_threads" != xno])
 
 echo
 echo "Initializing Libtool:"
@@ -747,4 +802,11 @@ if test x$tuklib_cv_cpucores_method = xunknown; then
 	echo
 	echo "WARNING:"
 	echo "No supported method to detect the number of CPU cores."
+fi
+
+if test "x$enable_threads$enable_small" = xnoyes; then
+	echo
+	echo "NOTE:"
+	echo "liblzma will be thread unsafe due the combination"
+	echo "of --disable-threads --enable-small."
 fi

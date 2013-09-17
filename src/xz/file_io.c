@@ -658,6 +658,7 @@ io_open_src(const char *src_name)
 static void
 io_close_src(file_pair *pair, bool success)
 {
+#ifndef TUKLIB_DOSLIKE
 	if (restore_stdin_flags) {
 		assert(pair->src_fd == STDIN_FILENO);
 
@@ -668,6 +669,7 @@ io_close_src(file_pair *pair, bool success)
 					"to standard input: %s"),
 					strerror(errno));
 	}
+#endif
 
 	if (pair->src_fd != STDIN_FILENO && pair->src_fd != -1) {
 #ifdef TUKLIB_DOSLIKE

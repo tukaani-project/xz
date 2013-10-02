@@ -726,13 +726,6 @@ stream_encode_mt(lzma_coder *coder, const lzma_allocator *allocator,
 				return ret;
 			}
 
-			// Check if the last Block was finished.
-			if (action == LZMA_FINISH
-					&& *in_pos == in_size
-					&& lzma_outq_is_empty(
-						&coder->outq))
-				break;
-
 			// Try to give uncompressed data to a worker thread.
 			ret = stream_encode_in(coder, allocator,
 					in, in_pos, in_size, action);
@@ -741,14 +734,44 @@ stream_encode_mt(lzma_coder *coder, const lzma_allocator *allocator,
 				return ret;
 			}
 
-			// Return if
-			//  - we have used all the input and expect to
-			//    get more input; or
-			//  - the output buffer has been filled.
+			// See if we should wait or return.
 			//
-			// TODO: Support flushing.
-			if ((*in_pos == in_size && action != LZMA_FINISH)
-					|| *out_pos == out_size)
+			// TODO: LZMA_SYNC_FLUSH and LZMA_SYNC_BARRIER.
+			if (*in_pos == in_size) {
+				// LZMA_RUN: More data is probably coming
+				// so return to let the caller fill the
+				// input buffer.
+				if (action == LZMA_RUN)
+					return LZMA_OK;
+
+				// LZMA_FULL_BARRIER: The same as with
+				// LZMA_RUN but tell the caller that the
+				// barrier was completed.
+				if (action == LZMA_FULL_BARRIER)
+					return LZMA_STREAM_END;
+
+				// Finishing or flushing isn't completed until
+				// all input data has been encoded and copied
+				// to the output buffer.
+				if (lzma_outq_is_empty(&coder->outq)) {
+					// LZMA_FINISH: Continue to encode
+					// the Index field.
+					if (action == LZMA_FINISH)
+						break;
+
+					// LZMA_FULL_FLUSH: Return to tell
+					// the caller that flushing was
+					// completed.
+					if (action == LZMA_FULL_FLUSH)
+						return LZMA_STREAM_END;
+				}
+			}
+
+			// Return if there is no output space left.
+			// This check must be done after testing the input
+			// buffer, because we might want to use a different
+			// return code.
+			if (*out_pos == out_size)
 				return LZMA_OK;
 
 			// Neither in nor out has been used completely.
@@ -1045,8 +1068,8 @@ lzma_stream_encoder_mt(lzma_stream *strm, const lzma_mt *options)
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 // 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
-// 	strm->internal->supported_actions[LZMA_FULL_FLUSH] = true;
-// 	strm->internal->supported_actions[LZMA_FULL_BARRIER] = true;
+	strm->internal->supported_actions[LZMA_FULL_FLUSH] = true;
+	strm->internal->supported_actions[LZMA_FULL_BARRIER] = true;
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;

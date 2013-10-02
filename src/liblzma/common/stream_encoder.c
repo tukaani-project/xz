@@ -146,9 +146,10 @@ stream_encode(lzma_coder *coder, const lzma_allocator *allocator,
 	}
 
 	case SEQ_BLOCK_ENCODE: {
-		static const lzma_action convert[4] = {
+		static const lzma_action convert[LZMA_ACTION_MAX + 1] = {
 			LZMA_RUN,
 			LZMA_SYNC_FLUSH,
+			LZMA_FINISH,
 			LZMA_FINISH,
 			LZMA_FINISH,
 		};
@@ -324,6 +325,7 @@ lzma_stream_encoder(lzma_stream *strm,
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_SYNC_FLUSH] = true;
 	strm->internal->supported_actions[LZMA_FULL_FLUSH] = true;
+	strm->internal->supported_actions[LZMA_FULL_BARRIER] = true;
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 
 	return LZMA_OK;

@@ -78,6 +78,10 @@
 	| LZMA_CONCATENATED )
 
 
+/// Largest valid lzma_action value as unsigned integer.
+#define LZMA_ACTION_MAX ((unsigned int)(LZMA_FULL_BARRIER))
+
+
 /// Special return value (lzma_ret) to indicate that a timeout was reached
 /// and lzma_code() must not return LZMA_BUF_ERROR. This is converted to
 /// LZMA_OK in lzma_code(). This is not in the lzma_ret enumeration because
@@ -207,6 +211,7 @@ struct lzma_internal_s {
 		ISEQ_SYNC_FLUSH,
 		ISEQ_FULL_FLUSH,
 		ISEQ_FINISH,
+		ISEQ_FULL_BARRIER,
 		ISEQ_END,
 		ISEQ_ERROR,
 	} sequence;
@@ -217,7 +222,7 @@ struct lzma_internal_s {
 	size_t avail_in;
 
 	/// Indicates which lzma_action values are allowed by next.code.
-	bool supported_actions[4];
+	bool supported_actions[LZMA_ACTION_MAX + 1];
 
 	/// If true, lzma_code will return LZMA_BUF_ERROR if no progress was
 	/// made (no input consumed and no output produced by next.code).

@@ -176,7 +176,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 			|| (strm->next_out == NULL && strm->avail_out != 0)
 			|| strm->internal == NULL
 			|| strm->internal->next.code == NULL
-			|| (unsigned int)(action) > LZMA_FINISH
+			|| (unsigned int)(action) > LZMA_ACTION_MAX
 			|| !strm->internal->supported_actions[action])
 		return LZMA_PROG_ERROR;
 
@@ -211,6 +211,10 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		case LZMA_FINISH:
 			strm->internal->sequence = ISEQ_FINISH;
 			break;
+
+		case LZMA_FULL_BARRIER:
+			strm->internal->sequence = ISEQ_FULL_BARRIER;
+			break;
 		}
 
 		break;
@@ -233,6 +237,13 @@ lzma_code(lzma_stream *strm, lzma_action action)
 
 	case ISEQ_FINISH:
 		if (action != LZMA_FINISH
+				|| strm->internal->avail_in != strm->avail_in)
+			return LZMA_PROG_ERROR;
+
+		break;
+
+	case ISEQ_FULL_BARRIER:
+		if (action != LZMA_FULL_BARRIER
 				|| strm->internal->avail_in != strm->avail_in)
 			return LZMA_PROG_ERROR;
 
@@ -288,7 +299,9 @@ lzma_code(lzma_stream *strm, lzma_action action)
 
 	case LZMA_STREAM_END:
 		if (strm->internal->sequence == ISEQ_SYNC_FLUSH
-				|| strm->internal->sequence == ISEQ_FULL_FLUSH)
+				|| strm->internal->sequence == ISEQ_FULL_FLUSH
+				|| strm->internal->sequence
+					== ISEQ_FULL_BARRIER)
 			strm->internal->sequence = ISEQ_RUN;
 		else
 			strm->internal->sequence = ISEQ_END;

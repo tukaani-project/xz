@@ -584,7 +584,7 @@ coder_normal(file_pair *pair)
 				// opt_block_size bytes of input.
 				block_remaining -= strm.avail_in;
 				if (block_remaining == 0)
-					action = LZMA_FULL_FLUSH;
+					action = LZMA_FULL_BARRIER;
 			}
 
 			if (action == LZMA_RUN && flush_needed)
@@ -605,21 +605,22 @@ coder_normal(file_pair *pair)
 		}
 
 		if (ret == LZMA_STREAM_END && (action == LZMA_SYNC_FLUSH
-				|| action == LZMA_FULL_FLUSH)) {
-			// Flushing completed. Write the pending data out
-			// immediatelly so that the reading side can
-			// decompress everything compressed so far. Do this
-			// also with LZMA_FULL_FLUSH because if it is combined
-			// with timed LZMA_SYNC_FLUSH the same flushing
-			// timer can be used.
-			if (io_write(pair, &out_buf, IO_BUFFER_SIZE
-					- strm.avail_out))
-				break;
+				|| action == LZMA_FULL_BARRIER)) {
+			if (action == LZMA_SYNC_FLUSH) {
+				// Flushing completed. Write the pending data
+				// out immediatelly so that the reading side
+				// can decompress everything compressed so far.
+				if (io_write(pair, &out_buf, IO_BUFFER_SIZE
+						- strm.avail_out))
+					break;
 
-			strm.next_out = out_buf.u8;
-			strm.avail_out = IO_BUFFER_SIZE;
+				strm.next_out = out_buf.u8;
+				strm.avail_out = IO_BUFFER_SIZE;
 
-			if (action == LZMA_FULL_FLUSH) {
+				// Set the time of the most recent flushing.
+				mytime_set_flush_time();
+			} else {
+				// Start a new Block after LZMA_FULL_BARRIER.
 				if (opt_block_list == NULL) {
 					block_remaining = opt_block_size;
 				} else {
@@ -632,9 +633,6 @@ coder_normal(file_pair *pair)
 						= opt_block_list[list_pos];
 				}
 			}
-
-			// Set the time of the most recent flushing.
-			mytime_set_flush_time();
 
 			// Start a new Block after LZMA_FULL_FLUSH or continue
 			// the same block after LZMA_SYNC_FLUSH.

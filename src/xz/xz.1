@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2013-06-21" "Tukaani" "XZ Utils"
+.TH XZ 1 "2013-10-22" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -834,6 +834,41 @@ the rest of the file should be encoded as a single block.
 .IP ""
 .B "Currently this option is badly broken if used together with"
 .B "\-\-block\-size or with multithreading."
+.TP
+.BI \-\-flush\-timeout= timeout
+When compressing, if more than
+.I timeout
+milliseconds (a positive integer) has passed since the previous flush and
+reading more input would block,
+all the pending input data is flushed from the encoder and
+made available in the output stream.
+This can be useful if
+.B xz
+is used to compress data that is streamed over a network.
+Small
+.I timeout
+values make the data available at the receiving end
+with a small delay, but large
+.I timeout
+values give better compression ratio.
+.IP ""
+This feature is disabled by default.
+If this option is specified more than once, the last one takes effect.
+The special
+.I timeout
+value of
+.B 0
+can be used to explicitly disable this feature.
+.IP ""
+This feature is not available on non-POSIX systems.
+.IP ""
+.\" FIXME
+.B "This feature is still experimental."
+Currently
+.B xz
+is unsuitable for decompressing the stream in real time due to how
+.B xz
+does buffering.
 .TP
 .BI \-\-memlimit\-compress= limit
 Set a memory usage limit for compression.

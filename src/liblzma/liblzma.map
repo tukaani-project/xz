@@ -95,7 +95,7 @@ global:
 	lzma_vli_size;
 };
 
-XZ_5.1.2alpha {
+XZ_5.1.3alpha {
 global:
 	lzma_block_uncomp_encode;
 	lzma_get_progress;

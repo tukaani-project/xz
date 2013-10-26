@@ -2,6 +2,41 @@
 XZ Utils Release Notes
 ======================
 
+5.1.3alpha (2013-10-26)
+
+    * All fixes from 5.0.5
+
+    * liblzma:
+
+        - Fixed a deadlock in the threaded encoder.
+
+        - Made the uses of lzma_allocator const correct.
+
+        - Added lzma_block_uncomp_encode() to create uncompressed
+          .xz Blocks using LZMA2 uncompressed chunks.
+
+        - Added support for native threads on Windows and the ability
+          to detect the number of CPU cores.
+
+    * xz:
+
+        - Fixed a race condition in the signal handling. It was
+          possible that e.g. the first SIGINT didn't make xz exit
+          if reading or writing blocked and one had bad luck. The fix
+          is non-trivial, so as of writing it is unknown if it will be
+          backported to the v5.0 branch.
+
+        - Made the progress indicator work correctly in threaded mode.
+
+        - Threaded encoder now works together with --block-list=SIZES.
+
+        - Added preliminary support for --flush-timeout=TIMEOUT.
+          It can be useful for (somewhat) real-time streaming. For
+          now the decompression side has to be done with something
+          else than the xz tool due to how xz does buffering, but this
+          should be fixed.
+
+
 5.1.2alpha (2012-07-04)
 
     * All fixes from 5.0.3 and 5.0.4

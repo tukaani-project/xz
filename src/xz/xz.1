@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2013-10-25" "Tukaani" "XZ Utils"
+.TH XZ 1 "2013-11-12" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -809,6 +809,12 @@ format, split the input data into blocks of
 bytes.
 The blocks are compressed independently from each other.
 .\" FIXME: Explain how to these can be used for random access and threading.
+.IP ""
+In multi-threaded mode the sizes of the blocks
+are stored in the block headers.
+This isn't done in single-threaded mode,
+so the encoded output won't be
+identical to that of the multi-threaded mode.
 .TP
 .BI \-\-block\-list= sizes
 When compressing to the
@@ -832,26 +838,26 @@ A special value of
 may be used as the last value to indicate that
 the rest of the file should be encoded as a single block.
 .IP ""
-If this option is used in threaded mode and one specifies
+If one specifies
 .I sizes
 that exceed the encoder's block size
-(either the default value or the value specified
-with \fB\-\-block\-size=\fIsize\fR),
+(either the default value in threaded mode or
+the value specified with \fB\-\-block\-size=\fIsize\fR),
 the encoder will create additional blocks while
 keeping the boundaries specified in
 .IR sizes .
 For example, if one specifies
-.B \-\-threads=2
 .B \-\-block\-size=10MiB
 .B \-\-block\-list=5MiB,10MiB,8MiB,12MiB,24MiB
 and the input file is 80 MiB,
 one will get 11 blocks:
 5, 10, 8, 10, 2, 10, 10, 4, 10, 10, and 1 MiB.
 .IP ""
-.\" FIXME
-.B "In single-threaded mode \-\-block\-size is ignored"
-.B "if \-\-block\-list is also specified."
-.B "This might change before 5.2.0 is released."
+In multi-threaded mode the sizes of the blocks
+are stored in the block headers.
+This isn't done in single-threaded mode,
+so the encoded output won't be
+identical to that of the multi-threaded mode.
 .TP
 .BI \-\-flush\-timeout= timeout
 When compressing, if more than

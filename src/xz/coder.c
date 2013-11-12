@@ -514,6 +514,56 @@ coder_init(file_pair *pair)
 }
 
 
+/// Resolve conflicts between opt_block_size and opt_block_list in single
+/// threaded mode. We want to default to opt_block_list, except when it is
+/// larger than opt_block_size. If this is the case for the current Block
+/// at *list_pos, then we break into smaller Blocks. Otherwise advance
+/// to the next Block in opt_block_list, and break apart if needed.
+static void
+split_block(uint64_t *block_remaining,
+	    uint64_t *next_block_remaining,
+	    uint64_t *list_pos)
+{
+	if (*next_block_remaining > 0) {
+		// The Block at *list_pos has previously been split up.
+		assert(hardware_threads_get() == 1);
+		assert(opt_block_size > 0);
+		assert(opt_block_list != NULL);
+
+		if (*next_block_remaining > opt_block_size) {
+			// We have to split the current Block at *list_pos
+			// into another opt_block_size length Block.
+			*block_remaining = opt_block_size;
+		} else {
+			// This is the last remaining split Block for the
+			// Block at *list_pos.
+			*block_remaining = *next_block_remaining;
+		}
+
+		*next_block_remaining -= *block_remaining;
+
+	} else {
+		// The Block at *list_pos has been finished. Go to the next
+		// entry in the list. If the end of the list has been reached,
+		// reuse the size of the last Block.
+		if (opt_block_list[*list_pos + 1] != 0)
+			++*list_pos;
+
+		*block_remaining = opt_block_list[*list_pos];
+
+		// If in single-threaded mode, split up the Block if needed.
+		// This is not needed in multi-threaded mode because liblzma
+		// will do this due to how threaded encoding works.
+		if (hardware_threads_get() == 1 && opt_block_size > 0
+				&& *block_remaining > opt_block_size) {
+			*next_block_remaining
+					= *block_remaining - opt_block_size;
+			*block_remaining = opt_block_size;
+		}
+	}
+}
+
+
 /// Compress or decompress using liblzma.
 static bool
 coder_normal(file_pair *pair)
@@ -537,6 +587,10 @@ coder_normal(file_pair *pair)
 	// only a single block is created.
 	uint64_t block_remaining = UINT64_MAX;
 
+	// next_block_remining for when we are in single-threaded mode and
+	// the Block in --block-list is larger than the --block-size=SIZE.
+	uint64_t next_block_remaining = 0;
+
 	// Position in opt_block_list. Unused if --block-list wasn't used.
 	size_t list_pos = 0;
 
@@ -551,14 +605,22 @@ coder_normal(file_pair *pair)
 
 		// If --block-list was used, start with the first size.
 		//
-		// FIXME: Currently this overrides --block-size but this isn't
-		// good. For threaded case, we want --block-size to specify
-		// how big Blocks the encoder needs to be prepared to create
-		// at maximum and --block-list will simultaneously cause new
-		// Blocks to be started at specified intervals. To keep things
-		// logical, the same should be done in single-threaded mode.
-		if (opt_block_list != NULL)
-			block_remaining = opt_block_list[list_pos];
+		// For threaded case, --block-size specifies how big Blocks
+		// the encoder needs to be prepared to create at maximum
+		// and --block-list will simultaneously cause new Blocks
+		// to be started at specified intervals. To keep things
+		// logical, the same is done in single-threaded mode. The
+		// output is still not identical because in single-threaded
+		// mode the size info isn't written into Block Headers.
+		if (opt_block_list != NULL) {
+			if (block_remaining < opt_block_list[list_pos]) {
+				assert(hardware_threads_get() == 1);
+				next_block_remaining = opt_block_list[list_pos]
+						- block_remaining;
+			} else {
+				block_remaining = opt_block_list[list_pos];
+			}
+		}
 	}
 
 	strm.next_out = out_buf.u8;
@@ -622,15 +684,13 @@ coder_normal(file_pair *pair)
 			} else {
 				// Start a new Block after LZMA_FULL_BARRIER.
 				if (opt_block_list == NULL) {
+					assert(hardware_threads_get() == 1);
+					assert(opt_block_size > 0);
 					block_remaining = opt_block_size;
 				} else {
-					// FIXME: Make it work together with
-					// --block-size.
-					if (opt_block_list[list_pos + 1] != 0)
-						++list_pos;
-
-					block_remaining
-						= opt_block_list[list_pos];
+					split_block(&block_remaining,
+							&next_block_remaining,
+							&list_pos);
 				}
 			}
 

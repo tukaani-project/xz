@@ -25,7 +25,7 @@
 #ifdef MYTHREAD_ENABLED
 
 ////////////////////////////////////////
-// Shared betewen all threading types //
+// Shared between all threading types //
 ////////////////////////////////////////
 
 // Locks a mutex for a duration of a block.

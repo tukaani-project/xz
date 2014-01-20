@@ -500,7 +500,7 @@ extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
 
 
 /**
- * \brief       Single-call uncompress .xz Block encoder
+ * \brief       Single-call uncompressed .xz Block encoder
  *
  * This is like lzma_block_buffer_encode() except this doesn't try to
  * compress the data and instead encodes the data using LZMA2 uncompressed

@@ -1036,8 +1036,8 @@ stream_encoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	for (size_t i = 0; next->coder->filters[i].id != LZMA_VLI_UNKNOWN; ++i)
 		lzma_free(next->coder->filters[i].options, allocator);
 
-	return_if_error(lzma_filters_copy(options->filters,
-			next->coder->filters, allocator));
+	return_if_error(lzma_filters_copy(
+			filters, next->coder->filters, allocator));
 
 	// Index
 	lzma_index_end(next->coder->index, allocator);

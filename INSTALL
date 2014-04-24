@@ -26,6 +26,8 @@ XZ Utils Installation
        4.2. "No POSIX conforming shell (sh) was found."
        4.3. configure works but build fails at crc32_x86.S
        4.4. Lots of warnings about symbol visibility
+       4.5. "make check" fails
+       4.6. liblzma.so (or similar) not found when running xz
 
 
 0. Preface
@@ -462,4 +464,27 @@ XZ Utils Installation
     argument to the configure script. This has no effect on the
     resulting binaries, but fewer warnings looks nicer and may allow
     using --enable-werror.
+
+
+4.5. "make check" fails
+
+    A likely reason is that libtool links the test programs against
+    an installed version of liblzma instead of the version that was
+    just built. This is obviously a bug which seems to happen on
+    some platforms. A workaround is to uninstall the old liblzma
+    versions first.
+
+    If the problem isn't the one described above, then it's likely
+    a bug in XZ Utils or in the compiler. See the platform-specific
+    notes in this file for possible known problems. Please report
+    a bug if you cannot solve the problem. See README for contact
+    information.
+
+
+4.6. liblzma.so (or similar) not found when running xz
+
+    If you installed the package with "make install" and get an error
+    about liblzma.so (or a similarly named file) being missing, try
+    running "ldconfig" to update the run-time linker cache (if your
+    operating system has such a command).
 

@@ -17,6 +17,7 @@ endif
 
 SUBDIRS += src po tests
 
+if COND_DOC
 dist_doc_DATA = \
 	AUTHORS \
 	COPYING \
@@ -42,6 +43,7 @@ examplesolddir = $(docdir)/examples_old
 dist_examplesold_DATA = \
 	doc/examples_old/xz_pipe_comp.c \
 	doc/examples_old/xz_pipe_decomp.c
+endif
 
 EXTRA_DIST = \
 	extra \

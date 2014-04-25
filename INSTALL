@@ -253,6 +253,12 @@ XZ Utils Installation
                 Don't install the scripts xzdiff, xzgrep, xzmore, xzless,
                 and their symlinks.
 
+    --disable-doc
+                Don't install the documentation files to $docdir
+                (often /usr/doc/xz or /usr/local/doc/xz). Man pages
+                will still be installed. The $docdir can be changed
+                with --docdir=DIR.
+
     --disable-assembler
                 liblzma includes some assembler optimizations. Currently
                 there is only assembler code for CRC32 and CRC64 for

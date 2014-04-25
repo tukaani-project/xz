@@ -402,6 +402,12 @@ AC_ARG_ENABLE([scripts], [AC_HELP_STRING([--disable-scripts],
 	[], [enable_scripts=yes])
 AM_CONDITIONAL([COND_SCRIPTS], [test x$enable_scripts != xno])
 
+AC_ARG_ENABLE([doc], [AC_HELP_STRING([--disable-doc],
+		[do not install documentation files to docdir
+		(man pages will still be installed)])],
+	[], [enable_doc=yes])
+AM_CONDITIONAL([COND_DOC], [test x$enable_doc != xno])
+
 
 ###############################################################################
 # Checks for programs.

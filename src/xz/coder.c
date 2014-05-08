@@ -522,7 +522,7 @@ coder_init(file_pair *pair)
 static void
 split_block(uint64_t *block_remaining,
 	    uint64_t *next_block_remaining,
-	    uint64_t *list_pos)
+	    size_t *list_pos)
 {
 	if (*next_block_remaining > 0) {
 		// The Block at *list_pos has previously been split up.

@@ -119,7 +119,7 @@ struct lzma_mf_s {
 	lzma_action action;
 
 	/// Number of elements in hash[]
-	uint32_t hash_size_sum;
+	uint32_t hash_count;
 
 	/// Number of elements in son[]
 	uint32_t sons_count;

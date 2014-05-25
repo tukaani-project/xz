@@ -116,24 +116,27 @@ normalize(lzma_mf *mf)
 			= (MUST_NORMALIZE_POS - mf->cyclic_size);
 				// & (~(UINT32_C(1) << 10) - 1);
 
-	const uint32_t count = mf->hash_size_sum + mf->sons_count;
-	uint32_t *hash = mf->hash;
-
-	for (uint32_t i = 0; i < count; ++i) {
+	for (uint32_t i = 0; i < mf->hash_count; ++i) {
 		// If the distance is greater than the dictionary size,
 		// we can simply mark the hash element as empty.
-		//
-		// NOTE: Only the first mf->hash_size_sum elements are
-		// initialized for sure. There may be uninitialized elements
-		// in mf->son. Since we go through both mf->hash and
-		// mf->son here in normalization, Valgrind may complain
-		// that the "if" below depends on uninitialized value. In
-		// this case it is safe to ignore the warning. See also the
-		// comments in lz_encoder_init() in lz_encoder.c.
-		if (hash[i] <= subvalue)
-			hash[i] = EMPTY_HASH_VALUE;
+		if (mf->hash[i] <= subvalue)
+			mf->hash[i] = EMPTY_HASH_VALUE;
 		else
-			hash[i] -= subvalue;
+			mf->hash[i] -= subvalue;
+	}
+
+	for (uint32_t i = 0; i < mf->sons_count; ++i) {
+		// Do the same for mf->son.
+		//
+		// NOTE: There may be uninitialized elements in mf->son.
+		// Valgrind may complain that the "if" below depends on
+		// an uninitialized value. In this case it is safe to ignore
+		// the warning. See also the comments in lz_encoder_init()
+		// in lz_encoder.c.
+		if (mf->son[i] <= subvalue)
+			mf->son[i] = EMPTY_HASH_VALUE;
+		else
+			mf->son[i] -= subvalue;
 	}
 
 	// Update offset to match the new locations.

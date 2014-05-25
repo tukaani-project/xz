@@ -53,6 +53,27 @@ lzma_alloc(size_t size, const lzma_allocator *allocator)
 }
 
 
+extern void * lzma_attribute((__malloc__)) lzma_attr_alloc_size(1)
+lzma_alloc_zero(size_t size, const lzma_allocator *allocator)
+{
+	// Some calloc() variants return NULL if called with size == 0.
+	if (size == 0)
+		size = 1;
+
+	void *ptr;
+
+	if (allocator != NULL && allocator->alloc != NULL) {
+		ptr = allocator->alloc(allocator->opaque, 1, size);
+		if (ptr != NULL)
+			memzero(ptr, size);
+	} else {
+		ptr = calloc(1, size);
+	}
+
+	return ptr;
+}
+
+
 extern void
 lzma_free(void *ptr, const lzma_allocator *allocator)
 {

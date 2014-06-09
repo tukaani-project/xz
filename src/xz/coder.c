@@ -195,6 +195,17 @@ coder_set_compression_settings(void)
 	// Print the selected filter chain.
 	message_filters_show(V_DEBUG, filters);
 
+	// Disable encoder threads when --flush-timeout is used because
+	// the threaded encoder doesn't support LZMA_SYNC_FLUSH.
+	// FIXME: When LZMA_SYNC_FLUSH is supported, this should be changed.
+	if (opt_mode == MODE_COMPRESS && opt_flush_timeout != 0
+			&& hardware_threads_get() > 1) {
+		message(V_WARNING, _("Switching to single-threaded mode "
+				"due to --flush-timeout=%" PRIu64),
+				opt_flush_timeout);
+		hardware_threads_set(1);
+	}
+
 	// Get the memory usage. Note that if --format=raw was used,
 	// we can be decompressing.
 	const uint64_t memory_limit = hardware_memlimit_get(opt_mode);

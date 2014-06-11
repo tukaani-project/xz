@@ -12,16 +12,18 @@
 # If scripts weren't built, this test is skipped.
 XZ=../src/xz/xz
 XZDIFF=../src/scripts/xzdiff
-test -x "$XZ" || XZ=
-test -x "$XZDIFF" || XZDIFF=
-if test -z "$XZ" || test -z "$XZDIFF"; then
+XZGREP=../src/scripts/xzgrep
+
+for i in XZ XZDIFF XZGREP; do
+	eval test -x "\$$i" && continue
 	(exit 77)
 	exit 77
-fi
+done
 
 PATH=`pwd`/../src/xz:$PATH
 export PATH
 
+test -z "$srcdir" && srcdir=.
 preimage=$srcdir/files/good-1-check-crc32.xz
 samepostimage=$srcdir/files/good-1-check-crc64.xz
 otherpostimage=$srcdir/files/good-1-lzma2-1.xz
@@ -49,6 +51,22 @@ if test "$status" != 2 ; then
 	(exit 1)
 	exit 1
 fi
+
+# The exit status must be 0 when a match was found at least from one file,
+# and 1 when no match was found in any file.
+for pattern in el Hello NOMATCH; do
+	for opts in "" "-l" "-h" "-H"; do
+		"$XZGREP" $opts $pattern \
+			"$srcdir/files/good-1-lzma2-1.xz" \
+			"$srcdir/files/good-2-lzma2.xz" > /dev/null 2>&1
+		status=$?
+		test $status = 0 && test $pattern != NOMATCH && continue
+		test $status = 1 && test $pattern = NOMATCH && continue
+		echo "wrong exit status from xzgrep"
+		(exit 1)
+		exit 1
+	done
+done
 
 (exit 0)
 exit 0

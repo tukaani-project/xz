@@ -52,4 +52,5 @@ TESTS += test_scripts.sh
 endif
 
 clean-local:
-	-rm -f compress_generated_*
+	-rm -f compress_generated_* \
+		xzgrep_test_output xzgrep_test_1.xz xzgrep_test_2.xz

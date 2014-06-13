@@ -54,19 +54,23 @@ fi
 
 # The exit status must be 0 when a match was found at least from one file,
 # and 1 when no match was found in any file.
+cp "$srcdir/files/good-1-lzma2-1.xz" xzgrep_test_1.xz
+cp "$srcdir/files/good-2-lzma2.xz" xzgrep_test_2.xz
 for pattern in el Hello NOMATCH; do
 	for opts in "" "-l" "-h" "-H"; do
-		"$XZGREP" $opts $pattern \
-			"$srcdir/files/good-1-lzma2-1.xz" \
-			"$srcdir/files/good-2-lzma2.xz" > /dev/null 2>&1
-		status=$?
-		test $status = 0 && test $pattern != NOMATCH && continue
-		test $status = 1 && test $pattern = NOMATCH && continue
-		echo "wrong exit status from xzgrep"
-		(exit 1)
-		exit 1
+		echo "=> xzgrep $opts $pattern <="
+		"$XZGREP" $opts $pattern xzgrep_test_1.xz xzgrep_test_2.xz
+		echo retval $?
 	done
-done
+done > xzgrep_test_output 2>&1
+
+if cmp -s "$srcdir/xzgrep_expected_output" xzgrep_test_output ; then
+	:
+else
+	echo "unexpected output from xzgrep"
+	(exit 1)
+	exit 1
+fi
 
 (exit 0)
 exit 0

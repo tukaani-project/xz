@@ -44,6 +44,7 @@ liblzma_la_SOURCES += \
 
 if COND_THREADS
 liblzma_la_SOURCES += \
+	common/hardware_cputhreads.c \
 	common/outqueue.c \
 	common/outqueue.h \
 	common/stream_encoder_mt.c

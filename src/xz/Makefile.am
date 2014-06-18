@@ -36,7 +36,6 @@ xz_SOURCES = \
 	$(top_srcdir)/src/common/tuklib_open_stdxxx.c \
 	$(top_srcdir)/src/common/tuklib_progname.c \
 	$(top_srcdir)/src/common/tuklib_exit.c \
-	$(top_srcdir)/src/common/tuklib_cpucores.c \
 	$(top_srcdir)/src/common/tuklib_mbstr_width.c \
 	$(top_srcdir)/src/common/tuklib_mbstr_fw.c
 

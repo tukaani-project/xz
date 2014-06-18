@@ -11,7 +11,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
-#include "tuklib_cpucores.h"
 
 
 /// Maximum number of worker threads. This can be set with
@@ -33,10 +32,17 @@ hardware_threads_set(uint32_t n)
 {
 	if (n == 0) {
 		// Automatic number of threads was requested.
-		// Use the number of available CPU cores.
-		threads_max = tuklib_cpucores();
+		// If threading support was enabled at build time,
+		// use the number of available CPU cores. Otherwise
+		// use one thread since disabling threading support
+		// omits lzma_cputhreads() from liblzma.
+#ifdef MYTHREAD_ENABLED
+		threads_max = lzma_cputhreads();
 		if (threads_max == 0)
 			threads_max = 1;
+#else
+		threads_max = 1;
+#endif
 	} else {
 		threads_max = n;
 	}

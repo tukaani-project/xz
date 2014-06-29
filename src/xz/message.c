@@ -1134,19 +1134,23 @@ message_help(bool long_help)
 
 	puts(_(
 "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-"                      to use the number of processor cores"));
+"                      to use as many threads as there are processor cores"));
 
 	if (long_help) {
-		// FIXME? Mention something about threading?
 		puts(_(
 "      --block-size=SIZE\n"
-"                      when compressing to the .xz format, start a new block\n"
-"                      after every SIZE bytes of input; 0=disabled (default)"));
-		// FIXME
+"                      start a new .xz block after every SIZE bytes of input;\n"
+"                      use this to set the block size for threaded compression"));
 		puts(_(
 "      --block-list=SIZES\n"
-"                      when compressing to the .xz format, start a new block\n"
-"                      after the given intervals of uncompressed data"));
+"                      start a new .xz block after the given comma-separated\n"
+"                      intervals of uncompressed data"));
+		puts(_(
+"      --flush-timeout=TIMEOUT\n"
+"                      when compressing, if more than TIMEOUT milliseconds has\n"
+"                      passed since the previous flush and reading more input\n"
+"                      would block, all pending data is flushed out"
+		));
 		puts(_( // xgettext:no-c-format
 "      --memlimit-compress=LIMIT\n"
 "      --memlimit-decompress=LIMIT\n"

@@ -20,6 +20,8 @@
 #	include "lz_encoder_hash_table.h"
 #endif
 
+#include "memcmplen.h"
+
 
 struct lzma_coder_s {
 	/// LZ-based encoder e.g. LZMA
@@ -363,9 +365,18 @@ lz_encoder_init(lzma_mf *mf, const lzma_allocator *allocator,
 {
 	// Allocate the history buffer.
 	if (mf->buffer == NULL) {
-		mf->buffer = lzma_alloc(mf->size, allocator);
+		// lzma_memcmplen() is used for the dictionary buffer
+		// so we need to allocate a few extra bytes to prevent
+		// it from reading past the end of the buffer.
+		mf->buffer = lzma_alloc(mf->size + LZMA_MEMCMPLEN_EXTRA,
+				allocator);
 		if (mf->buffer == NULL)
 			return true;
+
+		// Keep Valgrind happy with lzma_memcmplen() and initialize
+		// the extra bytes whose value may get read but which will
+		// effectively get ignored.
+		memzero(mf->buffer + mf->size, LZMA_MEMCMPLEN_EXTRA);
 	}
 
 	// Use cyclic_size as initial mf->offset. This allows

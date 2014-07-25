@@ -11,6 +11,7 @@
 
 #include "lzma_encoder_private.h"
 #include "fastpos.h"
+#include "memcmplen.h"
 
 
 ////////////
@@ -305,13 +306,9 @@ helper1(lzma_coder *restrict coder, lzma_mf *restrict mf,
 			continue;
 		}
 
-		uint32_t len_test;
-		for (len_test = 2; len_test < buf_avail
-				&& buf[len_test] == buf_back[len_test];
-				++len_test) ;
+		rep_lens[i] = lzma_memcmplen(buf, buf_back, 2, buf_avail);
 
-		rep_lens[i] = len_test;
-		if (len_test > rep_lens[rep_max_index])
+		if (rep_lens[i] > rep_lens[rep_max_index])
 			rep_max_index = i;
 	}
 
@@ -568,11 +565,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 		const uint8_t *const buf_back = buf - reps[0] - 1;
 		const uint32_t limit = my_min(buf_avail_full, nice_len + 1);
 
-		uint32_t len_test = 1;
-		while (len_test < limit && buf[len_test] == buf_back[len_test])
-			++len_test;
-
-		--len_test;
+		const uint32_t len_test = lzma_memcmplen(buf, buf_back, 1, limit) - 1;
 
 		if (len_test >= 2) {
 			lzma_lzma_state state_2 = state;
@@ -612,10 +605,7 @@ helper2(lzma_coder *coder, uint32_t *reps, const uint8_t *buf,
 		if (not_equal_16(buf, buf_back))
 			continue;
 
-		uint32_t len_test;
-		for (len_test = 2; len_test < buf_avail
-				&& buf[len_test] == buf_back[len_test];
-				++len_test) ;
+		uint32_t len_test = lzma_memcmplen(buf, buf_back, 2, buf_avail);
 
 		while (len_end < cur + len_test)
 			coder->opts[++len_end].price = RC_INFINITY_PRICE;

@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "lzma_encoder_private.h"
+#include "memcmplen.h"
 
 
 #define change_pair(small_dist, big_dist) \
@@ -57,9 +58,8 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 
 		// The first two bytes matched.
 		// Calculate the length of the match.
-		uint32_t len;
-		for (len = 2; len < buf_avail
-				&& buf[len] == buf_back[len]; ++len) ;
+		const uint32_t len = lzma_memcmplen(
+				buf, buf_back, 2, buf_avail);
 
 		// If we have found a repeated match that is at least
 		// nice_len long, return it immediately.

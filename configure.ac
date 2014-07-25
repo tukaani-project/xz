@@ -560,6 +560,7 @@ echo "Initializing gettext:"
 AM_GNU_GETTEXT_VERSION([0.18])
 AM_GNU_GETTEXT([external])
 
+
 ###############################################################################
 # Checks for header files.
 ###############################################################################
@@ -572,6 +573,9 @@ echo "System headers and functions:"
 AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
 	[],
 	[AC_MSG_ERROR([Required header file(s) are missing.])])
+
+# This allows the use of the intrinsic functions if they are available.
+AC_CHECK_HEADERS([immintrin.h])
 
 
 ###############################################################################
@@ -680,6 +684,15 @@ AM_CONDITIONAL([COND_INTERNAL_SHA256],
 	[test "x$ac_cv_func_SHA256_Init" != xyes \
 		&& test "x$ac_cv_func_SHA256Init" != xyes \
 		&& test "x$ac_cv_func_CC_SHA256_Init" != xyes])
+
+# Check for SSE2 intrinsics.
+AC_CHECK_DECL([_mm_movemask_epi8],
+	[AC_DEFINE([HAVE__MM_MOVEMASK_EPI8], [1],
+		[Define to 1 if _mm_movemask_epi8 is available.])],
+	[],
+[#ifdef HAVE_IMMINTRIN_H
+#include <immintrin.h>
+#endif])
 
 
 ###############################################################################

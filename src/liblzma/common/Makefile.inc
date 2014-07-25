@@ -8,6 +8,7 @@
 liblzma_la_SOURCES += \
 	common/common.c \
 	common/common.h \
+	common/memcmplen.h \
 	common/block_util.c \
 	common/easy_preset.c \
 	common/easy_preset.h \

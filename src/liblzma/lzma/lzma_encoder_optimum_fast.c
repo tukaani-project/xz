@@ -155,16 +155,7 @@ lzma_lzma_optimum_fast(lzma_coder *restrict coder, lzma_mf *restrict mf,
 	const uint32_t limit = len_main - 1;
 
 	for (uint32_t i = 0; i < REPS; ++i) {
-		const uint8_t *const buf_back = buf - coder->reps[i] - 1;
-
-		if (not_equal_16(buf, buf_back))
-			continue;
-
-		uint32_t len;
-		for (len = 2; len < limit
-				&& buf[len] == buf_back[len]; ++len) ;
-
-		if (len >= limit) {
+		if (memcmp(buf, buf - coder->reps[i] - 1, limit) == 0) {
 			*back_res = UINT32_MAX;
 			*len_res = 1;
 			return;

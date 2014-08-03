@@ -23,8 +23,13 @@
 
 #include "check.h"
 
-// At least on x86, GCC is able to optimize this to a rotate instruction.
-#define rotr_32(num, amount) ((num) >> (amount) | (num) << (32 - (amount)))
+// Rotate a uint32_t. GCC can optimize this to a rotate instruction
+// at least on x86.
+static inline uint32_t
+rotr_32(uint32_t num, unsigned amount)
+{
+        return (num >> amount) | (num << (32 - amount));
+}
 
 #define blk0(i) (W[i] = conv32be(data[i]))
 #define blk2(i) (W[i & 15] += s1(W[(i - 2) & 15]) + W[(i - 7) & 15] \
@@ -49,10 +54,10 @@
 #define R0(i) R(i, 0, blk0(i))
 #define R2(i) R(i, j, blk2(i))
 
-#define S0(x) (rotr_32(x, 2) ^ rotr_32(x, 13) ^ rotr_32(x, 22))
-#define S1(x) (rotr_32(x, 6) ^ rotr_32(x, 11) ^ rotr_32(x, 25))
-#define s0(x) (rotr_32(x, 7) ^ rotr_32(x, 18) ^ (x >> 3))
-#define s1(x) (rotr_32(x, 17) ^ rotr_32(x, 19) ^ (x >> 10))
+#define S0(x) rotr_32(x ^ rotr_32(x ^ rotr_32(x, 9), 11), 2)
+#define S1(x) rotr_32(x ^ rotr_32(x ^ rotr_32(x, 14), 5), 6)
+#define s0(x) (rotr_32(x ^ rotr_32(x, 11), 7) ^ (x >> 3))
+#define s1(x) (rotr_32(x ^ rotr_32(x, 2), 17) ^ (x >> 10))
 
 
 static const uint32_t SHA256_K[64] = {

@@ -36,7 +36,7 @@ rotr_32(uint32_t num, unsigned amount)
 		+ s0(W[(i - 15) & 15]))
 
 #define Ch(x, y, z) (z ^ (x & (y ^ z)))
-#define Maj(x, y, z) ((x & y) | (z & (x | y)))
+#define Maj(x, y, z) ((x & (y ^ z)) + (y & z))
 
 #define a(i) T[(0 - i) & 7]
 #define b(i) T[(1 - i) & 7]

@@ -23,11 +23,6 @@
 
 #include "check.h"
 
-// Avoid bogus warnings in transform().
-#if TUKLIB_GNUC_REQ(4, 2)
-#	pragma GCC diagnostic ignored "-Wuninitialized"
-#endif
-
 // At least on x86, GCC is able to optimize this to a rotate instruction.
 #define rotr_32(num, amount) ((num) >> (amount) | (num) << (32 - (amount)))
 

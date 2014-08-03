@@ -31,7 +31,7 @@
 // At least on x86, GCC is able to optimize this to a rotate instruction.
 #define rotr_32(num, amount) ((num) >> (amount) | (num) << (32 - (amount)))
 
-#define blk0(i) (W[i] = data[i])
+#define blk0(i) (W[i] = conv32be(data[i]))
 #define blk2(i) (W[i & 15] += s1(W[(i - 2) & 15]) + W[(i - 7) & 15] \
 		+ s0(W[(i - 15) & 15]))
 
@@ -111,18 +111,7 @@ transform(uint32_t state[8], const uint32_t data[16])
 static void
 process(lzma_check_state *check)
 {
-#ifdef WORDS_BIGENDIAN
 	transform(check->state.sha256.state, check->buffer.u32);
-
-#else
-	uint32_t data[16];
-
-	for (size_t i = 0; i < 16; ++i)
-		data[i] = bswap32(check->buffer.u32[i]);
-
-	transform(check->state.sha256.state, data);
-#endif
-
 	return;
 }
 

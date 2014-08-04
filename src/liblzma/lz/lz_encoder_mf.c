@@ -632,9 +632,8 @@ lzma_mf_bt3_find(lzma_mf *mf, lzma_match *matches)
 	uint32_t len_best = 2;
 
 	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
-		for ( ; len_best != len_limit; ++len_best)
-			if (*(cur + len_best - delta2) != cur[len_best])
-				break;
+		len_best = lzma_memcmplen(
+				cur, cur - delta2, len_best, len_limit);
 
 		matches[0].len = len_best;
 		matches[0].dist = delta2 - 1;

@@ -474,6 +474,30 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(
 
 
 /**
+ * This flag makes lzma_code() not calculate and verify the integrity check
+ * of the compressed data in .xz files. This means that invalid integrity
+ * check values won't be detected and LZMA_DATA_ERROR won't be returned in
+ * such cases.
+ *
+ * This flag only affects the checks of the compressed data itself; the CRC32
+ * values in the .xz headers will still be verified normally.
+ *
+ * Don't use this flag unless you know what you are doing. Possible reasons
+ * to use this flag:
+ *
+ *   - Trying to recover data from a corrupt .xz file.
+ *
+ *   - Speeding up decompression, which matters mostly with SHA-256
+ *     or with files that have compressed extremely well. It's recommended
+ *     to not use this flag for this purpose unless the file integrity is
+ *     verified externally in some other way.
+ *
+ * Support for this flag was added in liblzma 5.1.4beta.
+ */
+#define LZMA_IGNORE_CHECK               UINT32_C(0x10)
+
+
+/**
  * This flag enables decoding of concatenated files with file formats that
  * allow concatenating compressed files as is. From the formats currently
  * supported by liblzma, only the .xz format allows concatenated files.

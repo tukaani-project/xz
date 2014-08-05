@@ -1122,6 +1122,8 @@ message_help(bool long_help)
 "                      `auto' (default), `xz', `lzma', and `raw'\n"
 "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
 "                      `crc32', `crc64' (default), or `sha256'"));
+		puts(_(
+"      --ignore-check  don't verify the integrity check when decompressing"));
 	}
 
 	puts(_(

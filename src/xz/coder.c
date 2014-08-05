@@ -450,7 +450,15 @@ coder_init(file_pair *pair)
 			break;
 		}
 	} else {
-		uint32_t flags = LZMA_TELL_UNSUPPORTED_CHECK;
+		uint32_t flags = 0;
+
+		// It seems silly to warn about unsupported check if the
+		// check won't be verified anyway due to --ignore-check.
+		if (opt_ignore_check)
+			flags |= LZMA_IGNORE_CHECK;
+		else
+			flags |= LZMA_TELL_UNSUPPORTED_CHECK;
+
 		if (!opt_single_stream)
 			flags |= LZMA_CONCATENATED;
 

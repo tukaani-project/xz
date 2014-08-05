@@ -609,6 +609,25 @@ Integrity of the
 headers is always verified with CRC32.
 It is not possible to change or disable it.
 .TP
+.B \-\-ignore\-check
+Don't verify the integrity check of the compressed data when decompressing.
+The CRC32 values in the
+.B .xz
+headers will still be verified normally.
+.IP ""
+.B "Do not use this option unless you know what you are doing."
+Possible reasons to use this option:
+.RS
+.IP \(bu 3
+Trying to recover data from a corrupt .xz file.
+.IP \(bu 3
+Speeding up decompression.
+This matters mostly with SHA-256 or
+with files that have compressed extremely well.
+It's recommended to not use this option for this purpose
+unless the file integrity is verified externally in some other way.
+.RE
+.TP
 .BR \-0 " ... " \-9
 Select a compression preset level.
 The default is

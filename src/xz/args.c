@@ -22,6 +22,7 @@ bool opt_stdout = false;
 bool opt_force = false;
 bool opt_keep_original = false;
 bool opt_robot = false;
+bool opt_ignore_check = false;
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
@@ -141,6 +142,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_INFO_MEMORY,
 		OPT_ROBOT,
 		OPT_FLUSH_TIMEOUT,
+		OPT_IGNORE_CHECK,
 	};
 
 	static const char short_opts[]
@@ -169,6 +171,7 @@ parse_real(args_info *args, int argc, char **argv)
 		// Basic compression settings
 		{ "format",       required_argument, NULL,  'F' },
 		{ "check",        required_argument, NULL,  'C' },
+		{ "ignore-check", no_argument,       NULL,  OPT_IGNORE_CHECK },
 		{ "block-size",   required_argument, NULL,  OPT_BLOCK_SIZE },
 		{ "block-list",  required_argument, NULL,  OPT_BLOCK_LIST },
 		{ "memlimit-compress",   required_argument, NULL, OPT_MEM_COMPRESS },
@@ -437,6 +440,10 @@ parse_real(args_info *args, int argc, char **argv)
 			coder_set_check(types[i].check);
 			break;
 		}
+
+		case OPT_IGNORE_CHECK:
+			opt_ignore_check = true;
+			break;
 
 		case OPT_BLOCK_SIZE:
 			opt_block_size = str_to_uint64("block-size", optarg,

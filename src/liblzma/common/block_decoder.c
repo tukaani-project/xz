@@ -45,6 +45,9 @@ struct lzma_coder_s {
 
 	/// Check of the uncompressed data
 	lzma_check_state check;
+
+	/// True if the integrity check won't be calculated and verified.
+	bool ignore_check;
 };
 
 
@@ -97,8 +100,9 @@ block_decode(lzma_coder *coder, const lzma_allocator *allocator,
 					coder->block->uncompressed_size))
 			return LZMA_DATA_ERROR;
 
-		lzma_check_update(&coder->check, coder->block->check,
-				out + out_start, out_used);
+		if (!coder->ignore_check)
+			lzma_check_update(&coder->check, coder->block->check,
+					out + out_start, out_used);
 
 		if (ret != LZMA_STREAM_END)
 			return ret;
@@ -140,7 +144,9 @@ block_decode(lzma_coder *coder, const lzma_allocator *allocator,
 		if (coder->block->check == LZMA_CHECK_NONE)
 			return LZMA_STREAM_END;
 
-		lzma_check_finish(&coder->check, coder->block->check);
+		if (!coder->ignore_check)
+			lzma_check_finish(&coder->check, coder->block->check);
+
 		coder->sequence = SEQ_CHECK;
 
 	// Fall through
@@ -155,7 +161,8 @@ block_decode(lzma_coder *coder, const lzma_allocator *allocator,
 		// Validate the Check only if we support it.
 		// coder->check.buffer may be uninitialized
 		// when the Check ID is not supported.
-		if (lzma_check_is_supported(coder->block->check)
+		if (!coder->ignore_check
+				&& lzma_check_is_supported(coder->block->check)
 				&& memcmp(coder->block->raw_check,
 					coder->check.buffer.u8,
 					check_size) != 0)
@@ -223,6 +230,9 @@ lzma_block_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// Caller can test lzma_check_is_supported(block->check).
 	next->coder->check_pos = 0;
 	lzma_check_init(&next->coder->check, block->check);
+
+	next->coder->ignore_check = block->version >= 1
+			? block->ignore_check : false;
 
 	// Initialize the filter chain.
 	return lzma_raw_decoder_init(&next->coder->next, allocator,

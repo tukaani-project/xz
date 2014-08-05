@@ -233,7 +233,7 @@ block_buffer_encode(lzma_block *block, const lzma_allocator *allocator,
 
 	// The contents of the structure may depend on the version so
 	// check the version before validating the contents of *block.
-	if (block->version != 0)
+	if (block->version > 1)
 		return LZMA_OPTIONS_ERROR;
 
 	if ((unsigned int)(block->check) > LZMA_CHECK_ID_MAX

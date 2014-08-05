@@ -166,7 +166,7 @@ lzma_block_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 	// The contents of the structure may depend on the version so
 	// check the version first.
-	if (block->version != 0)
+	if (block->version > 1)
 		return LZMA_OPTIONS_ERROR;
 
 	// If the Check ID is not supported, we cannot calculate the check and

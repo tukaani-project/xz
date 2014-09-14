@@ -2,6 +2,49 @@
 XZ Utils Release Notes
 ======================
 
+5.1.4beta (2014-09-14)
+
+    * All fixes from 5.0.6
+
+    * liblzma: Fixed the use of presets in threaded encoder
+      initialization.
+
+    * xz --block-list and --block-size can now be used together
+      in single-threaded mode. Previously the combination only
+      worked in multi-threaded mode.
+
+    * Added support for LZMA_IGNORE_CHECK to liblzma and made it
+      available in xz as --ignore-check.
+
+    * liblzma speed optimizations:
+
+        - Initialization of a new LZMA1 or LZMA2 encoder has been
+          optimized. (The speed of reinitializing an already-allocated
+          encoder isn't affected.) This helps when compressing many
+          small buffers with lzma_stream_buffer_encode() and other
+          similar situations where an already-allocated encoder state
+          isn't reused. This speed-up is visible in xz too if one
+          compresses many small files one at a time instead running xz
+          once and giving all files as command-line arguments.
+
+        - Buffer comparisons are now much faster when unaligned access
+          is allowed (configured with --enable-unaligned-access). This
+          speeds up encoding significantly. There is arch-specific code
+          for 32-bit and 64-bit x86 (32-bit needs SSE2 for the best
+          results and there's no run-time CPU detection for now).
+          For other archs there is only generic code which probably
+          isn't as optimal as arch-specific solutions could be.
+
+        - A few speed optimizations were made to the SHA-256 code.
+          (Note that the builtin SHA-256 code isn't used on all
+          operating systems.)
+
+    * liblzma can now be built with MSVC 2013 update 2 or later
+      using windows/config.h.
+
+    * Vietnamese translation was added.
+
+
 5.1.3alpha (2013-10-26)
 
     * All fixes from 5.0.5
@@ -119,6 +162,13 @@ XZ Utils Release Notes
 
     * Support for short 8.3 filenames under DOS was added to xz. It is
       experimental and may change before it gets into a stable release.
+
+
+5.0.6 (2014-09-14)
+
+    * xzgrep now exits with status 0 if at least one file matched.
+
+    * A few minor portability and build system fixes
 
 
 5.0.5 (2013-06-30)

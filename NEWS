@@ -2,6 +2,13 @@
 XZ Utils Release Notes
 ======================
 
+5.0.6 (2014-09-14)
+
+    * xzgrep now exits with status 0 if at least one file matched.
+
+    * A few minor portability and build system fixes
+
+
 5.0.5 (2013-06-30)
 
     * lzmadec and liblzma's lzma_alone_decoder(): Support decompressing

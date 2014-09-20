@@ -164,6 +164,17 @@ XZ Utils Release Notes
       experimental and may change before it gets into a stable release.
 
 
+5.0.7 (2014-09-20)
+
+    * Fix regressions introduced in 5.0.6:
+
+        - Fix building with non-GNU make.
+
+        - Fix invalid Libs.private value in liblzma.pc which broke
+          static linking against liblzma if the linker flags were
+          taken from pkg-config.
+
+
 5.0.6 (2014-09-14)
 
     * xzgrep now exits with status 0 if at least one file matched.

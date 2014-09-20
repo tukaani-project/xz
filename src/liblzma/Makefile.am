@@ -24,7 +24,7 @@ liblzma_la_CPPFLAGS = \
 	-I$(top_srcdir)/src/liblzma/simple \
 	-I$(top_srcdir)/src/common \
 	-DTUKLIB_SYMBOL_PREFIX=lzma_
-liblzma_la_LDFLAGS = -no-undefined -version-info 5:6:0
+liblzma_la_LDFLAGS = -no-undefined -version-info 5:7:0
 
 include $(srcdir)/common/Makefile.inc
 include $(srcdir)/check/Makefile.inc

@@ -116,7 +116,7 @@ liblzma.pc: $(srcdir)/liblzma.pc.in
 		-e 's,@PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
 		-e 's,@PTHREAD_CFLAGS[@],$(PTHREAD_CFLAGS),g' \
 		-e 's,@LIBS[@],$(LIBS),g' \
-		< $< > $@ || { rm -f $@; exit 1; }
+		< $(srcdir)/liblzma.pc.in > $@ || { rm -f $@; exit 1; }
 
 clean-local:
 	rm -f liblzma.pc

@@ -749,8 +749,9 @@ if test "$GCC" = yes ; then
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"
-		CFLAGS="$CFLAGS $NEW_FLAG"
-		AC_COMPILE_IFELSE([AC_LANG_SOURCE([void foo(void) { }])], [
+		CFLAGS="$CFLAGS $NEW_FLAG -Werror"
+		AC_COMPILE_IFELSE([AC_LANG_SOURCE(
+				[void foo(void); void foo(void) { }])], [
 			AM_CFLAGS="$AM_CFLAGS $NEW_FLAG"
 			AC_MSG_RESULT([yes])
 		], [

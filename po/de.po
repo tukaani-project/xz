@@ -1,6 +1,6 @@
 # XZ Utils German translation
 # This file is put in the public domain.
-# Andre Noll <maan@systemlinux.org>, 2010.
+# Andre Noll <maan@tuebingen.mpg.de>, 2010.
 #
 msgid ""
 msgstr ""
@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
 "POT-Creation-Date: 2012-05-29 17:20+0200\n"
 "PO-Revision-Date: 2010-09-07 20:27+0200\n"
-"Last-Translator:  <maan@systemlinux.org>\n"
+"Last-Translator:  <maan@tuebingen.mpg.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -812,8 +812,7 @@ msgstr ""
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr ""
 "Melde Bugs an <%s> (in englisch oder finnisch).\n"
-"Melde Übersetzungsfehler an <maan@systemlinux.org> (in englisch oder "
-"deutsch).\n"
+"Melde Übersetzungsfehler an <maan@tuebingen.mpg.de> (in englisch oder deutsch).\n"
 
 #: src/xz/message.c:1245
 #, c-format

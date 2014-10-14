@@ -155,7 +155,7 @@ msgstr ""
 #: src/xz/file_io.c:725
 #, c-format
 msgid "%s: Closing the file failed: %s"
-msgstr "%s: Fehler beim Schießen der Datei: %s"
+msgstr "%s: Fehler beim Schließen der Datei: %s"
 
 #: src/xz/file_io.c:761 src/xz/file_io.c:945
 #, c-format

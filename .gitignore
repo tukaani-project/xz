@@ -1,6 +1,7 @@
 *~
 *.bak
 *.bak[0-9]
+.gdb_history
 
 .deps
 .libs
@@ -29,6 +30,7 @@ build-aux/depcomp
 build-aux/install-sh
 build-aux/ltmain.sh
 build-aux/missing
+build-aux/test-driver
 
 /src/liblzma/liblzma.pc
 /src/lzmainfo/lzmainfo

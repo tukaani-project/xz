@@ -32,10 +32,10 @@ liblzma_la_LDFLAGS += \
 	-Wl,--version-script=$(top_srcdir)/src/liblzma/liblzma.map
 endif
 
-liblzma_la_SOURCES += $(top_srcdir)/src/common/tuklib_physmem.c
+liblzma_la_SOURCES += ../common/tuklib_physmem.c
 
 if COND_THREADS
-liblzma_la_SOURCES += $(top_srcdir)/src/common/tuklib_cpucores.c
+liblzma_la_SOURCES += ../common/tuklib_cpucores.c
 endif
 
 include $(srcdir)/common/Makefile.inc

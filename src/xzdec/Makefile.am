@@ -14,8 +14,8 @@
 
 xzdec_SOURCES = \
 	xzdec.c \
-	$(top_srcdir)/src/common/tuklib_progname.c \
-	$(top_srcdir)/src/common/tuklib_exit.c
+	../common/tuklib_progname.c \
+	../common/tuklib_exit.c
 
 if COND_W32
 xzdec_SOURCES += xzdec_w32res.rc
@@ -37,8 +37,8 @@ xzdec_LDADD += $(LTLIBINTL)
 
 lzmadec_SOURCES = \
 	xzdec.c \
-	$(top_srcdir)/src/common/tuklib_progname.c \
-	$(top_srcdir)/src/common/tuklib_exit.c
+	../common/tuklib_progname.c \
+	../common/tuklib_exit.c
 
 if COND_W32
 lzmadec_SOURCES += lzmadec_w32res.rc

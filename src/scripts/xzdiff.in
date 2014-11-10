@@ -136,18 +136,18 @@ elif test $# -eq 2; then
             F=`expr "/$2" : '.*/\(.*\)[-.][ablmotxz2]*$'` || F=$prog
             tmp=
             trap '
-              test -n "$tmp" && rm -f "$tmp"
+              test -n "$tmp" && rm -rf "$tmp"
               (exit 2); exit 2
             ' HUP INT PIPE TERM 0
-            tmp=`mktemp -t -- "$F.XXXXXX"` || exit 2
-            $xz2 -cdfq -- "$2" > "$tmp" || exit 2
+            tmp=`mktemp -t -d -- "$prog.XXXXXXXXXX"` || exit 2
+            $xz2 -cdfq -- "$2" > "$tmp/$F" || exit 2
             xz_status=$(
               exec 4>&1
               ($xz1 -cdfq -- "$1" 4>&-; echo $? >&4) 3>&- |
-                eval "$cmp" - '"$tmp"' >&3
+                eval "$cmp" - '"$tmp/$F"' >&3
             )
             cmp_status=$?
-            rm -f "$tmp" || xz_status=$?
+            rm -rf "$tmp" || xz_status=$?
             trap - HUP INT PIPE TERM 0
             (exit $cmp_status)
           fi;;

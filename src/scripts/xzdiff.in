@@ -139,7 +139,22 @@ elif test $# -eq 2; then
               test -n "$tmp" && rm -rf "$tmp"
               (exit 2); exit 2
             ' HUP INT PIPE TERM 0
-            tmp=`mktemp -t -d -- "$prog.XXXXXXXXXX"` || exit 2
+            if type mktemp >/dev/null 2>&1; then
+              tmp=`mktemp -t -d -- "$prog.XXXXXXXXXX"` || exit 2
+            else
+              # Fallback code if mktemp is missing. This isn't as
+              # robust as using mktemp since this doesn't try with
+              # different file names in case of a file name conflict.
+              #
+              # There's no need to save the original umask since
+              # we don't create any non-temp files. Note that using
+              # mkdir -m 0077 isn't secure since some mkdir implementations
+              # create the dir with the default umask and chmod the
+              # the dir afterwards.
+              umask 0077
+              mkdir -- "${TMPDIR-/tmp}/$prog.$$" || exit 2
+              tmp="${TMPDIR-/tmp}/$prog.$$"
+            fi
             $xz2 -cdfq -- "$2" > "$tmp/$F" || exit 2
             xz_status=$(
               exec 4>&1

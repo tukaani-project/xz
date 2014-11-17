@@ -297,7 +297,7 @@ case $enable_assembler in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-assembler accepts only \`yes', \`no', \`x86', or \`x86_64'.])
+		AC_MSG_ERROR([--enable-assembler accepts only `yes', `no', `x86', or `x86_64'.])
 		;;
 esac
 AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
@@ -317,7 +317,7 @@ if test "x$enable_small" = xyes; then
 	AC_DEFINE([HAVE_SMALL], [1], [Define to 1 if optimizing for size.])
 elif test "x$enable_small" != xno; then
 	AC_MSG_RESULT([])
-	AC_MSG_ERROR([--enable-small accepts only \`yes' or \`no'])
+	AC_MSG_ERROR([--enable-small accepts only `yes' or `no'])
 fi
 AC_MSG_RESULT([$enable_small])
 AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
@@ -357,8 +357,7 @@ case $enable_threads in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-threads only accepts
-			\`yes', \`no', \`posix', \`win95', or \`vista'])
+		AC_MSG_ERROR([--enable-threads only accepts `yes', `no', `posix', `win95', or `vista'])
 		;;
 esac
 

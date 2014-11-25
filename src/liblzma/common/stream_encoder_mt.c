@@ -947,9 +947,12 @@ stream_encoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		return LZMA_MEM_ERROR;
 #endif
 
-	// FIXME TODO: Validate the filter chain so that we can give
-	// an error in this function instead of delaying it to the first
-	// call to lzma_code().
+	// Validate the filter chain so that we can give an error in this
+	// function instead of delaying it to the first call to lzma_code().
+	// The memory usage calculation verifies the filter chain as
+	// a side effect so we take advatange of that.
+	if (lzma_raw_encoder_memusage(filters) == UINT64_MAX)
+		return LZMA_OPTIONS_ERROR;
 
 	// Validate the Check ID.
 	if ((unsigned int)(options->check) > LZMA_CHECK_ID_MAX)

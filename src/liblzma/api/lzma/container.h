@@ -340,8 +340,9 @@ extern LZMA_API(uint64_t) lzma_stream_encoder_mt_memusage(
  * This provides the functionality of lzma_easy_encoder() and
  * lzma_stream_encoder() as a single function for multithreaded use.
  *
- * TODO: For lzma_code(), only LZMA_RUN and LZMA_FINISH are currently
- * supported. Support for other actions has been planned.
+ * The supported actions for lzma_code() are LZMA_RUN, LZMA_FULL_FLUSH,
+ * LZMA_FULL_BARRIER, and LZMA_FINISH. Support for LZMA_SYNC_FLUSH might be
+ * added in the future.
  *
  * \param       strm    Pointer to properly prepared lzma_stream
  * \param       options Pointer to multithreaded compression options

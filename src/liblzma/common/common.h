@@ -32,8 +32,6 @@
 
 #define LZMA_API(type) LZMA_API_EXPORT type LZMA_API_CALL
 
-#define LZMA_UNSTABLE
-
 #include "lzma.h"
 
 // These allow helping the compiler in some often-executed branches, whose

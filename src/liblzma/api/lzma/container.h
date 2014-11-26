@@ -60,7 +60,6 @@
 #define LZMA_PRESET_EXTREME       (UINT32_C(1) << 31)
 
 
-#ifdef LZMA_UNSTABLE /* Unstable API that may change. Use only for testing. */
 /**
  * \brief       Multithreading options
  */
@@ -180,7 +179,6 @@ typedef struct {
 	void *reserved_ptr4;
 
 } lzma_mt;
-#endif
 
 
 /**
@@ -314,7 +312,6 @@ extern LZMA_API(lzma_ret) lzma_stream_encoder(lzma_stream *strm,
 		lzma_nothrow lzma_attr_warn_unused_result;
 
 
-#ifdef LZMA_UNSTABLE /* Unstable API that may change. Use only for testing. */
 /**
  * \brief       Calculate approximate memory usage of multithreaded .xz encoder
  *
@@ -356,7 +353,6 @@ extern LZMA_API(uint64_t) lzma_stream_encoder_mt_memusage(
 extern LZMA_API(lzma_ret) lzma_stream_encoder_mt(
 		lzma_stream *strm, const lzma_mt *options)
 		lzma_nothrow lzma_attr_warn_unused_result;
-#endif
 
 
 /**

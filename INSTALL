@@ -500,13 +500,23 @@ XZ Utils Installation
 
 4.5. "make check" fails
 
-    A likely reason is that libtool links the test programs against
-    an installed version of liblzma instead of the version that was
-    just built. This is obviously a bug which seems to happen on
-    some platforms. A workaround is to uninstall the old liblzma
-    versions first.
+    If the other tests pass but test_scripts.sh fails, then the problem
+    is in the scripts in src/scripts. Comparing the contents of
+    tests/xzgrep_test_output to tests/xzgrep_expected_output might
+    give a good idea about problems in xzgrep. One possibility is that
+    some tools are missing from the current PATH or the tools lack
+    support for some POSIX features. This can happen at least on
+    Solaris where the tools in /bin may be ancient but good enough
+    tools are available in /usr/xpg4/bin or /usr/xpg6/bin. One fix
+    for this problem is described in section 3.2 of this file.
 
-    If the problem isn't the one described above, then it's likely
+    If tests other than test_scripts.sh fail, a likely reason is that
+    libtool links the test programs against an installed version of
+    liblzma instead of the version that was just built. This is
+    obviously a bug which seems to happen on some platforms.
+    A workaround is to uninstall the old liblzma versions first.
+
+    If the problem isn't any of those described above, then it's likely
     a bug in XZ Utils or in the compiler. See the platform-specific
     notes in this file for possible known problems. Please report
     a bug if you cannot solve the problem. See README for contact

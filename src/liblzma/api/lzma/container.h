@@ -96,6 +96,10 @@ typedef struct {
 	 * Set this to 0 to let liblzma choose the block size depending
 	 * on the compression options. For LZMA2 it will be 3*dict_size
 	 * or 1 MiB, whichever is more.
+	 *
+	 * For each thread, about 3 * block_size bytes of memory will be
+	 * allocated. This may change in later liblzma versions. If so,
+	 * the memory usage will probably be reduced, not increased.
 	 */
 	uint64_t block_size;
 

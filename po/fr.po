@@ -648,7 +648,7 @@ msgid ""
 "  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
 "                      decompressor memory usage into account before using 7-9!"
 msgstr ""
-"  -0 ... -9           préréglage de compression ; 6 par défaut ; pensez à\n"
+"  -0 ... -9           préréglage de compression : 6 par défaut ; pensez à\n"
 "                      l'utilisation mémoire du compresseur *et* du décompresseur\n"
 "                      avant d'utiliser 7, 8 ou 9 !"
 
@@ -706,8 +706,8 @@ msgstr ""
 "      --memlimit-decompress=LIMIT\n"
 "  -M, --memlimit=LIMIT\n"
 "                      règle la limite d'utilisation mémoire pour la compression,\n"
-"                      décompression ou les deux ; LIMIT est en octets, % de\n"
-"                      RAM, ou 0 pour les valeurs par défaut"
+"                      décompression ou les deux ; LIMIT est en octets,\n"
+"                      pourcentage de RAM, ou 0 pour les valeurs par défaut"
 
 #: src/xz/message.c:1164
 msgid ""
@@ -724,7 +724,7 @@ msgid ""
 " Custom filter chain for compression (alternative for using presets):"
 msgstr ""
 "\n"
-" Enchaînement de filtres de compression personnalisé (au lieu des préréglages) :"
+" Chaîne de filtres de compression personnalisée (en lieu des préréglages) :"
 
 #: src/xz/message.c:1179
 msgid ""
@@ -821,8 +821,8 @@ msgid ""
 "      --info-memory   display the total amount of RAM and the currently active\n"
 "                      memory usage limits, and exit"
 msgstr ""
-"      --info-memory   affiche la quantité totale de RAM et la limite actuelle\n"
-"                      en mémoire puis quitte"
+"      --info-memory   affiche la quantité totale de RAM ainsi que la limite\n"
+"                      actuelle d'utilisation mémoire puis quitte"
 
 #: src/xz/message.c:1230
 msgid ""
@@ -866,7 +866,7 @@ msgstr ""
 #: src/xz/message.c:1249
 #, c-format
 msgid "%s home page: <%s>\n"
-msgstr "%s page du projet : <%s>\n"
+msgstr "Page du projet %s : <%s>\n"
 
 #: src/xz/message.c:1253
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."

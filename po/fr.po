@@ -676,6 +676,8 @@ msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
 "                      to use as many threads as there are processor cores"
 msgstr ""
+"  -T, --threads=NB    créer au plus NB fils d'éxécution (1 par défault) ; la\n"
+"                      valeur 0 est spéciale et équivaut au nombre de processeurs"
 
 #: src/xz/message.c:1143
 msgid ""
@@ -683,17 +685,19 @@ msgid ""
 "                      start a new .xz block after every SIZE bytes of input;\n"
 "                      use this to set the block size for threaded compression"
 msgstr ""
+"      --block-size=TAILLE\n"
+"                      débuter un bloc XZ après chaque TAILLE octets de données\n"
+"                      d'entrée ; ce réglage sert pour la compression paralléle"
 
 #: src/xz/message.c:1147
-#, fuzzy
 msgid ""
 "      --block-list=SIZES\n"
 "                      start a new .xz block after the given comma-separated\n"
 "                      intervals of uncompressed data"
 msgstr ""
-"      --block-size=SIZE\n"
-"                      pour une compression au format .xz, entamer un nouveau\n"
-"                      bloc après SIZE octets d'entrée ; 0=désactivé (par défaut)"
+"      --block-list=TAILLES\n"
+"                      débuter des blocs XZ après les TAILLES octets de données\n"
+"                      spécifiées avec des virgules pour séparateur"
 
 #: src/xz/message.c:1151
 msgid ""

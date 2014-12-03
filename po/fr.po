@@ -150,10 +150,18 @@ msgstr "%s : Impossible de modifier le groupe propriétaire du fichier : %s"
 msgid "%s: Cannot set the file permissions: %s"
 msgstr "%s : Impossible de modifier les permissions du fichier : %s"
 
+# Note from translator on "file status flags".
+# The following entry is kept un-translated on purpose. It is difficult to
+# translate and should only happen in exceptional circumstances which means
+# that translating would:
+# - lose some of the meaning
+# - make it more difficult to look up in search engines; it might happen one in
+# a million times, if we dilute the error message in 20 languages, it will be
+# almost impossible to find an explanation and support for the error.
 #: src/xz/file_io.c:399
-#, fuzzy, c-format
+#, c-format
 msgid "Error getting the file status flags from standard input: %s"
-msgstr "Impossible de rétablir le drapeau O_APPEND sur la sortie standard : %s"
+msgstr ""
 
 #: src/xz/file_io.c:408
 #, fuzzy, c-format
@@ -190,15 +198,17 @@ msgstr "%s : Le fichier possède le bit `sticky' : ignoré"
 msgid "%s: Input file has more than one hard link, skipping"
 msgstr "%s : Le fichier d'entrée a plus d'un lien matériel : ignoré"
 
+# See note from translator above titled "file status flags".
 #: src/xz/file_io.c:668
-#, fuzzy, c-format
+#, c-format
 msgid "Error restoring the status flags to standard input: %s"
-msgstr "Impossible de rétablir le drapeau O_APPEND sur la sortie standard : %s"
+msgstr ""
 
+# See note from translator above titled "file status flags".
 #: src/xz/file_io.c:714
-#, fuzzy, c-format
+#, c-format
 msgid "Error getting the file status flags from standard output: %s"
-msgstr "Impossible de rétablir le drapeau O_APPEND sur la sortie standard : %s"
+msgstr ""
 
 #: src/xz/file_io.c:723
 #, fuzzy, c-format

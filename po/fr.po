@@ -1,6 +1,6 @@
 # XZ Utils French Translation
 # This file is put in the public domain.
-# Adrien Nader <camaradetux@gmail.com>, 2011.
+# Adrien Nader <adrien@notk.org>, 2011-2014.
 #
 msgid ""
 msgstr ""
@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
 "POT-Creation-Date: 2014-11-25 20:23+0100\n"
 "PO-Revision-Date: 2010-09-24 21;12+0200\n"
-"Last-Translator: Adrien Nader <camaradetux@gmail.com>\n"
+"Last-Translator: Adrien Nader <adrien@notk.org>\n"
 "Language-Team: None\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"

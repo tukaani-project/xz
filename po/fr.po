@@ -106,14 +106,14 @@ msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the m
 msgstr "Taille du dictionnaire LZMA%c réduite de %s MiB à %s MiB pour ne pas dépasser la limite d'utilisation mémoire de %s MiB"
 
 #: src/xz/file_io.c:90
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating a pipe: %s"
-msgstr "%s : Erreur lors de la lecture des noms de fichiers : %s"
+msgstr "Impossible de créer un tube anonyme (pipe) : %s"
 
 #: src/xz/file_io.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "%s: poll() failed: %s"
-msgstr "%s : Impossible de fermer le fichier : %s"
+msgstr "%s : L'appel à la fonction poll() a échoué : %s"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -164,9 +164,9 @@ msgid "Error getting the file status flags from standard input: %s"
 msgstr ""
 
 #: src/xz/file_io.c:408
-#, fuzzy, c-format
+#, c-format
 msgid "Error setting O_NONBLOCK on standard input: %s"
-msgstr "Impossible de rétablir le drapeau O_APPEND sur la sortie standard : %s"
+msgstr "Impossible d'établir le drapeau O_NONBLOCK sur la sortie standard : %s"
 
 #: src/xz/file_io.c:460 src/xz/file_io.c:522
 #, c-format
@@ -211,9 +211,9 @@ msgid "Error getting the file status flags from standard output: %s"
 msgstr ""
 
 #: src/xz/file_io.c:723
-#, fuzzy, c-format
+#, c-format
 msgid "Error setting O_NONBLOCK on standard output: %s"
-msgstr "Impossible de rétablir le drapeau O_APPEND sur la sortie standard : %s"
+msgstr "Impossible d'activer le drapeau O_NONBLOCK sur la sortie standard : %s"
 
 #: src/xz/file_io.c:896
 #, c-format

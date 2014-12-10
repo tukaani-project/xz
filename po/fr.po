@@ -344,7 +344,7 @@ msgstr "%s : Trop petit pour être un fichier xz valide."
 #. use two lines here. Test with "xz -l foo.xz".
 #: src/xz/list.c:671
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
-msgstr "Flux    Blocs    Compressé  Décompressé  Ratio  Vérif   Nom de fichier"
+msgstr "Flux    Blocs    Compressé  Décompressé  Ratio  Vérif.  Nom de fichier"
 
 #: src/xz/list.c:711
 #, c-format
@@ -359,12 +359,12 @@ msgstr "  Blocs :                           %s\n"
 #: src/xz/list.c:715
 #, c-format
 msgid "  Compressed size:    %s\n"
-msgstr "  Taille compressé :                %s\n"
+msgstr "  Taille données avec compression : %s\n"
 
 #: src/xz/list.c:718
 #, c-format
 msgid "  Uncompressed size:  %s\n"
-msgstr "  Taille décompressé :              %s\n"
+msgstr "  Taille données sans compression : %s\n"
 
 #: src/xz/list.c:721
 #, c-format
@@ -550,7 +550,7 @@ msgstr "%s : Enchaînement de filtres : %s\n"
 #: src/xz/message.c:1052
 #, c-format
 msgid "Try `%s --help' for more information."
-msgstr "Utilisez `%s --help' pour plus d'informations."
+msgstr "Éxécutez `%s --help' pour obtenir davantage d'informations."
 
 #: src/xz/message.c:1078
 #, c-format
@@ -580,10 +580,10 @@ msgid ""
 "  -t, --test          test compressed file integrity\n"
 "  -l, --list          list information about .xz files"
 msgstr ""
-"  -z, --compress      forcer la compression\n"
-"  -d, --decompress    forcer la décompression\n"
+"  -z, --compress      forcer le mode compression\n"
+"  -d, --decompress    forcer le mode décompression\n"
 "  -t, --test          tester l'intégrité du fichier compressé\n"
-"  -l, --list          lister les informations à propos des fichiers .xz"
+"  -l, --list          lister les informations sur les fichiers .xz"
 
 #: src/xz/message.c:1098
 msgid ""
@@ -599,9 +599,9 @@ msgid ""
 "  -f, --force         force overwrite of output file and (de)compress links\n"
 "  -c, --stdout        write to standard output and don't delete input files"
 msgstr ""
-"  -k, --keep          ne pas supprimer les fichiers d'entrée (\"keep\")\n"
-"  -f, --force         forcer l'écrasement du fichier de sortie et\n"
-"                      (dé)compresser les liens\n"
+"  -k, --keep          ne pas supprimer les fichiers d'entrée\n"
+"  -f, --force         forcer l'écrasement éventuel du fichier de sortie et\n"
+"                      (dé)compresser les liens symboliques\n"
 "  -c, --stdout        écrire sur la sortie standard et ne pas supprimer les\n"
 "                      fichiers d'entrée"
 
@@ -644,14 +644,16 @@ msgid ""
 "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
 "                      `crc32', `crc64' (default), or `sha256'"
 msgstr ""
-"  -F, --format=FMT    format de fichier à encoder ou décoder ; les possibilités\n"
-"                      sont : `auto' (par défaut), `xz', `lzma' et `raw'\n"
+"  -F, --format=FMT    format du fichier à encoder ou décoder ; sont acceptés :\n"
+"                      `auto' (par défaut), `xz', `lzma' et `raw'\n"
 "  -C, --check=CHECK   type de vérification d'intégrité : `none' (à utiliser avec\n"
 "                      précaution), `crc32', `crc64' (par défaut) ou `sha256'"
 
 #: src/xz/message.c:1126
 msgid "      --ignore-check  don't verify the integrity check when decompressing"
 msgstr ""
+"      --ignore-check  ne pas vérifier l'intégrité des données lors de\n"
+"                      la décompression"
 
 #: src/xz/message.c:1130
 msgid ""
@@ -668,16 +670,16 @@ msgid ""
 "                      does not affect decompressor memory requirements"
 msgstr ""
 "  -e, --extreme       essayer d'améliorer la compression en utilisant davantage\n"
-"                      de temps processeur sans affecter les besoins mémoire du\n"
-"                      décompresseur"
+"                      n'affecte pas les besoins mémoire du décompresseur"
 
 #: src/xz/message.c:1138
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
 "                      to use as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=NB    créer au plus NB fils d'éxécution (1 par défault) ; la\n"
-"                      valeur 0 est spéciale et équivaut au nombre de processeurs"
+"  -T, --threads=NB    créer au plus NB fils de compression (1 par défault) ; la\n"
+"                      valeur 0 est spéciale et équivaut au nombre de processeurs\n"
+"                      de la machine"
 
 #: src/xz/message.c:1143
 msgid ""
@@ -756,8 +758,8 @@ msgid ""
 "                        depth=NUM  maximum search depth; 0=automatic (default)"
 msgstr ""
 "\n"
-"  --lzma1[=OPTS]      LZMA1 ou LZMA2 ; OPTS est une liste de zéro ou plusieurs\n"
-"  --lzma2[=OPTS]      options parmi les suivantes (vals. valides ; par défaut) :\n"
+"  --lzma1[=OPTS]      LZMA1 ou LZMA2 ; OPTS est une liste d'options parmi\n"
+"  --lzma2[=OPTS]      (entre parenthèses : valeurs valides et par défaut) :\n"
 "                        preset=PRE remettre les options à un préréglage (0-9[e])\n"
 "                        dict=NUM   taille dictionnaire (4KiB - 1536MiB ; 8MiB)\n"
 "                        lc=NUM     nombre de 'literal context bits' (0-4 ; 3)\n"
@@ -789,7 +791,7 @@ msgstr ""
 "  --armthumb[=OPTS]   filtre BCJ ARM-Thumb ('little endian' uniquement)\n"
 "  --sparc[=OPTS]      filtre BCJ SPARC\n"
 "                      OPTS valides pour tous les filtres BCJ :\n"
-"                        start=NUM  start offset for conversions (default=0)"
+"                        start=NUM  position de début de la conversion (défaut=0)"
 
 #: src/xz/message.c:1206
 msgid ""
@@ -800,8 +802,8 @@ msgid ""
 msgstr ""
 "\n"
 "  --delta[=OPTS]      Filtre delta ; OPTS valides (vals. valides ; par défaut) :\n"
-"                        dist=NUM   distance entre les octets soustraits\n"
-"                                   les uns aux autres (1-256 ; 1)"
+"                        dist=NUM   distance entre les octets soustraits les\n"
+"                                   uns aux autres (1-256 ; 1)"
 
 #: src/xz/message.c:1214
 msgid ""
@@ -816,8 +818,8 @@ msgid ""
 "  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
 "  -v, --verbose       be verbose; specify twice for even more verbose"
 msgstr ""
-"  -q, --quiet         supprimer les avertissemnts ; spécifier deux fois pour\n"
-"                      aussi supprimer les erreur\n"
+"  -q, --quiet         masquer les avertissements ; spécifier deux fois pour\n"
+"                      aussi masquer les erreurs\n"
 "  -v, --verbose       être bavard ; spécifier deux fois pour l'être davantage"
 
 #: src/xz/message.c:1222
@@ -904,7 +906,7 @@ msgstr "%s : Valeur d'option invalide"
 #: src/xz/options.c:247
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Préréglage LZMA1/LZMA2 non pris en charge : %s"
+msgstr "Préréglage LZMA1/LZMA2 non reconnu : %s"
 
 #: src/xz/options.c:355
 msgid "The sum of lc and lp must not exceed 4"

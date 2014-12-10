@@ -875,7 +875,7 @@ msgstr ""
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr ""
 "Signaler les bogues à <%s> (en anglais ou en finlandais).\n"
-"Signaler les bogues de traduction à <camaradetux@gmail.com>.\n"
+"Signaler les bogues de traduction à <adrien@notk.org>.\n"
 
 #: src/xz/message.c:1249
 #, c-format

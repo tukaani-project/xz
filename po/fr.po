@@ -591,7 +591,7 @@ msgid ""
 " Operation modifiers:\n"
 msgstr ""
 "\n"
-" Modifictauers :\n"
+" Modificateurs :\n"
 
 #: src/xz/message.c:1101
 msgid ""
@@ -611,7 +611,7 @@ msgid ""
 "                      ignore possible remaining input data"
 msgstr ""
 "      --single-stream décompresser uniquement le premier flux et ignorer\n"
-"                      silenciseusement les données éventuellement restantes"
+"                      silencieusement les données éventuellement restantes"
 
 #: src/xz/message.c:1110
 msgid ""
@@ -626,7 +626,7 @@ msgstr ""
 "  -S, --suffix=.SUF   utiliser le suffixe `.SUF' pour les fichiers compressés\n"
 "      --files[=FILE]  lire les fichiers sur lesquels opérer depuis FILE ; si\n"
 "                      FILE est omis, ceux-ci sont lus depuis l'entrée standard\n"
-"                      et doivent être suivis d'un caractère de retour à la ligne\n"
+"                      et doivent être suivis d'un caractère retour à la ligne\n"
 "      --files0[=FILE] comme --files mais avec un caractère null comme séparateur"
 
 #: src/xz/message.c:1119
@@ -721,7 +721,7 @@ msgstr ""
 "  -M, --memlimit=LIMIT\n"
 "                      règle la limite d'utilisation mémoire pour la compression,\n"
 "                      décompression ou les deux ; LIMIT est en octets,\n"
-"                      pourcentage de RAM, ou 0 pour les valeurs par défaut"
+"                      pourcentage de RAM, ou 0 pour la valeur par défaut"
 
 #: src/xz/message.c:1164
 msgid ""
@@ -835,28 +835,28 @@ msgid ""
 "      --info-memory   display the total amount of RAM and the currently active\n"
 "                      memory usage limits, and exit"
 msgstr ""
-"      --info-memory   affiche la quantité totale de RAM ainsi que la limite\n"
-"                      actuelle d'utilisation mémoire puis quitte"
+"      --info-memory   afficher la quantité totale de RAM ainsi que la limite\n"
+"                      actuelle d'utilisation mémoire puis quitter"
 
 #: src/xz/message.c:1230
 msgid ""
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"
 msgstr ""
-"  -h, --help          affiche l'aide courte (ne liste que les options de base)\n"
-"  -H, --long-help     affiche l'aide longue (ceci) puis quitte"
+"  -h, --help          afficher l'aide courte (ne liste que les options de base)\n"
+"  -H, --long-help     afficher l'aide longue (ceci) puis quitter"
 
 #: src/xz/message.c:1234
 msgid ""
 "  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"
 msgstr ""
-"  -h, --help          affiche l'aide courte (ceci) puis quitte\n"
-"  -H, --long-help     affiche l'aide longue (liste aussi les options avancées)"
+"  -h, --help          afficher l'aide courte (ceci) puis quitter\n"
+"  -H, --long-help     afficher l'aide longue (liste aussi les options avancées)"
 
 #: src/xz/message.c:1239
 msgid "  -V, --version       display the version number and exit"
-msgstr "  -V, --version       affiche le numéro de version puis quitte"
+msgstr "  -V, --version       afficher le numéro de version puis quitter"
 
 #: src/xz/message.c:1241
 msgid ""

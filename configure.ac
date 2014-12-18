@@ -59,7 +59,7 @@ AM_CFLAGS=
 #############
 
 AC_MSG_CHECKING([if debugging code should be compiled])
-AC_ARG_ENABLE([debug], AC_HELP_STRING([--enable-debug], [Enable debugging code.]),
+AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [Enable debugging code.]),
 	[], enable_debug=no)
 if test "x$enable_debug" = xyes; then
 	AC_MSG_RESULT([yes])
@@ -84,7 +84,7 @@ enable_decoder_[]NAME=no
 ])dnl
 
 AC_MSG_CHECKING([which encoders to build])
-AC_ARG_ENABLE([encoders], AC_HELP_STRING([--enable-encoders=LIST],
+AC_ARG_ENABLE([encoders], AS_HELP_STRING([--enable-encoders=LIST],
 		[Comma-separated list of encoders to build. Default=all.
 		Available encoders:]
 			m4_translit(m4_defn([SUPPORTED_FILTERS]), [,], [ ])),
@@ -112,7 +112,7 @@ else
 fi
 
 AC_MSG_CHECKING([which decoders to build])
-AC_ARG_ENABLE([decoders], AC_HELP_STRING([--enable-decoders=LIST],
+AC_ARG_ENABLE([decoders], AS_HELP_STRING([--enable-decoders=LIST],
 		[Comma-separated list of decoders to build. Default=all.
 		Available decoders are the same as available encoders.]),
 	[], [enable_decoders=SUPPORTED_FILTERS])
@@ -195,7 +195,7 @@ m4_foreach([NAME], [SUPPORTED_MATCH_FINDERS],
 ])
 
 AC_MSG_CHECKING([which match finders to build])
-AC_ARG_ENABLE([match-finders], AC_HELP_STRING([--enable-match-finders=LIST],
+AC_ARG_ENABLE([match-finders], AS_HELP_STRING([--enable-match-finders=LIST],
 		[Comma-separated list of match finders to build. Default=all.
 		At least one match finder is required for encoding with
 		the LZMA1 and LZMA2 filters. Available match finders:]
@@ -234,7 +234,7 @@ m4_foreach([NAME], [SUPPORTED_CHECKS],
 ])dnl
 
 AC_MSG_CHECKING([which integrity checks to build])
-AC_ARG_ENABLE([checks], AC_HELP_STRING([--enable-checks=LIST],
+AC_ARG_ENABLE([checks], AS_HELP_STRING([--enable-checks=LIST],
 		[Comma-separated list of integrity checks to build.
 		Default=all. Available integrity checks:]
 		m4_translit(m4_defn([SUPPORTED_CHECKS]), [,], [ ])),
@@ -274,7 +274,7 @@ m4_foreach([NAME], [SUPPORTED_CHECKS],
 ###########################
 
 AC_MSG_CHECKING([if assembler optimizations should be used])
-AC_ARG_ENABLE([assembler], AC_HELP_STRING([--disable-assembler],
+AC_ARG_ENABLE([assembler], AS_HELP_STRING([--disable-assembler],
 		[Do not use assembler optimizations even if such exist
 		for the architecture.]),
 	[], [enable_assembler=yes])
@@ -309,7 +309,7 @@ AM_CONDITIONAL(COND_ASM_X86_64, test "x$enable_assembler" = xx86_64)
 #####################
 
 AC_MSG_CHECKING([if small size is preferred over speed])
-AC_ARG_ENABLE([small], AC_HELP_STRING([--enable-small],
+AC_ARG_ENABLE([small], AS_HELP_STRING([--enable-small],
 		[Make liblzma smaller and a little slower.
 		This is disabled by default to optimize for speed.]),
 	[], [enable_small=no])
@@ -328,7 +328,7 @@ AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
 #############
 
 AC_MSG_CHECKING([if threading support is wanted])
-AC_ARG_ENABLE([threads], AC_HELP_STRING([--disable-threads],
+AC_ARG_ENABLE([threads], AS_HELP_STRING([--disable-threads],
 		[Disable threading support.
 		This makes some things thread-unsafe.]),
 	[], [enable_threads=yes])
@@ -349,7 +349,7 @@ AC_MSG_RESULT([$enable_threads])
 # but most systems, on which we don't have any way to determine the amount
 # of RAM, will probably have at least 128 MiB of RAM.
 AC_MSG_CHECKING([how much RAM to assume if the real amount is unknown])
-AC_ARG_ENABLE([assume-ram], AC_HELP_STRING([--enable-assume-ram=SIZE],
+AC_ARG_ENABLE([assume-ram], AS_HELP_STRING([--enable-assume-ram=SIZE],
 		[If and only if the real amount of RAM cannot be determined,
 		assume SIZE MiB. The default is 128 MiB. This affects the
 		default memory usage limit.]),
@@ -369,40 +369,40 @@ AC_DEFINE_UNQUOTED([ASSUME_RAM], [$enable_assume_ram],
 # Components to install #
 #########################
 
-AC_ARG_ENABLE([xz], [AC_HELP_STRING([--disable-xz],
+AC_ARG_ENABLE([xz], [AS_HELP_STRING([--disable-xz],
 		[do not build the xz tool])],
 	[], [enable_xz=yes])
 AM_CONDITIONAL([COND_XZ], [test x$enable_xz != xno])
 
-AC_ARG_ENABLE([xzdec], [AC_HELP_STRING([--disable-xzdec],
+AC_ARG_ENABLE([xzdec], [AS_HELP_STRING([--disable-xzdec],
 		[do not build xzdec])],
 	[], [enable_xzdec=yes])
 AM_CONDITIONAL([COND_XZDEC], [test x$enable_xzdec != xno])
 
-AC_ARG_ENABLE([lzmadec], [AC_HELP_STRING([--disable-lzmadec],
+AC_ARG_ENABLE([lzmadec], [AS_HELP_STRING([--disable-lzmadec],
 		[do not build lzmadec
 		(it exists primarily for LZMA Utils compatibility)])],
 	[], [enable_lzmadec=yes])
 AM_CONDITIONAL([COND_LZMADEC], [test x$enable_lzmadec != xno])
 
-AC_ARG_ENABLE([lzmainfo], [AC_HELP_STRING([--disable-lzmainfo],
+AC_ARG_ENABLE([lzmainfo], [AS_HELP_STRING([--disable-lzmainfo],
 		[do not build lzmainfo
 		(it exists primarily for LZMA Utils compatibility)])],
 	[], [enable_lzmainfo=yes])
 AM_CONDITIONAL([COND_LZMAINFO], [test x$enable_lzmainfo != xno])
 
-AC_ARG_ENABLE([lzma-links], [AC_HELP_STRING([--disable-lzma-links],
+AC_ARG_ENABLE([lzma-links], [AS_HELP_STRING([--disable-lzma-links],
 		[do not create symlinks for LZMA Utils compatibility])],
 	[], [enable_lzma_links=yes])
 AM_CONDITIONAL([COND_LZMALINKS], [test x$enable_lzma_links != xno])
 
-AC_ARG_ENABLE([scripts], [AC_HELP_STRING([--disable-scripts],
+AC_ARG_ENABLE([scripts], [AS_HELP_STRING([--disable-scripts],
 		[do not install the scripts xzdiff, xzgrep, xzless, xzmore,
 		and their symlinks])],
 	[], [enable_scripts=yes])
 AM_CONDITIONAL([COND_SCRIPTS], [test x$enable_scripts != xno])
 
-AC_ARG_ENABLE([doc], [AC_HELP_STRING([--disable-doc],
+AC_ARG_ENABLE([doc], [AS_HELP_STRING([--disable-doc],
 		[do not install documentation files to docdir
 		(man pages will still be installed)])],
 	[], [enable_doc=yes])
@@ -600,7 +600,7 @@ if test "$GCC" = yes ; then
 	done
 
 	AC_ARG_ENABLE([werror],
-		AC_HELP_STRING([--enable-werror], [Enable -Werror to abort
+		AS_HELP_STRING([--enable-werror], [Enable -Werror to abort
 			compilation on all compiler warnings.]),
 		[], [enable_werror=no])
 	if test "x$enable_werror" = "xyes"; then

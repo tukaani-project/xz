@@ -1,5 +1,8 @@
 /* config.h for compiling liblzma (*not* the whole XZ Utils) with MSVC 2013 */
 
+/* Prefix for symbols exported by tuklib_*.c files */
+#define TUKLIB_SYMBOL_PREFIX lzma_
+
 /* How many MiB of RAM to assume if the real amount cannot be determined. */
 #define ASSUME_RAM 128
 

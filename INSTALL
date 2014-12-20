@@ -424,11 +424,16 @@ XZ Utils Installation
     gl_cv_posix_shell=/path/to/posix-sh as an argument to the configure
     script.
 
-    Some of the scripts require also mktemp. The original mktemp can be
-    found from <http://www.mktemp.org/>. On GNU, most will use the mktemp
-    program from GNU coreutils instead of the original implementation.
-    Both mktemp versions are fine for XZ Utils (and practically for
-    everything else too).
+    xzdiff (xzcmp/lzdiff/lzcmp) may use mktemp if it is available. As
+    a fallback xzdiff will use mkdir to securely create a temporary
+    directory. Having mktemp available is still recommended since the
+    mkdir fallback method isn't as robust as mktemp is. The original
+    mktemp can be found from <http://www.mktemp.org/>. On GNU, most will
+    use the mktemp program from GNU coreutils instead of the original
+    implementation. Both mktemp versions are fine.
+
+    In addition to using xz to decompress .xz files, xzgrep and xzdiff
+    use gzip, bzip2, and lzop to support .gz, bz2, and .lzo files.
 
 
 3.2. PATH

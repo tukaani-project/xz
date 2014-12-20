@@ -75,6 +75,8 @@ buildit()
 	# threading. So I don't include a size-optimized liblzma for now.
 	./configure \
 		--prefix= \
+		--enable-silent-rules \
+		--disable-dependency-tracking \
 		--disable-nls \
 		--disable-scripts \
 		--disable-threads \
@@ -89,9 +91,12 @@ buildit()
 
 	make distclean
 
-	# Build the normal speed-optimized binaries.
+	# Build the normal speed-optimized binaries. The type of threading
+	# (win95 vs. vista) will be autodetect from the target architecture.
 	./configure \
 		--prefix= \
+		--enable-silent-rules \
+		--disable-dependency-tracking \
 		--disable-nls \
 		--disable-scripts \
 		--build="$BUILD" \
@@ -125,19 +130,19 @@ txtcp()
 	done
 }
 
-# FIXME: Make sure that we don't get i686 or i586 code from the runtime.
-# Or if we do, update the strings here to match the generated code.
-# i686 has cmov which can help like maybe 1 % in performance but things
-# like SSE don't help, so i486 isn't horrible for performance.
-#
-# FIXME: Using i486 in the configure triplet may be wrong.
 if [ -d "$MINGW_W32_DIR" ]; then
 	# 32-bit x86, Win95 or later, using MinGW-w32
 	PATH=$MINGW_W32_DIR/bin:$MINGW_W32_DIR/i686-w64-mingw32/bin:$PATH \
 			buildit \
 			pkg/bin_i486 \
-			i486-w64-mingw32 \
-			'-march=i486 -mtune=generic'
+			i686-w64-mingw32 \
+			'-march=i686 -mtune=generic'
+	# 32-bit x86 with SSE2, Win98 or later, using MinGW-w32
+	PATH=$MINGW_W32_DIR/bin:$MINGW_W32_DIR/i686-w64-mingw32/bin:$PATH \
+			buildit \
+			pkg/bin_i686-sse2 \
+			i686-w64-mingw32 \
+			'-march=i686 -msse2 -mfpmath=sse -mtune=generic'
 elif [ -d "$MINGW_DIR" ]; then
 	# 32-bit x86, Win95 or later, using MinGW
 	PATH=$MINGW_DIR/bin:$PATH \

@@ -138,15 +138,18 @@ XZ Utils Installation
     redistributable .zip or .7z file. See windows/INSTALL-Windows.txt
     for more information.
 
-    It might be possible to build liblzma with a non-GNU toolchain too,
-    but that will probably require writing a separate makefile. Building
+    It may be possible to build liblzma with other toolchains too, but
+    that will probably require writing a separate makefile. Building
     the command line tools with non-GNU toolchains will be harder than
     building only liblzma.
 
-    Even if liblzma is built with MinGW, the resulting DLL or static
-    library can be used by other compilers and linkers, including MSVC.
-    Thus, it shouldn't be a problem to use MinGW to build liblzma even
-    if you cannot use MinGW to build the rest of your project. See
+    Starting with XZ Utils 5.2.0, building liblzma (not the whole
+    XZ Utils) should work with MSVC 2013 update 2 or later using
+    windows/config.h. No project files or makefiles are included yet,
+    so the build process isn't as convenient yet as it could be.
+
+    Even if liblzma is built with MinGW(-w64), the resulting DLL can
+    be used by other compilers and linkers, including MSVC. See
     windows/README-Windows.txt for details.
 
 

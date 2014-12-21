@@ -31,10 +31,6 @@ init_encoder(lzma_stream *strm)
 		// No flags are needed.
 		.flags = 0,
 
-		// Set the number of threads to use.
-		// FIXME: Add how to autodetect a reasonable number.
-		.threads = 4,
-
 		// Let liblzma determine a sane block size.
 		.block_size = 0,
 
@@ -56,6 +52,32 @@ init_encoder(lzma_stream *strm)
 		// 01_compress_easy.c about choosing the integrity check.
 		.check = LZMA_CHECK_CRC64,
 	};
+
+	// Detect how many threads the CPU supports.
+	mt.threads = lzma_cputhreads();
+
+	// If the number of CPU cores/threads cannot be detected,
+	// use one thread. Note that this isn't the same as the normal
+	// single-threaded mode as this will still split the data into
+	// blocks and use more RAM than the normal single-threaded mode.
+	// You may want to consider using lzma_easy_encoder() or
+	// lzma_stream_encoder() instead of lzma_stream_encoder_mt() if
+	// lzma_cputhreads() returns 0 or 1.
+	if (mt.threads == 0)
+		mt.threads = 1;
+
+	// If the number of CPU cores/threads exceeds threads_max,
+	// limit the number of threads to keep memory usage lower.
+	// The number 8 is arbitrarily chosen and may be too low or
+	// high depending on the compression preset and the computer
+	// being used.
+	//
+	// FIXME: A better way could be to check the amount of RAM
+	// (or available RAM) and use lzma_stream_encoder_mt_memusage()
+	// to determine if the number of threads should be reduced.
+	const uint32_t threads_max = 8;
+	if (mt.threads > threads_max)
+		mt.threads = threads_max;
 
 	// Initialize the threaded encoder.
 	lzma_ret ret = lzma_stream_encoder_mt(strm, &mt);

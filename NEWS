@@ -2,6 +2,71 @@
 XZ Utils Release Notes
 ======================
 
+5.2.0 (2014-12-21)
+
+    Since 5.1.4beta:
+
+    * All fixes from 5.0.8
+
+    * liblzma: Fixed lzma_stream_encoder_mt_memusage() when a preset
+      was used.
+
+    * xzdiff: If mktemp isn't installed, mkdir will be used as
+      a fallback to create a temporary directory. Installing mktemp
+      is still recommended.
+
+    * Updated French, German, Italian, Polish, and Vietnamese
+      translations.
+
+    Summary of fixes and new features added in the 5.1.x development
+    releases:
+
+    * liblzma:
+
+        - Added support for multi-threaded compression. See the
+          lzma_mt structure, lzma_stream_encoder_mt(), and
+          lzma_stream_encoder_mt_memusage() in <lzma/container.h>,
+          lzma_get_progress() in <lzma/base.h>, and lzma_cputhreads()
+          in <lzma/hardware.h> for details.
+
+        - Made the uses of lzma_allocator const correct.
+
+        - Added lzma_block_uncomp_encode() to create uncompressed
+          .xz Blocks using LZMA2 uncompressed chunks.
+
+        - Added support for LZMA_IGNORE_CHECK.
+
+        - A few speed optimizations were made.
+
+        - Added support for symbol versioning. It is enabled by default
+          on GNU/Linux, other GNU-based systems, and FreeBSD.
+
+        - liblzma (not the whole XZ Utils) should now be buildable
+          with MSVC 2013 update 2 or later using windows/config.h.
+
+    * xz:
+
+        - Fixed a race condition in the signal handling. It was
+          possible that e.g. the first SIGINT didn't make xz exit
+          if reading or writing blocked and one had bad luck. The fix
+          is non-trivial, so as of writing it is unknown if it will be
+          backported to the v5.0 branch.
+
+        - Multi-threaded decompression can be enabled with the
+          --threads (-T) option.
+
+        - New command line options in xz: --single-stream,
+          --block-size=SIZE, --block-list=SIZES,
+          --flush-timeout=TIMEOUT, and --ignore-check.
+
+        - xz -lvv now shows the minimum xz version that is required to
+          decompress the file. Currently it is 5.0.0 for all supported
+          .xz files except files with empty LZMA2 streams require 5.0.2.
+
+    * xzdiff and xzgrep now support .lzo files if lzop is installed.
+      The .tzo suffix is also recognized as a shorthand for .tar.lzo.
+
+
 5.1.4beta (2014-09-14)
 
     * All fixes from 5.0.6

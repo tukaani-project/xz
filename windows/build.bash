@@ -134,7 +134,7 @@ if [ -d "$MINGW_W32_DIR" ]; then
 	# 32-bit x86, Win95 or later, using MinGW-w32
 	PATH=$MINGW_W32_DIR/bin:$MINGW_W32_DIR/i686-w64-mingw32/bin:$PATH \
 			buildit \
-			pkg/bin_i486 \
+			pkg/bin_i686 \
 			i686-w64-mingw32 \
 			'-march=i686 -mtune=generic'
 	# 32-bit x86 with SSE2, Win98 or later, using MinGW-w32

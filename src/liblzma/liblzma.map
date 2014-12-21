@@ -95,7 +95,7 @@ global:
 	lzma_vli_size;
 };
 
-XZ_5.1.4beta {
+XZ_5.2 {
 global:
 	lzma_block_uncomp_encode;
 	lzma_cputhreads;

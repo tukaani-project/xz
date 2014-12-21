@@ -2,6 +2,18 @@
 XZ Utils Release Notes
 ======================
 
+5.0.8 (2014-12-21)
+
+    * Fixed an old bug in xzgrep that affected OpenBSD and probably
+      a few other operating systems too.
+
+    * Updated French and German translations.
+
+    * Added support for detecting the amount of RAM on AmigaOS/AROS.
+
+    * Minor build system updates.
+
+
 5.0.7 (2014-09-20)
 
     * Fix regressions introduced in 5.0.6:

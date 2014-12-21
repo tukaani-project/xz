@@ -670,6 +670,7 @@ msgid ""
 "                      does not affect decompressor memory requirements"
 msgstr ""
 "  -e, --extreme       essayer d'améliorer la compression en utilisant davantage\n"
+"                      de temps processeur ;\n"
 "                      n'affecte pas les besoins mémoire du décompresseur"
 
 #: src/xz/message.c:1138

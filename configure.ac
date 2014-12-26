@@ -474,7 +474,7 @@ AM_CONDITIONAL([COND_SYMVERS], [test "x$enable_symbol_versions" = xyes])
 
 echo
 gl_POSIX_SHELL
-if test -z "$POSIX_SHELL" ; then
+if test -z "$POSIX_SHELL" && test "x$enable_scripts" = xyes ; then
 	AC_MSG_ERROR([No POSIX conforming shell (sh) was found.])
 fi
 

@@ -738,6 +738,7 @@ io_open_dest_real(file_pair *pair)
 				message_error("%s: Refusing to write to "
 						"a DOS special file",
 						pair->dest_name);
+				free(pair->dest_name);
 				return true;
 			}
 
@@ -747,6 +748,7 @@ io_open_dest_real(file_pair *pair)
 				message_error("%s: Output file is the same "
 						"as the input file",
 						pair->dest_name);
+				free(pair->dest_name);
 				return true;
 			}
 		}

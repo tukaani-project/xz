@@ -393,7 +393,10 @@ io_open_src_real(file_pair *pair)
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDIN_FILENO, O_BINARY);
 #else
-		// Enable O_NONBLOCK for stdin.
+		// Try to set stdout to non-blocking mode. It won't work
+		// e.g. on OpenBSD if stdout is e.g. /dev/null. In such
+		// case we proceed as if stdout were non-blocking anyway
+		// (in case of /dev/null it will be in practice).
 		stdin_flags = fcntl(STDIN_FILENO, F_GETFL);
 		if (stdin_flags == -1) {
 			message_error(_("Error getting the file status flags "
@@ -402,17 +405,10 @@ io_open_src_real(file_pair *pair)
 			return true;
 		}
 
-		if ((stdin_flags & O_NONBLOCK) == 0) {
-			if (fcntl(STDIN_FILENO, F_SETFL,
-					stdin_flags | O_NONBLOCK) == -1) {
-				message_error(_("Error setting O_NONBLOCK "
-						"on standard input: %s"),
-						strerror(errno));
-				return true;
-			}
-
+		if ((stdin_flags & O_NONBLOCK) == 0
+				&& fcntl(STDIN_FILENO, F_SETFL,
+					stdin_flags | O_NONBLOCK) != -1)
 			restore_stdin_flags = true;
-		}
 #endif
 #ifdef HAVE_POSIX_FADVISE
 		// It will fail if stdin is a pipe and that's fine.

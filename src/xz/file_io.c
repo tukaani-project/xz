@@ -393,10 +393,11 @@ io_open_src_real(file_pair *pair)
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDIN_FILENO, O_BINARY);
 #else
-		// Try to set stdout to non-blocking mode. It won't work
+		// Try to set stdin to non-blocking mode. It won't work
 		// e.g. on OpenBSD if stdout is e.g. /dev/null. In such
-		// case we proceed as if stdout were non-blocking anyway
-		// (in case of /dev/null it will be in practice).
+		// case we proceed as if stdin were non-blocking anyway
+		// (in case of /dev/null it will be in practice). The
+		// same applies to stdout in io_open_dest_real().
 		stdin_flags = fcntl(STDIN_FILENO, F_GETFL);
 		if (stdin_flags == -1) {
 			message_error(_("Error getting the file status flags "
@@ -701,7 +702,10 @@ io_open_dest_real(file_pair *pair)
 #ifdef TUKLIB_DOSLIKE
 		setmode(STDOUT_FILENO, O_BINARY);
 #else
-		// Set O_NONBLOCK if it isn't already set.
+		// Try to set O_NONBLOCK if it isn't already set.
+		// If it fails, we assume that stdout is non-blocking
+		// in practice. See the comments in io_open_src_real()
+		// for similar situation with stdin.
 		//
 		// NOTE: O_APPEND may be unset later in this function
 		// and it relies on stdout_flags being set here.

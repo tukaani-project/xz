@@ -713,17 +713,10 @@ io_open_dest_real(file_pair *pair)
 			return true;
 		}
 
-		if ((stdout_flags & O_NONBLOCK) == 0) {
-			if (fcntl(STDOUT_FILENO, F_SETFL,
-					stdout_flags | O_NONBLOCK) == -1) {
-				message_error(_("Error setting O_NONBLOCK "
-						"on standard output: %s"),
-						strerror(errno));
-				return true;
-			}
-
-			restore_stdout_flags = true;
-		}
+		if ((stdout_flags & O_NONBLOCK) == 0
+				&& fcntl(STDOUT_FILENO, F_SETFL,
+					stdout_flags | O_NONBLOCK) != -1)
+				restore_stdout_flags = true;
 #endif
 	} else {
 		pair->dest_name = suffix_get_dest_name(pair->src_name);
@@ -827,23 +820,24 @@ io_open_dest_real(file_pair *pair)
 				if (lseek(STDOUT_FILENO, 0, SEEK_END) == -1)
 					return false;
 
-				// O_NONBLOCK was set earlier in this function
-				// so it must be kept here too. If this
-				// fcntl() call fails, we continue but won't
+				// Construct the new file status flags.
+				// If O_NONBLOCK was set earlier in this
+				// function, it must be kept here too.
+				int flags = stdout_flags & ~O_APPEND;
+				if (restore_stdout_flags)
+					flags |= O_NONBLOCK;
+
+				// If this fcntl() fails, we continue but won't
 				// try to create sparse output. The original
 				// flags will still be restored if needed (to
 				// unset O_NONBLOCK) when the file is finished.
-				if (fcntl(STDOUT_FILENO, F_SETFL,
-						(stdout_flags | O_NONBLOCK)
-						& ~O_APPEND) == -1)
+				if (fcntl(STDOUT_FILENO, F_SETFL, flags) == -1)
 					return false;
 
 				// Disabling O_APPEND succeeded. Mark
 				// that the flags should be restored
-				// in io_close_dest(). This quite likely was
-				// already set when enabling O_NONBLOCK but
-				// just in case O_NONBLOCK was already set,
-				// set this again here.
+				// in io_close_dest(). (This may have already
+				// been set when enabling O_NONBLOCK.)
 				restore_stdout_flags = true;
 
 			} else if (lseek(STDOUT_FILENO, 0, SEEK_CUR)

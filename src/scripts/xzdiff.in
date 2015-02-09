@@ -140,7 +140,12 @@ elif test $# -eq 2; then
               (exit 2); exit 2
             ' HUP INT PIPE TERM 0
             if type mktemp >/dev/null 2>&1; then
-              tmp=`mktemp -t -d -- "$prog.XXXXXXXXXX"` || exit 2
+              # Note that FreeBSD's mktemp isn't fully compatible with
+              # the implementations from mktemp.org and GNU coreutils.
+              # It is important that the -t argument is the last argument
+              # and that no "--" is used between -t and the template argument.
+              # This way this command works on all implementations.
+              tmp=`mktemp -d -t "$prog.XXXXXXXXXX"` || exit 2
             else
               # Fallback code if mktemp is missing. This isn't as
               # robust as using mktemp since this doesn't try with

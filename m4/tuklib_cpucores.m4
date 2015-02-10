@@ -45,6 +45,22 @@ compile error
 #endif
 ]])], [tuklib_cv_cpucores_method=special], [
 
+# FreeBSD has both cpuset and sysctl. Look for cpuset first because
+# it's a better approach.
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/param.h>
+#include <sys/cpuset.h>
+
+int
+main(void)
+{
+	cpuset_t set;
+	cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, -1,
+			sizeof(set), &set);
+	return 0;
+}
+]])], [tuklib_cv_cpucores_method=cpuset], [
+
 # Look for sysctl() solution first, because on OS/2, both sysconf()
 # and sysctl() pass the tests in this file, but only sysctl()
 # actually works.
@@ -97,9 +113,14 @@ main(void)
 ]])], [tuklib_cv_cpucores_method=pstat_getdynamic], [
 
 	tuklib_cv_cpucores_method=unknown
-])])])])])
+])])])])])])
 
 case $tuklib_cv_cpucores_method in
+	cpuset)
+		AC_DEFINE([TUKLIB_CPUCORES_CPUSET], [1],
+			[Define to 1 if the number of available CPU cores
+			can be detected with cpuset(2).])
+		;;
 	sysctl)
 		AC_DEFINE([TUKLIB_CPUCORES_SYSCTL], [1],
 			[Define to 1 if the number of available CPU cores

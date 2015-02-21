@@ -82,13 +82,19 @@ io_init(void)
 	// we are root.
 	warn_fchown = geteuid() == 0;
 
-	if (pipe(user_abort_pipe)
-			|| fcntl(user_abort_pipe[0], F_SETFL, O_NONBLOCK)
-				== -1
-			|| fcntl(user_abort_pipe[1], F_SETFL, O_NONBLOCK)
-				== -1)
+	// Create a pipe for the self-pipe trick.
+	if (pipe(user_abort_pipe))
 		message_fatal(_("Error creating a pipe: %s"),
 				strerror(errno));
+
+	// Make both ends of the pipe non-blocking.
+	for (unsigned i = 0; i < 2; ++i) {
+		int flags = fcntl(user_abort_pipe[i], F_GETFL);
+		if (flags == -1 || fcntl(user_abort_pipe[i], F_SETFL,
+				flags | O_NONBLOCK) == -1)
+			message_fatal(_("Error creating a pipe: %s"),
+					strerror(errno));
+	}
 #endif
 
 #ifdef __DJGPP__

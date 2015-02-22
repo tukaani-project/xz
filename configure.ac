@@ -626,8 +626,8 @@ gl_GETOPT
 # Find the best function to set timestamps.
 AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
 
-# This is nice to have but not mandatory.
-AC_CHECK_FUNCS([posix_fadvise])
+# These are nice to have but not mandatory.
+AC_CHECK_FUNCS([posix_fadvise pipe2])
 
 TUKLIB_PROGNAME
 TUKLIB_INTEGER

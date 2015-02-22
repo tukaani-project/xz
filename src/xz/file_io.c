@@ -82,7 +82,13 @@ io_init(void)
 	// we are root.
 	warn_fchown = geteuid() == 0;
 
-	// Create a pipe for the self-pipe trick.
+	// Create a pipe for the self-pipe trick. If pipe2() is available,
+	// we can avoid the fcntl() calls.
+#	ifdef HAVE_PIPE2
+	if (pipe2(user_abort_pipe, O_NONBLOCK))
+		message_fatal(_("Error creating a pipe: %s"),
+				strerror(errno));
+#	else
 	if (pipe(user_abort_pipe))
 		message_fatal(_("Error creating a pipe: %s"),
 				strerror(errno));
@@ -95,6 +101,7 @@ io_init(void)
 			message_fatal(_("Error creating a pipe: %s"),
 					strerror(errno));
 	}
+#	endif
 #endif
 
 #ifdef __DJGPP__

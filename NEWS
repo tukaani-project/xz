@@ -2,6 +2,20 @@
 XZ Utils Release Notes
 ======================
 
+5.2.1 (2015-02-26)
+
+    * Fixed a compression-ratio regression in fast mode of LZMA1 and
+      LZMA2. The bug is present in 5.1.4beta and 5.2.0 releases.
+
+    * Fixed a portability problem in xz that affected at least OpenBSD.
+
+    * Fixed xzdiff to be compatible with FreeBSD's mktemp which differs
+      from most other mktemp implementations.
+
+    * Changed CPU core count detection to use cpuset_getaffinity() on
+      FreeBSD.
+
+
 5.2.0 (2014-12-21)
 
     Since 5.1.4beta:

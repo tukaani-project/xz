@@ -11,7 +11,7 @@
 #   Supported methods:
 #     - GetSystemInfo(): Windows (including Cygwin)
 #     - sysctl(): BSDs, OS/2
-#     - sysconf(): GNU/Linux, Solaris, Tru64, IRIX, AIX, Cygwin (but
+#     - sysconf(): GNU/Linux, Solaris, Tru64, IRIX, AIX, QNX, Cygwin (but
 #       GetSystemInfo() is used on Cygwin)
 #     - pstat_getdynamic(): HP-UX
 #
@@ -61,10 +61,17 @@ main(void)
 }
 ]])], [tuklib_cv_cpucores_method=cpuset], [
 
-# Look for sysctl() solution first, because on OS/2, both sysconf()
-# and sysctl() pass the tests in this file, but only sysctl()
-# actually works.
+# On OS/2, both sysconf() and sysctl() pass the tests in this file,
+# but only sysctl() works. On QNX it's the opposite: only sysconf() works
+# (although it assumes that _POSIX_SOURCE, _XOPEN_SOURCE, and _POSIX_C_SOURCE
+# are undefined or alternatively _QNX_SOURCE is defined).
+#
+# We test sysctl() first and intentionally break the sysctl() test on QNX
+# so that sysctl() is never used on QNX.
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#ifdef __QNX__
+compile error
+#endif
 #include <sys/types.h>
 #ifdef HAVE_SYS_PARAM_H
 #	include <sys/param.h>

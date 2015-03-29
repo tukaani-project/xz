@@ -10,8 +10,8 @@
 #
 #   Supported methods:
 #
-#     - Windows (including Cygwin), OS/2, DJGPP (DOS), and OpenVMS have
-#       operating-system specific functions.
+#     - Windows (including Cygwin), OS/2, DJGPP (DOS), OpenVMS, AROS,
+#       and QNX have operating-system specific functions.
 #
 #     - AIX has _system_configuration.physmem.
 #
@@ -54,7 +54,7 @@ AC_CACHE_CHECK([how to detect the amount of physical memory],
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #if defined(_WIN32) || defined(__CYGWIN__) || defined(__OS2__) \
 		|| defined(__DJGPP__) || defined(__VMS) \
-		|| defined(AMIGA) || defined(__AROS__)
+		|| defined(AMIGA) || defined(__AROS__) || defined(__QNX__)
 int main(void) { return 0; }
 #else
 compile error

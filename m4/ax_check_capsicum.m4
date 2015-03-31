@@ -2,23 +2,26 @@
 
 # SYNOPSIS
 #
-#   AX_CHECK_CAPSICUM([action-if-found[, action-if-not-found]])
+#   AX_CHECK_CAPSICUM([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
 #
 # DESCRIPTION
 #
-#   This macro searches for an installed Capsicum library, and if found:
-#    - calls one of AC_DEFINE([HAVE_CAPSICUM_SYS_CAPSICUM_H]) or
-#      AC_DEFINE([HAVE_CAPSICUM_SYS_CAPABILITY_H])
-#    - sets CAPSICUM_LIB to the -l option needed to link Capsicum support.
+#   This macro searches for an installed Capsicum header and library,
+#   and if found:
+#     - AC_DEFINE([HAVE_CAPSICUM]) is called.
+#     - AC_DEFINE([HAVE_SYS_CAPSICUM_H]) is called if <sys/capsicum.h>
+#       is present (otherwise <sys/capability.h> must be used).
+#     - CAPSICUM_LIB is set to the -l option needed to link Capsicum support,
+#       and AC_SUBST([CAPSICUM_LIB]) is called.
+#     - The shell commands in ACTION-IF-FOUND are run. The default
+#       ACTION-IF-FOUND prepends ${CAPSICUM_LIB} into LIBS. If you don't
+#       want to modify LIBS and don't need to run any other commands either,
+#       use a colon as ACTION-IF-FOUND.
 #
-#   If either the header file or the library is not found,
-#   shell commands 'action-if-not-found' is run.
-#
-#   If both header file and library are found, shell commands
-#   'action-if-found' is run. If 'action-if-found' is not specified, the
-#   default action:
-#    - calls AC_DEFINE(HAVE_CAPSICUM)
-#    - prepends ${CAPSICUM_LIB} to LIBS.
+#   If Capsicum support isn't found:
+#     - The shell commands in ACTION-IF-NOT-FOUND are run. The default
+#       ACTION-IF-NOT-FOUND calls AC_MSG_WARN to print a warning that
+#       Capsicum support wasn't found.
 #
 #   You should use autoheader to include a definition for the symbols above
 #   in a config.h file.
@@ -26,61 +29,57 @@
 #   Sample usage in a C/C++ source is as follows:
 #
 #     #ifdef HAVE_CAPSICUM
-#     # ifdef HAVE_CAPSICUM_SYS_CAPSICUM_H
+#     # ifdef HAVE_SYS_CAPSICUM_H
 #     #  include <sys/capsicum.h>
 #     # else
-#     #  ifdef HAVE_CAPSICUM_SYS_CAPABILITY_H
-#     #   include <sys/capability.h>
-#     #  endif
+#     #  include <sys/capability.h>
 #     # endif
 #     #endif /* HAVE_CAPSICUM */
 #
 # LICENSE
 #
 #   Copyright (c) 2014 Google Inc.
+#   Copyright (c) 2015 Lasse Collin <lasse.collin@tukaani.org>
 #
 #   Copying and distribution of this file, with or without modification,
 #   are permitted in any medium without royalty provided the copyright
 #   notice and this notice are preserved.  This file is offered as-is,
 #   without any warranty.
 
-AU_ALIAS([CHECK_CAPSICUM], [AX_CHECK_CAPSICUM])
-AC_DEFUN([AX_CHECK_CAPSICUM],
-[AC_CHECK_HEADERS([sys/capability.h sys/capsicum.h])
-capsicum_hdrfound=false
-# If <sys/capsicum.h> exists (Linux, FreeBSD>=11.x), assume it is the correct header.
-if test "x$ac_cv_header_sys_capsicum_h" = "xyes" ; then
-   AC_DEFINE([HAVE_CAPSICUM_SYS_CAPSICUM_H],[],[Capsicum functions declared in <sys/capsicum.h>])
-   capsicum_hdrfound=true
-elif test "x$ac_cv_header_sys_capability_h" = "xyes" ; then
-   # Just <sys/capability.h>; on FreeBSD 10.x this covers Capsicum, but on Linux it
-   # describes POSIX.1e capabilities.  So check it declares cap_rights_limit.
-   AC_CHECK_DECL([cap_rights_limit],
-                  [AC_DEFINE([HAVE_CAPSICUM_SYS_CAPABILITY_H],[],[Capsicum functions declared in <sys/capability.h>])
-                   capsicum_hdrfound=true],[],
-                 [#include <sys/capability.h>])
+#serial 2
+
+AC_DEFUN([AX_CHECK_CAPSICUM], [
+# On FreeBSD >= 11.x and Linux, Capsicum is uses <sys/capsicum.h>.
+# If this header is found, it is assumed to be the right one.
+capsicum_header_found=no
+AC_CHECK_HEADERS([sys/capsicum.h], [capsicum_header_found=yes])
+if test "$capsicum_header_found" = no ; then
+    # On FreeBSD 10.x Capsicum uses <sys/capability.h>. Such a header exists
+    # on Linux too but it describes POSIX.1e capabilities. Look for the
+    # declaration of cap_rights_limit to check if <sys/capability.h> is
+    # a Capsicum header.
+    AC_CHECK_DECL([cap_rights_limit], [capsicum_header_found=yes], [],
+                  [#include <sys/capability.h>])
 fi
 
-AC_LANG_PUSH([C])
-# FreeBSD >= 10.x has Capsicum functions in libc
-capsicum_libfound=false
-AC_LINK_IFELSE([AC_LANG_CALL([], [cap_rights_limit])],
-               [capsicum_libfound=true],[])
-# Linux has Capsicum functions in libcaprights
-AC_CHECK_LIB([caprights],[cap_rights_limit],
-             [AC_SUBST([CAPSICUM_LIB],[-lcaprights])
-              capsicum_libfound=true],[])
-AC_LANG_POP([C])
+capsicum_lib_found=no
+CAPSICUM_LIB=
+if test "$capsicum_header_found" = yes ; then
+    AC_LANG_PUSH([C])
+    # FreeBSD >= 10.x has Capsicum functions in libc.
+    AC_LINK_IFELSE([AC_LANG_CALL([], [cap_rights_limit])],
+                   [capsicum_lib_found=yes], [])
+    # Linux has Capsicum functions in libcaprights.
+    AC_CHECK_LIB([caprights], [cap_rights_limit],
+                 [CAPSICUM_LIB=-lcaprights
+                  capsicum_lib_found=yes], [])
+    AC_LANG_POP([C])
+fi
+AC_SUBST([CAPSICUM_LIB])
 
-if test "$capsicum_hdrfound" = "true" && test "$capsicum_libfound" = "true"
-then
-    # If both library and header were found, action-if-found
-    m4_ifblank([$1],[
-                LIBS="${CAPSICUM_LIB} $LIBS"
-                AC_DEFINE([HAVE_CAPSICUM],[],[Capsicum library available])])
+if test "$capsicum_lib_found" = yes ; then
+    AC_DEFINE([HAVE_CAPSICUM], [1], [Define to 1 if Capsicum is available.])
+    m4_default([$1], [LIBS="${CAPSICUM_LIB} $LIBS"])
 else
-    # If either header or library was not found, action-if-not-found
-    m4_default([$2],[AC_MSG_WARN([Capsicum support not found])])
+    m4_default([$2], [AC_MSG_WARN([Capsicum support not found])])
 fi])
-
-

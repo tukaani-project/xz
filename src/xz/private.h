@@ -45,6 +45,10 @@
 #	define STDERR_FILENO (fileno(stderr))
 #endif
 
+#ifdef HAVE_CAPSICUM
+#	define ENABLE_SANDBOX 1
+#endif
+
 #include "main.h"
 #include "mytime.h"
 #include "coder.h"

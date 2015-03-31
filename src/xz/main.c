@@ -205,6 +205,24 @@ main(int argc, char **argv)
 	if (opt_mode != MODE_LIST)
 		signals_init();
 
+#ifdef ENABLE_SANDBOX
+	// Set a flag that sandboxing is allowed if all these are true:
+	//   - --files or --files0 wasn't used.
+	//   - There is exactly one input file or we are reading from stdin.
+	//   - We won't create any files: output goes to stdout or --test
+	//     or --list was used. Note that --test implies opt_stdout = true
+	//     but --list doesn't.
+	//
+	// This is obviously not ideal but it was easy to implement and
+	// it covers the most common use cases.
+	//
+	// TODO: Make sandboxing work for other situations too.
+	if (args.files_name == NULL && args.arg_count == 1
+			&& (opt_stdout || strcmp("-", args.arg_names[0]) == 0
+				|| opt_mode == MODE_LIST))
+		io_allow_sandbox();
+#endif
+
 	// coder_run() handles compression, decompression, and testing.
 	// list_file() is for --list.
 	void (*run)(const char *filename) = &coder_run;

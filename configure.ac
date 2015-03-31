@@ -492,6 +492,30 @@ AC_MSG_RESULT([$enable_symbol_versions])
 AM_CONDITIONAL([COND_SYMVERS], [test "x$enable_symbol_versions" = xyes])
 
 
+##############
+# Sandboxing #
+##############
+
+AC_MSG_CHECKING([if sandboxing should be used])
+AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
+		[This is an experimental feature.
+		Sandboxing METHOD can be `auto', `no', or `capsicum'.
+		The default is `no'.])],
+	[], [enable_sandbox=no])
+case $enable_sandbox in
+	auto)
+		AC_MSG_RESULT([maybe (autodetect)])
+		;;
+	no | capsicum)
+		AC_MSG_RESULT([$enable_sandbox])
+		;;
+	*)
+		AC_MSG_RESULT([])
+		AC_MSG_ERROR([--enable-sandbox only accepts `auto', `no', or `capsicum'.])
+		;;
+esac
+
+
 ###############################################################################
 # Checks for programs.
 ###############################################################################
@@ -720,6 +744,23 @@ AC_CHECK_DECL([_mm_movemask_epi8],
 [#ifdef HAVE_IMMINTRIN_H
 #include <immintrin.h>
 #endif])
+
+# Check for sandbox support. If one is found, set enable_sandbox=found.
+case $enable_sandbox in
+	auto | capsicum)
+		AX_CHECK_CAPSICUM([enable_sandbox=found], [:])
+		;;
+esac
+
+# If a specific sandboxing method was explicitly requested and it wasn't
+# found, give an error.
+case $enable_sandbox in
+	auto | no | found)
+		;;
+	*)
+		AC_MSG_ERROR([$enable_sandbox support not found])
+		;;
+esac
 
 
 ###############################################################################

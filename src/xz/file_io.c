@@ -29,6 +29,14 @@ static bool warn_fchown;
 #	include <utime.h>
 #endif
 
+#ifdef HAVE_CAPSICUM
+#	ifdef HAVE_SYS_CAPSICUM_H
+#		include <sys/capsicum.h>
+#	else
+#		include <sys/capability.h>
+#	endif
+#endif
+
 #include "tuklib_open_stdxxx.h"
 
 #ifndef O_BINARY
@@ -57,6 +65,11 @@ typedef enum {
 
 /// If true, try to create sparse files when decompressing.
 static bool try_sparse = true;
+
+#ifdef ENABLE_SANDBOX
+/// True if the conditions for sandboxing (described in main()) have been met.
+static bool sandbox_allowed = false;
+#endif
 
 #ifndef TUKLIB_DOSLIKE
 /// File status flags of standard input. This is used by io_open_src()
@@ -140,6 +153,69 @@ io_no_sparse(void)
 	try_sparse = false;
 	return;
 }
+
+
+#ifdef ENABLE_SANDBOX
+extern void
+io_allow_sandbox(void)
+{
+	sandbox_allowed = true;
+	return;
+}
+
+
+/// Enables operating-system-specific sandbox if it is possible.
+/// src_fd is the file descriptor of the input file.
+static void
+io_sandbox_enter(int src_fd)
+{
+	if (!sandbox_allowed) {
+		message(V_DEBUG, _("Sandbox is disabled due "
+				"to incompatible command line arguments"));
+		return;
+	}
+
+	const char dummy_str[] = "x";
+
+	// Try to ensure that both libc and xz locale files have been
+	// loaded when NLS is enabled.
+	snprintf(NULL, 0, "%s%s", _(dummy_str), strerror(EINVAL));
+
+	// Try to ensure that iconv data files needed for handling multibyte
+	// characters have been loaded. This is needed at least with glibc.
+	tuklib_mbstr_width(dummy_str, NULL);
+
+#ifdef HAVE_CAPSICUM
+	// Capsicum needs FreeBSD 10.0 or later.
+	cap_rights_t rights;
+
+	if (cap_rights_limit(src_fd, cap_rights_init(&rights,
+			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
+		goto error;
+
+	if (cap_rights_limit(STDOUT_FILENO, cap_rights_init(&rights,
+			CAP_EVENT, CAP_FCNTL, CAP_FSTAT, CAP_LOOKUP,
+			CAP_WRITE, CAP_SEEK)))
+		goto error;
+
+	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
+			CAP_EVENT, CAP_WRITE)))
+		goto error;
+
+	if (cap_enter())
+		goto error;
+
+#else
+#	error ENABLE_SANDBOX is defined but no sandboxing method was found.
+#endif
+
+	message(V_DEBUG, _("Sandbox was successfully enabled"));
+	return;
+
+error:
+	message(V_DEBUG, _("Failed to enable the sandbox"));
+}
+#endif // ENABLE_SANDBOX
 
 
 #ifndef TUKLIB_DOSLIKE
@@ -674,6 +750,11 @@ io_open_src(const char *src_name)
 	signals_block();
 	const bool error = io_open_src_real(&pair);
 	signals_unblock();
+
+#ifdef ENABLE_SANDBOX
+	if (!error)
+		io_sandbox_enter(pair.src_fd);
+#endif
 
 	return error ? NULL : &pair;
 }

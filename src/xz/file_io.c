@@ -198,8 +198,12 @@ io_sandbox_enter(int src_fd)
 			CAP_WRITE, CAP_SEEK)))
 		goto error;
 
+	if (cap_rights_limit(user_abort_pipe[0], cap_rights_init(&rights,
+			CAP_EVENT)))
+		goto error;
+
 	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
-			CAP_EVENT, CAP_WRITE)))
+			CAP_WRITE)))
 		goto error;
 
 	if (cap_enter())

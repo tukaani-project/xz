@@ -66,8 +66,9 @@ XZ Utils Release Notes
           is non-trivial, so as of writing it is unknown if it will be
           backported to the v5.0 branch.
 
-        - Multi-threaded decompression can be enabled with the
+        - Multi-threaded compression can be enabled with the
           --threads (-T) option.
+          [Fixed: This originally said "decompression".]
 
         - New command line options in xz: --single-stream,
           --block-size=SIZE, --block-list=SIZES,

@@ -651,7 +651,7 @@ msgid ""
 "                      decompressor memory usage into account before using 7-9!"
 msgstr ""
 "  -0 .. -9              Kompressionseinstellung; Voreinstellung is 6. Beachten\n"
-"                        Sie den Speicherverbrauch des Komprimieres *und* des\n"
+"                        Sie den Speicherverbrauch des Komprimierers *und* des\n"
 "                        Dekomprimierers, wenn Sie 7-9 benutzen!"
 
 #: src/xz/message.c:1134

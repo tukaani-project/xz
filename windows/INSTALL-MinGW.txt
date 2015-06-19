@@ -6,7 +6,7 @@ Introduction
 ------------
 
     This document explains shortly where to get and how to install the
-    build tool that are needed to build XZ Utils on Windows. The final
+    build tools that are needed to build XZ Utils on Windows. The final
     binary package will be standalone in sense that it will depend only
     on DLLs that are included in all Windows installations.
 

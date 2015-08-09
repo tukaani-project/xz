@@ -311,13 +311,8 @@
     <ClInclude Include="..\src\common\tuklib_common.h" />
     <ClInclude Include="..\src\common\tuklib_config.h" />
     <ClInclude Include="..\src\common\tuklib_cpucores.h" />
-    <ClInclude Include="..\src\common\tuklib_exit.h" />
-    <ClInclude Include="..\src\common\tuklib_gettext.h" />
     <ClInclude Include="..\src\common\tuklib_integer.h" />
-    <ClInclude Include="..\src\common\tuklib_mbstr.h" />
-    <ClInclude Include="..\src\common\tuklib_open_stdxxx.h" />
     <ClInclude Include="..\src\common\tuklib_physmem.h" />
-    <ClInclude Include="..\src\common\tuklib_progname.h" />
     <ClInclude Include="..\src\liblzma\api\lzma.h" />
     <ClInclude Include="..\src\liblzma\api\lzma\base.h" />
     <ClInclude Include="..\src\liblzma\api\lzma\bcj.h" />

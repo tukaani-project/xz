@@ -34,8 +34,8 @@ AC_CANONICAL_HOST
 
 # We do some special things on Windows (32-bit or 64-bit) builds.
 case $host_os in
-	mingw* | cygwin* | msys) is_w32=yes ;;
-	*)                       is_w32=no ;;
+	mingw* | cygwin | msys) is_w32=yes ;;
+	*)                      is_w32=no ;;
 esac
 AM_CONDITIONAL([COND_W32], [test "$is_w32" = yes])
 
@@ -289,7 +289,7 @@ if test "x$enable_assembler" = xyes; then
 	case $host_os in
 		# Darwin should work too but only if not creating universal
 		# binaries. Solaris x86 could work too but I cannot test.
-		linux* | *bsd* | mingw* | cygwin* | msys | *djgpp*)
+		linux* | *bsd* | mingw* | cygwin | msys | *djgpp*)
 			case $host_cpu in
 				i?86)   enable_assembler=x86 ;;
 				x86_64) enable_assembler=x86_64 ;;

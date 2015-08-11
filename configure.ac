@@ -34,8 +34,8 @@ AC_CANONICAL_HOST
 
 # We do some special things on Windows (32-bit or 64-bit) builds.
 case $host_os in
-	mingw* | cygwin*) is_w32=yes ;;
-	*)                is_w32=no ;;
+	mingw* | cygwin* | msys) is_w32=yes ;;
+	*)                       is_w32=no ;;
 esac
 AM_CONDITIONAL([COND_W32], [test "$is_w32" = yes])
 
@@ -43,9 +43,15 @@ AM_CONDITIONAL([COND_W32], [test "$is_w32" = yes])
 # executables. Cygwin is an exception to this, since it is recommended
 # that symlinks don't have the .exe suffix. To make this work, we
 # define LN_EXEEXT.
+#
+# MSYS2 is treated the same way as Cygwin. It uses plain "msys" like
+# the original MSYS when building MSYS/MSYS2-binaries. Hopefully this
+# doesn't break things for the original MSYS developers. Note that this
+# doesn't affect normal MSYS/MSYS2 users building non-MSYS/MSYS2 binaries
+# since in that case the $host_os is usually mingw32.
 case $host_os in
-	cygwin)  LN_EXEEXT= ;;
-	*)       LN_EXEEXT='$(EXEEXT)' ;;
+	cygwin | msys)  LN_EXEEXT= ;;
+	*)              LN_EXEEXT='$(EXEEXT)' ;;
 esac
 AC_SUBST([LN_EXEEXT])
 
@@ -283,7 +289,7 @@ if test "x$enable_assembler" = xyes; then
 	case $host_os in
 		# Darwin should work too but only if not creating universal
 		# binaries. Solaris x86 could work too but I cannot test.
-		linux* | *bsd* | mingw* | cygwin* | *djgpp*)
+		linux* | *bsd* | mingw* | cygwin* | msys | *djgpp*)
 			case $host_cpu in
 				i?86)   enable_assembler=x86 ;;
 				x86_64) enable_assembler=x86_64 ;;

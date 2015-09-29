@@ -2,6 +2,24 @@
 XZ Utils Release Notes
 ======================
 
+5.2.2 (2015-09-29)
+
+    * Fixed bugs in QNX-specific code.
+
+    * Omitted the use of pipe2() even if it is available to avoid
+      portability issues with some old Linux and glibc combinations.
+
+    * Updated German translation.
+
+    * Added project files to build static and shared liblzma (not the
+      whole XZ Utils) with Visual Studio 2013 update 2 or later.
+
+    * Documented that threaded decompression hasn't been implemented
+      yet. A 5.2.0 NEWS entry describing multi-threading support had
+      incorrectly said "decompression" when it should have said
+      "compression".
+
+
 5.2.1 (2015-02-26)
 
     * Fixed a compression-ratio regression in fast mode of LZMA1 and

@@ -872,17 +872,18 @@ index_dup_stream(const index_stream *src, const lzma_allocator *allocator)
 	index_stream *dest = index_stream_init(src->node.compressed_base,
 			src->node.uncompressed_base, src->number,
 			src->block_number_base, allocator);
-
-	// Return immediately if allocation failed or if there are
-	// no groups to duplicate.
-	if (dest == NULL || src->groups.leftmost == NULL)
-		return dest;
+	if (dest == NULL)
+		return NULL;
 
 	// Copy the overall information.
 	dest->record_count = src->record_count;
 	dest->index_list_size = src->index_list_size;
 	dest->stream_flags = src->stream_flags;
 	dest->stream_padding = src->stream_padding;
+
+	// Return if there are no groups to duplicate.
+	if (src->groups.leftmost == NULL)
+		return dest;
 
 	// Allocate memory for the Records. We put all the Records into
 	// a single group. It's simplest and also tends to make

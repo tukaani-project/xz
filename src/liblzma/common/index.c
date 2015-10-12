@@ -829,6 +829,9 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 				s->groups.rightmost = &newg->node;
 
 			lzma_free(g, allocator);
+
+			// NOTE: newg isn't leaked here because
+			// newg == (void *)&newg->node.
 		}
 	}
 

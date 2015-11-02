@@ -760,23 +760,22 @@ io_close_src(file_pair *pair, bool success)
 #endif
 
 	if (pair->src_fd != STDIN_FILENO && pair->src_fd != -1) {
-#ifdef TUKLIB_DOSLIKE
-		(void)close(pair->src_fd);
-#endif
-
-		// If we are going to unlink(), do it before closing the file.
-		// This way there's no risk that someone replaces the file and
-		// happens to get same inode number, which would make us
-		// unlink() wrong file.
+		// Close the file before possibly unlinking it. On DOS-like
+		// systems this is always required since unlinking will fail
+		// if the file is open. On POSIX systems it usually works
+		// to unlink open files, but in some cases it doesn't and
+		// one gets EBUSY in errno.
 		//
-		// NOTE: DOS-like systems are an exception to this, because
-		// they don't allow unlinking files that are open. *sigh*
+		// xz 5.2.2 and older unlinked the file before closing it
+		// (except on DOS-like systems). The old code didn't handle
+		// EBUSY and could fail e.g. on some CIFS shares. The
+		// advantage of unlinking before closing is negligible
+		// (avoids a race between close() and stat()/lstat() and
+		// unlink()), so let's keep this simple.
+		(void)close(pair->src_fd);
+
 		if (success && !opt_keep_original)
 			io_unlink(pair->src_name, &pair->src_st);
-
-#ifndef TUKLIB_DOSLIKE
-		(void)close(pair->src_fd);
-#endif
 	}
 
 	return;

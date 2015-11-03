@@ -10,6 +10,9 @@
 /* Define to 1 if sha256 integrity check is enabled. */
 #define HAVE_CHECK_SHA256 1
 
+/* Define to 1 if any of HAVE_DECODER_foo have been defined. */
+#define HAVE_DECODERS 1
+
 /* Define to 1 if arm decoder is enabled. */
 #define HAVE_DECODER_ARM 1
 
@@ -36,6 +39,9 @@
 
 /* Define to 1 if x86 decoder is enabled. */
 #define HAVE_DECODER_X86 1
+
+/* Define to 1 if any of HAVE_ENCODER_foo have been defined. */
+#define HAVE_ENCODERS 1
 
 /* Define to 1 if arm encoder is enabled. */
 #define HAVE_ENCODER_ARM 1

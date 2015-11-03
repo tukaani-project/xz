@@ -97,6 +97,7 @@ AC_ARG_ENABLE([encoders], AS_HELP_STRING([--enable-encoders=LIST],
 	[], [enable_encoders=SUPPORTED_FILTERS])
 enable_encoders=`echo "$enable_encoders" | sed 's/,/ /g'`
 if test "x$enable_encoders" = xno || test "x$enable_encoders" = x; then
+	enable_encoders=no
 	AC_MSG_RESULT([(none)])
 else
 	for arg in $enable_encoders
@@ -126,6 +127,7 @@ AC_ARG_ENABLE([decoders], AS_HELP_STRING([--enable-decoders=LIST],
 	[], [enable_decoders=SUPPORTED_FILTERS])
 enable_decoders=`echo "$enable_decoders" | sed 's/,/ /g'`
 if test "x$enable_decoders" = xno || test "x$enable_decoders" = x; then
+	enable_decoders=no
 	AC_MSG_RESULT([(none)])
 else
 	for arg in $enable_decoders
@@ -153,8 +155,8 @@ if test "x$enable_encoder_lzma2$enable_encoder_lzma1" = xyesno \
 	AC_MSG_ERROR([LZMA2 requires that LZMA1 is also enabled.])
 fi
 
-AM_CONDITIONAL(COND_MAIN_ENCODER, test "x$enable_encoders" != xno && test "x$enable_encoders" != x)
-AM_CONDITIONAL(COND_MAIN_DECODER, test "x$enable_decoders" != xno && test "x$enable_decoders" != x)
+AM_CONDITIONAL(COND_MAIN_ENCODER, test "x$enable_encoders" != xno)
+AM_CONDITIONAL(COND_MAIN_DECODER, test "x$enable_decoders" != xno)
 
 m4_foreach([NAME], [SUPPORTED_FILTERS],
 [AM_CONDITIONAL(COND_FILTER_[]m4_toupper(NAME), test "x$enable_filter_[]NAME" = xyes)

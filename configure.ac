@@ -141,11 +141,6 @@ else
 				;;
 		esac
 	done
-
-	# LZMA2 requires that LZMA1 is enabled.
-	test "x$enable_encoder_lzma2" = xyes && enable_encoder_lzma1=yes
-	test "x$enable_decoder_lzma2" = xyes && enable_decoder_lzma1=yes
-
 	AC_MSG_RESULT([$enable_decoders])
 fi
 

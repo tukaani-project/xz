@@ -416,18 +416,21 @@ AM_CONDITIONAL([COND_XZ], [test x$enable_xz != xno])
 AC_ARG_ENABLE([xzdec], [AS_HELP_STRING([--disable-xzdec],
 		[do not build xzdec])],
 	[], [enable_xzdec=yes])
+test "x$enable_decoders" = xno && enable_xzdec=no
 AM_CONDITIONAL([COND_XZDEC], [test x$enable_xzdec != xno])
 
 AC_ARG_ENABLE([lzmadec], [AS_HELP_STRING([--disable-lzmadec],
 		[do not build lzmadec
 		(it exists primarily for LZMA Utils compatibility)])],
 	[], [enable_lzmadec=yes])
+test "x$enable_decoder_lzma1" = xno && enable_lzmadec=no
 AM_CONDITIONAL([COND_LZMADEC], [test x$enable_lzmadec != xno])
 
 AC_ARG_ENABLE([lzmainfo], [AS_HELP_STRING([--disable-lzmainfo],
 		[do not build lzmainfo
 		(it exists primarily for LZMA Utils compatibility)])],
 	[], [enable_lzmainfo=yes])
+test "x$enable_decoder_lzma1" = xno && enable_lzmainfo=no
 AM_CONDITIONAL([COND_LZMAINFO], [test x$enable_lzmainfo != xno])
 
 AC_ARG_ENABLE([lzma-links], [AS_HELP_STRING([--disable-lzma-links],

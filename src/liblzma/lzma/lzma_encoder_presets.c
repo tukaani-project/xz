@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       lzma_presets.c
+/// \file       lzma_encoder_presets.c
 /// \brief      Encoder presets
 /// \note       xz needs this even when only decoding is enabled.
 //

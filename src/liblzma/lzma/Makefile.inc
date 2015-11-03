@@ -11,7 +11,7 @@ liblzma_la_SOURCES += lzma/lzma_common.h
 
 if COND_FILTER_LZMA1
 liblzma_la_SOURCES += \
-	lzma/lzma_presets.c
+	lzma/lzma_encoder_presets.c
 endif
 
 if COND_ENCODER_LZMA1

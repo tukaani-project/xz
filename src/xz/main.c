@@ -207,8 +207,11 @@ main(int argc, char **argv)
 
 	// coder_run() handles compression, decompression, and testing.
 	// list_file() is for --list.
-	void (*run)(const char *filename) = opt_mode == MODE_LIST
-			 ? &list_file : &coder_run;
+	void (*run)(const char *filename) = &coder_run;
+#ifdef HAVE_DECODERS
+	if (opt_mode == MODE_LIST)
+		run = &list_file;
+#endif
 
 	// Process the files given on the command line. Note that if no names
 	// were given, args_parse() gave us a fake "-" filename.
@@ -267,6 +270,7 @@ main(int argc, char **argv)
 			(void)fclose(args.files_file);
 	}
 
+#ifdef HAVE_DECODERS
 	// All files have now been handled. If in --list mode, display
 	// the totals before exiting. We don't have signal handlers
 	// enabled in --list mode, so we don't need to check user_abort.
@@ -274,6 +278,7 @@ main(int argc, char **argv)
 		assert(!user_abort);
 		list_totals();
 	}
+#endif
 
 #ifndef NDEBUG
 	coder_free();

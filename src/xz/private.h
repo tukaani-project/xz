@@ -60,4 +60,7 @@
 #include "signals.h"
 #include "suffix.h"
 #include "util.h"
-#include "list.h"
+
+#ifdef HAVE_DECODERS
+#	include "list.h"
+#endif

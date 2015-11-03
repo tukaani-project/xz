@@ -114,6 +114,8 @@ else
 				;;
 		esac
 	done
+	AC_DEFINE([HAVE_ENCODERS], [1],
+		[Define to 1 if any of HAVE_ENCODER_foo have been defined.])
 	AC_MSG_RESULT([$enable_encoders])
 fi
 
@@ -141,6 +143,8 @@ else
 				;;
 		esac
 	done
+	AC_DEFINE([HAVE_DECODERS], [1],
+		[Define to 1 if any of HAVE_DECODER_foo have been defined.])
 	AC_MSG_RESULT([$enable_decoders])
 fi
 

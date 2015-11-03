@@ -16,8 +16,6 @@ xz_SOURCES = \
 	file_io.h \
 	hardware.c \
 	hardware.h \
-	list.c \
-	list.h \
 	main.c \
 	main.h \
 	message.c \
@@ -38,6 +36,12 @@ xz_SOURCES = \
 	../common/tuklib_exit.c \
 	../common/tuklib_mbstr_width.c \
 	../common/tuklib_mbstr_fw.c
+
+if COND_MAIN_DECODER
+xz_SOURCES = \
+	list.c \
+	list.h
+endif
 
 if COND_W32
 xz_SOURCES += xz_w32res.rc

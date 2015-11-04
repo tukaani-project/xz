@@ -541,7 +541,11 @@ lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->coder->lz.code = NULL;
 		next->coder->lz.end = NULL;
 
+		// mf.size is initialized to silence Valgrind
+		// when used on optimized binaries (GCC may reorder
+		// code in a way that Valgrind gets unhappy).
 		next->coder->mf.buffer = NULL;
+		next->coder->mf.size = 0;
 		next->coder->mf.hash = NULL;
 		next->coder->mf.son = NULL;
 		next->coder->mf.hash_count = 0;

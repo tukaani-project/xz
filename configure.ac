@@ -645,18 +645,32 @@ TUKLIB_PHYSMEM
 TUKLIB_CPUCORES
 TUKLIB_MBSTR
 
-# Check for system-provided SHA-256. At least the following is supported:
+# Check for system-provided SHA-256. The supported implementations are listed
+# below. The detection for the ones marked with [*] has been intentionally
+# disabled because they have symbol name conflicts with OpenSSL's libcrypto
+# which can cause weird problems (clean namespaces would make things too
+# boring, I guess).
 #
 # OS       Headers                     Library  Type           Function
-# FreeBSD  sys/types.h + sha256.h      libmd    SHA256_CTX     SHA256_Init
+# FreeBSD  sys/types.h + sha256.h      libmd    SHA256_CTX     SHA256_Init [*]
 # NetBSD   sys/types.h + sha2.h                 SHA256_CTX     SHA256_Init
 # OpenBSD  sys/types.h + sha2.h                 SHA2_CTX       SHA256Init
 # Solaris  sys/types.h + sha2.h        libmd    SHA256_CTX     SHA256Init
-# MINIX 3  sys/types.h + minix/sha2.h  libutil  SHA256_CTX     SHA256_Init
+# MINIX 3  sys/types.h + minix/sha2.h  libutil  SHA256_CTX     SHA256_Init [*]
 # Darwin   CommonCrypto/CommonDigest.h          CC_SHA256_CTX  CC_SHA256_Init
 #
-# Note that Darwin's CC_SHA256_Update takes buffer size as uint32_t instead
-# of size_t.
+# Notes:
+#
+#   - NetBSD's SHA256_Init doesn't conflict with libcrypto because
+#     libcrypto on NetBSD was made to use the libc implementation to avoid
+#     this exact symbol conflict problem:
+#     http://ftp.netbsd.org/pub/NetBSD/security/advisories/NetBSD-SA2009-012.txt.asc
+#
+#   - As of 2016-03-10, FreeBSD seems to have the issue fixed in SVN head
+#     but not in the FreeBSD 10 branch.
+#
+#   - Darwin's CC_SHA256_Update takes buffer size as uint32_t instead
+#     of size_t.
 #
 # We don't check for e.g. OpenSSL or libgcrypt because we don't want
 # to introduce dependencies to other packages by default. Maybe such
@@ -688,7 +702,8 @@ if test "x$enable_check_sha256" = "xyes"; then
 			  #ifdef HAVE_MINIX_SHA2_H
 			  # include <minix/sha2.h>
 			  #endif]])
-		AC_SEARCH_LIBS([SHA256_Init], [md util])
+		dnl Omit detection of the FreeBSD and MINIX 3 versions:
+		dnl AC_SEARCH_LIBS([SHA256_Init], [md util])
 		AC_SEARCH_LIBS([SHA256Init], [md])
 		AC_CHECK_FUNCS([CC_SHA256_Init SHA256_Init SHA256Init],
 			[break])

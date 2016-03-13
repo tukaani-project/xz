@@ -275,6 +275,20 @@ m4_foreach([NAME], [SUPPORTED_CHECKS],
 [AM_CONDITIONAL(COND_CHECK_[]m4_toupper(NAME), test "x$enable_check_[]NAME" = xyes)
 ])dnl
 
+AC_MSG_CHECKING([if external SHA-256 should be used])
+AC_ARG_ENABLE([external-sha256], AS_HELP_STRING([--enable-external-sha256],
+		[Use SHA-256 code from the operating system.
+		See INSTALL for possible subtle problems.]),
+		[], [enable_external_sha256=no])
+if test "x$enable_check_sha256" != "xyes"; then
+	enable_external_sha256=no
+fi
+if test "x$enable_external_sha256" = xyes; then
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi
+
 
 ###########################
 # Assembler optimizations #
@@ -669,48 +683,34 @@ TUKLIB_PHYSMEM
 TUKLIB_CPUCORES
 TUKLIB_MBSTR
 
-# Check for system-provided SHA-256. The supported implementations are listed
-# below. The detection for the ones marked with [*] has been intentionally
-# disabled because they have symbol name conflicts with OpenSSL's libcrypto
-# which can cause weird problems (clean namespaces would make things too
-# boring, I guess).
+# If requsted, check for system-provided SHA-256. At least the following
+# implementations are supported:
 #
 # OS       Headers                     Library  Type           Function
-# FreeBSD  sys/types.h + sha256.h      libmd    SHA256_CTX     SHA256_Init [*]
+# FreeBSD  sys/types.h + sha256.h      libmd    SHA256_CTX     SHA256_Init
 # NetBSD   sys/types.h + sha2.h                 SHA256_CTX     SHA256_Init
 # OpenBSD  sys/types.h + sha2.h                 SHA2_CTX       SHA256Init
 # Solaris  sys/types.h + sha2.h        libmd    SHA256_CTX     SHA256Init
-# MINIX 3  sys/types.h + minix/sha2.h  libutil  SHA256_CTX     SHA256_Init [*]
+# MINIX 3  sys/types.h + sha2.h                 SHA256_CTX     SHA256_Init
 # Darwin   CommonCrypto/CommonDigest.h          CC_SHA256_CTX  CC_SHA256_Init
 #
-# Notes:
+# Note that Darwin's CC_SHA256_Update takes buffer size as uint32_t instead
+# of size_t.
 #
-#   - NetBSD's SHA256_Init doesn't conflict with libcrypto because
-#     libcrypto on NetBSD was made to use the libc implementation to avoid
-#     this exact symbol conflict problem:
-#     http://ftp.netbsd.org/pub/NetBSD/security/advisories/NetBSD-SA2009-012.txt.asc
-#
-#   - As of 2016-03-10, FreeBSD seems to have the issue fixed in SVN head
-#     but not in the FreeBSD 10 branch.
-#
-#   - Darwin's CC_SHA256_Update takes buffer size as uint32_t instead
-#     of size_t.
-#
-# We don't check for e.g. OpenSSL or libgcrypt because we don't want
-# to introduce dependencies to other packages by default. Maybe such
-# libraries could be supported via additional configure options though.
-#
-if test "x$enable_check_sha256" = "xyes"; then
+sha256_header_found=no
+sha256_type_found=no
+sha256_func_found=no
+if test "x$enable_external_sha256" = "xyes"; then
 	# Test for Common Crypto before others, because Darwin has sha256.h
 	# too and we don't want to use that, because on older versions it
 	# uses OpenSSL functions, whose SHA256_Init is not guaranteed to
 	# succeed.
-	sha256_header_found=no
 	AC_CHECK_HEADERS(
-		[CommonCrypto/CommonDigest.h sha256.h sha2.h minix/sha2.h],
+		[CommonCrypto/CommonDigest.h sha256.h sha2.h],
 		[sha256_header_found=yes ; break])
 	if test "x$sha256_header_found" = xyes; then
-		AC_CHECK_TYPES([CC_SHA256_CTX, SHA256_CTX, SHA2_CTX], [], [],
+		AC_CHECK_TYPES([CC_SHA256_CTX, SHA256_CTX, SHA2_CTX],
+			[sha256_type_found=yes], [],
 			[[#ifdef HAVE_SYS_TYPES_H
 			  # include <sys/types.h>
 			  #endif
@@ -722,21 +722,19 @@ if test "x$enable_check_sha256" = "xyes"; then
 			  #endif
 			  #ifdef HAVE_SHA2_H
 			  # include <sha2.h>
-			  #endif
-			  #ifdef HAVE_MINIX_SHA2_H
-			  # include <minix/sha2.h>
 			  #endif]])
-		dnl Omit detection of the FreeBSD and MINIX 3 versions:
-		dnl AC_SEARCH_LIBS([SHA256_Init], [md util])
-		AC_SEARCH_LIBS([SHA256Init], [md])
-		AC_CHECK_FUNCS([CC_SHA256_Init SHA256_Init SHA256Init],
-			[break])
+		if test "x$sha256_type_found" = xyes ; then
+			AC_SEARCH_LIBS([SHA256Init], [md])
+			AC_SEARCH_LIBS([SHA256_Init], [md])
+			AC_CHECK_FUNCS([CC_SHA256_Init SHA256Init SHA256_Init],
+				[sha256_func_found=yes ; break])
+		fi
 	fi
 fi
-AM_CONDITIONAL([COND_INTERNAL_SHA256],
-	[test "x$ac_cv_func_SHA256_Init" != xyes \
-		&& test "x$ac_cv_func_SHA256Init" != xyes \
-		&& test "x$ac_cv_func_CC_SHA256_Init" != xyes])
+AM_CONDITIONAL([COND_INTERNAL_SHA256], [test "x$sha256_func_found" = xno])
+if test "x$enable_external_sha256$sha256_func_found" = xyesno; then
+	AC_MSG_ERROR([--enable-external-sha256 was specified but no supported external SHA-256 implementation was found])
+fi
 
 # Check for SSE2 intrinsics.
 AC_CHECK_DECL([_mm_movemask_epi8],

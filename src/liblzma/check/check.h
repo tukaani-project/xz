@@ -15,13 +15,12 @@
 
 #include "common.h"
 
-// If either the data type or the function for external SHA-256 is missing,
-// use the internal SHA-256 code.
-#if !(defined(HAVE_CC_SHA256_CTX) || defined(HAVE_SHA256_CTX) \
-			|| defined(HAVE_SHA2_CTX)) \
-		|| !(defined(HAVE_CC_SHA256_INIT) \
-			|| defined(HAVE_SHA256_INIT) \
-			|| defined(HAVE_SHA256INIT))
+// If the function for external SHA-256 is missing, use the internal SHA-256
+// code. Due to how configure works, these defines can only get defined when
+// both a usable header and a type have already been found.
+#if !(defined(HAVE_CC_SHA256_INIT) \
+		|| defined(HAVE_SHA256_INIT) \
+		|| defined(HAVE_SHA256INIT))
 #	define HAVE_INTERNAL_SHA256 1
 #endif
 
@@ -35,9 +34,6 @@
 #elif defined(HAVE_SHA2_H)
 #	include <sys/types.h>
 #	include <sha2.h>
-#elif defined(HAVE_MINIX_SHA2_H)
-#	include <sys/types.h>
-#	include <minix/sha2.h>
 #endif
 
 #if defined(HAVE_INTERNAL_SHA256)

@@ -246,6 +246,42 @@ XZ Utils Installation
                 the liblzma ABI, so this option should be used only when
                 it is known to not cause problems.
 
+    --enable-external-sha256
+                Try to use SHA-256 code from the operating system libc
+                or similar base system libraries. This doesn't try to
+                use OpenSSL or libgcrypt or such libraries.
+
+                The reasons to use this option:
+
+                  - It makes liblzma slightly smaller.
+
+                  - It might improve SHA-256 speed if the implementation
+                    in the operating is very good (but see below).
+
+                External SHA-256 is disabled by default for two reasons:
+
+                  - On some operating systems the symbol names of the
+                    SHA-256 functions conflict with OpenSSL's libcrypto.
+                    This causes weird problems such as decompression
+                    errors if an application is linked against both
+                    liblzma and libcrypto. This problem affects at least
+                    FreeBSD 10 and older and MINIX 3.3.0 and older, but
+                    other OSes that provide a function "SHA256_Init" might
+                    also be affected. FreeBSD 11 has the problem fixed.
+                    NetBSD had the problem but it was fixed it in 2009
+                    already. OpenBSD uses "SHA256Init" and thus never had
+                    a conflict with libcrypto.
+
+                  - The SHA-256 code in liblzma is faster than the SHA-256
+                    code provided by some operating systems. If you are
+                    curious, build two copies of xz (internal and external
+                    SHA-256) and compare the decompression (xz --test)
+                    times:
+
+                        dd if=/dev/zero bs=1024k count=1024 \
+                            | xz -v -0 -Csha256 > foo.xz
+                        time xz --test foo.xz
+
     --disable-xz
     --disable-xzdec
     --disable-lzmadec

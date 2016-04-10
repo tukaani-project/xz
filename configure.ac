@@ -585,7 +585,7 @@ AM_CONDITIONAL([COND_SHARED], [test "x$enable_shared" != xno])
 
 echo
 echo "Initializing gettext:"
-AM_GNU_GETTEXT_VERSION([0.18])
+AM_GNU_GETTEXT_VERSION([0.19])
 AM_GNU_GETTEXT([external])
 
 

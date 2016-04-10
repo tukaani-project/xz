@@ -38,7 +38,7 @@ xz_SOURCES = \
 	../common/tuklib_mbstr_fw.c
 
 if COND_MAIN_DECODER
-xz_SOURCES = \
+xz_SOURCES += \
 	list.c \
 	list.h
 endif

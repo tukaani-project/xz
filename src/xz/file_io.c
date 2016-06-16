@@ -45,6 +45,14 @@ static bool warn_fchown;
 #	define O_NOCTTY 0
 #endif
 
+// Using this macro to silence a warning from gcc -Wlogical-op.
+#if EAGAIN == EWOULDBLOCK
+#	define IS_EAGAIN_OR_EWOULDBLOCK(e) ((e) == EAGAIN)
+#else
+#	define IS_EAGAIN_OR_EWOULDBLOCK(e) \
+		((e) == EAGAIN || (e) == EWOULDBLOCK)
+#endif
+
 
 typedef enum {
 	IO_WAIT_MORE,    // Reading or writing is possible.
@@ -1102,7 +1110,7 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 			}
 
 #ifndef TUKLIB_DOSLIKE
-			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+			if (IS_EAGAIN_OR_EWOULDBLOCK(errno)) {
 				const io_wait_ret ret = io_wait(pair,
 						mytime_get_flush_timeout(),
 						true);
@@ -1190,7 +1198,7 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 			}
 
 #ifndef TUKLIB_DOSLIKE
-			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+			if (IS_EAGAIN_OR_EWOULDBLOCK(errno)) {
 				if (io_wait(pair, -1, false) == IO_WAIT_MORE)
 					continue;
 

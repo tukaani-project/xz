@@ -23,6 +23,8 @@ static bool warn_fchown;
 
 #if defined(HAVE_FUTIMES) || defined(HAVE_FUTIMESAT) || defined(HAVE_UTIMES)
 #	include <sys/time.h>
+#elif defined(HAVE__FUTIME)
+#	include <sys/utime.h>
 #elif defined(HAVE_UTIME)
 #	include <utime.h>
 #endif
@@ -456,6 +458,22 @@ io_copy_attrs(const file_pair *pair)
 	// Argh, no function to use a file descriptor to set the timestamp.
 	(void)utimes(pair->dest_name, tv);
 #	endif
+
+#elif defined(HAVE__FUTIME)
+	// Use one-second precision with Windows-specific _futime().
+	// We could use utime() too except that for some reason the
+	// timestamp will get reset at close(). With _futime() it works.
+	// This struct cannot be const as _futime() takes a non-const pointer.
+	struct _utimbuf buf = {
+		.actime = pair->src_st.st_atime,
+		.modtime = pair->src_st.st_mtime,
+	};
+
+	// Avoid warnings.
+	(void)atime_nsec;
+	(void)mtime_nsec;
+
+	(void)_futime(pair->dest_fd, &buf);
 
 #elif defined(HAVE_UTIME)
 	// Use one-second precision. utime() doesn't support using file

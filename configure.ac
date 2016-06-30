@@ -672,7 +672,7 @@ AC_C_BIGENDIAN
 gl_GETOPT
 
 # Find the best function to set timestamps.
-AC_CHECK_FUNCS([futimens futimes futimesat utimes utime], [break])
+AC_CHECK_FUNCS([futimens futimes futimesat utimes _futime utime], [break])
 
 # This is nice to have but not mandatory.
 AC_CHECK_FUNCS([posix_fadvise])

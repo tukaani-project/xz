@@ -399,6 +399,29 @@ XZ Utils Installation
                                 calls any liblzma functions from more than
                                 one thread, something bad may happen.
 
+    --enable-sandbox=METHOD
+                There is limited sandboxing support in the xz tool. If
+                built with sandbox support, it's used automatically when
+                (de)compressing exactly one file to standard output and
+                the options --files or --files0 weren't used. This is a
+                common use case, for example, (de)compressing .tar.xz
+                files via GNU tar. The sandbox is also used for
+                single-file `xz --test' or `xz --list'.
+
+                Supported METHODs:
+
+                        auto    Look for a supported sandboxing method
+                                and use it if found. If no method is
+                                found, then sandboxing isn't used.
+                                This is the default.
+
+                        no      Disable sandboxing support.
+
+                        capsicum
+                                Use Capsicum (FreeBSD >= 10) for
+                                sandboxing. If no Capsicum support
+                                is found, configure will give an error.
+
     --enable-symbol-versions
                 Use symbol versioning for liblzma. This is enabled by
                 default on GNU/Linux, other GNU-based systems, and

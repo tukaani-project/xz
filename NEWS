@@ -2,6 +2,45 @@
 XZ Utils Release Notes
 ======================
 
+5.2.3 (2016-12-30)
+
+    * xz:
+
+        - Always close a file before trying to delete it to avoid
+          problems on some operating system and file system combinations.
+
+        - Fixed copying of file timestamps on Windows.
+
+        - Added experimental (disabled by default) sandbox support using
+          Capsicum (FreeBSD >= 10). See --enable-sandbox in INSTALL.
+
+    * C99/C11 conformance fixes to liblzma. The issues affected at least
+      some builds using link-time optimizations.
+
+    * Fixed bugs in the rarely-used function lzma_index_dup().
+
+    * Use of external SHA-256 code is now disabled by default.
+      It can still be enabled by passing --enable-external-sha256
+      to configure. The reasons to disable it by default (see INSTALL
+      for more details):
+
+        - Some OS-specific SHA-256 implementations conflict with
+          OpenSSL and cause problems in programs that link against both
+          liblzma and libcrypto. At least FreeBSD 10 and MINIX 3.3.0
+          are affected.
+
+        - The internal SHA-256 is faster than the SHA-256 code in
+          some operating systems.
+
+    * Changed CPU core count detection to use sched_getaffinity() on
+      GNU/Linux and GNU/kFreeBSD.
+
+    * Fixes to the build-system and xz to make xz buildable even when
+      encoders, decoders, or threading have been disabled from libilzma
+      using configure options. These fixes added two new #defines to
+      config.h: HAVE_ENCODERS and HAVE_DECODERS.
+
+
 5.2.2 (2015-09-29)
 
     * Fixed bugs in QNX-specific code.

@@ -234,6 +234,23 @@ typedef enum {
 		 * can be a sign of a bug in liblzma. See the documentation
 		 * how to report bugs.
 		 */
+
+	LZMA_SEEK               = 12
+		/**<
+		 * \brief       Request to change the input file position
+		 *
+		 * Some coders can do random access in the input file. The
+		 * initialization functions of these coders take the file size
+		 * as an argument. No other coders can return LZMA_SEEK.
+		 *
+		 * When this value is returned, the application must seek to
+		 * the file position given in lzma_stream.seek_in. This value
+		 * is guaranteed to never exceed the file size that was
+		 * specified at the coder initialization.
+		 *
+		 * After seeking the application should read new input and
+		 * pass it normally via lzma_stream.next_in and .avail_in.
+		 */
 } lzma_ret;
 
 
@@ -514,7 +531,19 @@ typedef struct {
 	void *reserved_ptr2;
 	void *reserved_ptr3;
 	void *reserved_ptr4;
-	uint64_t reserved_int1;
+
+	/**
+	 * \brief       New seek input position for LZMA_SEEK
+	 *
+	 * When lzma_code() returns LZMA_SEEK, the new input position needed
+	 * by liblzma will be available seek_in. The value is guaranteed to
+	 * not exceed the file size that was specified when this lzma_stream
+	 * was initialized.
+	 *
+	 * In all other situations the value of this variable is undefined.
+	 */
+	uint64_t seek_in;
+
 	uint64_t reserved_int2;
 	size_t reserved_int3;
 	size_t reserved_int4;

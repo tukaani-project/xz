@@ -818,6 +818,7 @@ message_strm(lzma_ret code)
 	case LZMA_STREAM_END:
 	case LZMA_GET_CHECK:
 	case LZMA_PROG_ERROR:
+	case LZMA_SEEK:
 		// Without "default", compiler will warn if new constants
 		// are added to lzma_ret, it is not too easy to forget to
 		// add the new constants to this function.

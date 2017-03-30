@@ -139,7 +139,10 @@ auto_decoder_memconfig(void *coder_ptr, uint64_t *memusage,
 		// the current memory usage.
 		*memusage = LZMA_MEMUSAGE_BASE;
 		*old_memlimit = coder->memlimit;
+
 		ret = LZMA_OK;
+		if (new_memlimit != 0 && new_memlimit < *memusage)
+			ret = LZMA_MEMLIMIT_ERROR;
 	}
 
 	if (ret == LZMA_OK && new_memlimit != 0)

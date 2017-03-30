@@ -10,7 +10,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "index.h"
+#include "index_decoder.h"
 #include "check.h"
 
 
@@ -265,11 +265,11 @@ index_decoder_reset(lzma_index_coder *coder, const lzma_allocator *allocator,
 }
 
 
-static lzma_ret
-index_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
+extern lzma_ret
+lzma_index_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		lzma_index **i, uint64_t memlimit)
 {
-	lzma_next_coder_init(&index_decoder_init, next, allocator);
+	lzma_next_coder_init(&lzma_index_decoder_init, next, allocator);
 
 	if (i == NULL)
 		return LZMA_PROG_ERROR;
@@ -296,7 +296,7 @@ index_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 extern LZMA_API(lzma_ret)
 lzma_index_decoder(lzma_stream *strm, lzma_index **i, uint64_t memlimit)
 {
-	lzma_next_strm_init(index_decoder_init, strm, i, memlimit);
+	lzma_next_strm_init(lzma_index_decoder_init, strm, i, memlimit);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_FINISH] = true;

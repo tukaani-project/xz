@@ -70,6 +70,7 @@ liblzma_la_SOURCES += \
 	common/filter_decoder.h \
 	common/filter_flags_decoder.c \
 	common/index_decoder.c \
+	common/index_decoder.h \
 	common/index_hash.c \
 	common/stream_buffer_decoder.c \
 	common/stream_decoder.c \

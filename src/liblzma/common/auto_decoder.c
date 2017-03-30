@@ -155,9 +155,6 @@ auto_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 {
 	lzma_next_coder_init(&auto_decoder_init, next, allocator);
 
-	if (memlimit == 0)
-		return LZMA_PROG_ERROR;
-
 	if (flags & ~LZMA_SUPPORTED_FLAGS)
 		return LZMA_OPTIONS_ERROR;
 
@@ -175,7 +172,7 @@ auto_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		coder->next = LZMA_NEXT_CODER_INIT;
 	}
 
-	coder->memlimit = memlimit;
+	coder->memlimit = my_max(1, memlimit);
 	coder->flags = flags;
 	coder->sequence = SEQ_INIT;
 

@@ -317,7 +317,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		ret = LZMA_OK;
 		break;
 
-	case LZMA_SEEK:
+	case LZMA_SEEK_NEEDED:
 		strm->internal->allow_buf_error = false;
 
 		// If LZMA_FINISH was used, reset it back to the

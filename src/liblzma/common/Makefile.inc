@@ -65,6 +65,7 @@ liblzma_la_SOURCES += \
 	common/block_decoder.h \
 	common/block_header_decoder.c \
 	common/easy_decoder_memusage.c \
+	common/file_info.c \
 	common/filter_buffer_decoder.c \
 	common/filter_decoder.c \
 	common/filter_decoder.h \

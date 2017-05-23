@@ -109,7 +109,7 @@ static struct {
 	uint32_t checks;
 	uint32_t min_version;
 	bool all_have_sizes;
-} totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, true };
+} totals = { 0, 0, 0, 0, 0, 0, 0, 0, 50000002, true };
 
 
 /// Convert XZ Utils version number to a string.
@@ -636,7 +636,11 @@ static void
 get_check_names(char buf[CHECKS_STR_SIZE],
 		uint32_t checks, bool space_after_comma)
 {
-	assert(checks != 0);
+	// If we get called when there are no Checks to print, set checks
+	// to 1 so that we print "None". This can happen in the robot mode
+	// when printing the totals line if there are no valid input files.
+	if (checks == 0)
+		checks = 1;
 
 	char *pos = buf;
 	size_t left = CHECKS_STR_SIZE;

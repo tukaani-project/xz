@@ -318,6 +318,8 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 		// If the above fails, the file is corrupt so
 		// LZMA_DATA_ERROR is a good error code.
 
+	// Fall through
+
 	case LZMA_DATA_ERROR:
 		// Free the memory allocated by lzma_block_header_decode().
 		for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i)

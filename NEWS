@@ -2,6 +2,17 @@
 XZ Utils Release Notes
 ======================
 
+5.3.1alpha (2018-04-29)
+
+    * All fixes from 5.2.4.
+
+    * Add lzma_file_info_decoder() into liblzma and use it in xz to
+      implement the --list feature.
+
+    * Capsicum sandbox support is enabled by default where available
+      (FreeBSD >= 10).
+
+
 5.2.4 (2018-04-29)
 
     * liblzma:

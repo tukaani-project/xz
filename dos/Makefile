@@ -64,6 +64,7 @@ SRCS_C = \
 	../src/liblzma/common/block_header_encoder.c \
 	../src/liblzma/common/block_util.c \
 	../src/liblzma/common/common.c \
+	../src/liblzma/common/file_info.c \
 	../src/liblzma/common/filter_common.c \
 	../src/liblzma/common/filter_decoder.c \
 	../src/liblzma/common/filter_encoder.c \

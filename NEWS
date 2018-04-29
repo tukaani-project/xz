@@ -2,6 +2,33 @@
 XZ Utils Release Notes
 ======================
 
+5.2.4 (2018-04-29)
+
+    * liblzma:
+
+        - Allow 0 as memory usage limit instead of returning
+          LZMA_PROG_ERROR. Now 0 is treated as if 1 byte was specified,
+          which effectively is the same as 0.
+
+        - Use "noexcept" keyword instead of "throw()" in the public
+          headers when a C++11 (or newer standard) compiler is used.
+
+        - Added a portability fix for recent Intel C Compilers.
+
+        - Microsoft Visual Studio build files have been moved under
+          windows/vs2013 and windows/vs2017.
+
+    * xz:
+
+        - Fix "xz --list --robot missing_or_bad_file.xz" which would
+          try to print an unitialized string and thus produce garbage
+          output. Since the exit status is non-zero, most uses of such
+          a command won't try to interpret the garbage output.
+
+        - "xz --list foo.xz" could print "Internal error (bug)" in a
+          corner case where a specific memory usage limit had been set.
+
+
 5.2.3 (2016-12-30)
 
     * xz:

@@ -825,8 +825,8 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 				s->groups.root = &newg->node;
 			}
 
-			if (s->groups.rightmost == &g->node)
-				s->groups.rightmost = &newg->node;
+			assert(s->groups.rightmost == &g->node);
+			s->groups.rightmost = &newg->node;
 
 			lzma_free(g, allocator);
 

@@ -180,8 +180,11 @@ index_decode(void *coder_ptr, const lzma_allocator *allocator,
 				return LZMA_OK;
 
 			if (((coder->crc32 >> (coder->pos * 8)) & 0xFF)
-					!= in[(*in_pos)++])
+					!= in[(*in_pos)++]) {
+#ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 				return LZMA_DATA_ERROR;
+#endif
+			}
 
 		} while (++coder->pos < 4);
 

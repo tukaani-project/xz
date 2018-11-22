@@ -23,7 +23,7 @@ volatile sig_atomic_t user_abort = false;
 /// been done.
 static volatile sig_atomic_t exit_signal = 0;
 
-/// Mask of signals for which have have established a signal handler to set
+/// Mask of signals for which we have established a signal handler to set
 /// user_abort to true.
 static sigset_t hooked_signals;
 

@@ -902,16 +902,19 @@ coder_run(const char *filename)
 				mytime_set_start_time();
 
 				// Initialize the progress indicator.
+				const bool is_passthru = init_ret
+						== CODER_INIT_PASSTHRU;
 				const uint64_t in_size
 						= pair->src_st.st_size <= 0
 						? 0 : pair->src_st.st_size;
-				message_progress_start(&strm, in_size);
+				message_progress_start(&strm,
+						is_passthru, in_size);
 
 				// Do the actual coding or passthru.
-				if (init_ret == CODER_INIT_NORMAL)
-					success = coder_normal(pair);
-				else
+				if (is_passthru)
 					success = coder_passthru(pair);
+				else
+					success = coder_normal(pair);
 
 				message_progress_end(success);
 			}

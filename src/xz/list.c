@@ -57,6 +57,49 @@ typedef struct {
 } block_header_info;
 
 
+/// Strings ending in a colon. These are used for lines like
+/// "  Foo:   123 MiB". These are groupped because translated strings
+/// may have different maximum string length, and we want to pad all
+/// strings so that the values are aligned nicely.
+static const char *colon_strs[] = {
+	N_("Streams:"),
+	N_("Blocks:"),
+	N_("Compressed size:"),
+	N_("Uncompressed size:"),
+	N_("Ratio:"),
+	N_("Check:"),
+	N_("Stream Padding:"),
+	N_("Memory needed:"),
+	N_("Sizes in headers:"),
+	// This won't be aligned because it's so long:
+	//N_("Minimum XZ Utils version:"),
+	N_("Number of files:"),
+};
+
+/// Enum matching the above strings.
+enum {
+	COLON_STR_STREAMS,
+	COLON_STR_BLOCKS,
+	COLON_STR_COMPRESSED_SIZE,
+	COLON_STR_UNCOMPRESSED_SIZE,
+	COLON_STR_RATIO,
+	COLON_STR_CHECK,
+	COLON_STR_STREAM_PADDING,
+	COLON_STR_MEMORY_NEEDED,
+	COLON_STR_SIZES_IN_HEADERS,
+	//COLON_STR_MINIMUM_XZ_VERSION,
+	COLON_STR_NUMBER_OF_FILES,
+};
+
+/// Field widths to use with printf to pad the strings to use the same number
+/// of columns on a terminal.
+static int colon_strs_fw[ARRAY_SIZE(colon_strs)];
+
+/// Convenience macro to get the translated string and its field width
+/// using a COLON_STR_foo enum.
+#define COLON_STR(num) colon_strs_fw[num], _(colon_strs[num])
+
+
 /// Check ID to string mapping
 static const char check_names[LZMA_CHECK_ID_MAX + 1][12] = {
 	// TRANSLATORS: Indicates that there is no integrity check.
@@ -110,6 +153,47 @@ static struct {
 	uint32_t min_version;
 	bool all_have_sizes;
 } totals = { 0, 0, 0, 0, 0, 0, 0, 0, 50000002, true };
+
+
+/// Initialize the printf field widths that are needed to get nicely aligned
+/// output with translated strings.
+static void
+init_field_widths(void)
+{
+	// Lengths of translated strings as bytes.
+	size_t lens[ARRAY_SIZE(colon_strs)];
+
+	// Lengths of translated strings as columns.
+	size_t widths[ARRAY_SIZE(colon_strs)];
+
+	// Maximum number of columns needed by a translated string.
+	size_t width_max = 0;
+
+	for (unsigned i = 0; i < ARRAY_SIZE(colon_strs); ++i) {
+		widths[i] = tuklib_mbstr_width(colon_strs[i], &lens[i]);
+
+		// If debugging is enabled, catch invalid strings with
+		// an assertion. However, when not debugging, use the
+		// byte count as the fallback width. This shouldn't
+		// ever happen unless there is a bad string in the
+		// translations, but in such case I guess it's better
+		// to try to print something useful instead of failing
+		// completely.
+		assert(widths[i] != (size_t)-1);
+		if (widths[i] == (size_t)-1)
+			widths[i] = lens[i];
+
+		if (widths[i] > width_max)
+			width_max = widths[i];
+	}
+
+	// Calculate the field width for printf("%*s") so that the strings
+	// will use width_max columns on a terminal.
+	for (unsigned i = 0; i < ARRAY_SIZE(colon_strs); ++i)
+		colon_strs_fw[i] = (int)(lens[i] + width_max - widths[i]);
+
+	return;
+}
 
 
 /// Convert XZ Utils version number to a string.
@@ -548,20 +632,20 @@ print_adv_helper(uint64_t stream_count, uint64_t block_count,
 	char checks_str[CHECKS_STR_SIZE];
 	get_check_names(checks_str, checks, true);
 
-	printf(_("  Streams:            %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_STREAMS),
 			uint64_to_str(stream_count, 0));
-	printf(_("  Blocks:             %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_BLOCKS),
 			uint64_to_str(block_count, 0));
-	printf(_("  Compressed size:    %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_COMPRESSED_SIZE),
 			uint64_to_nicestr(compressed_size,
 				NICESTR_B, NICESTR_TIB, true, 0));
-	printf(_("  Uncompressed size:  %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_UNCOMPRESSED_SIZE),
 			uint64_to_nicestr(uncompressed_size,
 				NICESTR_B, NICESTR_TIB, true, 0));
-	printf(_("  Ratio:              %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_RATIO),
 			get_ratio(compressed_size, uncompressed_size));
-	printf(_("  Check:              %s\n"), checks_str);
-	printf(_("  Stream padding:     %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_CHECK), checks_str);
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_STREAM_PADDING),
 			uint64_to_nicestr(stream_padding,
 				NICESTR_B, NICESTR_TIB, true, 0));
 	return;
@@ -734,10 +818,12 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	}
 
 	if (detailed) {
-		printf(_("  Memory needed:      %s MiB\n"), uint64_to_str(
+		printf("  %-*s %s MiB\n", COLON_STR(COLON_STR_MEMORY_NEEDED),
+				uint64_to_str(
 				round_up_to_mib(xfi->memusage_max), 0));
-		printf(_("  Sizes in headers:   %s\n"),
+		printf("  %-*s %s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
 				xfi->all_have_sizes ? _("Yes") : _("No"));
+		//printf("  %-*s %s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
 		printf(_("  Minimum XZ Utils version: %s\n"),
 				xz_ver_to_str(xfi->min_version));
 	}
@@ -902,17 +988,19 @@ print_totals_adv(void)
 {
 	putchar('\n');
 	puts(_("Totals:"));
-	printf(_("  Number of files:    %s\n"),
+	printf("  %-*s %s\n", COLON_STR(COLON_STR_NUMBER_OF_FILES),
 			uint64_to_str(totals.files, 0));
 	print_adv_helper(totals.streams, totals.blocks,
 			totals.compressed_size, totals.uncompressed_size,
 			totals.checks, totals.stream_padding);
 
 	if (message_verbosity_get() >= V_DEBUG) {
-		printf(_("  Memory needed:      %s MiB\n"), uint64_to_str(
+		printf("  %-*s %s MiB\n", COLON_STR(COLON_STR_MEMORY_NEEDED),
+				uint64_to_str(
 				round_up_to_mib(totals.memusage_max), 0));
-		printf(_("  Sizes in headers:   %s\n"),
+		printf("  %-*s %s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
 				totals.all_have_sizes ? _("Yes") : _("No"));
+		//printf("  %-*s %s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
 		printf(_("  Minimum XZ Utils version: %s\n"),
 				xz_ver_to_str(totals.min_version));
 	}
@@ -987,6 +1075,8 @@ list_file(const char *filename)
 				"standard input"));
 		return;
 	}
+
+	init_field_widths();
 
 	// Unset opt_stdout so that io_open_src() won't accept special files.
 	// Set opt_force so that io_open_src() will follow symlinks.

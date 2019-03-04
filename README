@@ -195,16 +195,15 @@ XZ Utils
 4. Translating the xz tool
 --------------------------
 
-    The messages from the xz tool have been translated into a few
-    languages. Before starting to translate into a new language, ask
-    the author whether someone else hasn't already started working on it.
+    The translations are handled via the Translation Project. If you
+    wish to help translating xz, please join the Translation Project:
 
-    Test your translation. Testing includes comparing the translated
-    output to the original English version by running the same commands
-    in both your target locale and with LC_ALL=C. Ask someone to
-    proof-read and test the translation.
+        https://translationproject.org/html/translators.html
 
-    Testing can be done e.g. by installing xz into a temporary directory:
+    Below are notes and testing instructions specific to xz
+    translations.
+
+    Testing can be done by installing xz into a temporary directory:
 
         ./configure --disable-shared --prefix=/tmp/xz-test
         # <Edit the .po file in the po directory.>
@@ -257,14 +256,11 @@ XZ Utils
         at the beginning and end of the strings.
 
       - Read the TRANSLATORS comments that have been extracted from the
-        source code and included in xz.pot. If they suggest testing the
-        translation with some type of command, do it. If testing needs
-        input files, use e.g. tests/files/good-*.xz.
-
-      - When updating the translation, read the fuzzy (modified) strings
-        carefully, and don't mark them as updated before you actually
-        have updated them. Reading through the unchanged messages can be
-        good too; sometimes you may find a better wording for them.
+        source code and included in xz.pot. Some comments suggest
+        testing with a specific command which needs an .xz file. You
+        may use e.g. any tests/files/good-*.xz. However, these test
+        commands are included in translations.bash output, so reading
+        translations.bash output carefully can be enough.
 
       - If you find language problems in the original English strings,
         feel free to suggest improvements. Ask if something is unclear.
@@ -274,9 +270,7 @@ XZ Utils
         make a direct word-by-word translation from English especially if
         the result doesn't sound good in your language.
 
-    In short, take your time and pay attention to the details. Making
-    a good translation is not a quick and trivial thing to do. The
-    translated xz should look as polished as the English version.
+    Thanks for your help!
 
 
 5. Other implementations of the .xz format

@@ -100,6 +100,63 @@ static int colon_strs_fw[ARRAY_SIZE(colon_strs)];
 #define COLON_STR(num) colon_strs_fw[num], _(colon_strs[num])
 
 
+/// Column headings
+struct {
+	/// Table column heading string
+	const char *str;
+
+	/// Number of terminal-columns to use for this table-column.
+	/// If a translated string is longer than the initial value,
+	/// this value will be increased in init_headings().
+	int columns;
+
+	/// Field width to use for printf() to pad "str" to use "columns"
+	/// number of columns on a terminal. This is calculated in
+	/// init_headings().
+	int fw;
+
+} headings[] = {
+	{ N_("Stream"), 6, 0 },
+	{ N_("Block"), 9, 0 },
+	{ N_("Blocks"), 9, 0 },
+	{ N_("CompOffset"), 15, 0 },
+	{ N_("UncompOffset"), 15, 0 },
+	{ N_("CompSize"), 15, 0 },
+	{ N_("UncompSize"), 15, 0 },
+	{ N_("TotalSize"), 15, 0 },
+	{ N_("Ratio"), 5, 0 },
+	{ N_("Check"), 10, 0 },
+	{ N_("CheckVal"), 1, 0 },
+	{ N_("Padding"), 7, 0 },
+	{ N_("Header"), 5, 0 },
+	{ N_("Flags"), 2, 0 },
+	{ N_("MemUsage"), 7 + 4, 0 }, // +4 is for " MiB"
+	{ N_("Filters"), 1, 0 },
+};
+
+/// Enum matching the above strings.
+enum {
+	HEADING_STREAM,
+	HEADING_BLOCK,
+	HEADING_BLOCKS,
+	HEADING_COMPOFFSET,
+	HEADING_UNCOMPOFFSET,
+	HEADING_COMPSIZE,
+	HEADING_UNCOMPSIZE,
+	HEADING_TOTALSIZE,
+	HEADING_RATIO,
+	HEADING_CHECK,
+	HEADING_CHECKVAL,
+	HEADING_PADDING,
+	HEADING_HEADERSIZE,
+	HEADING_HEADERFLAGS,
+	HEADING_MEMUSAGE,
+	HEADING_FILTERS,
+};
+
+#define HEADING_STR(num) headings[num].fw, _(headings[num].str)
+
+
 /// Check ID to string mapping
 static const char check_names[LZMA_CHECK_ID_MAX + 1][12] = {
 	// TRANSLATORS: Indicates that there is no integrity check.
@@ -155,10 +212,9 @@ static struct {
 } totals = { 0, 0, 0, 0, 0, 0, 0, 0, 50000002, true };
 
 
-/// Initialize the printf field widths that are needed to get nicely aligned
-/// output with translated strings.
+/// Initialize colon_strs_fw[].
 static void
-init_field_widths(void)
+init_colon_strs(void)
 {
 	// Lengths of translated strings as bytes.
 	size_t lens[ARRAY_SIZE(colon_strs)];
@@ -192,6 +248,44 @@ init_field_widths(void)
 	for (unsigned i = 0; i < ARRAY_SIZE(colon_strs); ++i)
 		colon_strs_fw[i] = (int)(lens[i] + width_max - widths[i]);
 
+	return;
+}
+
+
+/// Initialize headings[].
+static void
+init_headings(void)
+{
+	for (unsigned i = 0; i < ARRAY_SIZE(headings); ++i) {
+		size_t len;
+		size_t w = tuklib_mbstr_width(headings[i].str, &len);
+
+		// Error handling like in init_colon_strs().
+		assert(w != (size_t)-1);
+		if (w == (size_t)-1)
+			w = len;
+
+		// If the translated string is wider than the minimum width
+		// set at compile time, increase the width.
+		if ((size_t)(headings[i].columns) < w)
+			headings[i].columns = w;
+
+		// Calculate the field width for printf("%*s") so that
+		// the string uses .columns number of columns on a terminal.
+		headings[i].fw = (int)(len + headings[i].columns - w);
+	}
+
+	return;
+}
+
+
+/// Initialize the printf field widths that are needed to get nicely aligned
+/// output with translated strings.
+static void
+init_field_widths(void)
+{
+	init_colon_strs();
+	init_headings();
 	return;
 }
 
@@ -372,6 +466,10 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 	// Check the Block Flags. These must be done before calling
 	// lzma_block_compressed_size(), because it overwrites
 	// block.compressed_size.
+	//
+	// NOTE: If you add new characters here, update the minimum number of
+	// columns in headings[HEADING_HEADERFLAGS] to match the number of
+	// characters used here.
 	bhi->flags[0] = block.compressed_size != LZMA_VLI_UNKNOWN
 			? 'c' : '-';
 	bhi->flags[1] = block.uncompressed_size != LZMA_VLI_UNKNOWN
@@ -670,13 +768,19 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 
 	// Print information about the Streams.
 	//
-	// TRANSLATORS: The second line is column headings. All except
-	// Check are right aligned; Check is left aligned. Test with
-	// "xz -lv foo.xz".
-	puts(_("  Streams:\n    Stream    Blocks"
-			"      CompOffset    UncompOffset"
-			"        CompSize      UncompSize  Ratio"
-			"  Check      Padding"));
+	// All except Check are right aligned; Check is left aligned.
+	// Test with "xz -lv foo.xz".
+	printf("  %s\n    %*s %*s %*s %*s %*s %*s  %*s  %-*s %*s\n",
+			_(colon_strs[COLON_STR_STREAMS]),
+			HEADING_STR(HEADING_STREAM),
+			HEADING_STR(HEADING_BLOCKS),
+			HEADING_STR(HEADING_COMPOFFSET),
+			HEADING_STR(HEADING_UNCOMPOFFSET),
+			HEADING_STR(HEADING_COMPSIZE),
+			HEADING_STR(HEADING_UNCOMPSIZE),
+			HEADING_STR(HEADING_RATIO),
+			HEADING_STR(HEADING_CHECK),
+			HEADING_STR(HEADING_PADDING));
 
 	lzma_index_iter iter;
 	lzma_index_iter_init(&iter, xfi->idx);
@@ -689,10 +793,18 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 			uint64_to_str(iter.stream.uncompressed_offset, 3),
 		};
 		printf("    %*s %*s %*s %*s ",
-				tuklib_mbstr_fw(cols1[0], 6), cols1[0],
-				tuklib_mbstr_fw(cols1[1], 9), cols1[1],
-				tuklib_mbstr_fw(cols1[2], 15), cols1[2],
-				tuklib_mbstr_fw(cols1[3], 15), cols1[3]);
+			tuklib_mbstr_fw(cols1[0],
+				headings[HEADING_STREAM].columns),
+			cols1[0],
+			tuklib_mbstr_fw(cols1[1],
+				headings[HEADING_BLOCKS].columns),
+			cols1[1],
+			tuklib_mbstr_fw(cols1[2],
+				headings[HEADING_COMPOFFSET].columns),
+			cols1[2],
+			tuklib_mbstr_fw(cols1[3],
+				headings[HEADING_UNCOMPOFFSET].columns),
+			cols1[3]);
 
 		const char *cols2[5] = {
 			uint64_to_str(iter.stream.compressed_size, 0),
@@ -703,11 +815,21 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 			uint64_to_str(iter.stream.padding, 2),
 		};
 		printf("%*s %*s  %*s  %-*s %*s\n",
-				tuklib_mbstr_fw(cols2[0], 15), cols2[0],
-				tuklib_mbstr_fw(cols2[1], 15), cols2[1],
-				tuklib_mbstr_fw(cols2[2], 5), cols2[2],
-				tuklib_mbstr_fw(cols2[3], 10), cols2[3],
-				tuklib_mbstr_fw(cols2[4], 7), cols2[4]);
+			tuklib_mbstr_fw(cols2[0],
+				headings[HEADING_COMPSIZE].columns),
+			cols2[0],
+			tuklib_mbstr_fw(cols2[1],
+				headings[HEADING_UNCOMPSIZE].columns),
+			cols2[1],
+			tuklib_mbstr_fw(cols2[2],
+				headings[HEADING_RATIO].columns),
+			cols2[2],
+			tuklib_mbstr_fw(cols2[3],
+				headings[HEADING_CHECK].columns),
+			cols2[3],
+			tuklib_mbstr_fw(cols2[4],
+				headings[HEADING_PADDING].columns),
+			cols2[4]);
 
 		// Update the maximum Check size.
 		if (lzma_check_size(iter.stream.flags->check) > check_max)
@@ -723,26 +845,43 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	// Print information about the Blocks but only if there is
 	// at least one Block.
 	if (lzma_index_block_count(xfi->idx) > 0) {
-		// Calculate the width of the CheckVal field.
-		const int checkval_width = my_max(8, 2 * check_max);
+		// Calculate the width of the CheckVal column. This can be
+		// used as is as the field width for printf() when printing
+		// the actual check value as it is hexadecimal. However, to
+		// print the column heading, further calculation is needed
+		// to handle a translated string (it's done a few lines later).
+		const int checkval_width = my_max(
+			(uint32_t)(headings[HEADING_CHECKVAL].columns),
+			2 * check_max);
 
-		// TRANSLATORS: The second line is column headings. All
-		// except Check are right aligned; Check is left aligned.
-		printf(_("  Blocks:\n    Stream     Block"
-			"      CompOffset    UncompOffset"
-			"       TotalSize      UncompSize  Ratio  Check"));
+		// All except Check are right aligned; Check is left aligned.
+		printf("  %s\n    %*s %*s %*s %*s %*s %*s  %*s  %-*s",
+				_(colon_strs[COLON_STR_BLOCKS]),
+				HEADING_STR(HEADING_STREAM),
+				HEADING_STR(HEADING_BLOCK),
+				HEADING_STR(HEADING_COMPOFFSET),
+				HEADING_STR(HEADING_UNCOMPOFFSET),
+				HEADING_STR(HEADING_TOTALSIZE),
+				HEADING_STR(HEADING_UNCOMPSIZE),
+				HEADING_STR(HEADING_RATIO),
+				detailed ? headings[HEADING_CHECK].fw : 1,
+				_(headings[HEADING_CHECK].str));
 
 		if (detailed) {
-			// TRANSLATORS: These are additional column headings
-			// for the most verbose listing mode. CheckVal
-			// (Check value), Flags, and Filters are left aligned.
-			// Header (Block Header Size), CompSize, and MemUsage
-			// are right aligned. %*s is replaced with 0-120
-			// spaces to make the CheckVal column wide enough.
-			// Test with "xz -lvv foo.xz".
-			printf(_("      CheckVal %*s Header  Flags        "
-					"CompSize    MemUsage  Filters"),
-					checkval_width - 8, "");
+			// CheckVal (Check value), Flags, and Filters are
+			// left aligned. Block Header Size, CompSize, and
+			// MemUsage are right aligned. Test with
+			// "xz -lvv foo.xz".
+			printf(" %-*s  %*s  %-*s %*s %*s  %s",
+				headings[HEADING_CHECKVAL].fw
+					+ checkval_width
+					- headings[HEADING_CHECKVAL].columns,
+				_(headings[HEADING_CHECKVAL].str),
+				HEADING_STR(HEADING_HEADERSIZE),
+				HEADING_STR(HEADING_HEADERFLAGS),
+				HEADING_STR(HEADING_COMPSIZE),
+				HEADING_STR(HEADING_MEMUSAGE),
+				_(headings[HEADING_FILTERS].str));
 		}
 
 		putchar('\n');
@@ -764,10 +903,18 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 					iter.block.uncompressed_file_offset, 3)
 			};
 			printf("    %*s %*s %*s %*s ",
-				tuklib_mbstr_fw(cols1[0], 6), cols1[0],
-				tuklib_mbstr_fw(cols1[1], 9), cols1[1],
-				tuklib_mbstr_fw(cols1[2], 15), cols1[2],
-				tuklib_mbstr_fw(cols1[3], 15), cols1[3]);
+				tuklib_mbstr_fw(cols1[0],
+					headings[HEADING_STREAM].columns),
+				cols1[0],
+				tuklib_mbstr_fw(cols1[1],
+					headings[HEADING_BLOCK].columns),
+				cols1[1],
+				tuklib_mbstr_fw(cols1[2],
+					headings[HEADING_COMPOFFSET].columns),
+				cols1[2],
+				tuklib_mbstr_fw(cols1[3], headings[
+					HEADING_UNCOMPOFFSET].columns),
+				cols1[3]);
 
 			const char *cols2[4] = {
 				uint64_to_str(iter.block.total_size, 0),
@@ -778,11 +925,18 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 				_(check_names[iter.stream.flags->check])
 			};
 			printf("%*s %*s  %*s  %-*s",
-				tuklib_mbstr_fw(cols2[0], 15), cols2[0],
-				tuklib_mbstr_fw(cols2[1], 15), cols2[1],
-				tuklib_mbstr_fw(cols2[2], 5), cols2[2],
-				tuklib_mbstr_fw(cols2[3], detailed ? 11 : 1),
-					cols2[3]);
+				tuklib_mbstr_fw(cols2[0],
+					headings[HEADING_TOTALSIZE].columns),
+				cols2[0],
+				tuklib_mbstr_fw(cols2[1],
+					headings[HEADING_UNCOMPSIZE].columns),
+				cols2[1],
+				tuklib_mbstr_fw(cols2[2],
+					headings[HEADING_RATIO].columns),
+				cols2[2],
+				tuklib_mbstr_fw(cols2[3], detailed
+					? headings[HEADING_CHECK].columns : 1),
+				cols2[3]);
 
 			if (detailed) {
 				const lzma_vli compressed_size
@@ -803,13 +957,20 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 				};
 				// Show MiB for memory usage, because it
 				// is the only size which is not in bytes.
-				printf("%-*s  %*s  %-5s %*s %*s MiB  %s",
+				printf(" %-*s  %*s  %-*s %*s %*s MiB  %s",
 					checkval_width, cols3[0],
-					tuklib_mbstr_fw(cols3[1], 6), cols3[1],
+					tuklib_mbstr_fw(cols3[1], headings[
+						HEADING_HEADERSIZE].columns),
+					cols3[1],
+					tuklib_mbstr_fw(cols3[2], headings[
+						HEADING_HEADERFLAGS].columns),
 					cols3[2],
-					tuklib_mbstr_fw(cols3[3], 15),
-						cols3[3],
-					tuklib_mbstr_fw(cols3[4], 7), cols3[4],
+					tuklib_mbstr_fw(cols3[3], headings[
+						HEADING_COMPSIZE].columns),
+					cols3[3],
+					tuklib_mbstr_fw(cols3[4], headings[
+						HEADING_MEMUSAGE].columns - 4),
+					cols3[4],
 					cols3[5]);
 			}
 

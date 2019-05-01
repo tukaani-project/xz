@@ -160,15 +160,15 @@ enum {
 /// Check ID to string mapping
 static const char check_names[LZMA_CHECK_ID_MAX + 1][12] = {
 	// TRANSLATORS: Indicates that there is no integrity check.
-	// This string is used in tables, so the width must not
-	// exceed ten columns with a fixed-width font.
+	// This string is used in tables. In older xz version this
+	// string was limited to ten columns in a fixed-width font, but
+	// nowadays there is no strict length restriction anymore.
 	N_("None"),
 	"CRC32",
 	// TRANSLATORS: Indicates that integrity check name is not known,
-	// but the Check ID is known (here 2). This and other "Unknown-N"
-	// strings are used in tables, so the width must not exceed ten
-	// columns with a fixed-width font. It's OK to omit the dash if
-	// you need space for one extra letter, but don't use spaces.
+	// but the Check ID is known (here 2). In older xz version these
+	// strings were limited to ten columns in a fixed-width font, but
+	// nowadays there is no strict length restriction anymore.
 	N_("Unknown-2"),
 	N_("Unknown-3"),
 	"CRC64",
@@ -256,6 +256,26 @@ init_colon_strs(void)
 static void
 init_headings(void)
 {
+	// Before going through the heading strings themselves, treat
+	// the Check heading specially: Look at the widths of the various
+	// check names and increase the width of the Check column if neeeded.
+	// The width of the heading name "Check" will then be handled normally
+	// with other heading names in the second loop in this function.
+	for (unsigned i = 0; i < ARRAY_SIZE(check_names); ++i) {
+		size_t len;
+		size_t w = tuklib_mbstr_width(_(check_names[i]), &len);
+
+		// Error handling like in init_colon_strs().
+		assert(w != (size_t)-1);
+		if (w == (size_t)-1)
+			w = len;
+
+		// If the translated string is wider than the minimum width
+		// set at compile time, increase the width.
+		if ((size_t)(headings[HEADING_CHECK].columns) < w)
+			headings[HEADING_CHECK].columns = w;
+	}
+
 	for (unsigned i = 0; i < ARRAY_SIZE(headings); ++i) {
 		size_t len;
 		size_t w = tuklib_mbstr_width(_(headings[i].str), &len);

@@ -1,4 +1,4 @@
-/* config.h for compiling liblzma (*not* the whole XZ Utils) with MSVC 2017 */
+/* config.h for compiling liblzma (*not* the whole XZ Utils) with MSVC 2019 */
 
 /* Prefix for symbols exported by tuklib_*.c files */
 #define TUKLIB_SYMBOL_PREFIX lzma_

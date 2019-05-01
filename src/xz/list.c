@@ -226,7 +226,7 @@ init_colon_strs(void)
 	size_t width_max = 0;
 
 	for (unsigned i = 0; i < ARRAY_SIZE(colon_strs); ++i) {
-		widths[i] = tuklib_mbstr_width(colon_strs[i], &lens[i]);
+		widths[i] = tuklib_mbstr_width(_(colon_strs[i]), &lens[i]);
 
 		// If debugging is enabled, catch invalid strings with
 		// an assertion. However, when not debugging, use the
@@ -258,7 +258,7 @@ init_headings(void)
 {
 	for (unsigned i = 0; i < ARRAY_SIZE(headings); ++i) {
 		size_t len;
-		size_t w = tuklib_mbstr_width(headings[i].str, &len);
+		size_t w = tuklib_mbstr_width(_(headings[i].str), &len);
 
 		// Error handling like in init_colon_strs().
 		assert(w != (size_t)-1);

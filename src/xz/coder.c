@@ -635,7 +635,7 @@ coder_normal(file_pair *pair)
 	// only a single block is created.
 	uint64_t block_remaining = UINT64_MAX;
 
-	// next_block_remining for when we are in single-threaded mode and
+	// next_block_remaining for when we are in single-threaded mode and
 	// the Block in --block-list is larger than the --block-size=SIZE.
 	uint64_t next_block_remaining = 0;
 
@@ -718,7 +718,7 @@ coder_normal(file_pair *pair)
 				|| action == LZMA_FULL_BARRIER)) {
 			if (action == LZMA_SYNC_FLUSH) {
 				// Flushing completed. Write the pending data
-				// out immediatelly so that the reading side
+				// out immediately so that the reading side
 				// can decompress everything compressed so far.
 				if (io_write(pair, &out_buf, IO_BUFFER_SIZE
 						- strm.avail_out))

@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       11_file_info.c
-/// \brief      Get uncmopressed size of .xz file(s)
+/// \brief      Get uncompressed size of .xz file(s)
 ///
 /// Usage:      ./11_file_info INFILE1.xz [INFILEn.xz]...
 ///

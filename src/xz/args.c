@@ -88,7 +88,7 @@ parse_block_list(char *str)
 			// There is no string, that is, a comma follows
 			// another comma. Use the previous value.
 			//
-			// NOTE: We checked earler that the first char
+			// NOTE: We checked earlier that the first char
 			// of the whole list cannot be a comma.
 			assert(i > 0);
 			opt_block_list[i] = opt_block_list[i - 1];

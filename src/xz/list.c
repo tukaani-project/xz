@@ -58,7 +58,7 @@ typedef struct {
 
 
 /// Strings ending in a colon. These are used for lines like
-/// "  Foo:   123 MiB". These are groupped because translated strings
+/// "  Foo:   123 MiB". These are grouped because translated strings
 /// may have different maximum string length, and we want to pad all
 /// strings so that the values are aligned nicely.
 static const char *colon_strs[] = {
@@ -258,7 +258,7 @@ init_headings(void)
 {
 	// Before going through the heading strings themselves, treat
 	// the Check heading specially: Look at the widths of the various
-	// check names and increase the width of the Check column if neeeded.
+	// check names and increase the width of the Check column if needed.
 	// The width of the heading name "Check" will then be handled normally
 	// with other heading names in the second loop in this function.
 	for (unsigned i = 0; i < ARRAY_SIZE(check_names); ++i) {

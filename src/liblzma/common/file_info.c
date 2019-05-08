@@ -283,7 +283,7 @@ file_info_decode(void *coder_ptr, const lzma_allocator *allocator,
 
 		// This is the only Stream Header/Footer decoding where we
 		// want to return LZMA_FORMAT_ERROR if the Magic Bytes don't
-		// match. Elsewehere it will be converted to LZMA_DATA_ERROR.
+		// match. Elsewhere it will be converted to LZMA_DATA_ERROR.
 		return_if_error(lzma_stream_header_decode(
 				&coder->first_header_flags, coder->temp));
 
@@ -828,7 +828,7 @@ lzma_file_info_decoder_init(lzma_next_coder *next,
 	// won't return 0 (which would indicate an error).
 	coder->memlimit = my_max(1, memlimit);
 
-	// Preprare thse for reading the first Stream Header into coder->temp.
+	// Prepare these for reading the first Stream Header into coder->temp.
 	coder->temp_pos = 0;
 	coder->temp_size = LZMA_STREAM_HEADER_SIZE;
 

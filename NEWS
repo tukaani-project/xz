@@ -21,7 +21,7 @@ XZ Utils Release Notes
     * xz:
 
         - Fix "xz --list --robot missing_or_bad_file.xz" which would
-          try to print an unitialized string and thus produce garbage
+          try to print an uninitialized string and thus produce garbage
           output. Since the exit status is non-zero, most uses of such
           a command won't try to interpret the garbage output.
 

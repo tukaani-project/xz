@@ -241,7 +241,7 @@ lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	if (lz_options.dict_size < 4096)
 		lz_options.dict_size = 4096;
 
-	// Make dictionary size a multipe of 16. Some LZ-based decoders like
+	// Make dictionary size a multiple of 16. Some LZ-based decoders like
 	// LZMA use the lowest bits lzma_dict.pos to know the alignment of the
 	// data. Aligned buffer is also good when memcpying from the
 	// dictionary to the output buffer, since applications are

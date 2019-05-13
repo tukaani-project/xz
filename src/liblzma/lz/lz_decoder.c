@@ -91,11 +91,17 @@ decode_buffer(lzma_coder *coder,
 				in, in_pos, in_size);
 
 		// Copy the decoded data from the dictionary to the out[]
-		// buffer.
+		// buffer. Do it conditionally because out can be NULL
+		// (in which case copy_size is always 0). Calling memcpy()
+		// with a null-pointer is undefined even if the third
+		// argument is 0.
 		const size_t copy_size = coder->dict.pos - dict_start;
 		assert(copy_size <= out_size - *out_pos);
-		memcpy(out + *out_pos, coder->dict.buf + dict_start,
-				copy_size);
+
+		if (copy_size > 0)
+			memcpy(out + *out_pos, coder->dict.buf + dict_start,
+					copy_size);
+
 		*out_pos += copy_size;
 
 		// Reset the dictionary if so requested by coder->lz.code().

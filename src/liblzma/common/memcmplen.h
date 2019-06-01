@@ -99,15 +99,7 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 			_mm_loadu_si128((const __m128i *)(buf2 + len))));
 
 		if (x != 0) {
-#	if defined(__INTEL_COMPILER)
-			len += _bit_scan_forward(x);
-#	elif defined(_MSC_VER)
-			unsigned long tmp;
-			_BitScanForward(&tmp, x);
-			len += tmp;
-#	else
-			len += __builtin_ctz(x);
-#	endif
+			len += ctz32(x);
 			return my_min(len, limit);
 		}
 

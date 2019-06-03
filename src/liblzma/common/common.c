@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       common.h
+/// \file       common.c
 /// \brief      Common functions needed in many places in liblzma
 //
 //  Author:     Lasse Collin

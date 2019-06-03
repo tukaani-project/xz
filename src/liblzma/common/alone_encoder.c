@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       alone_decoder.c
-/// \brief      Decoder for LZMA_Alone files
+/// \file       alone_encoder.c
+/// \brief      Encoder for LZMA_Alone files
 //
 //  Author:     Lasse Collin
 //

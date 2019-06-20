@@ -413,7 +413,8 @@ static inline uint16_t
 unaligned_read16be(const uint8_t *buf)
 {
 #if defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	return conv16be(unaligned_read16ne(buf));
+	uint16_t num = unaligned_read16ne(buf);
+	return conv16be(num);
 #else
 	uint16_t num = ((uint16_t)buf[0] << 8) | (uint16_t)buf[1];
 	return num;
@@ -425,7 +426,8 @@ static inline uint16_t
 unaligned_read16le(const uint8_t *buf)
 {
 #if !defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	return conv16le(unaligned_read16ne(buf));
+	uint16_t num = unaligned_read16ne(buf);
+	return conv16le(num);
 #else
 	uint16_t num = ((uint16_t)buf[0]) | ((uint16_t)buf[1] << 8);
 	return num;
@@ -437,7 +439,8 @@ static inline uint32_t
 unaligned_read32be(const uint8_t *buf)
 {
 #if defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	return conv32be(unaligned_read32ne(buf));
+	uint32_t num = unaligned_read32ne(buf);
+	return conv32be(num);
 #else
 	uint32_t num = (uint32_t)buf[0] << 24;
 	num |= (uint32_t)buf[1] << 16;
@@ -452,7 +455,8 @@ static inline uint32_t
 unaligned_read32le(const uint8_t *buf)
 {
 #if !defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	return conv32le(unaligned_read32ne(buf));
+	uint32_t num = unaligned_read32ne(buf);
+	return conv32le(num);
 #else
 	uint32_t num = (uint32_t)buf[0];
 	num |= (uint32_t)buf[1] << 8;

@@ -382,12 +382,11 @@ parse_indexes(xz_file_info *xfi, file_pair *pair)
 			break;
 
 		case LZMA_SEEK_NEEDED:
-			// The cast is safe because liblzma won't ask us to
-			// seek past the known size of the input file which
-			// did fit into off_t.
+			// liblzma won't ask us to seek past the known size
+			// of the input file.
 			assert(strm.seek_pos
 					<= (uint64_t)(pair->src_st.st_size));
-			if (io_seek_src(pair, (off_t)(strm.seek_pos)))
+			if (io_seek_src(pair, strm.seek_pos))
 				goto error;
 
 			// avail_in must be zero so that we will read new
@@ -589,7 +588,7 @@ parse_check_value(file_pair *pair, const lzma_index_iter *iter)
 
 	// Locate and read the Check field.
 	const uint32_t size = lzma_check_size(iter->stream.flags->check);
-	const off_t offset = iter->block.compressed_file_offset
+	const uint64_t offset = iter->block.compressed_file_offset
 			+ iter->block.total_size - size;
 	io_buf buf;
 	if (io_pread(pair, &buf, size, offset))

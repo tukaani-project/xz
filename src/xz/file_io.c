@@ -1170,11 +1170,19 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 
 
 extern bool
-io_seek_src(file_pair *pair, off_t pos)
+io_seek_src(file_pair *pair, uint64_t pos)
 {
-	assert(pos >= 0);
+	// Caller must not attempt to seek past the end of the input file
+	// (seeking to 100 in a 100-byte file is seeking to the end of
+	// the file, not past the end of the file, and thus that is allowed).
+	//
+	// This also validates that pos can be safely cast to off_t.
+	if (pos > (uint64_t)(pair->src_st.st_size))
+		message_bug();
 
-	if (lseek(pair->src_fd, pos, SEEK_SET) != pos) {
+	const off_t offset = (off_t)pos;
+
+	if (lseek(pair->src_fd, offset, SEEK_SET) != offset) {
 		message_error(_("%s: Error seeking the file: %s"),
 				pair->src_name, strerror(errno));
 		return true;
@@ -1187,7 +1195,7 @@ io_seek_src(file_pair *pair, off_t pos)
 
 
 extern bool
-io_pread(file_pair *pair, io_buf *buf, size_t size, off_t pos)
+io_pread(file_pair *pair, io_buf *buf, size_t size, uint64_t pos)
 {
 	// Using lseek() and read() is more portable than pread() and
 	// for us it is as good as real pread().

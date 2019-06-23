@@ -543,7 +543,7 @@ bsr32(uint32_t n)
 	// multiple architectures. On x86, __builtin_clz() ^ 31U becomes
 	// either plain BSR (so the XOR gets optimized away) or LZCNT and
 	// XOR (if -march indicates that SSE4a instructions are supported).
-	return __builtin_clz(n) ^ 31U;
+	return (uint32_t)__builtin_clz(n) ^ 31U;
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 	uint32_t i;
@@ -593,7 +593,7 @@ clz32(uint32_t n)
 	return _bit_scan_reverse(n) ^ 31U;
 
 #elif TUKLIB_GNUC_REQ(3, 4) && UINT_MAX == UINT32_MAX
-	return __builtin_clz(n);
+	return (uint32_t)__builtin_clz(n);
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 	uint32_t i;
@@ -645,7 +645,7 @@ ctz32(uint32_t n)
 	return _bit_scan_forward(n);
 
 #elif TUKLIB_GNUC_REQ(3, 4) && UINT_MAX >= UINT32_MAX
-	return __builtin_ctz(n);
+	return (uint32_t)__builtin_ctz(n);
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 	uint32_t i;

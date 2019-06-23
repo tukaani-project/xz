@@ -1180,9 +1180,7 @@ io_seek_src(file_pair *pair, uint64_t pos)
 	if (pos > (uint64_t)(pair->src_st.st_size))
 		message_bug();
 
-	const off_t offset = (off_t)pos;
-
-	if (lseek(pair->src_fd, offset, SEEK_SET) != offset) {
+	if (lseek(pair->src_fd, (off_t)(pos), SEEK_SET) == -1) {
 		message_error(_("%s: Error seeking the file: %s"),
 				pair->src_name, strerror(errno));
 		return true;

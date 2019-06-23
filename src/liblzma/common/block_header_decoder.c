@@ -98,7 +98,7 @@ lzma_block_header_decode(lzma_block *block,
 		block->uncompressed_size = LZMA_VLI_UNKNOWN;
 
 	// Filter Flags
-	const size_t filter_count = (in[1] & 3) + 1;
+	const size_t filter_count = (in[1] & 3U) + 1;
 	for (size_t i = 0; i < filter_count; ++i) {
 		const lzma_ret ret = lzma_filter_flags_decode(
 				&block->filters[i], allocator,

@@ -50,7 +50,7 @@ tuklib_mbstr_width(const char *str, size_t *bytes)
 		if (wc_width < 0)
 			return (size_t)-1;
 
-		width += wc_width;
+		width += (size_t)wc_width;
 	}
 
 	// Require that the string ends in the initial shift state.

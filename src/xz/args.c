@@ -218,7 +218,7 @@ parse_real(args_info *args, int argc, char **argv)
 		// Compression preset (also for decompression if --format=raw)
 		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
-			coder_set_preset(c - '0');
+			coder_set_preset((uint32_t)(c - '0'));
 			break;
 
 		// --memlimit-compress
@@ -683,7 +683,7 @@ args_parse(args_info *args, int argc, char **argv)
 		// We got at least one filename from the command line, or
 		// --files or --files0 was specified.
 		args->arg_names = argv + optind;
-		args->arg_count = argc - optind;
+		args->arg_count = (unsigned int)(argc - optind);
 	}
 
 	return;

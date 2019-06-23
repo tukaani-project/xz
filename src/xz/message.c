@@ -440,8 +440,8 @@ progress_remaining(uint64_t in_pos, uint64_t elapsed)
 	// Calculate the estimate. Don't give an estimate of zero seconds,
 	// since it is possible that all the input has been already passed
 	// to the library, but there is still quite a bit of output pending.
-	uint32_t remaining = (double)(expected_in_size - in_pos)
-			* ((double)(elapsed) / 1000.0) / (double)(in_pos);
+	uint32_t remaining = (uint32_t)((double)(expected_in_size - in_pos)
+			* ((double)(elapsed) / 1000.0) / (double)(in_pos));
 	if (remaining < 1)
 		remaining = 1;
 

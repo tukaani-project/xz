@@ -79,7 +79,7 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 		result *= 10;
 
 		// Another overflow check
-		const uint32_t add = *value - '0';
+		const uint32_t add = (uint32_t)(*value - '0');
 		if (UINT64_MAX - add < result)
 			goto error;
 
@@ -243,7 +243,7 @@ my_snprintf(char **pos, size_t *left, const char *fmt, ...)
 		*left = 0;
 	} else {
 		*pos += len;
-		*left -= len;
+		*left -= (size_t)(len);
 	}
 
 	return;

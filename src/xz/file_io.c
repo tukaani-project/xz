@@ -360,13 +360,14 @@ io_copy_attrs(const file_pair *pair)
 	// Try changing the owner of the file. If we aren't root or the owner
 	// isn't already us, fchown() probably doesn't succeed. We warn
 	// about failing fchown() only if we are root.
-	if (fchown(pair->dest_fd, pair->src_st.st_uid, -1) && warn_fchown)
+	if (fchown(pair->dest_fd, pair->src_st.st_uid, (gid_t)(-1))
+			&& warn_fchown)
 		message_warning(_("%s: Cannot set the file owner: %s"),
 				pair->dest_name, strerror(errno));
 
 	mode_t mode;
 
-	if (fchown(pair->dest_fd, -1, pair->src_st.st_gid)) {
+	if (fchown(pair->dest_fd, (uid_t)(-1), pair->src_st.st_gid)) {
 		message_warning(_("%s: Cannot set the file group: %s"),
 				pair->dest_name, strerror(errno));
 		// We can still safely copy some additional permissions:

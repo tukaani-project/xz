@@ -905,8 +905,8 @@ coder_run(const char *filename)
 				const bool is_passthru = init_ret
 						== CODER_INIT_PASSTHRU;
 				const uint64_t in_size
-						= pair->src_st.st_size <= 0
-						? 0 : pair->src_st.st_size;
+					= pair->src_st.st_size <= 0
+					? 0 : (uint64_t)(pair->src_st.st_size);
 				message_progress_start(&strm,
 						is_passthru, in_size);
 

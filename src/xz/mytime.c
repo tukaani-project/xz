@@ -39,11 +39,11 @@ mytime_now(void)
 	while (clock_gettime(clk_id, &tv))
 		clk_id = CLOCK_REALTIME;
 
-	return (uint64_t)(tv.tv_sec) * UINT64_C(1000) + tv.tv_nsec / 1000000;
+	return (uint64_t)tv.tv_sec * 1000 + (uint64_t)(tv.tv_nsec / 1000000);
 #else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	return (uint64_t)(tv.tv_sec) * UINT64_C(1000) + tv.tv_usec / 1000;
+	return (uint64_t)tv.tv_sec * 1000 + (uint64_t)(tv.tv_usec / 1000);
 #endif
 }
 

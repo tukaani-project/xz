@@ -833,6 +833,14 @@ message_strm(lzma_ret code)
 	case LZMA_GET_CHECK:
 	case LZMA_PROG_ERROR:
 	case LZMA_SEEK_NEEDED:
+	case LZMA_RET_INTERNAL1:
+	case LZMA_RET_INTERNAL2:
+	case LZMA_RET_INTERNAL3:
+	case LZMA_RET_INTERNAL4:
+	case LZMA_RET_INTERNAL5:
+	case LZMA_RET_INTERNAL6:
+	case LZMA_RET_INTERNAL7:
+	case LZMA_RET_INTERNAL8:
 		// Without "default", compiler will warn if new constants
 		// are added to lzma_ret, it is not too easy to forget to
 		// add the new constants to this function.

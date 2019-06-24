@@ -235,7 +235,7 @@ typedef enum {
 		 * how to report bugs.
 		 */
 
-	LZMA_SEEK_NEEDED        = 12
+	LZMA_SEEK_NEEDED        = 12,
 		/**<
 		 * \brief       Request to change the input file position
 		 *
@@ -251,6 +251,19 @@ typedef enum {
 		 * After seeking the application should read new input and
 		 * pass it normally via lzma_stream.next_in and .avail_in.
 		 */
+
+	/*
+	 * These eumerations may be used internally by liblzma
+	 * but they will never be returned to applications.
+	 */
+	LZMA_RET_INTERNAL1      = 101,
+	LZMA_RET_INTERNAL2      = 102,
+	LZMA_RET_INTERNAL3      = 103,
+	LZMA_RET_INTERNAL4      = 104,
+	LZMA_RET_INTERNAL5      = 105,
+	LZMA_RET_INTERNAL6      = 106,
+	LZMA_RET_INTERNAL7      = 107,
+	LZMA_RET_INTERNAL8      = 108
 } lzma_ret;
 
 

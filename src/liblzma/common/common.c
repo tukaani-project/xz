@@ -298,9 +298,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 
 	strm->internal->avail_in = strm->avail_in;
 
-	// Cast is needed to silence a warning about LZMA_TIMED_OUT, which
-	// isn't part of lzma_ret enumeration.
-	switch ((unsigned int)(ret)) {
+	switch (ret) {
 	case LZMA_OK:
 		// Don't return LZMA_BUF_ERROR when it happens the first time.
 		// This is to avoid returning LZMA_BUF_ERROR when avail_out

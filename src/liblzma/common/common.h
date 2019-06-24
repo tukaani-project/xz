@@ -83,9 +83,8 @@
 
 /// Special return value (lzma_ret) to indicate that a timeout was reached
 /// and lzma_code() must not return LZMA_BUF_ERROR. This is converted to
-/// LZMA_OK in lzma_code(). This is not in the lzma_ret enumeration because
-/// there's no need to have it in the public API.
-#define LZMA_TIMED_OUT 32
+/// LZMA_OK in lzma_code().
+#define LZMA_TIMED_OUT LZMA_RET_INTERNAL1
 
 
 typedef struct lzma_next_coder_s lzma_next_coder;

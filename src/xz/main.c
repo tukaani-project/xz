@@ -326,5 +326,5 @@ main(int argc, char **argv)
 	if (es == E_WARNING && no_warn)
 		es = E_SUCCESS;
 
-	tuklib_exit(es, E_ERROR, message_verbosity_get() != V_SILENT);
+	tuklib_exit((int)es, E_ERROR, message_verbosity_get() != V_SILENT);
 }

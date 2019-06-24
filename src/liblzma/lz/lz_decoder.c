@@ -131,8 +131,7 @@ decode_buffer(lzma_coder *coder,
 
 
 static lzma_ret
-lz_decode(void *coder_ptr,
-		const lzma_allocator *allocator lzma_attribute((__unused__)),
+lz_decode(void *coder_ptr, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size,

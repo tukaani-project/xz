@@ -1273,8 +1273,15 @@ io_write(file_pair *pair, const io_buf *buf, size_t size)
 		// if the file ends with sparse block, we must also return
 		// if size == 0 to avoid doing the lseek().
 		if (size == IO_BUFFER_SIZE) {
-			if (is_sparse(buf)) {
-				pair->dest_pending_sparse += size;
+			// Even if the block was sparse, treat it as non-sparse
+			// if the pending sparse amount is large compared to
+			// the size of off_t. In practice this only matters
+			// on 32-bit systems where off_t isn't always 64 bits.
+			const off_t pending_max
+				= (off_t)(1) << (sizeof(off_t) * CHAR_BIT - 2);
+			if (is_sparse(buf) && pair->dest_pending_sparse
+					< pending_max) {
+				pair->dest_pending_sparse += (off_t)(size);
 				return false;
 			}
 		} else if (size == 0) {

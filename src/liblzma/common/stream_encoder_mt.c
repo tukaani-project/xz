@@ -700,7 +700,7 @@ stream_encode_mt(void *coder_ptr, const lzma_allocator *allocator,
 				ret = coder->thread_error;
 				if (ret != LZMA_OK) {
 					assert(ret != LZMA_STREAM_END);
-					break;
+					break; // Break out of mythread_sync.
 				}
 
 				// Try to read compressed data to out[].

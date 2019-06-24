@@ -83,7 +83,7 @@ test_footer(void)
 static void
 test_encode_invalid(void)
 {
-	known_flags.check = LZMA_CHECK_ID_MAX + 1;
+	known_flags.check = (lzma_check)(LZMA_CHECK_ID_MAX + 1);
 	known_flags.backward_size = 1024;
 
 	expect(lzma_stream_header_encode(&known_flags, buffer)

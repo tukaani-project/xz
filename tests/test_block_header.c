@@ -127,7 +127,8 @@ test1(void)
 	known_options.filters = filters_one;
 	expect(lzma_block_header_size(&known_options) == LZMA_OK);
 
-	known_options.check = 999; // Some invalid value, which gets ignored.
+	// Some invalid value, which gets ignored.
+	known_options.check = (lzma_check)(99);
 	expect(lzma_block_header_size(&known_options) == LZMA_OK);
 
 	known_options.compressed_size = 5;

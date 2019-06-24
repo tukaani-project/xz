@@ -101,7 +101,7 @@ static int colon_strs_fw[ARRAY_SIZE(colon_strs)];
 
 
 /// Column headings
-struct {
+static struct {
 	/// Table column heading string
 	const char *str;
 

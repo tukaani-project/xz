@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tuklib_mbstr.h"
+#include <string.h>
 
 #if defined(HAVE_MBRTOWC) && defined(HAVE_WCWIDTH)
 #	include <wchar.h>

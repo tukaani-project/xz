@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       tuklib_mstr_width.c
+/// \file       tuklib_mbstr_width.c
 /// \brief      Calculate width of a multibyte string
 //
 //  Author:     Lasse Collin

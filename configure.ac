@@ -516,6 +516,32 @@ case $enable_sandbox in
 esac
 
 
+###########################
+# PATH prefix for scripts #
+###########################
+
+# The scripts can add a prefix to the search PATH so that POSIX tools
+# or the xz binary is always in the PATH.
+AC_ARG_ENABLE([path-for-scripts],
+	[AS_HELP_STRING([--enable-path-for-scripts=PREFIX],
+		[If PREFIX isn't empty, PATH=PREFIX:$PATH will be set in
+		the beginning of the scripts (xzgrep and others).
+		The default is empty except on Solaris the default is
+		/usr/xpg4/bin.])],
+	[], [
+		case $host_os in
+			solaris*) enable_path_for_scripts=/usr/xpg4/bin ;;
+			*)        enable_path_for_scripts= ;;
+		esac
+	])
+if test -n "$enable_path_for_scripts" && test "x$enable_path_for_scripts" != xno ; then
+	enable_path_for_scripts="PATH=$enable_path_for_scripts:\$PATH"
+else
+	enable_path_for_scripts=
+fi
+AC_SUBST([enable_path_for_scripts])
+
+
 ###############################################################################
 # Checks for programs.
 ###############################################################################

@@ -123,8 +123,11 @@ XZ Utils Installation
     as an argument to the configure script.
 
     test_scripts.sh in "make check" may fail if good enough tools are
-    missing from PATH (/usr/xpg4/bin or /usr/xpg6/bin). See sections
-    4.5 and 3.2 for more information.
+    missing from PATH (/usr/xpg4/bin or /usr/xpg6/bin). Nowadays
+    /usr/xpg4/bin is added to the script PATH by default on Solaris
+    (see --enable-path-for-scripts=PREFIX in section 2), but old xz
+    releases needed extra steps. See sections 4.5 and 3.2 for more
+    information.
 
 
 1.2.6. Tru64
@@ -438,6 +441,23 @@ XZ Utils Installation
                 and should work on most systems. This has no effect on the
                 resulting binaries.
 
+    --enable-path-for-scripts=PREFIX
+                If PREFIX isn't empty, PATH=PREFIX:$PATH will be set in
+                the beginning of the scripts (xzgrep and others).
+                The default is empty except on Solaris the default is
+                /usr/xpg4/bin.
+
+                This can be useful if the default PATH doesn't contain
+                modern POSIX tools (as can be the case on Solaris) or if
+                one wants to ensure that the correct xz binary is in the
+                PATH for the scripts. Note that the latter use can break
+                "make check" if the prefixed PATH causes a wrong xz binary
+                (other than the one that was just built) to be used.
+
+                Older xz releases support a different method for setting
+                the PATH for the scripts. It is described in section 3.2
+                and is supported in this xz version too.
+
 
 2.1. Static vs. dynamic linking of liblzma
 
@@ -510,11 +530,17 @@ XZ Utils Installation
 
 3.2. PATH
 
+    The method described below is supported by older xz releases.
+    It is supported by the current version too, but the newer
+    --enable-path-for-scripts=PREFIX described in section 2 may be
+    more convenient.
+
     The scripts assume that the required tools (standard POSIX utilities,
-    mktemp, and xz) are in PATH; the scripts don't set the PATH themselves.
-    Some people like this while some think this is a bug. Those in the
-    latter group can easily patch the scripts before running the configure
-    script by taking advantage of a placeholder line in the scripts.
+    mktemp, and xz) are in PATH; the scripts don't set the PATH themselves
+    (except as described for --enable-path-for-scripts=PREFIX). Some
+    people like this while some think this is a bug. Those in the latter
+    group can easily patch the scripts before running the configure script
+    by taking advantage of a placeholder line in the scripts.
 
     For example, to make the scripts prefix /usr/bin:/bin to PATH:
 
@@ -588,8 +614,9 @@ XZ Utils Installation
     some tools are missing from the current PATH or the tools lack
     support for some POSIX features. This can happen at least on
     Solaris where the tools in /bin may be ancient but good enough
-    tools are available in /usr/xpg4/bin or /usr/xpg6/bin. One fix
-    for this problem is described in section 3.2 of this file.
+    tools are available in /usr/xpg4/bin or /usr/xpg6/bin. For possible
+    fixes, see --enable-path-for-scripts=PREFIX in section 2 and the
+    older alternative method described in section 3.2 of this file.
 
     If tests other than test_scripts.sh fail, a likely reason is that
     libtool links the test programs against an installed version of

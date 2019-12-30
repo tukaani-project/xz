@@ -61,8 +61,7 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 	// to __builtin_clzll().
 #define LZMA_MEMCMPLEN_EXTRA 8
 	while (len < limit) {
-		const uint64_t x = unaligned_read64ne(buf1 + len)
-				- unaligned_read64ne(buf2 + len);
+		const uint64_t x = read64ne(buf1 + len) - read64ne(buf2 + len);
 		if (x != 0) {
 #	if defined(_M_X64) // MSVC or Intel C compiler on Windows
 			unsigned long tmp;
@@ -112,8 +111,7 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 	// Generic 32-bit little endian method
 #	define LZMA_MEMCMPLEN_EXTRA 4
 	while (len < limit) {
-		uint32_t x = unaligned_read32ne(buf1 + len)
-				- unaligned_read32ne(buf2 + len);
+		uint32_t x = read32ne(buf1 + len) - read32ne(buf2 + len);
 		if (x != 0) {
 			if ((x & 0xFFFF) == 0) {
 				len += 2;
@@ -135,8 +133,7 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 	// Generic 32-bit big endian method
 #	define LZMA_MEMCMPLEN_EXTRA 4
 	while (len < limit) {
-		uint32_t x = unaligned_read32ne(buf1 + len)
-				^ unaligned_read32ne(buf2 + len);
+		uint32_t x = read32ne(buf1 + len) ^ read32ne(buf2 + len);
 		if (x != 0) {
 			if ((x & 0xFFFF0000) == 0) {
 				len += 2;

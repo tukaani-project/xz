@@ -67,7 +67,7 @@ lzma_block_header_decode(lzma_block *block,
 	const size_t in_size = block->header_size - 4;
 
 	// Verify CRC32
-	if (lzma_crc32(in, in_size, 0) != unaligned_read32le(in + in_size)) {
+	if (lzma_crc32(in, in_size, 0) != read32le(in + in_size)) {
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 		return LZMA_DATA_ERROR;
 #endif

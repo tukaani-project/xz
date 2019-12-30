@@ -45,11 +45,26 @@ main(void)
 	])dnl
 fi
 
+AC_MSG_CHECKING([if __builtin_bswap16/32/64 are supported])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
+			[[__builtin_bswap16(1);
+			__builtin_bswap32(1);
+			__builtin_bswap64(1);]])],
+	[
+		AC_DEFINE([HAVE___BUILTIN_BSWAPXX], [1],
+			[Define to 1 if the GNU C extensions
+			__builtin_bswap16/32/64 are supported.])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
+
 AC_MSG_CHECKING([if unaligned memory access should be used])
 AC_ARG_ENABLE([unaligned-access], AS_HELP_STRING([--enable-unaligned-access],
 		[Enable if the system supports *fast* unaligned memory access
 		with 16-bit and 32-bit integers. By default, this is enabled
-		only on x86, x86_64, and big endian PowerPC.]),
+		only on x86, x86_64, big endian PowerPC,
+		and some ARM systems.]),
 	[], [enable_unaligned_access=auto])
 if test "x$enable_unaligned_access" = xauto ; then
 	# TODO: There may be other architectures, on which unaligned access
@@ -82,4 +97,33 @@ if test "x$enable_unaligned_access" = xyes ; then
 else
 	AC_MSG_RESULT([no])
 fi
+
+AC_MSG_CHECKING([if unsafe type punning should be used])
+AC_ARG_ENABLE([unsafe-type-punning],
+	AS_HELP_STRING([--enable-unsafe-type-punning],
+		[This introduces strict aliasing violations and may result
+		in broken code. However, this might improve performance in
+		some cases, especially with old compilers (e.g.
+		GCC 3 and early 4.x on x86, GCC < 6 on ARMv6 and ARMv7).]),
+	[], [enable_unsafe_type_punning=no])
+if test "x$enable_unsafe_type_punning" = xyes ; then
+	AC_DEFINE([TUKLIB_USE_UNSAFE_TYPE_PUNNING], [1], [Define to 1 to use
+		unsafe type punning, e.g. char *x = ...; *(int *)x = 123;
+		which violates strict aliasing rules and thus is
+		undefined behavior and might result in broken code.])
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi
+
+AC_MSG_CHECKING([if __builtin_assume_aligned is supported])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_assume_aligned("", 1);]])],
+	[
+		AC_DEFINE([HAVE___BUILTIN_ASSUME_ALIGNED], [1],
+			[Define to 1 if the GNU C extension
+			__builtin_assume_aligned is supported.])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
 ])dnl

@@ -9,16 +9,16 @@
 /// Native endian inline functions (XX = 16, 32, or 64):
 ///   - Unaligned native endian reads: unaligned_readXXne(ptr)
 ///   - Unaligned native endian writes: unaligned_writeXXne(ptr, num)
-///   - Aligned native endian reads: readXXne(ptr)
-///   - Aligned native endian writes: writeXXne(ptr, num)
+///   - Aligned native endian reads: aligned_readXXne(ptr)
+///   - Aligned native endian writes: aligned_writeXXne(ptr, num)
 ///
 /// Endianness-converting integer operations (these can be macros!)
 /// (XX = 16, 32, or 64; Y = b or l):
 ///   - Byte swapping: bswapXX(num)
 ///   - Byte order conversions to/from native (byteswaps if Y isn't
 ///     the native endianness): convXXYe(num)
-///   - Aligned reads: readXXYe(ptr)
-///   - Aligned writes: writeXXYe(ptr, num)
+///   - Aligned reads: aligned_readXXYe(ptr)
+///   - Aligned writes: aligned_writeXXYe(ptr, num)
 ///   - Unaligned reads (16/32-bit only): unaligned_readXXYe(ptr)
 ///   - Unaligned writes (16/32-bit only): unaligned_writeXXYe(ptr, num)
 ///
@@ -447,7 +447,7 @@ unaligned_write32le(uint8_t *buf, uint32_t num)
 
 
 static inline uint16_t
-read16ne(const uint8_t *buf)
+aligned_read16ne(const uint8_t *buf)
 {
 #if defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING) \
 		|| defined(TUKLIB_USE_UNSAFE_ALIGNED_READS)
@@ -461,7 +461,7 @@ read16ne(const uint8_t *buf)
 
 
 static inline uint32_t
-read32ne(const uint8_t *buf)
+aligned_read32ne(const uint8_t *buf)
 {
 #if defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING) \
 		|| defined(TUKLIB_USE_UNSAFE_ALIGNED_READS)
@@ -475,7 +475,7 @@ read32ne(const uint8_t *buf)
 
 
 static inline uint64_t
-read64ne(const uint8_t *buf)
+aligned_read64ne(const uint8_t *buf)
 {
 #if defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING) \
 		|| defined(TUKLIB_USE_UNSAFE_ALIGNED_READS)
@@ -489,7 +489,7 @@ read64ne(const uint8_t *buf)
 
 
 static inline void
-write16ne(uint8_t *buf, uint16_t num)
+aligned_write16ne(uint8_t *buf, uint16_t num)
 {
 #ifdef TUKLIB_USE_UNSAFE_TYPE_PUNNING
 	*(uint16_t *)buf = num;
@@ -501,7 +501,7 @@ write16ne(uint8_t *buf, uint16_t num)
 
 
 static inline void
-write32ne(uint8_t *buf, uint32_t num)
+aligned_write32ne(uint8_t *buf, uint32_t num)
 {
 #ifdef TUKLIB_USE_UNSAFE_TYPE_PUNNING
 	*(uint32_t *)buf = num;
@@ -513,7 +513,7 @@ write32ne(uint8_t *buf, uint32_t num)
 
 
 static inline void
-write64ne(uint8_t *buf, uint64_t num)
+aligned_write64ne(uint8_t *buf, uint64_t num)
 {
 #ifdef TUKLIB_USE_UNSAFE_TYPE_PUNNING
 	*(uint64_t *)buf = num;
@@ -525,60 +525,60 @@ write64ne(uint8_t *buf, uint64_t num)
 
 
 static inline uint16_t
-read16be(const uint8_t *buf)
+aligned_read16be(const uint8_t *buf)
 {
-	uint16_t num = read16ne(buf);
+	uint16_t num = aligned_read16ne(buf);
 	return conv16be(num);
 }
 
 
 static inline uint16_t
-read16le(const uint8_t *buf)
+aligned_read16le(const uint8_t *buf)
 {
-	uint16_t num = read16ne(buf);
+	uint16_t num = aligned_read16ne(buf);
 	return conv16le(num);
 }
 
 
 static inline uint32_t
-read32be(const uint8_t *buf)
+aligned_read32be(const uint8_t *buf)
 {
-	uint32_t num = read32ne(buf);
+	uint32_t num = aligned_read32ne(buf);
 	return conv32be(num);
 }
 
 
 static inline uint32_t
-read32le(const uint8_t *buf)
+aligned_read32le(const uint8_t *buf)
 {
-	uint32_t num = read32ne(buf);
+	uint32_t num = aligned_read32ne(buf);
 	return conv32le(num);
 }
 
 
 static inline uint64_t
-read64be(const uint8_t *buf)
+aligned_read64be(const uint8_t *buf)
 {
-	uint64_t num = read64ne(buf);
+	uint64_t num = aligned_read64ne(buf);
 	return conv64be(num);
 }
 
 
 static inline uint64_t
-read64le(const uint8_t *buf)
+aligned_read64le(const uint8_t *buf)
 {
-	uint64_t num = read64ne(buf);
+	uint64_t num = aligned_read64ne(buf);
 	return conv64le(num);
 }
 
 
 // These need to be macros like in the unaligned case.
-#define write16be(buf, num) write16ne((buf), conv16be(num))
-#define write16le(buf, num) write16ne((buf), conv16le(num))
-#define write32be(buf, num) write32ne((buf), conv32be(num))
-#define write32le(buf, num) write32ne((buf), conv32le(num))
-#define write64be(buf, num) write64ne((buf), conv64be(num))
-#define write64le(buf, num) write64ne((buf), conv64le(num))
+#define aligned_write16be(buf, num) aligned_write16ne((buf), conv16be(num))
+#define aligned_write16le(buf, num) aligned_write16ne((buf), conv16le(num))
+#define aligned_write32be(buf, num) aligned_write32ne((buf), conv32be(num))
+#define aligned_write32le(buf, num) aligned_write32ne((buf), conv32le(num))
+#define aligned_write64be(buf, num) aligned_write64ne((buf), conv64be(num))
+#define aligned_write64le(buf, num) aligned_write64ne((buf), conv64le(num))
 
 
 ////////////////////

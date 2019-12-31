@@ -121,7 +121,7 @@ alone_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	if (d != UINT32_MAX)
 		++d;
 
-	unaligned_write32le(coder->header + 1, d);
+	write32le(coder->header + 1, d);
 
 	// - Uncompressed size (always unknown and using EOPM)
 	memset(coder->header + 1 + 4, 0xFF, 8);

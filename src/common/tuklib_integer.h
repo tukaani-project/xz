@@ -7,8 +7,8 @@
 /// operations.
 ///
 /// Native endian inline functions (XX = 16, 32, or 64):
-///   - Unaligned native endian reads: unaligned_readXXne(ptr)
-///   - Unaligned native endian writes: unaligned_writeXXne(ptr, num)
+///   - Unaligned native endian reads: readXXne(ptr)
+///   - Unaligned native endian writes: writeXXne(ptr, num)
 ///   - Aligned native endian reads: aligned_readXXne(ptr)
 ///   - Aligned native endian writes: aligned_writeXXne(ptr, num)
 ///
@@ -17,10 +17,10 @@
 ///   - Byte swapping: bswapXX(num)
 ///   - Byte order conversions to/from native (byteswaps if Y isn't
 ///     the native endianness): convXXYe(num)
+///   - Unaligned reads (16/32-bit only): readXXYe(ptr)
+///   - Unaligned writes (16/32-bit only): writeXXYe(ptr, num)
 ///   - Aligned reads: aligned_readXXYe(ptr)
 ///   - Aligned writes: aligned_writeXXYe(ptr, num)
-///   - Unaligned reads (16/32-bit only): unaligned_readXXYe(ptr)
-///   - Unaligned writes (16/32-bit only): unaligned_writeXXYe(ptr, num)
 ///
 /// Since the above can macros, the arguments should have no side effects
 /// because they may be evaluated more than once.
@@ -205,7 +205,7 @@
 // Hopefully this is flexible enough in practice.
 
 static inline uint16_t
-unaligned_read16ne(const uint8_t *buf)
+read16ne(const uint8_t *buf)
 {
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING)
@@ -219,7 +219,7 @@ unaligned_read16ne(const uint8_t *buf)
 
 
 static inline uint32_t
-unaligned_read32ne(const uint8_t *buf)
+read32ne(const uint8_t *buf)
 {
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING)
@@ -233,7 +233,7 @@ unaligned_read32ne(const uint8_t *buf)
 
 
 static inline uint64_t
-unaligned_read64ne(const uint8_t *buf)
+read64ne(const uint8_t *buf)
 {
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING)
@@ -247,7 +247,7 @@ unaligned_read64ne(const uint8_t *buf)
 
 
 static inline void
-unaligned_write16ne(uint8_t *buf, uint16_t num)
+write16ne(uint8_t *buf, uint16_t num)
 {
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING)
@@ -260,7 +260,7 @@ unaligned_write16ne(uint8_t *buf, uint16_t num)
 
 
 static inline void
-unaligned_write32ne(uint8_t *buf, uint32_t num)
+write32ne(uint8_t *buf, uint32_t num)
 {
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING)
@@ -273,7 +273,7 @@ unaligned_write32ne(uint8_t *buf, uint32_t num)
 
 
 static inline void
-unaligned_write64ne(uint8_t *buf, uint64_t num)
+write64ne(uint8_t *buf, uint64_t num)
 {
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& defined(TUKLIB_USE_UNSAFE_TYPE_PUNNING)
@@ -286,10 +286,10 @@ unaligned_write64ne(uint8_t *buf, uint64_t num)
 
 
 static inline uint16_t
-unaligned_read16be(const uint8_t *buf)
+read16be(const uint8_t *buf)
 {
 #if defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	uint16_t num = unaligned_read16ne(buf);
+	uint16_t num = read16ne(buf);
 	return conv16be(num);
 #else
 	uint16_t num = ((uint16_t)buf[0] << 8) | (uint16_t)buf[1];
@@ -299,10 +299,10 @@ unaligned_read16be(const uint8_t *buf)
 
 
 static inline uint16_t
-unaligned_read16le(const uint8_t *buf)
+read16le(const uint8_t *buf)
 {
 #if !defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	uint16_t num = unaligned_read16ne(buf);
+	uint16_t num = read16ne(buf);
 	return conv16le(num);
 #else
 	uint16_t num = ((uint16_t)buf[0]) | ((uint16_t)buf[1] << 8);
@@ -312,10 +312,10 @@ unaligned_read16le(const uint8_t *buf)
 
 
 static inline uint32_t
-unaligned_read32be(const uint8_t *buf)
+read32be(const uint8_t *buf)
 {
 #if defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	uint32_t num = unaligned_read32ne(buf);
+	uint32_t num = read32ne(buf);
 	return conv32be(num);
 #else
 	uint32_t num = (uint32_t)buf[0] << 24;
@@ -328,10 +328,10 @@ unaligned_read32be(const uint8_t *buf)
 
 
 static inline uint32_t
-unaligned_read32le(const uint8_t *buf)
+read32le(const uint8_t *buf)
 {
 #if !defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-	uint32_t num = unaligned_read32ne(buf);
+	uint32_t num = read32ne(buf);
 	return conv32le(num);
 #else
 	uint32_t num = (uint32_t)buf[0];
@@ -348,23 +348,19 @@ unaligned_read32le(const uint8_t *buf)
 // byte swapping macros. The actual write is done in an inline function
 // to make type checking of the buf pointer possible.
 #if defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-#	define unaligned_write16be(buf, num) \
-			unaligned_write16ne(buf, conv16be(num))
-#	define unaligned_write32be(buf, num) \
-			unaligned_write32ne(buf, conv32be(num))
+#	define write16be(buf, num) write16ne(buf, conv16be(num))
+#	define write32be(buf, num) write32ne(buf, conv32be(num))
 #endif
 
 #if !defined(WORDS_BIGENDIAN) || defined(TUKLIB_FAST_UNALIGNED_ACCESS)
-#	define unaligned_write16le(buf, num) \
-			unaligned_write16ne(buf, conv16le(num))
-#	define unaligned_write32le(buf, num) \
-			unaligned_write32ne(buf, conv32le(num))
+#	define write16le(buf, num) write16ne(buf, conv16le(num))
+#	define write32le(buf, num) write32ne(buf, conv32le(num))
 #endif
 
 
-#ifndef unaligned_write16be
+#ifndef write16be
 static inline void
-unaligned_write16be(uint8_t *buf, uint16_t num)
+write16be(uint8_t *buf, uint16_t num)
 {
 	buf[0] = (uint8_t)(num >> 8);
 	buf[1] = (uint8_t)num;
@@ -373,9 +369,9 @@ unaligned_write16be(uint8_t *buf, uint16_t num)
 #endif
 
 
-#ifndef unaligned_write16le
+#ifndef write16le
 static inline void
-unaligned_write16le(uint8_t *buf, uint16_t num)
+write16le(uint8_t *buf, uint16_t num)
 {
 	buf[0] = (uint8_t)num;
 	buf[1] = (uint8_t)(num >> 8);
@@ -384,9 +380,9 @@ unaligned_write16le(uint8_t *buf, uint16_t num)
 #endif
 
 
-#ifndef unaligned_write32be
+#ifndef write32be
 static inline void
-unaligned_write32be(uint8_t *buf, uint32_t num)
+write32be(uint8_t *buf, uint32_t num)
 {
 	buf[0] = (uint8_t)(num >> 24);
 	buf[1] = (uint8_t)(num >> 16);
@@ -397,9 +393,9 @@ unaligned_write32be(uint8_t *buf, uint32_t num)
 #endif
 
 
-#ifndef unaligned_write32le
+#ifndef write32le
 static inline void
-unaligned_write32le(uint8_t *buf, uint32_t num)
+write32le(uint8_t *buf, uint32_t num)
 {
 	buf[0] = (uint8_t)num;
 	buf[1] = (uint8_t)(num >> 8);

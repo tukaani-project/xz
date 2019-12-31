@@ -25,8 +25,7 @@
 // MATCH_LEN_MIN bytes. Unaligned access gives tiny gain so there's no
 // reason to not use it when it is supported.
 #ifdef TUKLIB_FAST_UNALIGNED_ACCESS
-#	define not_equal_16(a, b) \
-		(unaligned_read16ne(a) != unaligned_read16ne(b))
+#	define not_equal_16(a, b) (read16ne(a) != read16ne(b))
 #else
 #	define not_equal_16(a, b) \
 		((a)[0] != (b)[0] || (a)[1] != (b)[1])

@@ -266,11 +266,8 @@ io_wait(file_pair *pair, int timeout, bool is_reading)
 			return IO_WAIT_ERROR;
 		}
 
-		if (ret == 0) {
-			assert(opt_flush_timeout != 0);
-			flush_needed = true;
+		if (ret == 0)
 			return IO_WAIT_TIMEOUT;
-		}
 
 		if (pfd[0].revents != 0)
 			return IO_WAIT_MORE;
@@ -1147,6 +1144,7 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 					return SIZE_MAX;
 
 				case IO_WAIT_TIMEOUT:
+					flush_needed = true;
 					return size - left;
 
 				default:

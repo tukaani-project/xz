@@ -1107,16 +1107,16 @@ io_fix_src_pos(file_pair *pair, size_t rewind_size)
 
 
 extern size_t
-io_read(file_pair *pair, io_buf *buf_union, size_t size)
+io_read(file_pair *pair, io_buf *buf, size_t size)
 {
 	// We use small buffers here.
 	assert(size < SSIZE_MAX);
 
-	uint8_t *buf = buf_union->u8;
-	size_t left = size;
+	size_t pos = 0;
 
-	while (left > 0) {
-		const ssize_t amount = read(pair->src_fd, buf, left);
+	while (pos < size) {
+		const ssize_t amount = read(
+				pair->src_fd, buf->u8 + pos, size - pos);
 
 		if (amount == 0) {
 			pair->src_eof = true;
@@ -1145,7 +1145,7 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 
 				case IO_WAIT_TIMEOUT:
 					flush_needed = true;
-					return size - left;
+					return pos;
 
 				default:
 					message_bug();
@@ -1159,11 +1159,10 @@ io_read(file_pair *pair, io_buf *buf_union, size_t size)
 			return SIZE_MAX;
 		}
 
-		buf += (size_t)(amount);
-		left -= (size_t)(amount);
+		pos += (size_t)(amount);
 	}
 
-	return size - left;
+	return pos;
 }
 
 

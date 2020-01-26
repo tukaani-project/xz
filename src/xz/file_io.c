@@ -749,6 +749,7 @@ io_open_src(const char *src_name)
 		.src_fd = -1,
 		.dest_fd = -1,
 		.src_eof = false,
+		.src_has_seen_input = false,
 		.dest_try_sparse = false,
 		.dest_pending_sparse = 0,
 	};
@@ -1133,10 +1134,15 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 
 #ifndef TUKLIB_DOSLIKE
 			if (IS_EAGAIN_OR_EWOULDBLOCK(errno)) {
-				const io_wait_ret ret = io_wait(pair,
-						mytime_get_flush_timeout(),
-						true);
-				switch (ret) {
+				// Disable the flush-timeout if no input has
+				// been seen since the previous flush and thus
+				// there would be nothing to flush after the
+				// timeout expires (avoids busy waiting).
+				const int timeout = pair->src_has_seen_input
+						? mytime_get_flush_timeout()
+						: -1;
+
+				switch (io_wait(pair, timeout, true)) {
 				case IO_WAIT_MORE:
 					continue;
 
@@ -1160,6 +1166,7 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 		}
 
 		pos += (size_t)(amount);
+		pair->src_has_seen_input = true;
 	}
 
 	return pos;

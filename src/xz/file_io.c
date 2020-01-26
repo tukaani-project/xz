@@ -750,6 +750,7 @@ io_open_src(const char *src_name)
 		.dest_fd = -1,
 		.src_eof = false,
 		.src_has_seen_input = false,
+		.flush_needed = false,
 		.dest_try_sparse = false,
 		.dest_pending_sparse = 0,
 	};
@@ -1150,7 +1151,7 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 					return SIZE_MAX;
 
 				case IO_WAIT_TIMEOUT:
-					flush_needed = true;
+					pair->flush_needed = true;
 					return pos;
 
 				default:

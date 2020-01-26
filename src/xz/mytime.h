@@ -21,10 +21,6 @@
 extern uint64_t opt_flush_timeout;
 
 
-/// \brief      True when flushing is needed due to expired timeout
-extern bool flush_needed;
-
-
 /// \brief      Store the time when (de)compression was started
 ///
 /// The start time is also stored as the time of the first flush.

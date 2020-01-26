@@ -53,6 +53,9 @@ typedef struct {
 	/// since the previous flush or the start of the file.
 	bool src_has_seen_input;
 
+	/// For --flush-timeout: True when flushing is needed.
+	bool flush_needed;
+
 	/// If true, we look for long chunks of zeros and try to create
 	/// a sparse file.
 	bool dest_try_sparse;

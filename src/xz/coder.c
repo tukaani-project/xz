@@ -711,7 +711,7 @@ coder_normal(file_pair *pair)
 					action = LZMA_FULL_BARRIER;
 			}
 
-			if (action == LZMA_RUN && flush_needed)
+			if (action == LZMA_RUN && pair->flush_needed)
 				action = LZMA_SYNC_FLUSH;
 		}
 
@@ -739,6 +739,7 @@ coder_normal(file_pair *pair)
 				// Mark that we haven't seen any new input
 				// since the previous flush.
 				pair->src_has_seen_input = false;
+				pair->flush_needed = false;
 			} else {
 				// Start a new Block after LZMA_FULL_BARRIER.
 				if (opt_block_list == NULL) {

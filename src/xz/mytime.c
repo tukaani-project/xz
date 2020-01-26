@@ -17,7 +17,6 @@
 #endif
 
 uint64_t opt_flush_timeout = 0;
-bool flush_needed;
 
 static uint64_t start_time;
 static uint64_t next_flush;
@@ -53,7 +52,6 @@ mytime_set_start_time(void)
 {
 	start_time = mytime_now();
 	next_flush = start_time + opt_flush_timeout;
-	flush_needed = false;
 	return;
 }
 
@@ -69,7 +67,6 @@ extern void
 mytime_set_flush_time(void)
 {
 	next_flush = mytime_now() + opt_flush_timeout;
-	flush_needed = false;
 	return;
 }
 

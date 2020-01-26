@@ -729,6 +729,10 @@ coder_normal(file_pair *pair)
 
 				// Set the time of the most recent flushing.
 				mytime_set_flush_time();
+
+				// Mark that we haven't seen any new input
+				// since the previous flush.
+				pair->src_has_seen_input = false;
 			} else {
 				// Start a new Block after LZMA_FULL_BARRIER.
 				if (opt_block_list == NULL) {

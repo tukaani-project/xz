@@ -49,6 +49,10 @@ typedef struct {
 	/// True once end of the source file has been detected.
 	bool src_eof;
 
+	/// For --flush-timeout: True if at least one byte has been read
+	/// since the previous flush or the start of the file.
+	bool src_has_seen_input;
+
 	/// If true, we look for long chunks of zeros and try to create
 	/// a sparse file.
 	bool dest_try_sparse;

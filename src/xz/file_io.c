@@ -1167,7 +1167,11 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 		}
 
 		pos += (size_t)(amount);
-		pair->src_has_seen_input = true;
+
+		if (!pair->src_has_seen_input) {
+			pair->src_has_seen_input = true;
+			mytime_set_flush_time();
+		}
 	}
 
 	return pos;

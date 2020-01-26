@@ -51,7 +51,6 @@ extern void
 mytime_set_start_time(void)
 {
 	start_time = mytime_now();
-	next_flush = start_time + opt_flush_timeout;
 	return;
 }
 

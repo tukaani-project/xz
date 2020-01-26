@@ -20,7 +20,10 @@
 
 
 /// is_sparse() accesses the buffer as uint64_t for maximum speed.
-/// Use an union to make sure that the buffer is properly aligned.
+/// The u32 and u64 members must only be access through this union
+/// to avoid strict aliasing violations. Taking a pointer of u8
+/// should be fine as long as uint8_t maps to unsigned char which
+/// can alias anything.
 typedef union {
 	uint8_t u8[IO_BUFFER_SIZE];
 	uint32_t u32[IO_BUFFER_SIZE / sizeof(uint32_t)];

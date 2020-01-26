@@ -612,6 +612,20 @@ split_block(uint64_t *block_remaining,
 }
 
 
+static bool
+coder_write_output(file_pair *pair)
+{
+	if (opt_mode != MODE_TEST) {
+		if (io_write(pair, &out_buf, IO_BUFFER_SIZE - strm.avail_out))
+			return true;
+	}
+
+	strm.next_out = out_buf.u8;
+	strm.avail_out = IO_BUFFER_SIZE;
+	return false;
+}
+
+
 /// Compress or decompress using liblzma.
 static bool
 coder_normal(file_pair *pair)
@@ -706,12 +720,8 @@ coder_normal(file_pair *pair)
 
 		// Write out if the output buffer became full.
 		if (strm.avail_out == 0) {
-			if (opt_mode != MODE_TEST && io_write(pair, &out_buf,
-					IO_BUFFER_SIZE - strm.avail_out))
+			if (coder_write_output(pair))
 				break;
-
-			strm.next_out = out_buf.u8;
-			strm.avail_out = IO_BUFFER_SIZE;
 		}
 
 		if (ret == LZMA_STREAM_END && (action == LZMA_SYNC_FLUSH
@@ -720,12 +730,8 @@ coder_normal(file_pair *pair)
 				// Flushing completed. Write the pending data
 				// out immediately so that the reading side
 				// can decompress everything compressed so far.
-				if (io_write(pair, &out_buf, IO_BUFFER_SIZE
-						- strm.avail_out))
+				if (coder_write_output(pair))
 					break;
-
-				strm.next_out = out_buf.u8;
-				strm.avail_out = IO_BUFFER_SIZE;
 
 				// Set the time of the most recent flushing.
 				mytime_set_flush_time();
@@ -762,9 +768,7 @@ coder_normal(file_pair *pair)
 				// as much data as possible, which can be good
 				// when trying to get at least some useful
 				// data out of damaged files.
-				if (opt_mode != MODE_TEST && io_write(pair,
-						&out_buf, IO_BUFFER_SIZE
-							- strm.avail_out))
+				if (coder_write_output(pair))
 					break;
 			}
 

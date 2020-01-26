@@ -733,9 +733,6 @@ coder_normal(file_pair *pair)
 				if (coder_write_output(pair))
 					break;
 
-				// Set the time of the most recent flushing.
-				mytime_set_flush_time();
-
 				// Mark that we haven't seen any new input
 				// since the previous flush.
 				pair->src_has_seen_input = false;
@@ -906,8 +903,7 @@ coder_run(const char *filename)
 			// is used.
 			if (opt_mode == MODE_TEST || !io_open_dest(pair)) {
 				// Remember the current time. It is needed
-				// for progress indicator and for timed
-				// flushing.
+				// for progress indicator.
 				mytime_set_start_time();
 
 				// Initialize the progress indicator.

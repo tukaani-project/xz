@@ -221,7 +221,7 @@ io_sandbox_enter(int src_fd)
 	return;
 
 error:
-	message(V_DEBUG, _("Failed to enable the sandbox"));
+	message_fatal(_("Failed to enable the sandbox"));
 }
 #endif // ENABLE_SANDBOX
 

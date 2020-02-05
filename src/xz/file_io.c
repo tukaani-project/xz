@@ -170,8 +170,11 @@ static void
 io_sandbox_enter(int src_fd)
 {
 	if (!sandbox_allowed) {
-		message(V_DEBUG, _("Sandbox is disabled due "
-				"to incompatible command line arguments"));
+		// This message is more often annoying than useful so
+		// it's commented out. It can be useful when developing
+		// the sandboxing code.
+		//message(V_DEBUG, _("Sandbox is disabled due "
+		//		"to incompatible command line arguments"));
 		return;
 	}
 
@@ -213,7 +216,8 @@ io_sandbox_enter(int src_fd)
 #	error ENABLE_SANDBOX is defined but no sandboxing method was found.
 #endif
 
-	message(V_DEBUG, _("Sandbox was successfully enabled"));
+	// This message is annoying in xz -lvv.
+	//message(V_DEBUG, _("Sandbox was successfully enabled"));
 	return;
 
 error:

@@ -403,12 +403,6 @@ XZ Utils Installation
                                 one thread, something bad may happen.
 
     --enable-sandbox=METHOD
-                This feature is EXPERIMENTAL in the XZ Utils 5.2.x and
-                disabled by default. If you test this, look especially
-                if message translations and locale-specific decimal and
-                thousand separators (e.g. xz --list foo.xz) work the
-                same way as they do without sandboxing.
-
                 There is limited sandboxing support in the xz tool. If
                 built with sandbox support, it's used automatically when
                 (de)compressing exactly one file to standard output and

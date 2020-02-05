@@ -498,10 +498,10 @@ AM_CONDITIONAL([COND_SYMVERS], [test "x$enable_symbol_versions" = xyes])
 
 AC_MSG_CHECKING([if sandboxing should be used])
 AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
-		[This is an experimental feature.
-		Sandboxing METHOD can be `auto', `no', or `capsicum'.
-		The default is `no'.])],
-	[], [enable_sandbox=no])
+		[Sandboxing METHOD can be `auto', `no', or `capsicum'.
+		The default is `auto' which enables sandboxing if
+		a supported sandboxing method is found.])],
+	[], [enable_sandbox=auto])
 case $enable_sandbox in
 	auto)
 		AC_MSG_RESULT([maybe (autodetect)])

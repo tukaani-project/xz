@@ -547,6 +547,16 @@ AC_SUBST([enable_path_for_scripts])
 ###############################################################################
 
 echo
+case $host_os in
+	solaris*)
+		# The gnulib POSIX shell macro below may pick a shell that
+		# doesn't work with xzgrep. Workaround by picking a shell
+		# that is known to work.
+		if test -z "$gl_cv_posix_shell" && test -x /usr/xpg4/bin/sh; then
+			gl_cv_posix_shell=/usr/xpg4/bin/sh
+		fi
+		;;
+esac
 gl_POSIX_SHELL
 if test -z "$POSIX_SHELL" && test "x$enable_scripts" = xyes ; then
 	AC_MSG_ERROR([No POSIX conforming shell (sh) was found.])

@@ -9,14 +9,16 @@
 #
 ###############################################################################
 
-# The result of using "autoreconf -fi" should be identical to using this
-# script. I'm leaving this script here just in case someone finds it useful.
-
 set -e -x
 
+# The following six lines are almost identical to "autoreconf -fi" but faster.
 ${AUTOPOINT:-autopoint} -f
 ${LIBTOOLIZE:-libtoolize} -c -f || glibtoolize -c -f
 ${ACLOCAL:-aclocal} -I m4
 ${AUTOCONF:-autoconf}
 ${AUTOHEADER:-autoheader}
 ${AUTOMAKE:-automake} -acf --foreign
+
+# Generate the translated man pages if the "po4a" tool is available.
+# This is *NOT* done by "autoreconf -fi" or when "make" is run.
+cd po4a && sh update-po

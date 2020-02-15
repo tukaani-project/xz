@@ -15,7 +15,7 @@
 # of malloc(), stat(), or lstat(), since we don't use those functions in
 # a way that would cause the problems the autoconf macros check.
 
-AC_PREREQ([2.64])
+AC_PREREQ([2.69])
 
 AC_INIT([XZ Utils], m4_esyscmd([/bin/sh build-aux/version.sh]),
 	[lasse.collin@tukaani.org], [xz], [https://tukaani.org/xz/])
@@ -628,7 +628,7 @@ AM_CONDITIONAL([COND_THREADS], [test "x$enable_threads" != xno])
 
 echo
 echo "Initializing Libtool:"
-LT_PREREQ([2.2])
+LT_PREREQ([2.4])
 LT_INIT([win32-dll])
 LT_LANG([Windows Resource])
 

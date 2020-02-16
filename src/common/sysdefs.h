@@ -44,9 +44,7 @@
 
 // Some pre-C99 systems have SIZE_MAX in limits.h instead of stdint.h. The
 // limits are also used to figure out some macros missing from pre-C99 systems.
-#ifdef HAVE_LIMITS_H
-#	include <limits.h>
-#endif
+#include <limits.h>
 
 // Be more compatible with systems that have non-conforming inttypes.h.
 // We assume that int is 32-bit and that long is either 32-bit or 64-bit.
@@ -153,9 +151,7 @@ typedef unsigned char _Bool;
 
 // string.h should be enough but let's include strings.h and memory.h too if
 // they exists, since that shouldn't do any harm, but may improve portability.
-#ifdef HAVE_STRING_H
-#	include <string.h>
-#endif
+#include <string.h>
 
 #ifdef HAVE_STRINGS_H
 #	include <strings.h>

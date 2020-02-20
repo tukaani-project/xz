@@ -7,7 +7,7 @@
 #
 #   Checks for tuklib_integer.h:
 #     - Endianness
-#     - Does operating system provide byte swapping macros
+#     - Does the compiler or the operating system provide byte swapping macros
 #     - Does the hardware support fast unaligned access to 16-bit
 #       and 32-bit integers
 #
@@ -22,13 +22,28 @@
 AC_DEFUN_ONCE([TUKLIB_INTEGER], [
 AC_REQUIRE([TUKLIB_COMMON])
 AC_REQUIRE([AC_C_BIGENDIAN])
-AC_CHECK_HEADERS([byteswap.h sys/endian.h sys/byteorder.h], [break])
 
-# Even if we have byteswap.h, we may lack the specific macros/functions.
-if test x$ac_cv_header_byteswap_h = xyes ; then
-	m4_foreach([FUNC], [bswap_16,bswap_32,bswap_64], [
-		AC_MSG_CHECKING([if FUNC is available])
-		AC_LINK_IFELSE([AC_LANG_SOURCE([
+AC_MSG_CHECKING([if __builtin_bswap16/32/64 are supported])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
+			[[__builtin_bswap16(1);
+			__builtin_bswap32(1);
+			__builtin_bswap64(1);]])],
+[
+	AC_DEFINE([HAVE___BUILTIN_BSWAPXX], [1],
+		[Define to 1 if the GNU C extensions
+		__builtin_bswap16/32/64 are supported.])
+	AC_MSG_RESULT([yes])
+], [
+	AC_MSG_RESULT([no])
+
+	# Look for other byteswapping methods.
+	AC_CHECK_HEADERS([byteswap.h sys/endian.h sys/byteorder.h], [break])
+
+	# Even if we have byteswap.h we may lack the specific macros/functions.
+	if test x$ac_cv_header_byteswap_h = xyes ; then
+		m4_foreach([FUNC], [bswap_16,bswap_32,bswap_64], [
+			AC_MSG_CHECKING([if FUNC is available])
+			AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <byteswap.h>
 int
 main(void)
@@ -36,28 +51,15 @@ main(void)
 	FUNC[](42);
 	return 0;
 }
-		])], [
-			AC_DEFINE(HAVE_[]m4_toupper(FUNC), [1],
+			])], [
+				AC_DEFINE(HAVE_[]m4_toupper(FUNC), [1],
 					[Define to 1 if] FUNC [is available.])
-			AC_MSG_RESULT([yes])
-		], [AC_MSG_RESULT([no])])
+				AC_MSG_RESULT([yes])
+			], [AC_MSG_RESULT([no])])
 
-	])dnl
-fi
-
-AC_MSG_CHECKING([if __builtin_bswap16/32/64 are supported])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
-			[[__builtin_bswap16(1);
-			__builtin_bswap32(1);
-			__builtin_bswap64(1);]])],
-	[
-		AC_DEFINE([HAVE___BUILTIN_BSWAPXX], [1],
-			[Define to 1 if the GNU C extensions
-			__builtin_bswap16/32/64 are supported.])
-		AC_MSG_RESULT([yes])
-	], [
-		AC_MSG_RESULT([no])
-	])
+		])dnl
+	fi
+])
 
 AC_MSG_CHECKING([if unaligned memory access should be used])
 AC_ARG_ENABLE([unaligned-access], AS_HELP_STRING([--enable-unaligned-access],

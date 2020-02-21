@@ -152,7 +152,7 @@ signals_unblock(void)
 extern void
 signals_exit(void)
 {
-	const int sig = exit_signal;
+	const int sig = (int)exit_signal;
 
 	if (sig != 0) {
 #if defined(TUKLIB_DOSLIKE) || defined(__VMS)

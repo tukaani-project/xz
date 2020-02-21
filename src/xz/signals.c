@@ -166,7 +166,7 @@ signals_exit(void)
 		sigfillset(&sa.sa_mask);
 		sa.sa_flags = 0;
 		sigaction(sig, &sa, NULL);
-		raise(exit_signal);
+		raise(sig);
 #endif
 	}
 

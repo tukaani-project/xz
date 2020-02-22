@@ -189,7 +189,8 @@ typedef unsigned char _Bool;
 #	define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 #endif
 
-#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4
+#if defined(__GNUC__) \
+		&& ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4)
 #	define lzma_attr_alloc_size(x) __attribute__((__alloc_size__(x)))
 #else
 #	define lzma_attr_alloc_size(x)

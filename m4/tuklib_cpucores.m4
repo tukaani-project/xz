@@ -95,7 +95,6 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #ifdef __QNX__
 compile error
 #endif
-#include <sys/types.h>
 #ifdef HAVE_SYS_PARAM_H
 #	include <sys/param.h>
 #endif

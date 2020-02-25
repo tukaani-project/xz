@@ -65,10 +65,10 @@ string(REGEX REPLACE
 #define LZMA_VERSION_MINOR ([0-9]+)\n\
 #define LZMA_VERSION_PATCH ([0-9]+)\n\
 .*$"
-       "\\1.\\2.\\3" XZ_VERSION ${XZ_VERSION})
+       "\\1.\\2.\\3" XZ_VERSION "${XZ_VERSION}")
 
 # Among other things, this gives us variables xz_VERSION and xz_VERSION_MAJOR.
-project(xz VERSION ${XZ_VERSION} LANGUAGES C)
+project(xz VERSION "${XZ_VERSION}" LANGUAGES C)
 
 # Definitions common to all targets:
 add_compile_definitions(
@@ -152,7 +152,7 @@ if(NOT WIN32 AND NOT DEFINED CACHE{HAVE_CLOCK_GETTIME})
         # when clock_gettime is available.
         add_compile_definitions(
             HAVE_CLOCK_GETTIME
-            HAVE_DECL_CLOCK_MONOTONIC=$<BOOL:${HAVE_DECL_CLOCK_MONOTONIC}>
+            HAVE_DECL_CLOCK_MONOTONIC=$<BOOL:"${HAVE_DECL_CLOCK_MONOTONIC}">
         )
     endif()
 endif()
@@ -167,7 +167,7 @@ else()
 
     # Check if pthread_condattr_setclock() exists to use CLOCK_MONOTONIC.
     if(HAVE_DECL_CLOCK_MONOTONIC)
-        list(INSERT CMAKE_REQUIRED_LIBRARIES 0 ${CMAKE_THREAD_LIBS_INIT})
+        list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
         check_symbol_exists(pthread_condattr_setclock pthread.h
                             HAVE_PTHREAD_CONDATTR_SETCLOCK)
         tuklib_add_definition_if(ALL HAVE_PTHREAD_CONDATTR_SETCLOCK)
@@ -395,11 +395,11 @@ if(WIN32)
 elseif(CMAKE_SYSTEM_NAME MATCHES "^Linux$|^FreeBSD$")
     # Symbol versioning for shared liblzma. This doesn't affect static builds.
     target_link_options(liblzma PRIVATE
-        -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma.map
+        "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma.map"
     )
     set_target_properties(liblzma PROPERTIES
-        LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma.map
-        LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc
+        LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma.map"
+        LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
     )
 endif()
 
@@ -407,8 +407,8 @@ set_target_properties(liblzma PROPERTIES
     # At least for now the package versioning matches the rules used for
     # shared library versioning (excluding development releases) so it is
     # fine to use the package version here.
-    SOVERSION ${xz_VERSION_MAJOR}
-    VERSION ${xz_VERSION}
+    SOVERSION "${xz_VERSION_MAJOR}"
+    VERSION "${xz_VERSION}"
 
     # It's liblzma.so or liblzma.dll, not libliblzma.so or lzma.dll.
     # Avoid the name lzma.dll because it would conflict with LZMA SDK.
@@ -421,12 +421,12 @@ set_target_properties(liblzma PROPERTIES
 # for development releases where each release may have incompatible changes.
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfigVersion.cmake
-    VERSION ${liblzma_VERSION}
+    "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfigVersion.cmake"
+    VERSION "${liblzma_VERSION}"
     COMPATIBILITY SameMajorVersion)
 
 # Create liblzmaConfig.cmake.
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfig.cmake
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfig.cmake"
 "include(CMakeFindDependencyMacro)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_dependency(Threads)
@@ -439,36 +439,36 @@ include(GNUInstallDirs)
 # Install the library binary. The INCLUDES specifies the include path that
 # is exported for other projects to use but it doesn't install any files.
 install(TARGETS liblzma EXPORT liblzmaTargets
-        RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+        RUNTIME  DESTINATION "${CMAKE_INSTALL_BINDIR}"
                  COMPONENT liblzma_Runtime
-        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY  DESTINATION "${CMAKE_INSTALL_LIBDIR}"
                  COMPONENT liblzma_Runtime
                  NAMELINK_COMPONENT liblzma_Development
-        ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE  DESTINATION "${CMAKE_INSTALL_LIBDIR}"
                  COMPONENT liblzma_Development
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Install the liblzma API headers. These use a subdirectory so
 # this has to be done as a separate step.
 install(DIRECTORY src/liblzma/api/
         COMPONENT liblzma_Development
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
         FILES_MATCHING PATTERN "*.h")
 
 # Install the CMake files that other packages can use to find liblzma.
 set(liblzma_INSTALL_CMAKEDIR
-    ${CMAKE_INSTALL_LIBDIR}/cmake/liblzma
+    "${CMAKE_INSTALL_LIBDIR}/cmake/liblzma"
     CACHE STRING "Path to liblzma's .cmake files")
 
 install(EXPORT liblzmaTargets
         NAMESPACE liblzma::
         FILE liblzmaTargets.cmake
-        DESTINATION ${liblzma_INSTALL_CMAKEDIR}
+        DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfig.cmake
-              ${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfigVersion.cmake
-        DESTINATION ${liblzma_INSTALL_CMAKEDIR}
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfigVersion.cmake"
+        DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 
 
@@ -507,12 +507,12 @@ if(HAVE_GETOPT_LONG)
     tuklib_progname(xzdec)
 
     install(TARGETS xzdec
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
                     COMPONENT xzdec)
 
     if(UNIX)
         install(FILES src/xzdec/xzdec.1
-                DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+                DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
                 COMPONENT xzdec)
     endif()
 endif()
@@ -634,10 +634,10 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
     endif()
 
     install(TARGETS xz
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
                     COMPONENT xz)
 
     install(FILES src/xz/xz.1
-            DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+            DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
             COMPONENT xz)
 endif()

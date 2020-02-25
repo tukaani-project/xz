@@ -10,15 +10,11 @@
 # You can do whatever you want with this file.
 #
 
-include(${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake)
+include("${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake")
 include(CheckCSourceCompiles)
 include(CheckIncludeFile)
 
 function(tuklib_physmem_internal_check)
-    if(CACHE{TUKLIB_PHYSMEM_DEFINITIONS})
-        return()
-    endif()
-
     # Shortcut on Windows:
     if(WIN32 OR CYGWIN)
         # Nothing to do, the tuklib_physmem.c handles it.
@@ -134,16 +130,21 @@ function(tuklib_physmem_internal_check)
 endfunction()
 
 function(tuklib_physmem TARGET_OR_ALL)
-    message(STATUS "Checking how to detect the amount of physical memory")
+    if(NOT DEFINED CACHE{TUKLIB_PHYSMEM_FOUND})
+        message(STATUS "Checking how to detect the amount of physical memory")
+        tuklib_physmem_internal_check()
 
-    tuklib_physmem_internal_check()
-
-    if(NOT DEFINED CACHE{TUKLIB_PHYSMEM_DEFINITIONS})
-        set(TUKLIB_PHYSMEM_FOUND 0 PARENT_SCOPE)
-        message(WARNING
+        if(DEFINED CACHE{TUKLIB_PHYSMEM_DEFINITIONS})
+            set(TUKLIB_PHYSMEM_FOUND 1 CACHE INTERNAL "")
+        else()
+            set(TUKLIB_PHYSMEM_FOUND 0 CACHE INTERNAL "")
+            message(WARNING
                 "No method to detect the amount of physical memory was found")
-    else()
-        set(TUKLIB_PHYSMEM_FOUND 1 PARENT_SCOPE)
-        tuklib_add_definitions(${TARGET_OR_ALL} ${TUKLIB_PHYSMEM_DEFINITIONS})
+        endif()
+    endif()
+
+    if(TUKLIB_PHYSMEM_FOUND)
+        tuklib_add_definitions("${TARGET_OR_ALL}"
+                               "${TUKLIB_PHYSMEM_DEFINITIONS}")
     endif()
 endfunction()

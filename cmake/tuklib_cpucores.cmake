@@ -7,15 +7,11 @@
 # You can do whatever you want with this file.
 #
 
-include(${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake)
+include("${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake")
 include(CheckCSourceCompiles)
 include(CheckIncludeFile)
 
 function(tuklib_cpucores_internal_check)
-    if(CACHE{TUKLIB_CPUCORES_DEFINITIONS})
-        return()
-    endif()
-
     if(WIN32 OR CYGWIN)
         # Nothing to do, the tuklib_cpucores.c handles it.
         set(TUKLIB_CPUCORES_DEFINITIONS "" CACHE INTERNAL "")
@@ -158,16 +154,22 @@ function(tuklib_cpucores_internal_check)
 endfunction()
 
 function(tuklib_cpucores TARGET_OR_ALL)
-    message(STATUS "Checking how to detect the number of available CPU cores")
+    if(NOT DEFINED CACHE{TUKLIB_CPUCORES_FOUND})
+        message(STATUS
+                "Checking how to detect the number of available CPU cores")
+        tuklib_cpucores_internal_check()
 
-    tuklib_cpucores_internal_check()
+        if(DEFINED CACHE{TUKLIB_CPUCORES_DEFINITIONS})
+            set(TUKLIB_CPUCORES_FOUND 1 CACHE INTERNAL "")
+        else()
+            set(TUKLIB_CPUCORES_FOUND 0 CACHE INTERNAL "")
+            message(WARNING
+                    "No method to detect the number of CPU cores was found")
+        endif()
+    endif()
 
-    if(NOT DEFINED CACHE{TUKLIB_CPUCORES_DEFINITIONS})
-        set(TUKLIB_CPUCORES_FOUND 0 PARENT_SCOPE)
-        message(WARNING
-                "No method to detect the number of CPU cores was found")
-    else()
-        set(TUKLIB_CPUCORES_FOUND 1 PARENT_SCOPE)
-        tuklib_add_definitions(${TARGET_OR_ALL} ${TUKLIB_CPUCORES_DEFINITIONS})
+    if(TUKLIB_CPUCORES_FOUND)
+        tuklib_add_definitions("${TARGET_OR_ALL}"
+                               "${TUKLIB_CPUCORES_DEFINITIONS}")
     endif()
 endfunction()

@@ -350,6 +350,24 @@ target_compile_definitions(liblzma PRIVATE TUKLIB_SYMBOL_PREFIX=lzma_)
 tuklib_cpucores(liblzma)
 tuklib_physmem(liblzma)
 
+# While liblzma can be built without tuklib_cpucores or tuklib_physmem
+# modules, the liblzma API functions lzma_cputhreads() and lzma_physmem()
+# will then be useless (which isn't too bad but still unfortunate). Since
+# I expect the CMake-based builds to be only used on systems that are
+# supported by these tuklib modules, problems with these tuklib modules
+# are considered a hard error for now. This hopefully helps to catch bugs
+# in the CMake versions of the tuklib checks.
+if(NOT TUKLIB_CPUCORES_FOUND OR NOT TUKLIB_PHYSMEM_FOUND)
+    # Use SEND_ERROR instead of FATAL_ERROR. If someone reports a bug,
+    # seeing the results of the remaining checks can be useful too.
+    message(SEND_ERROR
+            "tuklib_cpucores() or tuklib_physmem() failed. "
+            "Unless you really are building for a system where these "
+            "modules are not supported (unlikely), this is a bug in the "
+            "included cmake/tuklib_*.cmake files that should be fixed. "
+            "To build anyway, edit this CMakeLists.txt to ignore this error.")
+endif()
+
 # immintrin.h:
 include(CheckIncludeFile)
 check_include_file(immintrin.h HAVE_IMMINTRIN_H)

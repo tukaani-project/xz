@@ -18,9 +18,7 @@ CPPFLAGS =
 CFLAGS = -g -Wall -Wextra -Wfatal-errors -march=i386 -mtune=i686 -O2
 LDFLAGS = -lemu
 
-# NOTE: -fgnu89-inline is needed on DJGPP 2.04 beta and GCC >= 4.3.0
-# because time.h uses GNU-style "extern inline".
-ALL_CFLAGS = -std=gnu99 -fgnu89-inline
+ALL_CFLAGS = -std=gnu99
 
 ALL_CPPFLAGS = \
 	-I. \

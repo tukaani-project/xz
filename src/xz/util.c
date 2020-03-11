@@ -142,14 +142,24 @@ round_up_to_mib(uint64_t n)
 }
 
 
-/// Check if thousand separator is supported. Run-time checking is easiest,
-/// because it seems to be sometimes lacking even on POSIXish system.
+/// Check if thousands separator is supported. Run-time checking is easiest
+/// because it seems to be sometimes lacking even on a POSIXish system.
+/// Note that trying to use thousands separators when snprintf() doesn't
+/// support them results in undefined behavior. This just has happened to
+/// work well enough in practice.
+///
+/// DJGPP 2.05 added support for thousands separators but it's broken
+/// at least under WinXP with Finnish locale that uses a non-breaking space
+/// as the thousands separator. Workaround by disabling thousands separators
+/// for DJGPP builds.
 static void
 check_thousand_sep(uint32_t slot)
 {
 	if (thousand == UNKNOWN) {
 		bufs[slot][0] = '\0';
+#ifndef __DJGPP__
 		snprintf(bufs[slot], sizeof(bufs[slot]), "%'u", 1U);
+#endif
 		thousand = bufs[slot][0] == '1' ? WORKS : BROKEN;
 	}
 

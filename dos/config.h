@@ -116,6 +116,14 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #define HAVE__BOOL 1
 
+/* Define to 1 if the GNU C extension __builtin_assume_aligned is supported.
+   */
+#define HAVE___BUILTIN_ASSUME_ALIGNED 1
+
+/* Define to 1 if the GNU C extensions __builtin_bswap16/32/64 are supported.
+   */
+#define HAVE___BUILTIN_BSWAPXX 1
+
 /* Define to 1 to disable debugging code. */
 #define NDEBUG 1
 

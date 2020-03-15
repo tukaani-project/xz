@@ -14,6 +14,7 @@ XZ Utils Installation
             1.2.6. Tru64
             1.2.7. Windows
             1.2.8. DOS
+            1.2.9. z/OS
        1.3. Adding support for new platforms
     2. configure options
        2.1. Static vs. dynamic linking of liblzma
@@ -139,8 +140,22 @@ XZ Utils Installation
 
 1.2.7. Windows
 
-    Building XZ Utils on Windows is supported under the following
-    environments:
+    If it is enough to build liblzma (no command line tools):
+
+      - There is experimental CMake support. As it is, it should be
+        good enough to build static liblzma with Visual Studio.
+        Building liblzma.dll might work too (if it doesn't, it should
+        be fixed). The CMake support may work with MinGW or MinGW-w64.
+        Read the comment in the beginning of CMakeLists.txt before
+        running CMake!
+
+      - There are Visual Studio project files under the "windows"
+        directory. See windows/INSTALL-MSVC.txt. In the future the
+        project files will be removed when CMake support is good
+        enough. Thus, please test the CMake version and help fix
+        possible issues.
+
+    To build also the command line tools:
 
       - MinGW-w64 + MSYS (32-bit and 64-bit x86): This is used
         for building the official binary packages for Windows.
@@ -156,9 +171,6 @@ XZ Utils Installation
         which is safe under older Cygwin versions. You can check
         the Cygwin version with the command "cygcheck -V".
 
-      - Microsoft Visual Studio 2013 update 2 or later (MSVC for short):
-        See windows/INSTALL-MSVC.txt for more information.
-
     It may be possible to build liblzma with other toolchains too, but
     that will probably require writing a separate makefile. Building
     the command line tools with non-GNU toolchains will be harder than
@@ -171,12 +183,31 @@ XZ Utils Installation
 
 1.2.8. DOS
 
-    There is an experimental Makefile in the "dos" directory to build
-    XZ Utils on DOS using DJGPP. Support for long file names (LFN) is
-    needed. See dos/README for more information.
+    There is a Makefile in the "dos" directory to build XZ Utils on
+    DOS using DJGPP. Support for long file names (LFN) is needed at
+    build time but the resulting xz.exe works without LFN support too.
+    See dos/INSTALL.txt and dos/README.txt for more information.
 
-    GNU Autotools based build hasn't been tried on DOS. If you try, I
-    would like to hear if it worked.
+
+1.2.9. z/OS
+
+    To build XZ Utils on z/OS UNIX System Services using xlc, pass
+    these options to the configure script: CC='xlc -qhaltonmsg=CCN3296'
+    CPPFLAS='-D_UNIX03_THREADS -D_XOPEN_SOURCE=600'. The first makes
+    xlc throw an error if a header file is missing, which is required
+    to make the tests in configure work. The CPPFLAGS are needed to
+    get pthread support (some other CPPFLAGS may work too; if there
+    are problems, try -D_UNIX95_THREADS instead of -D_UNIX03_THREADS).
+
+    test_scripts.sh in "make check" will fail even if the scripts
+    actually work because the test data includes compressed files
+    with US-ASCII text.
+
+    No other tests should fail. If test_files.sh fails, check that
+    the included .xz test files weren't affected by EBCDIC conversion.
+
+    XZ Utils doesn't have code to detect the amount of physical RAM and
+    number of CPU cores on z/OS.
 
 
 1.3. Adding support for new platforms

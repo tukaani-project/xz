@@ -55,9 +55,11 @@ XZ Utils
     Similarly, it is possible that some day there is a filter that will
     compress better than LZMA2.
 
-    XZ Utils doesn't support multithreaded compression or decompression
-    yet. It has been planned though and taken into account when designing
-    the .xz file format.
+    XZ Utils supports multithreaded compression. XZ Utils doesn't support
+    multithreaded decompression yet. It has been planned though and taken
+    into account when designing the .xz file format. In the future, files
+    that were created in threaded mode can be decompressed in threaded
+    mode too.
 
 
 1. Documentation
@@ -103,14 +105,13 @@ XZ Utils
     and data type as Doxygen tags. These docs should be quite OK as
     a quick reference.
 
-    I have planned to write a bunch of very well documented example
-    programs, which (due to comments) should work as a tutorial to
-    various features of liblzma. No such example programs have been
-    written yet.
+    There are a few example/tutorial programs that should help in
+    getting started with liblzma. In the source package the examples
+    are in "doc/examples" and in binary packages they may be under
+    "examples" in the same directory as this README.
 
-    For now, if you have never used liblzma, libbzip2, or zlib, I
-    recommend learning the *basics* of the zlib API. Once you know that,
-    it should be easier to learn liblzma.
+    Since the liblzma API has similarities to the zlib API, some people
+    may find it useful to read the zlib docs and tutorial too:
 
         http://zlib.net/manual.html
         http://zlib.net/zlib_how.html

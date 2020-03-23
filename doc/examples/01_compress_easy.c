@@ -173,7 +173,7 @@ compress(lzma_stream *strm, FILE *infile, FILE *outfile)
 		lzma_ret ret = lzma_code(strm, action);
 
 		// If the output buffer is full or if the compression finished
-		// successfully, write the data from the output bufffer to
+		// successfully, write the data from the output buffer to
 		// the output file.
 		if (strm->avail_out == 0 || ret == LZMA_STREAM_END) {
 			// When lzma_code() has returned LZMA_STREAM_END,

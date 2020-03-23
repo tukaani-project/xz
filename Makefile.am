@@ -64,7 +64,7 @@ EXTRA_DIST = \
 
 ACLOCAL_AMFLAGS = -I m4
 
-# List of man pages to conver to PDF and plain text in the dist-hook target.
+# List of man pages to convert to PDF and plain text in the dist-hook target.
 manfiles = \
 	src/xz/xz.1 \
 	src/xzdec/xzdec.1 \

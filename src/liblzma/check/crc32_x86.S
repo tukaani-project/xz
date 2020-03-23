@@ -195,7 +195,7 @@ LZMA_CRC32:
 
 	/*
 	 * Read the next four bytes, for which the CRC is calculated
-	 * on the next interation of the loop.
+	 * on the next iteration of the loop.
 	 */
 	movl	12(%esi), %ecx
 

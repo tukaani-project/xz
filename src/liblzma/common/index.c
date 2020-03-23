@@ -1226,7 +1226,7 @@ lzma_index_iter_locate(lzma_index_iter *iter, lzma_vli target)
 
 	// Use binary search to locate the exact Record. It is the first
 	// Record whose uncompressed_sum is greater than target.
-	// This is because we want the rightmost Record that fullfills the
+	// This is because we want the rightmost Record that fulfills the
 	// search criterion. It is possible that there are empty Blocks;
 	// we don't want to return them.
 	size_t left = 0;

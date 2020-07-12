@@ -6,7 +6,9 @@
  */
 
 #include <winresrc.h>
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 #define LZMA_H_INTERNAL
 #define LZMA_H_INTERNAL_RC
 #include "lzma/version.h"

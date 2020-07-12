@@ -840,7 +840,7 @@ The default
 .I size
 is three times the LZMA2 dictionary size or 1 MiB,
 whichever is more.
-Typically a good value is 2\-4 times
+Typically a good value is 2\(en4 times
 the size of the LZMA2 dictionary or at least 1 MiB.
 Using
 .I size
@@ -1325,7 +1325,7 @@ The default depends on the
 .IR preset :
 0 uses
 .BR hc3 ,
-1\-3
+1\(en3
 use
 .BR hc4 ,
 and the rest use
@@ -1441,11 +1441,11 @@ The default is
 .B fast
 for
 .I presets
-0\-3 and
+0\(en3 and
 .B normal
 for
 .I presets
-4\-9.
+4\(en9.
 .IP ""
 Usually
 .B fast
@@ -1464,7 +1464,7 @@ bytes is found, the algorithm stops
 looking for possibly better matches.
 .IP ""
 .I Nice
-can be 2\-273 bytes.
+can be 2\(en273 bytes.
 Higher values tend to give better compression ratio
 at the expense of speed.
 The default depends on the
@@ -1482,7 +1482,7 @@ and
 .IP ""
 Reasonable
 .I depth
-for Hash Chains is 4\-100 and 16\-1000 for Binary Trees.
+for Hash Chains is 4\(en100 and 16\(en1000 for Binary Trees.
 Using very high values for
 .I depth
 can make the encoder extremely slow with some files.
@@ -1523,7 +1523,7 @@ A BCJ filter converts relative addresses in
 the machine code to their absolute counterparts.
 This doesn't change the size of the data,
 but it increases redundancy,
-which can help LZMA2 to produce 0\-15\ % smaller
+which can help LZMA2 to produce 0\(en15\ % smaller
 .B .xz
 file.
 The BCJ filters are always reversible,
@@ -1642,7 +1642,7 @@ Specify the
 .I distance
 of the delta calculation in bytes.
 .I distance
-must be 1\-256.
+must be 1\(en256.
 The default is 1.
 .IP ""
 For example, with

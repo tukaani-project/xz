@@ -159,6 +159,7 @@ for i; do
     *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) uncompress="gzip -cdfq";;
     *[-.]bz2 | *[-.]tbz | *.tbz2) uncompress="bzip2 -cdfq";;
     *[-.]lzo | *[-.]tzo) uncompress="lzop -cdfq";;
+    *[-.]zst | *[-.]tzst) uncompress="zstd -cdfq";;
     *) uncompress="$xz -cdfq";;
   esac
   # Fail if xz or grep (or sed) fails.

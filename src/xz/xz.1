@@ -2591,7 +2591,7 @@ but if a limit has already been set, don't increase it:
 .PP
 .nf
 .ft CW
-NEWLIM=$((123 << 20))  # 123 MiB
+NEWLIM=$((123 << 20))\ \ # 123 MiB
 OLDLIM=$(xz \-\-robot \-\-info\-memory | cut \-f3)
 if [ $OLDLIM \-eq 0 \-o $OLDLIM \-gt $NEWLIM ]; then
     XZ_OPT="$XZ_OPT \-\-memlimit\-decompress=$NEWLIM"

@@ -234,16 +234,18 @@ by default by setting the environment variable
 for example,
 .BR XZ_DEFAULTS=\-\-memlimit=150MiB .
 It is possible to set the limits separately
-for compression and decompression
-by using \fB\-\-memlimit\-compress=\fIlimit\fR and
-\fB\-\-memlimit\-decompress=\fIlimit\fR.
+for compression and decompression by using
+.BI \-\-memlimit\-compress= limit
+and \fB\-\-memlimit\-decompress=\fIlimit\fR.
 Using these two options outside
 .B XZ_DEFAULTS
 is rarely useful because a single run of
 .B xz
 cannot do both compression and decompression and
 .BI \-\-memlimit= limit
-(or \fB\-M\fR \fIlimit\fR)
+(or
+.B \-M
+.IR limit )
 is shorter to type on the command line.
 .PP
 If the specified memory usage limit is exceeded when decompressing,
@@ -252,8 +254,10 @@ will display an error and decompressing the file will fail.
 If the limit is exceeded when compressing,
 .B xz
 will try to scale the settings down so that the limit
-is no longer exceeded (except when using \fB\-\-format=raw\fR
-or \fB\-\-no\-adjust\fR).
+is no longer exceeded (except when using
+.B \-\-format=raw
+or
+.BR \-\-no\-adjust ).
 This way the operation won't fail unless the limit is very small.
 The scaling of the settings is done in steps that don't
 match the compression level presets, for example, if the limit is
@@ -1042,7 +1046,8 @@ for possible ways to specify the
 .IR limit .
 .TP
 \fB\-M\fR \fIlimit\fR, \fB\-\-memlimit=\fIlimit\fR, \fB\-\-memory=\fIlimit
-This is equivalent to specifying \fB\-\-memlimit\-compress=\fIlimit
+This is equivalent to specifying
+.BI \-\-memlimit\-compress= limit
 \fB\-\-memlimit\-decompress=\fIlimit\fR.
 .TP
 .B \-\-no\-adjust
@@ -1088,7 +1093,12 @@ A custom filter chain allows specifying
 the compression settings in detail instead of relying on
 the settings associated to the presets.
 When a custom filter chain is specified,
-preset options (\fB\-0\fR \&...\& \fB\-9\fR and \fB\-\-extreme\fR)
+preset options
+.RB ( \-0
+\&...\&
+.B \-9
+and
+.BR \-\-extreme )
 earlier on the command line are forgotten.
 If a preset option is specified
 after one or more custom filter chain options,
@@ -1172,7 +1182,10 @@ The integer can be from
 .B 0
 to
 .BR 9 ,
-matching the command line options \fB\-0\fR \&...\& \fB\-9\fR.
+matching the command line options
+.B \-0
+\&...\&
+.BR \-9 .
 The only supported modifier is currently
 .BR e ,
 which matches

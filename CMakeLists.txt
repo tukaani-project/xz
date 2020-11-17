@@ -127,7 +127,7 @@ tuklib_integer(ALL)
 
 # Check for clock_gettime(). Do this before checking for threading so
 # that we know there if CLOCK_MONOTONIC is available.
-if(NOT WIN32 AND NOT DEFINED CACHE{HAVE_CLOCK_GETTIME})
+if(NOT WIN32 AND NOT DEFINED HAVE_CLOCK_GETTIME)
     check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
     if(NOT HAVE_CLOCK_GETTIME)
         # With glibc <= 2.17 or Solaris 10 this needs librt.

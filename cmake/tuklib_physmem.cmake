@@ -130,11 +130,11 @@ function(tuklib_physmem_internal_check)
 endfunction()
 
 function(tuklib_physmem TARGET_OR_ALL)
-    if(NOT DEFINED CACHE{TUKLIB_PHYSMEM_FOUND})
+    if(NOT DEFINED TUKLIB_PHYSMEM_FOUND)
         message(STATUS "Checking how to detect the amount of physical memory")
         tuklib_physmem_internal_check()
 
-        if(DEFINED CACHE{TUKLIB_PHYSMEM_DEFINITIONS})
+        if(DEFINED TUKLIB_PHYSMEM_DEFINITIONS)
             set(TUKLIB_PHYSMEM_FOUND 1 CACHE INTERNAL "")
         else()
             set(TUKLIB_PHYSMEM_FOUND 0 CACHE INTERNAL "")

@@ -70,6 +70,9 @@ string(REGEX REPLACE
 # Among other things, this gives us variables xz_VERSION and xz_VERSION_MAJOR.
 project(xz VERSION "${XZ_VERSION}" LANGUAGES C)
 
+# On Apple OSes, don't build executables as bundles:
+set(CMAKE_MACOSX_BUNDLE OFF)
+
 # Definitions common to all targets:
 add_compile_definitions(
     # Package info:

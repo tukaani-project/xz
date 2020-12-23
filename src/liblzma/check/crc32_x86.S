@@ -51,6 +51,14 @@ init_table(void)
  * extern uint32_t lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc);
  */
 
+/* When Intel CET is enabled, include <cet.h> in assembly code to mark
+   Intel CET support.  */
+#ifdef __CET__
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 /*
  * On some systems, the functions need to be prefixed. The prefix is
  * usually an underscore.
@@ -83,6 +91,7 @@ init_table(void)
 
 	ALIGN(4, 16)
 LZMA_CRC32:
+	_CET_ENDBR
 	/*
 	 * Register usage:
 	 * %eax crc

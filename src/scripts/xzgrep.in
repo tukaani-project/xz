@@ -156,11 +156,11 @@ res=1
 
 for i; do
   case $i in
-    *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) uncompress="gzip -cdfq";;
-    *[-.]bz2 | *[-.]tbz | *.tbz2) uncompress="bzip2 -cdfq";;
-    *[-.]lzo | *[-.]tzo) uncompress="lzop -cdfq";;
-    *[-.]zst | *[-.]tzst) uncompress="zstd -cdfq";;
-    *) uncompress="$xz -cdfq";;
+    *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) uncompress="gzip -cdf";;
+    *[-.]bz2 | *[-.]tbz | *.tbz2) uncompress="bzip2 -cdf";;
+    *[-.]lzo | *[-.]tzo) uncompress="lzop -cdf";;
+    *[-.]zst | *[-.]tzst) uncompress="zstd -cdfq";; # zstd needs -q.
+    *) uncompress="$xz -cdf";;
   esac
   # Fail if xz or grep (or sed) fails.
   xz_status=$(
@@ -205,8 +205,14 @@ for i; do
   # fail occurred previously, nothing worse can happen
   test $res -gt 1 && continue
 
-  test "$xz_status" -eq 0 || test "$xz_status" -eq 2 \
-      || test "$(kill -l "$xz_status" 2> /dev/null)" = "PIPE" || r=2
+  if test "$xz_status" -eq 0; then
+    :
+  elif test "$xz_status" -ge 128 \
+      && test "$(kill -l "$xz_status" 2> /dev/null)" = "PIPE"; then
+    :
+  else
+    r=2
+  fi
 
   # still no match
   test $r -eq 1 && continue

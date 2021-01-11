@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2022-07-12" "Tukaani" "XZ Utils"
+.TH XZ 1 "2022-07-24" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -392,6 +392,20 @@ should be used.
 .TP
 .BR \-k ", " \-\-keep
 Don't delete the input files.
+.IP ""
+Since
+.B xz
+5.2.6,
+this option also makes
+.B xz
+compress or decompress even if the input is
+a symbolic link to a regular file,
+has more than one hard link,
+or has the setuid, setgid, or sticky bit set.
+The setuid, setgid, and sticky bits are not copied
+to the target file.
+In earlier versions this was only done with
+.BR \-\-force .
 .TP
 .BR \-f ", " \-\-force
 This option has several effects:

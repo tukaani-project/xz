@@ -80,19 +80,23 @@ if test $# -eq 1; then
       xz1=gzip;;
     *[-.]lzo | *.tzo)
       xz1=lzop;;
+    *[-.]zst | *.tzst)
+      xz1='zstd -q';;
     *)
       echo >&2 "$0: $1: Unknown compressed file name suffix"
       exit 2;;
   esac
   case $1 in
-    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lzo)
-      FILE=`expr "X$1" : 'X\(.*\)[-.][abglmoxzZ2]*$'`;;
+    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lzo | *[-.]zst)
+      FILE=`expr "X$1" : 'X\(.*\)[-.][abglmostxzZ2]*$'`;;
     *.t[abglx]z)
       FILE=`expr "X$1" : 'X\(.*[-.]t\)[abglx]z$'`ar;;
     *.tbz2)
       FILE=`expr "X$1" : 'X\(.*[-.]t\)bz2$'`ar;;
     *.tzo)
       FILE=`expr "X$1" : 'X\(.*[-.]t\)zo$'`ar;;
+    *.tzst)
+      FILE=`expr "X$1" : 'X\(.*[-.]t\)zst$'`ar;;
   esac
   xz_status=$(
     exec 4>&1
@@ -103,16 +107,18 @@ elif test $# -eq 2; then
     *[-.]bz2 | *.tbz | *.tbz2) xz1=bzip2;;
     *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) xz1=gzip;;
     *[-.]lzo | *.tzo) xz1=lzop;;
+    *[-.]zst | *.tzst) xz1='zstd -q';;
   esac
   case $2 in
     *[-.]bz2 | *.tbz | *.tbz2) xz2=bzip2;;
     *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) xz2=gzip;;
     *[-.]lzo | *.tzo) xz2=lzop;;
+    *[-.]zst | *.tzst) xz2='zstd -q';;
   esac
   case $1 in
-    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | -)
+    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
       case "$2" in
-        *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | -)
+        *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
           if test "$1$2" = --; then
             xz_status=$(
               exec 4>&1
@@ -176,7 +182,7 @@ elif test $# -eq 2; then
     esac;;
   *)
     case "$2" in
-      *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | -)
+      *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
         xz_status=$(
           exec 4>&1
           ($xz2 -cdf -- "$2" 4>&-; echo $? >&4) 3>&- |

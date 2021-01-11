@@ -536,8 +536,9 @@ io_open_src_real(file_pair *pair)
 	}
 
 	// Symlinks are not followed unless writing to stdout or --force
-	// was used.
-	const bool follow_symlinks = opt_stdout || opt_force;
+	// or --keep was used.
+	const bool follow_symlinks
+			= opt_stdout || opt_force || opt_keep_original;
 
 	// We accept only regular files if we are writing the output
 	// to disk too. bzip2 allows overriding this with --force but
@@ -674,7 +675,7 @@ io_open_src_real(file_pair *pair)
 	}
 
 #ifndef TUKLIB_DOSLIKE
-	if (reg_files_only && !opt_force) {
+	if (reg_files_only && !opt_force && !opt_keep_original) {
 		if (pair->src_st.st_mode & (S_ISUID | S_ISGID)) {
 			// gzip rejects setuid and setgid files even
 			// when --force was used. bzip2 doesn't check
@@ -683,7 +684,7 @@ io_open_src_real(file_pair *pair)
 			// and setgid bits there.
 			//
 			// We accept setuid and setgid files if
-			// --force was used. We drop these bits
+			// --force or --keep was used. We drop these bits
 			// explicitly in io_copy_attr().
 			message_warning(_("%s: File has setuid or "
 					"setgid bit set, skipping"),

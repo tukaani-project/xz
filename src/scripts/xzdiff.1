@@ -6,7 +6,7 @@
 .\"
 .\" License: GNU GPLv2+
 .\"
-.TH XZDIFF 1 "2011-03-19" "Tukaani" "XZ Utils"
+.TH XZDIFF 1 "2021-01-11" "Tukaani" "XZ Utils"
 .SH NAME
 xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .SH SYNOPSIS
@@ -34,8 +34,9 @@ on files compressed with
 .BR lzma (1),
 .BR gzip (1),
 .BR bzip2 (1),
+.BR lzop (1),
 or
-.BR lzop (1).
+.BR zstd (1).
 All options specified are passed directly to
 .BR cmp (1)
 or
@@ -68,6 +69,7 @@ are provided for backward compatibility with LZMA Utils.
 .BR gzip (1),
 .BR bzip2 (1),
 .BR lzop (1),
+.BR zstd (1),
 .BR zdiff (1)
 .SH BUGS
 Messages from the

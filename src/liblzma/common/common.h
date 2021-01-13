@@ -172,6 +172,16 @@ struct lzma_next_coder_s {
 	lzma_ret (*update)(void *coder, const lzma_allocator *allocator,
 			const lzma_filter *filters,
 			const lzma_filter *reversed_filters);
+
+	/// Set how many bytes of output this coder may produce at maximum.
+	/// On success LZMA_OK must be returned.
+	/// If the filter chain as a whole cannot support this feature,
+	/// this must return LZMA_OPTIONS_ERROR.
+	/// If no input has been given to the coder and the requested limit
+	/// is too small, this must return LZMA_BUF_ERROR. If input has been
+	/// seen, LZMA_OK is allowed too.
+	lzma_ret (*set_out_limit)(void *coder, uint64_t *uncomp_size,
+			uint64_t out_limit);
 };
 
 
@@ -187,6 +197,7 @@ struct lzma_next_coder_s {
 		.get_check = NULL, \
 		.memconfig = NULL, \
 		.update = NULL, \
+		.set_out_limit = NULL, \
 	}
 
 

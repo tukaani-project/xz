@@ -521,6 +521,21 @@ lz_encoder_update(void *coder_ptr, const lzma_allocator *allocator,
 }
 
 
+static lzma_ret
+lz_encoder_set_out_limit(void *coder_ptr, uint64_t *uncomp_size,
+		uint64_t out_limit)
+{
+	lzma_coder *coder = coder_ptr;
+
+	// This is supported only if there are no other filters chained.
+	if (coder->next.code == NULL && coder->lz.set_out_limit != NULL)
+		return coder->lz.set_out_limit(
+				coder->lz.coder, uncomp_size, out_limit);
+
+	return LZMA_OPTIONS_ERROR;
+}
+
+
 extern lzma_ret
 lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters,
@@ -544,6 +559,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->code = &lz_encode;
 		next->end = &lz_encoder_end;
 		next->update = &lz_encoder_update;
+		next->set_out_limit = &lz_encoder_set_out_limit;
 
 		coder->lz.coder = NULL;
 		coder->lz.code = NULL;

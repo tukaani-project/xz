@@ -72,6 +72,18 @@ struct lzma_lzma1_encoder_s {
 	/// Range encoder
 	lzma_range_encoder rc;
 
+	/// Uncompressed size (doesn't include possible preset dictionary)
+	uint64_t uncomp_size;
+
+	/// If non-zero, produce at most this much output.
+	/// Some input may then be missing from the output.
+	uint64_t out_limit;
+
+	/// If the above out_limit is non-zero, *uncomp_size_ptr is set to
+	/// the amount of uncompressed data that we were able to fit
+	/// in the output buffer.
+	uint64_t *uncomp_size_ptr;
+
 	/// State
 	lzma_lzma_state state;
 

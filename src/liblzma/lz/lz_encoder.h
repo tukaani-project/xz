@@ -204,6 +204,10 @@ typedef struct {
 	/// Update the options in the middle of the encoding.
 	lzma_ret (*options_update)(void *coder, const lzma_filter *filter);
 
+	/// Set maximum allowed output size
+	lzma_ret (*set_out_limit)(void *coder, uint64_t *uncomp_size,
+			uint64_t out_limit);
+
 } lzma_lz_encoder;
 
 

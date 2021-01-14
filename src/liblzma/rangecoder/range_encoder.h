@@ -274,7 +274,7 @@ rc_encode_dummy(const lzma_range_encoder *rc, size_t out_size)
 
 	size_t pos = rc->pos;
 
-	while (pos < rc->count) {
+	while (true) {
 		// Normalize
 		if (range < RC_TOP_VALUE) {
 			if (rc_shift_low_dummy(&low, &cache_size, &cache,
@@ -283,6 +283,11 @@ rc_encode_dummy(const lzma_range_encoder *rc, size_t out_size)
 
 			range <<= RC_SHIFT_BITS;
 		}
+
+		// This check is here because the normalization above must
+		// be done before flushing the last bytes.
+		if (pos == rc->count)
+			break;
 
 		// Encode a bit
 		switch (rc->symbols[pos]) {

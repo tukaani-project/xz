@@ -18,11 +18,26 @@ typedef struct {
 	/// LZMA1 decoder
 	lzma_next_coder lzma;
 
-	/// Uncompressed size of the stream as given by the application
+	/// Compressed size of the stream as given by the application.
+	/// This must be exactly correct.
+	///
+	/// This will be decremented when input is read.
+	uint64_t comp_size;
+
+	/// Uncompressed size of the stream as given by the application.
+	/// This may be less than the actual uncompressed size if
+	/// uncomp_size_is_exact is false.
+	///
+	/// This will be decremented when output is produced.
 	lzma_vli uncomp_size;
 
 	/// LZMA dictionary size as given by the application
 	uint32_t dict_size;
+
+	/// If true, the exact uncompressed size is known. If false,
+	/// uncomp_size may be smaller than the real uncompressed size;
+	/// uncomp_size may never be bigger than the real uncompressed size.
+	bool uncomp_size_is_exact;
 
 	/// True once the first byte of the EROFS LZMA stream
 	/// has been processed.
@@ -37,6 +52,26 @@ erofs_decode(void *coder_ptr, const lzma_allocator *allocator,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
 	lzma_erofs_coder *coder = coder_ptr;
+
+	// Remember the in start position so that we can update comp_size.
+	const size_t in_start = *in_pos;
+
+	// Remember the out start position so that we can update uncomp_size.
+	const size_t out_start = *out_pos;
+
+	// Limit the amount of input so that the decoder won't read more than
+	// comp_size. This is required when uncomp_size isn't exact because
+	// in that case the LZMA decoder will try to decode more input even
+	// when it has no output space (it can be looking for EOPM).
+	if (in_size - *in_pos > coder->comp_size)
+		in_size = *in_pos + (size_t)(coder->comp_size);
+
+	// When the exact uncompressed size isn't known, we must limit
+	// the available output space to prevent the LZMA decoder from
+	// trying to decode too much.
+	if (!coder->uncomp_size_is_exact
+			&& out_size - *out_pos > coder->uncomp_size)
+		out_size = *out_pos + (size_t)(coder->uncomp_size);
 
 	if (!coder->props_decoded) {
 		// There must be at least one byte of input to decode
@@ -71,8 +106,9 @@ erofs_decode(void *coder_ptr, const lzma_allocator *allocator,
 				allocator, filters));
 
 		// Use a hack to set the uncompressed size.
-		lzma_lz_decoder_uncompressed(coder->lzma.coder,
-				coder->uncomp_size);
+		if (coder->uncomp_size_is_exact)
+			lzma_lz_decoder_uncompressed(coder->lzma.coder,
+					coder->uncomp_size);
 
 		// Pass one dummy 0x00 byte to the LZMA decoder since that
 		// is what it expects the first byte to be.
@@ -88,9 +124,30 @@ erofs_decode(void *coder_ptr, const lzma_allocator *allocator,
 	}
 
 	// The rest is normal LZMA decoding.
-	return coder->lzma.code(coder->lzma.coder, allocator,
+	lzma_ret ret = coder->lzma.code(coder->lzma.coder, allocator,
 				in, in_pos, in_size,
 				out, out_pos, out_size, action);
+
+	// Update the remaining compressed size.
+	assert(coder->comp_size >= *in_pos - in_start);
+	coder->comp_size -= *in_pos - in_start;
+
+	if (!coder->uncomp_size_is_exact) {
+		// Update the amount of output remaining.
+		assert(coder->uncomp_size >= *out_pos - out_start);
+		coder->uncomp_size -= *out_pos - out_start;
+
+		// - We must not get LZMA_STREAM_END because the stream
+		//   shouldn't have EOPM.
+		// - We must use uncomp_size to determine when to
+		//   return LZMA_STREAM_END.
+		if (ret == LZMA_STREAM_END)
+			ret = LZMA_DATA_ERROR;
+		else if (coder->uncomp_size == 0)
+			ret = LZMA_STREAM_END;
+	}
+
+	return ret;
 }
 
 
@@ -106,7 +163,9 @@ erofs_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
 
 static lzma_ret
 erofs_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
-		uint64_t uncomp_size, uint32_t dict_size)
+		uint64_t comp_size,
+		uint64_t uncomp_size, bool uncomp_size_is_exact,
+		uint32_t dict_size)
 {
 	lzma_next_coder_init(&erofs_decoder_init, next, allocator);
 
@@ -124,10 +183,14 @@ erofs_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		coder->lzma = LZMA_NEXT_CODER_INIT;
 	}
 
+	// The public API is uint64_t but the internal LZ decoder API uses
+	// lzma_vli.
 	if (uncomp_size > LZMA_VLI_MAX)
 		return LZMA_OPTIONS_ERROR;
 
+	coder->comp_size = comp_size;
 	coder->uncomp_size = uncomp_size;
+	coder->uncomp_size_is_exact = uncomp_size_is_exact;
 	coder->dict_size = dict_size;
 
 	coder->props_decoded = false;
@@ -137,9 +200,12 @@ erofs_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 
 extern LZMA_API(lzma_ret)
-lzma_erofs_decoder(lzma_stream *strm, uint64_t uncomp_size, uint32_t dict_size)
+lzma_erofs_decoder(lzma_stream *strm, uint64_t comp_size,
+		uint64_t uncomp_size, lzma_bool uncomp_size_is_exact,
+		uint32_t dict_size)
 {
-	lzma_next_strm_init(erofs_decoder_init, strm, uncomp_size, dict_size);
+	lzma_next_strm_init(erofs_decoder_init, strm, comp_size,
+			uncomp_size, uncomp_size_is_exact, dict_size);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;
 	strm->internal->supported_actions[LZMA_FINISH] = true;

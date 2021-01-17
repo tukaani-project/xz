@@ -690,11 +690,22 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
  * The special behavior of lzma_code() applies to lzma_erofs_encoder() only.
  *
  * \param       strm        Pointer to properly prepared lzma_stream
+ * \param       comp_size   Compressed size of the EROFS LZMA stream.
+ *                          The caller must somehow know this exactly.
  * \param       uncomp_size Uncompressed size of the EROFS LZMA stream.
- *                          The caller must somehow know this. Note that
- *                          while the EROFS LZMA decoder in XZ Embedded needs
- *                          also the compressed size, the implementation in
- *                          liblzma doesn't need to know the compressed size.
+ *                          If the exact uncompressed size isn't known, this
+ *                          can be set to a value that is at most as big as
+ *                          the exact uncompressed size would be, but then the
+ *                          next argument uncomp_size_is_exact must be false.
+ * \param       uncomp_size_is_exact
+ *                          If true, uncomp_size must be exactly correct.
+ *                          This will improve error detection at the end of
+ *                          the stream. If the exact uncompressed size isn't
+ *                          known, this must be false. uncomp_size must still
+ *                          be at most as big as the exact uncompressed size
+ *                          is. Setting this to false when the exact size is
+ *                          known will work but error detection at the end of
+ *                          the stream will be weaker.
  * \param       dict_size   LZMA dictionary size that was used when
  *                          compressing the data. It is OK to use a bigger
  *                          value too but liblzma will then allocate more
@@ -705,4 +716,6 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
  *                          dictionary than actually required.)
  */
 extern LZMA_API(lzma_ret) lzma_erofs_decoder(
-		lzma_stream *strm, uint64_t uncomp_size, uint32_t dict_size);
+		lzma_stream *strm, uint64_t comp_size,
+		uint64_t uncomp_size, lzma_bool uncomp_size_is_exact,
+		uint32_t dict_size);

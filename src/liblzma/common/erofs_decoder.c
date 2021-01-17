@@ -132,7 +132,12 @@ erofs_decode(void *coder_ptr, const lzma_allocator *allocator,
 	assert(coder->comp_size >= *in_pos - in_start);
 	coder->comp_size -= *in_pos - in_start;
 
-	if (!coder->uncomp_size_is_exact) {
+	if (coder->uncomp_size_is_exact) {
+		// After successful decompression of the complete stream
+		// the compressed size must match.
+		if (ret == LZMA_STREAM_END && coder->comp_size != 0)
+			ret = LZMA_DATA_ERROR;
+	} else {
 		// Update the amount of output remaining.
 		assert(coder->uncomp_size >= *out_pos - out_start);
 		coder->uncomp_size -= *out_pos - out_start;

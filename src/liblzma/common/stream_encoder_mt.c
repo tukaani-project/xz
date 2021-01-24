@@ -640,9 +640,13 @@ wait_for_work(lzma_stream_coder *coder, mythread_condtime *wait_abs,
 		// to true here and calculate the absolute time when
 		// we must return if there's nothing to do.
 		//
-		// The idea of *has_blocked is to avoid unneeded calls
-		// to mythread_condtime_set(), which may do a syscall
-		// depending on the operating system.
+		// This way if we block multiple times for short moments
+		// less than "timeout" milliseconds, we will return once
+		// "timeout" amount of time has passed since the *first*
+		// blocking occurred. If the absolute time was calculated
+		// again every time we block, "timeout" would effectively
+		// be meaningless if we never consecutively block longer
+		// than "timeout" ms.
 		*has_blocked = true;
 		mythread_condtime_set(wait_abs, &coder->cond, coder->timeout);
 	}

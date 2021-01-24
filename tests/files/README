@@ -209,6 +209,13 @@
 
     bad-1-check-crc32.xz has wrong Check (CRC32).
 
+    bad-1-check-crc32-2.xz has Compressed Size and Uncompressed Size in
+    Block Header but wrong Check (CRC32) in the actual data. This file
+    differs by one byte from good-1-block_header-1.xz: the last byte of
+    the Check field is wrong. This file is useful for testing error
+    detection in the threaded decoder when a worker thread is configured
+    to pass input one byte at a time to the Block decoder.
+
     bad-1-check-crc64.xz has wrong Check (CRC64).
 
     bad-1-check-sha256.xz has wrong Check (SHA-256).

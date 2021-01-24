@@ -245,3 +245,7 @@
     bad-1-lzma2-8.xz is like good-1-lzma2-4.xz but doesn't set new
     properties in the third LZMA2 chunk.
 
+    bad-1-lzma2-9.xz has LZMA2 stream that is truncated at the end of
+    a LZMA2 chunk and has no end marker. The uncompressed size of the
+    partial LZMA2 stream exceeds the value stored in the Block Header.
+

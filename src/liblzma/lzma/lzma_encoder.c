@@ -651,6 +651,7 @@ lzma_lzma_encoder_create(void **coder_ptr,
 			&& options->preset_dict_size > 0;
 	coder->is_flushed = false;
 	coder->uncomp_size = 0;
+	coder->uncomp_size_ptr = NULL;
 
 	// Output size limitting is disabled by default.
 	coder->out_limit = 0;

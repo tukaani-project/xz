@@ -434,22 +434,27 @@ set_target_properties(liblzma PROPERTIES
     PREFIX ""
 )
 
-# Create liblzmaConfigVersion.cmake.
+# Create liblzma-config-version.cmake. We use this spelling instead of
+# liblzmaConfig.cmake to make find_package work in case insensitive manner
+# even with case sensitive file systems. This gives more consistent behavior
+# between operating systems.
 #
 # FIXME: SameMajorVersion is correct for stable releases but it is wrong
 # for development releases where each release may have incompatible changes.
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config-version.cmake"
     VERSION "${liblzma_VERSION}"
     COMPATIBILITY SameMajorVersion)
 
-# Create liblzmaConfig.cmake.
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfig.cmake"
+# Create liblzma-config.cmake.
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
 "include(CMakeFindDependencyMacro)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_dependency(Threads)
-include(\"\${CMAKE_CURRENT_LIST_DIR}/liblzmaTargets.cmake\")
+include(\"\${CMAKE_CURRENT_LIST_DIR}/liblzma-targets.cmake\")
+# Be compatible with the spelling used by the FindLibLZMA module:
+add_library(LibLZMA::LibLZMA ALIAS liblzma::liblzma)
 ")
 
 # Set CMAKE_INSTALL_LIBDIR and friends.
@@ -481,12 +486,12 @@ set(liblzma_INSTALL_CMAKEDIR
 
 install(EXPORT liblzmaTargets
         NAMESPACE liblzma::
-        FILE liblzmaTargets.cmake
+        FILE liblzma-targets.cmake
         DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfig.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/liblzmaConfigVersion.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config-version.cmake"
         DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 

@@ -6,7 +6,7 @@
 .\"
 .\" License: GNU GPLv2+
 .\"
-.TH XZDIFF 1 "2021-01-11" "Tukaani" "XZ Utils"
+.TH XZDIFF 1 "2021-06-04" "Tukaani" "XZ Utils"
 .SH NAME
 xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .SH SYNOPSIS
@@ -55,7 +55,7 @@ The exit status from
 .BR cmp (1)
 or
 .BR diff (1)
-is preserved.
+is preserved unless a decompression error occurs; then exit status is 2.
 .PP
 The names
 .B lzcmp

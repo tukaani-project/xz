@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       erofs_encoder.c
-/// \brief      Encode into EROFS LZMA format
+/// \file       microlzma_encoder.c
+/// \brief      Encode into MicroLZMA format
 //
 //  Author:     Lasse Collin
 //
@@ -19,16 +19,16 @@ typedef struct {
 
 	/// LZMA properties byte (lc/lp/pb)
 	uint8_t props;
-} lzma_erofs_coder;
+} lzma_microlzma_coder;
 
 
 static lzma_ret
-erofs_encode(void *coder_ptr, const lzma_allocator *allocator,
+microlzma_encode(void *coder_ptr, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	lzma_erofs_coder *coder = coder_ptr;
+	lzma_microlzma_coder *coder = coder_ptr;
 
 	// Remember *out_pos so that we can overwrite the first byte with
 	// the LZMA properties byte.
@@ -80,9 +80,9 @@ erofs_encode(void *coder_ptr, const lzma_allocator *allocator,
 
 
 static void
-erofs_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
+microlzma_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
 {
-	lzma_erofs_coder *coder = coder_ptr;
+	lzma_microlzma_coder *coder = coder_ptr;
 	lzma_next_end(&coder->lzma, allocator);
 	lzma_free(coder, allocator);
 	return;
@@ -90,21 +90,21 @@ erofs_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
 
 
 static lzma_ret
-erofs_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
+microlzma_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_options_lzma *options)
 {
-	lzma_next_coder_init(&erofs_encoder_init, next, allocator);
+	lzma_next_coder_init(&microlzma_encoder_init, next, allocator);
 
-	lzma_erofs_coder *coder = next->coder;
+	lzma_microlzma_coder *coder = next->coder;
 
 	if (coder == NULL) {
-		coder = lzma_alloc(sizeof(lzma_erofs_coder), allocator);
+		coder = lzma_alloc(sizeof(lzma_microlzma_coder), allocator);
 		if (coder == NULL)
 			return LZMA_MEM_ERROR;
 
 		next->coder = coder;
-		next->code = &erofs_encode;
-		next->end = &erofs_encoder_end;
+		next->code = &microlzma_encode;
+		next->end = &microlzma_encoder_end;
 
 		coder->lzma = LZMA_NEXT_CODER_INIT;
 	}
@@ -128,9 +128,9 @@ erofs_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 
 extern LZMA_API(lzma_ret)
-lzma_erofs_encoder(lzma_stream *strm, const lzma_options_lzma *options)
+lzma_microlzma_encoder(lzma_stream *strm, const lzma_options_lzma *options)
 {
-	lzma_next_strm_init(erofs_encoder_init, strm, options);
+	lzma_next_strm_init(microlzma_encoder_init, strm, options);
 
 	strm->internal->supported_actions[LZMA_FINISH] = true;
 

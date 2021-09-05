@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       erofs_decoder.c
-/// \brief      Decode EROFS LZMA format
+/// \file       microlzma_decoder.c
+/// \brief      Decode MicroLZMA format
 //
 //  Author:     Lasse Collin
 //
@@ -39,19 +39,19 @@ typedef struct {
 	/// uncomp_size may never be bigger than the real uncompressed size.
 	bool uncomp_size_is_exact;
 
-	/// True once the first byte of the EROFS LZMA stream
+	/// True once the first byte of the MicroLZMA stream
 	/// has been processed.
 	bool props_decoded;
-} lzma_erofs_coder;
+} lzma_microlzma_coder;
 
 
 static lzma_ret
-erofs_decode(void *coder_ptr, const lzma_allocator *allocator,
+microlzma_decode(void *coder_ptr, const lzma_allocator *allocator,
 		const uint8_t *restrict in, size_t *restrict in_pos,
 		size_t in_size, uint8_t *restrict out,
 		size_t *restrict out_pos, size_t out_size, lzma_action action)
 {
-	lzma_erofs_coder *coder = coder_ptr;
+	lzma_microlzma_coder *coder = coder_ptr;
 
 	// Remember the in start position so that we can update comp_size.
 	const size_t in_start = *in_pos;
@@ -157,9 +157,9 @@ erofs_decode(void *coder_ptr, const lzma_allocator *allocator,
 
 
 static void
-erofs_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
+microlzma_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
 {
-	lzma_erofs_coder *coder = coder_ptr;
+	lzma_microlzma_coder *coder = coder_ptr;
 	lzma_next_end(&coder->lzma, allocator);
 	lzma_free(coder, allocator);
 	return;
@@ -167,23 +167,23 @@ erofs_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
 
 
 static lzma_ret
-erofs_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
+microlzma_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		uint64_t comp_size,
 		uint64_t uncomp_size, bool uncomp_size_is_exact,
 		uint32_t dict_size)
 {
-	lzma_next_coder_init(&erofs_decoder_init, next, allocator);
+	lzma_next_coder_init(&microlzma_decoder_init, next, allocator);
 
-	lzma_erofs_coder *coder = next->coder;
+	lzma_microlzma_coder *coder = next->coder;
 
 	if (coder == NULL) {
-		coder = lzma_alloc(sizeof(lzma_erofs_coder), allocator);
+		coder = lzma_alloc(sizeof(lzma_microlzma_coder), allocator);
 		if (coder == NULL)
 			return LZMA_MEM_ERROR;
 
 		next->coder = coder;
-		next->code = &erofs_decode;
-		next->end = &erofs_decoder_end;
+		next->code = &microlzma_decode;
+		next->end = &microlzma_decoder_end;
 
 		coder->lzma = LZMA_NEXT_CODER_INIT;
 	}
@@ -205,11 +205,11 @@ erofs_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 
 extern LZMA_API(lzma_ret)
-lzma_erofs_decoder(lzma_stream *strm, uint64_t comp_size,
+lzma_microlzma_decoder(lzma_stream *strm, uint64_t comp_size,
 		uint64_t uncomp_size, lzma_bool uncomp_size_is_exact,
 		uint32_t dict_size)
 {
-	lzma_next_strm_init(erofs_decoder_init, strm, comp_size,
+	lzma_next_strm_init(microlzma_decoder_init, strm, comp_size,
 			uncomp_size, uncomp_size_is_exact, dict_size);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;

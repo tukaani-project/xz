@@ -106,8 +106,8 @@ global:
 
 XZ_5.3.1alpha {
 global:
-	lzma_erofs_decoder;
-	lzma_erofs_encoder;
+	lzma_microlzma_decoder;
+	lzma_microlzma_encoder;
 	lzma_file_info_decoder;
 
 local:

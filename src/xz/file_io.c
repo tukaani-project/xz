@@ -368,7 +368,13 @@ io_copy_attrs(const file_pair *pair)
 
 	mode_t mode;
 
-	if (fchown(pair->dest_fd, (uid_t)(-1), pair->src_st.st_gid)) {
+	// With BSD semantics the new dest file may have a group that
+	// does not belong to the user.  If the src file has the same gid
+	// nothing has to be done.  Nevertheless OpenBSD fchown(2) fails
+	// in this case which seems to be POSIX compliant.  As there is
+	// nothing to do, skip the system call.
+	if (pair->dest_st.st_gid != pair->src_st.st_gid &&
+	    fchown(pair->dest_fd, (uid_t)(-1), pair->src_st.st_gid)) {
 		message_warning(_("%s: Cannot set the file group: %s"),
 				pair->dest_name, strerror(errno));
 		// We can still safely copy some additional permissions:

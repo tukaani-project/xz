@@ -2,6 +2,92 @@
 XZ Utils Release Notes
 ======================
 
+5.3.2alpha (2021-10-28)
+
+    This release was made on short notice so that recent erofs-utils can
+    be built with LZMA support without needing a snapshot from xz.git.
+    Thus many pending things were not included, not even updated
+    translations (which would need to be updated for the new --list
+    strings anyway).
+
+    * All fixes from 5.2.5.
+
+    * xz:
+
+        - When copying metadata from the source file to the destination
+          file, don't try to set the group (GID) if it is already set
+          correctly. This avoids a failure on OpenBSD (and possibly on
+          a few other OSes) where files may get created so that their
+          group doesn't belong to the user, and fchown(2) can fail even
+          if it needs to do nothing.
+
+        - The --keep option now accepts symlinks, hardlinks, and
+          setuid, setgid, and sticky files. Previously this required
+          using --force.
+
+        - Split the long strings used in --list and --info-memory modes
+          to make them much easier for translators.
+
+        - If built with sandbox support and enabling the sandbox fails,
+          xz will now immediately exit with exit status of 1. Previously
+          it would only display a warning if -vv was used.
+
+        - Cap --memlimit-compress to 2000 MiB on MIPS32 because on
+          MIPS32 userspace processes are limited to 2 GiB of address
+          space.
+
+    * liblzma:
+
+        - Added lzma_microlzma_encoder() and lzma_microlzma_decoder().
+          The API is in lzma/container.h.
+
+          The MicroLZMA format is a raw LZMA stream (without end marker)
+          whose first byte (always 0x00) has been replaced with
+          bitwise-negation of the LZMA properties (lc/lp/pb). It was
+          created for use in EROFS but may be used in other contexts
+          as well where it is important to avoid wasting bytes for
+          stream headers or footers. The format is also supported by
+          XZ Embedded.
+
+          The MicroLZMA encoder API in liblzma can compress into a
+          fixed-sized output buffer so that as much data is compressed
+          as can be fit into the buffer while still creating a valid
+          MicroLZMA stream. This is needed for EROFS.
+
+        - Added fuzzing support.
+
+        - Support Intel Control-flow Enforcement Technology (CET) in
+          32-bit x86 assembly files.
+
+        - Visual Studio: Use non-standard _MSVC_LANG to detect C++
+          standard version in the lzma.h API header. It's used to
+          detect when "noexcept" can be used.
+
+    * Scripts:
+
+        - Fix exit status of xzdiff/xzcmp. Exit status could be 2 when
+          the correct value is 1.
+
+        - Fix exit status of xzgrep.
+
+        - Detect corrupt .bz2 files in xzgrep.
+
+        - Add zstd support to xzgrep and xzdiff/xzcmp.
+
+        - Fix less(1) version detection in xzless. It failed if the
+          version number from "less -V" contained a dot.
+
+    * Fix typos and technical issues in man pages.
+
+    * Build systems:
+
+        - Windows: Fix building of resource files when config.h isn't
+          used. CMake + Visual Studio can now build liblzma.dll.
+
+        - Various fixes to the CMake support. It might still need a few
+          more fixes even for liblzma-only builds.
+
+
 5.3.1alpha (2018-04-29)
 
     * All fixes from 5.2.4.

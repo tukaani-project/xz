@@ -67,9 +67,9 @@ is invoked as
 or
 .B xzfgrep
 then
-.BR egrep (1)
+.B grep \-E
 or
-.BR fgrep (1)
+.B grep \-F
 is used instead of
 .BR grep (1).
 The same applies to names
@@ -87,9 +87,9 @@ environment variable is set,
 .B xzgrep
 uses it instead of
 .BR grep (1),
-.BR egrep (1),
+.BR "grep \-E" ,
 or
-.BR fgrep (1).
+.BR "grep \-F" .
 .SH "SEE ALSO"
 .BR grep (1),
 .BR xz (1),

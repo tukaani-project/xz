@@ -29,8 +29,8 @@ xz='@xz@ --format=auto'
 unset GZIP BZIP BZIP2 LZOP
 
 case ${0##*/} in
-  *egrep*) prog=xzegrep; grep=${GREP:-egrep};;
-  *fgrep*) prog=xzfgrep; grep=${GREP:-fgrep};;
+  *egrep*) prog=xzegrep; grep=${GREP:-grep -E};;
+  *fgrep*) prog=xzfgrep; grep=${GREP:-grep -F};;
   *)       prog=xzgrep; grep=${GREP:-grep};;
 esac
 

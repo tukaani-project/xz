@@ -164,7 +164,17 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 if(CMAKE_USE_WIN32_THREADS_INIT)
-    add_compile_definitions(MYTHREAD_VISTA)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        # Define to 1 when using Windows 95 (and thus XP) compatible threads. This
+        # avoids use of features that were added in Windows Vista.
+        # This is used for 32-bit x86 builds for compatibility reasons since it
+        # makes no measurable difference in performance compared to Vista threads.
+        add_compile_definitions(MYTHREAD_WIN95)
+    else()
+        # Define to 1 when using Windows Vista compatible threads. This uses features
+        # that are not available on Windows XP.
+        add_compile_definitions(MYTHREAD_VISTA)
+    endif()
 else()
     add_compile_definitions(MYTHREAD_POSIX)
 

@@ -160,9 +160,12 @@ rc_shift_low(lzma_range_encoder *rc,
 }
 
 
+// NOTE: The last two arguments are uint64_t instead of size_t because in
+// the dummy version these refer to the size of the whole range-encoded
+// output stream, not just to the currently available output buffer space.
 static inline bool
 rc_shift_low_dummy(uint64_t *low, uint64_t *cache_size, uint8_t *cache,
-		size_t *out_pos, size_t out_size)
+		uint64_t *out_pos, uint64_t out_size)
 {
 	if ((uint32_t)(*low) < (uint32_t)(0xFF000000)
 			|| (uint32_t)(*low >> 32) != 0) {
@@ -262,7 +265,7 @@ rc_encode(lzma_range_encoder *rc,
 
 
 static inline bool
-rc_encode_dummy(const lzma_range_encoder *rc, size_t out_size)
+rc_encode_dummy(const lzma_range_encoder *rc, uint64_t out_limit)
 {
 	assert(rc->count <= RC_SYMBOLS_MAX);
 
@@ -278,7 +281,7 @@ rc_encode_dummy(const lzma_range_encoder *rc, size_t out_size)
 		// Normalize
 		if (range < RC_TOP_VALUE) {
 			if (rc_shift_low_dummy(&low, &cache_size, &cache,
-					&out_pos, out_size))
+					&out_pos, out_limit))
 				return true;
 
 			range <<= RC_SHIFT_BITS;
@@ -330,7 +333,7 @@ rc_encode_dummy(const lzma_range_encoder *rc, size_t out_size)
 	// the flushing that will be done at the end of the stream.
 	for (pos = 0; pos < 5; ++pos) {
 		if (rc_shift_low_dummy(&low, &cache_size,
-				&cache, &out_pos, out_size))
+				&cache, &out_pos, out_limit))
 			return true;
 	}
 

@@ -305,9 +305,9 @@ LZMA_CRC32:
 
 /*
  * This is needed to support non-executable stack. It's ugly to
- * use __linux__ here, but I don't know a way to detect when
+ * use __FreeBSD__ and __linux__ here, but I don't know a way to detect when
  * we are using GNU assembler.
  */
-#if defined(__ELF__) && defined(__linux__)
+#if defined(__ELF__) && (defined(__FreeBSD__) || defined(__linux__))
 	.section	.note.GNU-stack,"",@progbits
 #endif

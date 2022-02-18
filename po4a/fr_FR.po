@@ -1171,7 +1171,7 @@ msgstr "B<--flush-timeout=>I<temps_d'attente>"
 #: ../src/xz/xz.1:922
 msgid "When compressing, if more than I<timeout> milliseconds (a positive integer) has passed since the previous flush and reading more input would block, all the pending input data is flushed from the encoder and made available in the output stream.  This can be useful if B<xz> is used to compress data that is streamed over a network.  Small I<timeout> values make the data available at the receiving end with a small delay, but large I<timeout> values give better compression ratio."
 msgstr ""
-"Lors de la compression, si plus que <temps_d'attente> millisecondes (un entier positif) se sont écoulées depuis le précédent vidage et que lire plus de données bloquerait, toutes les données d'entrée en attente sont vidées de l'encodeur et mises à disposition dans le flux de sortie. Cela peut être utile si B<xz>  est utilisé pour compresser les données qui sont diffusées sur un réseau. Des petites valeurs de I<temps_d'attente> rendent les données disponibles à l'extrémité réceptrice avec un léger retard, mais les grandes valeurs de "
+"Lors de la compression, si plus que I<temps_d'attente> millisecondes (un entier positif) se sont écoulées depuis le précédent vidage et que lire plus de données bloquerait, toutes les données d'entrée en attente sont vidées de l'encodeur et mises à disposition dans le flux de sortie. Cela peut être utile si B<xz>  est utilisé pour compresser les données qui sont diffusées sur un réseau. Des petites valeurs de I<temps_d'attente> rendent les données disponibles à l'extrémité réceptrice avec un léger retard, mais les grandes valeurs de "
 "I<temps_d'attente> donnent un meilleur taux de compression."
 
 #. type: Plain text
@@ -2841,7 +2841,7 @@ msgstr "Décompresseurs .xz embarqués"
 #. type: Plain text
 #: ../src/xz/xz.1:2427
 msgid "Embedded B<.xz> decompressor implementations like XZ Embedded don't necessarily support files created with integrity I<check> types other than B<none> and B<crc32>.  Since the default is B<--check=crc64>, you must use B<--check=none> or B<--check=crc32> when creating files for embedded systems."
-msgstr "Les implémentations de décompresseur embarqué comme XZ Embedded ne gèrent pas nécessairement les fichiers créés avec d'autres types de <vérification> d'intégrité que B<none> et B<CRC32>. Comme la valeur par défaut est B<--check=crc64>, vous devez utiliser B<--check=none> ou B<--check=crc32> lors de la création de fichiers pour les systèmes embarqués."
+msgstr "Les implémentations de décompresseur embarqué comme XZ Embedded ne gèrent pas nécessairement les fichiers créés avec d'autres types de I<vérification> d'intégrité que B<none> et B<CRC32>. Comme la valeur par défaut est B<--check=crc64>, vous devez utiliser B<--check=none> ou B<--check=crc32> lors de la création de fichiers pour les systèmes embarqués."
 
 #. type: Plain text
 #: ../src/xz/xz.1:2437
@@ -2975,6 +2975,8 @@ msgstr ""
 "CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
 "    echo \"Votre version de xz est trop ancienne.\"\n"
+"fi\n"
+"unset XZ_VERSION LIBLZMA_VERSION>\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1:2589

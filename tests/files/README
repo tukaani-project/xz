@@ -256,3 +256,8 @@
     the end of the file). The Check type is None to nullify certain
     simple size-based sanity checks in a Block decoder.
 
+    bad-1-lzma2-11.xz has LZMA2 stream that lacks the end of
+    payload marker. When Compressed Size bytes have been decoded,
+    Uncompressed Size bytes of output will have been produced but
+    the LZMA2 decoder doesn't indicate end of stream.
+

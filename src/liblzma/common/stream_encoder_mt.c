@@ -715,6 +715,10 @@ stream_encode_mt(void *coder_ptr, const lzma_allocator *allocator,
 				ret = lzma_index_append(coder->index,
 						allocator, unpadded_size,
 						uncompressed_size);
+				if (ret != LZMA_OK) {
+					threads_stop(coder, false);
+					return ret;
+				}
 
 				// If we didn't fill the output buffer yet,
 				// try to read more data. Maybe the next
@@ -724,8 +728,7 @@ stream_encode_mt(void *coder_ptr, const lzma_allocator *allocator,
 			}
 
 			if (ret != LZMA_OK) {
-				// coder->thread_error was set or
-				// lzma_index_append() failed.
+				// coder->thread_error was set.
 				threads_stop(coder, false);
 				return ret;
 			}

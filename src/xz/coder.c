@@ -51,7 +51,7 @@ static lzma_check check;
 /// This becomes false if the --check=CHECK option is used.
 static bool check_default = true;
 
-#if defined(HAVE_ENCODERS) && defined(MYTHREAD_ENABLED)
+#ifdef MYTHREAD_ENABLED
 static lzma_mt mt_options = {
 	.flags = 0,
 	.timeout = 300,
@@ -520,9 +520,43 @@ coder_init(file_pair *pair)
 			break;
 
 		case FORMAT_XZ:
+#	ifdef MYTHREAD_ENABLED
+			mt_options.flags = flags;
+
+			mt_options.threads = hardware_threads_get();
+
+			// TODO: Support --memlimit-threading=LIMIT.
+			mt_options.memlimit_stop
+				= hardware_memlimit_get(MODE_DECOMPRESS);
+			mt_options.memlimit_threading
+					= mt_options.memlimit_stop;
+
+			if (mt_options.threads == 1) {
+				// Single-threaded mode was requested. Force
+				// the decoder to use minimal memory, matching
+				// the behavior of lzma_stream_decoder().
+				mt_options.memlimit_threading = 0;
+
+			} else if (mt_options.memlimit_threading
+					== UINT64_MAX) {
+				// TODO: Support --memlimit-threading=LIMIT.
+				//
+				// If lzma_physmem() fails, it returns 0 and
+				// we end up with a single thread.
+				//
+				// NOTE: It is assential that we never end up
+				// with an effectively infinite value in
+				// memlimit_threading!
+				mt_options.memlimit_threading
+						= lzma_physmem() / 4;
+			}
+
+			ret = lzma_stream_decoder_mt(&strm, &mt_options);
+#	else
 			ret = lzma_stream_decoder(&strm,
 					hardware_memlimit_get(
 						MODE_DECOMPRESS), flags);
+#	endif
 			break;
 
 		case FORMAT_LZMA:

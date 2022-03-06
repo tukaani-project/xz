@@ -80,4 +80,9 @@ liblzma_la_SOURCES += \
 	common/stream_decoder.h \
 	common/stream_flags_decoder.c \
 	common/vli_decoder.c
+
+if COND_THREADS
+liblzma_la_SOURCES += \
+	common/stream_decoder_mt.c
+endif
 endif

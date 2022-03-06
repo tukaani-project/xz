@@ -69,7 +69,11 @@ typedef struct {
 	 *
 	 * Set this to zero if no flags are wanted.
 	 *
-	 * No flags are currently supported.
+	 * Encoder: No flags are currently supported.
+	 *
+	 * Decoder: Bitwise-or of zero or more of the decoder flags:
+	 * LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
+	 * LZMA_TELL_ANY_CHECK, LZMA_CONCATENATED
 	 */
 	uint32_t flags;
 
@@ -79,7 +83,7 @@ typedef struct {
 	uint32_t threads;
 
 	/**
-	 * \brief       Maximum uncompressed size of a Block
+	 * \brief       Encoder only: Maximum uncompressed size of a Block
 	 *
 	 * The encoder will start a new .xz Block every block_size bytes.
 	 * Using LZMA_FULL_FLUSH or LZMA_FULL_BARRIER with lzma_code()
@@ -135,7 +139,7 @@ typedef struct {
 	uint32_t timeout;
 
 	/**
-	 * \brief       Compression preset (level and possible flags)
+	 * \brief       Encoder only: Compression preset
 	 *
 	 * The preset is set just like with lzma_easy_encoder().
 	 * The preset is ignored if filters below is non-NULL.
@@ -143,7 +147,7 @@ typedef struct {
 	uint32_t preset;
 
 	/**
-	 * \brief       Filter chain (alternative to a preset)
+	 * \brief       Encoder only: Filter chain (alternative to a preset)
 	 *
 	 * If this is NULL, the preset above is used. Otherwise the preset
 	 * is ignored and the filter chain specified here is used.
@@ -151,7 +155,7 @@ typedef struct {
 	const lzma_filter *filters;
 
 	/**
-	 * \brief       Integrity check type
+	 * \brief       Encoder only: Integrity check type
 	 *
 	 * See check.h for available checks. The xz command line tool
 	 * defaults to LZMA_CHECK_CRC64, which is a good choice if you
@@ -173,8 +177,50 @@ typedef struct {
 	uint32_t reserved_int2;
 	uint32_t reserved_int3;
 	uint32_t reserved_int4;
-	uint64_t reserved_int5;
-	uint64_t reserved_int6;
+
+	/**
+	 * \brief       Memory usage limit to reduce the number of threads
+	 *
+	 * Encoder: Ignored.
+	 *
+	 * Decoder:
+	 *
+	 * If the number of threads has been set so high that more than
+	 * memlimit_threading bytes of memory would be needed, the number
+	 * of threads will be reduced so that the memory usage will not exceed
+	 * memlimit_threading bytes. However, if memlimit_threading cannot
+	 * be met even in single-threaded mode, then decoding will continue
+	 * in single-threaded mode and memlimit_threading may be exceeded
+	 * even by a large amount. That is, memlimit_threading will never make
+	 * lzma_code() return LZMA_MEMLIMIT_ERROR. To truly cap the memory
+	 * usage, see memlimit_stop below.
+	 *
+	 * Setting memlimit_threading to UINT64_MAX or a similar huge value
+	 * means that liblzma is allowed to keep the whole compressed file
+	 * and the whole uncompressed file in memory in addition to the memory
+	 * needed by the decompressor data structures used by each thread!
+	 * In other words, a reasonable value limit must be set here or it
+	 * will cause problems sooner or later. If you have no idea what
+	 * a reasonable value could be, try lzma_physmem() / 4 as a starting
+	 * point. Setting this limit will never prevent decompression of
+	 * a file; this will only reduce the number of threads.
+	 *
+	 * If memlimit_threading is greater than memlimit_stop, then the value
+	 * of memlimit_stop will be used for both.
+	 */
+	uint64_t memlimit_threading;
+
+	/**
+	 * \brief       Memory usage limit that should never be exceeded
+	 *
+	 * Encoder: Ignored.
+	 *
+	 * Decoder: If decompressing will need more than this amount of
+	 * memory even in the single-threaded mode, then lzma_code() will
+	 * return LZMA_MEMLIMIT_ERROR.
+	 */
+	uint64_t memlimit_stop;
+
 	uint64_t reserved_int7;
 	uint64_t reserved_int8;
 	void *reserved_ptr1;
@@ -589,6 +635,36 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
  */
 extern LZMA_API(lzma_ret) lzma_stream_decoder(
 		lzma_stream *strm, uint64_t memlimit, uint32_t flags)
+		lzma_nothrow lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Initialize multithreaded .xz Stream decoder
+ *
+ * \param       strm        Pointer to properly prepared lzma_stream
+ * \param       options     Pointer to multithreaded compression options
+ *
+ * The decoder can decode multiple Blocks in parallel. This requires that each
+ * Block Header contains the Compressed Size and Uncompressed size fields
+ * which are added by the multi-threaded encoder, see lzma_stream_encoder_mt().
+ *
+ * A Stream with one Block will only utilize one thread. A Stream with multiple
+ * Blocks but without size information in Block Headers will be processed in
+ * single-threaded mode in the same way as done by lzma_stream_decoder().
+ * Concatenated Streams are processed one Stream at a time; no inter-Stream
+ * parallelization is done.
+ *
+ * This function behaves like lzma_stream_decoder() when options->threads == 1
+ * and options->memlimit_threading <= 1.
+ *
+ * \return      - LZMA_OK: Initialization was successful.
+ *              - LZMA_MEM_ERROR: Cannot allocate memory.
+ *              - LZMA_MEMLIMIT_ERROR: Memory usage limit was reached.
+ *              - LZMA_OPTIONS_ERROR: Unsupported flags.
+ *              - LZMA_PROG_ERROR
+ */
+extern LZMA_API(lzma_ret) lzma_stream_decoder_mt(
+		lzma_stream *strm, const lzma_mt *options)
 		lzma_nothrow lzma_attr_warn_unused_result;
 
 

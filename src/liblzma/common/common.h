@@ -86,6 +86,10 @@
 /// LZMA_OK in lzma_code().
 #define LZMA_TIMED_OUT LZMA_RET_INTERNAL1
 
+/// Special return value (lzma_ret) for use in stream_decoder_mt.c to
+/// indicate Index was detected instead of a Block Header.
+#define LZMA_INDEX_DETECTED LZMA_RET_INTERNAL2
+
 
 typedef struct lzma_next_coder_s lzma_next_coder;
 

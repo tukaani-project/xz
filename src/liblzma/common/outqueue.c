@@ -34,7 +34,8 @@ lzma_outq_memusage(uint64_t buf_size_max, uint32_t threads)
 	if (threads > LZMA_THREADS_MAX || buf_size_max > limit)
 		return UINT64_MAX;
 
-	return GET_BUFS_LIMIT(threads) * (sizeof(lzma_outbuf) + buf_size_max);
+	return GET_BUFS_LIMIT(threads)
+			* lzma_outq_outbuf_memusage(buf_size_max);
 }
 
 
@@ -44,8 +45,6 @@ move_head_to_cache(lzma_outq *outq, const lzma_allocator *allocator)
 	assert(outq->head != NULL);
 	assert(outq->tail != NULL);
 	assert(outq->bufs_in_use > 0);
-
-	--outq->bufs_in_use;
 
 	lzma_outbuf *buf = outq->head;
 	outq->head = buf->next;
@@ -57,6 +56,9 @@ move_head_to_cache(lzma_outq *outq, const lzma_allocator *allocator)
 
 	buf->next = outq->cache;
 	outq->cache = buf;
+
+	--outq->bufs_in_use;
+	outq->mem_in_use -= lzma_outq_outbuf_memusage(buf->allocated);
 
 	return;
 }
@@ -71,7 +73,7 @@ free_one_cached_buffer(lzma_outq *outq, const lzma_allocator *allocator)
 	outq->cache = buf->next;
 
 	--outq->bufs_allocated;
-	outq->memusage -= sizeof(*buf) + buf->allocated;
+	outq->mem_allocated -= lzma_outq_outbuf_memusage(buf->allocated);
 
 	lzma_free(buf, allocator);
 	return;
@@ -82,6 +84,25 @@ extern void
 lzma_outq_clear_cache(lzma_outq *outq, const lzma_allocator *allocator)
 {
 	while (outq->cache != NULL)
+		free_one_cached_buffer(outq, allocator);
+
+	return;
+}
+
+
+extern void
+lzma_outq_clear_cache2(lzma_outq *outq, const lzma_allocator *allocator,
+		size_t keep_size)
+{
+	if (outq->cache == NULL)
+		return;
+
+	// Free all but one.
+	while (outq->cache->next != NULL)
+		free_one_cached_buffer(outq, allocator);
+
+	// Free the last one only if its size doesn't equal to keep_size.
+	if (outq->cache->allocated != keep_size)
 		free_one_cached_buffer(outq, allocator);
 
 	return;
@@ -139,10 +160,12 @@ lzma_outq_prealloc_buf(lzma_outq *outq, const lzma_allocator *allocator,
 	if (size > SIZE_MAX - sizeof(lzma_outbuf))
 		return LZMA_MEM_ERROR;
 
+	const size_t alloc_size = lzma_outq_outbuf_memusage(size);
+
 	// The cache may have buffers but their size is wrong.
 	lzma_outq_clear_cache(outq, allocator);
 
-	outq->cache = lzma_alloc(sizeof(lzma_outbuf) + size, allocator);
+	outq->cache = lzma_alloc(alloc_size, allocator);
 	if (outq->cache == NULL)
 		return LZMA_MEM_ERROR;
 
@@ -150,7 +173,7 @@ lzma_outq_prealloc_buf(lzma_outq *outq, const lzma_allocator *allocator,
 	outq->cache->allocated = size;
 
 	++outq->bufs_allocated;
-	outq->memusage += sizeof(lzma_outbuf) + size;
+	outq->mem_allocated += alloc_size;
 
 	return LZMA_OK;
 }
@@ -180,12 +203,15 @@ lzma_outq_get_buf(lzma_outq *outq, void *worker)
 
 	buf->worker = worker;
 	buf->finished = false;
+	buf->finish_ret = LZMA_STREAM_END;
 	buf->pos = 0;
+	buf->decoder_in_pos = 0;
 
 	buf->unpadded_size = 0;
 	buf->uncompressed_size = 0;
 
 	++outq->bufs_in_use;
+	outq->mem_in_use += lzma_outq_outbuf_memusage(buf->allocated);
 
 	return buf;
 }
@@ -234,11 +260,14 @@ lzma_outq_read(lzma_outq *restrict outq,
 	if (uncompressed_size != NULL)
 		*uncompressed_size = buf->uncompressed_size;
 
+	// Remember the return value.
+	const lzma_ret finish_ret = buf->finish_ret;
+
 	// Free this buffer for further use.
 	move_head_to_cache(outq, allocator);
 	outq->read_pos = 0;
 
-	return LZMA_STREAM_END;
+	return finish_ret;
 }
 
 

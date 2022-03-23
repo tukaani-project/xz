@@ -799,7 +799,7 @@ read_output_and_wait(struct lzma_stream_coder *coder,
 	// If we are returning an error, then the application cannot get
 	// more output from us and thus keeping the threads running is
 	// useless and waste of CPU time.
-	if (ret != LZMA_OK)
+	if (ret != LZMA_OK && ret != LZMA_TIMED_OUT)
 		threads_stop(coder);
 
 	return ret;

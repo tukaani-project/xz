@@ -180,22 +180,26 @@ for i; do
          { test $# -eq 1 || test $no_filename -eq 1; }; then
       eval "$grep"
     else
+      # Append a colon so that the last character will never be a newline
+      # which would otherwise get lost in shell command substitution.
+      i="$i:"
+
+      # Escape & \ | and newlines only if such characters are present
+      # (speed optimization).
       case $i in
       (*'
 '* | *'&'* | *'\'* | *'|'*)
-        i=$(printf '%s\n' "$i" |
-            sed '
-              $!N
-              $s/[&\|]/\\&/g
-              $s/\n/\\n/g
-            ');;
+        i=$(printf '%s\n' "$i" | LC_ALL=C sed 's/[&\|]/\\&/g; $!s/$/\\/');;
       esac
-      sed_script="s|^|$i:|"
+
+      # $i already ends with a colon so don't add it here.
+      sed_script="s|^|$i|"
 
       # Fail if grep or sed fails.
       r=$(
         exec 4>&1
-        (eval "$grep" 4>&-; echo $? >&4) 3>&- | sed "$sed_script" >&3 4>&-
+        (eval "$grep" 4>&-; echo $? >&4) 3>&- |
+            LC_ALL=C sed "$sed_script" >&3 4>&-
       ) || r=2
       exit $r
     fi >&3 5>&-

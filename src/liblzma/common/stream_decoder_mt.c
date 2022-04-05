@@ -1000,8 +1000,30 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 	//     if they assume that output-not-full implies that all input has
 	//     been consumed. If and only if timeout is enabled, we may return
 	//     when output isn't full *and* not all input has been consumed.
-	const bool waiting_allowed = *in_pos == in_size
-			&& !coder->out_was_filled;
+	//
+	// However, if LZMA_FINISH is used, the above is ignored and we always
+	// wait (timeout can still cause us to return) because we know that
+	// we won't get any more input. This matters if the input file is
+	// truncated and we are doing single-shot decoding, that is,
+	// timeout = 0 and LZMA_FINISH is used on the first call to
+	// lzma_code() and the output buffer is known to be big enough
+	// to hold all uncompressed data:
+	//
+	//   - If LZMA_FINISH wasn't handled specially, we could return
+	//     LZMA_OK before providing all output that is possible with the
+	//     truncated input. The rest would be available if lzma_code() was
+	//     called again but then it's not single-shot decoding anymore.
+	//
+	//   - By handling LZMA_FINISH specially here, the first call will
+	//     produce all the output, matching the behavior of the
+	//     single-threaded decoder.
+	//
+	// So it's a very specific corner case but also easy to avoid. Note
+	// that this special handling of LZMA_FINISH has no effect for
+	// single-shot decoding when the input file is valid (not truncated);
+	// premature LZMA_OK wouldn't be possible as long as timeout = 0.
+	const bool waiting_allowed = action == LZMA_FINISH
+			|| (*in_pos == in_size && !coder->out_was_filled);
 	coder->out_was_filled = false;
 
 	while (true)

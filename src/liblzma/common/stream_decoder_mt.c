@@ -711,16 +711,29 @@ read_output_and_wait(struct lzma_stream_coder *coder,
 
 			// Check if any thread has indicated an error.
 			if (coder->thread_error != LZMA_OK) {
-				if (coder->pending_error == LZMA_OK)
-					coder->pending_error
-							= coder->thread_error;
-
 				// If LZMA_FAIL_FAST was used, report errors
 				// from worker threads immediately.
 				if (coder->fail_fast) {
 					ret = coder->thread_error;
 					break;
 				}
+
+				// Otherwise set pending_error. The value we
+				// set here will not actually get used other
+				// than working as a flag that an error has
+				// occurred. This is because in SEQ_ERROR
+				// all output before the error will be read
+				// first by calling this function, and once we
+				// reach the location of the (first) error the
+				// error code from the above lzma_outq_read()
+				// will be returned to the application.
+				//
+				// Use LZMA_PROG_ERROR since the value should
+				// never leak to the application. It's
+				// possible that pending_error has already
+				// been set but that doesn't matter: if we get
+				// here, pending_error only works as a flag.
+				coder->pending_error = LZMA_PROG_ERROR;
 			}
 
 			// Check if decoding of the next Block can be started.
@@ -1150,9 +1163,18 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 
 		// See if an error occurred.
 		if (ret != LZMA_STREAM_END) {
-			if (coder->pending_error == LZMA_OK)
-				coder->pending_error = ret;
-
+			// NOTE: Here and in all other places where
+			// pending_error is set, it may overwrite the value
+			// (LZMA_PROG_ERROR) set by read_output_and_wait().
+			// That function might overwrite value set here too.
+			// These are fine because when read_output_and_wait()
+			// sets pending_error, it actually works as a flag
+			// variable only ("some error has occurred") and the
+			// actual value of pending_error is not used in
+			// SEQ_ERROR. In such cases SEQ_ERROR will eventually
+			// get the correct error code from the return value of
+			// a later read_output_and_wait() call.
+			coder->pending_error = ret;
 			coder->sequence = SEQ_ERROR;
 			break;
 		}
@@ -1163,9 +1185,7 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 
 		if (coder->mem_next_filters == UINT64_MAX) {
 			// One or more unknown Filter IDs.
-			if (coder->pending_error == LZMA_OK)
-				coder->pending_error = LZMA_OPTIONS_ERROR;
-
+			coder->pending_error = LZMA_OPTIONS_ERROR;
 			coder->sequence = SEQ_ERROR;
 			break;
 		}
@@ -1254,9 +1274,7 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 					&coder->block_options),
 				coder->block_options.uncompressed_size);
 		if (ret != LZMA_OK) {
-			if (coder->pending_error == LZMA_OK)
-				coder->pending_error = ret;
-
+			coder->pending_error = ret;
 			coder->sequence = SEQ_ERROR;
 			break;
 		}
@@ -1425,9 +1443,7 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		// Check if memory usage calculation and Block encoder
 		// initialization succeeded.
 		if (ret != LZMA_OK) {
-			if (coder->pending_error == LZMA_OK)
-				coder->pending_error = ret;
-
+			coder->pending_error = ret;
 			coder->sequence = SEQ_ERROR;
 			break;
 		}
@@ -1712,6 +1728,9 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 				return LZMA_OK;
 		}
 
+		// We only get here if no errors were detected by the worker
+		// threads. Errors from worker threads would have already been
+		// returned by the call to read_output_and_wait() above.
 		return coder->pending_error;
 
 	default:

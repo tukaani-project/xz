@@ -67,14 +67,15 @@
 #define LZMA_FILTER_RESERVED_START (LZMA_VLI_C(1) << 62)
 
 
-/// Supported flags that can be passed to lzma_stream_decoder()
-/// or lzma_auto_decoder().
+/// Supported flags that can be passed to lzma_stream_decoder(),
+/// lzma_auto_decoder(), or lzma_stream_decoder_mt().
 #define LZMA_SUPPORTED_FLAGS \
 	( LZMA_TELL_NO_CHECK \
 	| LZMA_TELL_UNSUPPORTED_CHECK \
 	| LZMA_TELL_ANY_CHECK \
 	| LZMA_IGNORE_CHECK \
-	| LZMA_CONCATENATED )
+	| LZMA_CONCATENATED \
+	| LZMA_FAIL_FAST )
 
 
 /// Largest valid lzma_action value as unsigned integer.

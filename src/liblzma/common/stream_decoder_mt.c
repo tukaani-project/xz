@@ -300,6 +300,10 @@ struct lzma_stream_coder {
 	/// Stream Padding is a multiple of four bytes.
 	bool concatenated;
 
+	/// If true, we will return any errors immediately instead of first
+	/// producing all output before the location of the error.
+	bool fail_fast;
+
 
 	/// When decoding concatenated Streams, this is true as long as we
 	/// are decoding the first Stream. This is needed to avoid misleading
@@ -711,13 +715,12 @@ read_output_and_wait(struct lzma_stream_coder *coder,
 					coder->pending_error
 							= coder->thread_error;
 
-				// FIXME? Add a flag to do this conditionally?
-				// That way errors would get reported to the
-				// application without a delay.
-// 				if (coder->fast_errors) {
-// 					ret = coder->thread_error;
-// 					break;
-// 				}
+				// If LZMA_FAIL_FAST was used, report errors
+				// from worker threads immediately.
+				if (coder->fail_fast) {
+					ret = coder->thread_error;
+					break;
+				}
 			}
 
 			// Check if decoding of the next Block can be started.
@@ -1690,22 +1693,24 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		break;
 
 	case SEQ_ERROR:
-		// Let the application get all data before the point where
-		// the error was detected. This matches the behavior of
-		// single-threaded use.
-		//
-		// FIXME? Some errors (LZMA_MEM_ERROR) don't get here,
-		// they are returned immediately. Thus in rare cases the
-		// output will be less than in single-threaded mode. But
-		// maybe this doesn't matter much in practice.
-		return_if_error(read_output_and_wait(coder, allocator,
-				out, out_pos, out_size,
-				NULL, true, &wait_abs, &has_blocked));
+		if (!coder->fail_fast) {
+			// Let the application get all data before the point
+			// where the error was detected. This matches the
+			// behavior of single-threaded use.
+			//
+			// FIXME? Some errors (LZMA_MEM_ERROR) don't get here,
+			// they are returned immediately. Thus in rare cases
+			// the output will be less than in the single-threaded
+			// mode. Maybe this doesn't matter much in practice.
+			return_if_error(read_output_and_wait(coder, allocator,
+					out, out_pos, out_size,
+					NULL, true, &wait_abs, &has_blocked));
 
-		// We get here only if the error happened in the main thread,
-		// for example, unsupported Block Header.
-		if (!lzma_outq_is_empty(&coder->outq))
-			return LZMA_OK;
+			// We get here only if the error happened in the main
+			// thread, for example, unsupported Block Header.
+			if (!lzma_outq_is_empty(&coder->outq))
+				return LZMA_OK;
+		}
 
 		return coder->pending_error;
 
@@ -1900,6 +1905,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	coder->tell_any_check = (options->flags & LZMA_TELL_ANY_CHECK) != 0;
 	coder->ignore_check = (options->flags & LZMA_IGNORE_CHECK) != 0;
 	coder->concatenated = (options->flags & LZMA_CONCATENATED) != 0;
+	coder->fail_fast = (options->flags & LZMA_FAIL_FAST) != 0;
 
 	coder->first_stream = true;
 	coder->out_was_filled = false;

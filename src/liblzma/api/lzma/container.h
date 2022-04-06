@@ -73,7 +73,7 @@ typedef struct {
 	 *
 	 * Decoder: Bitwise-or of zero or more of the decoder flags:
 	 * LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
-	 * LZMA_TELL_ANY_CHECK, LZMA_CONCATENATED
+	 * LZMA_TELL_ANY_CHECK, LZMA_CONCATENATED, LZMA_FAIL_FAST
 	 */
 	uint32_t flags;
 
@@ -613,6 +613,29 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
  * as `action' for lzma_code(), but the usage of LZMA_FINISH isn't required.
  */
 #define LZMA_CONCATENATED               UINT32_C(0x08)
+
+
+/**
+ * This flag makes the threaded decoder report errors (like LZMA_DATA_ERROR)
+ * as soon as they are detected. This saves time when the application has no
+ * interest in a partially decompressed truncated or corrupt file. Note that
+ * due to timing randomness, if the same truncated or corrupt input is
+ * decompressed multiple times with this flag, a different amount of output
+ * may be produced by different runs, and even the error code might vary.
+ *
+ * Without this flag the threaded decoder will provide as much output as
+ * possible at first and then report the pending error. This default behavior
+ * matches the single-threaded decoder and provides repeatable behavior
+ * with truncated or corrupt input. There are a few special cases where the
+ * behavior can still differ like memory allocation failures (LZMA_MEM_ERROR).
+ *
+ * Single-threaded decoders currently ignore this flag.
+ *
+ * Support for this flag was added in liblzma 5.3.3alpha. Note that in older
+ * versions this flag isn't supported (LZMA_OPTIONS_ERROR) even by functions
+ * that ignore this flag in newer liblzma versions.
+ */
+#define LZMA_FAIL_FAST                  UINT32_C(0x20)
 
 
 /**

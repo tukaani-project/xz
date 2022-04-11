@@ -29,10 +29,11 @@ bool opt_ignore_check = false;
 const char stdin_filename[] = "(stdin)";
 
 
-/// Parse and set the memory usage limit for compression and/or decompression.
+/// Parse and set the memory usage limit for compression, decompression,
+/// and/or multithreaded decompression.
 static void
 parse_memlimit(const char *name, const char *name_percentage, char *str,
-		bool set_compress, bool set_decompress)
+		bool set_compress, bool set_decompress, bool set_mtdec)
 {
 	bool is_percentage = false;
 	uint64_t value;
@@ -49,8 +50,8 @@ parse_memlimit(const char *name, const char *name_percentage, char *str,
 		value = str_to_uint64(name, str, 0, UINT64_MAX);
 	}
 
-	hardware_memlimit_set(
-			value, set_compress, set_decompress, is_percentage);
+	hardware_memlimit_set(value, set_compress, set_decompress, set_mtdec,
+			is_percentage);
 	return;
 }
 
@@ -138,6 +139,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_BLOCK_LIST,
 		OPT_MEM_COMPRESS,
 		OPT_MEM_DECOMPRESS,
+		OPT_MEM_MT_DECOMPRESS,
 		OPT_NO_ADJUST,
 		OPT_INFO_MEMORY,
 		OPT_ROBOT,
@@ -176,6 +178,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "block-list",  required_argument, NULL,  OPT_BLOCK_LIST },
 		{ "memlimit-compress",   required_argument, NULL, OPT_MEM_COMPRESS },
 		{ "memlimit-decompress", required_argument, NULL, OPT_MEM_DECOMPRESS },
+		{ "memlimit-mt-decompress", required_argument, NULL, OPT_MEM_MT_DECOMPRESS },
 		{ "memlimit",     required_argument, NULL,  'M' },
 		{ "memory",       required_argument, NULL,  'M' }, // Old alias
 		{ "no-adjust",    no_argument,       NULL,  OPT_NO_ADJUST },
@@ -225,20 +228,27 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_MEM_COMPRESS:
 			parse_memlimit("memlimit-compress",
 					"memlimit-compress%", optarg,
-					true, false);
+					true, false, false);
 			break;
 
 		// --memlimit-decompress
 		case OPT_MEM_DECOMPRESS:
 			parse_memlimit("memlimit-decompress",
 					"memlimit-decompress%", optarg,
-					false, true);
+					false, true, false);
+			break;
+
+		// --memlimit-mt-decompress
+		case OPT_MEM_MT_DECOMPRESS:
+			parse_memlimit("memlimit-mt-decompress",
+					"memlimit-mt-decompress%", optarg,
+					false, false, true);
 			break;
 
 		// --memlimit
 		case 'M':
 			parse_memlimit("memlimit", "memlimit%", optarg,
-					true, true);
+					true, true, true);
 			break;
 
 		// --suffix

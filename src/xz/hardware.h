@@ -22,16 +22,21 @@ extern void hardware_threads_set(uint32_t threadlimit);
 extern uint32_t hardware_threads_get(void);
 
 
-/// Set the memory usage limit. There are separate limits for compression
-/// and decompression (the latter includes also --list), one or both can
-/// be set with a single call to this function. Zero indicates resetting
-/// the limit back to the defaults. The limit can also be set as a percentage
-/// of installed RAM; the percentage must be in the range [1, 100].
+/// Set the memory usage limit. There are separate limits for compression,
+/// decompression (also includes --list), and multithreaded decompression.
+/// Any combination of these can be set with a single call to this function.
+/// Zero indicates resetting the limit back to the defaults.
+/// The limit can also be set as a percentage of installed RAM; the
+/// percentage must be in the range [1, 100].
 extern void hardware_memlimit_set(uint64_t new_memlimit,
-		bool set_compress, bool set_decompress, bool is_percentage);
+		bool set_compress, bool set_decompress, bool set_mtdec,
+		bool is_percentage);
 
 /// Get the current memory usage limit for compression or decompression.
 extern uint64_t hardware_memlimit_get(enum operation_mode mode);
+
+/// Get the current memory usage limit for multithreaded decompression.
+extern uint64_t hardware_memlimit_mtdec_get(void);
 
 /// Display the amount of RAM and memory usage limits and exit.
 extern void hardware_memlimit_show(void) lzma_attribute((__noreturn__));

@@ -18,10 +18,26 @@
 static uint32_t threads_max = 1;
 
 /// Memory usage limit for compression
-static uint64_t memlimit_compress;
+static uint64_t memlimit_compress = 0;
 
 /// Memory usage limit for decompression
-static uint64_t memlimit_decompress;
+static uint64_t memlimit_decompress = 0;
+
+/// Default memory usage for multithreaded modes:
+///
+///   - Default value for --memlimit-mt-decompress
+///
+/// This value is caluclated in hardware_init() and cannot be changed later.
+static uint64_t memlimit_mt_default;
+
+/// Memory usage limit for multithreaded decompression. This is a soft limit:
+/// if reducing the number of threads to one isn't enough to keep memory
+/// usage below this limit, then one thread is used and this limit is ignored.
+/// memlimit_decompress is still obeyed.
+///
+/// This can be set with --memlimit-mt-decompress. The default value for
+/// this is memlimit_mt_default.
+static uint64_t memlimit_mtdec;
 
 /// Total amount of physical RAM
 static uint64_t total_ram;
@@ -60,7 +76,8 @@ hardware_threads_get(void)
 
 extern void
 hardware_memlimit_set(uint64_t new_memlimit,
-		bool set_compress, bool set_decompress, bool is_percentage)
+		bool set_compress, bool set_decompress, bool set_mtdec,
+		bool is_percentage)
 {
 	if (is_percentage) {
 		assert(new_memlimit > 0);
@@ -110,6 +127,9 @@ hardware_memlimit_set(uint64_t new_memlimit,
 	if (set_decompress)
 		memlimit_decompress = new_memlimit;
 
+	if (set_mtdec)
+		memlimit_mtdec = new_memlimit;
+
 	return;
 }
 
@@ -129,6 +149,23 @@ hardware_memlimit_get(enum operation_mode mode)
 	const uint64_t memlimit = mode == MODE_COMPRESS
 			? memlimit_compress : memlimit_decompress;
 	return memlimit != 0 ? memlimit : UINT64_MAX;
+}
+
+
+extern uint64_t
+hardware_memlimit_mtdec_get(void)
+{
+	uint64_t m = memlimit_mtdec != 0
+			? memlimit_mtdec
+			: memlimit_mt_default;
+
+	// Cap the value to memlimit_decompress if it has been specified.
+	// This is nice for --info-memory. It wouldn't be needed for liblzma
+	// since it does this anyway.
+	if (memlimit_decompress != 0 && m > memlimit_decompress)
+		m = memlimit_decompress;
+
+	return m;
 }
 
 
@@ -203,7 +240,20 @@ hardware_init(void)
 	if (total_ram == 0)
 		total_ram = (uint64_t)(ASSUME_RAM) * 1024 * 1024;
 
-	// Set the defaults.
-	hardware_memlimit_set(0, true, true, false);
+	// FIXME? There may be better methods to determine the default value.
+	// One Linux-specific suggestion is to use MemAvailable from
+	// /proc/meminfo as the starting point.
+	memlimit_mt_default = total_ram / 4;
+
+	// A too high value may cause 32-bit xz to run out of address space.
+	// Use a conservative maximum value here. A few typical address space
+	// sizes with Linux:
+	//   - x86-64 with 32-bit xz: 4 GiB
+	//   - x86: 3 GiB
+	//   - MIPS32: 2 GiB
+	const size_t mem_ceiling = SIZE_MAX / 3; // About 1365 GiB on 32-bit
+	if (memlimit_mt_default > mem_ceiling)
+		memlimit_mt_default = mem_ceiling;
+
 	return;
 }

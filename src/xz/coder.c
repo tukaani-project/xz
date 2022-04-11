@@ -524,32 +524,20 @@ coder_init(file_pair *pair)
 			mt_options.flags = flags;
 
 			mt_options.threads = hardware_threads_get();
-
-			// TODO: Support --memlimit-threading=LIMIT.
 			mt_options.memlimit_stop
 				= hardware_memlimit_get(MODE_DECOMPRESS);
+
+			// If single-threaded mode was requested, set the
+			// memlimit for threading to zero. This forces the
+			// decoder to use single-threaded mode which matches
+			// the behavior of lzma_stream_decoder().
+			//
+			// Otherwise use the limit for threaded decompression
+			// which has a sane default (users are still free to
+			// make it insanely high though).
 			mt_options.memlimit_threading
-					= mt_options.memlimit_stop;
-
-			if (mt_options.threads == 1) {
-				// Single-threaded mode was requested. Force
-				// the decoder to use minimal memory, matching
-				// the behavior of lzma_stream_decoder().
-				mt_options.memlimit_threading = 0;
-
-			} else if (mt_options.memlimit_threading
-					== UINT64_MAX) {
-				// TODO: Support --memlimit-threading=LIMIT.
-				//
-				// If lzma_physmem() fails, it returns 0 and
-				// we end up with a single thread.
-				//
-				// NOTE: It is assential that we never end up
-				// with an effectively infinite value in
-				// memlimit_threading!
-				mt_options.memlimit_threading
-						= lzma_physmem() / 4;
-			}
+					= mt_options.threads == 1
+					? 0 : hardware_memlimit_mtdec_get();
 
 			ret = lzma_stream_decoder_mt(&strm, &mt_options);
 #	else

@@ -17,6 +17,10 @@
 /// the --threads=NUM command line option.
 static uint32_t threads_max = 1;
 
+/// True when the number of threads is automatically determined based
+/// on the available hardware threads.
+static bool threads_are_automatic = false;
+
 /// Memory usage limit for compression
 static uint64_t memlimit_compress = 0;
 
@@ -48,6 +52,8 @@ hardware_threads_set(uint32_t n)
 {
 	if (n == 0) {
 		// Automatic number of threads was requested.
+		threads_are_automatic = true;
+
 		// If threading support was enabled at build time,
 		// use the number of available CPU cores. Otherwise
 		// use one thread since disabling threading support
@@ -61,6 +67,7 @@ hardware_threads_set(uint32_t n)
 #endif
 	} else {
 		threads_max = n;
+		threads_are_automatic = false;
 	}
 
 	return;
@@ -71,6 +78,13 @@ extern uint32_t
 hardware_threads_get(void)
 {
 	return threads_max;
+}
+
+
+extern bool
+hardware_threads_is_mt(void)
+{
+	return threads_max > 1 || threads_are_automatic;
 }
 
 

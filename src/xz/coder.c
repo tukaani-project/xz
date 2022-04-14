@@ -211,7 +211,7 @@ coder_set_compression_settings(void)
 			}
 		}
 
-		if (hardware_threads_get() > 1) {
+		if (hardware_threads_is_mt()) {
 			message(V_WARNING, _("Switching to single-threaded "
 					"mode due to --flush-timeout"));
 			hardware_threads_set(1);
@@ -225,7 +225,7 @@ coder_set_compression_settings(void)
 	if (opt_mode == MODE_COMPRESS) {
 #ifdef HAVE_ENCODERS
 #	ifdef MYTHREAD_ENABLED
-		if (opt_format == FORMAT_XZ && hardware_threads_get() > 1) {
+		if (opt_format == FORMAT_XZ && hardware_threads_is_mt()) {
 			mt_options.threads = hardware_threads_get();
 			mt_options.block_size = opt_block_size;
 			mt_options.check = check;
@@ -278,7 +278,7 @@ coder_set_compression_settings(void)
 
 #ifdef HAVE_ENCODERS
 #	ifdef MYTHREAD_ENABLED
-	if (opt_format == FORMAT_XZ && mt_options.threads > 1) {
+	if (opt_format == FORMAT_XZ && hardware_threads_is_mt()) {
 		// Try to reduce the number of threads before
 		// adjusting the compression settings down.
 		while (mt_options.threads > 1) {
@@ -469,7 +469,7 @@ coder_init(file_pair *pair)
 
 		case FORMAT_XZ:
 #	ifdef MYTHREAD_ENABLED
-			if (hardware_threads_get() > 1)
+			if (hardware_threads_is_mt())
 				ret = lzma_stream_encoder_mt(
 						&strm, &mt_options);
 			else
@@ -619,7 +619,7 @@ split_block(uint64_t *block_remaining,
 {
 	if (*next_block_remaining > 0) {
 		// The Block at *list_pos has previously been split up.
-		assert(hardware_threads_get() == 1);
+		assert(!hardware_threads_is_mt());
 		assert(opt_block_size > 0);
 		assert(opt_block_list != NULL);
 
@@ -647,7 +647,7 @@ split_block(uint64_t *block_remaining,
 		// If in single-threaded mode, split up the Block if needed.
 		// This is not needed in multi-threaded mode because liblzma
 		// will do this due to how threaded encoding works.
-		if (hardware_threads_get() == 1 && opt_block_size > 0
+		if (!hardware_threads_is_mt() && opt_block_size > 0
 				&& *block_remaining > opt_block_size) {
 			*next_block_remaining
 					= *block_remaining - opt_block_size;
@@ -707,7 +707,7 @@ coder_normal(file_pair *pair)
 		// --block-size doesn't do anything here in threaded mode,
 		// because the threaded encoder will take care of splitting
 		// to fixed-sized Blocks.
-		if (hardware_threads_get() == 1 && opt_block_size > 0)
+		if (!hardware_threads_is_mt() && opt_block_size > 0)
 			block_remaining = opt_block_size;
 
 		// If --block-list was used, start with the first size.
@@ -721,7 +721,7 @@ coder_normal(file_pair *pair)
 		// mode the size info isn't written into Block Headers.
 		if (opt_block_list != NULL) {
 			if (block_remaining < opt_block_list[list_pos]) {
-				assert(hardware_threads_get() == 1);
+				assert(!hardware_threads_is_mt());
 				next_block_remaining = opt_block_list[list_pos]
 						- block_remaining;
 			} else {
@@ -785,7 +785,7 @@ coder_normal(file_pair *pair)
 			} else {
 				// Start a new Block after LZMA_FULL_BARRIER.
 				if (opt_block_list == NULL) {
-					assert(hardware_threads_get() == 1);
+					assert(!hardware_threads_is_mt());
 					assert(opt_block_size > 0);
 					block_remaining = opt_block_size;
 				} else {

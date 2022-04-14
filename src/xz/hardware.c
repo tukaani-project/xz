@@ -279,15 +279,17 @@ hardware_init(void)
 	// /proc/meminfo as the starting point.
 	memlimit_mt_default = total_ram / 4;
 
+#if SIZE_MAX == UINT32_MAX
 	// A too high value may cause 32-bit xz to run out of address space.
 	// Use a conservative maximum value here. A few typical address space
 	// sizes with Linux:
 	//   - x86-64 with 32-bit xz: 4 GiB
 	//   - x86: 3 GiB
 	//   - MIPS32: 2 GiB
-	const size_t mem_ceiling = SIZE_MAX / 3; // About 1365 GiB on 32-bit
+	const size_t mem_ceiling = 1400U << 20;
 	if (memlimit_mt_default > mem_ceiling)
 		memlimit_mt_default = mem_ceiling;
+#endif
 
 	return;
 }

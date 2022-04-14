@@ -91,7 +91,11 @@ hardware_threads_get(void)
 extern bool
 hardware_threads_is_mt(void)
 {
+#ifdef MYTHREAD_ENABLED
 	return threads_max > 1 || threads_are_automatic;
+#else
+	return false;
+#endif
 }
 
 

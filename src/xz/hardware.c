@@ -29,6 +29,13 @@ static uint64_t memlimit_decompress = 0;
 
 /// Default memory usage for multithreaded modes:
 ///
+///   - Default value for --memlimit-compress when automatic number of threads
+///     is used. However, if the limit wouldn't allow even one thread then
+///     the limit is ignored in coder.c and one thread will be used anyway.
+///     This mess is a compromise: we wish to prevent -T0 from using too
+///     many threads but we also don't want xz to give an error due to
+///     a memlimit that the user didn't explicitly set.
+///
 ///   - Default value for --memlimit-mt-decompress
 ///
 /// This value is caluclated in hardware_init() and cannot be changed later.
@@ -151,18 +158,31 @@ hardware_memlimit_set(uint64_t new_memlimit,
 extern uint64_t
 hardware_memlimit_get(enum operation_mode mode)
 {
-	// Zero is a special value that indicates the default. Currently
-	// the default simply disables the limit. Once there is threading
-	// support, this might be a little more complex, because there will
-	// probably be a special case where a user asks for "optimal" number
-	// of threads instead of a specific number (this might even become
-	// the default mode). Each thread may use a significant amount of
-	// memory. When there are no memory usage limits set, we need some
-	// default soft limit for calculating the "optimal" number of
-	// threads.
+	// 0 is a special value that indicates the default.
+	// It disables the limit in single-threaded mode.
+	//
+	// NOTE: For multithreaded decompression, this is the hard limit
+	// (memlimit_stop). hardware_memlimit_mtdec_get() gives the
+	// soft limit (memlimit_threaded).
 	const uint64_t memlimit = mode == MODE_COMPRESS
 			? memlimit_compress : memlimit_decompress;
 	return memlimit != 0 ? memlimit : UINT64_MAX;
+}
+
+
+extern uint64_t
+hardware_memlimit_mtenc_get(void)
+{
+	return memlimit_compress == 0 && threads_are_automatic
+			? memlimit_mt_default
+			: hardware_memlimit_get(MODE_COMPRESS);
+}
+
+
+extern bool
+hardware_memlimit_mtenc_is_default(void)
+{
+	return memlimit_compress == 0 && threads_are_automatic;
 }
 
 

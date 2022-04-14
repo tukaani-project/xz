@@ -37,9 +37,36 @@ extern void hardware_memlimit_set(uint64_t new_memlimit,
 		bool is_percentage);
 
 /// Get the current memory usage limit for compression or decompression.
+/// This is a hard limit that will not be exceeded. This is obeyed in
+/// both single-threaded and multithreaded modes.
 extern uint64_t hardware_memlimit_get(enum operation_mode mode);
 
+/// This returns a system-specific default value if all of the following
+/// conditions are true:
+///
+///   - An automatic number of threads was requested (--threads=0).
+///
+///   - --memlimit-compress wasn't used or it was reset to the default
+///     value by setting it to 0.
+///
+/// Otherwise this is identical to hardware_memlimit_get(MODE_COMPRESS).
+///
+/// The idea is to keep automatic thread count reasonable so that too
+/// high memory usage is avoided and, with 32-bit xz, running out of
+/// address space is avoided.
+extern uint64_t hardware_memlimit_mtenc_get(void);
+
+/// Returns true if the value returned by hardware_memlimit_mtenc_get() is
+/// a system-specific default value. coder.c uses this to ignore the default
+/// memlimit in case it's too small even for a single thread in multithreaded
+/// mode. This way the default limit will never make xz fail or affect the
+/// compressed output; it will only make xz reduce the number of threads.
+extern bool hardware_memlimit_mtenc_is_default(void);
+
 /// Get the current memory usage limit for multithreaded decompression.
+/// This is only used to reduce the number of threads. This limit can be
+/// exceeded if the number of threads are reduce to one. Then the value
+/// from hardware_memlimit_get() will be honored like in single-threaded mode.
 extern uint64_t hardware_memlimit_mtdec_get(void);
 
 /// Display the amount of RAM and memory usage limits and exit.

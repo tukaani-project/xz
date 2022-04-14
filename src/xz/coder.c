@@ -220,12 +220,16 @@ coder_set_compression_settings(void)
 
 	// Get the memory usage. Note that if --format=raw was used,
 	// we can be decompressing.
-	const uint64_t memory_limit = hardware_memlimit_get(opt_mode);
+	//
+	// If multithreaded .xz compression is done, this value will be
+	// replaced.
+	uint64_t memory_limit = hardware_memlimit_get(opt_mode);
 	uint64_t memory_usage = UINT64_MAX;
 	if (opt_mode == MODE_COMPRESS) {
 #ifdef HAVE_ENCODERS
 #	ifdef MYTHREAD_ENABLED
 		if (opt_format == FORMAT_XZ && hardware_threads_is_mt()) {
+			memory_limit = hardware_memlimit_mtenc_get();
 			mt_options.threads = hardware_threads_get();
 			mt_options.block_size = opt_block_size;
 			mt_options.check = check;
@@ -304,6 +308,27 @@ coder_set_compression_settings(void)
 			}
 		}
 
+		// If the memory usage limit is only a soft limit (automatic
+		// number of threads and no --memlimit-compress), the limit
+		// is only used to reduce the number of threads and once at
+		// just one thread, the limit is completely ignored. This
+		// way -T0 won't use insane amount of memory but at the same
+		// time the soft limit will never make xz fail and never make
+		// xz change settings that would affect the compressed output.
+		if (hardware_memlimit_mtenc_is_default()) {
+			message(V_WARNING, _("Reduced the number of threads "
+				"from %s to one. The automatic memory usage "
+				"limit of %s MiB is still being exceeded. "
+				"%s MiB of memory is required. "
+				"Continuing anyway."),
+				uint64_to_str(hardware_threads_get(), 0),
+				uint64_to_str(
+					round_up_to_mib(memory_limit), 1),
+				uint64_to_str(
+					round_up_to_mib(memory_usage), 2));
+			return;
+		}
+
 		// If --no-adjust was used, we cannot drop to single-threaded
 		// mode since it produces different compressed output.
 		//
@@ -321,7 +346,6 @@ coder_set_compression_settings(void)
 		message(V_WARNING, _("Switching to single-threaded mode "
 			"to not exceed the memory usage limit of %s MiB"),
 			uint64_to_str(round_up_to_mib(memory_limit), 0));
-
 	}
 #	endif
 

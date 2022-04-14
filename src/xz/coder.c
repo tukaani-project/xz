@@ -269,10 +269,9 @@ coder_set_compression_settings(void)
 	if (memory_usage <= memory_limit)
 		return;
 
-	// If --no-adjust was used or we didn't find LZMA1 or
-	// LZMA2 as the last filter, give an error immediately.
-	// --format=raw implies --no-adjust.
-	if (!opt_auto_adjust || opt_format == FORMAT_RAW)
+	// With --format=raw settings are never adjusted to meet
+	// the memory usage limit.
+	if (opt_format == FORMAT_RAW)
 		memlimit_too_small(memory_usage);
 
 	assert(opt_mode == MODE_COMPRESS);
@@ -282,33 +281,57 @@ coder_set_compression_settings(void)
 	if (opt_format == FORMAT_XZ && mt_options.threads > 1) {
 		// Try to reduce the number of threads before
 		// adjusting the compression settings down.
-		do {
-			// FIXME? The real single-threaded mode has
-			// lower memory usage, but it's not comparable
-			// because it doesn't write the size info
-			// into Block Headers.
-			if (--mt_options.threads == 0)
-				memlimit_too_small(memory_usage);
-
+		while (mt_options.threads > 1) {
+			// Reduce the number of threads by one and check
+			// the memory usage.
+			--mt_options.threads;
 			memory_usage = lzma_stream_encoder_mt_memusage(
 					&mt_options);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
 
-		} while (memory_usage > memory_limit);
+			if (memory_usage <= memory_limit) {
+				// The memory usage is now low enough.
+				message(V_WARNING, _("Reduced the number of "
+					"threads from %s to %s to not exceed "
+					"the memory usage limit of %s MiB"),
+					uint64_to_str(
+						hardware_threads_get(), 0),
+					uint64_to_str(mt_options.threads, 1),
+					uint64_to_str(round_up_to_mib(
+						memory_limit), 2));
+				return;
+			}
+		}
 
-		message(V_WARNING, _("Adjusted the number of threads "
-			"from %s to %s to not exceed "
-			"the memory usage limit of %s MiB"),
-			uint64_to_str(hardware_threads_get(), 0),
-			uint64_to_str(mt_options.threads, 1),
-			uint64_to_str(round_up_to_mib(
-				memory_limit), 2));
+		// If --no-adjust was used, we cannot drop to single-threaded
+		// mode since it produces different compressed output.
+		//
+		// NOTE: In xz 5.2.x, --no-adjust also prevented reducing
+		// the number of threads. This changed in 5.3.3alpha.
+		if (!opt_auto_adjust)
+			memlimit_too_small(memory_usage);
+
+		// Switch to single-threaded mode. It uses
+		// less memory than using one thread in
+		// the multithreaded mode but the output
+		// is also different.
+		hardware_threads_set(1);
+		memory_usage = lzma_raw_encoder_memusage(filters);
+		message(V_WARNING, _("Switching to single-threaded mode "
+			"to not exceed the memory usage limit of %s MiB"),
+			uint64_to_str(round_up_to_mib(memory_limit), 0));
+
 	}
 #	endif
 
 	if (memory_usage <= memory_limit)
 		return;
+
+	// Don't adjust LZMA2 or LZMA1 dictionary size if --no-adjust
+	// was specified as that would change the compressed output.
+	if (!opt_auto_adjust)
+		memlimit_too_small(memory_usage);
 
 	// Look for the last filter if it is LZMA2 or LZMA1, so we can make
 	// it use less RAM. With other filters we don't know what to do.

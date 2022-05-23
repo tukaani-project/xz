@@ -69,9 +69,6 @@ test_xz() {
 			exit 1
 		fi
 	fi
-
-	# Show progress:
-	echo . | tr -d '\n\r'
 }
 
 XZ="../src/xz/xz --memlimit-compress=48MiB --memlimit-decompress=5MiB \
@@ -95,12 +92,8 @@ trap 'rm -f tmp_compressed tmp_uncompressed' 0
 
 # Compress and decompress each file with various filter configurations.
 # This takes quite a bit of time.
-echo "test_compress.sh:"
 for FILE in compress_generated_* "$srcdir"/compress_prepared_*
 do
-	MSG=`echo "x$FILE" | sed 's,^x,,; s,^.*/,,; s,^compress_,,'`
-	echo "  $MSG" | tr -d '\n\r'
-
 	# Don't test with empty arguments; it breaks some ancient
 	# proprietary /bin/sh versions due to $@ used in test_xz().
 	test_xz -1
@@ -134,8 +127,6 @@ do
 		# Disabled until Subblock format is stable.
 		# test_xz --subblock $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
 	done
-
-	echo
 done
 
 (exit 0)

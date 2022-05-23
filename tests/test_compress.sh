@@ -101,16 +101,6 @@ do
 	test_xz -3
 	test_xz -4
 
-	# Disabled until Subblock format is stable.
-#		--subblock \
-#		--subblock=size=1 \
-#		--subblock=size=1,rle=1 \
-#		--subblock=size=1,rle=4 \
-#		--subblock=size=4,rle=4 \
-#		--subblock=size=8,rle=4 \
-#		--subblock=size=8,rle=8 \
-#		--subblock=size=4096,rle=12 \
-#
 	for ARGS in \
 		--delta=dist=1 \
 		--delta=dist=4 \
@@ -123,9 +113,6 @@ do
 		--sparc
 	do
 		test_xz $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
-
-		# Disabled until Subblock format is stable.
-		# test_xz --subblock $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
 	done
 done
 

@@ -11,6 +11,11 @@ EXTRA_DIST = \
 	tests.h \
 	test_files.sh \
 	test_compress.sh \
+	test_compress_prepared_bcj_sparc \
+	test_compress_prepared_bcj_x86 \
+	test_compress_generated_abc \
+	test_compress_generated_random \
+	test_compress_generated_text \
 	test_scripts.sh \
 	bcj_test.c \
 	compress_prepared_bcj_sparc \
@@ -47,7 +52,11 @@ TESTS = \
 	test_index \
 	test_bcj_exact_size \
 	test_files.sh \
-	test_compress.sh
+	test_compress_prepared_bcj_sparc \
+	test_compress_prepared_bcj_x86 \
+	test_compress_generated_abc \
+	test_compress_generated_random \
+	test_compress_generated_text
 
 if COND_SCRIPTS
 TESTS += test_scripts.sh

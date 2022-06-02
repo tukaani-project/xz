@@ -8,6 +8,7 @@
 EXTRA_DIST = \
 	files \
 	ossfuzz \
+	tuktest.h \
 	tests.h \
 	test_files.sh \
 	test_compress.sh \

@@ -16,11 +16,13 @@
 #include "sysdefs.h"
 #include "tuklib_integer.h"
 #include "lzma.h"
+#include "tuktest.h"
 
-#include <stdio.h>
 
 #define memcrap(buf, size) memset(buf, 0xFD, size)
 
+
+// TODO: Remove these three macros once all tests have been converted.
 #define expect(test) ((test) ? 0 : (fprintf(stderr, "%s:%d: %s\n", \
 	__FILE__, __LINE__, #test), abort(), 0))
 
@@ -29,29 +31,26 @@
 #define fail(test) expect(test)
 
 
-static inline const char *
-lzma_ret_sym(lzma_ret ret)
-{
-	if ((unsigned int)(ret) > LZMA_PROG_ERROR)
-		return "UNKNOWN_ERROR";
+// This table and macro allow getting more readable error messages when
+// comparing the lzma_ret enumeration values.
+static const char *enum_strings_lzma_ret[] = {
+	"LZMA_OK",
+	"LZMA_STREAM_END",
+	"LZMA_NO_CHECK",
+	"LZMA_UNSUPPORTED_CHECK",
+	"LZMA_GET_CHECK",
+	"LZMA_MEM_ERROR",
+	"LZMA_MEMLIMIT_ERROR",
+	"LZMA_FORMAT_ERROR",
+	"LZMA_OPTIONS_ERROR",
+	"LZMA_DATA_ERROR",
+	"LZMA_BUF_ERROR",
+	"LZMA_PROG_ERROR",
+	"LZMA_SEEK_NEEDED",
+};
 
-	static const char *msgs[] = {
-		"LZMA_OK",
-		"LZMA_STREAM_END",
-		"LZMA_NO_CHECK",
-		"LZMA_UNSUPPORTED_CHECK",
-		"LZMA_GET_CHECK",
-		"LZMA_MEM_ERROR",
-		"LZMA_MEMLIMIT_ERROR",
-		"LZMA_FORMAT_ERROR",
-		"LZMA_OPTIONS_ERROR",
-		"LZMA_DATA_ERROR",
-		"LZMA_BUF_ERROR",
-		"LZMA_PROG_ERROR"
-	};
-
-	return msgs[ret];
-}
+#define assert_lzma_ret(test_expr, ref_val) \
+	assert_enum_eq(test_expr, ref_val, enum_strings_lzma_ret)
 
 
 static inline bool

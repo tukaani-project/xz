@@ -43,6 +43,8 @@ build-aux/test-driver
 /src/scripts/xzless
 /src/scripts/xzmore
 
+/tests/*.log
+/tests/*.trs
 /tests/compress_generated_abc
 /tests/compress_generated_random
 /tests/compress_generated_text

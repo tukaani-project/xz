@@ -51,6 +51,7 @@ build-aux/test-driver
 /tests/test_block_header
 /tests/test_check
 /tests/test_filter_flags
+/tests/test_hardware
 /tests/test_index
 /tests/test_stream_flags
 /tests/xzgrep_test_1.xz

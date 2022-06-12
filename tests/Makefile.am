@@ -44,7 +44,8 @@ check_PROGRAMS = \
 	test_filter_flags \
 	test_block_header \
 	test_index \
-	test_bcj_exact_size
+	test_bcj_exact_size \
+	test_vli
 
 TESTS = \
 	test_check \
@@ -54,6 +55,7 @@ TESTS = \
 	test_block_header \
 	test_index \
 	test_bcj_exact_size \
+	test_vli \
 	test_files.sh \
 	test_compress_prepared_bcj_sparc \
 	test_compress_prepared_bcj_x86 \

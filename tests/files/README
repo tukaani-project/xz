@@ -93,6 +93,11 @@
 
     good-1-3delta-lzma2.xz has three Delta filters and LZMA2.
 
+    good-1-empty-bcj-lzma2.xz has an empty Block that uses PowerPC BCJ
+    and LZMA2. liblzma from XZ Utils 5.0.1 and older may incorrectly
+    return LZMA_BUF_ERROR in some cases. See commit message
+    d8db706acb8316f9861abd432cfbe001dd6d0c5c for the details.
+
 
 2.2. Unsupported Files
 

@@ -52,8 +52,6 @@ static void
 test_lzma_vli_size(void)
 {
 	// First test invalid VLI values (should return 0)
-	// VLI values are unsigned
-	assert_int_eq(lzma_vli_size(-1), 0);
 	// VLI UNKNOWN is an invalid VLI
 	assert_uint_eq(lzma_vli_size(LZMA_VLI_UNKNOWN), 0);
 	// Loop over a few VLI values just over the maximum

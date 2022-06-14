@@ -17,34 +17,35 @@
 // VLI can have between 1 and 9 bytes when encoded
 // They are encoded little endian where all but the last
 // byte must have the leading 1 bit set
-static uint8_t one_byte[1] = {0x25};
-static lzma_vli one_byte_value = 37;
+static const uint8_t one_byte[1] = {0x25};
+static const lzma_vli one_byte_value = 37;
 
-static uint8_t two_bytes[2] = {0x80, 0x56};
-static lzma_vli two_byte_value = 11008;
+static const uint8_t two_bytes[2] = {0x80, 0x56};
+static const lzma_vli two_byte_value = 11008;
 
-static uint8_t three_bytes[3] = {0x99, 0x92, 0x20};
-static lzma_vli three_byte_value = 526617;
+static const uint8_t three_bytes[3] = {0x99, 0x92, 0x20};
+static const lzma_vli three_byte_value = 526617;
 
-static uint8_t four_bytes[4] = {0x97, 0x83, 0x94, 0x47};
-static lzma_vli four_byte_value = 149225879;
+static const uint8_t four_bytes[4] = {0x97, 0x83, 0x94, 0x47};
+static const lzma_vli four_byte_value = 149225879;
 
-static uint8_t five_bytes[5] = {0xA6, 0x92, 0x88, 0x89, 0x32};
-static lzma_vli five_byte_value = 13440780582;
+static const uint8_t five_bytes[5] = {0xA6, 0x92, 0x88, 0x89, 0x32};
+static const lzma_vli five_byte_value = 13440780582;
 
-static uint8_t six_bytes[6] = {0xA9, 0x84, 0x99, 0x82, 0x94, 0x12};
-static lzma_vli six_byte_value = 623848604201;
+static const uint8_t six_bytes[6] = {0xA9, 0x84, 0x99, 0x82, 0x94, 0x12};
+static const lzma_vli six_byte_value = 623848604201;
 
-static uint8_t seven_bytes[7] = {0x90, 0x80, 0x90, 0x80, 0x90, 0x80, 0x79};
-static lzma_vli seven_byte_value = 532167923073040;
+static const uint8_t seven_bytes[7] = {0x90, 0x80, 0x90, 0x80, 0x90, 0x80,
+				0x79};
+static const lzma_vli seven_byte_value = 532167923073040;
 
-static uint8_t eight_bytes[8] = {0x91, 0x87, 0xF2, 0xB2, 0xC2, 0xD2, 0x93,
-				0x63};
-static lzma_vli eight_byte_value = 55818443594433425;
+static const uint8_t eight_bytes[8] = {0x91, 0x87, 0xF2, 0xB2, 0xC2, 0xD2,
+				0x93, 0x63};
+static const lzma_vli eight_byte_value = 55818443594433425;
 
-static uint8_t nine_bytes[9] = {0x81, 0x91, 0xA1, 0xB1, 0xC1, 0xD1, 0xE1,
-				0xF1, 0x1};
-static lzma_vli nine_byte_value = 136100349976529025;
+static const uint8_t nine_bytes[9] = {0x81, 0x91, 0xA1, 0xB1, 0xC1, 0xD1,
+				0xE1, 0xF1, 0x1};
+static const lzma_vli nine_byte_value = 136100349976529025;
 
 
 static void
@@ -74,7 +75,8 @@ test_lzma_vli_size(void)
 // Helper function for test_lzma_vli_encode
 // Encodes an input VLI and compares against a pre-computed value
 static void
-encode_single_call_mode(lzma_vli input, uint8_t* expected, uint32_t expected_len)
+encode_single_call_mode(lzma_vli input, const uint8_t *expected,
+		uint32_t expected_len)
 {
 	uint8_t out[LZMA_VLI_BYTES_MAX];
 	size_t out_pos = 0;
@@ -82,7 +84,6 @@ encode_single_call_mode(lzma_vli input, uint8_t* expected, uint32_t expected_len
 			expected_len), LZMA_OK);
 	assert_uint_eq(out_pos, expected_len);
 	assert_array_eq(out, expected, expected_len);
-
 }
 
 
@@ -90,7 +91,7 @@ encode_single_call_mode(lzma_vli input, uint8_t* expected, uint32_t expected_len
 // Encodes an input VLI one byte at a time with the multi call
 // method. Then compares agaist a pre-computed value
 static void
-encode_multi_call_mode(lzma_vli input, uint8_t* expected,
+encode_multi_call_mode(lzma_vli input, const uint8_t *expected,
 		uint32_t expected_len)
 {
 	uint8_t out[LZMA_VLI_BYTES_MAX];
@@ -194,7 +195,8 @@ test_lzma_vli_encode(void)
 
 
 static void
-decode_single_call_mode(uint8_t* input, uint32_t input_len, lzma_vli expected)
+decode_single_call_mode(const uint8_t *input, uint32_t input_len,
+		lzma_vli expected)
 {
 	lzma_vli out = 0;
 	size_t in_pos = 0;
@@ -207,7 +209,8 @@ decode_single_call_mode(uint8_t* input, uint32_t input_len, lzma_vli expected)
 
 
 static void
-decode_multi_call_mode(uint8_t* input, uint32_t input_len, lzma_vli expected)
+decode_multi_call_mode(const uint8_t *input, uint32_t input_len,
+		lzma_vli expected)
 {
 	lzma_vli out = 0;
 	size_t in_pos = 0;

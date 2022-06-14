@@ -457,22 +457,32 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 }
 
 
-// Internal helper that converts an enum tuktest_result value to a string.
-static const char *
-tuktest_result_str(enum tuktest_result result)
+// Internal helper that prints the prefix of the fail/skip/error message line.
+static void
+tuktest_print_result_prefix(enum tuktest_result result,
+		const char *filename, unsigned line)
 {
-	return result == TUKTEST_PASS ? TUKTEST_STR_PASS
-			: (result) == TUKTEST_FAIL ? TUKTEST_STR_FAIL
-			: (result) == TUKTEST_SKIP ? TUKTEST_STR_SKIP
+	// This is never called with TUKTEST_PASS but I kept it here anyway.
+	const char *result_str
+			= result == TUKTEST_PASS ? TUKTEST_STR_PASS
+			: result == TUKTEST_FAIL ? TUKTEST_STR_FAIL
+			: result == TUKTEST_SKIP ? TUKTEST_STR_SKIP
 			: TUKTEST_STR_ERROR;
+
+	const char *short_filename = tuktest_basename(filename);
+
+	if (tuktest_name != NULL)
+		printf("%s %s [%s:%u] ", result_str, tuktest_name,
+				short_filename, line);
+	else
+		printf("%s [%s:%u] ", result_str, short_filename, line);
 }
 
 
 // Internal helper for assert_fail, assert_skip, and assert_error.
 #define tuktest_print_and_jump(result, ...) \
 do { \
-	printf("%s %s [%s:%u] ", tuktest_result_str(result), tuktest_name, \
-			tuktest_basename(__FILE__), __LINE__); \
+	tuktest_print_result_prefix(result, __FILE__, __LINE__); \
 	printf(__VA_ARGS__); \
 	printf("\n"); \
 	longjmp(tuktest_jmpenv, result); \

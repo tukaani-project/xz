@@ -78,15 +78,9 @@ static void
 test_empty_block(void)
 {
 	// An empty file with one Block using PowerPC BCJ and LZMA2.
-	static const uint8_t empty_bcj_lzma2[] = {
-		0xFD, 0x37, 0x7A, 0x58, 0x5A, 0x00, 0x00, 0x01,
-		0x69, 0x22, 0xDE, 0x36, 0x02, 0x01, 0x05, 0x00,
-		0x21, 0x01, 0x00, 0x00, 0x7F, 0xE0, 0xF1, 0xC8,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x01, 0x11, 0x00, 0x3B, 0x96, 0x5F, 0x73,
-		0x90, 0x42, 0x99, 0x0D, 0x01, 0x00, 0x00, 0x00,
-		0x00, 0x01, 0x59, 0x5A
-	};
+	size_t in_size;
+	uint8_t *empty_bcj_lzma2 = file_from_srcdir(
+			"files/good-1-empty-bcj-lzma2.xz", &in_size);
 
 	// Decompress without giving any output space.
 	uint64_t memlimit = 1 << 20;
@@ -94,11 +88,12 @@ test_empty_block(void)
 	size_t in_pos = 0;
 	size_t out_pos = 0;
 	assert_lzma_ret(lzma_stream_buffer_decode(&memlimit, 0, NULL,
-			empty_bcj_lzma2, &in_pos, sizeof(empty_bcj_lzma2),
-			out, &out_pos, 0),
+			empty_bcj_lzma2, &in_pos, in_size, out, &out_pos, 0),
 		LZMA_OK);
-	assert_uint_eq(in_pos, sizeof(empty_bcj_lzma2));
+	assert_uint_eq(in_pos, in_size);
 	assert_uint_eq(out_pos, 0);
+
+	free(empty_bcj_lzma2);
 }
 
 

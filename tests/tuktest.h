@@ -83,14 +83,16 @@
 /// IMPORTANT:
 ///
 ///   - The assert_CONDITION() macros may only be used by code that is
-///     called via tuktest_run()! This includes not only the function
-///     named in the tuktest_run() call but also any functions called
-///     further from there. (The assert_CONDITION() macros depend on setup
-///     code in tuktest_run() and other use results in undefined behavior.)
+///     called via tuktest_run()! This includes the function named in
+///     the tuktest_run() call and functions called further from there.
+///     (The assert_CONDITION() macros depend on setup code in tuktest_run()
+///     and other use results in undefined behavior.)
 ///
-///   - The limitations goes the other way too: Functions and macros
-///     other than the assert_CONDITION() macros must not be used in
-///     the tests called via tuktest_run().
+///   - The tuktest_* functions and macros macros must not be used in
+///     the tests called via tuktest_run()!
+///
+///   - file_from_* functions and macros may be used anywhere after
+///     tuktest_start() has been called.
 ///
 /// Footnotes:
 ///
@@ -476,6 +478,173 @@ tuktest_print_result_prefix(enum tuktest_result result,
 				short_filename, line);
 	else
 		printf("%s [%s:%u] ", result_str, short_filename, line);
+}
+
+
+// Maximum allowed file size in file_from_* macros and functions.
+#ifndef TUKTEST_FILE_SIZE_MAX
+#	define TUKTEST_FILE_SIZE_MAX (64L << 20)
+#endif
+
+/// Allocates memory and reads the specified file into a buffer.
+/// If the environment variable srcdir is set, it will be prefixed
+/// to the filename. Otherwise the filename is used as is (and so
+/// the behavior is identical to file_from_builddir() below).
+///
+/// On success the a pointer to malloc'ed memory is returned.
+/// The size of the allocation and the file is stored in *size.
+///
+/// If anything goes wrong, a hard error is reported and this function
+/// won't return. Possible other tests won't be run (this will call exit()).
+///
+/// Empty files and files over TUKTEST_FILE_SIZE_MAX are rejected.
+/// The assumption is that something is wrong in these cases.
+///
+/// This function can be called either from outside the tests (like in main())
+/// or from tests run via tuktest_run(). Remember to free() the memory to
+/// keep Valgrind happy.
+#define file_from_srcdir(filename, sizeptr) \
+	file_from_x(getenv("srcdir"), filename, sizeptr, __FILE__, __LINE__)
+
+/// Like file_from_srcdir except this reads from the current directory.
+#define file_from_builddir(filename, sizeptr) \
+	file_from_x(NULL, filename, sizeptr, __FILE__, __LINE__)
+
+// Internal helper for the macros above.
+static void *
+file_from_x(const char *prefix, const char *filename, size_t *size,
+		const char *prog_filename, unsigned prog_line)
+{
+	// If needed: buffer for holding prefix + '/' + filename + '\0'.
+	char *alloc_name = NULL;
+
+	// Buffer for the data read from the file.
+	void *buf = NULL;
+
+	// File being read
+	FILE *f = NULL;
+
+	// Error message to use under the "error:" label.
+	const char *error_msg = NULL;
+
+	if (filename == NULL) {
+		error_msg = "Filename is NULL";
+		goto error;
+	}
+
+	if (filename[0] == '\0') {
+		error_msg = "Filename is an empty string";
+		filename = NULL;
+		goto error;
+	}
+
+	if (size == NULL) {
+		error_msg = "The size argument is NULL";
+		goto error;
+	}
+
+	// If a prefix was given, construct the full filename.
+	if (prefix != NULL && prefix[0] != '\0') {
+		const size_t prefix_len = strlen(prefix);
+		const size_t filename_len = strlen(filename);
+
+		const size_t alloc_name_size
+				= prefix_len + 1 + filename_len + 1;
+		alloc_name = malloc(alloc_name_size);
+		if (alloc_name == NULL) {
+			error_msg = "Memory allocation failed (alloc_name)";
+			goto error;
+		}
+
+		memcpy(alloc_name, prefix, prefix_len);
+		alloc_name[prefix_len] = '/';
+		memcpy(alloc_name + prefix_len + 1, filename, filename_len);
+		alloc_name[prefix_len + 1 + filename_len] = '\0';
+
+		// Set filename to point to the new string. alloc_name
+		// can be freed unconditionally as it is NULL if a prefix
+		// wasn't specified.
+		filename = alloc_name;
+	}
+
+	f = fopen(filename, "rb");
+	if (f == NULL) {
+		error_msg = "Failed to open the file";
+		goto error;
+	}
+
+	// Get the size of the file and store it in *size.
+	//
+	// We assume that the file isn't big and even reject very big files.
+	// There is no need to use fseeko/ftello from POSIX to support
+	// large files. Using standard C functions is portable outside POSIX.
+	if (fseek(f, 0, SEEK_END) != 0) {
+		error_msg = "Seeking failed (fseek end)";
+		goto error;
+	}
+
+	const long end = ftell(f);
+	if (end < 0) {
+		error_msg = "Seeking failed (ftell)";
+		goto error;
+	}
+
+	if (end == 0) {
+		error_msg = "File is empty";
+		goto error;
+	}
+
+	if (end > TUKTEST_FILE_SIZE_MAX) {
+		error_msg = "File size exceeds TUKTEST_FILE_SIZE_MAX";
+		goto error;
+	}
+
+	*size = (size_t)end;
+	rewind(f);
+
+	buf = malloc(*size);
+	if (buf == NULL) {
+		error_msg = "Memory allocation failed (buf)";
+		goto error;
+	}
+
+	const size_t amount = fread(buf, 1, *size, f);
+	if (ferror(f)) {
+		error_msg = "Read error";
+		goto error;
+	}
+
+	if (amount != *size) {
+		error_msg = "File is smaller than indicated by ftell()";
+		goto error;
+	}
+
+	const int fclose_ret = fclose(f);
+	f = NULL;
+	if (fclose_ret != 0) {
+		error_msg = "Error closing the file";
+		goto error;
+	}
+
+	free(alloc_name);
+	return buf;
+
+error:
+	if (f != NULL)
+		(void)fclose(f);
+
+	tuktest_print_result_prefix(TUKTEST_ERROR, prog_filename, prog_line);
+
+	if (filename == NULL)
+		printf("file_from_x: %s\n", error_msg);
+	else
+		printf("file_from_x: %s: %s\n", filename, error_msg);
+
+	free(buf);
+	free(alloc_name);
+
+	++tuktest_stats[TUKTEST_ERROR];
+	exit(tuktest_end());
 }
 
 

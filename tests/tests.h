@@ -53,6 +53,29 @@ static const char enum_strings_lzma_ret[][24] = {
 	assert_enum_eq(test_expr, ref_val, enum_strings_lzma_ret)
 
 
+static const char enum_strings_lzma_check[][24] = {
+	"LZMA_CHECK_NONE",
+	"LZMA_CHECK_CRC32",
+	"LZMA_CHECK_UNKNOWN_2",
+	"LZMA_CHECK_UNKNOWN_3",
+	"LZMA_CHECK_CRC64",
+	"LZMA_CHECK_UNKNOWN_5",
+	"LZMA_CHECK_UNKNOWN_6",
+	"LZMA_CHECK_UNKNOWN_7",
+	"LZMA_CHECK_UNKNOWN_8",
+	"LZMA_CHECK_UNKNOWN_9",
+	"LZMA_CHECK_SHA256",
+	"LZMA_CHECK_UNKNOWN_11",
+	"LZMA_CHECK_UNKNOWN_12",
+	"LZMA_CHECK_UNKNOWN_13",
+	"LZMA_CHECK_UNKNOWN_14",
+	"LZMA_CHECK_UNKNOWN_15",
+};
+
+#define assert_lzma_check(test_expr, ref_val) \
+	assert_enum_eq(test_expr, ref_val, enum_strings_lzma_check)
+
+
 static inline bool
 coder_loop(lzma_stream *strm, uint8_t *in, size_t in_size,
 		uint8_t *out, size_t out_size,

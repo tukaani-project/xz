@@ -2,7 +2,7 @@
 //
 /// \file       tuktest.h
 /// \brief      Helper macros for writing simple test programs
-/// \version    2022-06-02
+/// \version    2022-06-16
 ///
 /// Some inspiration was taken from STest by Keith Nicholas.
 ///
@@ -88,11 +88,16 @@
 ///     (The assert_CONDITION() macros depend on setup code in tuktest_run()
 ///     and other use results in undefined behavior.)
 ///
-///   - The tuktest_* functions and macros macros must not be used in
-///     the tests called via tuktest_run()!
+///   - tuktest_start(), tuktest_early_skip, tuktest_error(), tuktest_run(),
+///     and tuktest_end() must not be used in the tests called via
+///     tuktest_run()! (tuktest_end() is called more freely internally
+///     by this file but such use isn't part of the API.)
 ///
-///   - file_from_* functions and macros may be used anywhere after
+///   - tuktest_malloc(), tuktest_free(), tuktest_file_from_srcdir(), and
+///     tuktest_file_from_builddir() can be used everywhere after
 ///     tuktest_start() has been called.
+///
+///   - Everything else is for internal use only.
 ///
 /// Footnotes:
 ///
@@ -605,7 +610,7 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 }
 
 
-// Maximum allowed file size in file_from_* macros and functions.
+// Maximum allowed file size in tuktest_file_from_* macros and functions.
 #ifndef TUKTEST_FILE_SIZE_MAX
 #	define TUKTEST_FILE_SIZE_MAX (64L << 20)
 #endif
@@ -613,7 +618,7 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 /// Allocates memory and reads the specified file into a buffer.
 /// If the environment variable srcdir is set, it will be prefixed
 /// to the filename. Otherwise the filename is used as is (and so
-/// the behavior is identical to file_from_builddir() below).
+/// the behavior is identical to tuktest_file_from_builddir() below).
 ///
 /// On success the a pointer to malloc'ed memory is returned.
 /// The size of the allocation and the file is stored in *size.
@@ -627,16 +632,17 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 /// This function can be called either from outside the tests (like in main())
 /// or from tests run via tuktest_run(). Remember to free() the memory to
 /// keep Valgrind happy.
-#define file_from_srcdir(filename, sizeptr) \
-	file_from_x(getenv("srcdir"), filename, sizeptr, __FILE__, __LINE__)
+#define tuktest_file_from_srcdir(filename, sizeptr) \
+	tuktest_file_from_x(getenv("srcdir"), filename, sizeptr, \
+			__FILE__, __LINE__)
 
-/// Like file_from_srcdir except this reads from the current directory.
-#define file_from_builddir(filename, sizeptr) \
-	file_from_x(NULL, filename, sizeptr, __FILE__, __LINE__)
+/// Like tuktest_file_from_srcdir except this reads from the current directory.
+#define tuktest_file_from_builddir(filename, sizeptr) \
+	tuktest_file_from_x(NULL, filename, sizeptr, __FILE__, __LINE__)
 
 // Internal helper for the macros above.
 static void *
-file_from_x(const char *prefix, const char *filename, size_t *size,
+tuktest_file_from_x(const char *prefix, const char *filename, size_t *size,
 		const char *prog_filename, unsigned prog_line)
 {
 	// If needed: buffer for holding prefix + '/' + filename + '\0'.
@@ -674,11 +680,8 @@ file_from_x(const char *prefix, const char *filename, size_t *size,
 
 		const size_t alloc_name_size
 				= prefix_len + 1 + filename_len + 1;
-		alloc_name = malloc(alloc_name_size);
-		if (alloc_name == NULL) {
-			error_msg = "Memory allocation failed (alloc_name)";
-			goto error;
-		}
+		alloc_name = tuktest_malloc_impl(alloc_name_size,
+				prog_filename, prog_line);
 
 		memcpy(alloc_name, prefix, prefix_len);
 		alloc_name[prefix_len] = '/';
@@ -726,11 +729,7 @@ file_from_x(const char *prefix, const char *filename, size_t *size,
 	*size = (size_t)end;
 	rewind(f);
 
-	buf = malloc(*size);
-	if (buf == NULL) {
-		error_msg = "Memory allocation failed (buf)";
-		goto error;
-	}
+	buf = tuktest_malloc_impl(*size, prog_filename, prog_line);
 
 	const size_t amount = fread(buf, 1, *size, f);
 	if (ferror(f)) {
@@ -750,7 +749,7 @@ file_from_x(const char *prefix, const char *filename, size_t *size,
 		goto error;
 	}
 
-	free(alloc_name);
+	tuktest_free(alloc_name);
 	return buf;
 
 error:
@@ -760,12 +759,9 @@ error:
 	tuktest_print_result_prefix(TUKTEST_ERROR, prog_filename, prog_line);
 
 	if (filename == NULL)
-		printf("file_from_x: %s\n", error_msg);
+		printf("tuktest_file_from_x: %s\n", error_msg);
 	else
-		printf("file_from_x: %s: %s\n", filename, error_msg);
-
-	free(buf);
-	free(alloc_name);
+		printf("tuktest_file_from_x: %s: %s\n", filename, error_msg);
 
 	++tuktest_stats[TUKTEST_ERROR];
 	exit(tuktest_end());

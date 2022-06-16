@@ -79,7 +79,7 @@ test_empty_block(void)
 {
 	// An empty file with one Block using PowerPC BCJ and LZMA2.
 	size_t in_size;
-	uint8_t *empty_bcj_lzma2 = file_from_srcdir(
+	uint8_t *empty_bcj_lzma2 = tuktest_file_from_srcdir(
 			"files/good-1-empty-bcj-lzma2.xz", &in_size);
 
 	// Decompress without giving any output space.
@@ -92,8 +92,6 @@ test_empty_block(void)
 		LZMA_OK);
 	assert_uint_eq(in_pos, in_size);
 	assert_uint_eq(out_pos, 0);
-
-	free(empty_bcj_lzma2);
 }
 
 

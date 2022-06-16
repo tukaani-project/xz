@@ -268,6 +268,28 @@ tuktest_basename(const char *filename)
 }
 
 
+// Internal helper that prints the prefix of the fail/skip/error message line.
+static void
+tuktest_print_result_prefix(enum tuktest_result result,
+		const char *filename, unsigned line)
+{
+	// This is never called with TUKTEST_PASS but I kept it here anyway.
+	const char *result_str
+			= result == TUKTEST_PASS ? TUKTEST_STR_PASS
+			: result == TUKTEST_FAIL ? TUKTEST_STR_FAIL
+			: result == TUKTEST_SKIP ? TUKTEST_STR_SKIP
+			: TUKTEST_STR_ERROR;
+
+	const char *short_filename = tuktest_basename(filename);
+
+	if (tuktest_name != NULL)
+		printf("%s %s [%s:%u] ", result_str, tuktest_name,
+				short_filename, line);
+	else
+		printf("%s [%s:%u] ", result_str, short_filename, line);
+}
+
+
 /// Initialize the test framework. No other functions or macros
 /// from this file may be called before calling this.
 ///
@@ -456,28 +478,6 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 	}
 
 	tuktest_name = NULL;
-}
-
-
-// Internal helper that prints the prefix of the fail/skip/error message line.
-static void
-tuktest_print_result_prefix(enum tuktest_result result,
-		const char *filename, unsigned line)
-{
-	// This is never called with TUKTEST_PASS but I kept it here anyway.
-	const char *result_str
-			= result == TUKTEST_PASS ? TUKTEST_STR_PASS
-			: result == TUKTEST_FAIL ? TUKTEST_STR_FAIL
-			: result == TUKTEST_SKIP ? TUKTEST_STR_SKIP
-			: TUKTEST_STR_ERROR;
-
-	const char *short_filename = tuktest_basename(filename);
-
-	if (tuktest_name != NULL)
-		printf("%s %s [%s:%u] ", result_str, tuktest_name,
-				short_filename, line);
-	else
-		printf("%s [%s:%u] ", result_str, short_filename, line);
 }
 
 

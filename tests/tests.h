@@ -33,7 +33,7 @@
 
 // This table and macro allow getting more readable error messages when
 // comparing the lzma_ret enumeration values.
-static const char *enum_strings_lzma_ret[] = {
+static const char enum_strings_lzma_ret[][24] = {
 	"LZMA_OK",
 	"LZMA_STREAM_END",
 	"LZMA_NO_CHECK",

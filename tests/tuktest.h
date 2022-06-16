@@ -241,6 +241,10 @@ static const char *tuktest_name = NULL;
 static jmp_buf tuktest_jmpenv;
 
 
+// This declaration is needed for tuktest_malloc().
+static int tuktest_end(void);
+
+
 // printf() is without checking its return value in many places. This function
 // is called before exiting to check the status of stdout and catch errors.
 static void
@@ -287,6 +291,122 @@ tuktest_print_result_prefix(enum tuktest_result result,
 				short_filename, line);
 	else
 		printf("%s [%s:%u] ", result_str, short_filename, line);
+}
+
+
+// An entry for linked list of memory allocations.
+struct tuktest_malloc_record {
+	struct tuktest_malloc_record *next;
+	void *p;
+};
+
+// Linked list of per-test allocations. This is used when under tuktest_run().
+// These allocations are freed in tuktest_run() and, in case of a hard error,
+// also in tuktest_end().
+static struct tuktest_malloc_record *tuktest_malloc_test = NULL;
+
+// Linked list of global allocations. This is used allocations are made
+// outside tuktest_run(). These are freed in tuktest_end().
+static struct tuktest_malloc_record *tuktest_malloc_global = NULL;
+
+
+/// A wrapper for malloc() that never return NULL and the allocated memory is
+/// automatically freed at the end of tuktest_run() (if allocation was done
+/// within a test) or early in tuktest_end() (if allocation was done outside
+/// tuktest_run()).
+///
+/// If allocation fails, a hard error is reported and this function won't
+/// return. Possible other tests won't be run (this will call exit()).
+#define tuktest_malloc(size) tuktest_malloc_impl(size, __FILE__, __LINE__)
+
+static void *
+tuktest_malloc_impl(size_t size, const char *filename, unsigned line)
+{
+	void *p = malloc(size);
+	struct tuktest_malloc_record *r = malloc(sizeof(*r));
+
+	if (p == NULL || r == NULL) {
+		free(r);
+		free(p);
+
+		tuktest_print_result_prefix(TUKTEST_ERROR, filename, line);
+
+		// Avoid %zu for portability to very old systems that still
+		// can compile C99 code.
+		printf("tuktest_malloc(%" TUKTEST_PRIu ") failed\n",
+				(tuktest_uint)size);
+
+		++tuktest_stats[TUKTEST_ERROR];
+		exit(tuktest_end());
+	}
+
+	r->p = p;
+
+	if (tuktest_name == NULL) {
+		// We were called outside tuktest_run().
+		r->next = tuktest_malloc_global;
+		tuktest_malloc_global = r;
+	} else {
+		// We were called under tuktest_run().
+		r->next = tuktest_malloc_test;
+		tuktest_malloc_test = r;
+	}
+
+	return p;
+}
+
+
+/// Frees memory allocated using tuktest_malloc(). Usually this isn't needed
+/// as the memory is freed automatically.
+///
+/// NULL is silently ignored.
+///
+/// NOTE: Under tuktest_run() only memory allocated there can be freed.
+/// That is,  allocations done outside tuktest_run() can only be freed
+/// outside tuktest_run().
+#define tuktest_free(ptr) tuktest_free_impl(ptr, __FILE__, __LINE__)
+
+static void
+tuktest_free_impl(void *p, const char *filename, unsigned line)
+{
+	if (p == NULL)
+		return;
+
+	struct tuktest_malloc_record **r = tuktest_name != NULL
+			? &tuktest_malloc_test : &tuktest_malloc_global;
+
+	while (*r != NULL) {
+		struct tuktest_malloc_record *tmp = *r;
+
+		if (tmp->p == p) {
+			*r = tmp->next;
+			free(p);
+			free(tmp);
+			return;
+		}
+
+		r = &tmp->next;
+	}
+
+	tuktest_print_result_prefix(TUKTEST_ERROR, filename, line);
+	printf("tuktest_free: Allocation matching the pointer "
+			"was not found\n");
+	++tuktest_stats[TUKTEST_ERROR];
+	exit(tuktest_end());
+}
+
+
+// Frees all allocates in the given record list. The argument must be
+// either &tuktest_malloc_test or &tuktest_malloc_global.
+static void
+tuktest_free_all(struct tuktest_malloc_record **r)
+{
+	while (*r != NULL) {
+		struct tuktest_malloc_record *tmp = *r;
+		*r = tmp->next;
+		free(tmp->p);
+		free(tmp);
+	}
 }
 
 
@@ -363,6 +483,9 @@ do { \
 static int
 tuktest_end(void)
 {
+	tuktest_free_all(&tuktest_malloc_test);
+	tuktest_free_all(&tuktest_malloc_global);
+
 	unsigned total_tests = 0;
 	for (unsigned i = 0; i <= TUKTEST_ERROR; ++i)
 		total_tests += tuktest_stats[i];
@@ -477,6 +600,7 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 			exit(tuktest_end());
 	}
 
+	tuktest_free_all(&tuktest_malloc_test);
 	tuktest_name = NULL;
 }
 

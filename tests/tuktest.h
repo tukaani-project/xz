@@ -88,14 +88,16 @@
 ///     (The assert_CONDITION() macros depend on setup code in tuktest_run()
 ///     and other use results in undefined behavior.)
 ///
-///   - tuktest_start(), tuktest_early_skip, tuktest_error(), tuktest_run(),
-///     and tuktest_end() must not be used in the tests called via
-///     tuktest_run()! (tuktest_end() is called more freely internally
-///     by this file but such use isn't part of the API.)
+///   - tuktest_start(), tuktest_early_skip, tuktest_run(), and tuktest_end()
+///     must not be used in the tests called via tuktest_run()! (tuktest_end()
+///     is called more freely internally by this file but such use isn't part
+///     of the API.)
 ///
-///   - tuktest_malloc(), tuktest_free(), tuktest_file_from_srcdir(), and
-///     tuktest_file_from_builddir() can be used everywhere after
-///     tuktest_start() has been called.
+///   - tuktest_error(), tuktest_malloc(), tuktest_free(),
+///     tuktest_file_from_srcdir(), and tuktest_file_from_builddir()
+///     can be used everywhere after tuktest_start() has been called.
+///     (In tests running under tuktest_run(), assert_error() can be used
+///     instead of tuktest_error() when a hard error occurs.)
 ///
 ///   - Everything else is for internal use only.
 ///
@@ -250,6 +252,18 @@ static jmp_buf tuktest_jmpenv;
 static int tuktest_end(void);
 
 
+// Internal helper for handling hard errors both inside and
+// outside tuktest_run().
+#define tuktest_error_impl(filename, line, ...) \
+do { \
+	tuktest_print_result_prefix(TUKTEST_ERROR, filename, line); \
+	printf(__VA_ARGS__); \
+	printf("\n"); \
+	++tuktest_stats[TUKTEST_ERROR]; \
+	exit(tuktest_end()); \
+} while (0)
+
+
 // printf() is without checking its return value in many places. This function
 // is called before exiting to check the status of stdout and catch errors.
 static void
@@ -334,15 +348,11 @@ tuktest_malloc_impl(size_t size, const char *filename, unsigned line)
 		free(r);
 		free(p);
 
-		tuktest_print_result_prefix(TUKTEST_ERROR, filename, line);
-
 		// Avoid %zu for portability to very old systems that still
 		// can compile C99 code.
-		printf("tuktest_malloc(%" TUKTEST_PRIu ") failed\n",
+		tuktest_error_impl(filename, line,
+				"tuktest_malloc(%" TUKTEST_PRIu ") failed",
 				(tuktest_uint)size);
-
-		++tuktest_stats[TUKTEST_ERROR];
-		exit(tuktest_end());
 	}
 
 	r->p = p;
@@ -393,11 +403,8 @@ tuktest_free_impl(void *p, const char *filename, unsigned line)
 		r = &tmp->next;
 	}
 
-	tuktest_print_result_prefix(TUKTEST_ERROR, filename, line);
-	printf("tuktest_free: Allocation matching the pointer "
-			"was not found\n");
-	++tuktest_stats[TUKTEST_ERROR];
-	exit(tuktest_end());
+	tuktest_error_impl(filename, line, "tuktest_free: "
+			"Allocation matching the pointer was not found");
 }
 
 
@@ -464,18 +471,9 @@ do { \
 ///
 /// NOTE: tuktest_start() must have been called before tuktest_error().
 ///
-/// NOTE: This macro MUST NOT be called from test functions running under
-/// tuktest_run()! Use assert_error() to report a hard error in code that
-/// is running under tuktest_run().
-#define tuktest_error(...) \
-do { \
-	++tuktest_stats[TUKTEST_ERROR]; \
-	printf(TUKTEST_STR_ERROR " [%s:%u] ", \
-			tuktest_basename(__FILE__), __LINE__); \
-	printf(__VA_ARGS__); \
-	printf("\n"); \
-	exit(tuktest_end()); \
-} while (0)
+/// NOTE: This macro can be called from test functions running under
+/// tuktest_run() but assert_error() is somewhat preferred in that context.
+#define tuktest_error(...) tuktest_error_impl(__FILE__, __LINE__, __VA_ARGS__)
 
 
 /// At the end of main() one should have "return tuktest_end();" which
@@ -659,12 +657,13 @@ tuktest_file_from_x(const char *prefix, const char *filename, size_t *size,
 
 	if (filename == NULL) {
 		error_msg = "Filename is NULL";
+		filename = "(NULL)";
 		goto error;
 	}
 
 	if (filename[0] == '\0') {
 		error_msg = "Filename is an empty string";
-		filename = NULL;
+		filename = "(empty string)";
 		goto error;
 	}
 
@@ -756,15 +755,8 @@ error:
 	if (f != NULL)
 		(void)fclose(f);
 
-	tuktest_print_result_prefix(TUKTEST_ERROR, prog_filename, prog_line);
-
-	if (filename == NULL)
-		printf("tuktest_file_from_x: %s\n", error_msg);
-	else
-		printf("tuktest_file_from_x: %s: %s\n", filename, error_msg);
-
-	++tuktest_stats[TUKTEST_ERROR];
-	exit(tuktest_end());
+	tuktest_error_impl(prog_filename, prog_line,
+			"tuktest_file_from_x: %s: %s\n", filename, error_msg);
 }
 
 

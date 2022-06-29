@@ -1,0 +1,984 @@
+# Spanish translation for xz-5.2.4
+# This file is put in the public domain.
+# Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xz 5.2.4\n"
+"Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
+"POT-Creation-Date: 2018-04-29 18:19+0300\n"
+"PO-Revision-Date: 2022-06-22 23:40+0800\n"
+"Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
+"Language-Team: Spanish <es@tp.org.es>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/xz/args.c:63
+#, c-format
+msgid "%s: Invalid argument to --block-list"
+msgstr "%s: Argumento inválido para --block-list"
+
+#: src/xz/args.c:73
+#, c-format
+msgid "%s: Too many arguments to --block-list"
+msgstr "%s: Demasiados argumentos para --block-list"
+
+#: src/xz/args.c:102
+msgid "0 can only be used as the last element in --block-list"
+msgstr "0 solo se puede usar como el último elemento en --block-list"
+
+#: src/xz/args.c:406
+#, c-format
+msgid "%s: Unknown file format type"
+msgstr "%s: Tipo de formato de fichero desconocido"
+
+#: src/xz/args.c:429 src/xz/args.c:437
+#, c-format
+msgid "%s: Unsupported integrity check type"
+msgstr "%s: No se admite el tipo de verificación de integridad"
+
+#: src/xz/args.c:473
+msgid "Only one file can be specified with `--files' or `--files0'."
+msgstr "Solo se puede especificar un fichero con `--files' o `--files0'."
+
+#: src/xz/args.c:541
+#, c-format
+msgid "The environment variable %s contains too many arguments"
+msgstr "La variable de ambiente %s contiene demasiados argumentos"
+
+#: src/xz/args.c:643
+msgid "Compression support was disabled at build time"
+msgstr "Se desactivó el soporte para compresión en el momento de compilación"
+
+#: src/xz/args.c:650
+msgid "Decompression support was disabled at build time"
+msgstr "Se desactivo el soporte para descompresión en el momento de compilación"
+
+#: src/xz/coder.c:110
+msgid "Maximum number of filters is four"
+msgstr "El número máximo de filtros es cuatro"
+
+#: src/xz/coder.c:129
+msgid "Memory usage limit is too low for the given filter setup."
+msgstr "El límite de uso de memoria es muy bajo para la configuración de filtro dada."
+
+#: src/xz/coder.c:159
+msgid "Using a preset in raw mode is discouraged."
+msgstr "No se recomienda un modo predeterminado en modo crudo."
+
+#: src/xz/coder.c:161
+msgid "The exact options of the presets may vary between software versions."
+msgstr "El número exacto de las opciones predeterminadas puede variar entre versiones del software."
+
+#: src/xz/coder.c:184
+msgid "The .lzma format supports only the LZMA1 filter"
+msgstr "El formato .lzma solamente admite el filtro LZMA1"
+
+#: src/xz/coder.c:192
+msgid "LZMA1 cannot be used with the .xz format"
+msgstr "No se puede usar LZMA1 con el formato .xz"
+
+#: src/xz/coder.c:209
+msgid "The filter chain is incompatible with --flush-timeout"
+msgstr "La cadena de filtros es incompatible con --flush-timeout"
+
+#: src/xz/coder.c:215
+msgid "Switching to single-threaded mode due to --flush-timeout"
+msgstr "Se cambia al modo de un solo hilo debido a --flush-timeout"
+
+#: src/xz/coder.c:235
+#, c-format
+msgid "Using up to %<PRIu32> threads."
+msgstr "Se usan hasta %<PRIu32> hilos."
+
+#: src/xz/coder.c:251
+msgid "Unsupported filter chain or filter options"
+msgstr "No se admite las opciones de cadena de filtros o de filtro"
+
+#: src/xz/coder.c:263
+#, c-format
+msgid "Decompression will need %s MiB of memory."
+msgstr "La descompresión necesitará %s MiB de memoria."
+
+#: src/xz/coder.c:300
+#, c-format
+msgid "Adjusted the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
+msgstr "Se ajusta el número de hilos de %s a %s para no exceder el límite de uso de memoria de %s MiB"
+
+#: src/xz/coder.c:354
+#, c-format
+msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+msgstr "Se ajusta el tamaño del diccionario LZMA%c de %s MiB a %s MiB para no exceder el límite de uso de memoria de %s MiB"
+
+#: src/xz/file_io.c:110 src/xz/file_io.c:118
+#, c-format
+msgid "Error creating a pipe: %s"
+msgstr "Error al crear una tubería: %s"
+
+#: src/xz/file_io.c:224
+msgid "Failed to enable the sandbox"
+msgstr "Falló al activar el arenero"
+
+#: src/xz/file_io.c:266
+#, c-format
+msgid "%s: poll() failed: %s"
+msgstr "%s: falló poll(): %s"
+
+#. TRANSLATORS: When compression or decompression finishes,
+#. and xz is going to remove the source file, xz first checks
+#. if the source file still exists, and if it does, does its
+#. device and inode numbers match what xz saw when it opened
+#. the source file. If these checks fail, this message is
+#. shown, %s being the filename, and the file is not deleted.
+#. The check for device and inode numbers is there, because
+#. it is possible that the user has put a new file in place
+#. of the original file, and in that case it obviously
+#. shouldn't be removed.
+#: src/xz/file_io.c:333
+#, c-format
+msgid "%s: File seems to have been moved, not removing"
+msgstr "%s: Al parecer se movió el fichero, no se borra"
+
+#: src/xz/file_io.c:340 src/xz/file_io.c:882
+#, c-format
+msgid "%s: Cannot remove: %s"
+msgstr "%s: No se puede borrar: %s"
+
+#: src/xz/file_io.c:366
+#, c-format
+msgid "%s: Cannot set the file owner: %s"
+msgstr "%s: No se puede establecer el propietario del fichero: %s"
+
+#: src/xz/file_io.c:372
+#, c-format
+msgid "%s: Cannot set the file group: %s"
+msgstr "%s: No se puede establecer el grupo del fichero: %s"
+
+#: src/xz/file_io.c:391
+#, c-format
+msgid "%s: Cannot set the file permissions: %s"
+msgstr "%s: No se pueden establecer los permisos del fichero: %s"
+
+#: src/xz/file_io.c:517
+#, c-format
+msgid "Error getting the file status flags from standard input: %s"
+msgstr "Error al obtener la opciones de estado de fichero de la entrada estándar: %s"
+
+#: src/xz/file_io.c:574 src/xz/file_io.c:636
+#, c-format
+msgid "%s: Is a symbolic link, skipping"
+msgstr "%s: Es un enlace simbólico, se salta"
+
+#: src/xz/file_io.c:665
+#, c-format
+msgid "%s: Is a directory, skipping"
+msgstr "%s: Es un directorio, se salta"
+
+#: src/xz/file_io.c:671
+#, c-format
+msgid "%s: Not a regular file, skipping"
+msgstr "%s: No es un fichero regular, se salta"
+
+#: src/xz/file_io.c:688
+#, c-format
+msgid "%s: File has setuid or setgid bit set, skipping"
+msgstr "%s: El fichero tiene el bit setuid o setgid activo, se salta"
+
+#: src/xz/file_io.c:695
+#, c-format
+msgid "%s: File has sticky bit set, skipping"
+msgstr "%s: El fichero tiene el bit sticky activo, se salta"
+
+#: src/xz/file_io.c:702
+#, c-format
+msgid "%s: Input file has more than one hard link, skipping"
+msgstr "%s: El fichero de entrada tiene más de un enlace duro, se salta"
+
+#: src/xz/file_io.c:792
+#, c-format
+msgid "Error restoring the status flags to standard input: %s"
+msgstr "Error al restaurar las opciones de estado en la entrada estándar: %s"
+
+#: src/xz/file_io.c:840
+#, c-format
+msgid "Error getting the file status flags from standard output: %s"
+msgstr "Error al obtener las opciones de estado de fichero de la entrada estándar: %s"
+
+#: src/xz/file_io.c:1018
+#, c-format
+msgid "Error restoring the O_APPEND flag to standard output: %s"
+msgstr "Error al restaurar la opción O_APPEND a la salida estándar: %s"
+
+#: src/xz/file_io.c:1030
+#, c-format
+msgid "%s: Closing the file failed: %s"
+msgstr "%s: Falló al cerrar el fichero: %s"
+
+#: src/xz/file_io.c:1066 src/xz/file_io.c:1309
+#, c-format
+msgid "%s: Seeking failed when trying to create a sparse file: %s"
+msgstr "%s: Falló la búsqueda al tratar de crear un fichero disperso: %s"
+
+#: src/xz/file_io.c:1167
+#, c-format
+msgid "%s: Read error: %s"
+msgstr "%s: Error de lectura: %s"
+
+#: src/xz/file_io.c:1191
+#, c-format
+msgid "%s: Error seeking the file: %s"
+msgstr "%s: Error al buscar en el fichero: %s"
+
+#: src/xz/file_io.c:1201
+#, c-format
+msgid "%s: Unexpected end of file"
+msgstr "%s: Fin de fichero inesperado"
+
+#: src/xz/file_io.c:1260
+#, c-format
+msgid "%s: Write error: %s"
+msgstr "%s: Error de escritura: %s"
+
+#: src/xz/hardware.c:137
+msgid "Disabled"
+msgstr "Desactivado"
+
+#. TRANSLATORS: Test with "xz --info-memory" to see if
+#. the alignment looks nice.
+#: src/xz/hardware.c:156
+msgid "Total amount of physical memory (RAM): "
+msgstr "Cantidad total de memoria física (RAM):      "
+
+#: src/xz/hardware.c:158
+msgid "Memory usage limit for compression:    "
+msgstr "Límite de uso de memoria para compresión:    "
+
+#: src/xz/hardware.c:160
+msgid "Memory usage limit for decompression:  "
+msgstr "Límite de uso de memoria para descompresión: "
+
+#. TRANSLATORS: Indicates that there is no integrity check.
+#. This string is used in tables, so the width must not
+#. exceed ten columns with a fixed-width font.
+#: src/xz/list.c:65
+msgid "None"
+msgstr "Ninguno"
+
+#. TRANSLATORS: Indicates that integrity check name is not known,
+#. but the Check ID is known (here 2). This and other "Unknown-N"
+#. strings are used in tables, so the width must not exceed ten
+#. columns with a fixed-width font. It's OK to omit the dash if
+#. you need space for one extra letter, but don't use spaces.
+#: src/xz/list.c:72
+msgid "Unknown-2"
+msgstr "Descon-2"
+
+#: src/xz/list.c:73
+msgid "Unknown-3"
+msgstr "Descon-3"
+
+#: src/xz/list.c:75
+msgid "Unknown-5"
+msgstr "Descon-5"
+
+#: src/xz/list.c:76
+msgid "Unknown-6"
+msgstr "Descon-6"
+
+#: src/xz/list.c:77
+msgid "Unknown-7"
+msgstr "Descon-7"
+
+#: src/xz/list.c:78
+msgid "Unknown-8"
+msgstr "Descon-8"
+
+#: src/xz/list.c:79
+msgid "Unknown-9"
+msgstr "Descon-9"
+
+#: src/xz/list.c:81
+msgid "Unknown-11"
+msgstr "Descon-11"
+
+#: src/xz/list.c:82
+msgid "Unknown-12"
+msgstr "Descon-12"
+
+#: src/xz/list.c:83
+msgid "Unknown-13"
+msgstr "Descon-13"
+
+#: src/xz/list.c:84
+msgid "Unknown-14"
+msgstr "Descon-14"
+
+#: src/xz/list.c:85
+msgid "Unknown-15"
+msgstr "Descon-15"
+
+#: src/xz/list.c:153
+#, c-format
+msgid "%s: File is empty"
+msgstr "%s: El fichero está vacío"
+
+#: src/xz/list.c:158
+#, c-format
+msgid "%s: Too small to be a valid .xz file"
+msgstr "%s: Demasiado pequeño para ser un fichero .xz válido"
+
+#. TRANSLATORS: These are column headings. From Strms (Streams)
+#. to Ratio, the columns are right aligned. Check and Filename
+#. are left aligned. If you need longer words, it's OK to
+#. use two lines here. Test with "xz -l foo.xz".
+#: src/xz/list.c:677
+msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
+msgstr "Flujos Bloques  Comprimido Sin-Comprimir Relac  Verif   Nombre-Fichero"
+
+#: src/xz/list.c:717
+#, c-format
+msgid "  Streams:            %s\n"
+msgstr "  Flujos:               %s\n"
+
+#: src/xz/list.c:719
+#, c-format
+msgid "  Blocks:             %s\n"
+msgstr "  Bloques:              %s\n"
+
+#: src/xz/list.c:721
+#, c-format
+msgid "  Compressed size:    %s\n"
+msgstr "  Tamaño comprimido:    %s\n"
+
+#: src/xz/list.c:724
+#, c-format
+msgid "  Uncompressed size:  %s\n"
+msgstr "  Tamaño sin comprimir: %s\n"
+
+#: src/xz/list.c:727
+#, c-format
+msgid "  Ratio:              %s\n"
+msgstr "  Relación:             %s\n"
+
+#: src/xz/list.c:729
+#, c-format
+msgid "  Check:              %s\n"
+msgstr "  Verificación:         %s\n"
+
+#: src/xz/list.c:730
+#, c-format
+msgid "  Stream padding:     %s\n"
+msgstr "  Relleno de flujo:     %s\n"
+
+#. TRANSLATORS: The second line is column headings. All except
+#. Check are right aligned; Check is left aligned. Test with
+#. "xz -lv foo.xz".
+#: src/xz/list.c:758
+msgid ""
+"  Streams:\n"
+"    Stream    Blocks      CompOffset    UncompOffset        CompSize      UncompSize  Ratio  Check      Padding"
+msgstr ""
+"  Flujos:\n"
+"     Flujo   Bloques       DesplComp     DesplUncomp         TamComp      TamDescomp  Razon  Verif      Relleno"
+
+#. TRANSLATORS: The second line is column headings. All
+#. except Check are right aligned; Check is left aligned.
+#: src/xz/list.c:813
+#, c-format
+msgid ""
+"  Blocks:\n"
+"    Stream     Block      CompOffset    UncompOffset       TotalSize      UncompSize  Ratio  Check"
+msgstr ""
+"  Bloques:\n"
+"     Flujo    Bloque       DesplComp     DesplUncomp        TamTotal      TamDescomp  Razon  Verif"
+
+#. TRANSLATORS: These are additional column headings
+#. for the most verbose listing mode. CheckVal
+#. (Check value), Flags, and Filters are left aligned.
+#. Header (Block Header Size), CompSize, and MemUsage
+#. are right aligned. %*s is replaced with 0-120
+#. spaces to make the CheckVal column wide enough.
+#. Test with "xz -lvv foo.xz".
+#: src/xz/list.c:825
+#, c-format
+msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
+msgstr "      VerifVal %*s Cabece  Opciones      TamComp      UsoMem  Filtros"
+
+#: src/xz/list.c:903 src/xz/list.c:1078
+#, c-format
+msgid "  Memory needed:      %s MiB\n"
+msgstr "  Memoria requerida:    %s MiB\n"
+
+#: src/xz/list.c:905 src/xz/list.c:1080
+#, c-format
+msgid "  Sizes in headers:   %s\n"
+msgstr "  Tamaños en cabeceras: %s\n"
+
+#: src/xz/list.c:906 src/xz/list.c:1081
+msgid "Yes"
+msgstr "Sí"
+
+#: src/xz/list.c:906 src/xz/list.c:1081
+msgid "No"
+msgstr "No"
+
+#: src/xz/list.c:907 src/xz/list.c:1082
+#, c-format
+msgid "  Minimum XZ Utils version: %s\n"
+msgstr "  Versión de herramientas XZ mínima: %s\n"
+
+#. TRANSLATORS: %s is an integer. Only the plural form of this
+#. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
+#: src/xz/list.c:1057
+#, c-format
+msgid "%s file\n"
+msgid_plural "%s files\n"
+msgstr[0] "%s fichero\n"
+msgstr[1] "%s ficheros\n"
+
+#: src/xz/list.c:1070
+msgid "Totals:"
+msgstr "Totales:"
+
+#: src/xz/list.c:1071
+#, c-format
+msgid "  Number of files:    %s\n"
+msgstr "  Número de ficheros:   %s\n"
+
+#: src/xz/list.c:1146
+msgid "--list works only on .xz files (--format=xz or --format=auto)"
+msgstr "--list solo funciona con ficheros .xz (--format=xz o --format=auto)"
+
+#: src/xz/list.c:1152
+msgid "--list does not support reading from standard input"
+msgstr "--list no admite leer de la entrada estándar"
+
+#: src/xz/main.c:89
+#, c-format
+msgid "%s: Error reading filenames: %s"
+msgstr "%s: Error al leer nombres de fichero: %s"
+
+#: src/xz/main.c:96
+#, c-format
+msgid "%s: Unexpected end of input when reading filenames"
+msgstr "%s: Fin de entrada inesperada al leer nombres de fichero"
+
+#: src/xz/main.c:120
+#, c-format
+msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
+msgstr "%s: Se encontraron caracteres nulos al leer nombres de ficheros. ¿Tal vez quería usar `--files0' en lugar de `--files'?"
+
+#: src/xz/main.c:174
+msgid "Compression and decompression with --robot are not supported yet."
+msgstr "Aún no se admite la compresión y descompresión con --robot."
+
+#: src/xz/main.c:252
+msgid "Cannot read data from standard input when reading filenames from standard input"
+msgstr "No se pueden leer datos de la entrada estándar cuando se leen nombres de fichero de la entrada estándar"
+
+#. TRANSLATORS: This is the program name in the beginning
+#. of the line in messages. Usually it becomes "xz: ".
+#. This is a translatable string because French needs
+#. a space before a colon.
+#: src/xz/message.c:728
+#, c-format
+msgid "%s: "
+msgstr "%s: "
+
+#: src/xz/message.c:791 src/xz/message.c:841
+msgid "Internal error (bug)"
+msgstr "Error interno (bug)"
+
+#: src/xz/message.c:798
+msgid "Cannot establish signal handlers"
+msgstr "No se pueden establecer los manejadores de señales"
+
+#: src/xz/message.c:807
+msgid "No integrity check; not verifying file integrity"
+msgstr "No hay revisión de integridad; no se verifica la integridad del fichero"
+
+#: src/xz/message.c:810
+msgid "Unsupported type of integrity check; not verifying file integrity"
+msgstr "No se admite el tipo de revisión de integridad; no se verifica la integridad del fichero"
+
+#: src/xz/message.c:817
+msgid "Memory usage limit reached"
+msgstr "Se alcanzó el límite de uso de memoria"
+
+#: src/xz/message.c:820
+msgid "File format not recognized"
+msgstr "No se reconoce el formato del fichero"
+
+#: src/xz/message.c:823
+msgid "Unsupported options"
+msgstr "Opciones sin soporte"
+
+#: src/xz/message.c:826
+msgid "Compressed data is corrupt"
+msgstr "Los datos comprimidos están corruptos"
+
+#: src/xz/message.c:829
+msgid "Unexpected end of input"
+msgstr "Fin de entrada inesperado"
+
+#: src/xz/message.c:862
+#, c-format
+msgid "%s MiB of memory is required. The limiter is disabled."
+msgstr "Se requieren %s MiB de memoria. Se desactiva el limitador."
+
+#: src/xz/message.c:890
+#, c-format
+msgid "%s MiB of memory is required. The limit is %s."
+msgstr "Se requieren %s MiB de memoria. El límite es %s."
+
+#: src/xz/message.c:1057
+#, c-format
+msgid "%s: Filter chain: %s\n"
+msgstr "%s: Cadena de filtro: %s\n"
+
+#: src/xz/message.c:1067
+#, c-format
+msgid "Try `%s --help' for more information."
+msgstr "Intente `%s --help' para obtener más información."
+
+#: src/xz/message.c:1093
+#, c-format
+msgid ""
+"Usage: %s [OPTION]... [FILE]...\n"
+"Compress or decompress FILEs in the .xz format.\n"
+"\n"
+msgstr ""
+"Modo de empleo: %s [OPCIÓN]... [FICHERO]...\n"
+"Comprime o descomprime FICHEROs en el formato .xz.\n"
+"\n"
+
+#: src/xz/message.c:1100
+msgid "Mandatory arguments to long options are mandatory for short options too.\n"
+msgstr ""
+"Los argumentos obligatorios para las opciones largar también son\n"
+"obligatorios para las opciones cortas.\n"
+
+#: src/xz/message.c:1104
+msgid " Operation mode:\n"
+msgstr " Modo de operación:\n"
+
+#: src/xz/message.c:1107
+msgid ""
+"  -z, --compress      force compression\n"
+"  -d, --decompress    force decompression\n"
+"  -t, --test          test compressed file integrity\n"
+"  -l, --list          list information about .xz files"
+msgstr ""
+"  -z, --compress      fuerza la compresión\n"
+"  -d, --decompress    fuerza la descompresión\n"
+"  -t, --test          prueba la integridad del fichero comprimido\n"
+"  -l, --list          lista la información sobre los ficheros .xz"
+
+#: src/xz/message.c:1113
+msgid ""
+"\n"
+" Operation modifiers:\n"
+msgstr ""
+"\n"
+" Modificadores de operación:\n"
+
+#: src/xz/message.c:1116
+msgid ""
+"  -k, --keep          keep (don't delete) input files\n"
+"  -f, --force         force overwrite of output file and (de)compress links\n"
+"  -c, --stdout        write to standard output and don't delete input files"
+msgstr ""
+"  -k, --keep          conserva (no borra) los ficheros de entrada\n"
+"  -f, --force         fuerza la sobreescritura del fichero de salida y\n"
+"                      (des)comprime enlaces\n"
+"  -c, --stdout        escribe a la entrada estándar y no borra los ficheros\n"
+"                      de entrada"
+
+#: src/xz/message.c:1122
+msgid ""
+"      --single-stream decompress only the first stream, and silently\n"
+"                      ignore possible remaining input data"
+msgstr ""
+"      --single-stream solo descomprime el primer flujo, y descarta\n"
+"                      silenciosamente los posibles datos de entrada restantes"
+
+#: src/xz/message.c:1125
+msgid ""
+"      --no-sparse     do not create sparse files when decompressing\n"
+"  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
+"      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
+"                      omitted, filenames are read from the standard input;\n"
+"                      filenames must be terminated with the newline character\n"
+"      --files0[=FILE] like --files but use the null character as terminator"
+msgstr ""
+"      --no-sparse     no crea archivos dispersos durante la descompresión\n"
+"  -S, --suffix=.SUF   usa el sufijo `.SUF' en los ficheros comprimidos\n"
+"      --files[=FICH]  lee los nombres de ficheros a procesar de FICHero;\n"
+"                      si se omite el FICHero, los nombres de fichero se leen\n"
+"                      de la entrada estándar; los nombres de fichero deben\n"
+"                      terminar con el carácter de línea nueva\n"
+"      --files0[=FICH] como --files pero usa el carácter nulo como terminador"
+
+#: src/xz/message.c:1134
+msgid ""
+"\n"
+" Basic file format and compression options:\n"
+msgstr ""
+"\n"
+" Opciones básicas de compresión y formato de fichero:\n"
+
+#: src/xz/message.c:1136
+msgid ""
+"  -F, --format=FMT    file format to encode or decode; possible values are\n"
+"                      `auto' (default), `xz', `lzma', and `raw'\n"
+"  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
+"                      `crc32', `crc64' (default), or `sha256'"
+msgstr ""
+"  -F, --format=FMT    formato de fichero para codificar o decodificar; los\n"
+"                      valores posibles son\n"
+"                      `auto' (por defecto), `xz', `lzma', y `raw'\n"
+"  -C, --check=VERIF   tipo de verificación de integridad:\n"
+"                      `none' (usar con precaución),\n"
+"                      `crc32', `crc64' (por defecto), o `sha256'"
+
+#: src/xz/message.c:1141
+msgid "      --ignore-check  don't verify the integrity check when decompressing"
+msgstr "      --ignore-check  no hace la verificación de integridad al descomprimir"
+
+#: src/xz/message.c:1145
+msgid ""
+"  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
+"                      decompressor memory usage into account before using 7-9!"
+msgstr ""
+"  -0 ... -9           valor predefinido de compresión; por defecto es 6.\n"
+"                      ¡Considere el uso de memoria del compresor *y*\n"
+"                      del descompresor antes de usar 7-9!"
+
+#: src/xz/message.c:1149
+msgid ""
+"  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
+"                      does not affect decompressor memory requirements"
+msgstr ""
+"  -e, --extreme       trata de mejorar la razón de compresión usando más\n"
+"                      tiempo de procesamiento; no afecta los requisitos\n"
+"                      de memoria del descompresor"
+
+#: src/xz/message.c:1153
+msgid ""
+"  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
+"                      to use as many threads as there are processor cores"
+msgstr ""
+"  -T, --threads=NÚM   usa como máximo NÚM hilos; por defecto es 1;\n"
+"                      establezca a 0 para usar tantos hilos como hayan\n"
+"                      núcleos de procesador"
+
+#: src/xz/message.c:1158
+msgid ""
+"      --block-size=SIZE\n"
+"                      start a new .xz block after every SIZE bytes of input;\n"
+"                      use this to set the block size for threaded compression"
+msgstr ""
+"      --block-size=TAMAÑO\n"
+"                      inicia un nuevo bloque .xz después de cada TAMAÑO bytes\n"
+"                      de entrada; use esta opción para establecer el tamaño\n"
+"                      de bloque para la compresión con hilos"
+
+#: src/xz/message.c:1162
+msgid ""
+"      --block-list=SIZES\n"
+"                      start a new .xz block after the given comma-separated\n"
+"                      intervals of uncompressed data"
+msgstr ""
+"      --block-list=TAMAÑOS\n"
+"                      inicia un nuevo bloque .xz después de cada intervalo\n"
+"                      dado, separado por comas, de datos sin comprimir"
+
+#: src/xz/message.c:1166
+msgid ""
+"      --flush-timeout=TIMEOUT\n"
+"                      when compressing, if more than TIMEOUT milliseconds has\n"
+"                      passed since the previous flush and reading more input\n"
+"                      would block, all pending data is flushed out"
+msgstr ""
+"      --flush-timeout=TIEMPO\n"
+"                      al comprimir, si pasaron más de TIEMPO milisegundos\n"
+"                      desde el últim descarte y la lectura de más entrada\n"
+"                      produciría un bloqueo, todos los datos pendientes son\n"
+"                      descartados"
+
+#: src/xz/message.c:1172
+#, no-c-format
+msgid ""
+"      --memlimit-compress=LIMIT\n"
+"      --memlimit-decompress=LIMIT\n"
+"  -M, --memlimit=LIMIT\n"
+"                      set memory usage limit for compression, decompression,\n"
+"                      or both; LIMIT is in bytes, % of RAM, or 0 for defaults"
+msgstr ""
+"      --memlimit-compress=LÍMITE\n"
+"      --memlimit-decompress=LÍMITE\n"
+"  -M, --memlimit=LÍMITE\n"
+"                      define el límite de uso de memoria para compresión,\n"
+"                      descompresión o ambos; el LÍMITE está en bytes, % de RAM\n"
+"                      0 para valores por defecto"
+
+#: src/xz/message.c:1179
+msgid ""
+"      --no-adjust     if compression settings exceed the memory usage limit,\n"
+"                      give an error instead of adjusting the settings downwards"
+msgstr ""
+"      --no-adjust     si la configuración de compresión excede el límite de\n"
+"                      uso de memoria, muestra un error en lugar de ajustar\n"
+"                      los valores hacia abajo"
+
+#: src/xz/message.c:1185
+msgid ""
+"\n"
+" Custom filter chain for compression (alternative for using presets):"
+msgstr ""
+"\n"
+" Cadena de filtros para compresión (alternativa a valores predefinidos):"
+
+#: src/xz/message.c:1194
+msgid ""
+"\n"
+"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
+"  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
+"                        preset=PRE reset options to a preset (0-9[e])\n"
+"                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
+"                        lc=NUM     number of literal context bits (0-4; 3)\n"
+"                        lp=NUM     number of literal position bits (0-4; 0)\n"
+"                        pb=NUM     number of position bits (0-4; 2)\n"
+"                        mode=MODE  compression mode (fast, normal; normal)\n"
+"                        nice=NUM   nice length of a match (2-273; 64)\n"
+"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
+"                        depth=NUM  maximum search depth; 0=automatic (default)"
+msgstr ""
+"\n"
+"  --lzma1[=OPCIONES]  LZMA1 o LZMA2; OPCIONES es una lista separada por comas\n"
+"  --lzma2[=OPCIONES]  de cero o más opciones (valores válidos; por defecto)\n"
+"                        preset=PRE inicia opciones con un valor predefinido\n"
+"                                     (0-9[e])\n"
+"                        dict=NÚM   tamaño de diccionario (4KiB - 1536MiB; 8MiB)\n"
+"                        lc=NÚM     número de bits de contexto literal (0-4; 3)\n"
+"                        lp=NÚM     número de bits de posición literal (0-4; 0)\n"
+"                        pb=NÚM     número de bits de posición (0-4; 2)\n"
+"                        mode=MODO  modo de compresión (fast, normal; normal)\n"
+"                        nice=NÚM   longitud para una coincidencia (2-273; 64)\n"
+"                        mf=NOMBRE  buscador de coincidencias\n"
+"                                     (hc3, hc4, bt2, bt3, bt4; bt4)\n"
+"                        depth=NÚM  profundidad máxima de búsqueda;\n"
+"                                      0=automática (por defecto)"
+
+#: src/xz/message.c:1209
+msgid ""
+"\n"
+"  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
+"  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
+"  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
+"  --arm[=OPTS]        ARM BCJ filter (little endian only)\n"
+"  --armthumb[=OPTS]   ARM-Thumb BCJ filter (little endian only)\n"
+"  --sparc[=OPTS]      SPARC BCJ filter\n"
+"                      Valid OPTS for all BCJ filters:\n"
+"                        start=NUM  start offset for conversions (default=0)"
+msgstr ""
+"\n"
+"  --x86[=OPCIONES]      filtro BCJ para x86 BCJ (32-bit y 64-bit)\n"
+"  --powerpc[=OPCIONES]  filtro BCJ para PowerPC BCJ (solo big endian)\n"
+"  --ia64[=OPCIONES]     filtro BCJ para IA-64 (Itanium)\n"
+"  --arm[=OPCIONES]      filtro BCJ para ARM (solo little endian)\n"
+"  --armthumb[=OPCIONES] filtro BCJ para ARM-Thumb (solo little endian)\n"
+"  --sparc[=OPCIONES]    filtro BCJ para SPARC\n"
+"                        OPCIONES válidas para todos los filtros BCJ:\n"
+"                          start=NÚM  inicio de desplazamiento para\n"
+"                          conversiones (por defecto=0)"
+
+#: src/xz/message.c:1221
+msgid ""
+"\n"
+"  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
+"                        dist=NUM   distance between bytes being subtracted\n"
+"                                   from each other (1-256; 1)"
+msgstr ""
+"\n"
+"  --delta[=OPCIONES]    Filtro delta; OPCIONES (valores válidos; por defecto):\n"
+"                          dist=NÚM   distancia entre bytes que se restan\n"
+"                                     uno del otro (1-256; 1)"
+
+#: src/xz/message.c:1229
+msgid ""
+"\n"
+" Other options:\n"
+msgstr ""
+"\n"
+" Otras opciones:\n"
+
+#: src/xz/message.c:1232
+msgid ""
+"  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
+"  -v, --verbose       be verbose; specify twice for even more verbose"
+msgstr ""
+"  -q, --quiet         suprime avisos; use dos veces para suprimir errores\n"
+"  -v, --verbose       detallado; use dos veces para obtener aún más detalle"
+
+#: src/xz/message.c:1237
+msgid "  -Q, --no-warn       make warnings not affect the exit status"
+msgstr "  -Q, --no-warn       los avisos no afectan el estado de la salida"
+
+#: src/xz/message.c:1239
+msgid "      --robot         use machine-parsable messages (useful for scripts)"
+msgstr "      --robot         usa mensajes analizables por máquina (útil para scripts)"
+
+#: src/xz/message.c:1242
+msgid ""
+"      --info-memory   display the total amount of RAM and the currently active\n"
+"                      memory usage limits, and exit"
+msgstr ""
+"      --info-memory   muestra la cantidad total de RAM y los límites de uso\n"
+"                      de memoria activos, y termina"
+
+#: src/xz/message.c:1245
+msgid ""
+"  -h, --help          display the short help (lists only the basic options)\n"
+"  -H, --long-help     display this long help and exit"
+msgstr ""
+"  -h, --help          muestra la ayuda corta (solo muestra las opciones básicas)\n"
+"  -H, --long-help     muestra esta ayuda detallada y termina"
+
+#: src/xz/message.c:1249
+msgid ""
+"  -h, --help          display this short help and exit\n"
+"  -H, --long-help     display the long help (lists also the advanced options)"
+msgstr ""
+"  -h, --help          muestra esta ayuda corta y termina\n"
+"  -H, --long-help     muestra la ayuda larga (además muestra opciones avanzadas)"
+
+#: src/xz/message.c:1254
+msgid "  -V, --version       display the version number and exit"
+msgstr "  -V, --version       muestra el número de versión y termina"
+
+#: src/xz/message.c:1256
+msgid ""
+"\n"
+"With no FILE, or when FILE is -, read standard input.\n"
+msgstr ""
+"\n"
+"Sin FICHEROs, o cuando el FICHERO es -, lee la entrada estándar.\n"
+
+#. TRANSLATORS: This message indicates the bug reporting address
+#. for this package. Please add _another line_ saying
+#. "Report translation bugs to <...>\n" with the email or WWW
+#. address for translation bugs. Thanks.
+#: src/xz/message.c:1262
+#, c-format
+msgid "Report bugs to <%s> (in English or Finnish).\n"
+msgstr ""
+"Reporte errores a <%s> (en inglés o finlandés).\n"
+"Reporte errores de traducción al español a <es@tp.org.es>.\n"
+
+#: src/xz/message.c:1264
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "Sitio web de %s: <%s>\n"
+
+#: src/xz/message.c:1268
+msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
+msgstr "ESTA ES UNA VERSIÓN EN DESARROLLO Y NO ESTÁ LISTA PARA USO EN PRODUCCIÓN."
+
+#: src/xz/options.c:86
+#, c-format
+msgid "%s: Options must be `name=value' pairs separated with commas"
+msgstr "%s: Las opciones deben ser pares `nombre=valor' separadas por comas"
+
+#: src/xz/options.c:93
+#, c-format
+msgid "%s: Invalid option name"
+msgstr "%s: Nombre de opción inválido"
+
+#: src/xz/options.c:113
+#, c-format
+msgid "%s: Invalid option value"
+msgstr "%s: Valor de opción inválido"
+
+#: src/xz/options.c:247
+#, c-format
+msgid "Unsupported LZMA1/LZMA2 preset: %s"
+msgstr "No se admite el valor predefinido LZMA1/LZMA2: %s"
+
+#: src/xz/options.c:355
+msgid "The sum of lc and lp must not exceed 4"
+msgstr "La suma de lc y lp no debe exceder 4"
+
+#: src/xz/options.c:359
+#, c-format
+msgid "The selected match finder requires at least nice=%<PRIu32>"
+msgstr "El buscador de coincidencias seleccionado requiere por lo menos nice=%<PRIu32>"
+
+#: src/xz/suffix.c:133 src/xz/suffix.c:258
+#, c-format
+msgid "%s: With --format=raw, --suffix=.SUF is required unless writing to stdout"
+msgstr "%s: Con --format=raw, se requiere --suffix=.SUF a menos que se escriba a la salida estándar"
+
+#: src/xz/suffix.c:164
+#, c-format
+msgid "%s: Filename has an unknown suffix, skipping"
+msgstr "%s: El nombre de fichero tiene un sufijo desconocido, se salta"
+
+#: src/xz/suffix.c:185
+#, c-format
+msgid "%s: File already has `%s' suffix, skipping"
+msgstr "%s: El fichero ya tiene un sufijo `%s', se salta"
+
+#: src/xz/suffix.c:393
+#, c-format
+msgid "%s: Invalid filename suffix"
+msgstr "%s: Sufijo de nombre de fichero inválido"
+
+#: src/xz/util.c:71
+#, c-format
+msgid "%s: Value is not a non-negative decimal integer"
+msgstr "%s: El valor no es un entero decimal no-negativo"
+
+#: src/xz/util.c:113
+#, c-format
+msgid "%s: Invalid multiplier suffix"
+msgstr "%s: Sufijo multiplicador inválido"
+
+#: src/xz/util.c:115
+msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
+msgstr "Los sufijos válidos son `KiB' (2^10), `MiB' (2^20), y `GiB' (2^30)."
+
+#: src/xz/util.c:132
+#, c-format
+msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+msgstr "El valor de la opción `%s' debe estar en el rango [%<PRIu64>, %<PRIu64>]"
+
+#: src/xz/util.c:267
+msgid "Empty filename, skipping"
+msgstr "Nombre de fichero vacío, se salta"
+
+#: src/xz/util.c:281
+msgid "Compressed data cannot be read from a terminal"
+msgstr "No se pueden leer datos comprimidos de una terminal"
+
+#: src/xz/util.c:294
+msgid "Compressed data cannot be written to a terminal"
+msgstr "No se pueden escribir datos comprimidos a una terminal"
+
+#: src/common/tuklib_exit.c:40
+msgid "Writing to standard output failed"
+msgstr "Falló la escritura a la salida estándar"
+
+#: src/common/tuklib_exit.c:43
+msgid "Unknown error"
+msgstr "Error desconocido"
+
+#~ msgid "Sandbox is disabled due to incompatible command line arguments"
+#~ msgstr "Se desactiva el arenero debido a argumentos incompatibles en la línea de órdenes"
+
+#~ msgid "Sandbox was successfully enabled"
+#~ msgstr "Se activó el arenero con éxito"

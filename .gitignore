@@ -5,6 +5,8 @@
 
 .deps
 .libs
+*.gcda
+*.gcno
 *.la
 *.lo
 *.o
@@ -31,6 +33,8 @@ build-aux/install-sh
 build-aux/ltmain.sh
 build-aux/missing
 build-aux/test-driver
+
+coverage
 
 /src/liblzma/liblzma.pc
 /src/lzmainfo/lzmainfo

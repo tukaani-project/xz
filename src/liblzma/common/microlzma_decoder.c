@@ -108,7 +108,7 @@ microlzma_decode(void *coder_ptr, const lzma_allocator *allocator,
 		// Use a hack to set the uncompressed size.
 		if (coder->uncomp_size_is_exact)
 			lzma_lz_decoder_uncompressed(coder->lzma.coder,
-					coder->uncomp_size);
+					coder->uncomp_size, false);
 
 		// Pass one dummy 0x00 byte to the LZMA decoder since that
 		// is what it expects the first byte to be.

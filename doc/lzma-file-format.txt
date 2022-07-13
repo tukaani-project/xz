@@ -40,7 +40,11 @@ The .lzma File Format
 
 0.2. Changes
 
-        Last modified: 2011-04-12 11:55+0300
+        Last modified: 2022-07-13 21:00+0300
+
+        Compared to the previous version (2011-04-12 11:55+0300)
+        the section 1.1.3 was modified to allow End of Payload Marker
+        with a known Uncompressed Size.
 
 
 1. File Format
@@ -129,7 +133,10 @@ The .lzma File Format
         Uncompressed Size is stored as unsigned 64-bit little endian
         integer. A special value of 0xFFFF_FFFF_FFFF_FFFF indicates
         that Uncompressed Size is unknown. End of Payload Marker (*)
-        is used if and only if Uncompressed Size is unknown.
+        is used if Uncompressed Size is unknown. End of Payload Marker
+        is allowed but rarely used if Uncompressed Size is known.
+        XZ Utils 5.2.5 and older don't support .lzma files that have
+        End of Payload Marker together with a known Uncompressed Size.
 
         XZ Utils rejects files whose Uncompressed Size field specifies
         a known size that is 256 GiB or more. This is to reject false

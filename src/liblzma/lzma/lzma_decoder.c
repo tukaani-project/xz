@@ -348,9 +348,14 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 
 	lzma_ret ret = LZMA_OK;
 
+	// This is true when the next LZMA symbol is allowed to be EOPM.
+	// That is, if this is false, then EOPM is considered
+	// an invalid symbol and we will return LZMA_DATA_ERROR.
+	//
 	// EOPM is always required (not just allowed) when
-	// the uncompressed size isn't known.
-	bool eopm_allowed = coder->uncompressed_size == LZMA_VLI_UNKNOWN;
+	// the uncompressed size isn't known. When uncompressed size
+	// is known, eopm_is_valid may be set to true later.
+	bool eopm_is_valid = coder->uncompressed_size == LZMA_VLI_UNKNOWN;
 
 	// If uncompressed size is known and there is enough output space
 	// to decode all the data, limit the available buffer space so that
@@ -397,7 +402,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 
 			// Otherwise continue decoding with the expectation
 			// that the next LZMA symbol is EOPM.
-			eopm_allowed = true;
+			eopm_is_valid = true;
 		}
 
 		rc_if_0(coder->is_match[state][pos_state], SEQ_IS_MATCH) {
@@ -705,7 +710,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 						//     that EOPM might be used
 						//     (it's not allowed in
 						//     LZMA2).
-						if (!eopm_allowed) {
+						if (!eopm_is_valid) {
 							ret = LZMA_DATA_ERROR;
 							goto out;
 						}

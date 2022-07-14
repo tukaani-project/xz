@@ -53,5 +53,25 @@ do
 	fi
 done
 
+for I in "$srcdir"/files/good-*.lzma
+do
+	if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then
+		:
+	else
+		echo "Good file failed: $I"
+		(exit 1)
+		exit 1
+	fi
+done
+
+for I in "$srcdir"/files/bad-*.lzma
+do
+	if test -n "$XZ" && "$XZ" -dc "$I" > /dev/null 2>&1; then
+		echo "Bad file succeeded: $I"
+		(exit 1)
+		exit 1
+	fi
+done
+
 (exit 0)
 exit 0

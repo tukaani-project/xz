@@ -63,13 +63,28 @@ while test $# -ne 0; do
   optarg=
 
   case $option in
-  (-[0123456789abcdhHiIKLlnoqrRsTuUvVwxyzZ]?*)
+  (-[0123456789abcdEFGhHiIKlLnoPqrRsTuUvVwxyzZ]*[!0123456789]*)
+    # Something like -Fiv was specified, that is, $option contains more
+    # than one option of which the first option (in this example -F)
+    # doesn't take an argument. Split the first option into a standalone
+    # argument and continue parsing the rest of the options (in this example,
+    # replace -Fiv with -iv in the argument list and set option=-F).
+    #
+    # If there are digits [0-9] they are treated as if they were a single
+    # option character because this syntax is an alias for -C for GNU grep.
+    # For example, "grep -25F" is equivalent to "grep -C25 -F". If only
+    # digits are specified like "grep -25" we don't get here because the
+    # above pattern in the case-statement doesn't match such strings.
     arg2=-\'$(expr "X${option}X" : 'X-.[0-9]*\(.*\)' | sed "$escape")
     eval "set -- $arg2 "'${1+"$@"}'
     option=$(expr "X$option" : 'X\(-.[0-9]*\)');;
   (--binary-*=* | --[lm]a*=* | --reg*=*)
+    # These options require an argument and an argument has been provided
+    # with the --foo=argument syntax. All is good.
     ;;
-  (-[ABCDefm] | --binary-* | --file | --[lm]a* | --reg*)
+  (-[ABCDefmX] | --binary-* | --file | --[lm]a* | --reg*)
+    # These options require an argument which should now be in $1.
+    # If it isn't, display an error and exit.
     case ${1?"$option option requires an argument"} in
     (*\'*)
       optarg=" '"$(printf '%sX\n' "$1" | sed "$escape");;

@@ -75,9 +75,10 @@ while test $# -ne 0; do
     # For example, "grep -25F" is equivalent to "grep -C25 -F". If only
     # digits are specified like "grep -25" we don't get here because the
     # above pattern in the case-statement doesn't match such strings.
-    arg2=-\'$(expr "X${option}X" : 'X-.[0-9]*\(.*\)' | sed "$escape")
+    arg2=-\'$(LC_ALL=C expr "X${option}X" : 'X-.[0-9]*\(.*\)' |
+                LC_ALL=C sed "$escape")
     eval "set -- $arg2 "'${1+"$@"}'
-    option=$(expr "X$option" : 'X\(-.[0-9]*\)');;
+    option=$(LC_ALL=C expr "X$option" : 'X\(-.[0-9]*\)');;
   (--binary-*=* | --[lm]a*=* | --reg*=*)
     # These options require an argument and an argument has been provided
     # with the --foo=argument syntax. All is good.
@@ -87,7 +88,7 @@ while test $# -ne 0; do
     # If it isn't, display an error and exit.
     case ${1?"$option option requires an argument"} in
     (*\'*)
-      optarg=" '"$(printf '%sX\n' "$1" | sed "$escape");;
+      optarg=" '"$(printf '%sX\n' "$1" | LC_ALL=C sed "$escape");;
     (*)
       optarg=" '$1'";;
     esac
@@ -99,7 +100,8 @@ while test $# -ne 0; do
   (*)
     case $option in
     (*\'*)
-      operands="$operands '"$(printf '%sX\n' "$option" | sed "$escape");;
+      operands="$operands '"$(printf '%sX\n' "$option" |
+                                LC_ALL=C sed "$escape");;
     (*)
       operands="$operands '$option'";;
     esac
@@ -136,7 +138,7 @@ while test $# -ne 0; do
 
   case $option in
   (*\'?*)
-    option=\'$(expr "X${option}X" : 'X\(.*\)' | sed "$escape");;
+    option=\'$(printf '%sX\n' "$option" | LC_ALL=C sed "$escape");;
   (*)
     option="'$option'";;
   esac
@@ -153,7 +155,7 @@ eval "set -- $operands "'${1+"$@"}'
 if test $have_pat -eq 0; then
   case ${1?"Missing pattern; try \`${0##*/} --help' for help"} in
   (*\'*)
-    grep="$grep -- '"$(printf '%sX\n' "$1" | sed "$escape");;
+    grep="$grep -- '"$(printf '%sX\n' "$1" | LC_ALL=C sed "$escape");;
   (*)
     grep="$grep -- '$1'";;
   esac

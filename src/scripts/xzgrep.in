@@ -57,6 +57,13 @@ files_without_matches=0
 no_filename=0
 with_filename=0
 
+# See if -H and --label options are supported (GNU and *BSDs).
+if test f:x = "$(eval "echo x | $grep -H --label=f x 2> /dev/null")"; then
+  grep_supports_label=1
+else
+  grep_supports_label=0
+fi
+
 while test $# -ne 0; do
   option=$1
   shift
@@ -192,6 +199,20 @@ for i; do
     elif test $with_filename -eq 0 &&
          { test $# -eq 1 || test $no_filename -eq 1; }; then
       eval "$grep"
+    elif test $grep_supports_label -eq 1; then
+      # The grep implementation in use allows us to specify the filename
+      # that grep will prefix to the output lines. This is faster and
+      # less prone to security bugs than the fallback method that uses sed.
+      # This also avoids confusing output with GNU grep >= 3.5 (2020-09-27)
+      # which prints "binary file matches" to stderr instead of stdout.
+      #
+      # If reading from stdin, let grep use whatever name it prefers for
+      # stdin. With GNU grep it's a locale-specific translated string.
+      if test "x$i" = "x-"; then
+        eval "$grep -H"
+      else
+        eval "$grep -H --label \"\$i\""
+      fi
     else
       # Append a colon so that the last character will never be a newline
       # which would otherwise get lost in shell command substitution.

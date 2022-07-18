@@ -146,18 +146,14 @@ while test $# -ne 0; do
   grep="$grep $option$optarg"
 done
 
-if test $files_with_matches -eq 1 || test $files_without_matches -eq 1; then
-  grep="$grep -q"
-fi
-
 eval "set -- $operands "'${1+"$@"}'
 
 if test $have_pat -eq 0; then
   case ${1?"Missing pattern; try \`${0##*/} --help' for help"} in
   (*\'*)
-    grep="$grep -- '"$(printf '%sX\n' "$1" | LC_ALL=C sed "$escape");;
+    grep="$grep -e '"$(printf '%sX\n' "$1" | LC_ALL=C sed "$escape");;
   (*)
-    grep="$grep -- '$1'";;
+    grep="$grep -e '$1'";;
   esac
   shift
 fi
@@ -184,9 +180,9 @@ for i; do
     exec 5>&1
     ($uncompress -- "$i" 5>&-; echo $? >&5) 3>&- |
     if test $files_with_matches -eq 1; then
-      eval "$grep" && { printf '%s\n' "$i" || exit 2; }
+      eval "$grep -q" && { printf '%s\n' "$i" || exit 2; }
     elif test $files_without_matches -eq 1; then
-      eval "$grep" || {
+      eval "$grep -q" || {
         r=$?
         if test $r -eq 1; then
           printf '%s\n' "$i" || r=2

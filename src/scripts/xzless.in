@@ -33,8 +33,8 @@ Options are the same as for 'less'.
 Report bugs to <@PACKAGE_BUGREPORT@>."
 
 case $1 in
-	--help)    echo "$usage" || exit 2; exit;;
-	--version) echo "$version" || exit 2; exit;;
+	--help)    printf '%s\n' "$usage" || exit 2; exit;;
+	--version) printf '%s\n' "$version" || exit 2; exit;;
 esac
 
 if test "${LESSMETACHARS+set}" != set; then

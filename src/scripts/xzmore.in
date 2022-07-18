@@ -31,8 +31,8 @@ Like 'more', but operate on the uncompressed contents of xz compressed FILEs.
 Report bugs to <@PACKAGE_BUGREPORT@>."
 
 case $1 in
-	--help)    echo "$usage" || exit 2; exit;;
-	--version) echo "$version" || exit 2; exit;;
+	--help)    printf '%s\n' "$usage" || exit 2; exit;;
+	--version) printf '%s\n' "$version" || exit 2; exit;;
 esac
 
 oldtty=`stty -g 2>/dev/null`
@@ -50,7 +50,7 @@ fi
 
 if test $# = 0; then
 	if test -t 0; then
-		echo "$usage"; exit 1
+		printf '%s\n' "$usage"; exit 1
 	else
 		$xz -cdfq | eval "${PAGER:-more}"
 	fi
@@ -69,7 +69,7 @@ else
 			esac
 		fi
 		if test "$ANS" != 's'; then
-			echo "------> $FILE <------"
+			printf '%s\n' "------> $FILE <------"
 			$xz -cdfq -- "$FILE" | eval "${PAGER:-more}"
 		fi
 		if test -t 1; then

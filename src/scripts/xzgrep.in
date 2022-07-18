@@ -223,7 +223,10 @@ for i; do
       case $i in
       (*'
 '* | *'&'* | *'\'* | *'|'*)
-        i=$(printf '%s\n' "$i" | LC_ALL=C sed 's/[&\|]/\\&/g; $!s/$/\\/');;
+        # If sed fails, set i to a known safe string to ensure that
+        # failing sed didn't create a half-escaped dangerous string.
+        i=$(printf '%s\n' "$i" | LC_ALL=C sed 's/[&\|]/\\&/g; $!s/$/\\/') ||
+            i='(unknown filename):';;
       esac
 
       # $i already ends with a colon so don't add it here.

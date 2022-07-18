@@ -51,7 +51,7 @@ escape='
 while :; do
   case $1 in
     --h*) printf '%s\n' "$usage" || exit 2; exit;;
-    --v*) echo "$version" || exit 2; exit;;
+    --v*) printf '%s\n' "$version" || exit 2; exit;;
     --) shift; break;;
     -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
     -?*) cmp="$cmp '$1'";;
@@ -83,7 +83,7 @@ if test $# -eq 1; then
     *[-.]zst | *.tzst)
       xz1='zstd -q';;
     *)
-      echo >&2 "$0: $1: Unknown compressed file name suffix"
+      printf '%s\n' "$0: $1: Unknown compressed file name suffix" >&2
       exit 2;;
   esac
   case $1 in
@@ -193,7 +193,7 @@ elif test $# -eq 2; then
     esac;;
   esac
 else
-  echo >&2 "$0: Invalid number of operands; try \`${0##*/} --help' for help"
+  printf '%s\n' "$0: Invalid number of operands; try \`${0##*/} --help' for help" >&2
   exit 2
 fi
 

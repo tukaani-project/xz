@@ -116,7 +116,7 @@ while test $# -ne 0; do
   (-[ef]* | --file | --file=* | --reg*)
     have_pat=1;;
   (--h | --he | --hel | --help)
-    echo "$usage" || exit 2
+    printf '%s\n' "$usage" || exit 2
     exit;;
   (-H | --wi | --wit | --with | --with- | --with-f | --with-fi \
   | --with-fil | --with-file | --with-filen | --with-filena | --with-filenam \
@@ -132,7 +132,7 @@ while test $# -ne 0; do
   (-h | --no-f*)
     no_filename=1;;
   (-V | --v | --ve | --ver | --vers | --versi | --versio | --version)
-    echo "$version" || exit 2
+    printf '%s\n' "$version" || exit 2
     exit;;
   esac
 

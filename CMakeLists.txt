@@ -285,6 +285,7 @@ add_library(liblzma
     src/liblzma/common/stream_buffer_decoder.c
     src/liblzma/common/stream_buffer_encoder.c
     src/liblzma/common/stream_decoder.c
+    src/liblzma/common/stream_decoder_mt.c
     src/liblzma/common/stream_decoder.h
     src/liblzma/common/stream_encoder.c
     src/liblzma/common/stream_encoder_mt.c

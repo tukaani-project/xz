@@ -182,7 +182,9 @@ for i; do
     *[-.]zst | *[-.]tzst) uncompress="zstd -cdfq";; # zstd needs -q.
     *) uncompress="$xz -cdf";;
   esac
-  # Fail if xz or grep (or sed) fails.
+  # xz_status will hold the decompressor's exit status.
+  # Exit status of grep (and in rare cases, printf or sed) is
+  # available as the exit status of this assignment command.
   xz_status=$(
     exec 5>&1
     ($uncompress -- "$i" 5>&-; echo $? >&5) 3>&- |
@@ -232,33 +234,65 @@ for i; do
       # $i already ends with a colon so don't add it here.
       sed_script="s|^|$i|"
 
-      # Fail if grep or sed fails.
+      # If grep or sed fails, pick the larger value of the two exit statuses.
+      # If sed fails, use at least 2 since we use >= 2 to indicate errors.
       r=$(
         exec 4>&1
         (eval "$grep" 4>&-; echo $? >&4) 3>&- |
             LC_ALL=C sed "$sed_script" >&3 4>&-
-      ) || r=2
+      ) || {
+        sed_status=$?
+        test "$sed_status" -lt 2 && sed_status=2
+        test "$r" -lt "$sed_status" && r=$sed_status
+      }
       exit $r
     fi >&3 5>&-
   )
   r=$?
 
-  # fail occurred previously, nothing worse can happen
-  test $res -gt 1 && continue
+  # If grep or sed or other non-decompression command failed with a signal,
+  # exit immediately and ignore the possible remaining files.
+  #
+  # NOTE: Instead of 128 + signal_number, some shells use
+  # 256 + signal_number (ksh) or 384 + signal_number (yash).
+  # This is fine for us since their "exit" and "kill -l" commands take
+  # this into account. (At least the versions I tried do but there is
+  # a report of an old ksh variant whose "exit" truncates the exit status
+  # to 8 bits without any special handling for values indicating a signal.)
+  test "$r" -ge 128 && exit "$r"
 
-  if test "$xz_status" -eq 0; then
-    :
-  elif test "$xz_status" -ge 128 \
-      && test "$(kill -l "$xz_status" 2> /dev/null)" = "PIPE"; then
-    :
-  else
-    r=2
+  if test -z "$xz_status"; then
+    # Something unusual happened, for example, we got a signal and
+    # the exit status of the decompressor was never echoed and thus
+    # $xz_status is empty. Exit immediately and ignore the possible
+    # remaining files.
+    exit 2
+  elif test "$xz_status" -ge 128; then
+    # The decompressor died due to a signal. SIGPIPE is ignored since it can
+    # occur if grep exits before the whole file has been decompressed (grep -q
+    # can do that). If the decompressor died with some other signal, exit
+    # immediately and ignore the possible remaining files.
+    test "$(kill -l "$xz_status" 2> /dev/null)" != "PIPE" && exit "$xz_status"
+  elif test "$xz_status" -gt 0; then
+    # Decompression failed but we will continue with the remaining
+    # files anwyway. Set exit status to at least 2 to indicate an error.
+    test "$r" -lt 2 && r=2
   fi
 
-  # still no match
-  test $r -eq 1 && continue
-
-  # 0 == match, >=2 == fail
-  res=$r
+  # Since res=1 is the initial value, we only need to care about
+  # matches (r == 0) and errors (r >= 2) here; r == 1 can be ignored.
+  if test "$r" -ge 2; then
+    # An error occurred in decompressor, grep, or some other command. Update
+    # res unless a larger error code has been seen with an earlier file.
+    test "$res" -lt "$r" && res=$r
+  elif test "$r" -eq 0; then
+    # grep found a match and no errors occurred. Update res if no errors have
+    # occurred with earlier files.
+    test "$res" -eq 1 && res=0
+  fi
 done
-exit $res
+
+# 0: At least one file matched and no errors occurred.
+# 1: No matches were found and no errors occurred.
+# >=2: Error. It's unknown if matches were found.
+exit "$res"

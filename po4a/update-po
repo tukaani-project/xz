@@ -41,5 +41,5 @@ set -x
 po4a --force --verbose \
 	--package-name="XZ Utils" \
 	--package-version="$PACKAGE_VERSION" \
-	--copyright-holder="This file is put in the public domain." \
+	--copyright-holder="[See the headers in the input files.]" \
 	po4a.conf

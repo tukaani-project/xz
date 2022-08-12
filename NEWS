@@ -99,6 +99,127 @@ XZ Utils Release Notes
       (FreeBSD >= 10).
 
 
+5.2.6 (2022-08-12)
+
+    * xz:
+
+        - The --keep option now accepts symlinks, hardlinks, and
+          setuid, setgid, and sticky files. Previously this required
+          using --force.
+
+        - When copying metadata from the source file to the destination
+          file, don't try to set the group (GID) if it is already set
+          correctly. This avoids a failure on OpenBSD (and possibly on
+          a few other OSes) where files may get created so that their
+          group doesn't belong to the user, and fchown(2) can fail even
+          if it needs to do nothing.
+
+        - Cap --memlimit-compress to 2000 MiB instead of 4020 MiB on
+          MIPS32 because on MIPS32 userspace processes are limited
+          to 2 GiB of address space.
+
+    * liblzma:
+
+        - Fixed a missing error-check in the threaded encoder. If a
+          small memory allocation fails, a .xz file with an invalid
+          Index field would be created. Decompressing such a file would
+          produce the correct output but result in an error at the end.
+          Thus this is a "mild" data corruption bug. Note that while
+          a failed memory allocation can trigger the bug, it cannot
+          cause invalid memory access.
+
+        - The decoder for .lzma files now supports files that have
+          uncompressed size stored in the header and still use the
+          end of payload marker (end of stream marker) at the end
+          of the LZMA stream. Such files are rare but, according to
+          the documentation in LZMA SDK, they are valid.
+          doc/lzma-file-format.txt was updated too.
+
+        - Improved 32-bit x86 assembly files:
+            * Support Intel Control-flow Enforcement Technology (CET)
+            * Use non-executable stack on FreeBSD.
+
+        - Visual Studio: Use non-standard _MSVC_LANG to detect C++
+          standard version in the lzma.h API header. It's used to
+          detect when "noexcept" can be used.
+
+    * xzgrep:
+
+        - Fixed arbitrary command injection via a malicious filename
+          (CVE-2022-1271, ZDI-CAN-16587). A standalone patch for
+          this was released to the public on 2022-04-07. A slight
+          robustness improvement has been made since then and, if
+          using GNU or *BSD grep, a new faster method is now used
+          that doesn't use the old sed-based construct at all. This
+          also fixes bad output with GNU grep >= 3.5 (2020-09-27)
+          when xzgrepping binary files.
+
+          This vulnerability was discovered by:
+          cleemy desu wayo working with Trend Micro Zero Day Initiative
+
+        - Fixed detection of corrupt .bz2 files.
+
+        - Improved error handling to fix exit status in some situations
+          and to fix handling of signals: in some situations a signal
+          didn't make xzgrep exit when it clearly should have. It's
+          possible that the signal handling still isn't quite perfect
+          but hopefully it's good enough.
+
+        - Documented exit statuses on the man page.
+
+        - xzegrep and xzfgrep now use "grep -E" and "grep -F" instead
+          of the deprecated egrep and fgrep commands.
+
+        - Fixed parsing of the options -E, -F, -G, -P, and -X. The
+          problem occurred when multiple options were specied in
+          a single argument, for example,
+
+              echo foo | xzgrep -Fe foo
+
+          treated foo as a filename because -Fe wasn't correctly
+          split into -F -e.
+
+        - Added zstd support.
+
+    * xzdiff/xzcmp:
+
+        - Fixed wrong exit status. Exit status could be 2 when the
+          correct value is 1.
+
+        - Documented on the man page that exit status of 2 is used
+          for decompression errors.
+
+        - Added zstd support.
+
+    * xzless:
+
+        - Fix less(1) version detection. It failed if the version number
+          from "less -V" contained a dot.
+
+    * Translations:
+
+        - Added new translations: Catalan, Croatian, Esperanto,
+          Korean, Portuguese, Romanian, Serbian, Spanish, Swedish,
+          and Ukrainian
+
+        - Updated the Brazilian Portuguese translation.
+
+        - Added French man page translation. This and the existing
+          German translation aren't complete anymore because the
+          English man pages got a few updates and the translators
+          weren't reached so that they could update their work.
+
+    * Build systems:
+
+        - Windows: Fix building of resource files when config.h isn't
+          used. CMake + Visual Studio can now build liblzma.dll.
+
+        - Various fixes to the CMake support. Building static or shared
+          liblzma should work fine in most cases. In contrast, building
+          the command line tools with CMake is still clearly incomplete
+          and experimental and should be used for testing only.
+
+
 5.2.5 (2020-03-17)
 
     * liblzma:

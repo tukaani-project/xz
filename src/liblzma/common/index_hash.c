@@ -145,7 +145,7 @@ lzma_index_hash_append(lzma_index_hash *index_hash, lzma_vli unpadded_size,
 		lzma_vli uncompressed_size)
 {
 	// Validate the arguments.
-	if (index_hash->sequence != SEQ_BLOCK
+	if (index_hash == NULL || index_hash->sequence != SEQ_BLOCK
 			|| unpadded_size < UNPADDED_SIZE_MIN
 			|| unpadded_size > UNPADDED_SIZE_MAX
 			|| uncompressed_size > LZMA_VLI_MAX)

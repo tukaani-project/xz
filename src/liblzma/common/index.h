@@ -22,6 +22,9 @@
 /// Maximum Unpadded Size
 #define UNPADDED_SIZE_MAX (LZMA_VLI_MAX & ~LZMA_VLI_C(3))
 
+/// Index Indicator based on xz specification
+#define INDEX_INDICATOR 0
+
 
 /// Get the size of the Index Padding field. This is needed by Index encoder
 /// and decoder, but applications should have no use for this.

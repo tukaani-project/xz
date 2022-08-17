@@ -190,7 +190,7 @@ lzma_index_hash_decode(lzma_index_hash *index_hash, const uint8_t *in,
 	switch (index_hash->sequence) {
 	case SEQ_BLOCK:
 		// Check the Index Indicator is present.
-		if (in[(*in_pos)++] != 0x00)
+		if (in[(*in_pos)++] != INDEX_INDICATOR)
 			return LZMA_DATA_ERROR;
 
 		index_hash->sequence = SEQ_COUNT;

@@ -623,6 +623,12 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
  * decompressed multiple times with this flag, a different amount of output
  * may be produced by different runs, and even the error code might vary.
  *
+ * When using LZMA_FAIL_FAST, it is recommended to use LZMA_FINISH to tell
+ * the decoder when no more input will be coming because it can help fast
+ * detection and reporting of truncated files. Note that in this situation
+ * truncated files might be diagnosed with LZMA_DATA_ERROR instead of
+ * LZMA_OK or LZMA_BUF_ERROR!
+ *
  * Without this flag the threaded decoder will provide as much output as
  * possible at first and then report the pending error. This default behavior
  * matches the single-threaded decoder and provides repeatable behavior

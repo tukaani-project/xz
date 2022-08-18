@@ -1143,6 +1143,35 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 			//     of "called with an empty input buffer".
 			assert(*in_pos == in_size);
 
+			// If LZMA_FINISH was used we know that we won't get
+			// more input, so the file must be truncated if we
+			// get here. If worker threads don't detect any
+			// errors, eventually there will be no more output
+			// while we keep returning LZMA_OK which gets
+			// converted to LZMA_BUF_ERROR in lzma_code().
+			//
+			// If fail-fast is enabled then we will return
+			// immediately using LZMA_DATA_ERROR instead of
+			// LZMA_OK or LZMA_BUF_ERROR. Rationale for the
+			// error code:
+			//
+			//   - Worker threads may have a large amount of
+			//     not-yet-decoded input data and we don't
+			//     know for sure if all data is valid. Bad
+			//     data there would result in LZMA_DATA_ERROR
+			//     when fail-fast isn't used.
+			//
+			//   - Immediate LZMA_BUF_ERROR would be a bit weird
+			//     considering the older liblzma code. lzma_code()
+			//     even has an assertion to prevent coders from
+			//     returning LZMA_BUF_ERROR directly.
+			//
+			// The downside of this is that with fail-fast apps
+			// cannot always distinguish between corrupt and
+			// truncated files.
+			if (action == LZMA_FINISH && coder->fail_fast)
+				return LZMA_DATA_ERROR;
+
 			return_if_error(read_output_and_wait(coder, allocator,
 				out, out_pos, out_size,
 				NULL, waiting_allowed,
@@ -1478,6 +1507,19 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 	// Fall through
 
 	case SEQ_BLOCK_THR_RUN: {
+		if (action == LZMA_FINISH && coder->fail_fast) {
+			// We know that we won't get more input and that
+			// the caller wants fail-fast behavior. If we see
+			// that we don't have enough input to finish this
+			// Block, return LZMA_DATA_ERROR immediately.
+			// See SEQ_BLOCK_HEADER for the error code rationale.
+			const size_t in_avail = in_size - *in_pos;
+			const size_t in_needed = coder->thr->in_size
+					- coder->thr->in_filled;
+			if (in_avail < in_needed)
+				return LZMA_DATA_ERROR;
+		}
+
 		// Copy input to the worker thread.
 		size_t cur_in_filled = coder->thr->in_filled;
 		lzma_bufcpy(in, in_pos, in_size, coder->thr->in,

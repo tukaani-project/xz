@@ -52,6 +52,8 @@ EXTRA_DIST = \
 	dos \
 	windows \
 	macosx \
+	cmake \
+	CMakeLists.txt \
 	autogen.sh \
 	Doxyfile.in \
 	COPYING.GPLv2 \

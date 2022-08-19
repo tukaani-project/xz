@@ -222,9 +222,9 @@ memlimit_show(const char *str, size_t str_columns, uint64_t value)
 	// is 0 or UINT64_MAX. This might get a bit more complex once there
 	// is threading support. See the comment in hardware_memlimit_get().
 	if (value == 0 || value == UINT64_MAX)
-		printf("%-*s  %s\n", fw, str, _("Disabled"));
+		printf("  %-*s  %s\n", fw, str, _("Disabled"));
 	else
-		printf("%-*s  %s MiB (%s B)\n", fw, str,
+		printf("  %-*s  %s MiB (%s B)\n", fw, str,
 				uint64_to_str(round_up_to_mib(value), 0),
 				uint64_to_str(value, 1));
 
@@ -241,8 +241,11 @@ hardware_memlimit_show(void)
 	} else {
 		const char *msgs[] = {
 			_("Amount of physical memory (RAM):"),
-			_("Memory usage limit for compression:"),
-			_("Memory usage limit for decompression:"),
+			_("Number of processor threads:"),
+			_("Compression:"),
+			_("Decompression:"),
+			_("Multi-threaded decompression:"),
+			_("Default for -T0:"),
 		};
 
 		size_t width_max = 1;
@@ -260,9 +263,26 @@ hardware_memlimit_show(void)
 				width_max = w;
 		}
 
+		uint32_t cputhreads = 1;
+#ifdef MYTHREAD_ENABLED
+		cputhreads = lzma_cputhreads();
+		if (cputhreads == 0)
+			cputhreads = 1;
+#endif
+
+		puts(_("Hardware information:"));
 		memlimit_show(msgs[0], width_max, total_ram);
-		memlimit_show(msgs[1], width_max, memlimit_compress);
-		memlimit_show(msgs[2], width_max, memlimit_decompress);
+		printf("  %-*s  %" PRIu32 "\n",
+				tuklib_mbstr_fw(msgs[1], (int)(width_max)),
+				msgs[1], cputhreads);
+
+		putchar('\n');
+		puts(_("Memory usage limits:"));
+		memlimit_show(msgs[2], width_max, memlimit_compress);
+		memlimit_show(msgs[3], width_max, memlimit_decompress);
+		memlimit_show(msgs[4], width_max,
+				hardware_memlimit_mtdec_get());
+		memlimit_show(msgs[5], width_max, memlimit_mt_default);
 	}
 
 	tuklib_exit(E_SUCCESS, E_ERROR, message_verbosity_get() != V_SILENT);

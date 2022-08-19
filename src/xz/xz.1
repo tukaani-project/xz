@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2022-07-24" "Tukaani" "XZ Utils"
+.TH XZ 1 "2022-08-19" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -964,15 +964,28 @@ the last one takes effect.
 If the compression settings exceed the
 .IR limit ,
 .B xz
-will adjust the settings downwards so that
+will attempt to adjust the settings downwards so that
 the limit is no longer exceeded and display a notice that
 automatic adjustment was done.
-Such adjustments are not made when compressing with
+The adjustments are done in this order:
+reducing the number of threads,
+switching to single-threaded mode
+if even one thread in multi-threaded mode exceeds the
+.IR limit ,
+and finally reducing the LZMA2 dictionary size.
+.IP ""
+When compressing with
 .B \-\-format=raw
 or if
 .B \-\-no\-adjust
-has been specified.
-In those cases, an error is displayed and
+has been specified,
+only the number of threads may be reduced
+since it can be done without affecting the compressed output.
+.IP ""
+If the
+.I limit
+cannot be met even with the adjustments described above,
+an error is displayed and
 .B xz
 will exit with exit status 1.
 .IP ""
@@ -1011,16 +1024,6 @@ This is currently equivalent to setting the
 to
 .B max
 (no memory usage limit).
-Once multithreading support has been implemented,
-there may be a difference between
-.B 0
-and
-.B max
-for the multithreaded case, so it is recommended to use
-.B 0
-instead of
-.B max
-until the details have been decided.
 .RE
 .IP ""
 For 32-bit
@@ -1063,16 +1066,73 @@ See
 for possible ways to specify the
 .IR limit .
 .TP
+.BI \-\-memlimit\-mt\-decompress= limit
+Set a memory usage limit for decompression that can only affect
+the number of threads.
+Unlike
+.BR \-\-memlimit\-decompress ,
+this
+.I limit
+will never make
+.B xz
+refuse to decompress a file.
+If even single-threaded mode will exceed the
+.I limit
+then the
+.I limit
+is ignored and
+.B xz
+will decompress in single-threaded mode anyway.
+.IP ""
+In contrast to the other memory usage limit options,
+.BI \-\-memlimit\-mt\-decompress= limit
+has a system-specific default
+.IR limit .
+.B "xz \-\-info\-memory"
+can be used to see the current value.
+.IP ""
+This option and its default value exist
+because without any limit the threaded decompressor
+could end up allocating an insane amount of memory with some input files.
+If the default
+.I limit
+is too low on your system,
+feel free to increase the
+.I limit
+but never set it to a value larger than the amount of usable RAM
+as with appropriate input files
+.B xz
+will attempt to use that amount of memory
+even with a low number of threads.
+Running out of memory or swapping
+will not improve decompression performance.
+.IP ""
+See
+.BI \-\-memlimit\-compress= limit
+for possible ways to specify the
+.IR limit .
+Setting
+.I limit
+to
+.B 0
+resets it to the default system-specific value.
+.TP
 \fB\-M\fR \fIlimit\fR, \fB\-\-memlimit=\fIlimit\fR, \fB\-\-memory=\fIlimit
 This is equivalent to specifying
 .BI \-\-memlimit\-compress= limit
-\fB\-\-memlimit\-decompress=\fIlimit\fR.
+.BI \-\-memlimit-decompress= limit
+\fB\-\-memlimit\-mt\-decompress=\fIlimit\fR.
 .TP
 .B \-\-no\-adjust
-Display an error and exit if the compression settings exceed
-the memory usage limit.
-The default is to adjust the settings downwards so
-that the memory usage limit is not exceeded.
+Display an error and exit if the memory usage limit cannot be
+met without adjusting settings that affect the compressed output.
+That is, this prevents
+.B xz
+from switching the encoder from multi-threaded mode to single-threaded mode
+and from reducing the LZMA2 dictionary size.
+Even when this option is used the number of threads may be reduced
+to meet the memory usage limit as that won't affect the compressed output.
+.IP ""
 Automatic adjusting is always disabled when creating raw streams
 .RB ( \-\-format=raw ).
 .TP
@@ -1084,12 +1144,46 @@ to a special value
 .B 0
 makes
 .B xz
-use as many threads as there are CPU cores on the system.
-The actual number of threads can be less than
+use up to as many threads as the processor(s) on the system support.
+The actual number of threads can be fewer than
 .I threads
 if the input file is not big enough
 for threading with the given settings or
 if using more threads would exceed the memory usage limit.
+.IP ""
+The single-threaded and multi-threaded compressors produce different output.
+Single-threaded compressor will give the smallest file size but
+only the output from the multi-threaded compressor can be decompressed
+using multiple threads.
+Setting
+.I threads
+to
+.B 1
+will use the single-threaded mode.
+Setting
+.I threads
+to any other value, including
+.BR 0 ,
+will use the multi-threaded compressor
+even if the system supports only one hardware thread.
+.RB ( xz
+5.2.x
+used single-threaded mode in this situation.)
+.IP ""
+If an automatic number of threads has been requested and
+no memory usage limit has been specified,
+then a system-specific default soft limit will be used to possibly
+limit the number of threads.
+It is a soft limit in sense that it is ignored
+if the number of threads becomes one,
+thus a soft limit will never stop
+.B xz
+from compressing or decompressing.
+This default soft limit will not make
+.B xz
+switch from multi-threaded mode to single-threaded mode.
+The active limits can be seen with
+.BR "xz \-\-info\-memory" .
 .IP ""
 Currently the only threading method is to split the input into
 blocks and compress them independently from each other.
@@ -1098,13 +1192,13 @@ can be overridden with the
 .BI \-\-block\-size= size
 option.
 .IP ""
-Threaded decompression hasn't been implemented yet.
-It will only work on files that contain multiple blocks
-with size information in block headers.
-All files compressed in multi-threaded mode meet this condition,
+Threaded decompression only works on files that contain
+multiple blocks with size information in block headers.
+All large enough files compressed in multi-threaded mode
+meet this condition,
 but files compressed in single-threaded mode don't even if
 .BI \-\-block\-size= size
-is used.
+has been used.
 .
 .SS "Custom compressor filter chains"
 A custom filter chain allows specifying

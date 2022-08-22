@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2022-08-19" "Tukaani" "XZ Utils"
+.TH XZ 1 "2022-08-22" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -1067,22 +1067,26 @@ for possible ways to specify the
 .IR limit .
 .TP
 .BI \-\-memlimit\-mt\-decompress= limit
-Set a memory usage limit for decompression that can only affect
-the number of threads.
-Unlike
-.BR \-\-memlimit\-decompress ,
-this
-.I limit
-will never make
+Set a memory usage limit for multi-threaded decompression.
+This can only affect the number of threads;
+this will never make
 .B xz
 refuse to decompress a file.
-If even single-threaded mode will exceed the
+If
 .I limit
-then the
+is too low to allow any multi-threading, the
 .I limit
 is ignored and
 .B xz
-will decompress in single-threaded mode anyway.
+will continue in single-threaded mode.
+Note that if also
+.B \-\-memlimit\-decompress
+is used,
+it will always apply to both single-threaded and multi-threaded modes,
+and so the effective
+.I limit
+for multi-threading will never be higher than the limit set with
+.BR \-\-memlimit\-decompress .
 .IP ""
 In contrast to the other memory usage limit options,
 .BI \-\-memlimit\-mt\-decompress= limit
@@ -1115,7 +1119,10 @@ Setting
 .I limit
 to
 .B 0
-resets it to the default system-specific value.
+resets the
+.I limit
+to the default system-specific value.
+.IP ""
 .TP
 \fB\-M\fR \fIlimit\fR, \fB\-\-memlimit=\fIlimit\fR, \fB\-\-memory=\fIlimit
 This is equivalent to specifying

@@ -2,6 +2,125 @@
 XZ Utils Release Notes
 ======================
 
+5.3.3alpha (2022-08-22)
+
+    * All fixes from 5.2.6.
+
+    * liblzma:
+
+        - Fixed 32-bit build.
+
+        - Added threaded .xz decompressor lzma_stream_decoder_mt().
+          It can use multiple threads with .xz files that have multiple
+          Blocks with size information in Block Headers. The threaded
+          encoder in xz has always created such files.
+
+          Single-threaded encoder cannot store the size information in
+          Block Headers even if one used LZMA_FULL_FLUSH to create
+          multiple Blocks, so this threaded decoder cannot use multiple
+          threads with such files.
+
+          If there are multiple Streams (concatenated .xz files), one
+          Stream will be decompressed completely before starting the
+          next Stream.
+
+        - A new decoder flag LZMA_FAIL_FAST was added. It makes the
+          threaded decompressor report errors soon instead of first
+          flushing all pending data before the error location.
+
+    * xz:
+
+        - Using -T0 (--threads=0) will now use multi-threaded encoder
+          even on a single-core system. This is to ensure that output
+          from the same xz binary is identical on both single-core and
+          multi-core systems.
+
+        - A default soft memory usage limit is now used for compression
+          when -T0 is used and no explicit limit has been specified.
+          This soft limit is used to restrict the number of threads
+          but if the limit is exceeded with even one thread then xz
+          will continue with one thread using the multi-threaded
+          encoder and this limit is ignored. If the number of threads
+          is specified manually then no default limit will be used;
+          this affects only -T0.
+
+          This change helps on systems that have very many cores and
+          using all of them for xz makes no sense. Previously xz -T0
+          could run out of memory on such systems because it attempted
+          to reserve memory for too many threads.
+
+          This also helps with 32-bit builds which don't have a large
+          amount of address space that would be required for many
+          threads. The default limit is 1400 MiB on all 32-bit
+          platforms with -T0.
+
+          Now xz -T0 should just work. It might use too few threads
+          in some cases but at least it shouldn't easily run out of
+          memory. It's possible that this will be tweaked before 5.4.0.
+
+        - Changes to --memlimit-compress and --no-adjust:
+
+          In single-threaded mode, --memlimit-compress can make xz
+          scale down the LZMA2 dictionary size to meet the memory usage
+          limit. This obviously affects the compressed output. However,
+          if xz was in threaded mode, --memlimit-compress could make xz
+          reduce the number of threads but it wouldn't make xz switch
+          from multi-threaded mode to single-threaded mode or scale
+          down the LZMA2 dictionary size. This seemed illogical.
+
+          Now --memlimit-compress can make xz switch to single-threaded
+          mode if one thread in multi-threaded mode uses too much
+          memory. If memory usage is still too high, then the LZMA2
+          dictionary size can be scaled down too.
+
+          The option --no-adjust was also changed so that it no longer
+          prevents xz from scaling down the number of threads as that
+          doesn't affect compressed output (only performance). After
+          this commit --no-adjust only prevents adjustments that affect
+          compressed output, that is, with --no-adjust xz won't switch
+          from multithreaded mode to single-threaded mode and won't
+          scale down the LZMA2 dictionary size.
+
+        - Added a new option --memlimit-decompress-mt=LIMIT. This is
+          used to limit the number of decompressor threads (possibly
+          falling back to single-threaded mode) but it will never make
+          xz refuse to decompress a file. This has a system-specific
+          default value because without any limit xz could end up
+          allocating memory for the whole compressed input file, the
+          whole uncompressed output file, multiple thread-specific
+          decompressor instances and so on. Basically xz could
+          attempt to use an insane amount of memory even with fairly
+          common files.
+
+          The new option works together with the existing option
+          --memlimit-decompress=LIMIT. The old option sets a hard limit
+          that must not be exceeded (xz will refuse to decompress)
+          while the new option only restricts the number of threads.
+          If the limit set with --memlimit-mt-decompress is greater
+          than the limit set with --memlimit-compress, then the latter
+          value is used also for --memlimit-mt-decompress.
+
+    * Tests:
+
+        - Added a few more tests.
+
+        - Added tests/code_coverage.sh to create a code coverage report
+          of the tests.
+
+    * Build systems:
+
+        - Automake's parallel test harness is now used to make tests
+          finish faster.
+
+        - Added the CMake files to the distribution tarball. These were
+          supposed to be in 5.2.5 already.
+
+        - Added liblzma tests to the CMake build.
+
+        - Windows: Fix building of liblzma.dll with the included
+          Visual Studio project files.
+
+
 5.3.2alpha (2021-10-28)
 
     This release was made on short notice so that recent erofs-utils can

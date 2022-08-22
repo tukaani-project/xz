@@ -17,7 +17,7 @@
 #
 # Other missing things:
 #   - No xzgrep or other scripts or their symlinks
-#   - No tests (no test failures either!)
+#   - No xz tests (liblzma tests only)
 #
 # NOTE: Even if the code compiles without warnings, the end result may be
 # different than via ./configure. Specifically, the list of #defines
@@ -684,4 +684,55 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
     install(FILES src/xz/xz.1
             DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
             COMPONENT xz)
+endif()
+
+
+#############################################################################
+# Tests
+#############################################################################
+
+include(CTest)
+
+if(BUILD_TESTING)
+    set(LIBLZMA_TESTS
+        test_bcj_exact_size
+        test_block_header
+        test_check
+        test_filter_flags
+        test_hardware
+        test_index
+        test_stream_flags
+        test_vli
+    )
+
+    foreach(TEST IN LISTS LIBLZMA_TESTS)
+        add_executable("${TEST}" "tests/${TEST}.c")
+
+        target_include_directories("${TEST}" PRIVATE
+            src/common
+            src/liblzma/api
+            lib
+        )
+
+        target_link_libraries("${TEST}" PRIVATE liblzma)
+
+        # Put the test programs into their own subdirectory so they don't
+        # pollute the top-level dir which might contain xz and xzdec.
+        set_target_properties("${TEST}" PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tests_bin"
+        )
+
+        add_test(NAME "${TEST}"
+                 COMMAND "${CMAKE_CURRENT_BINARY_DIR}/tests_bin/${TEST}"
+        )
+
+        # Set srcdir environment variable so that the tests find their
+        # input files from the source tree.
+        #
+        # Set the return code for skipped tests to match Automake convention.
+        set_tests_properties("${TEST}" PROPERTIES
+            ENVIRONMENT "srcdir=${CMAKE_CURRENT_LIST_DIR}/tests"
+            SKIP_RETURN_CODE 77
+        )
+    endforeach()
 endif()

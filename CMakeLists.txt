@@ -13,7 +13,6 @@
 #   - No replacement getopt_long(), libc must have it
 #   - No sandboxing support
 #   - No translations
-#   - No xz symlinks are installed
 #
 # Other missing things:
 #   - No xzgrep or other scripts or their symlinks
@@ -685,6 +684,43 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
         install(FILES src/xz/xz.1
                 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
                 COMPONENT xz)
+
+        option(CREATE_XZ_SYMLINKS "Create unxz and xzcat symlinks" ON)
+        option(CREATE_LZMA_SYMLINKS "Create lzma, unlzma, and lzcat symlinks"
+               ON)
+        set(XZ_LINKS)
+
+        if(CREATE_XZ_SYMLINKS)
+            list(APPEND XZ_LINKS "unxz" "xzcat")
+        endif()
+
+        if(CREATE_LZMA_SYMLINKS)
+            list(APPEND XZ_LINKS "lzma" "unlzma" "lzcat")
+        endif()
+
+        # Create symlinks in the build directory and then install them.
+        #
+        # FIXME? On OSes where executables have a suffix like .exe, this
+        # will create links like unxz -> xz.exe which is correct on Cygwin
+        # but perhaps on some other cases unxz.suffix -> xz.suffix would
+        # be the corrent thing?
+        foreach(LINK IN LISTS XZ_LINKS)
+            add_custom_target("${LINK}" ALL
+                "${CMAKE_COMMAND}" -E create_symlink
+                    "$<TARGET_FILE_NAME:xz>" "${LINK}"
+                BYPRODUCTS "${LINK}"
+                VERBATIM)
+            install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
+                    DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                    COMPONENT xz)
+            add_custom_target("${LINK}.1" ALL
+                "${CMAKE_COMMAND}" -E create_symlink "xz.1" "${LINK}.1"
+                BYPRODUCTS "${LINK}.1"
+                VERBATIM)
+            install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}.1"
+                    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+                    COMPONENT xz)
+        endforeach()
     endif()
 endif()
 

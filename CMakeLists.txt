@@ -681,9 +681,11 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
                     COMPONENT xz)
 
-    install(FILES src/xz/xz.1
-            DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
-            COMPONENT xz)
+    if(UNIX)
+        install(FILES src/xz/xz.1
+                DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+                COMPONENT xz)
+    endif()
 endif()
 
 

@@ -656,6 +656,10 @@ lzma_index_append(lzma_index *i, const lzma_allocator *allocator,
 	const uint32_t index_list_size_add = lzma_vli_size(unpadded_size)
 			+ lzma_vli_size(uncompressed_size);
 
+	// Check that uncompressed size will not overflow.
+	if (uncompressed_base + uncompressed_size > LZMA_VLI_MAX)
+		return LZMA_DATA_ERROR;
+
 	// Check that the file size will stay within limits.
 	if (index_file_size(s->node.compressed_base,
 			compressed_base + unpadded_size, s->record_count + 1,

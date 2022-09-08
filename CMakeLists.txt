@@ -714,10 +714,9 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
 
         # Create symlinks in the build directory and then install them.
         #
-        # FIXME? On OSes where executables have a suffix like .exe, this
-        # will create links like unxz -> xz.exe which is correct on Cygwin
-        # but perhaps on some other cases unxz.suffix -> xz.suffix would
-        # be the corrent thing?
+        # The symlinks do not likely need any special extension since
+        # even on Windows the symlink can still be executed without
+        # the .exe extension.
         foreach(LINK IN LISTS XZ_LINKS)
             add_custom_target("${LINK}" ALL
                 "${CMAKE_COMMAND}" -E create_symlink

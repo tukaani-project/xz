@@ -153,6 +153,14 @@
 #endif
 
 
+// This is silencing warnings about unused functions. Not all test programs
+// need all functions from this header.
+#if TUKTEST_GNUC_REQ(3, 0)
+#	define tuktest_maybe_unused __attribute__((__unused__))
+#else
+#	define tuktest_maybe_unused
+#endif
+
 // We need printf("") so silence the warning about empty format string.
 #if TUKTEST_GNUC_REQ(4, 2)
 #	pragma GCC diagnostic ignored "-Wformat-zero-length"
@@ -561,6 +569,7 @@ tuktest_end(void)
 #define tuktest_run(testfunc) \
 	tuktest_run_test(&(testfunc), #testfunc)
 
+tuktest_maybe_unused
 static void
 tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 {
@@ -639,6 +648,7 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 	tuktest_file_from_x(NULL, filename, sizeptr, __FILE__, __LINE__)
 
 // Internal helper for the macros above.
+tuktest_maybe_unused
 static void *
 tuktest_file_from_x(const char *prefix, const char *filename, size_t *size,
 		const char *prog_filename, unsigned prog_line)

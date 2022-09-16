@@ -53,6 +53,14 @@ do
 	fi
 done
 
+# Testing for the lzma_index_append() bug in <= 5.2.6 needs "xz -l":
+I="$srcdir/files/bad-3-index-uncomp-overflow.xz"
+if test -n "$XZ" && "$XZ" -l "$I" > /dev/null 2>&1; then
+	echo "Bad file succeeded with xz -l: $I"
+	(exit 1)
+	exit 1
+fi
+
 for I in "$srcdir"/files/good-*.lzma
 do
 	if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then

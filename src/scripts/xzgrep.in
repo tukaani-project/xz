@@ -209,7 +209,7 @@ for i; do
       # which prints "binary file matches" to stderr instead of stdout.
       #
       # If reading from stdin, let grep use whatever name it prefers for
-      # stdin. With GNU grep it's a locale-specific translated string.
+      # stdin. With GNU grep it is a locale-specific translated string.
       if test "x$i" = "x-"; then
         eval "$grep -H"
       else
@@ -226,12 +226,12 @@ for i; do
       (*'
 '* | *'&'* | *'\'* | *'|'*)
         # If sed fails, set i to a known safe string to ensure that
-        # failing sed didn't create a half-escaped dangerous string.
+        # failing sed did not create a half-escaped dangerous string.
         i=$(printf '%s\n' "$i" | LC_ALL=C sed 's/[&\|]/\\&/g; $!s/$/\\/') ||
             i='(unknown filename):';;
       esac
 
-      # $i already ends with a colon so don't add it here.
+      # $i already ends with a colon so do not add it here.
       sed_script="s|^|$i|"
 
       # If grep or sed fails, pick the larger value of the two exit statuses.

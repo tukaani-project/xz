@@ -209,6 +209,16 @@
     file gets rejected specifically due to Unpadded Size having an invalid
     value.
 
+    bad-3-index-uncomp-overflow.xz has Index whose Uncompressed Size
+    fields have huge values whose sum exceeds the maximum allowed size
+    of 2^63 - 1 bytes. In this file the sum is exactly 2^64.
+    lzma_index_append() in liblzma <= 5.2.6 lacks the integer overflow
+    check for the uncompressed size and thus doesn't catch the error
+    when decoding the Index field in this file. This makes "xz -l"
+    not detect the error and will display 0 as the uncompressed size.
+    Note that regular decompression isn't affected by this bug because
+    it uses lzma_index_hash_append() instead.
+
     bad-2-compressed_data_padding.xz has non-null byte in the padding of
     the Compressed Data field of the first Block.
 

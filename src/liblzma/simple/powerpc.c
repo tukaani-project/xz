@@ -54,7 +54,7 @@ powerpc_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters, bool is_encoder)
 {
 	return lzma_simple_coder_init(next, allocator, filters,
-			&powerpc_code, 0, 4, 4, is_encoder);
+			&powerpc_code, 0, 4, 4, is_encoder, true);
 }
 
 

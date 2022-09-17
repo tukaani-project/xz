@@ -69,6 +69,6 @@ extern lzma_ret lzma_simple_coder_init(lzma_next_coder *next,
 		size_t (*filter)(void *simple, uint32_t now_pos,
 			bool is_encoder, uint8_t *buffer, size_t size),
 		size_t simple_size, size_t unfiltered_max,
-		uint32_t alignment, bool is_encoder);
+		uint32_t alignment, bool is_encoder, bool is_generic_bcj);
 
 #endif

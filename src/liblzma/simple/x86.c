@@ -128,7 +128,8 @@ x86_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters, bool is_encoder)
 {
 	const lzma_ret ret = lzma_simple_coder_init(next, allocator, filters,
-			&x86_code, sizeof(lzma_simple_x86), 5, 1, is_encoder);
+			&x86_code, sizeof(lzma_simple_x86), 5, 1, is_encoder,
+			true);
 
 	if (ret == LZMA_OK) {
 		lzma_simple_coder *coder = next->coder;

@@ -86,6 +86,7 @@ add_compile_definitions(
     HAVE_DECODERS
     HAVE_DECODER_ARM
     HAVE_DECODER_ARMTHUMB
+    HAVE_DECODER_ARM64
     HAVE_DECODER_DELTA
     HAVE_DECODER_IA64
     HAVE_DECODER_LZMA1
@@ -96,6 +97,7 @@ add_compile_definitions(
     HAVE_ENCODERS
     HAVE_ENCODER_ARM
     HAVE_ENCODER_ARMTHUMB
+    HAVE_ENCODER_ARM64
     HAVE_ENCODER_DELTA
     HAVE_ENCODER_IA64
     HAVE_ENCODER_LZMA1
@@ -331,6 +333,7 @@ add_library(liblzma
     src/liblzma/rangecoder/range_encoder.h
     src/liblzma/simple/arm.c
     src/liblzma/simple/armthumb.c
+    src/liblzma/simple/arm64.c
     src/liblzma/simple/ia64.c
     src/liblzma/simple/powerpc.c
     src/liblzma/simple/simple_coder.c

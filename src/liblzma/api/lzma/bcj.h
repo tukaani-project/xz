@@ -49,9 +49,16 @@
 	 * Filter for SPARC binaries.
 	 */
 
+#define LZMA_FILTER_ARM64       LZMA_VLI_C(0x3FDB87B33B27000B)
+       /**<
+        * Filter for ARM64 binaries.
+        *
+        * \note         Unlike the older filters above, this doesn't
+        *               support any options (must be NULL).
+        */
 
 /**
- * \brief       Options for BCJ filters
+ * \brief       Options for BCJ filters (except ARM64)
  *
  * The BCJ filters never change the size of the data. Specifying options
  * for them is optional: if pointer to options is NULL, default value is
@@ -88,3 +95,29 @@ typedef struct {
 	uint32_t start_offset;
 
 } lzma_options_bcj;
+
+/**
+ * \brief       Options for the ARM64 filter
+ *
+ * This filter never changes the size of the data.
+ * Specifying options is mandatory.
+ */
+typedef struct {
+	/**
+	 * \brief       How wide range of relative addresses are converted
+	 *
+	 * The ARM64 BL instruction has 26-bit immediate field that encodes
+	 * a relative address as a multiple of four bytes, so the effective
+	 * range is 2^28 bytes (+/-128 MiB).
+	 *
+	 * If width is 28 bits (LZMA_ARM64_WIDTH_MAX), then all BL
+	 * instructions will be converted. This has a downside of some
+	 * false matches that make compression worse. The best value
+	 * depends on the input file and the differences can be significant;
+	 * with large executables the maximum value is sometimes the best.
+	 */
+	uint32_t width;
+#	define LZMA_ARM64_WIDTH_MIN     18
+#	define LZMA_ARM64_WIDTH_MAX     28
+#	define LZMA_ARM64_WIDTH_DEFAULT 26
+} lzma_options_arm64;

@@ -79,8 +79,8 @@ fi
 # Filters #
 ###########
 
-m4_define([SUPPORTED_FILTERS], [lzma1,lzma2,delta,x86,powerpc,ia64,arm,armthumb,sparc])dnl
-m4_define([SIMPLE_FILTERS], [x86,powerpc,ia64,arm,armthumb,sparc])
+m4_define([SUPPORTED_FILTERS], [lzma1,lzma2,delta,x86,powerpc,ia64,arm,armthumb,arm64,sparc])dnl
+m4_define([SIMPLE_FILTERS], [x86,powerpc,ia64,arm,armthumb,arm64,sparc])
 m4_define([LZ_FILTERS], [lzma1,lzma2])
 
 m4_foreach([NAME], [SUPPORTED_FILTERS],

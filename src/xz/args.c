@@ -126,6 +126,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_IA64,
 		OPT_ARM,
 		OPT_ARMTHUMB,
+		OPT_ARM64,
 		OPT_SPARC,
 		OPT_DELTA,
 		OPT_LZMA1,
@@ -197,6 +198,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "ia64",         optional_argument, NULL,  OPT_IA64 },
 		{ "arm",          optional_argument, NULL,  OPT_ARM },
 		{ "armthumb",     optional_argument, NULL,  OPT_ARMTHUMB },
+		{ "experimental-arm64",        optional_argument, NULL,  OPT_ARM64 },
 		{ "sparc",        optional_argument, NULL,  OPT_SPARC },
 		{ "delta",        optional_argument, NULL,  OPT_DELTA },
 
@@ -368,6 +370,11 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_ARMTHUMB:
 			coder_add_filter(LZMA_FILTER_ARMTHUMB,
 					options_bcj(optarg));
+			break;
+
+		case OPT_ARM64:
+			coder_add_filter(LZMA_FILTER_ARM64,
+					options_arm64(optarg));
 			break;
 
 		case OPT_SPARC:

@@ -1036,6 +1036,13 @@ message_filters_to_str(char buf[FILTERS_STR_SIZE],
 			break;
 		}
 
+		case LZMA_FILTER_ARM64: {
+			const lzma_options_arm64 *opt = filters[i].options;
+			my_snprintf(&pos, &left, "arm64=width=%" PRIu32,
+					opt->width);
+			break;
+		}
+
 		case LZMA_FILTER_DELTA: {
 			const lzma_options_delta *opt = filters[i].options;
 			my_snprintf(&pos, &left, "delta=dist=%" PRIu32,

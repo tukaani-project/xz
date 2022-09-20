@@ -72,6 +72,9 @@ arm64_code(void *simple_ptr, uint32_t now_pos, bool is_encoder,
 			src <<= 2;
 			src &= ADDR28_MASK;
 
+			// When the conversion width isn't the maximum,
+			// check that the highest bits are either all zero
+			// or all one.
 			if ((src & sign_mask) != 0
 					&& (src & sign_mask) != sign_mask)
 				continue;
@@ -197,7 +200,17 @@ arm64_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		lzma_simple_coder *coder = next->coder;
 		lzma_simple_arm64 *simple = coder->simple;
 
+		// This will be used to detect if the value, after
+		// conversion has been done, is negative. The location
+		// of the sign bit depends on the conversion width.
 		simple->sign_bit = UINT32_C(1) << (opt->width - 1);
+
+		// When conversion width isn't the maximum, the highest
+		// bits must all be either zero or one, that is, they
+		// all are copies of the sign bit. This mask is used to
+		// (1) detect if input value is in the range specified
+		// by the conversion width and (2) clearing or setting
+		// the high bits after conversion (integers can wrap around).
 		simple->sign_mask = (UINT32_C(1) << 28) - simple->sign_bit;
 	}
 

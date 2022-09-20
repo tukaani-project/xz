@@ -53,8 +53,8 @@
        /**<
         * Filter for ARM64 binaries.
         *
-        * \note         Unlike the older filters above, this doesn't
-        *               support any options (must be NULL).
+        * \note         In contrast to the other BCJ filters, this uses
+        *               its own options structure, lzma_options_arm64.
         */
 
 /**

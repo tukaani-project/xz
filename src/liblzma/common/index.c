@@ -771,6 +771,9 @@ extern LZMA_API(lzma_ret)
 lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 		const lzma_allocator *allocator)
 {
+	if (dest == NULL || src == NULL)
+		return LZMA_PROG_ERROR;
+
 	const lzma_vli dest_file_size = lzma_index_file_size(dest);
 
 	// Check that we don't exceed the file size limits.

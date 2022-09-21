@@ -839,6 +839,11 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 		}
 	}
 
+	// dest->checks includes the check types of all except the last Stream
+	// in dest. Set the bit for the check type of the last Stream now so
+	// that it won't get lost when Stream(s) from src are appended to dest.
+	dest->checks = lzma_index_checks(dest);
+
 	// Add all the Streams from src to dest. Update the base offsets
 	// of each Stream from src.
 	const index_cat_info info = {
@@ -855,7 +860,7 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	dest->total_size += src->total_size;
 	dest->record_count += src->record_count;
 	dest->index_list_size += src->index_list_size;
-	dest->checks = lzma_index_checks(dest) | src->checks;
+	dest->checks |= src->checks;
 
 	// There's nothing else left in src than the base structure.
 	lzma_free(src, allocator);

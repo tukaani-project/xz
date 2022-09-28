@@ -24,9 +24,7 @@ typedef struct {
 		SEQ_STREAM_PADDING,
 	} sequence;
 
-	/// Block or Metadata decoder. This takes little memory and the same
-	/// data structure can be used to decode every Block Header, so it's
-	/// a good idea to have a separate lzma_next_coder structure for it.
+	/// Block decoder
 	lzma_next_coder block_decoder;
 
 	/// Block options decoded by the Block Header decoder and used by
@@ -63,9 +61,9 @@ typedef struct {
 
 	/// If true, we will decode concatenated Streams that possibly have
 	/// Stream Padding between or after them. LZMA_STREAM_END is returned
-	/// once the application isn't giving us any new input, and we aren't
-	/// in the middle of a Stream, and possible Stream Padding is a
-	/// multiple of four bytes.
+	/// once the application isn't giving us any new input (LZMA_FINISH),
+	/// and we aren't in the middle of a Stream, and possible
+	/// Stream Padding is a multiple of four bytes.
 	bool concatenated;
 
 	/// When decoding concatenated Streams, this is true as long as we
@@ -240,7 +238,7 @@ stream_decode(void *coder_ptr, const lzma_allocator *allocator,
 
 		coder->block_options.filters = NULL;
 
-		// Check if memory usage calculation and Block enocoder
+		// Check if memory usage calculation and Block decoder
 		// initialization succeeded.
 		if (ret != LZMA_OK)
 			return ret;

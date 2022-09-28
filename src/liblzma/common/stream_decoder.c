@@ -18,7 +18,8 @@ typedef struct {
 	enum {
 		SEQ_STREAM_HEADER,
 		SEQ_BLOCK_HEADER,
-		SEQ_BLOCK,
+		SEQ_BLOCK_INIT,
+		SEQ_BLOCK_RUN,
 		SEQ_INDEX,
 		SEQ_STREAM_FOOTER,
 		SEQ_STREAM_PADDING,
@@ -185,6 +186,15 @@ stream_decode(void *coder_ptr, const lzma_allocator *allocator,
 			return LZMA_OK;
 
 		coder->pos = 0;
+		coder->sequence = SEQ_BLOCK_INIT;
+	}
+
+	// Fall through
+
+	case SEQ_BLOCK_INIT: {
+		// Checking memusage and doing the initialization needs
+		// its own sequence point because we need to be able to
+		// retry if we return LZMA_MEMLIMIT_ERROR.
 
 		// Version 1 is needed to support the .ignore_check option.
 		coder->block_options.version = 1;
@@ -243,12 +253,12 @@ stream_decode(void *coder_ptr, const lzma_allocator *allocator,
 		if (ret != LZMA_OK)
 			return ret;
 
-		coder->sequence = SEQ_BLOCK;
+		coder->sequence = SEQ_BLOCK_RUN;
 	}
 
 	// Fall through
 
-	case SEQ_BLOCK: {
+	case SEQ_BLOCK_RUN: {
 		const lzma_ret ret = coder->block_decoder.code(
 				coder->block_decoder.coder, allocator,
 				in, in_pos, in_size, out, out_pos, out_size,

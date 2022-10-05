@@ -12,6 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tests.h"
+#include "mythread.h"
 
 
 // These must be specified as numbers so that the test works on EBCDIC

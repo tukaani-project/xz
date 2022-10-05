@@ -53,6 +53,9 @@ test_memlimit_stream_decoder(void)
 static void
 test_memlimit_stream_decoder_mt(void)
 {
+#ifndef MYTHREAD_ENABLED
+	assert_skip("Threading support disabed");
+#else
 	lzma_stream strm = LZMA_STREAM_INIT;
 	lzma_mt mt = {
 		.flags = 0,
@@ -79,6 +82,7 @@ test_memlimit_stream_decoder_mt(void)
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 	lzma_end(&strm);
+#endif
 }
 
 

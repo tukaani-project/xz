@@ -235,6 +235,9 @@ test_lzma_get_check_st(void)
 static void
 test_lzma_get_check_mt(void)
 {
+#ifndef MYTHREAD_ENABLED
+	assert_skip("Threading support disabed");
+#else
 	const uint32_t flags = LZMA_TELL_ANY_CHECK |
 			LZMA_TELL_UNSUPPORTED_CHECK |
 			LZMA_TELL_NO_CHECK;
@@ -311,6 +314,7 @@ test_lzma_get_check_mt(void)
 #endif
 
 	lzma_end(&strm);
+#endif
 }
 
 

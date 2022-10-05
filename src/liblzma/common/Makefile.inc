@@ -22,7 +22,10 @@ liblzma_la_SOURCES += \
 	common/vli_size.c
 
 if COND_THREADS
-liblzma_la_SOURCES += common/hardware_cputhreads.c
+liblzma_la_SOURCES += \
+	common/hardware_cputhreads.c \
+	common/outqueue.c \
+	common/outqueue.h
 endif
 
 if COND_MAIN_ENCODER
@@ -50,8 +53,6 @@ liblzma_la_SOURCES += \
 
 if COND_THREADS
 liblzma_la_SOURCES += \
-	common/outqueue.c \
-	common/outqueue.h \
 	common/stream_encoder_mt.c
 endif
 endif

@@ -18,6 +18,15 @@
 static void
 test_exact_size(void)
 {
+#if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
+	assert_skip("Encoder or decoder support disabled");
+#else
+	if (!lzma_filter_encoder_is_supported(LZMA_FILTER_POWERPC)
+			|| !lzma_filter_decoder_is_supported(
+				LZMA_FILTER_POWERPC))
+		assert_skip("PowerPC BCJ encoder and/or decoder "
+				"is disabled");
+
 	// Something to be compressed
 	const uint8_t in[16] = "0123456789ABCDEF";
 
@@ -71,12 +80,16 @@ test_exact_size(void)
 		if (strm.total_out < sizeof(in))
 			strm.avail_out = 1;
 	}
+#endif
 }
 
 
 static void
 test_empty_block(void)
 {
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
 	// An empty file with one Block using PowerPC BCJ and LZMA2.
 	size_t in_size;
 	uint8_t *empty_bcj_lzma2 = tuktest_file_from_srcdir(
@@ -92,6 +105,7 @@ test_empty_block(void)
 		LZMA_OK);
 	assert_uint_eq(in_pos, in_size);
 	assert_uint_eq(out_pos, 0);
+#endif
 }
 
 
@@ -99,12 +113,6 @@ extern int
 main(int argc, char **argv)
 {
 	tuktest_start(argc, argv);
-
-	if (!lzma_filter_encoder_is_supported(LZMA_FILTER_POWERPC)
-			|| !lzma_filter_decoder_is_supported(
-				LZMA_FILTER_POWERPC))
-		tuktest_early_skip("PowerPC BCJ encoder and/or decoder "
-				"is disabled");
 
 	tuktest_run(test_exact_size);
 	tuktest_run(test_empty_block);

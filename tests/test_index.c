@@ -211,6 +211,7 @@ test_read(lzma_index *i)
 static void
 test_code(lzma_index *i)
 {
+#if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 	const size_t alloc_size = 128 * 1024;
 	uint8_t *buf = malloc(alloc_size);
 	expect(buf != NULL);
@@ -275,6 +276,9 @@ test_code(lzma_index *i)
 	lzma_index_end(d, NULL);
 
 	free(buf);
+#else
+	(void)i;
+#endif
 }
 
 
@@ -633,6 +637,7 @@ test_locate(void)
 static void
 test_corrupt(void)
 {
+#if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 	const size_t alloc_size = 128 * 1024;
 	uint8_t *buf = malloc(alloc_size);
 	expect(buf != NULL);
@@ -668,6 +673,7 @@ test_corrupt(void)
 
 	lzma_end(&strm);
 	free(buf);
+#endif
 }
 
 

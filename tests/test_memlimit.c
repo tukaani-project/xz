@@ -26,6 +26,9 @@ static uint8_t out[8192];
 static void
 test_memlimit_stream_decoder(void)
 {
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
 	lzma_stream strm = LZMA_STREAM_INIT;
 	assert_lzma_ret(lzma_stream_decoder(&strm, MEMLIMIT_TOO_LOW, 0),
 			LZMA_OK);
@@ -48,6 +51,7 @@ test_memlimit_stream_decoder(void)
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 
 	lzma_end(&strm);
+#endif
 }
 
 
@@ -55,7 +59,9 @@ static void
 test_memlimit_stream_decoder_mt(void)
 {
 #ifndef MYTHREAD_ENABLED
-	assert_skip("Threading support disabed");
+	assert_skip("Threading support disabled");
+#elif !defined(HAVE_DECODERS)
+	assert_skip("Decoder support disabled");
 #else
 	lzma_stream strm = LZMA_STREAM_INIT;
 	lzma_mt mt = {
@@ -90,6 +96,9 @@ test_memlimit_stream_decoder_mt(void)
 static void
 test_memlimit_alone_decoder(void)
 {
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
 	size_t alone_size;
 	uint8_t *alone_buf = tuktest_file_from_srcdir(
 			"files/good-unknown_size-with_eopm.lzma", &alone_size);
@@ -112,12 +121,16 @@ test_memlimit_alone_decoder(void)
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 	lzma_end(&strm);
+#endif
 }
 
 
 static void
 test_memlimit_auto_decoder(void)
 {
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
 	lzma_stream strm = LZMA_STREAM_INIT;
 	assert_lzma_ret(lzma_auto_decoder(&strm, MEMLIMIT_TOO_LOW, 0),
 			LZMA_OK);
@@ -137,6 +150,7 @@ test_memlimit_auto_decoder(void)
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 	lzma_end(&strm);
+#endif
 }
 
 

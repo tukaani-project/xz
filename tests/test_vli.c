@@ -70,6 +70,7 @@ test_lzma_vli_size(void)
 }
 
 
+#ifdef HAVE_ENCODERS
 // Helper function for test_lzma_vli_encode
 // Encodes an input VLI and compares against a pre-computed value
 static void
@@ -108,11 +109,15 @@ encode_multi_call_mode(lzma_vli input, const uint8_t *expected,
 	assert_uint_eq(vli_pos, expected_len);
 	assert_array_eq(out, expected, expected_len);
 }
+#endif
 
 
 static void
 test_lzma_vli_encode(void)
 {
+#ifndef HAVE_ENCODERS
+	assert_skip("Encoder support disabled");
+#else
 	size_t vli_pos = 0;
 	uint8_t out[LZMA_VLI_BYTES_MAX];
 	uint8_t zeros[LZMA_VLI_BYTES_MAX];
@@ -189,9 +194,11 @@ test_lzma_vli_encode(void)
 			sizeof(eight_bytes));
 	encode_multi_call_mode(nine_byte_value, nine_bytes,
 			sizeof(nine_bytes));
+#endif
 }
 
 
+#ifdef HAVE_DECODERS
 static void
 decode_single_call_mode(const uint8_t *input, uint32_t input_len,
 		lzma_vli expected)
@@ -227,10 +234,15 @@ decode_multi_call_mode(const uint8_t *input, uint32_t input_len,
 	assert_uint_eq(vli_pos, input_len);
 	assert_uint_eq(out, expected);
 }
+#endif
+
 
 static void
 test_lzma_vli_decode(void)
 {
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
 	lzma_vli out = 0;
 	size_t in_pos = 0;
 
@@ -295,6 +307,7 @@ test_lzma_vli_decode(void)
 			eight_byte_value);
 	decode_multi_call_mode(nine_bytes, sizeof(nine_bytes),
 			nine_byte_value);
+#endif
 }
 
 

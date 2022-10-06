@@ -602,8 +602,8 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
 /**
  * This flag enables decoding of concatenated files with file formats that
  * allow concatenating compressed files as is. From the formats currently
- * supported by liblzma, only the .xz format allows concatenated files.
- * Concatenated files are not allowed with the legacy .lzma format.
+ * supported by liblzma, only the .xz and .lz formats allow concatenated
+ * files. Concatenated files are not allowed with the legacy .lzma format.
  *
  * This flag also affects the usage of the `action' argument for lzma_code().
  * When LZMA_CONCATENATED is used, lzma_code() won't return LZMA_STREAM_END
@@ -754,6 +754,64 @@ extern LZMA_API(lzma_ret) lzma_auto_decoder(
  */
 extern LZMA_API(lzma_ret) lzma_alone_decoder(
 		lzma_stream *strm, uint64_t memlimit)
+		lzma_nothrow lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Initialize .lz (lzip) decoder (a foreign file format)
+ *
+ * \param       strm        Pointer to properly prepared lzma_stream
+ * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
+ *                          to effectively disable the limiter.
+ * \param       flags       Bitwise-or of flags, or zero for no flags.
+ *                          All decoder flags listed above are supported
+ *                          although only LZMA_CONCATENATED and (in very rare
+ *                          cases) LZMA_IGNORE_CHECK are actually useful.
+ *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
+ *                          and LZMA_FAIL_FAST do nothing. LZMA_TELL_ANY_CHECK
+ *                          is supported for consistency only as CRC32 is
+ *                          always used in the .lz format.
+ *
+ * This decoder supports the .lz format version 0 and the unextended .lz
+ * format version 1:
+ *
+ *   - Files in the format version 0 were produced by lzip 1.3 and older.
+ *     Such files aren't common but may be found from file archives
+ *     as a few source packages were released in this format. People
+ *     might have old personal files in this format too. Decompression
+ *     support for the format version 0 was removed in lzip 1.18.
+ *
+ *   - lzip 1.3 added decompression support for .lz format version 1 files.
+ *     Compression support was added in lzip 1.4. In lzip 1.6 the .lz format
+ *     version 1 was extended to support the Sync Flush marker. This extension
+ *     is not supported by liblzma. lzma_code() will return LZMA_DATA_ERROR
+ *     at the location of the Sync Flush marker. In practice files with
+ *     the Sync Flush marker are very rare and thus liblzma can decompress
+ *     almost all .lz files.
+ *
+ * Just like with lzma_stream_decoder() for .xz files, LZMA_CONCATENATED
+ * should be used when decompressing normal standalone .lz files.
+ *
+ * The .lz format allows putting non-.lz data at the end of a file after at
+ * least one valid .lz member. That is, one can append custom data at the end
+ * of a .lz file and the decoder is required to ignore it. In liblzma this
+ * is relevant only when LZMA_CONCATENATED is used. In that case lzma_code()
+ * will return LZMA_STREAM_END and leave lzma_stream.next_in pointing to
+ * the first byte of the non-.lz data. An exception to this is if the first
+ * 1-3 bytes of the non-.lz data are identical to the .lz magic bytes
+ * (0x4C, 0x5A, 0x49, 0x50; "LZIP" in US-ASCII). In such a case the 1-3 bytes
+ * will have been ignored by lzma_code(). If one wishes to locate the non-.lz
+ * data reliably, one must ensure that the first byte isn't 0x4C. Actually
+ * one should ensure that none of the first four bytes of trailing data are
+ * equal to the magic bytes because lzip >= 1.20 requires it by default.
+ *
+ * \return      - LZMA_OK: Initialization was successful.
+ *              - LZMA_MEM_ERROR: Cannot allocate memory.
+ *              - LZMA_OPTIONS_ERROR: Unsupported flags
+ *              - LZMA_PROG_ERROR
+ */
+extern LZMA_API(lzma_ret) lzma_lzip_decoder(
+		lzma_stream *strm, uint64_t memlimit, uint32_t flags)
 		lzma_nothrow lzma_attr_warn_unused_result;
 
 

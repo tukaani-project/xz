@@ -316,6 +316,27 @@ esac
 AM_CONDITIONAL(COND_MICROLZMA, test "x$enable_microlzma" = xyes)
 
 
+#############################
+# .lz (lzip) format support #
+#############################
+
+AC_MSG_CHECKING([if .lz (lzip) decompression support should be built])
+AC_ARG_ENABLE([lzip-decoder], AS_HELP_STRING([--disable-lzip-decoder],
+		[Disable decompression support for .lz (lzip) files.]),
+	[], [enable_lzip_decoder=yes])
+if test "x$enable_decoder_lzma1" != xyes; then
+	enable_lzip_decoder=no
+	AC_MSG_RESULT([no because LZMA1 decoder is disabled])
+elif test "x$enable_lzip_decoder" = xyes; then
+	AC_DEFINE([HAVE_LZIP_DECODER], [1],
+		[Define to 1 if .lz (lzip) decompression support is enabled.])
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi
+AM_CONDITIONAL(COND_LZIP_DECODER, test "x$enable_lzip_decoder" = xyes)
+
+
 ###########################
 # Assembler optimizations #
 ###########################

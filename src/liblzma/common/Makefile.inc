@@ -94,4 +94,9 @@ if COND_MICROLZMA
 liblzma_la_SOURCES += \
 	common/microlzma_decoder.c
 endif
+
+if COND_LZIP_DECODER
+liblzma_la_SOURCES += \
+	common/lzip_decoder.c
+endif
 endif

@@ -113,4 +113,5 @@ global:
 	lzma_microlzma_encoder;
 	lzma_file_info_decoder;
 	lzma_stream_decoder_mt;
+	lzma_lzip_decoder;
 } XZ_5.2;

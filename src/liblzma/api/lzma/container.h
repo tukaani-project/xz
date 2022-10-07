@@ -700,11 +700,13 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder_mt(
 
 
 /**
- * \brief       Decode .xz Streams and .lzma files with autodetection
+ * \brief       Decode .xz, .lzma, and .lz (lzip) files with autodetection
  *
- * This decoder autodetects between the .xz and .lzma file formats, and
- * calls lzma_stream_decoder() or lzma_alone_decoder() once the type
- * of the input file has been detected.
+ * This decoder autodetects between the .xz, .lzma, and .lz file formats,
+ * and calls lzma_stream_decoder(), lzma_alone_decoder(), or
+ * lzma_lzip_decoder() once the type of the input file has been detected.
+ *
+ * Support for .lz was added in 5.4.0.
  *
  * If the flag LZMA_CONCATENATED is used and the input is a .lzma file:
  * For historical reasons concatenated .lzma files aren't supported.

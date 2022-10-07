@@ -97,6 +97,7 @@ endif
 
 if COND_LZIP_DECODER
 liblzma_la_SOURCES += \
-	common/lzip_decoder.c
+	common/lzip_decoder.c \
+	common/lzip_decoder.h
 endif
 endif

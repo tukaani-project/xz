@@ -23,6 +23,9 @@ enum format_type {
 	FORMAT_AUTO,
 	FORMAT_XZ,
 	FORMAT_LZMA,
+#ifdef HAVE_LZIP_DECODER
+	FORMAT_LZIP,
+#endif
 	// HEADER_GZIP,
 	FORMAT_RAW,
 };

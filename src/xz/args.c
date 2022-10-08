@@ -412,6 +412,9 @@ parse_real(args_info *args, int argc, char **argv)
 				{ "xz",     FORMAT_XZ },
 				{ "lzma",   FORMAT_LZMA },
 				{ "alone",  FORMAT_LZMA },
+#ifdef HAVE_LZIP_DECODER
+				{ "lzip",   FORMAT_LZIP },
+#endif
 				// { "gzip",   FORMAT_GZIP },
 				// { "gz",     FORMAT_GZIP },
 				{ "raw",    FORMAT_RAW },
@@ -666,6 +669,12 @@ args_parse(args_info *args, int argc, char **argv)
 	if (opt_mode != MODE_COMPRESS)
 		message_fatal(_("Decompression support was disabled "
 				"at build time"));
+#endif
+
+#ifdef HAVE_LZIP_DECODER
+	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_LZIP)
+		message_fatal(_("Compression of lzip files (.lz) "
+				"is not supported"));
 #endif
 
 	// Never remove the source file when the destination is not on disk.

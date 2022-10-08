@@ -119,7 +119,10 @@ uncompressed_name(const char *src_name, const size_t src_len)
 #ifdef __DJGPP__
 		{ ".lzm",   "" },
 #endif
-		{ ".tlz",   ".tar" },
+		{ ".tlz",   ".tar" }, // Both .tar.lzma and .tar.lz
+#ifdef HAVE_LZIP_DECODER
+		{ ".lz",    "" },
+#endif
 		// { ".gz",    "" },
 		// { ".tgz",   ".tar" },
 	};
@@ -208,6 +211,15 @@ compressed_name(const char *src_name, size_t src_len)
 #endif
 			".tlz",
 			NULL
+#ifdef HAVE_LZIP_DECODER
+		// This is needed to keep the table indexing in sync with
+		// enum format_type from coder.h.
+		}, {
+/*
+			".lz",
+*/
+			NULL
+#endif
 /*
 		}, {
 			".gz",
@@ -221,8 +233,11 @@ compressed_name(const char *src_name, size_t src_len)
 		}
 	};
 
-	// args.c ensures this.
+	// args.c ensures these.
 	assert(opt_format != FORMAT_AUTO);
+#ifdef HAVE_LZIP_DECODER
+	assert(opt_format != FORMAT_LZIP);
+#endif
 
 	const size_t format = opt_format - 1;
 	const char *const *suffixes = all_suffixes[format];
@@ -299,8 +314,11 @@ compressed_name(const char *src_name, size_t src_len)
 			// xz foo.tar          -> foo.txz
 			// xz -F lzma foo.tar  -> foo.tlz
 			static const char *const tar_suffixes[] = {
-				".txz",
-				".tlz",
+				".txz", // .tar.xz
+				".tlz", // .tar.lzma
+/*
+				".tlz", // .tar.lz
+*/
 				// ".tgz",
 			};
 			suffix = tar_suffixes[format];

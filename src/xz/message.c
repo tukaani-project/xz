@@ -1150,7 +1150,7 @@ message_help(bool long_help)
 		puts(_("\n Basic file format and compression options:\n"));
 		puts(_(
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      `auto' (default), `xz', `lzma', and `raw'\n"
+"                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
 "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
 "                      `crc32', `crc64' (default), or `sha256'"));
 		puts(_(

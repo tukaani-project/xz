@@ -15,7 +15,6 @@ XZDEC=../src/xzdec/xzdec
 test -x "$XZ" || XZ=
 test -x "$XZDEC" || XZDEC=
 if test -z "$XZ$XZDEC"; then
-	(exit 77)
 	exit 77
 fi
 
@@ -25,7 +24,6 @@ do
 		:
 	else
 		echo "Good file failed: $I"
-		(exit 1)
 		exit 1
 	fi
 
@@ -33,7 +31,6 @@ do
 		:
 	else
 		echo "Good file failed: $I"
-		(exit 1)
 		exit 1
 	fi
 done
@@ -42,13 +39,11 @@ for I in "$srcdir"/files/bad-*.xz
 do
 	if test -n "$XZ" && "$XZ" -dc "$I" > /dev/null 2>&1; then
 		echo "Bad file succeeded: $I"
-		(exit 1)
 		exit 1
 	fi
 
 	if test -n "$XZDEC" && "$XZDEC" "$I" > /dev/null 2>&1; then
 		echo "Bad file succeeded: $I"
-		(exit 1)
 		exit 1
 	fi
 done
@@ -57,7 +52,6 @@ done
 I="$srcdir/files/bad-3-index-uncomp-overflow.xz"
 if test -n "$XZ" && "$XZ" -l "$I" > /dev/null 2>&1; then
 	echo "Bad file succeeded with xz -l: $I"
-	(exit 1)
 	exit 1
 fi
 
@@ -67,7 +61,6 @@ do
 		:
 	else
 		echo "Good file failed: $I"
-		(exit 1)
 		exit 1
 	fi
 done
@@ -76,10 +69,8 @@ for I in "$srcdir"/files/bad-*.lzma
 do
 	if test -n "$XZ" && "$XZ" -dc "$I" > /dev/null 2>&1; then
 		echo "Bad file succeeded: $I"
-		(exit 1)
 		exit 1
 	fi
 done
 
-(exit 0)
 exit 0

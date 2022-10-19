@@ -13,7 +13,6 @@
 if test -x ../src/xz/xz ; then
 	:
 else
-	(exit 77)
 	exit 77
 fi
 
@@ -21,7 +20,6 @@ fi
 eval 'unset foo ; foo() { return 42; } ; foo'
 if test $? != 42 ; then
 	echo "/bin/sh doesn't support functions, skipping this test."
-	(exit 77)
 	exit 77
 fi
 
@@ -30,7 +28,6 @@ test_xz() {
 		:
 	else
 		echo "Compressing failed: $* $FILE"
-		(exit 1)
 		exit 1
 	fi
 
@@ -38,7 +35,6 @@ test_xz() {
 		:
 	else
 		echo "Decompressing failed: $* $FILE"
-		(exit 1)
 		exit 1
 	fi
 
@@ -47,7 +43,6 @@ test_xz() {
 	else
 		echo "Decompressed file does not match" \
 				"the original: $* $FILE"
-		(exit 1)
 		exit 1
 	fi
 
@@ -56,7 +51,6 @@ test_xz() {
 			:
 		else
 			echo "Decompressing failed: $* $FILE"
-			(exit 1)
 			exit 1
 		fi
 
@@ -65,7 +59,6 @@ test_xz() {
 		else
 			echo "Decompressed file does not match" \
 					"the original: $* $FILE"
-			(exit 1)
 			exit 1
 		fi
 	fi
@@ -85,13 +78,11 @@ case $FILE in
 		else
 			rm -f "$FILE"
 			echo "Failed to create the file '$FILE'."
-			(exit 1)
 			exit 1
 		fi
 		;;
 	'')
 		echo "No test file was specified."
-		(exit 1)
 		exit 1
 		;;
 esac
@@ -129,5 +120,4 @@ do
 	test_xz $ARGS --lzma2=dict=64KiB,nice=32,mode=fast
 done
 
-(exit 0)
 exit 0

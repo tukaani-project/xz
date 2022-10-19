@@ -16,7 +16,6 @@ XZGREP=../src/scripts/xzgrep
 
 for i in XZ XZDIFF XZGREP; do
 	eval test -x "\$$i" && continue
-	(exit 77)
 	exit 77
 done
 
@@ -32,7 +31,6 @@ otherpostimage=$srcdir/files/good-1-lzma2-1.xz
 status=$?
 if test "$status" != 0 ; then
 	echo "xzdiff with no changes exited with status $status != 0"
-	(exit 1)
 	exit 1
 fi
 
@@ -40,7 +38,6 @@ fi
 status=$?
 if test "$status" != 1 ; then
 	echo "xzdiff with changes exited with status $status != 1"
-	(exit 1)
 	exit 1
 fi
 
@@ -48,7 +45,6 @@ fi
 status=$?
 if test "$status" != 2 ; then
 	echo "xzdiff with missing operand exited with status $status != 2"
-	(exit 1)
 	exit 1
 fi
 
@@ -68,9 +64,7 @@ if cmp -s "$srcdir/xzgrep_expected_output" xzgrep_test_output ; then
 	:
 else
 	echo "unexpected output from xzgrep"
-	(exit 1)
 	exit 1
 fi
 
-(exit 0)
 exit 0

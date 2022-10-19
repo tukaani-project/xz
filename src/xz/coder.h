@@ -26,7 +26,6 @@ enum format_type {
 #ifdef HAVE_LZIP_DECODER
 	FORMAT_LZIP,
 #endif
-	// HEADER_GZIP,
 	FORMAT_RAW,
 };
 

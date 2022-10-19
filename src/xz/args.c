@@ -415,8 +415,6 @@ parse_real(args_info *args, int argc, char **argv)
 #ifdef HAVE_LZIP_DECODER
 				{ "lzip",   FORMAT_LZIP },
 #endif
-				// { "gzip",   FORMAT_GZIP },
-				// { "gz",     FORMAT_GZIP },
 				{ "raw",    FORMAT_RAW },
 			};
 

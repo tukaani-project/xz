@@ -123,8 +123,6 @@ uncompressed_name(const char *src_name, const size_t src_len)
 #ifdef HAVE_LZIP_DECODER
 		{ ".lz",    "" },
 #endif
-		// { ".gz",    "" },
-		// { ".tgz",   ".tar" },
 	};
 
 	const char *new_suffix = "";
@@ -220,12 +218,6 @@ compressed_name(const char *src_name, size_t src_len)
 */
 			NULL
 #endif
-/*
-		}, {
-			".gz",
-			".tgz",
-			NULL
-*/
 		}, {
 			// --format=raw requires specifying the suffix
 			// manually or using stdout.
@@ -319,7 +311,6 @@ compressed_name(const char *src_name, size_t src_len)
 /*
 				".tlz", // .tar.lz
 */
-				// ".tgz",
 			};
 			suffix = tar_suffixes[format];
 			suffix_len = 4;

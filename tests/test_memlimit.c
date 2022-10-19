@@ -20,7 +20,10 @@
 
 static uint8_t *in;
 static size_t in_size;
+
+#ifdef HAVE_DECODERS
 static uint8_t out[8192];
+#endif
 
 
 static void

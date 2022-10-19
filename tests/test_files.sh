@@ -18,6 +18,17 @@ if test -z "$XZ$XZDEC"; then
 	exit 77
 fi
 
+# If decompression support is missing, this test is skipped.
+# This isn't perfect as if only some decompressors are disabled
+# then some good files might not decompress and the test fails
+# for a (kind of) wrong reason.
+if grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
+	:
+else
+	echo "Decompression support is disabled, skipping this test."
+	exit 77
+fi
+
 for I in "$srcdir"/files/good-*.xz
 do
 	if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then

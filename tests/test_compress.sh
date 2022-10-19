@@ -16,6 +16,18 @@ else
 	exit 77
 fi
 
+# If compression or decompression support is missing, this test is skipped.
+# This isn't perfect as if only some compressors or decompressors are disabled
+# then this script can still fail because for now this doesn't check the
+# availability of each filter.
+if grep 'define HAVE_ENCODERS' ../config.h > /dev/null \
+		&& grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
+	:
+else
+	echo "Compression or decompression support is disabled, skipping this test."
+	exit 77
+fi
+
 # Find out if our shell supports functions.
 eval 'unset foo ; foo() { return 42; } ; foo'
 if test $? != 42 ; then

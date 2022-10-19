@@ -19,6 +19,17 @@ for i in XZ XZDIFF XZGREP; do
 	exit 77
 done
 
+# If decompression support is missing, this test is skipped.
+# Installing the scripts in this case is a bit silly but they
+# could still be used with other decompression tools so configure
+# doesn't automatically disable scripts if decoders are disabled.
+if grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
+	:
+else
+	echo "Decompression support is disabled, skipping this test."
+	exit 77
+fi
+
 PATH=`pwd`/../src/xz:$PATH
 export PATH
 

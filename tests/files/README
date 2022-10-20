@@ -4,25 +4,25 @@
 
 0. Introduction
 
-    This directory contains bunch of files to test handling of .xz
-    and .lzma files in decoder implementations. Many of the files have
-    been created by hand with a hex editor, thus there is no better
-    "source code" than the files themselves. All the test files and
-    this README have been put into the public domain.
+    This directory contains bunch of files to test handling of .xz,
+    .lzma (LZMA_Alone), and .lz (lzip) files in decoder implementations.
+    Many of the files have been created by hand with a hex editor, thus
+    there is no better "source code" than the files themselves. All the
+    test files and this README have been put into the public domain.
 
 
 1. File Types
 
-    Good files (good-*.xz, good-*.lzma) must decode successfully
-    without requiring a lot of CPU time or RAM.
+    Good files (good-*) must decode successfully without requiring
+    a lot of CPU time or RAM.
 
-    Unsupported files (unsupported-*.xz) are good files, but headers
+    Unsupported files (unsupported-*) are good files, but headers
     indicate features not supported by the current file format
     specification.
 
-    Bad files (bad-*.xz, bad-*.lzma) must cause the decoder to give
-    an error. Like with the good files, these files must not require
-    a lot of CPU time or RAM before they get detected to be broken.
+    Bad files (bad-*) must cause the decoder to give an error. Like
+    with the good files, these files must not require a lot of CPU
+    time or RAM before they get detected to be broken.
 
 
 2. Descriptions of Individual .xz Files
@@ -312,4 +312,91 @@
 
     bad-too_small_size-without_eopm-3.lzma is like -1 above but instead
     of a literal the problem occurs in the middle of a match.
+
+
+4. Descriptions of Individual .lz (lzip) Files
+
+4.1. Good Files
+
+    good-1-v0.lz contains a single version 0 member. lzip 1.17 and
+    *older* can decompress this; support for version 0 was removed
+    in lzip 1.18.
+
+    good-1-v0-trailing-1.lz is like good-1-v0.lz but contains
+    trailing data that the decompressor must ignore.
+
+    good-1-v1.lz contains a single version 1 member. lzip 1.3 and
+    newer can decompress this.
+
+    good-1-v1-trailing-1.lz is like good-1-v1.lz but contains
+    trailing data that the decompressor must ignore.
+
+    good-1-v1-trailing-2.lz is like good-1-v1.lz but contains
+    trailing data whose first three bytes match the .lz magic bytes.
+    With lzip >= 1.20 this file results in an error unless one uses
+    the command line option --loose-trailing. lzip 1.3 to 1.19 decode
+    this file successfully by default. XZ Utils uses the old behavior
+    because it allows lzma_code() to stop at the first byte of the
+    trailing data as long as the first byte isn't 0x4C (L in US-ASCII);
+    otherwise the first 1-3 bytes that equal to the magic bytes are
+    consumed and lost in lzma_code(), and this is visible in xz too:
+
+        $ ( xz -dc ; cat ) < good-1-v1-trailing-2.lz
+        Hello
+        World!
+        Trailing garbage
+
+        $ ( xz -dc --single-stream ; cat ) < good-1-v1-trailing-2.lz
+        Hello
+        World!
+        LZITrailing garbage
+
+    good-2-v0-v1.lz contains two members of which the first is
+    version 0 and the second version 1. lzip versions 1.3 to 1.17
+    (inclusive) can decompress this.
+
+    good-2-v1-v0.lz contains two members of which the first is
+    version 1 and the second version 0. lzip versions 1.3 to 1.17
+    (inclusive) can decompress this.
+
+    good-2-v1-v1.lz contains two version 1 members. lzip versions 1.3
+    and newer can decompress this.
+
+
+4.2. Unsupported Files
+
+    unsupported-1-v234.lz is like good-1-v1.lz except the version
+    field has been set to 234 (0xEA) which, as of writing, isn't
+    defined or supported by any .lz implementation.
+
+
+4.3. Bad Files
+
+    bad-1-v1-magic-1.lz is like good-1-v1.lz but the first magic byte
+    is wrong.
+
+    bad-1-v1-magic-2.lz is like good-1-v1.lz but the last (fourth)
+    magic byte is wrong.
+
+    bad-1-v1-dict-1.lz has too low value in the dictionary size field.
+
+    bad-1-v1-dict-2.lz has too high value in the dictionary size field.
+
+    bad-1-v1-crc32.lz has wrong CRC32 value.
+
+    bad-1-v0-uncomp-size.lz is version 0 format with incorrect value
+    in the uncompressed size field.
+
+    bad-1-v1-uncomp-size.lz is version 1 format with incorrect value
+    in the uncompressed size field.
+
+    bad-1-v1-member-size.lz has incorrect value in the member size
+    field.
+
+    bad-1-v1-trailing-magic.lz has the four .lz magic bytes as trailing
+    data. This should be detected as a truncated file and thus result
+    in an error. That is, the last four bytes of the file should not be
+    ignored as trailing garbage. lzip >= 1.18 matches this behavior
+    while older versions ignore the last four bytes and don't indicate
+    an error.
 

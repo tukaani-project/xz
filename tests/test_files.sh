@@ -164,4 +164,29 @@ do
 	fi
 done
 
+
+#######
+# .lz #
+#######
+
+if grep 'define HAVE_LZIP_DECODER' ../config.h > /dev/null ; then
+	for I in "$srcdir"/files/good-*.lz
+	do
+		if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then
+			:
+		else
+			echo "Good file failed: $I"
+			exit 1
+		fi
+	done
+
+	for I in "$srcdir"/files/bad-*.lz "$srcdir"/files/unsupported-*.lz
+	do
+		if test -n "$XZ" && "$XZ" -dc "$I" > /dev/null 2>&1; then
+			echo "Bad file succeeded: $I"
+			exit 1
+		fi
+	done
+fi
+
 exit "$EXIT_STATUS"

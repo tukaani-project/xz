@@ -90,6 +90,9 @@ test_empty_block(void)
 #ifndef HAVE_DECODERS
 	assert_skip("Decoder support disabled");
 #else
+	if (!lzma_filter_decoder_is_supported(LZMA_FILTER_POWERPC))
+		assert_skip("PowerPC BCJ decoder is disabled");
+
 	// An empty file with one Block using PowerPC BCJ and LZMA2.
 	size_t in_size;
 	uint8_t *empty_bcj_lzma2 = tuktest_file_from_srcdir(

@@ -748,8 +748,10 @@ error:
 extern file_pair *
 io_open_src(const char *src_name)
 {
-	if (is_empty_filename(src_name))
+	if (src_name[0] == '\0') {
+		message_error(_("Empty filename, skipping"));
 		return NULL;
+	}
 
 	// Since we have only one file open at a time, we can use
 	// a statically allocated structure.

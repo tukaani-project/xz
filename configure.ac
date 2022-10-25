@@ -22,7 +22,7 @@ AC_INIT([XZ Utils], m4_esyscmd([/bin/sh build-aux/version.sh]),
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 echo
 echo "$PACKAGE_STRING"

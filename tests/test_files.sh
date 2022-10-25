@@ -29,6 +29,11 @@ else
 	exit 77
 fi
 
+
+#######
+# .xz #
+#######
+
 for I in "$srcdir"/files/good-*.xz
 do
 	if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then
@@ -65,6 +70,38 @@ if test -n "$XZ" && "$XZ" -l "$I" > /dev/null 2>&1; then
 	echo "Bad file succeeded with xz -l: $I"
 	exit 1
 fi
+
+for I in "$srcdir"/files/unsupported-*.xz
+do
+	# Test these only with xz as unsupported-check.xz will exit
+	# successfully with xzdec because it doesn't warn about
+	# unsupported check type.
+	if test -n "$XZ" && "$XZ" -dc "$I" > /dev/null 2>&1; then
+		echo "Unsupported file succeeded: $I"
+		exit 1
+	fi
+done
+
+# Test that this passes with --no-warn (-Q).
+I="$srcdir/files/unsupported-check.xz"
+if test -z "$XZ" || "$XZ" -dcQ "$I" > /dev/null; then
+	:
+else
+	echo "Unsupported file failed with xz -Q: $I"
+	exit 1
+fi
+
+if test -z "$XZDEC" || "$XZDEC" -Q "$I" > /dev/null; then
+	:
+else
+	echo "Unsupported file failed with xzdec -Q: $I"
+	exit 1
+fi
+
+
+#########
+# .lzma #
+#########
 
 for I in "$srcdir"/files/good-*.lzma
 do

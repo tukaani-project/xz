@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2022-08-22" "Tukaani" "XZ Utils"
+.TH XZ 1 "2022-10-25" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -183,7 +183,8 @@ is removed unless
 was specified.
 The source
 .I file
-is never removed if the output is written to standard output.
+is never removed if the output is written to standard output
+or if an error occurs.
 .PP
 Sending
 .B SIGINFO

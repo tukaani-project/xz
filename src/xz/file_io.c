@@ -330,14 +330,14 @@ io_unlink(const char *name, const struct stat *known_st)
 		// it is possible that the user has put a new file in place
 		// of the original file, and in that case it obviously
 		// shouldn't be removed.
-		message_error(_("%s: File seems to have been moved, "
+		message_warning(_("%s: File seems to have been moved, "
 				"not removing"), name);
 	else
 #endif
 		// There's a race condition between lstat() and unlink()
 		// but at least we have tried to avoid removing wrong file.
 		if (unlink(name))
-			message_error(_("%s: Cannot remove: %s"),
+			message_warning(_("%s: Cannot remove: %s"),
 					name, strerror(errno));
 
 	return;

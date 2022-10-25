@@ -294,6 +294,28 @@ else
 fi
 
 
+#############
+# MicroLZMA #
+#############
+
+AC_MSG_CHECKING([if MicroLZMA support should be built])
+AC_ARG_ENABLE([microlzma], AS_HELP_STRING([--disable-microlzma],
+		[Do not build MicroLZMA encoder and decoder.
+		It is needed by specific applications only,
+		for example, erofs-utils.]),
+	[], [enable_microlzma=yes])
+case $enable_microlzma in
+	yes | no)
+		AC_MSG_RESULT([$enable_microlzma])
+		;;
+	*)
+		AC_MSG_RESULT([])
+		AC_MSG_ERROR([--enable-microlzma accepts only `yes' or `no'.])
+		;;
+esac
+AM_CONDITIONAL(COND_MICROLZMA, test "x$enable_microlzma" = xyes)
+
+
 ###########################
 # Assembler optimizations #
 ###########################

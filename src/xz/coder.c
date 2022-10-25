@@ -557,6 +557,15 @@ coder_init(file_pair *pair)
 					== LZMA_UNSUPPORTED_CHECK)
 				message_warning("%s: %s", pair->src_name,
 						message_strm(ret));
+
+			// With --single-stream lzma_code won't wait for
+			// LZMA_FINISH and thus it can return LZMA_STREAM_END
+			// if the file has no uncompressed data inside.
+			// So treat LZMA_STREAM_END as LZMA_OK here.
+			// When lzma_code() is called again in coder_normal()
+			// it will return LZMA_STREAM_END again.
+			if (ret == LZMA_STREAM_END)
+				ret = LZMA_OK;
 		}
 #endif
 	}

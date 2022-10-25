@@ -523,7 +523,8 @@ AM_CONDITIONAL([COND_SYMVERS_GENERIC],
 
 AC_MSG_CHECKING([if sandboxing should be used])
 AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
-		[Sandboxing METHOD can be `auto', `no', or `capsicum'.
+		[Sandboxing METHOD can be
+		`auto', `no', `capsicum', or `pledge'.
 		The default is `auto' which enables sandboxing if
 		a supported sandboxing method is found.])],
 	[], [enable_sandbox=auto])
@@ -531,12 +532,12 @@ case $enable_sandbox in
 	auto)
 		AC_MSG_RESULT([maybe (autodetect)])
 		;;
-	no | capsicum)
+	no | capsicum | pledge)
 		AC_MSG_RESULT([$enable_sandbox])
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-sandbox only accepts `auto', `no', or `capsicum'.])
+		AC_MSG_ERROR([--enable-sandbox only accepts `auto', `no', `capsicum', or `pledge'.])
 		;;
 esac
 
@@ -814,6 +815,11 @@ AC_CHECK_DECL([_mm_movemask_epi8],
 case $enable_sandbox in
 	auto | capsicum)
 		AX_CHECK_CAPSICUM([enable_sandbox=found], [:])
+		;;
+esac
+case $enable_sandbox in
+	auto | pledge)
+		AC_CHECK_FUNCS([pledge], [enable_sandbox=found ; break])
 		;;
 esac
 

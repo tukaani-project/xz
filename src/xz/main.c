@@ -163,6 +163,19 @@ main(int argc, char **argv)
 	// on the command line, thus this must be done before args_parse().
 	hardware_init();
 
+#ifdef HAVE_PLEDGE
+	// OpenBSD's pledge() sandbox
+	//
+	// Unconditionally enable sandboxing with fairly relaxed promises.
+	// This is still way better than having no sandbox at all. :-)
+	// More strict promises will be made later in file_io.c if possible.
+	//
+	// This is done only after the above initializations
+	// as the error message needs locale support.
+	if (pledge("stdio rpath wpath cpath fattr", ""))
+		message_fatal(_("Failed to enable the sandbox"));
+#endif
+
 	// Parse the command line arguments and get an array of filenames.
 	// This doesn't return if something is wrong with the command line
 	// arguments. If there are no arguments, one filename ("-") is still

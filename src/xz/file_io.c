@@ -212,6 +212,17 @@ io_sandbox_enter(int src_fd)
 	if (cap_enter())
 		goto error;
 
+#elif defined(HAVE_PLEDGE)
+	// pledge() was introduced in OpenBSD 5.9.
+	//
+	// main() unconditionally calls pledge() with fairly relaxed
+	// promises which work in all situations. Here we make the
+	// sandbox more strict.
+	if (pledge("stdio", ""))
+		goto error;
+
+	(void)src_fd;
+
 #else
 #	error ENABLE_SANDBOX is defined but no sandboxing method was found.
 #endif

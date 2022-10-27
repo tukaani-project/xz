@@ -30,21 +30,60 @@ else
 	exit 77
 fi
 
+# If a feature was disabled at build time, make it possible to skip
+# some of the test files. Use exit status 77 if any files were skipped.
+EXIT_STATUS=0
+have_feature()
+{
+	grep "define HAVE_$1" ../config.h > /dev/null && return 0
+	printf '%s: Skipping because HAVE_%s is not enabled\n' "$2" "$1"
+	EXIT_STATUS=77
+	return 1
+}
+
 
 #######
 # .xz #
 #######
 
+# If these integrity check types were disabled at build time,
+# allow the tests to pass still.
+NO_WARN=
+grep 'define HAVE_CHECK_CRC64' ../config.h > /dev/null || NO_WARN=-qQ
+grep 'define HAVE_CHECK_SHA256' ../config.h > /dev/null || NO_WARN=-qQ
+
 for I in "$srcdir"/files/good-*.xz
 do
-	if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then
+	# If features were disabled at build time, keep this still working.
+	case $I in
+		*/good-1-*delta-lzma2*.xz)
+			have_feature DECODER_DELTA "$I" || continue
+			;;
+	esac
+	case $I in
+		*/good-1-empty-bcj-lzma2.xz)
+			have_feature DECODER_POWERPC "$I" || continue
+			;;
+	esac
+	case $I in
+		*/good-1-sparc-lzma2.xz)
+			have_feature DECODER_SPARC "$I" || continue
+			;;
+	esac
+	case $I in
+		*/good-1-x86-lzma2.xz)
+			have_feature DECODER_X86 "$I" || continue
+			;;
+	esac
+
+	if test -z "$XZ" || "$XZ" $NO_WARN -dc "$I" > /dev/null; then
 		:
 	else
 		echo "Good file failed: $I"
 		exit 1
 	fi
 
-	if test -z "$XZDEC" || "$XZDEC" "$I" > /dev/null; then
+	if test -z "$XZDEC" || "$XZDEC" $NO_WARN "$I" > /dev/null; then
 		:
 	else
 		echo "Good file failed: $I"
@@ -59,7 +98,10 @@ do
 		exit 1
 	fi
 
-	if test -n "$XZDEC" && "$XZDEC" "$I" > /dev/null 2>&1; then
+	# xzdec doesn't warn about unsupported check so skip this if any of
+	# the check types were disabled at built time (NO_WARN isn't empty).
+	if test -n "$XZDEC" && test -z "$NO_WARN" \
+			&& "$XZDEC" "$I" > /dev/null 2>&1; then
 		echo "Bad file succeeded: $I"
 		exit 1
 	fi
@@ -122,4 +164,4 @@ do
 	fi
 done
 
-exit 0
+exit "$EXIT_STATUS"

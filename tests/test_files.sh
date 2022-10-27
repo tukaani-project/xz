@@ -85,14 +85,14 @@ done
 
 # Test that this passes with --no-warn (-Q).
 I="$srcdir/files/unsupported-check.xz"
-if test -z "$XZ" || "$XZ" -dcQ "$I" > /dev/null; then
+if test -z "$XZ" || "$XZ" -dcqQ "$I" > /dev/null; then
 	:
 else
 	echo "Unsupported file failed with xz -Q: $I"
 	exit 1
 fi
 
-if test -z "$XZDEC" || "$XZDEC" -Q "$I" > /dev/null; then
+if test -z "$XZDEC" || "$XZDEC" -qQ "$I" > /dev/null; then
 	:
 else
 	echo "Unsupported file failed with xzdec -Q: $I"

@@ -15,6 +15,7 @@ XZDEC=../src/xzdec/xzdec
 test -x "$XZ" || XZ=
 test -x "$XZDEC" || XZDEC=
 if test -z "$XZ$XZDEC"; then
+	echo "xz and xzdec were not built, skipping this test."
 	exit 77
 fi
 

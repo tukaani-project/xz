@@ -46,10 +46,11 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 
 		while (buf < limit) {
 #ifdef WORDS_BIGENDIAN
-			const uint32_t tmp = (crc >> 32)
+			const uint32_t tmp = (uint32_t)(crc >> 32)
 					^ aligned_read32ne(buf);
 #else
-			const uint32_t tmp = crc ^ aligned_read32ne(buf);
+			const uint32_t tmp = (uint32_t)crc
+					^ aligned_read32ne(buf);
 #endif
 			buf += 4;
 

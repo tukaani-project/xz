@@ -699,10 +699,6 @@ AC_CHECK_HEADERS([immintrin.h])
 # Checks for typedefs, structures, and compiler characteristics.
 ###############################################################################
 
-dnl We don't need these as long as we need a C99 compiler anyway.
-dnl AC_C_INLINE
-dnl AC_C_RESTRICT
-
 AC_HEADER_STDBOOL
 
 AC_TYPE_UINT8_T

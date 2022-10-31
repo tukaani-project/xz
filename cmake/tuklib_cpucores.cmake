@@ -89,7 +89,12 @@ function(tuklib_cpucores_internal_check)
             #include <sys/sysctl.h>
             int main(void)
             {
+            #ifdef HW_NCPUONLINE
+                /* This is preferred on OpenBSD, see tuklib_cpucores.c. */
+                int name[2] = { CTL_HW, HW_NCPUONLINE };
+            #else
                 int name[2] = { CTL_HW, HW_NCPU };
+            #endif
                 int cpus;
                 size_t cpus_size = sizeof(cpus);
                 sysctl(name, 2, &cpus, &cpus_size, NULL, 0);

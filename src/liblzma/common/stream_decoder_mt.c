@@ -1834,11 +1834,27 @@ stream_decoder_mt_memconfig(void *coder_ptr, uint64_t *memusage,
 {
 	// NOTE: This function gets/sets memlimit_stop. For now,
 	// memlimit_threading cannot be modified after initialization.
+	//
+	// *memusage will include cached memory too. Excluding cached memory
+	// would be misleading and it wouldn't help the applications to
+	// know how much memory is actually needed to decompress the file
+	// because the higher the number of threads and the memlimits are
+	// the more memory the decoder may use.
+	//
+	// Setting a new limit includes the cached memory too and too low
+	// limits will be rejected. Alternative could be to free the cached
+	// memory immediately if that helps to bring the limit down but
+	// the current way is the simplest. It's unlikely that limit needs
+	// to be lowered in the middle of a file anyway; the typical reason
+	// to want a new limit is to increase after LZMA_MEMLIMIT_ERROR
+	// and even such use isn't common.
 	struct lzma_stream_coder *coder = coder_ptr;
 
 	mythread_sync(coder->mutex) {
-		*memusage = coder->mem_direct_mode + coder->mem_in_use
-				+ coder->outq.mem_in_use; // FIXME?
+		*memusage = coder->mem_direct_mode
+				+ coder->mem_in_use
+				+ coder->mem_cached
+				+ coder->outq.mem_allocated;
 	}
 
 	// If no filter chains are allocated, *memusage may be zero.
@@ -1849,7 +1865,7 @@ stream_decoder_mt_memconfig(void *coder_ptr, uint64_t *memusage,
 	*old_memlimit = coder->memlimit_stop;
 
 	if (new_memlimit != 0) {
-		if (new_memlimit < *memusage) // FIXME?
+		if (new_memlimit < *memusage)
 			return LZMA_MEMLIMIT_ERROR;
 
 		coder->memlimit_stop = new_memlimit;

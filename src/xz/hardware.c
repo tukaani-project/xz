@@ -235,9 +235,22 @@ memlimit_show(const char *str, size_t str_columns, uint64_t value)
 extern void
 hardware_memlimit_show(void)
 {
+	uint32_t cputhreads = 1;
+#ifdef MYTHREAD_ENABLED
+	cputhreads = lzma_cputhreads();
+	if (cputhreads == 0)
+		cputhreads = 1;
+#endif
+
 	if (opt_robot) {
-		printf("%" PRIu64 "\t%" PRIu64 "\t%" PRIu64 "\n", total_ram,
-				memlimit_compress, memlimit_decompress);
+		printf("%" PRIu64 "\t%" PRIu64 "\t%" PRIu64 "\t%" PRIu64
+				"\t%" PRIu64 "\t%" PRIu32 "\n",
+				total_ram,
+				memlimit_compress,
+				memlimit_decompress,
+				hardware_memlimit_mtdec_get(),
+				memlimit_mt_default,
+				cputhreads);
 	} else {
 		const char *msgs[] = {
 			_("Amount of physical memory (RAM):"),
@@ -262,13 +275,6 @@ hardware_memlimit_show(void)
 			if (width_max < w)
 				width_max = w;
 		}
-
-		uint32_t cputhreads = 1;
-#ifdef MYTHREAD_ENABLED
-		cputhreads = lzma_cputhreads();
-		if (cputhreads == 0)
-			cputhreads = 1;
-#endif
 
 		puts(_("Hardware information:"));
 		memlimit_show(msgs[0], width_max, total_ram);

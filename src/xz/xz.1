@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2022-10-25" "Tukaani" "XZ Utils"
+.TH XZ 1 "2022-11-07" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -1960,15 +1960,50 @@ and
 .B "xz \-\-robot \-\-info\-memory"
 prints a single line with three tab-separated columns:
 .IP 1. 4
-Total amount of physical memory (RAM) in bytes
+Total amount of physical memory (RAM) in bytes.
 .IP 2. 4
-Memory usage limit for compression in bytes.
-A special value of zero indicates the default setting,
+Memory usage limit for compression in bytes
+.RB ( \-\-memlimit\-compress ).
+A special value of
+.B 0
+indicates the default setting
 which for single-threaded mode is the same as no limit.
 .IP 3. 4
-Memory usage limit for decompression in bytes.
-A special value of zero indicates the default setting,
+Memory usage limit for decompression in bytes
+.RB ( \-\-memlimit\-decompress ).
+A special value of
+.B 0
+indicates the default setting
 which for single-threaded mode is the same as no limit.
+.IP 4. 4
+Since
+.B xz
+5.3.4alpha:
+Memory usage for multi-threaded decompression in bytes
+.RB ( \-\-memlimit\-mt\-decompress ).
+This is never zero because a system-specific default value
+shown in the column 5
+is used if no limit has been specified explicitly.
+This is also never greater than the value in the column 3
+even if a larger value has been specified with
+.BR \-\-memlimit\-mt\-decompress .
+.IP 5. 4
+Since
+.B xz
+5.3.4alpha:
+A system-specific default memory usage limit
+that is used to limit the number of threads
+when compressing with an automatic number of threads
+.RB ( \-\-threads=0 )
+and no memory usage limit has been specified
+.RB ( \-\-memlimit\-compress ).
+This is also used as the default value for
+.BR \-\-memlimit\-mt\-decompress .
+.IP 6. 4
+Since
+.B xz
+5.3.4alpha:
+Number of available processor threads.
 .PP
 In the future, the output of
 .B "xz \-\-robot \-\-info\-memory"

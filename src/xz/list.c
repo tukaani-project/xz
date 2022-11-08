@@ -544,16 +544,26 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 
 	// Determine the minimum XZ Utils version that supports this Block.
 	//
-	// Currently the only thing that 5.0.0 doesn't support is empty
-	// LZMA2 Block. This decoder bug was fixed in 5.0.2.
-	{
+	//   - ARM64 filter needs 5.4.0.
+	//
+	//   - 5.0.0 doesn't support empty LZMA2 streams and thus empty
+	//     Blocks that use LZMA2. This decoder bug was fixed in 5.0.2.
+	if (xfi->min_version < 50040002U) {
+		for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+			if (filters[i].id == LZMA_FILTER_ARM64) {
+				xfi->min_version = 50040002U;
+				break;
+			}
+		}
+	}
+
+	if (xfi->min_version < 50000022U) {
 		size_t i = 0;
 		while (filters[i + 1].id != LZMA_VLI_UNKNOWN)
 			++i;
 
 		if (filters[i].id == LZMA_FILTER_LZMA2
-				&& iter->block.uncompressed_size == 0
-				&& xfi->min_version < 50000022U)
+				&& iter->block.uncompressed_size == 0)
 			xfi->min_version = 50000022U;
 	}
 

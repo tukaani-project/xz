@@ -408,7 +408,7 @@ msgstr ""
 #: src/xz/list.c:825
 #, c-format
 msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
-msgstr "    DğrDentm %*s Üstvri  Bayraklar  SkştrBoyut   BelKullnm  Süzgeçler"
+msgstr "    DğrDentm %*s Üstvri  Bayrak     SkştrBoyut   BelKullnm  Süzgeçler"
 
 #: src/xz/list.c:903 src/xz/list.c:1078
 #, c-format

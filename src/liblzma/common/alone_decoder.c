@@ -139,10 +139,8 @@ alone_decode(void *coder_ptr, const lzma_allocator *allocator,
 			}
 		};
 
-		const lzma_ret ret = lzma_next_filter_init(&coder->next,
-				allocator, filters);
-		if (ret != LZMA_OK)
-			return ret;
+		return_if_error(lzma_next_filter_init(&coder->next,
+				allocator, filters));
 
 		// Use a hack to set the uncompressed size.
 		lzma_lz_decoder_uncompressed(coder->next.coder,

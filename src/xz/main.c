@@ -142,6 +142,20 @@ read_name(const args_info *args)
 int
 main(int argc, char **argv)
 {
+#ifdef HAVE_PLEDGE
+	// OpenBSD's pledge(2) sandbox
+	//
+	// Unconditionally enable sandboxing with fairly relaxed promises.
+	// This is still way better than having no sandbox at all. :-)
+	// More strict promises will be made later in file_io.c if possible.
+	if (pledge("stdio rpath wpath cpath fattr", "")) {
+		// Don't translate the string or use message_fatal() as
+		// those haven't been initialized yet.
+		fprintf(stderr, "%s: Failed to enable the sandbox\n", argv[0]);
+		return E_ERROR;
+	}
+#endif
+
 #if defined(_WIN32) && !defined(__CYGWIN__)
 	InitializeCriticalSection(&exit_status_cs);
 #endif
@@ -162,19 +176,6 @@ main(int argc, char **argv)
 	// Set hardware-dependent default values. These can be overridden
 	// on the command line, thus this must be done before args_parse().
 	hardware_init();
-
-#ifdef HAVE_PLEDGE
-	// OpenBSD's pledge() sandbox
-	//
-	// Unconditionally enable sandboxing with fairly relaxed promises.
-	// This is still way better than having no sandbox at all. :-)
-	// More strict promises will be made later in file_io.c if possible.
-	//
-	// This is done only after the above initializations
-	// as the error message needs locale support.
-	if (pledge("stdio rpath wpath cpath fattr", ""))
-		message_fatal(_("Failed to enable the sandbox"));
-#endif
 
 	// Parse the command line arguments and get an array of filenames.
 	// This doesn't return if something is wrong with the command line

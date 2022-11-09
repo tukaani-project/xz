@@ -73,6 +73,7 @@ SRCS_C = \
 	../src/liblzma/common/index_decoder.c \
 	../src/liblzma/common/index_encoder.c \
 	../src/liblzma/common/index_hash.c \
+	../src/liblzma/common/lzip_decoder.c \
 	../src/liblzma/common/stream_decoder.c \
 	../src/liblzma/common/stream_encoder.c \
 	../src/liblzma/common/stream_flags_common.c \
@@ -97,6 +98,7 @@ SRCS_C = \
 	../src/liblzma/lzma/lzma_encoder_presets.c \
 	../src/liblzma/rangecoder/price_table.c \
 	../src/liblzma/simple/arm.c \
+	../src/liblzma/simple/arm64.c \
 	../src/liblzma/simple/armthumb.c \
 	../src/liblzma/simple/ia64.c \
 	../src/liblzma/simple/powerpc.c \

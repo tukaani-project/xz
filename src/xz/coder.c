@@ -513,8 +513,12 @@ coder_init(file_pair *pair)
 			// is needed, because we don't want to do use
 			// passthru mode with --test.
 			if (opt_mode == MODE_DECOMPRESS
-					&& opt_stdout && opt_force)
+					&& opt_stdout && opt_force) {
+				// These are needed for progress info.
+				strm.total_in = 0;
+				strm.total_out = 0;
 				return CODER_INIT_PASSTHRU;
+			}
 
 			ret = LZMA_FORMAT_ERROR;
 			break;

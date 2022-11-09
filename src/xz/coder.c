@@ -1000,6 +1000,15 @@ coder_run(const char *filename)
 				mytime_set_start_time();
 
 				// Initialize the progress indicator.
+				//
+				// NOTE: When reading from stdin, fstat()
+				// isn't called on it and thus src_st.st_size
+				// is zero. If stdin pointed to a regular
+				// file, it would still be possible to know
+				// the file size but then we would also need
+				// to take into account the current reading
+				// position since with stdin it isn't
+				// necessarily at the beginning of the file.
 				const bool is_passthru = init_ret
 						== CODER_INIT_PASSTHRU;
 				const uint64_t in_size

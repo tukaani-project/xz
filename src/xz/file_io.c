@@ -768,6 +768,10 @@ io_open_src(const char *src_name)
 	// a statically allocated structure.
 	static file_pair pair;
 
+	// This implicitly also initializes src_st.st_size to zero
+	// which is expected to be <= 0 by default. fstat() isn't
+	// called when reading from standard input but src_st.st_size
+	// is still read.
 	pair = (file_pair){
 		.src_name = src_name,
 		.dest_name = NULL,

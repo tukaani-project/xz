@@ -110,6 +110,7 @@ add_compile_definitions(
     HAVE_MF_BT4
     HAVE_MF_HC3
     HAVE_MF_HC4
+    HAVE_LZIP_DECODER
 
     # Standard headers and types are available:
     HAVE_STDBOOL_H
@@ -280,6 +281,8 @@ add_library(liblzma
     src/liblzma/common/index_encoder.c
     src/liblzma/common/index_encoder.h
     src/liblzma/common/index_hash.c
+    src/liblzma/common/lzip_decoder.c
+    src/liblzma/common/lzip_decoder.h
     src/liblzma/common/memcmplen.h
     src/liblzma/common/outqueue.c
     src/liblzma/common/outqueue.h

@@ -1674,13 +1674,15 @@ and
 \fB\-\-x86\fR[\fB=\fIoptions\fR]
 .PD 0
 .TP
-\fB\-\-powerpc\fR[\fB=\fIoptions\fR]
-.TP
-\fB\-\-ia64\fR[\fB=\fIoptions\fR]
-.TP
 \fB\-\-arm\fR[\fB=\fIoptions\fR]
 .TP
 \fB\-\-armthumb\fR[\fB=\fIoptions\fR]
+.TP
+\fB\-\-arm64\fR[\fB=\fIoptions\fR]
+.TP
+\fB\-\-powerpc\fR[\fB=\fIoptions\fR]
+.TP
+\fB\-\-ia64\fR[\fB=\fIoptions\fR]
 .TP
 \fB\-\-sparc\fR[\fB=\fIoptions\fR]
 .PD
@@ -1690,7 +1692,7 @@ in the filter chain.
 .IP ""
 A BCJ filter converts relative addresses in
 the machine code to their absolute counterparts.
-This doesn't change the size of the data,
+This doesn't change the size of the data
 but it increases redundancy,
 which can help LZMA2 to produce 0\(en15\ % smaller
 .B .xz
@@ -1699,21 +1701,8 @@ The BCJ filters are always reversible,
 so using a BCJ filter for wrong type of data
 doesn't cause any data loss, although it may make
 the compression ratio slightly worse.
-.IP ""
-It is fine to apply a BCJ filter on a whole executable;
-there's no need to apply it only on the executable section.
-Applying a BCJ filter on an archive that contains both executable
-and non-executable files may or may not give good results,
-so it generally isn't good to blindly apply a BCJ filter when
-compressing binary packages for distribution.
-.IP ""
-These BCJ filters are very fast and
-use insignificant amount of memory.
-If a BCJ filter improves compression ratio of a file,
-it can improve decompression speed at the same time.
-This is because, on the same hardware,
-the decompression speed of LZMA2 is roughly
-a fixed number of bytes of compressed data per second.
+The BCJ filters are very fast and
+use an insignificant amount of memory.
 .IP ""
 These BCJ filters have known problems related to
 the compression ratio:
@@ -1722,24 +1711,24 @@ the compression ratio:
 Some types of files containing executable code
 (for example, object files, static libraries, and Linux kernel modules)
 have the addresses in the instructions filled with filler values.
-These BCJ filters will still do the address conversion,
+These BCJ filters (except ARM64) will still do the address conversion,
 which will make the compression worse with these files.
+The ARM64 filter doesn't have this problem.
 .IP \(bu 3
-Applying a BCJ filter on an archive containing multiple similar
-executables can make the compression ratio worse than not using
-a BCJ filter.
-This is because the BCJ filter doesn't detect the boundaries
-of the executable files, and doesn't reset
-the address conversion counter for each executable.
+If a BCJ filter is applied on an archive,
+it is possible that it makes the compression ratio
+worse than not using a BCJ filter.
+For example, if there are similar or even identical executables
+then filtering will likely make the files less similar
+and thus compression is worse.
+The contents of non-executable files in the same archive can matter too.
+In practice one has to try with and without a BCJ filter to see
+which is better in each situation.
 .RE
 .IP ""
-Both of the above problems will be fixed
-in the future in a new filter.
-The old BCJ filters will still be useful in embedded systems,
-because the decoder of the new filter will be bigger
-and use more memory.
-.IP ""
 Different instruction sets have different alignment:
+the executable file must be aligned to a multiple of
+this value in the input data to make the filter work.
 .RS
 .RS
 .PP
@@ -1749,11 +1738,12 @@ l n l
 l n l.
 Filter;Alignment;Notes
 x86;1;32-bit or 64-bit x86
+ARM;4;
+ARM-Thumb;2;
+ARM64;4;4096-byte alignment is best
 PowerPC;4;Big endian only
-ARM;4;Little endian only
-ARM-Thumb;2;Little endian only
-IA-64;16;Big or little endian
-SPARC;4;Big or little endian
+IA-64;16;Itanium
+SPARC;4;
 .TE
 .RE
 .RE
@@ -1764,6 +1754,8 @@ the LZMA2 options are set to match the
 alignment of the selected BCJ filter.
 For example, with the IA-64 filter, it's good to set
 .B pb=4
+or even
+.B pb=4,lp=4,lc=0
 with LZMA2 (2^4=16).
 The x86 filter is an exception;
 it's usually good to stick to LZMA2's default

@@ -1113,6 +1113,9 @@ message_help(bool long_help)
 "  -k, --keep          keep (don't delete) input files\n"
 "  -f, --force         force overwrite of output file and (de)compress links\n"
 "  -c, --stdout        write to standard output and don't delete input files"));
+	// NOTE: --to-stdout isn't included above because it's not
+	// the recommended spelling. It was copied from gzip but other
+	// compressors with gzip-like syntax don't support it.
 
 	if (long_help) {
 		puts(_(

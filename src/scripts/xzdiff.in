@@ -65,8 +65,9 @@ for file; do
   test "X$file" = X- || <"$file" || exit 2
 done
 
-xz1=$xz
-xz2=$xz
+# xz needs -qQ to ignore warnings like unsupported check type.
+xz1="$xz -qQ"
+xz2="$xz -qQ"
 xz_status=0
 exec 3>&1
 

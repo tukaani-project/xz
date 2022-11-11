@@ -180,7 +180,7 @@ for i; do
     *[-.]bz2 | *[-.]tbz | *.tbz2) uncompress="bzip2 -cdf";;
     *[-.]lzo | *[-.]tzo) uncompress="lzop -cdf";;
     *[-.]zst | *[-.]tzst) uncompress="zstd -cdfq";; # zstd needs -q.
-    *) uncompress="$xz -cdf";;
+    *) uncompress="$xz -cdfqQ";; # -qQ to ignore warnings like unsupp. check.
   esac
   # xz_status will hold the decompressor's exit status.
   # Exit status of grep (and in rare cases, printf or sed) is

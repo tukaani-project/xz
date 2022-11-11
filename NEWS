@@ -218,6 +218,80 @@ XZ Utils Release Notes
       (FreeBSD >= 10).
 
 
+5.2.7 (2022-09-30)
+
+    * liblzma:
+
+        - Made lzma_filters_copy() to never modify the destination
+          array if an error occurs. lzma_stream_encoder() and
+          lzma_stream_encoder_mt() already assumed this. Before this
+          change, if a tiny memory allocation in lzma_filters_copy()
+          failed it would lead to a crash (invalid free() or invalid
+          memory reads) in the cleanup paths of these two encoder
+          initialization functions.
+
+        - Added missing integer overflow check to lzma_index_append().
+          This affects xz --list and other applications that decode
+          the Index field from .xz files using lzma_index_decoder().
+          Normal decompression of .xz files doesn't call this code
+          and thus most applications using liblzma aren't affected
+          by this bug.
+
+        - Single-threaded .xz decoder (lzma_stream_decoder()): If
+          lzma_code() returns LZMA_MEMLIMIT_ERROR it is now possible
+          to use lzma_memlimit_set() to increase the limit and continue
+          decoding. This was supposed to work from the beginning
+          but there was a bug. With other decoders (.lzma or
+          threaded .xz decoder) this already worked correctly.
+
+        - Fixed accumulation of integrity check type statistics in
+          lzma_index_cat(). This bug made lzma_index_checks() return
+          only the type of the integrity check of the last Stream
+          when multiple lzma_indexes were concatenated. Most
+          applications don't use these APIs but in xz it made
+          xz --list not list all check types from concatenated .xz
+          files. In xz --list --verbose only the per-file "Check:"
+          lines were affected and in xz --robot --list only the "file"
+          line was affected.
+
+        - Added ABI compatibility with executables that were linked
+          against liblzma in RHEL/CentOS 7 or other liblzma builds
+          that had copied the problematic patch from RHEL/CentOS 7
+          (xz-5.2.2-compat-libs.patch). For the details, see the
+          comment at the top of src/liblzma/validate_map.sh.
+
+          WARNING: This uses __symver__ attribute with GCC >= 10.
+          In other cases the traditional __asm__(".symver ...")
+          is used. Using link-time optimization (LTO, -flto) with
+          GCC versions older than 10 can silently result in
+          broken liblzma.so.5 (incorrect symbol versions)! If you
+          want to use -flto with GCC, you must use GCC >= 10.
+          LTO with Clang seems to work even with the traditional
+          __asm__(".symver ...") method.
+
+    * xzgrep: Fixed compatibility with old shells that break if
+      comments inside command substitutions have apostrophes (').
+      This problem was introduced in 5.2.6.
+
+    * Build systems:
+
+        - New #define in config.h: HAVE_SYMBOL_VERSIONS_LINUX
+
+        - Windows: Fixed liblzma.dll build with Visual Studio project
+          files. It broke in 5.2.6 due to a change that was made to
+          improve CMake support.
+
+        - Windows: Building liblzma with UNICODE defined should now
+          work.
+
+        - CMake files are now actually included in the release tarball.
+          They should have been in 5.2.5 already.
+
+        - Minor CMake fixes and improvements.
+
+    * Added a new translation: Turkish
+
+
 5.2.6 (2022-08-12)
 
     * xz:

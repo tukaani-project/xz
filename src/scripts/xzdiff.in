@@ -73,7 +73,7 @@ exec 3>&1
 
 if test $# -eq 1; then
   case $1 in
-    *[-.]xz | *[-.]lzma | *.t[lx]z)
+    *[-.]xz | *[-.]lzma | *[-.]lz | *.t[lx]z)
       ;;
     *[-.]bz2 | *.tbz | *.tbz2)
       xz1=bzip2;;
@@ -88,7 +88,7 @@ if test $# -eq 1; then
       exit 2;;
   esac
   case $1 in
-    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lzo | *[-.]zst)
+    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *[-.]lzo | *[-.]zst)
       FILE=`expr "X$1" : 'X\(.*\)[-.][abglmostxzZ2]*$'`;;
     *.t[abglx]z)
       FILE=`expr "X$1" : 'X\(.*[-.]t\)[abglx]z$'`ar;;
@@ -117,9 +117,9 @@ elif test $# -eq 2; then
     *[-.]zst | *.tzst) xz2='zstd -q';;
   esac
   case $1 in
-    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
+    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
       case "$2" in
-        *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
+        *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
           if test "$1$2" = --; then
             xz_status=$(
               exec 4>&1
@@ -183,7 +183,7 @@ elif test $# -eq 2; then
     esac;;
   *)
     case "$2" in
-      *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
+      *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *.t[abglx]z | *.tbz2 | *[-.]lzo | *.tzo | *[-.]zst | *.tzst | -)
         xz_status=$(
           exec 4>&1
           ($xz2 -cdf -- "$2" 4>&-; echo $? >&4) 3>&- |

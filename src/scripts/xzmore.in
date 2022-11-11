@@ -52,7 +52,7 @@ if test $# = 0; then
 	if test -t 0; then
 		printf '%s\n' "$usage"; exit 1
 	else
-		$xz -cdfq | eval "${PAGER:-more}"
+		$xz -cdfqQ | eval "${PAGER:-more}"
 	fi
 else
 	FIRST=1
@@ -70,7 +70,7 @@ else
 		fi
 		if test "$ANS" != 's'; then
 			printf '%s\n' "------> $FILE <------"
-			$xz -cdfq -- "$FILE" | eval "${PAGER:-more}"
+			$xz -cdfqQ -- "$FILE" | eval "${PAGER:-more}"
 		fi
 		if test -t 1; then
 			FIRST=0

@@ -50,9 +50,9 @@ fi
 if test "$(less -V | { read _ ver _ && echo ${ver%%.*}; })" -ge 429; then
 	# less 429 or later: LESSOPEN pipe will be used on
 	# standard input if $LESSOPEN begins with |-.
-	LESSOPEN="|-$xz -cdfq -- %s"
+	LESSOPEN="|-$xz -cdfqQ -- %s"
 else
-	LESSOPEN="|$xz -cdfq -- %s"
+	LESSOPEN="|$xz -cdfqQ -- %s"
 fi
 export LESSMETACHARS LESSOPEN
 

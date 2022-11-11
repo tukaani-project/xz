@@ -51,7 +51,7 @@
 // since 2000). When using @@ instead of @@@, the internal name must not be
 // the same as the external name to avoid problems in some situations. This
 // is why "#define foo_52 foo" is needed for the default symbol versions.
-#	if TUKLIB_GNUC_REQ(10, 0)
+#	if TUKLIB_GNUC_REQ(10, 0) && !defined(__INTEL_COMPILER)
 #		define LZMA_SYMVER_API(extnamever, type, intname) \
 			extern __attribute__((__symver__(extnamever))) \
 					LZMA_API(type) intname

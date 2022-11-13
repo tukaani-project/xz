@@ -2,6 +2,85 @@
 XZ Utils Release Notes
 ======================
 
+5.2.8 (2022-11-13)
+
+    * xz:
+
+        - If xz cannot remove an input file when it should, this
+          is now treated as a warning (exit status 2) instead of
+          an error (exit status 1). This matches GNU gzip and it
+          is more logical as at that point the output file has
+          already been successfully closed.
+
+        - Fix handling of .xz files with an unsupported check type.
+          Previously such printed a warning message but then xz
+          behaved as if an error had occurred (didn't decompress,
+          exit status 1). Now a warning is printed, decompression
+          is done anyway, and exit status is 2. This used to work
+          slightly before 5.0.0. In practice this bug matters only
+          if xz has been built with some check types disabled. As
+          instructed in PACKAGERS, such builds should be done in
+          special situations only.
+
+        - Fix "xz -dc --single-stream tests/files/good-0-empty.xz"
+          which failed with "Internal error (bug)". That is,
+          --single-stream was broken if the first .xz stream in
+          the input file didn't contain any uncompressed data.
+
+        - Fix displaying file sizes in the progress indicator when
+          working in passthru mode and there are multiple input files.
+          Just like "gzip -cdf", "xz -cdf" works like "cat" when the
+          input file isn't a supported compressed file format. In
+          this case the file size counters weren't reset between
+          files so with multiple input files the progress indicator
+          displayed an incorrect (too large) value.
+
+    * liblzma:
+
+        - API docs in lzma/container.h:
+            * Update the list of decoder flags in the decoder
+              function docs.
+            * Explain LZMA_CONCATENATED behavior with .lzma files
+              in lzma_auto_decoder() docs.
+
+        - OpenBSD: Use HW_NCPUONLINE to detect the number of
+          available hardware threads in lzma_physmem().
+
+        - Fix use of wrong macro to detect x86 SSE2 support.
+          __SSE2_MATH__ was used with GCC/Clang but the correct
+          one is __SSE2__. The first one means that SSE2 is used
+          for floating point math which is irrelevant here.
+          The affected SSE2 code isn't used on x86-64 so this affects
+          only 32-bit x86 builds that use -msse2 without -mfpmath=sse
+          (there is no runtime detection for SSE2). It improves LZMA
+          compression speed (not decompression).
+
+        - Fix the build with Intel C compiler 2021 (ICC, not ICX)
+          on Linux. It defines __GNUC__ to 10 but doesn't support
+          the __symver__ attribute introduced in GCC 10.
+
+    * Scripts: Ignore warnings from xz by using --quiet --no-warn.
+      This is needed if the input .xz files use an unsupported
+      check type.
+
+    * Translations:
+
+        - Updated Croatian and Turkish translations.
+
+        - One new translations wasn't included because it needed
+          technical fixes. It will be in upcoming 5.4.0. No new
+          translations will be added to the 5.2.x branch anymore.
+
+        - Renamed the French man page translation file from
+          fr_FR.po to fr.po and thus also its install directory
+          (like /usr/share/man/fr_FR -> .../fr).
+
+        - Man page translations for upcoming 5.4.0 are now handled
+          in the Translation Project.
+
+    * Update doc/faq.txt a little so it's less out-of-date.
+
+
 5.2.7 (2022-09-30)
 
     * liblzma:

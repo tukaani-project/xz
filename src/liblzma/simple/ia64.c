@@ -90,7 +90,7 @@ ia64_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters, bool is_encoder)
 {
 	return lzma_simple_coder_init(next, allocator, filters,
-			&ia64_code, 0, 16, 16, is_encoder, true);
+			&ia64_code, 0, 16, 16, is_encoder);
 }
 
 

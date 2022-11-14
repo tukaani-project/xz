@@ -19,8 +19,4 @@ extern lzma_ret lzma_simple_props_decode(
 		void **options, const lzma_allocator *allocator,
 		const uint8_t *props, size_t props_size);
 
-extern lzma_ret lzma_arm64_props_decode(
-		void **options, const lzma_allocator *allocator,
-		const uint8_t *props, size_t props_size);
-
 #endif

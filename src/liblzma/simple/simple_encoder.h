@@ -20,6 +20,4 @@ extern lzma_ret lzma_simple_props_size(uint32_t *size, const void *options);
 
 extern lzma_ret lzma_simple_props_encode(const void *options, uint8_t *out);
 
-extern lzma_ret lzma_arm64_props_encode(const void *options, uint8_t *out);
-
 #endif

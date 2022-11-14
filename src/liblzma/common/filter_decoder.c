@@ -100,12 +100,12 @@ static const lzma_filter_decoder decoders[] = {
 	},
 #endif
 #ifdef HAVE_DECODER_ARM64
-       {
-               .id = LZMA_FILTER_ARM64,
-               .init = &lzma_simple_arm64_decoder_init,
-               .memusage = NULL,
-               .props_decode = &lzma_arm64_props_decode,
-       },
+	{
+		.id = LZMA_FILTER_ARM64,
+		.init = &lzma_simple_arm64_decoder_init,
+		.memusage = NULL,
+		.props_decode = &lzma_simple_props_decode,
+	},
 #endif
 #ifdef HAVE_DECODER_SPARC
 	{

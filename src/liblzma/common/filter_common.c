@@ -98,13 +98,13 @@ static const struct {
 	},
 #endif
 #if defined(HAVE_ENCODER_ARM64) || defined(HAVE_DECODER_ARM64)
-       {
-               .id = LZMA_FILTER_ARM64,
-		.options_size = sizeof(lzma_options_arm64),
-               .non_last_ok = true,
-               .last_ok = false,
-               .changes_size = false,
-       },
+	{
+		.id = LZMA_FILTER_ARM64,
+		.options_size = sizeof(lzma_options_bcj),
+		.non_last_ok = true,
+		.last_ok = false,
+		.changes_size = false,
+	},
 #endif
 #if defined(HAVE_ENCODER_SPARC) || defined(HAVE_DECODER_SPARC)
 	{

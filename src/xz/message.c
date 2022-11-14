@@ -1034,9 +1034,16 @@ message_filters_to_str(char buf[FILTERS_STR_SIZE],
 		}
 
 		case LZMA_FILTER_ARM64: {
-			const lzma_options_arm64 *opt = filters[i].options;
-			my_snprintf(&pos, &left, "arm64=width=%" PRIu32,
-					opt->width);
+			// FIXME TODO: Merge with the above generic BCJ list
+			// once the Filter ID is changed to the final value.
+			const lzma_options_bcj *opt = filters[i].options;
+			my_snprintf(&pos, &left, "arm64");
+
+			// Show the start offset only when really needed.
+			if (opt != NULL && opt->start_offset != 0)
+				my_snprintf(&pos, &left, "=start=%" PRIu32,
+						opt->start_offset);
+
 			break;
 		}
 

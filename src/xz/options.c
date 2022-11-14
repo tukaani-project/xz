@@ -224,45 +224,6 @@ options_bcj(const char *str)
 }
 
 
-///////////
-// ARM64 //
-///////////
-
-enum {
-	OPT_WIDTH,
-};
-
-
-static void
-set_arm64(void *options, unsigned key, uint64_t value,
-		const char *valuestr lzma_attribute((__unused__)))
-{
-	lzma_options_arm64 *opt = options;
-	switch (key) {
-	case OPT_WIDTH:
-		opt->width = value;
-		break;
-	}
-}
-
-
-extern lzma_options_arm64 *
-options_arm64(const char *str)
-{
-	static const option_map opts[] = {
-		{ "width", NULL, LZMA_ARM64_WIDTH_MIN, LZMA_ARM64_WIDTH_MAX },
-		{ NULL,    NULL, 0, 0 }
-	};
-
-	lzma_options_arm64 *options = xmalloc(sizeof(lzma_options_arm64));
-	options->width = LZMA_ARM64_WIDTH_DEFAULT;
-
-	parse_options(str, opts, &set_arm64, options);
-
-	return options;
-}
-
-
 //////////
 // LZMA //
 //////////

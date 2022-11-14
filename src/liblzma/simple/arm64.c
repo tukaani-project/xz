@@ -3,6 +3,22 @@
 /// \file       arm64.c
 /// \brief      Filter for ARM64 binaries
 ///
+/// This converts ARM64 relative addresses in the BL and ADRP immediates
+/// to absolute values to increase redundancy of ARM64 code.
+///
+/// Unlike the older BCJ filters, this handles zeros specially. This way
+/// the filter won't be counterproductive on Linux kernel modules, object
+/// files, and static libraries where the immediates are all zeros (to be
+/// filled later by a linker). Usually this has no downsides but with bad
+/// luck it can reduce the effectiveness of the filter and trying a different
+/// start offset can mitigate the problem.
+///
+/// Converting B or ADR instructions was also tested but it's not useful.
+/// A majority of the jumps for the B instruction are very small (+/- 0xFF).
+/// These are typical for loops and if-statements. Encoding them to their
+/// absolute address reduces redundancy since many of the small relative
+/// jump values are repeated, but very few of the absolute addresses are.
+//
 //  Authors:    Lasse Collin
 //              Jia Tan
 //
@@ -13,126 +29,110 @@
 
 #include "simple_private.h"
 
-#ifdef HAVE_ENCODER_ARM64
-#	include "simple_encoder.h"
-#endif
 
-#ifdef HAVE_DECODER_ARM64
-#	include "simple_decoder.h"
-#endif
+static uint32_t
+arm64_conv(uint32_t src, uint32_t pc, uint32_t mask, bool is_encoder)
+{
+	if (!is_encoder)
+		pc = 0U - pc;
 
+	uint32_t dest = src + pc;
+	if ((dest & mask) == 0)
+		dest = pc;
 
-// In ARM64, there are two main branch instructions.
-// bl - branch and link: Calls a function and stores the return address.
-// b - branch: Jumps to a location, but does not store a return address.
-//
-// After some benchmarking, it was determined that only the bl instruction
-// is beneficial for compression. A majority of the jumps for the b
-// instruction are very small (+/- 0xFF). These are typical for loops
-// and if-statements. Encoding them to their absolute address reduces
-// redundancy since many of the small relative jump values are repeated,
-// but very few of the absolute addresses are.
-//
-// Thus, only the bl instruction will be encoded and decoded.
-// The bl instruction is 32 bits in size. The highest 6 bits contain
-// the opcode (10 0101 == 0x25) and the remaining 26 bits are
-// the immediate value. The immediate is a signed integer that
-// encodes the target address as a multiple of four bytes so
-// the range is +/-128 MiB.
-
-// The 6-bit op code for the bl instruction in ARM64
-#define ARM64_BL_OPCODE 0x25
-
-// Once the 26-bit immediate is multiple by four, the address is 28 bits
-// with the two lowest bits being zero. This mask is used to clear the
-// unwanted bits.
-#define ADDR28_MASK 0x0FFFFFFCU
-
-
-typedef struct {
-	uint32_t sign_bit;
-	uint32_t sign_mask;
-} lzma_simple_arm64;
+	return dest;
+}
 
 
 static size_t
-arm64_code(void *simple_ptr, uint32_t now_pos, bool is_encoder,
+arm64_code(void *simple lzma_attribute((__unused__)),
+		uint32_t now_pos, bool is_encoder,
 		uint8_t *buffer, size_t size)
 {
-	const lzma_simple_arm64 *simple = simple_ptr;
-	const uint32_t sign_bit = simple->sign_bit;
-	const uint32_t sign_mask = simple->sign_mask;
-
 	size_t i;
+
+	// Clang 14.0.6 on x86-64 makes this four times bigger and 60 % slower
+	// with auto-vectorization that is enabled by default with -O2.
+	// Even -Os, which doesn't use vectorization, produces faster code.
+	// Disabling vectorization with -O2 gives good speed (faster than -Os)
+	// and reasonable code size.
+	//
+	// Such vectorization bloat happens with -O2 when targeting ARM64 too
+	// but performance hasn't been tested.
+	//
+	// Clang 14 and 15 won't auto-vectorize this loop if the condition
+	// for ADRP is replaced with the commented-out version. However,
+	// at least Clang 14.0.6 doesn't generate as fast code with that
+	// condition. The commented-out code is also bigger.
+	//
+	// GCC 12.2 on x86-64 with -O2 produces good code with both versions
+	// of the ADRP if-statement although the single-branch version is
+	// slightly faster and smaller than the commented-out version.
+	// Speed is similar to non-vectorized clang -O2.
+#ifdef __clang__
+#	pragma clang loop vectorize(disable)
+#endif
 	for (i = 0; i + 4 <= size; i += 4) {
-		if ((buffer[i + 3] >> 2) == ARM64_BL_OPCODE) {
-			// Get the relative 28-bit address from
-			// the 26-bit immediate.
-			uint32_t src = read32le(buffer + i);
-			src <<= 2;
-			src &= ADDR28_MASK;
+		const uint32_t pc = (uint32_t)(now_pos + i);
+		uint32_t instr = read32le(buffer + i);
 
-			// When the conversion width isn't the maximum,
-			// check that the highest bits are either all zero
-			// or all one.
-			if ((src & sign_mask) != 0
-					&& (src & sign_mask) != sign_mask)
-				continue;
+		if ((instr >> 26) == 0x25) {
+			// BL instruction:
+			// The full 26-bit immediate is converted.
+			// The range is +/-128 MiB.
+			//
+			// Using the full range is helps quite a lot with
+			// big executables. Smaller range would reduce false
+			// positives in non-code sections of the input though
+			// so this is a compromise that slightly favors big
+			// files. With the full range only six bits of the 32
+			// need to match to trigger a conversion.
+			const uint32_t mask26 = 0x03FFFFFF;
+			const uint32_t src = instr & mask26;
+			instr = 0x94000000;
 
-			// Some files like static libraries or Linux kernel
-			// modules have the immediate value filled with
-			// zeros. Converting these placeholder values would
-			// make compression worse so don't touch them.
 			if (src == 0)
 				continue;
 
-			const uint32_t pc = now_pos + (uint32_t)(i);
+			instr |= arm64_conv(src, pc >> 2, mask26, is_encoder)
+					& mask26;
+			write32le(buffer + i, instr);
 
-			uint32_t dest;
-			if (is_encoder)
-				dest = pc + src;
-			else
-				dest = src - pc;
+/*
+		// This is a more readable version of the one below but this
+		// has two branches. It results in bigger and slower code.
+		} else if ((instr & 0x9FF00000) == 0x90000000
+				|| (instr & 0x9FF00000) == 0x90F00000) {
+*/
+		// This is only a rotation, addition, and testing that
+		// none of the bits covered by the bitmask are set.
+		} else if (((((instr << 8) | (instr >> 24))
+				+ (0x10000000 - 0x90)) & 0xE000009F) == 0) {
+			// ADRP instruction:
+			// Only values in the range +/-512 MiB are converted.
+			//
+			// Using less than the full +/-4 GiB range reduces
+			// false positives on non-code sections of the input
+			// while being excellent for executables up to 512 MiB.
+			// The positive effect of ADRP conversion is smaller
+			// than that of BL but it also doesn't hurt so much in
+			// non-code sections of input because, with +/-512 MiB
+			// range, nine bits of 32 need to match to trigger a
+			// conversion (two 10-bit match choices = 9 bits).
+			const uint32_t src = ((instr >> 29) & 3)
+					| ((instr >> 3) & 0x0003FFFC);
+			instr &= 0x9000001F;
 
-			dest &= ADDR28_MASK;
+			if (src == 0)
+				continue;
 
-			// Sign-extend negative values or unset sign bits
-			// from positive values.
-			if (dest & sign_bit)
-				dest |= sign_mask;
-			else
-				dest &= ~sign_mask;
+			const uint32_t dest = arm64_conv(
+					src, pc >> 12, 0x3FFFF, is_encoder);
 
-			assert((dest & sign_mask) == 0
-					|| (dest & sign_mask) == sign_mask);
-
-			// Since also the decoder will ignore src values
-			// of 0, we must ensure that nothing is ever encoded
-			// to 0. This is achieved by encoding such values
-			// as pc instead. When decoding, pc will be first
-			// converted to 0 which we will catch here and fix.
-			if (dest == 0) {
-				// We cannot get here if pc is zero because
-				// then src would need to be zero too but we
-				// already ensured that src != 0.
-				assert((pc & ADDR28_MASK) != 0);
-				dest = is_encoder ? pc : 0U - pc;
-				dest &= ADDR28_MASK;
-
-				if (dest & sign_bit)
-					dest |= sign_mask;
-				else
-					dest &= ~sign_mask;
-			}
-
-			assert((dest & sign_mask) == 0
-					|| (dest & sign_mask) == sign_mask);
-			assert((dest & ~ADDR28_MASK) == 0);
-
-			// Construct and store the modified 32-bit instruction.
-			dest >>= 2;
-			dest |= (uint32_t)ARM64_BL_OPCODE << 26;
-			write32le(buffer + i, dest);
+			instr |= (dest & 3) << 29;
+			instr |= (dest & 0x0003FFFC) << 3;
+			instr |= (0U - (dest & 0x00020000)) & 0x00E00000;
+			write32le(buffer + i, instr);
 		}
 	}
 
@@ -140,81 +140,12 @@ arm64_code(void *simple_ptr, uint32_t now_pos, bool is_encoder,
 }
 
 
-#ifdef HAVE_ENCODER_ARM64
-extern lzma_ret
-lzma_arm64_props_encode(const void *options, uint8_t *out)
-{
-	const lzma_options_arm64 *const opt = options;
-
-	if (opt->width < LZMA_ARM64_WIDTH_MIN
-			|| opt->width > LZMA_ARM64_WIDTH_MAX)
-		return LZMA_OPTIONS_ERROR;
-
-	out[0] = (uint8_t)(opt->width - LZMA_ARM64_WIDTH_MIN);
-	return LZMA_OK;
-}
-#endif
-
-
-#ifdef HAVE_DECODER_ARM64
-extern lzma_ret
-lzma_arm64_props_decode(void **options, const lzma_allocator *allocator,
-		const uint8_t *props, size_t props_size)
-{
-	if (props_size != 1)
-		return LZMA_OPTIONS_ERROR;
-
-	if (props[0] > LZMA_ARM64_WIDTH_MAX - LZMA_ARM64_WIDTH_MIN)
-		return LZMA_OPTIONS_ERROR;
-
-	lzma_options_arm64 *opt = lzma_alloc(sizeof(lzma_options_arm64),
-			allocator);
-	if (opt == NULL)
-		return LZMA_MEM_ERROR;
-
-	opt->width = props[0] + LZMA_ARM64_WIDTH_MIN;
-	*options = opt;
-	return LZMA_OK;
-
-}
-#endif
-
-
 static lzma_ret
 arm64_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters, bool is_encoder)
 {
-	if (filters[0].options == NULL)
-		return LZMA_PROG_ERROR;
-
-	const lzma_options_arm64 *opt = filters[0].options;
-	if (opt->width < LZMA_ARM64_WIDTH_MIN
-			|| opt->width > LZMA_ARM64_WIDTH_MAX)
-		return LZMA_OPTIONS_ERROR;
-
-	const lzma_ret ret = lzma_simple_coder_init(next, allocator, filters,
-			&arm64_code, sizeof(lzma_simple_arm64), 4, 4,
-			is_encoder, false);
-
-	if (ret == LZMA_OK) {
-		lzma_simple_coder *coder = next->coder;
-		lzma_simple_arm64 *simple = coder->simple;
-
-		// This will be used to detect if the value, after
-		// conversion has been done, is negative. The location
-		// of the sign bit depends on the conversion width.
-		simple->sign_bit = UINT32_C(1) << (opt->width - 1);
-
-		// When conversion width isn't the maximum, the highest
-		// bits must all be either zero or one, that is, they
-		// all are copies of the sign bit. This mask is used to
-		// (1) detect if input value is in the range specified
-		// by the conversion width and (2) clearing or setting
-		// the high bits after conversion (integers can wrap around).
-		simple->sign_mask = (UINT32_C(1) << 28) - simple->sign_bit;
-	}
-
-	return ret;
+	return lzma_simple_coder_init(next, allocator, filters,
+			&arm64_code, 0, 4, 4, is_encoder, true);
 }
 
 

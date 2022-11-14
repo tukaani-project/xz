@@ -374,7 +374,7 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case OPT_ARM64:
 			coder_add_filter(LZMA_FILTER_ARM64,
-					options_arm64(optarg));
+					options_bcj(optarg));
 			break;
 
 		case OPT_SPARC:

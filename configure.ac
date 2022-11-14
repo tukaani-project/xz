@@ -370,6 +370,16 @@ esac
 AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
 
 
+#############
+# CLMUL CRC #
+#############
+
+AC_ARG_ENABLE([clmul-crc], AS_HELP_STRING([--disable-clmul-crc],
+		[Do not use carryless multiplication for CRC calculation
+		even if support for it is detected.]),
+	[], [enable_clmul_crc=yes])
+
+
 #####################
 # Size optimization #
 #####################
@@ -733,8 +743,9 @@ AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
 	[],
 	[AC_MSG_ERROR([Required header file(s) are missing.])])
 
-# This allows the use of the intrinsic functions if they are available.
-AC_CHECK_HEADERS([immintrin.h])
+# immintrin.h allows the use of the intrinsic functions if they are available.
+# cpuid.h may be used for detecting x86 processor features at runtime.
+AC_CHECK_HEADERS([immintrin.h cpuid.h])
 
 
 ###############################################################################
@@ -873,6 +884,50 @@ AC_CHECK_DECL([_mm_movemask_epi8],
 [#ifdef HAVE_IMMINTRIN_H
 #include <immintrin.h>
 #endif])
+
+# For faster CRC on 32/64-bit x86 and E2K (see also crc64_fast.c):
+#
+#   - Check for the CLMUL intrinsic _mm_clmulepi64_si128 in <immintrin.h>.
+#
+#   - Check that __attribute__((__target__("ssse3,sse4.1,pclmul"))) works
+#     together with _mm_clmulepi64_si128 from <immintrin.h>. The attribute
+#     was added in GCC 4.4 but some GCC 4.x versions don't allow intrinsics
+#     with it. Exception: it must be not be used with EDG-based compilers
+#     like ICC and the compiler on E2K.
+#
+# If everything above is supported, runtime detection will be used to keep the
+# binaries working on systems that don't support the required extensions.
+AC_MSG_CHECKING([if _mm_clmulepi64_si128 is usable])
+if test "x$enable_clmul_crc" = xno ; then
+	AC_MSG_RESULT([no, --disable-clmul-crc was used])
+else
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <immintrin.h>
+
+// CLMUL works on older E2K instruction set but it is slow due to emulation.
+#if defined(__e2k__) && __iset__ < 6
+#	error
+#endif
+
+// Intel's old compiler (ICC) can define __GNUC__ but the attribute must not
+// be used with it. The new Clang-based ICX needs the attribute.
+// Checking for !defined(__EDG__) catches ICC and other EDG-based compilers.
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
+__attribute__((__target__("ssse3,sse4.1,pclmul")))
+#endif
+__m128i my_clmul(__m128i a, __m128i b)
+{
+	return _mm_clmulepi64_si128(a, b, 0);
+}
+	]])], [
+		AC_DEFINE([HAVE_USABLE_CLMUL], [1],
+			[Define to 1 if _mm_clmulepi64_si128 is usable.
+			See configure.ac for details.])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
+fi
 
 # Check for sandbox support. If one is found, set enable_sandbox=found.
 case $enable_sandbox in

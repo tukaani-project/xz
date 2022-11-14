@@ -370,6 +370,18 @@ XZ Utils Installation
                 pre-i686 systems, you may want to disable the assembler
                 code.
 
+    --disable-clmul-crc
+                Disable the use carryless multiplication for CRC
+                calculation even if compiler support for it is detected.
+                The code uses runtime detection of SSSE3, SSE4.1, and
+                CLMUL instructions on x86. On 32-bit x86 this currently
+                is used only if --disable-assembler is used (this might
+                be fixed in the future). The code works on E2K too.
+
+                If using compiler options that unconditionally allow the
+                required extensions (-msse4.1 -mpclmul) then runtime
+                detection isn't used and the generic code is omitted.
+
     --enable-unaligned-access
                 Allow liblzma to use unaligned memory access for 16-bit,
                 32-bit, and 64-bit loads and stores. This should be

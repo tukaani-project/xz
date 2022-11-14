@@ -49,8 +49,10 @@
 cmake_minimum_required(VERSION 3.13...3.16 FATAL_ERROR)
 
 include(CMakePushCheckState)
+include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckStructHasMember)
+include(CheckCSourceCompiles)
 include(cmake/tuklib_integer.cmake)
 include(cmake/tuklib_cpucores.cmake)
 include(cmake/tuklib_physmem.cmake)
@@ -402,14 +404,16 @@ check_c_source_compiles("
 cmake_pop_check_state()
 tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
 
+# cpuid.h
+check_include_file(cpuid.h HAVE_CPUID_H)
+tuklib_add_definition_if(liblzma HAVE_CPUID_H)
+
 # immintrin.h:
-include(CheckIncludeFile)
 check_include_file(immintrin.h HAVE_IMMINTRIN_H)
 if(HAVE_IMMINTRIN_H)
     target_compile_definitions(liblzma PRIVATE HAVE_IMMINTRIN_H)
 
     # SSE2 intrinsics:
-    include(CheckCSourceCompiles)
     check_c_source_compiles("
             #include <immintrin.h>
             int main(void)
@@ -421,6 +425,24 @@ if(HAVE_IMMINTRIN_H)
         "
         HAVE__MM_MOVEMASK_EPI8)
     tuklib_add_definition_if(liblzma HAVE__MM_MOVEMASK_EPI8)
+
+    # CLMUL intrinsic:
+    check_c_source_compiles("
+            #include <immintrin.h>
+            #if defined(__e2k__) && __iset__ < 6
+            #   error
+            #endif
+            #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
+            __attribute__((__target__(\"ssse3,sse4.1,pclmul\")))
+            #endif
+            __m128i my_clmul(__m128i a, __m128i b)
+            {
+                return _mm_clmulepi64_si128(a, b, 0);
+            }
+            int main(void) { return 0; }
+    "
+    HAVE_USABLE_CLMUL)
+    tuklib_add_definition_if(liblzma HAVE_USABLE_CLMUL)
 endif()
 
 # Support -fvisiblity=hidden when building shared liblzma.

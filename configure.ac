@@ -354,22 +354,20 @@ if test "x$enable_assembler" = xyes; then
 		linux* | *bsd* | mingw* | cygwin | msys | *djgpp*)
 			case $host_cpu in
 				i?86)   enable_assembler=x86 ;;
-				x86_64) enable_assembler=x86_64 ;;
 			esac
 			;;
 	esac
 fi
 case $enable_assembler in
-	x86 | x86_64 | no)
+	x86 | no)
 		AC_MSG_RESULT([$enable_assembler])
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-assembler accepts only `yes', `no', `x86', or `x86_64'.])
+		AC_MSG_ERROR([--enable-assembler accepts only `yes', `no', or `x86' (32-bit).])
 		;;
 esac
 AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
-AM_CONDITIONAL(COND_ASM_X86_64, test "x$enable_assembler" = xx86_64)
 
 
 #####################

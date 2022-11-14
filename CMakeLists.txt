@@ -48,6 +48,7 @@
 
 cmake_minimum_required(VERSION 3.13...3.16 FATAL_ERROR)
 
+include(CMakePushCheckState)
 include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(cmake/tuklib_integer.cmake)
@@ -386,6 +387,20 @@ if(NOT TUKLIB_CPUCORES_FOUND OR NOT TUKLIB_PHYSMEM_FOUND)
             "included cmake/tuklib_*.cmake files that should be fixed. "
             "To build anyway, edit this CMakeLists.txt to ignore this error.")
 endif()
+
+# Check for __attribute__((__constructor__)) support.
+# This needs -Werror because some compilers just warn
+# about this being unsupported.
+cmake_push_check_state()
+set(CMAKE_REQUIRED_FLAGS "-Werror")
+check_c_source_compiles("
+        __attribute__((__constructor__))
+        static void my_constructor_func(void) { return; }
+        int main(void) { return 0; }
+    "
+    HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
+cmake_pop_check_state()
+tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
 
 # immintrin.h:
 include(CheckIncludeFile)

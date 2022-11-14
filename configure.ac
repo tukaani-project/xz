@@ -768,6 +768,29 @@ AC_CHECK_MEMBERS([
 AC_SYS_LARGEFILE
 AC_C_BIGENDIAN
 
+# __attribute__((__constructor__)) can be used for one-time initializations.
+# Use -Werror because some compilers accept unknown attributes and just
+# give a warning. If it works this should give no warnings, even
+# clang -Weverything should be fine.
+# dnl This doesn't need AC_LANG_SOURCE, minimal code is enough.
+AC_MSG_CHECKING([if __attribute__((__constructor__)) can be used])
+have_func_attribute_constructor=no
+OLD_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -Werror"
+AC_COMPILE_IFELSE([
+	__attribute__((__constructor__))
+	static void my_constructor_func(void) { return; }
+], [
+	AC_DEFINE([HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR], [1],
+		[Define to 1 if __attribute__((__constructor__))
+		is supported for functions.])
+	have_func_attribute_constructor=yes
+	AC_MSG_RESULT([yes])
+], [
+	AC_MSG_RESULT([no])
+])
+CFLAGS="$OLD_CFLAGS"
+
 
 ###############################################################################
 # Checks for library functions.
@@ -1005,9 +1028,11 @@ if test x$tuklib_cv_cpucores_method = xunknown; then
 	echo "No supported method to detect the number of CPU cores."
 fi
 
-if test "x$enable_threads$enable_small" = xnoyes; then
+if test "x$enable_threads$enable_small$have_func_attribute_constructor" \
+		= xnoyesno; then
 	echo
 	echo "NOTE:"
-	echo "liblzma will be thread unsafe due the combination"
-	echo "of --disable-threads --enable-small."
+	echo "liblzma will be thread-unsafe due to the combination"
+	echo "of --disable-threads --enable-small when using a compiler"
+	echo "that doesn't support __attribute__((__constructor__))."
 fi

@@ -543,7 +543,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 			const lzma_allocator *allocator, const void *options,
 			lzma_lz_options *lz_options))
 {
-#ifdef HAVE_SMALL
+#if defined(HAVE_SMALL) && !defined(HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
 	// We need that the CRC32 table has been initialized.
 	lzma_crc32_init();
 #endif

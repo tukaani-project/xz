@@ -456,7 +456,9 @@ XZ Utils Installation
 
                         no      Disable threading support. This is the
                                 same as using --disable-threads.
-                                NOTE: If combined with --enable-small, the
+                                NOTE: If combined with --enable-small
+                                and the compiler doesn't support
+                                __attribute__((__constructor__)), the
                                 resulting liblzma won't be thread safe,
                                 that is, if a multi-threaded application
                                 calls any liblzma functions from more than

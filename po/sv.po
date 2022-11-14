@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: xz 5.4.0-pre1\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
 "POT-Creation-Date: 2022-11-09 19:59+0200\n"
-"PO-Revision-Date: 2022-11-14 17:58+0100\n"
+"PO-Revision-Date: 2022-11-14 18:23+0100\n"
 "Last-Translator: Luna Jernberg <droidbittin@gmail.com>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -274,7 +274,7 @@ msgstr "Totalt mängd fysiskt minne (RAM):"
 
 #: src/xz/hardware.c:257
 msgid "Number of processor threads:"
-msgstr "Antal av processortrådar:"
+msgstr "Antal processortrådar:"
 
 #: src/xz/hardware.c:258
 msgid "Compression:"
@@ -318,7 +318,7 @@ msgstr "Okomprimerad storlek:"
 
 #: src/xz/list.c:69
 msgid "Ratio:"
-msgstr "Ratio:"
+msgstr "Förhållande:"
 
 #: src/xz/list.c:70
 msgid "Check:"
@@ -374,7 +374,7 @@ msgstr "Total storlek"
 
 #: src/xz/list.c:127
 msgid "Ratio"
-msgstr "Ratio"
+msgstr "Förhållande"
 
 #: src/xz/list.c:128
 msgid "Check"
@@ -529,7 +529,7 @@ msgstr "%s: Oväntat slut av indata vid läsning av filnamn"
 #: src/xz/main.c:120
 #, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
-msgstr "%s Null-tecken hittat vid läsning av filnamn; kanske menade du att använda ”--files0” istället för ”--files”?"
+msgstr "%s: Null-tecken hittat vid läsning av filnamn; kanske menade du att använda ”--files0” istället för ”--files”?"
 
 #: src/xz/main.c:188
 msgid "Compression and decompression with --robot are not supported yet."
@@ -847,9 +847,9 @@ msgstr ""
 "\n"
 "  --x86[=FLAGGOR]      x86 BCJ-filter (32- och 64-bitar)\n"
 "  --arm[=FLAGGOR]      ARM BCJ filter\n"
-"  --armthumb[=FLAGGOR] ARM-Thumb BCJ filter\n"
-"  --arm64[=FLAGGOR]    ARM64 BCJ filter\n"
-"  --powerpc[=FLAGGOR]  PowerPC BCJ-filter (bara big endian)\n"
+"  --armthumb[=FLAGGOR] ARM-Thumb BCJ-filter\n"
+"  --arm64[=FLAGGOR]    ARM64 BCJ-filter\n"
+"  --powerpc[=FLAGGOR]  PowerPC BCJ-filter (endast rak byteordning)\n"
 "  --ia64[=FLAGGOR]     IA-64 (Itanium) BCJ-filter\n"
 "  --sparc[=FLAGGOR]    SPARC BCJ-filter\n"
 "                       Giltiga FLAGGOR för alla BCJ-filter:\n"

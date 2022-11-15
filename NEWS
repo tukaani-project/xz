@@ -2,6 +2,102 @@
 XZ Utils Release Notes
 ======================
 
+5.3.4alpha (2022-11-15)
+
+    * All fixes from 5.2.7 and 5.2.8.
+
+    * liblzma:
+
+        - Minor improvements to the threaded decoder.
+
+        - Added CRC64 implementation that uses SSSE3, SSE4.1, and CLMUL
+          instructions on 32/64-bit x86 and E2K. On 32-bit x86 it's
+          not enabled unless --disable-assembler is used but then
+          the non-CLMUL code might be slower. Processor support is
+          detected at runtime so this is built by default on x86-64
+          and E2K. On these platforms, if compiler flags indicate
+          unconditional CLMUL support (-msse4.1 -mpclmul) then the
+          generic version is not built, making liblzma 8-9 KiB smaller
+          compared to having both versions included.
+
+          With extremely compressible files this can make decompression
+          up to twice as fast but with typical files 5 % improvement
+          is a more realistic expectation.
+
+          The CLMUL version is slower than the generic version with
+          tiny inputs (especially at 1-8 bytes per call, but up to
+          16 bytes). In normal use in xz this doesn't matter at all.
+
+        - Added an experimental ARM64 filter. This is *not* the final
+          version! Files created with this experimental version won't
+          be supported in the future versions! The filter design is
+          a compromise where improving one use case makes some other
+          cases worse.
+
+        - Added decompression support for the .lz (lzip) file format
+          version 0 and the original unextended version 1. See the
+          API docs of lzma_lzip_decoder() for details. Also
+          lzma_auto_decoder() supports .lz files.
+
+        - Building with --disable-threads --enable-small
+          is now thread-safe if the compiler supports
+          __attribute__((__constructor__))
+
+    * xz:
+
+        - Added support for OpenBSD's pledge(2) as a sandboxing method.
+
+        - Don't mention endianness for ARM and ARM-Thumb filters in
+          --long-help. The filters only work for little endian
+          instruction encoding but modern ARM processors using
+          big endian data access still use little endian
+          instruction encoding. So the help text was misleading.
+          In contrast, the PowerPC filter is only for big endian
+          32/64-bit PowerPC code. Little endian PowerPC would need
+          a separate filter.
+
+        - Added --experimental-arm64. This will be renamed once the
+          filter is finished. Files created with this experimental
+          filter will not be supported in the future!
+
+        - Added new fields to the output of xz --robot --info-memory.
+
+        - Added decompression support for the .lz (lzip) file format
+          version 0 and the original unextended version 1. It is
+          autodetected by default. See also the option --format on
+          the xz man page.
+
+    * Scripts now support the .lz format using xz.
+
+    * Build systems:
+
+        - New #defines in config.h: HAVE_ENCODER_ARM64,
+          HAVE_DECODER_ARM64, HAVE_LZIP_DECODER, HAVE_CPUID_H,
+          HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR, HAVE_USABLE_CLMUL
+
+        - New configure options: --disable-clmul-crc,
+          --disable-microlzma, --disable-lzip-decoder, and
+          'pledge' is now an option in --enable-sandbox (but
+          it's autodetected by default anyway).
+
+        - INSTALL was updated to document the new configure options.
+
+        - PACKAGERS now lists also --disable-microlzma and
+          --disable-lzip-decoder as configure options that must
+          not be used in builds for non-embedded use.
+
+    * Tests:
+
+        - Fix some of the tests so that they skip instead of fail if
+          certain features have been disabled with configure options.
+          It's still not perfect.
+
+        - Other improvements to tests.
+
+    * Updated translations: Croatian, Finnish, Hungarian, Polish,
+      Romanian, Spanish, Swedish, and Ukrainian.
+
+
 5.3.3alpha (2022-08-22)
 
     * All fixes from 5.2.6.

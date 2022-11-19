@@ -258,11 +258,23 @@ parse_real(args_info *args, int argc, char **argv)
 			suffix_set(optarg);
 			break;
 
-		case 'T':
+		case 'T': {
+			// Since xz 5.4.0: Ignore leading '+' first.
+			const char *s = optarg;
+			if (optarg[0] == '+')
+				++s;
+
 			// The max is from src/liblzma/common/common.h.
-			hardware_threads_set(str_to_uint64("threads",
-					optarg, 0, 16384));
+			uint32_t t = str_to_uint64("threads", s, 0, 16384);
+
+			// If leading '+' was used then use multi-threaded
+			// mode even if exactly one thread was specified.
+			if (t == 1 && optarg[0] == '+')
+				t = UINT32_MAX;
+
+			hardware_threads_set(t);
 			break;
+		}
 
 		// --version
 		case 'V':

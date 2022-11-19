@@ -5,7 +5,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2022-11-09" "Tukaani" "XZ Utils"
+.TH XZ 1 "2022-11-19" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -1213,6 +1213,25 @@ even if the system supports only one hardware thread.
 .RB ( xz
 5.2.x
 used single-threaded mode in this situation.)
+.IP ""
+To use multi-threaded mode with only one thread, set
+.I threads
+to
+.BR +1 .
+The
+.B +
+prefix has no effect with values other than
+.BR 1 .
+A memory usage limit can still make
+.B xz
+switch to single-threaded mode unless
+.B \-\-no\-adjust
+is used.
+Support for the
+.B +
+prefix was added in
+.B xz
+5.4.0.
 .IP ""
 If an automatic number of threads has been requested and
 no memory usage limit has been specified,

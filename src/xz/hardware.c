@@ -21,6 +21,10 @@ static uint32_t threads_max = 1;
 /// on the available hardware threads.
 static bool threads_are_automatic = false;
 
+/// If true, then try to use multi-threaded mode (if memlimit allows)
+/// even if only one thread was requested explicitly (-T+1).
+static bool use_mt_mode_with_one_thread = false;
+
 /// Memory usage limit for compression
 static uint64_t memlimit_compress = 0;
 
@@ -57,9 +61,16 @@ static uint64_t total_ram;
 extern void
 hardware_threads_set(uint32_t n)
 {
+	// Reset these to false first and set them to true when appropriate.
+	threads_are_automatic = false;
+	use_mt_mode_with_one_thread = false;
+
 	if (n == 0) {
 		// Automatic number of threads was requested.
+		// If there is only one hardware thread, multi-threaded
+		// mode will still be used if memory limit allows.
 		threads_are_automatic = true;
+		use_mt_mode_with_one_thread = true;
 
 		// If threading support was enabled at build time,
 		// use the number of available CPU cores. Otherwise
@@ -72,9 +83,11 @@ hardware_threads_set(uint32_t n)
 #else
 		threads_max = 1;
 #endif
+	} else if (n == UINT32_MAX) {
+		use_mt_mode_with_one_thread = true;
+		threads_max = 1;
 	} else {
 		threads_max = n;
-		threads_are_automatic = false;
 	}
 
 	return;
@@ -92,7 +105,7 @@ extern bool
 hardware_threads_is_mt(void)
 {
 #ifdef MYTHREAD_ENABLED
-	return threads_max > 1 || threads_are_automatic;
+	return threads_max > 1 || use_mt_mode_with_one_thread;
 #else
 	return false;
 #endif

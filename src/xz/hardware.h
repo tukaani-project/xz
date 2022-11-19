@@ -16,6 +16,7 @@ extern void hardware_init(void);
 
 
 /// Set the maximum number of worker threads.
+/// A special value of UINT32_MAX sets one thread in multi-threaded mode.
 extern void hardware_threads_set(uint32_t threadlimit);
 
 /// Get the maximum number of worker threads.

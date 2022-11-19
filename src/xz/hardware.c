@@ -190,7 +190,7 @@ hardware_memlimit_get(enum operation_mode mode)
 extern uint64_t
 hardware_memlimit_mtenc_get(void)
 {
-	return memlimit_compress == 0 && threads_are_automatic
+	return hardware_memlimit_mtenc_is_default()
 			? memlimit_mt_default
 			: hardware_memlimit_get(MODE_COMPRESS);
 }

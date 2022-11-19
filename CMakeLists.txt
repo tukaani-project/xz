@@ -795,6 +795,7 @@ if(BUILD_TESTING)
         test_filter_flags
         test_hardware
         test_index
+        test_memlimit
         test_stream_flags
         test_vli
     )

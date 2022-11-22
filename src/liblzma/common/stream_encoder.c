@@ -319,7 +319,7 @@ stream_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 	// Initialize the Block encoder. This way we detect unsupported
 	// filter chains when initializing the Stream encoder instead of
-	// giving an error after Stream Header has already written out.
+	// giving an error after Stream Header has already been written out.
 	return stream_encoder_update(coder, allocator, filters, NULL);
 }
 

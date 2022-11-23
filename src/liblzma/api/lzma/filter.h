@@ -125,6 +125,27 @@ extern LZMA_API(lzma_ret) lzma_filters_copy(
 
 
 /**
+ * \brief       Free the options in the array of lzma_filter structures
+ *
+ * This frees the filter chain options. The filters array itself is not freed.
+ *
+ * The filters array must have at most LZMA_FILTERS_MAX + 1 elements
+ * including the terminating element which must have .id = LZMA_VLI_UNKNOWN.
+ * For all elements before the terminating element:
+ *   - options will be freed using the given lzma_allocator or,
+ *     if allocator is NULL, using free().
+ *   - options will be set to NULL.
+ *   - id will be set to LZMA_VLI_UNKNOWN.
+ *
+ * If filters is NULL, this does nothing but remember that this never frees
+ * the filters array itself.
+ */
+extern LZMA_API(void) lzma_filters_free(
+		lzma_filter *filters, const lzma_allocator *allocator)
+		lzma_nothrow;
+
+
+/**
  * \brief       Calculate approximate memory requirements for raw encoder
  *
  * This function can be used to calculate the memory requirements for

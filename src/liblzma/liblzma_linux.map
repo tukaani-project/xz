@@ -129,4 +129,5 @@ global:
 	lzma_file_info_decoder;
 	lzma_stream_decoder_mt;
 	lzma_lzip_decoder;
+	lzma_filters_free;
 } XZ_5.2;

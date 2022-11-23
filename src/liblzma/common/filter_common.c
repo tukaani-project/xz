@@ -205,6 +205,32 @@ error:
 }
 
 
+extern LZMA_API(void)
+lzma_filters_free(lzma_filter *filters, const lzma_allocator *allocator)
+{
+	if (filters == NULL)
+		return;
+
+	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+		if (i == LZMA_FILTERS_MAX) {
+			// The API says that LZMA_FILTERS_MAX + 1 is the
+			// maximum allowed size including the terminating
+			// element. Thus, we should never get here but in
+			// case there is a bug and we do anyway, don't go
+			// past the (probable) end of the array.
+			assert(0);
+			break;
+		}
+
+		lzma_free(filters[i].options, allocator);
+		filters[i].options = NULL;
+		filters[i].id = LZMA_VLI_UNKNOWN;
+	}
+
+	return;
+}
+
+
 static lzma_ret
 validate_chain(const lzma_filter *filters, size_t *count)
 {

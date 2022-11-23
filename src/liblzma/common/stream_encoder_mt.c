@@ -866,8 +866,7 @@ stream_encoder_mt_end(void *coder_ptr, const lzma_allocator *allocator)
 	threads_end(coder, allocator);
 	lzma_outq_end(&coder->outq, allocator);
 
-	for (size_t i = 0; coder->filters[i].id != LZMA_VLI_UNKNOWN; ++i)
-		lzma_free(coder->filters[i].options, allocator);
+	lzma_filters_free(coder->filters, allocator);
 
 	lzma_next_end(&coder->index_encoder, allocator);
 	lzma_index_end(coder->index, allocator);
@@ -1068,13 +1067,7 @@ stream_encoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	coder->timeout = options->timeout;
 
 	// Free the old filter chain and copy the new one.
-	for (size_t i = 0; coder->filters[i].id != LZMA_VLI_UNKNOWN; ++i)
-		lzma_free(coder->filters[i].options, allocator);
-
-	// Mark it as empty so that it is in a safe state in case
-	// lzma_filters_copy() fails.
-	coder->filters[0].id = LZMA_VLI_UNKNOWN;
-
+	lzma_filters_free(coder->filters, allocator);
 	return_if_error(lzma_filters_copy(
 			filters, coder->filters, allocator));
 

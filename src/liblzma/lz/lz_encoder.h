@@ -220,6 +220,15 @@ typedef struct {
 // are called `read ahead'.
 
 
+/// Get how many bytes the match finder hashes in its initial step.
+/// This is also the minimum nice_len value with the match finder.
+static inline uint32_t
+mf_get_hash_bytes(lzma_match_finder match_finder)
+{
+	return (uint32_t)match_finder & 0x0F;
+}
+
+
 /// Get pointer to the first byte not ran through the match finder
 static inline const uint8_t *
 mf_ptr(const lzma_mf *mf)

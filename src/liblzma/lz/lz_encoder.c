@@ -293,11 +293,15 @@ lz_encoder_prepare(lzma_mf *mf, const lzma_allocator *allocator,
 		return true;
 	}
 
-	// Calculate the sizes of mf->hash and mf->son and check that
-	// nice_len is big enough for the selected match finder.
-	const uint32_t hash_bytes = lz_options->match_finder & 0x0F;
-	if (hash_bytes > mf->nice_len)
-		return true;
+	// Calculate the sizes of mf->hash and mf->son.
+	//
+	// NOTE: Since 5.3.5beta the LZMA encoder ensures that nice_len
+	// is big enough for the selected match finder. This makes it
+	// easier for applications as nice_len = 2 will always be accepted
+	// even though the effective value can be slightly bigger.
+	const uint32_t hash_bytes
+			= mf_get_hash_bytes(lz_options->match_finder);
+	assert(hash_bytes <= mf->nice_len);
 
 	const bool is_bt = (lz_options->match_finder & 0x10) != 0;
 	uint32_t hs;

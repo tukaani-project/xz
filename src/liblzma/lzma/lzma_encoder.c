@@ -492,7 +492,8 @@ set_lz_options(lzma_lz_options *lz_options, const lzma_options_lzma *options)
 	lz_options->dict_size = options->dict_size;
 	lz_options->after_size = LOOP_INPUT_MAX;
 	lz_options->match_len_max = MATCH_LEN_MAX;
-	lz_options->nice_len = options->nice_len;
+	lz_options->nice_len = my_max(mf_get_hash_bytes(options->mf),
+				options->nice_len);
 	lz_options->match_finder = options->mf;
 	lz_options->depth = options->depth;
 	lz_options->preset_dict = options->preset_dict;
@@ -643,10 +644,14 @@ lzma_lzma_encoder_create(void **coder_ptr,
 			coder->dist_table_size = log_size * 2;
 
 			// Length encoders' price table size
+			const uint32_t nice_len = my_max(
+					mf_get_hash_bytes(options->mf),
+					options->nice_len);
+
 			coder->match_len_encoder.table_size
-				= options->nice_len + 1 - MATCH_LEN_MIN;
+					= nice_len + 1 - MATCH_LEN_MIN;
 			coder->rep_len_encoder.table_size
-				= options->nice_len + 1 - MATCH_LEN_MIN;
+					= nice_len + 1 - MATCH_LEN_MIN;
 			break;
 		}
 

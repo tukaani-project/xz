@@ -226,21 +226,27 @@ extern LZMA_API(lzma_ret) lzma_raw_decoder(
 /**
  * \brief       Update the filter chain in the encoder
  *
- * This function is for advanced users only. This function has two slightly
- * different purposes:
+ * This function may be called after lzma_code() has returned LZMA_STREAM_END
+ * when LZMA_FULL_BARRIER, LZMA_FULL_FLUSH, or LZMA_SYNC_FLUSH was used:
  *
- *  - After LZMA_FULL_FLUSH when using Stream encoder: Set a new filter
- *    chain, which will be used starting from the next Block.
+ *  - After LZMA_FULL_BARRIER or LZMA_FULL_FLUSH: Single-threaded .xz Stream
+ *    encoder (lzma_stream_encoder()) and (since liblzma 5.4.0) multi-threaded
+ *    Stream encoder (lzma_stream_encoder_mt()) allow setting a new filter
+ *    chain to be used for the next Block(s).
  *
- *  - After LZMA_SYNC_FLUSH using Raw, Block, or Stream encoder: Change
- *    the filter-specific options in the middle of encoding. The actual
- *    filters in the chain (Filter IDs) cannot be changed. In the future,
- *    it might become possible to change the filter options without
- *    using LZMA_SYNC_FLUSH.
+ *  - After LZMA_SYNC_FLUSH: Raw encoder (lzma_raw_encoder()),
+ *    Block encocder (lzma_block_encoder()), and single-threaded .xz Stream
+ *    encoder (lzma_stream_encoder()) allow changing certain filter-specific
+ *    options in the middle of encoding. The actual filters in the chain
+ *    (Filter IDs) must not be changed! Currently only the lc, lp, and pb
+ *    options of LZMA2 (not LZMA1) can be changed this way.
  *
- * While rarely useful, this function may be called also when no data has
- * been compressed yet. In that case, this function will behave as if
- * LZMA_FULL_FLUSH (Stream encoder) or LZMA_SYNC_FLUSH (Raw or Block
+ *  - In the future some filters might allow changing some of their options
+ *    without any barrier or flushing but currently such filters don't exist.
+ *
+ * This function may also be called when no data has been compressed yet
+ * although this is rarely useful. In that case, this function will behave
+ * as if LZMA_FULL_FLUSH (Stream encoders) or LZMA_SYNC_FLUSH (Raw or Block
  * encoder) had been used right before calling this function.
  *
  * \return      - LZMA_OK

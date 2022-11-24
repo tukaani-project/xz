@@ -477,7 +477,10 @@ elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # because it would put symbol versions into the static library which
     # can cause problems. It's clearer if all symver related things are
     # omitted when not building a shared library.
-    target_compile_definitions(liblzma PRIVATE HAVE_SYMBOL_VERSIONS_LINUX)
+    #
+    # NOTE: Set it explicitly to 1 to make it clear that versioning is
+    # done unconditionally in the C files.
+    target_compile_definitions(liblzma PRIVATE HAVE_SYMBOL_VERSIONS_LINUX=1)
     target_link_options(liblzma PRIVATE
         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_linux.map"
     )

@@ -14,22 +14,6 @@
 #include "check.h"
 
 
-static void
-free_properties(lzma_block *block, const lzma_allocator *allocator)
-{
-	// Free allocated filter options. The last array member is not
-	// touched after the initialization in the beginning of
-	// lzma_block_header_decode(), so we don't need to touch that here.
-	for (size_t i = 0; i < LZMA_FILTERS_MAX; ++i) {
-		lzma_free(block->filters[i].options, allocator);
-		block->filters[i].id = LZMA_VLI_UNKNOWN;
-		block->filters[i].options = NULL;
-	}
-
-	return;
-}
-
-
 extern LZMA_API(lzma_ret)
 lzma_block_header_decode(lzma_block *block,
 		const lzma_allocator *allocator, const uint8_t *in)
@@ -107,7 +91,7 @@ lzma_block_header_decode(lzma_block *block,
 				&block->filters[i], allocator,
 				in, &in_pos, in_size);
 		if (ret != LZMA_OK) {
-			free_properties(block, allocator);
+			lzma_filters_free(block->filters, allocator);
 			return ret;
 		}
 	}
@@ -115,7 +99,7 @@ lzma_block_header_decode(lzma_block *block,
 	// Padding
 	while (in_pos < in_size) {
 		if (in[in_pos++] != 0x00) {
-			free_properties(block, allocator);
+			lzma_filters_free(block->filters, allocator);
 
 			// Possibly some new field present so use
 			// LZMA_OPTIONS_ERROR instead of LZMA_DATA_ERROR.

@@ -929,18 +929,6 @@ decode_block_header(struct lzma_stream_coder *coder,
 }
 
 
-static void
-cleanup_filters(lzma_filter *filters, const lzma_allocator *allocator)
-{
-	for (uint32_t i = 0; i < LZMA_FILTERS_MAX; ++i) {
-		lzma_free(filters[i].options, allocator);
-		filters[i].options = NULL;
-	}
-
-	return;
-}
-
-
 /// Get the size of the Compressed Data + Block Padding + Check.
 static size_t
 comp_blk_size(const struct lzma_stream_coder *coder)
@@ -1481,7 +1469,7 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 
 		// Free the allocated filter options since they are needed
 		// only to initialize the Block decoder.
-		cleanup_filters(coder->filters, allocator);
+		lzma_filters_free(coder->filters, allocator);
 		coder->thr->block_options.filters = NULL;
 
 		// Check if memory usage calculation and Block encoder
@@ -1613,7 +1601,7 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 
 		// Free the allocated filter options since they are needed
 		// only to initialize the Block decoder.
-		cleanup_filters(coder->filters, allocator);
+		lzma_filters_free(coder->filters, allocator);
 		coder->block_options.filters = NULL;
 
 		// Check if Block decoder initialization succeeded.
@@ -1812,7 +1800,7 @@ stream_decoder_mt_end(void *coder_ptr, const lzma_allocator *allocator)
 	lzma_outq_end(&coder->outq, allocator);
 
 	lzma_next_end(&coder->block_decoder, allocator);
-	cleanup_filters(coder->filters, allocator);
+	lzma_filters_free(coder->filters, allocator);
 	lzma_index_hash_end(coder->index_hash, allocator);
 
 	lzma_free(coder, allocator);
@@ -1939,7 +1927,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->memconfig = &stream_decoder_mt_memconfig;
 		next->get_progress = &stream_decoder_mt_get_progress;
 
-		memzero(coder->filters, sizeof(coder->filters));
+		coder->filters[0].id = LZMA_VLI_UNKNOWN;
 		memzero(&coder->outq, sizeof(coder->outq));
 
 		coder->block_decoder = LZMA_NEXT_CODER_INIT;
@@ -1953,7 +1941,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 	// Cleanup old filter chain if one remains after unfinished decoding
 	// of a previous Stream.
-	cleanup_filters(coder->filters, allocator);
+	lzma_filters_free(coder->filters, allocator);
 
 	// By allocating threads from scratch we can start memory-usage
 	// accounting from scratch, too. Changes in filter and block sizes may

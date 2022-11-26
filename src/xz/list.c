@@ -523,9 +523,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 
 	case LZMA_DATA_ERROR:
 		// Free the memory allocated by lzma_block_header_decode().
-		for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i)
-			free(filters[i].options);
-
+		lzma_filters_free(filters, NULL);
 		goto data_error;
 
 	default:
@@ -571,9 +569,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 	message_filters_to_str(bhi->filter_chain, filters, false);
 
 	// Free the memory allocated by lzma_block_header_decode().
-	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i)
-		free(filters[i].options);
-
+	lzma_filters_free(filters, NULL);
 	return false;
 
 data_error:

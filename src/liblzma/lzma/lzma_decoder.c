@@ -1018,11 +1018,35 @@ lzma_decoder_init(lzma_lz_decoder *lz, const lzma_allocator *allocator,
 	if (!is_lclppb_valid(options))
 		return LZMA_PROG_ERROR;
 
+	lzma_vli uncomp_size = LZMA_VLI_UNKNOWN;
+	bool allow_eopm = true;
+
+	if (id == LZMA_FILTER_LZMA1EXT) {
+		const lzma_options_lzma *opt = options;
+
+		// Only one flag is supported.
+		if (opt->ext_flags & ~LZMA_LZMA1EXT_ALLOW_EOPM)
+			return LZMA_OPTIONS_ERROR;
+
+		// FIXME? Using lzma_vli instead of uint64_t is weird because
+		// this has nothing to do with .xz headers and variable-length
+		// integer encoding. On the other hand, using LZMA_VLI_UNKNOWN
+		// instead of UINT64_MAX is clearer when unknown size is
+		// meant. A problem with using lzma_vli is that now we
+		// allow > LZMA_VLI_MAX which is fine in this file but
+		// it's still confusing. Note that alone_decoder.c also
+		// allows > LZMA_VLI_MAX when setting uncompressed size.
+		uncomp_size = opt->ext_size_low
+				+ ((uint64_t)(opt->ext_size_high) << 32);
+		allow_eopm = (opt->ext_flags & LZMA_LZMA1EXT_ALLOW_EOPM) != 0
+				|| uncomp_size == LZMA_VLI_UNKNOWN;
+	}
+
 	return_if_error(lzma_lzma_decoder_create(
 			lz, allocator, options, lz_options));
 
 	lzma_decoder_reset(lz->coder, options);
-	lzma_decoder_uncompressed(lz->coder, LZMA_VLI_UNKNOWN, true);
+	lzma_decoder_uncompressed(lz->coder, uncomp_size, allow_eopm);
 
 	return LZMA_OK;
 }

@@ -111,6 +111,9 @@ struct lzma_lzma1_encoder_s {
 	/// have been written to the output buffer yet.
 	bool is_flushed;
 
+	/// True if end of payload marker will be written.
+	bool use_eopm;
+
 	uint32_t pos_mask;         ///< (1 << pos_bits) - 1
 	uint32_t literal_context_bits;
 	uint32_t literal_pos_mask;

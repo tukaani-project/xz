@@ -42,6 +42,13 @@ static const struct {
 		.last_ok = true,
 		.changes_size = true,
 	},
+	{
+		.id = LZMA_FILTER_LZMA1EXT,
+		.options_size = sizeof(lzma_options_lzma),
+		.non_last_ok = false,
+		.last_ok = true,
+		.changes_size = true,
+	},
 #endif
 #if defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
 	{

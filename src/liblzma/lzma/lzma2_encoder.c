@@ -341,7 +341,7 @@ lzma2_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
 
 	// Initialize LZMA encoder
 	return_if_error(lzma_lzma_encoder_create(&coder->lzma, allocator,
-			&coder->opt_cur, lz_options));
+			LZMA_FILTER_LZMA2, &coder->opt_cur, lz_options));
 
 	// Make sure that we will always have enough history available in
 	// case we need to use uncompressed chunks. They are used when the

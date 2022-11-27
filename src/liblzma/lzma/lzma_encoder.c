@@ -416,7 +416,7 @@ lzma_lzma_encode(lzma_lzma1_encoder *restrict coder, lzma_mf *restrict mf,
 	//
 	// Plain LZMA streams without EOPM aren't supported except when
 	// output size limiting is enabled.
-	if (limit == UINT32_MAX && coder->out_limit == 0)
+	if (coder->use_eopm)
 		encode_eopm(coder, (uint32_t)(coder->uncomp_size));
 
 	// Flush the remaining bytes from the range encoder.
@@ -462,6 +462,7 @@ lzma_lzma_set_out_limit(
 	lzma_lzma1_encoder *coder = coder_ptr;
 	coder->out_limit = out_limit;
 	coder->uncomp_size_ptr = uncomp_size;
+	coder->use_eopm = false;
 	return LZMA_OK;
 }
 
@@ -599,10 +600,13 @@ lzma_lzma_encoder_reset(lzma_lzma1_encoder *coder,
 
 
 extern lzma_ret
-lzma_lzma_encoder_create(void **coder_ptr,
-		const lzma_allocator *allocator,
-		const lzma_options_lzma *options, lzma_lz_options *lz_options)
+lzma_lzma_encoder_create(void **coder_ptr, const lzma_allocator *allocator,
+		lzma_vli id, const lzma_options_lzma *options,
+		lzma_lz_options *lz_options)
 {
+	assert(id == LZMA_FILTER_LZMA1 || id == LZMA_FILTER_LZMA1EXT
+			|| id == LZMA_FILTER_LZMA2);
+
 	// Allocate lzma_lzma1_encoder if it wasn't already allocated.
 	if (*coder_ptr == NULL) {
 		*coder_ptr = lzma_alloc(sizeof(lzma_lzma1_encoder), allocator);
@@ -672,6 +676,32 @@ lzma_lzma_encoder_create(void **coder_ptr,
 	// Output size limitting is disabled by default.
 	coder->out_limit = 0;
 
+	// Determine if end marker is wanted:
+	//   - It is never used with LZMA2.
+	//   - It is always used with LZMA_FILTER_LZMA1 (unless
+	//     lzma_lzma_set_out_limit() is called later).
+	//   - LZMA_FILTER_LZMA1EXT has a flag for it in the options.
+	coder->use_eopm = (id == LZMA_FILTER_LZMA1);
+	if (id == LZMA_FILTER_LZMA1EXT) {
+		// Check if unsupported flags are present.
+		if (options->ext_flags & ~LZMA_LZMA1EXT_ALLOW_EOPM)
+			return LZMA_OPTIONS_ERROR;
+
+		coder->use_eopm = (options->ext_flags
+				& LZMA_LZMA1EXT_ALLOW_EOPM) != 0;
+
+		// TODO? As long as there are no filters that change the size
+		// of the data, it is enough to look at lzma_stream.total_in
+		// after encoding has been finished to know the uncompressed
+		// size of the LZMA1 stream. But in the future there could be
+		// filters that change the size of the data and then total_in
+		// doesn't work as the LZMA1 stream size might be different
+		// due to another filter in the chain. The problem is simple
+		// to solve: Add another flag to ext_flags and then set
+		// coder->uncomp_size_ptr to the address stored in
+		// lzma_options_lzma.reserved_ptr2 (or _ptr1).
+	}
+
 	set_lz_options(lz_options, options);
 
 	return lzma_lzma_encoder_reset(coder, options);
@@ -685,7 +715,7 @@ lzma_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
 	lz->code = &lzma_encode;
 	lz->set_out_limit = &lzma_lzma_set_out_limit;
 	return lzma_lzma_encoder_create(
-			&lz->coder, allocator, options, lz_options);
+			&lz->coder, allocator, id, options, lz_options);
 }
 
 

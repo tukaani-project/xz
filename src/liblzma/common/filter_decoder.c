@@ -50,6 +50,12 @@ static const lzma_filter_decoder decoders[] = {
 		.memusage = &lzma_lzma_decoder_memusage,
 		.props_decode = &lzma_lzma_props_decode,
 	},
+	{
+		.id = LZMA_FILTER_LZMA1EXT,
+		.init = &lzma_lzma_decoder_init,
+		.memusage = &lzma_lzma_decoder_memusage,
+		.props_decode = &lzma_lzma_props_decode,
+	},
 #endif
 #ifdef HAVE_DECODER_LZMA2
 	{

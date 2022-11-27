@@ -986,7 +986,7 @@ lzma_decoder_reset(void *coder_ptr, const void *opt)
 
 extern lzma_ret
 lzma_lzma_decoder_create(lzma_lz_decoder *lz, const lzma_allocator *allocator,
-		const void *opt, lzma_lz_options *lz_options)
+		const lzma_options_lzma *options, lzma_lz_options *lz_options)
 {
 	if (lz->coder == NULL) {
 		lz->coder = lzma_alloc(sizeof(lzma_lzma1_decoder), allocator);
@@ -1000,7 +1000,6 @@ lzma_lzma_decoder_create(lzma_lz_decoder *lz, const lzma_allocator *allocator,
 
 	// All dictionary sizes are OK here. LZ decoder will take care of
 	// the special cases.
-	const lzma_options_lzma *options = opt;
 	lz_options->dict_size = options->dict_size;
 	lz_options->preset_dict = options->preset_dict;
 	lz_options->preset_dict_size = options->preset_dict_size;

@@ -310,7 +310,8 @@ lzma2_encoder_options_update(void *coder_ptr, const lzma_filter *filter)
 
 static lzma_ret
 lzma2_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
-		const void *options, lzma_lz_options *lz_options)
+		lzma_vli id lzma_attribute((__unused__)), const void *options,
+		lzma_lz_options *lz_options)
 {
 	if (options == NULL)
 		return LZMA_PROG_ERROR;

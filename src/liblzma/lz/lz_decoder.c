@@ -212,7 +212,8 @@ extern lzma_ret
 lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters,
 		lzma_ret (*lz_init)(lzma_lz_decoder *lz,
-			const lzma_allocator *allocator, const void *options,
+			const lzma_allocator *allocator,
+			lzma_vli id, const void *options,
 			lzma_lz_options *lz_options))
 {
 	// Allocate the base structure if it isn't already allocated.
@@ -236,7 +237,7 @@ lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// us the dictionary size.
 	lzma_lz_options lz_options;
 	return_if_error(lz_init(&coder->lz, allocator,
-			filters[0].options, &lz_options));
+			filters[0].id, filters[0].options, &lz_options));
 
 	// If the dictionary size is very small, increase it to 4096 bytes.
 	// This is to prevent constant wrapping of the dictionary, which

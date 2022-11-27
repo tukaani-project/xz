@@ -162,8 +162,11 @@ typedef void (*lzma_end_function)(
 /// an array of lzma_filter_info structures. This array is used with
 /// lzma_next_filter_init to initialize the filter chain.
 struct lzma_filter_info_s {
-	/// Filter ID. This is used only by the encoder
-	/// with lzma_filters_update().
+	/// Filter ID. This can be used to share the same initiazation
+	/// function *and* data structures with different Filter IDs
+	/// (LZMA_FILTER_LZMA1EXT does it), and also by the encoder
+	/// with lzma_filters_update() if filter chain is updated
+	/// in the middle of a raw stream or Block (LZMA_SYNC_FLUSH).
 	lzma_vli id;
 
 	/// Pointer to function used to initialize the filter.

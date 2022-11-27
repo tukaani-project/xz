@@ -116,6 +116,7 @@ microlzma_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// Initialize the LZMA encoder.
 	const lzma_filter_info filters[2] = {
 		{
+			.id = LZMA_FILTER_LZMA1,
 			.init = &lzma_lzma_encoder_init,
 			.options = (void *)(options),
 		}, {

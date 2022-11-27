@@ -680,7 +680,7 @@ lzma_lzma_encoder_create(void **coder_ptr,
 
 static lzma_ret
 lzma_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
-		const void *options, lzma_lz_options *lz_options)
+		lzma_vli id, const void *options, lzma_lz_options *lz_options)
 {
 	lz->code = &lzma_encode;
 	lz->set_out_limit = &lzma_lzma_set_out_limit;

@@ -1014,7 +1014,7 @@ lzma_lzma_decoder_create(lzma_lz_decoder *lz, const lzma_allocator *allocator,
 /// the LZ initialization).
 static lzma_ret
 lzma_decoder_init(lzma_lz_decoder *lz, const lzma_allocator *allocator,
-		const void *options, lzma_lz_options *lz_options)
+		lzma_vli id, const void *options, lzma_lz_options *lz_options)
 {
 	if (!is_lclppb_valid(options))
 		return LZMA_PROG_ERROR;

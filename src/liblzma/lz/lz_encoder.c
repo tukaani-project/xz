@@ -544,7 +544,8 @@ extern lzma_ret
 lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		const lzma_filter_info *filters,
 		lzma_ret (*lz_init)(lzma_lz_encoder *lz,
-			const lzma_allocator *allocator, const void *options,
+			const lzma_allocator *allocator,
+			lzma_vli id, const void *options,
 			lzma_lz_options *lz_options))
 {
 #if defined(HAVE_SMALL) && !defined(HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
@@ -585,7 +586,7 @@ lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// Initialize the LZ-based encoder.
 	lzma_lz_options lz_options;
 	return_if_error(lz_init(&coder->lz, allocator,
-			filters[0].options, &lz_options));
+			filters[0].id, filters[0].options, &lz_options));
 
 	// Setup the size information into coder->mf and deallocate
 	// old buffers if they have wrong size.

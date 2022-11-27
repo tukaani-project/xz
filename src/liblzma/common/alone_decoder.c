@@ -132,6 +132,7 @@ alone_decode(void *coder_ptr, const lzma_allocator *allocator,
 
 		lzma_filter_info filters[2] = {
 			{
+				.id = LZMA_FILTER_LZMA1,
 				.init = &lzma_lzma_decoder_init,
 				.options = &coder->options,
 			}, {

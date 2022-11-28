@@ -80,9 +80,16 @@ microlzma_decode(void *coder_ptr, const lzma_allocator *allocator,
 			return LZMA_OK;
 
 		lzma_options_lzma options = {
+			.dict_size = coder->dict_size,
 			.preset_dict = NULL,
 			.preset_dict_size = 0,
+			.ext_flags = 0, // EOPM not allowed when size is known
+			.ext_size_low = UINT32_MAX, // Unknown size by default
+			.ext_size_high = UINT32_MAX,
 		};
+
+		if (coder->uncomp_size_is_exact)
+			lzma_set_ext_size(options, coder->uncomp_size);
 
 		// The properties are stored as bitwise-negation
 		// of the typical encoding.
@@ -92,10 +99,9 @@ microlzma_decode(void *coder_ptr, const lzma_allocator *allocator,
 		++*in_pos;
 
 		// Initialize the decoder.
-		options.dict_size = coder->dict_size;
 		lzma_filter_info filters[2] = {
 			{
-				.id = LZMA_FILTER_LZMA1,
+				.id = LZMA_FILTER_LZMA1EXT,
 				.init = &lzma_lzma_decoder_init,
 				.options = &options,
 			}, {
@@ -105,11 +111,6 @@ microlzma_decode(void *coder_ptr, const lzma_allocator *allocator,
 
 		return_if_error(lzma_next_filter_init(&coder->lzma,
 				allocator, filters));
-
-		// Use a hack to set the uncompressed size.
-		if (coder->uncomp_size_is_exact)
-			lzma_lz_decoder_uncompressed(coder->lzma.coder,
-					coder->uncomp_size, false);
 
 		// Pass one dummy 0x00 byte to the LZMA decoder since that
 		// is what it expects the first byte to be.

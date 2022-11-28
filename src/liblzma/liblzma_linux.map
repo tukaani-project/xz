@@ -130,4 +130,7 @@ global:
 	lzma_stream_decoder_mt;
 	lzma_lzip_decoder;
 	lzma_filters_free;
+	lzma_str_to_filters;
+	lzma_str_from_filters;
+	lzma_str_list_filters;
 } XZ_5.2;

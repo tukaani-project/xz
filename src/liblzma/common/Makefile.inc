@@ -19,6 +19,7 @@ liblzma_la_SOURCES += \
 	common/index.h \
 	common/stream_flags_common.c \
 	common/stream_flags_common.h \
+	common/string_conversion.c \
 	common/vli_size.c
 
 if COND_THREADS

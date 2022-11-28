@@ -900,181 +900,20 @@ message_mem_needed(enum message_verbosity v, uint64_t memusage)
 }
 
 
-/// \brief      Convert uint32_t to a nice string for --lzma[12]=dict=SIZE
-///
-/// The idea is to use KiB or MiB suffix when possible.
-static const char *
-uint32_to_optstr(uint32_t num)
-{
-	static char buf[16];
-
-	if ((num & ((UINT32_C(1) << 20) - 1)) == 0)
-		snprintf(buf, sizeof(buf), "%" PRIu32 "MiB", num >> 20);
-	else if ((num & ((UINT32_C(1) << 10) - 1)) == 0)
-		snprintf(buf, sizeof(buf), "%" PRIu32 "KiB", num >> 10);
-	else
-		snprintf(buf, sizeof(buf), "%" PRIu32, num);
-
-	return buf;
-}
-
-
-extern void
-message_filters_to_str(char buf[FILTERS_STR_SIZE],
-		const lzma_filter *filters, bool all_known)
-{
-	char *pos = buf;
-	size_t left = FILTERS_STR_SIZE;
-
-	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
-		// Add the dashes for the filter option. A space is
-		// needed after the first and later filters.
-		my_snprintf(&pos, &left, "%s", i == 0 ? "--" : " --");
-
-		switch (filters[i].id) {
-		case LZMA_FILTER_LZMA1:
-		case LZMA_FILTER_LZMA2: {
-			const lzma_options_lzma *opt = filters[i].options;
-			const char *mode = NULL;
-			const char *mf = NULL;
-
-			if (all_known) {
-				switch (opt->mode) {
-				case LZMA_MODE_FAST:
-					mode = "fast";
-					break;
-
-				case LZMA_MODE_NORMAL:
-					mode = "normal";
-					break;
-
-				default:
-					mode = "UNKNOWN";
-					break;
-				}
-
-				switch (opt->mf) {
-				case LZMA_MF_HC3:
-					mf = "hc3";
-					break;
-
-				case LZMA_MF_HC4:
-					mf = "hc4";
-					break;
-
-				case LZMA_MF_BT2:
-					mf = "bt2";
-					break;
-
-				case LZMA_MF_BT3:
-					mf = "bt3";
-					break;
-
-				case LZMA_MF_BT4:
-					mf = "bt4";
-					break;
-
-				default:
-					mf = "UNKNOWN";
-					break;
-				}
-			}
-
-			// Add the filter name and dictionary size, which
-			// is always known.
-			my_snprintf(&pos, &left, "lzma%c=dict=%s",
-					filters[i].id == LZMA_FILTER_LZMA2
-						? '2' : '1',
-					uint32_to_optstr(opt->dict_size));
-
-			// With LZMA1 also lc/lp/pb are known when
-			// decompressing, but this function is never
-			// used to print information about .lzma headers.
-			assert(filters[i].id == LZMA_FILTER_LZMA2
-					|| all_known);
-
-			// Print the rest of the options, which are known
-			// only when compressing.
-			if (all_known)
-				my_snprintf(&pos, &left,
-					",lc=%" PRIu32 ",lp=%" PRIu32
-					",pb=%" PRIu32
-					",mode=%s,nice=%" PRIu32 ",mf=%s"
-					",depth=%" PRIu32,
-					opt->lc, opt->lp, opt->pb,
-					mode, opt->nice_len, mf, opt->depth);
-			break;
-		}
-
-		case LZMA_FILTER_X86:
-		case LZMA_FILTER_POWERPC:
-		case LZMA_FILTER_IA64:
-		case LZMA_FILTER_ARM:
-		case LZMA_FILTER_ARMTHUMB:
-		case LZMA_FILTER_SPARC: {
-			static const char bcj_names[][9] = {
-				"x86",
-				"powerpc",
-				"ia64",
-				"arm",
-				"armthumb",
-				"sparc",
-			};
-
-			const lzma_options_bcj *opt = filters[i].options;
-			my_snprintf(&pos, &left, "%s", bcj_names[filters[i].id
-					- LZMA_FILTER_X86]);
-
-			// Show the start offset only when really needed.
-			if (opt != NULL && opt->start_offset != 0)
-				my_snprintf(&pos, &left, "=start=%" PRIu32,
-						opt->start_offset);
-
-			break;
-		}
-
-		case LZMA_FILTER_ARM64: {
-			// FIXME TODO: Merge with the above generic BCJ list
-			// once the Filter ID is changed to the final value.
-			const lzma_options_bcj *opt = filters[i].options;
-			my_snprintf(&pos, &left, "arm64");
-
-			// Show the start offset only when really needed.
-			if (opt != NULL && opt->start_offset != 0)
-				my_snprintf(&pos, &left, "=start=%" PRIu32,
-						opt->start_offset);
-
-			break;
-		}
-
-		case LZMA_FILTER_DELTA: {
-			const lzma_options_delta *opt = filters[i].options;
-			my_snprintf(&pos, &left, "delta=dist=%" PRIu32,
-					opt->dist);
-			break;
-		}
-
-		default:
-			// This should be possible only if liblzma is
-			// newer than the xz tool.
-			my_snprintf(&pos, &left, "UNKNOWN");
-			break;
-		}
-	}
-
-	return;
-}
-
-
 extern void
 message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 {
 	if (v > verbosity)
 		return;
 
-	char buf[FILTERS_STR_SIZE];
-	message_filters_to_str(buf, filters, true);
+	char *buf;
+	const lzma_ret ret = lzma_str_from_filters(&buf, filters,
+			LZMA_STR_ENCODER | LZMA_STR_GETOPT_LONG, NULL);
+	if (ret != LZMA_OK)
+		message_fatal("%s", message_strm(ret));
+
 	fprintf(stderr, _("%s: Filter chain: %s\n"), progname, buf);
+	free(buf);
 	return;
 }
 

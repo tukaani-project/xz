@@ -238,8 +238,8 @@ lzma_filters_free(lzma_filter *filters, const lzma_allocator *allocator)
 }
 
 
-static lzma_ret
-validate_chain(const lzma_filter *filters, size_t *count)
+extern lzma_ret
+lzma_validate_chain(const lzma_filter *filters, size_t *count)
 {
 	// There must be at least one filter.
 	if (filters == NULL || filters[0].id == LZMA_VLI_UNKNOWN)
@@ -293,7 +293,7 @@ lzma_raw_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 {
 	// Do some basic validation and get the number of filters.
 	size_t count;
-	return_if_error(validate_chain(options, &count));
+	return_if_error(lzma_validate_chain(options, &count));
 
 	// Set the filter functions and copy the options pointer.
 	lzma_filter_info filters[LZMA_FILTERS_MAX + 1];
@@ -346,7 +346,7 @@ lzma_raw_coder_memusage(lzma_filter_find coder_find,
 	// The chain has to have at least one filter.
 	{
 		size_t tmp;
-		if (validate_chain(filters, &tmp) != LZMA_OK)
+		if (lzma_validate_chain(filters, &tmp) != LZMA_OK)
 			return UINT64_MAX;
 	}
 

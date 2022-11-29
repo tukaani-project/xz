@@ -679,8 +679,8 @@ extern LZMA_API(lzma_ret) lzma_str_from_filters(
  * filter name. If LZMA_STR_ENCODER or LZMA_STR_DECODER is used then the
  * options required for encoding or decoding are listed on the same line too.
  *
- * If filter_id is LZMA_VLI_UNKNOWN then all filters that can be used in
- * the .xz format are listed:
+ * If filter_id is LZMA_VLI_UNKNOWN then all supported .xz-compatible filters
+ * are listed:
  *
  *   - If neither LZMA_STR_ENCODER nor LZMA_STR_DECODER is used then
  *     the supported filter names are listed on a single line separated
@@ -704,7 +704,7 @@ extern LZMA_API(lzma_ret) lzma_str_from_filters(
  *                          Set to NULL to use malloc() and free().
  *
  * \return      - LZMA_OK
- *              - LZMA_OPTIONS_ERROR: Unsupported flags
+ *              - LZMA_OPTIONS_ERROR: Unsupported filter_id or flags
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
  */

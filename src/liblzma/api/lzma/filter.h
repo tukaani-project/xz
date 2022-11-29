@@ -544,7 +544,7 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_decode(
  * LZMA_PRESET_EXTREME. For partial xz command line syntax compatibility,
  * a preset string may start with a single dash "-".
  *
- * A filter chain consist of one or more "filtername:opt1=value1,opt2=value2"
+ * A filter chain consists of one or more "filtername:opt1=value1,opt2=value2"
  * strings separated by one or more spaces. Leading and trailing spaces are
  * ignored. All names and values must be lower-case. Extra commas in the
  * option list are ignored. The order of filters is significant: when
@@ -647,10 +647,10 @@ extern LZMA_API(const char *) lzma_str_to_filters(
  * specify "6" to lzma_str_to_filters() then lzma_str_from_filters()
  * will produce a string containing "lzma2".
  *
- * \param       str         On success *str will be set to point an allocated
- *                          string describing the given filter chain. Old
- *                          value is ignored. On error *str is always set
- *                          to NULL.
+ * \param       str         On success *str will be set to point to an
+ *                          allocated string describing the given filter
+ *                          chain. Old value is ignored. On error *str is
+ *                          always set to NULL.
  * \param       filters     Array of 1-4 filters and a terminating element
  *                          with .id = LZMA_VLI_UNKNOWN.
  * \param       flags       Bitwise-or of zero or more of the flags
@@ -693,9 +693,10 @@ extern LZMA_API(lzma_ret) lzma_str_from_filters(
  *   - If LZMA_STR_ALL_FILTERS is used then the list will include also
  *     those filters that cannot be used in the .xz format (LZMA1).
  *
- * \param       str         On success *str will be set to point an allocated
- *                          string listing the filters and options. Old value
- *                          is ignored. On error *str is always set to NULL.
+ * \param       str         On success *str will be set to point to an
+ *                          allocated string listing the filters and options.
+ *                          Old value is ignored. On error *str is always set
+ *                          to NULL.
  * \param       filter_id   Filter ID or LZMA_VLI_UNKNOWN.
  * \param       flags       Bitwise-or of zero or more of the flags
  *                          LZMA_STR_ALL_FILTERS, LZMA_STR_ENCODER,

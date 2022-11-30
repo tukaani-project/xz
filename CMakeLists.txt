@@ -76,7 +76,7 @@ set(CMAKE_MACOSX_BUNDLE OFF)
 add_compile_definitions(
     # Package info:
     PACKAGE_NAME="XZ Utils"
-    PACKAGE_BUGREPORT="lasse.collin@tukaani.org"
+    PACKAGE_BUGREPORT="xz@tukaani.org"
     PACKAGE_URL="https://tukaani.org/xz/"
 
     # Features:

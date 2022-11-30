@@ -128,7 +128,7 @@
 #define NDEBUG 1
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "lasse.collin@tukaani.org"
+#define PACKAGE_BUGREPORT "xz@tukaani.org"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "XZ Utils"

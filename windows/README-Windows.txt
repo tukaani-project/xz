@@ -118,5 +118,5 @@ Other compilers
 Reporting bugs
 --------------
 
-    Report bugs to <lasse.collin@tukaani.org> (in English or Finnish).
+    Report bugs to <xz@tukaani.org>.
 

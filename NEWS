@@ -2,6 +2,40 @@
 XZ Utils Release Notes
 ======================
 
+5.2.9 (2022-11-30)
+
+    * liblzma:
+
+        - Fixed an infinite loop in LZMA encoder initialization
+          if dict_size >= 2 GiB. (The encoder only supports up
+          to 1536 MiB.)
+
+        - Fixed two cases of invalid free() that can happen if
+          a tiny allocation fails in encoder re-initialization
+          or in lzma_filters_update(). These bugs had some
+          similarities with the bug fixed in 5.2.7.
+
+        - Fixed lzma_block_encoder() not allowing the use of
+          LZMA_SYNC_FLUSH with lzma_code() even though it was
+          documented to be supported. The sync-flush code in
+          the Block encoder was already used internally via
+          lzma_stream_encoder(), so this was just a missing flag
+          in the lzma_block_encoder() API function.
+
+        - GNU/Linux only: Don't put symbol versions into static
+          liblzma as it breaks things in some cases (and even if
+          it didn't break anything, symbol versions in static
+          libraries are useless anyway). The downside of the fix
+          is that if the configure options --with-pic or --without-pic
+          are used then it's not possible to build both shared and
+          static liblzma at the same time on GNU/Linux anymore;
+          with those options --disable-static or --disable-shared
+          must be used too.
+
+    * New email address for bug reports is <xz@tukaani.org> which
+      forwards messages to Lasse Collin and Jia Tan.
+
+
 5.2.8 (2022-11-13)
 
     * xz:

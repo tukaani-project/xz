@@ -79,6 +79,7 @@ SRCS_C = \
 	../src/liblzma/common/stream_flags_common.c \
 	../src/liblzma/common/stream_flags_decoder.c \
 	../src/liblzma/common/stream_flags_encoder.c \
+	../src/liblzma/common/string_conversion.c \
 	../src/liblzma/common/vli_decoder.c \
 	../src/liblzma/common/vli_encoder.c \
 	../src/liblzma/common/vli_size.c \

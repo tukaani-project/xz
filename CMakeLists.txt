@@ -300,6 +300,7 @@ add_library(liblzma
     src/liblzma/common/stream_flags_common.h
     src/liblzma/common/stream_flags_decoder.c
     src/liblzma/common/stream_flags_encoder.c
+    src/liblzma/common/string_conversion.c
     src/liblzma/common/vli_decoder.c
     src/liblzma/common/vli_encoder.c
     src/liblzma/common/vli_size.c

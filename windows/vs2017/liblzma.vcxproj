@@ -253,6 +253,7 @@
     <ClCompile Include="..\..\src\liblzma\common\stream_flags_common.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_flags_decoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_flags_encoder.c" />
+    <ClCompile Include="..\..\src\liblzma\common\string_conversion.c" />
     <ClCompile Include="..\..\src\liblzma\common\vli_decoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\vli_encoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\vli_size.c" />

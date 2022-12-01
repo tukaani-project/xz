@@ -583,8 +583,7 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_decode(
  *                          an int to make it straightforward to use this
  *                          as printf() field width. The value is guaranteed
  *                          to be in the range [0, INT_MAX] even if strlen(str)
- *                          somehow was greater than INT_MAX. On success this
- *                          is equal to min(strlen(str), INT_MAX).
+ *                          somehow was greater than INT_MAX.
  * \param       filters     An array of lzma_filter structures. There must
  *                          be LZMA_FILTERS_MAX + 1 (that is, five) elements
  *                          in the array. The old contents are ignored so it

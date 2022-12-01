@@ -237,6 +237,20 @@ static const char *parse_options(const char **const str, const char *str_end,
 // BCJ //
 /////////
 
+#if defined(HAVE_ENCODER_X86) \
+		|| defined(HAVE_DECODER_X86) \
+		|| defined(HAVE_ENCODER_ARM) \
+		|| defined(HAVE_DECODER_ARM) \
+		|| defined(HAVE_ENCODER_ARMTHUMB) \
+		|| defined(HAVE_DECODER_ARMTHUMB) \
+		|| defined(HAVE_ENCODER_ARM64) \
+		|| defined(HAVE_DECODER_ARM64) \
+		|| defined(HAVE_ENCODER_POWERPC) \
+		|| defined(HAVE_DECODER_POWERPC) \
+		|| defined(HAVE_ENCODER_IA64) \
+		|| defined(HAVE_DECODER_IA64) \
+		|| defined(HAVE_ENCODER_SPARC) \
+		|| defined(HAVE_DECODER_SPARC)
 static const option_map bcj_optmap[] = {
 	{
 		.name = "start",
@@ -256,6 +270,7 @@ parse_bcj(const char **const str, const char *str_end, void *filter_options)
 	return parse_options(str, str_end, filter_options,
 			bcj_optmap, ARRAY_SIZE(bcj_optmap));
 }
+#endif
 
 
 ///////////

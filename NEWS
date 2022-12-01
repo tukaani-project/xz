@@ -2,6 +2,49 @@
 XZ Utils Release Notes
 ======================
 
+5.3.5beta (2022-12-01)
+
+    * All fixes from 5.2.9.
+
+    * liblzma:
+
+        - Added new LZMA_FILTER_LZMA1EXT for raw encoder and decoder to
+          handle raw LZMA1 streams that don't have end of payload marker
+          (EOPM) alias end of stream (EOS) marker. It can be used in
+          filter chains, for example, with the x86 BCJ filter.
+
+        - Added lzma_str_to_filters(), lzma_str_from_filters(), and
+          lzma_str_list_filters() to make it easier for applications
+          to get custom compression options from a user and convert
+          it to an array of lzma_filter structures.
+
+        - Added lzma_filters_free().
+
+        - lzma_filters_update() can now be used with the multi-threaded
+          encoder (lzma_stream_encoder_mt()) to change the filter chain
+          after LZMA_FULL_BARRIER or LZMA_FULL_FLUSH.
+
+        - In lzma_options_lzma, allow nice_len = 2 and 3 with the match
+          finders that require at least 3 or 4. Now it is internally
+          rounded up if needed.
+
+        - ARM64 filter was modified. It is still experimental.
+
+        - Fixed LTO build with Clang if -fgnuc-version=10 or similar
+          was used to make Clang look like GCC >= 10. Now it uses
+          __has_attribute(__symver__) which should be reliable.
+
+    * xz:
+
+        - --threads=+1 or -T+1 is now a way to put xz into multi-threaded
+          mode while using only one worker thread.
+
+        - In --lzma2=nice=NUMBER allow 2 and 3 with all match finders
+          now that liblzma handles it.
+
+    * Updated translations: Chinese (simplified), Korean, and Turkish.
+
+
 5.3.4alpha (2022-11-15)
 
     * All fixes from 5.2.7 and 5.2.8.

@@ -34,6 +34,14 @@
 
 #include "lzma.h"
 
+// This is for detecting modern GCC and Clang attributes
+// like __symver__ in GCC >= 10.
+#ifdef __has_attribute
+#	define lzma_has_attribute(attr) __has_attribute(attr)
+#else
+#	define lzma_has_attribute(attr) 0
+#endif
+
 // The extra symbol versioning in the C files may only be used when
 // building a shared library. If HAVE_SYMBOL_VERSIONS_LINUX is defined
 // to 2 then symbol versioning is done only if also PIC is defined.
@@ -63,7 +71,12 @@
 // since 2000). When using @@ instead of @@@, the internal name must not be
 // the same as the external name to avoid problems in some situations. This
 // is why "#define foo_52 foo" is needed for the default symbol versions.
-#	if TUKLIB_GNUC_REQ(10, 0) && !defined(__INTEL_COMPILER)
+//
+// __has_attribute is supported before GCC 10 and it is supported in Clang 14
+// too (which doesn't support __symver__) so use it to detect if __symver__
+// is available. This should be far more reliable than looking at compiler
+// version macros as nowadays especially __GNUC__ is defined by many compilers.
+#	if lzma_has_attribute(__symver__)
 #		define LZMA_SYMVER_API(extnamever, type, intname) \
 			extern __attribute__((__symver__(extnamever))) \
 					LZMA_API(type) intname

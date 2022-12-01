@@ -1,117 +1,131 @@
 # Chinese translations for xz package
 # xz 软件包的简体中文翻译。
 # This file is put in the public domain.
-# Boyuan Yang <073plan@gmail.com>, 2019.
+# Boyuan Yang <073plan@gmail.com>, 2019, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.2.4\n"
+"Project-Id-Version: xz 5.4.0-pre1\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2018-04-29 18:19+0300\n"
-"PO-Revision-Date: 2019-03-20 15:25-0400\n"
+"POT-Creation-Date: 2022-11-09 19:59+0200\n"
+"PO-Revision-Date: 2022-11-30 13:31-0500\n"
 "Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Poedit 3.2\n"
 
-#: src/xz/args.c:63
+#: src/xz/args.c:64
 #, c-format
 msgid "%s: Invalid argument to --block-list"
 msgstr "%s：--block-list 的无效参数"
 
-#: src/xz/args.c:73
+#: src/xz/args.c:74
 #, c-format
 msgid "%s: Too many arguments to --block-list"
 msgstr "%s：--block-list 得到过多参数"
 
-#: src/xz/args.c:102
+#: src/xz/args.c:103
 msgid "0 can only be used as the last element in --block-list"
 msgstr "0 仅可用于 --block-list 的最后一个元素"
 
-#: src/xz/args.c:406
+#: src/xz/args.c:424
 #, c-format
 msgid "%s: Unknown file format type"
 msgstr "%s：位置文件格式类型"
 
-#: src/xz/args.c:429 src/xz/args.c:437
+#: src/xz/args.c:447 src/xz/args.c:455
 #, c-format
 msgid "%s: Unsupported integrity check type"
 msgstr "%s：不支持的完整性检查类型"
 
-#: src/xz/args.c:473
+#: src/xz/args.c:491
 msgid "Only one file can be specified with `--files' or `--files0'."
 msgstr "仅可使用“--files”或“--files0”指定一个文件。"
 
-#: src/xz/args.c:541
+#: src/xz/args.c:559
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "环境变量 %s 包含过多参数"
 
-#: src/xz/args.c:643
+#: src/xz/args.c:661
 msgid "Compression support was disabled at build time"
 msgstr "压缩支持已在构建时禁用"
 
-#: src/xz/args.c:650
+#: src/xz/args.c:668
 msgid "Decompression support was disabled at build time"
 msgstr "解压支持已在构建时禁用"
 
-#: src/xz/coder.c:110
+#: src/xz/args.c:674
+msgid "Compression of lzip files (.lz) is not supported"
+msgstr "不支持对 lzip 文件 (.lz) 的压缩"
+
+#: src/xz/coder.c:115
 msgid "Maximum number of filters is four"
 msgstr "过滤器最多数量为四"
 
-#: src/xz/coder.c:129
+#: src/xz/coder.c:134
 msgid "Memory usage limit is too low for the given filter setup."
 msgstr "内存用量限制对指定过滤器设置过低。"
 
-#: src/xz/coder.c:159
+#: src/xz/coder.c:169
 msgid "Using a preset in raw mode is discouraged."
 msgstr "不推荐在 raw 模式使用预设等级。"
 
-#: src/xz/coder.c:161
+#: src/xz/coder.c:171
 msgid "The exact options of the presets may vary between software versions."
 msgstr "各个预设等级所使用的准确选项列表在不同软件版本之间可能不同。"
 
-#: src/xz/coder.c:184
+#: src/xz/coder.c:194
 msgid "The .lzma format supports only the LZMA1 filter"
 msgstr ".lzma 格式只支持 LZMA1 过滤器"
 
-#: src/xz/coder.c:192
+#: src/xz/coder.c:202
 msgid "LZMA1 cannot be used with the .xz format"
 msgstr "LZMA1 无法用于 .xz 格式"
 
-#: src/xz/coder.c:209
+#: src/xz/coder.c:219
 msgid "The filter chain is incompatible with --flush-timeout"
 msgstr "过滤器链和 --flush-timeout 不兼容"
 
-#: src/xz/coder.c:215
+#: src/xz/coder.c:225
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "因 --flush-timeout 而切换至单线程模式"
 
-#: src/xz/coder.c:235
+#: src/xz/coder.c:249
 #, c-format
 msgid "Using up to %<PRIu32> threads."
 msgstr "使用最多 %<PRIu32> 个线程。"
 
-#: src/xz/coder.c:251
+#: src/xz/coder.c:265
 msgid "Unsupported filter chain or filter options"
 msgstr "不支持的过滤器链或过滤器选项"
 
-#: src/xz/coder.c:263
+#: src/xz/coder.c:277
 #, c-format
 msgid "Decompression will need %s MiB of memory."
 msgstr "解压缩需要 %s MiB 的内存。"
 
-#: src/xz/coder.c:300
+#: src/xz/coder.c:309
 #, c-format
-msgid "Adjusted the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
-msgstr "已将所使用的线程数从 %s 调整为 %s，以不超出 %s MiB 的内存用量限制"
+msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
+msgstr "已将所使用的线程数从 %s 减小为 %s，以不超出 %s MiB 的内存用量限制"
 
-#: src/xz/coder.c:354
+#: src/xz/coder.c:329
+#, c-format
+msgid "Reduced the number of threads from %s to one. The automatic memory usage limit of %s MiB is still being exceeded. %s MiB of memory is required. Continuing anyway."
+msgstr "已将所使用的线程数从 %s 减小为 1。这仍然超出了自动的内存使用限制 %s MiB。需要 %s MiB 的内存。继续操作。"
+
+#: src/xz/coder.c:356
+#, c-format
+msgid "Switching to single-threaded mode to not exceed the memory usage limit of %s MiB"
+msgstr "正在切换到单线程模式以不超出 %s MiB 的内存用量限制"
+
+#: src/xz/coder.c:411
 #, c-format
 msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
 msgstr "已调整 LZMA%c 字典大小（从 %s MiB 调整为 %s MiB），以不超出 %s MiB 的内存用量限制"
@@ -121,19 +135,11 @@ msgstr "已调整 LZMA%c 字典大小（从 %s MiB 调整为 %s MiB），以不�
 msgid "Error creating a pipe: %s"
 msgstr "创建管道时出错：%s"
 
-#: src/xz/file_io.c:173
-msgid "Sandbox is disabled due to incompatible command line arguments"
-msgstr "沙盒已因不兼容的命令行参数而禁用"
-
-#: src/xz/file_io.c:216
-msgid "Sandbox was successfully enabled"
-msgstr "已成功启用沙盒"
-
-#: src/xz/file_io.c:220
+#: src/xz/file_io.c:235
 msgid "Failed to enable the sandbox"
 msgstr "沙盒启用失败"
 
-#: src/xz/file_io.c:262
+#: src/xz/file_io.c:277
 #, c-format
 msgid "%s: poll() failed: %s"
 msgstr "%s：poll() 失败：%s"
@@ -148,195 +154,321 @@ msgstr "%s：poll() 失败：%s"
 #. it is possible that the user has put a new file in place
 #. of the original file, and in that case it obviously
 #. shouldn't be removed.
-#: src/xz/file_io.c:332
+#: src/xz/file_io.c:344
 #, c-format
 msgid "%s: File seems to have been moved, not removing"
 msgstr "%s：文件似乎已移动，不再进行删除操作"
 
-#: src/xz/file_io.c:339 src/xz/file_io.c:878
+#: src/xz/file_io.c:351 src/xz/file_io.c:907
 #, c-format
 msgid "%s: Cannot remove: %s"
 msgstr "%s：无法删除：%s"
 
-#: src/xz/file_io.c:364
+#: src/xz/file_io.c:377
 #, c-format
 msgid "%s: Cannot set the file owner: %s"
 msgstr "%s：无法设置文件所有者：%s"
 
-#: src/xz/file_io.c:370
+#: src/xz/file_io.c:390
 #, c-format
 msgid "%s: Cannot set the file group: %s"
 msgstr "%s：无法设置文件所有组：%s"
 
-#: src/xz/file_io.c:389
+#: src/xz/file_io.c:409
 #, c-format
 msgid "%s: Cannot set the file permissions: %s"
 msgstr "%s：无法设置文件权限：%s"
 
-#: src/xz/file_io.c:515
+#: src/xz/file_io.c:535
 #, c-format
 msgid "Error getting the file status flags from standard input: %s"
 msgstr "从标准输入获取文件状态标志出错：%s"
 
-#: src/xz/file_io.c:572 src/xz/file_io.c:634
+#: src/xz/file_io.c:593 src/xz/file_io.c:655
 #, c-format
 msgid "%s: Is a symbolic link, skipping"
 msgstr "%s：是符号链接，跳过"
 
-#: src/xz/file_io.c:663
+#: src/xz/file_io.c:684
 #, c-format
 msgid "%s: Is a directory, skipping"
 msgstr "%s：是目录，跳过"
 
-#: src/xz/file_io.c:669
+#: src/xz/file_io.c:690
 #, c-format
 msgid "%s: Not a regular file, skipping"
 msgstr "%s：不是标准文件，跳过"
 
-#: src/xz/file_io.c:686
+#: src/xz/file_io.c:707
 #, c-format
 msgid "%s: File has setuid or setgid bit set, skipping"
 msgstr "%s：文件有设置用户ID或设置组ID标识，跳过"
 
-#: src/xz/file_io.c:693
+#: src/xz/file_io.c:714
 #, c-format
 msgid "%s: File has sticky bit set, skipping"
 msgstr "%s：文件有粘滞位标识，跳过"
 
-#: src/xz/file_io.c:700
+#: src/xz/file_io.c:721
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
 msgstr "%s：输入文件有多于一个硬链接，跳过"
 
-#: src/xz/file_io.c:788
+#: src/xz/file_io.c:763
+msgid "Empty filename, skipping"
+msgstr "空文件名，跳过"
+
+#: src/xz/file_io.c:817
 #, c-format
 msgid "Error restoring the status flags to standard input: %s"
 msgstr "回复标准输入的状态标志时出错：%s"
 
-#: src/xz/file_io.c:836
+#: src/xz/file_io.c:865
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
 msgstr "获取标准输出的文件状态标志时出错：%s"
 
-#: src/xz/file_io.c:1014
+#: src/xz/file_io.c:1043
 #, c-format
 msgid "Error restoring the O_APPEND flag to standard output: %s"
 msgstr "恢复标准输出的 O_APPEND 标志时出错：%s"
 
-#: src/xz/file_io.c:1026
+#: src/xz/file_io.c:1055
 #, c-format
 msgid "%s: Closing the file failed: %s"
 msgstr "%s：关闭文件失败：%s"
 
-#: src/xz/file_io.c:1062 src/xz/file_io.c:1288
+#: src/xz/file_io.c:1091 src/xz/file_io.c:1354
 #, c-format
 msgid "%s: Seeking failed when trying to create a sparse file: %s"
 msgstr "%s：尝试创建稀疏文件时 seek 失败：%s"
 
-#: src/xz/file_io.c:1157
+#: src/xz/file_io.c:1192
 #, c-format
 msgid "%s: Read error: %s"
 msgstr "%s：读取错误：%s"
 
-#: src/xz/file_io.c:1177
+#: src/xz/file_io.c:1222
 #, c-format
 msgid "%s: Error seeking the file: %s"
 msgstr "%s：seek 文件时出错：%s"
 
-#: src/xz/file_io.c:1187
+#: src/xz/file_io.c:1246
 #, c-format
 msgid "%s: Unexpected end of file"
 msgstr "%s：未预期的文件结束"
 
-#: src/xz/file_io.c:1246
+#: src/xz/file_io.c:1305
 #, c-format
 msgid "%s: Write error: %s"
 msgstr "%s：写入错误：%s"
 
-#: src/xz/hardware.c:107
+#: src/xz/hardware.c:225
 msgid "Disabled"
 msgstr "已禁用"
 
-#. TRANSLATORS: Test with "xz --info-memory" to see if
-#. the alignment looks nice.
-#: src/xz/hardware.c:126
-msgid "Total amount of physical memory (RAM): "
-msgstr "物理内存（RAM）总量：      "
+#: src/xz/hardware.c:256
+msgid "Amount of physical memory (RAM):"
+msgstr "物理内存（RAM）用量："
 
-#: src/xz/hardware.c:128
-msgid "Memory usage limit for compression:    "
-msgstr "用于压缩的内存用量限制：   "
+#: src/xz/hardware.c:257
+msgid "Number of processor threads:"
+msgstr "处理器线程数："
 
-#: src/xz/hardware.c:130
-msgid "Memory usage limit for decompression:  "
-msgstr "用于解压缩的内存用量限制： "
+#: src/xz/hardware.c:258
+msgid "Compression:"
+msgstr "压缩："
+
+#: src/xz/hardware.c:259
+msgid "Decompression:"
+msgstr "解压缩："
+
+#: src/xz/hardware.c:260
+msgid "Multi-threaded decompression:"
+msgstr "多线程解压缩："
+
+#: src/xz/hardware.c:261
+msgid "Default for -T0:"
+msgstr "-T0 的默认值："
+
+#: src/xz/hardware.c:279
+msgid "Hardware information:"
+msgstr "硬件信息："
+
+#: src/xz/hardware.c:286
+msgid "Memory usage limits:"
+msgstr "内存使用限制："
+
+#: src/xz/list.c:65
+msgid "Streams:"
+msgstr "流："
+
+#: src/xz/list.c:66
+msgid "Blocks:"
+msgstr "块："
+
+#: src/xz/list.c:67
+msgid "Compressed size:"
+msgstr "压缩后大小："
+
+#: src/xz/list.c:68
+msgid "Uncompressed size:"
+msgstr "解压缩大小："
+
+#: src/xz/list.c:69
+msgid "Ratio:"
+msgstr "比例："
+
+#: src/xz/list.c:70
+msgid "Check:"
+msgstr "校验："
+
+#: src/xz/list.c:71
+msgid "Stream Padding:"
+msgstr "流填充大小："
+
+#: src/xz/list.c:72
+msgid "Memory needed:"
+msgstr "所需内存："
+
+#: src/xz/list.c:73
+msgid "Sizes in headers:"
+msgstr "头部存放大小："
+
+#: src/xz/list.c:76
+msgid "Number of files:"
+msgstr "文件数量："
+
+#: src/xz/list.c:119
+msgid "Stream"
+msgstr "流"
+
+#: src/xz/list.c:120
+msgid "Block"
+msgstr "块"
+
+#: src/xz/list.c:121
+msgid "Blocks"
+msgstr "块"
+
+#: src/xz/list.c:122
+msgid "CompOffset"
+msgstr "压缩偏移量"
+
+#: src/xz/list.c:123
+msgid "UncompOffset"
+msgstr "解压偏移量"
+
+#: src/xz/list.c:124
+msgid "CompSize"
+msgstr "压缩后大小"
+
+#: src/xz/list.c:125
+msgid "UncompSize"
+msgstr "解压缩大小"
+
+#: src/xz/list.c:126
+msgid "TotalSize"
+msgstr "总大小"
+
+#: src/xz/list.c:127
+msgid "Ratio"
+msgstr "比例"
+
+#: src/xz/list.c:128
+msgid "Check"
+msgstr "校验"
+
+#: src/xz/list.c:129
+msgid "CheckVal"
+msgstr "校验值"
+
+#: src/xz/list.c:130
+msgid "Padding"
+msgstr "填充"
+
+#: src/xz/list.c:131
+msgid "Header"
+msgstr "头部"
+
+#: src/xz/list.c:132
+msgid "Flags"
+msgstr "标志"
+
+#: src/xz/list.c:133
+msgid "MemUsage"
+msgstr "内存用量"
+
+#: src/xz/list.c:134
+msgid "Filters"
+msgstr "过滤器"
 
 #. TRANSLATORS: Indicates that there is no integrity check.
-#. This string is used in tables, so the width must not
-#. exceed ten columns with a fixed-width font.
-#: src/xz/list.c:65
+#. This string is used in tables. In older xz version this
+#. string was limited to ten columns in a fixed-width font, but
+#. nowadays there is no strict length restriction anymore.
+#: src/xz/list.c:166
 msgid "None"
 msgstr "无"
 
 #. TRANSLATORS: Indicates that integrity check name is not known,
-#. but the Check ID is known (here 2). This and other "Unknown-N"
-#. strings are used in tables, so the width must not exceed ten
-#. columns with a fixed-width font. It's OK to omit the dash if
-#. you need space for one extra letter, but don't use spaces.
-#: src/xz/list.c:72
+#. but the Check ID is known (here 2). In older xz version these
+#. strings were limited to ten columns in a fixed-width font, but
+#. nowadays there is no strict length restriction anymore.
+#: src/xz/list.c:172
 msgid "Unknown-2"
 msgstr "未知-2"
 
-#: src/xz/list.c:73
+#: src/xz/list.c:173
 msgid "Unknown-3"
 msgstr "未知-3"
 
-#: src/xz/list.c:75
+#: src/xz/list.c:175
 msgid "Unknown-5"
 msgstr "未知-5"
 
-#: src/xz/list.c:76
+#: src/xz/list.c:176
 msgid "Unknown-6"
 msgstr "未知-6"
 
-#: src/xz/list.c:77
+#: src/xz/list.c:177
 msgid "Unknown-7"
 msgstr "未知-7"
 
-#: src/xz/list.c:78
+#: src/xz/list.c:178
 msgid "Unknown-8"
 msgstr "未知-8"
 
-#: src/xz/list.c:79
+#: src/xz/list.c:179
 msgid "Unknown-9"
 msgstr "未知-9"
 
-#: src/xz/list.c:81
+#: src/xz/list.c:181
 msgid "Unknown-11"
 msgstr "未知-11"
 
-#: src/xz/list.c:82
+#: src/xz/list.c:182
 msgid "Unknown-12"
 msgstr "未知-12"
 
-#: src/xz/list.c:83
+#: src/xz/list.c:183
 msgid "Unknown-13"
 msgstr "未知-13"
 
-#: src/xz/list.c:84
+#: src/xz/list.c:184
 msgid "Unknown-14"
 msgstr "未知-14"
 
-#: src/xz/list.c:85
+#: src/xz/list.c:185
 msgid "Unknown-15"
 msgstr "未知-15"
 
-#: src/xz/list.c:153
+#: src/xz/list.c:348
 #, c-format
 msgid "%s: File is empty"
 msgstr "%s：文件为空"
 
-#: src/xz/list.c:158
+#: src/xz/list.c:353
 #, c-format
 msgid "%s: Too small to be a valid .xz file"
 msgstr "%s：过小而不是有效的 .xz 文件"
@@ -345,124 +477,40 @@ msgstr "%s：过小而不是有效的 .xz 文件"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:677
+#: src/xz/list.c:722
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "   流      块     压缩大小     解压大小   比例  校验    文件名"
 
-#: src/xz/list.c:717
-#, c-format
-msgid "  Streams:            %s\n"
-msgstr "  流：                %s\n"
-
-#: src/xz/list.c:719
-#, c-format
-msgid "  Blocks:             %s\n"
-msgstr "  块：                %s\n"
-
-#: src/xz/list.c:721
-#, c-format
-msgid "  Compressed size:    %s\n"
-msgstr "  压缩后大小：        %s\n"
-
-#: src/xz/list.c:724
-#, c-format
-msgid "  Uncompressed size:  %s\n"
-msgstr "  解压缩大小：        %s\n"
-
-#: src/xz/list.c:727
-#, c-format
-msgid "  Ratio:              %s\n"
-msgstr "  压缩比：            %s\n"
-
-#: src/xz/list.c:729
-#, c-format
-msgid "  Check:              %s\n"
-msgstr "  校验方式：          %s\n"
-
-#: src/xz/list.c:730
-#, c-format
-msgid "  Stream padding:     %s\n"
-msgstr "  流填充大小：        %s\n"
-
-#. TRANSLATORS: The second line is column headings. All except
-#. Check are right aligned; Check is left aligned. Test with
-#. "xz -lv foo.xz".
-#: src/xz/list.c:758
-msgid ""
-"  Streams:\n"
-"    Stream    Blocks      CompOffset    UncompOffset        CompSize      UncompSize  Ratio  Check      Padding"
-msgstr ""
-"  流：\n"
-"        流        块      压缩偏移量      解压偏移量        压缩大小        解压大小   比例  校验          填充"
-
-#. TRANSLATORS: The second line is column headings. All
-#. except Check are right aligned; Check is left aligned.
-#: src/xz/list.c:813
-#, c-format
-msgid ""
-"  Blocks:\n"
-"    Stream     Block      CompOffset    UncompOffset       TotalSize      UncompSize  Ratio  Check"
-msgstr ""
-"  块：\n"
-"        流        块      压缩偏移量      解压偏移量        总计大小        解压大小   比例  校验"
-
-#. TRANSLATORS: These are additional column headings
-#. for the most verbose listing mode. CheckVal
-#. (Check value), Flags, and Filters are left aligned.
-#. Header (Block Header Size), CompSize, and MemUsage
-#. are right aligned. %*s is replaced with 0-120
-#. spaces to make the CheckVal column wide enough.
-#. Test with "xz -lvv foo.xz".
-#: src/xz/list.c:825
-#, c-format
-msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
-msgstr "       CheckVal %*s   头部  标记         压缩大小    内存使用  过滤器"
-
-#: src/xz/list.c:903 src/xz/list.c:1078
-#, c-format
-msgid "  Memory needed:      %s MiB\n"
-msgstr "  所需内存：          %s MiB\n"
-
-#: src/xz/list.c:905 src/xz/list.c:1080
-#, c-format
-msgid "  Sizes in headers:   %s\n"
-msgstr "  头部存放大小：      %s\n"
-
-#: src/xz/list.c:906 src/xz/list.c:1081
+#: src/xz/list.c:1016 src/xz/list.c:1193
 msgid "Yes"
 msgstr "是"
 
-#: src/xz/list.c:906 src/xz/list.c:1081
+#: src/xz/list.c:1016 src/xz/list.c:1193
 msgid "No"
 msgstr "否"
 
-#: src/xz/list.c:907 src/xz/list.c:1082
+#: src/xz/list.c:1018 src/xz/list.c:1195
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "  最低 XZ Utils 版本：%s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:1057
+#: src/xz/list.c:1168
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
 msgstr[0] "%s 文件\n"
 
-#: src/xz/list.c:1070
+#: src/xz/list.c:1181
 msgid "Totals:"
 msgstr "总计："
 
-#: src/xz/list.c:1071
-#, c-format
-msgid "  Number of files:    %s\n"
-msgstr "  文件数量：          %s\n"
-
-#: src/xz/list.c:1146
+#: src/xz/list.c:1259
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "--list 仅适用于 .xz 文件（--format=xz 或 --format=auto）"
 
-#: src/xz/list.c:1152
+#: src/xz/list.c:1265
 msgid "--list does not support reading from standard input"
 msgstr "--list 不支持从标准输入读取"
 
@@ -481,11 +529,11 @@ msgstr "%s：读取文件名列表时遇到未预期的输入结束"
 msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
 msgstr "%s：读取文件名列表时获得了空字符；您可能想要使用“--files0”而非“--files”？"
 
-#: src/xz/main.c:174
+#: src/xz/main.c:188
 msgid "Compression and decompression with --robot are not supported yet."
 msgstr "尚不支持带 --robot 的压缩和解压缩。"
 
-#: src/xz/main.c:252
+#: src/xz/main.c:266
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "无法同时从标准输入读取数据和文件名列表"
 
@@ -493,68 +541,68 @@ msgstr "无法同时从标准输入读取数据和文件名列表"
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c:714
+#: src/xz/message.c:725
 #, c-format
 msgid "%s: "
 msgstr "%s："
 
-#: src/xz/message.c:777 src/xz/message.c:827
+#: src/xz/message.c:788 src/xz/message.c:847
 msgid "Internal error (bug)"
 msgstr "内部错误（bug）"
 
-#: src/xz/message.c:784
+#: src/xz/message.c:795
 msgid "Cannot establish signal handlers"
 msgstr "无法建立信号处理器"
 
-#: src/xz/message.c:793
+#: src/xz/message.c:804
 msgid "No integrity check; not verifying file integrity"
 msgstr "无完整性检查；将不验证文件完整性"
 
-#: src/xz/message.c:796
+#: src/xz/message.c:807
 msgid "Unsupported type of integrity check; not verifying file integrity"
 msgstr "不支持的完整性检查类型；将不验证文件完整性"
 
-#: src/xz/message.c:803
+#: src/xz/message.c:814
 msgid "Memory usage limit reached"
 msgstr "达到内存使用限制"
 
-#: src/xz/message.c:806
+#: src/xz/message.c:817
 msgid "File format not recognized"
 msgstr "无法识别文件格式"
 
-#: src/xz/message.c:809
+#: src/xz/message.c:820
 msgid "Unsupported options"
 msgstr "不支持的选项"
 
-#: src/xz/message.c:812
+#: src/xz/message.c:823
 msgid "Compressed data is corrupt"
 msgstr "压缩数据已损坏"
 
-#: src/xz/message.c:815
+#: src/xz/message.c:826
 msgid "Unexpected end of input"
 msgstr "输入意外结束"
 
-#: src/xz/message.c:848
+#: src/xz/message.c:868
 #, c-format
 msgid "%s MiB of memory is required. The limiter is disabled."
 msgstr "需要 %s MiB 的内存空间。限制已禁用。"
 
-#: src/xz/message.c:876
+#: src/xz/message.c:896
 #, c-format
 msgid "%s MiB of memory is required. The limit is %s."
 msgstr "需要 %s MiB 的内存空间。限制为 %s。"
 
-#: src/xz/message.c:1043
+#: src/xz/message.c:1070
 #, c-format
 msgid "%s: Filter chain: %s\n"
 msgstr "%s：过滤器链：%s\n"
 
-#: src/xz/message.c:1053
+#: src/xz/message.c:1080
 #, c-format
 msgid "Try `%s --help' for more information."
 msgstr "请尝试执行“%s --help”来获取更多信息。"
 
-#: src/xz/message.c:1079
+#: src/xz/message.c:1106
 #, c-format
 msgid ""
 "Usage: %s [OPTION]... [FILE]...\n"
@@ -565,15 +613,15 @@ msgstr ""
 "使用 .xz 格式压缩或解压缩文件。\n"
 "\n"
 
-#: src/xz/message.c:1086
+#: src/xz/message.c:1113
 msgid "Mandatory arguments to long options are mandatory for short options too.\n"
 msgstr "必选参数对长短选项同时适用。\n"
 
-#: src/xz/message.c:1090
+#: src/xz/message.c:1117
 msgid " Operation mode:\n"
 msgstr " 操作模式：\n"
 
-#: src/xz/message.c:1093
+#: src/xz/message.c:1120
 msgid ""
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
@@ -585,7 +633,7 @@ msgstr ""
 "  -t, --test          测试压缩文件完整性\n"
 "  -l, --list          列出 .xz 文件的信息"
 
-#: src/xz/message.c:1099
+#: src/xz/message.c:1126
 msgid ""
 "\n"
 " Operation modifiers:\n"
@@ -593,7 +641,7 @@ msgstr ""
 "\n"
 " 操作修饰符：\n"
 
-#: src/xz/message.c:1102
+#: src/xz/message.c:1129
 msgid ""
 "  -k, --keep          keep (don't delete) input files\n"
 "  -f, --force         force overwrite of output file and (de)compress links\n"
@@ -603,13 +651,13 @@ msgstr ""
 "  -f, --force         强制覆写输出文件和（解）压缩链接\n"
 "  -c, --stdout        向标准输出写入，同时不要删除输入文件"
 
-#: src/xz/message.c:1108
+#: src/xz/message.c:1138
 msgid ""
 "      --single-stream decompress only the first stream, and silently\n"
 "                      ignore possible remaining input data"
 msgstr "      --single-stream 仅解压缩第一个流，忽略其后可能继续出现的输入数据"
 
-#: src/xz/message.c:1111
+#: src/xz/message.c:1141
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
@@ -624,7 +672,7 @@ msgstr ""
 "                      将从标准输入读取文件名列表；文件名必须使用换行符分隔\n"
 "      --files0[=文件] 类似 --files，但使用空字符进行分隔"
 
-#: src/xz/message.c:1120
+#: src/xz/message.c:1150
 msgid ""
 "\n"
 " Basic file format and compression options:\n"
@@ -632,23 +680,24 @@ msgstr ""
 "\n"
 " 基本文件格式和压缩选项：\n"
 
-#: src/xz/message.c:1122
+#: src/xz/message.c:1152
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      `auto' (default), `xz', `lzma', and `raw'\n"
+"                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
 "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
 "                      `crc32', `crc64' (default), or `sha256'"
 msgstr ""
 "  -F, --format=格式   要编码或解码的文件格式；可能的值包括\n"
-"                      “auto”（默认）、“xz”、“lzma”和“raw”\n"
+"                      “auto”（默认）、“xz”、“lzma”、\n"
+"                      “lzip”和“raw”\n"
 "  -C, --check=类型    完整性检查类型：“none”（请谨慎使用）、\n"
 "                      “crc32”、“crc64”（默认）或“sha256”"
 
-#: src/xz/message.c:1127
+#: src/xz/message.c:1157
 msgid "      --ignore-check  don't verify the integrity check when decompressing"
 msgstr "      --ignore-check  解压缩时不要进行完整性检查验证"
 
-#: src/xz/message.c:1131
+#: src/xz/message.c:1161
 msgid ""
 "  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
 "                      decompressor memory usage into account before using 7-9!"
@@ -656,7 +705,7 @@ msgstr ""
 "  -0 ... -9           压缩预设等级；默认为 6；使用 7-9 的等级之前，请先考虑\n"
 "                      压缩和解压缩所需的内存用量！（会占用大量内存空间）"
 
-#: src/xz/message.c:1135
+#: src/xz/message.c:1165
 msgid ""
 "  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
 "                      does not affect decompressor memory requirements"
@@ -664,7 +713,7 @@ msgstr ""
 "  -e, --extreme       尝试使用更多 CPU 时间来改进压缩比率；\n"
 "                      不会影响解压缩的内存需求量"
 
-#: src/xz/message.c:1139
+#: src/xz/message.c:1169
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
 "                      to use as many threads as there are processor cores"
@@ -672,7 +721,7 @@ msgstr ""
 "  -T, --threads=数量  使用最多指定数量的线程；默认值为 1；设置为 0\n"
 "                      可以使用与处理器内核数量相同的线程数"
 
-#: src/xz/message.c:1144
+#: src/xz/message.c:1174
 msgid ""
 "      --block-size=SIZE\n"
 "                      start a new .xz block after every SIZE bytes of input;\n"
@@ -682,7 +731,7 @@ msgstr ""
 "                      输入每读取指定块大小的数据后即开始一个新的 .xz 块；\n"
 "                      使用该选项可以设置多线程压缩中的块大小"
 
-#: src/xz/message.c:1148
+#: src/xz/message.c:1178
 msgid ""
 "      --block-list=SIZES\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -692,7 +741,7 @@ msgstr ""
 "                      在所给出的未压缩数据间隔大小的数据之后开始一个新的\n"
 "                      .xz 块（使用逗号分隔）"
 
-#: src/xz/message.c:1152
+#: src/xz/message.c:1182
 msgid ""
 "      --flush-timeout=TIMEOUT\n"
 "                      when compressing, if more than TIMEOUT milliseconds has\n"
@@ -703,29 +752,32 @@ msgstr ""
 "                      进行压缩时，如果从上次刷洗输出之后经过了指定的超时时间\n"
 "                      且读取更多数据会被阻塞，则刷洗输出所有缓冲数据"
 
-#: src/xz/message.c:1158
+#: src/xz/message.c:1188
 #, no-c-format
 msgid ""
 "      --memlimit-compress=LIMIT\n"
 "      --memlimit-decompress=LIMIT\n"
+"      --memlimit-mt-decompress=LIMIT\n"
 "  -M, --memlimit=LIMIT\n"
 "                      set memory usage limit for compression, decompression,\n"
-"                      or both; LIMIT is in bytes, % of RAM, or 0 for defaults"
+"                      threaded decompression, or all of these; LIMIT is in\n"
+"                      bytes, % of RAM, or 0 for defaults"
 msgstr ""
 "      --memlimit-compress=限制用量\n"
 "      --memlimit-decompress=限制用量\n"
+"      --memlimit-mt-decompress=限制用量\n"
 "  -M, --memlimit=限制用量\n"
-"                      设置压缩、解压缩或者两者共同的内存用量限制；\n"
+"                      设置压缩、解压缩、多线程解压缩或者共同的内存用量限制；\n"
 "                      所指定限制量单位为字节，或以百分号 % 结尾表示内存比例，\n"
 "                      或者指定 0 取软件默认值"
 
-#: src/xz/message.c:1165
+#: src/xz/message.c:1197
 msgid ""
 "      --no-adjust     if compression settings exceed the memory usage limit,\n"
 "                      give an error instead of adjusting the settings downwards"
 msgstr "      --no-adjust     如果压缩设置超出内存用量限制，不调整设置而直接报错"
 
-#: src/xz/message.c:1171
+#: src/xz/message.c:1203
 msgid ""
 "\n"
 " Custom filter chain for compression (alternative for using presets):"
@@ -733,7 +785,7 @@ msgstr ""
 "\n"
 " 用于压缩的自定义过滤器链（不使用预设等级时的备选用法）："
 
-#: src/xz/message.c:1180
+#: src/xz/message.c:1212
 msgid ""
 "\n"
 "  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
@@ -762,29 +814,31 @@ msgstr ""
 "                                   (hc3, hc4, bt2, bt3, bt4; bt4)\n"
 "                        depth=数字 最大搜索深度； 0=自动（默认）"
 
-#: src/xz/message.c:1195
+#: src/xz/message.c:1227
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
+"  --arm[=OPTS]        ARM BCJ filter\n"
+"  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
+"  --arm64[=OPTS]      ARM64 BCJ filter\n"
 "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
 "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-"  --arm[=OPTS]        ARM BCJ filter (little endian only)\n"
-"  --armthumb[=OPTS]   ARM-Thumb BCJ filter (little endian only)\n"
 "  --sparc[=OPTS]      SPARC BCJ filter\n"
 "                      Valid OPTS for all BCJ filters:\n"
 "                        start=NUM  start offset for conversions (default=0)"
 msgstr ""
 "\n"
 "  --x86[=选项]        x86 BCJ 过滤器（32 位和 64 位）\n"
+"  --arm[=选项]        ARM BCJ 过滤器\n"
+"  --armthumb[=选项]   ARM-Thumb BCJ 过滤器\n"
+"  --arm64[=选项]      ARM64 BCJ 过滤器\n"
 "  --powerpc[=选项]    PowerPC BCJ 过滤器（仅大端序）\n"
 "  --ia64[=选项]       IA-64 (Itanium，安腾) BCJ 过滤器\n"
-"  --arm[=选项]        ARM BCJ 过滤器（仅小端序）\n"
-"  --armthumb[=选项]   ARM-Thumb BCJ 过滤器（仅小端序）\n"
 "  --sparc[=选项]      SPARC BCJ 过滤器\n"
 "                      所有过滤器可用选项：\n"
 "                        start=数字  转换的起始偏移量（默认=0）"
 
-#: src/xz/message.c:1207
+#: src/xz/message.c:1240
 msgid ""
 "\n"
 "  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
@@ -795,7 +849,7 @@ msgstr ""
 "  --delta[=选项]      增量过滤器；有效选项（有效值；默认值）：\n"
 "                        dist=NUM   相减的字节之间的距离 (1-256; 1)"
 
-#: src/xz/message.c:1215
+#: src/xz/message.c:1248
 msgid ""
 "\n"
 " Other options:\n"
@@ -803,7 +857,7 @@ msgstr ""
 "\n"
 " 其它选项：\n"
 
-#: src/xz/message.c:1218
+#: src/xz/message.c:1251
 msgid ""
 "  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
 "  -v, --verbose       be verbose; specify twice for even more verbose"
@@ -811,21 +865,21 @@ msgstr ""
 "  -q, --quiet         不显示警告信息；指定两次可不显示错误信息\n"
 "  -v, --verbose       输出详细信息；指定两次可以输出更详细的信息"
 
-#: src/xz/message.c:1223
+#: src/xz/message.c:1256
 msgid "  -Q, --no-warn       make warnings not affect the exit status"
 msgstr "  -Q, --no-warn       使得警告信息不影响程序退出返回值"
 
-#: src/xz/message.c:1225
+#: src/xz/message.c:1258
 msgid "      --robot         use machine-parsable messages (useful for scripts)"
 msgstr "      --robot         使用机器可解析的信息（对于脚本有用）"
 
-#: src/xz/message.c:1228
+#: src/xz/message.c:1261
 msgid ""
 "      --info-memory   display the total amount of RAM and the currently active\n"
 "                      memory usage limits, and exit"
 msgstr "      --info-memory   显示 RAM 总量和当前配置的内存用量限制，然后退出"
 
-#: src/xz/message.c:1231
+#: src/xz/message.c:1264
 msgid ""
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"
@@ -833,7 +887,7 @@ msgstr ""
 "  -h, --help          显示短帮助信息（仅列出基本选项）\n"
 "  -H, --long-help     显示本长帮助信息"
 
-#: src/xz/message.c:1235
+#: src/xz/message.c:1268
 msgid ""
 "  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"
@@ -841,11 +895,11 @@ msgstr ""
 "  -h, --help          显示本短帮助信息并退出\n"
 "  -H, --long-help     显示长帮助信息（同时列出高级选项）"
 
-#: src/xz/message.c:1240
+#: src/xz/message.c:1273
 msgid "  -V, --version       display the version number and exit"
 msgstr "  -V, --version       显示软件版本号并退出"
 
-#: src/xz/message.c:1242
+#: src/xz/message.c:1275
 msgid ""
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
@@ -857,7 +911,7 @@ msgstr ""
 #. for this package. Please add _another line_ saying
 #. "Report translation bugs to <...>\n" with the email or WWW
 #. address for translation bugs. Thanks.
-#: src/xz/message.c:1248
+#: src/xz/message.c:1281
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr ""
@@ -865,12 +919,12 @@ msgstr ""
 "请使用中文向 TP 简体中文翻译团队 <i18n-zh@googlegroups.com>\n"
 "报告软件的简体中文翻译错误。\n"
 
-#: src/xz/message.c:1250
+#: src/xz/message.c:1283
 #, c-format
 msgid "%s home page: <%s>\n"
 msgstr "%s 主页：<%s>\n"
 
-#: src/xz/message.c:1254
+#: src/xz/message.c:1287
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
 msgstr "这是开发版本，不适用于生产环境使用。"
 
@@ -889,36 +943,36 @@ msgstr "%s：无效的选项名称"
 msgid "%s: Invalid option value"
 msgstr "%s：无效的选项值"
 
-#: src/xz/options.c:247
+#: src/xz/options.c:286
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
 msgstr "不支持的 LZMA1/LZMA2 预设等级：%s"
 
-#: src/xz/options.c:355
+#: src/xz/options.c:394
 msgid "The sum of lc and lp must not exceed 4"
 msgstr "lc 和 lp 的和必须不大于 4"
 
-#: src/xz/options.c:359
+#: src/xz/options.c:398
 #, c-format
 msgid "The selected match finder requires at least nice=%<PRIu32>"
 msgstr "所选中的匹配搜索器（match finder）至少需要 nice=%<PRIu32>"
 
-#: src/xz/suffix.c:133 src/xz/suffix.c:258
+#: src/xz/suffix.c:134 src/xz/suffix.c:265
 #, c-format
 msgid "%s: With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgstr "%s：在启用 --format-raw 选项时，必须指定 --suffix=.SUF 获知写入至标准输出"
 
-#: src/xz/suffix.c:164
+#: src/xz/suffix.c:165
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s：文件名有未知后缀，跳过"
 
-#: src/xz/suffix.c:185
+#: src/xz/suffix.c:186
 #, c-format
 msgid "%s: File already has `%s' suffix, skipping"
 msgstr "%s：文件已有“%s”后缀名，跳过"
 
-#: src/xz/suffix.c:393
+#: src/xz/suffix.c:402
 #, c-format
 msgid "%s: Invalid filename suffix"
 msgstr "%s：无效的文件名后缀"
@@ -942,22 +996,56 @@ msgstr "有效的后缀包括“KiB”（2^10）、“MiB”（2^20）和“GiB�
 msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "选项“%s”的值必须位于 [%<PRIu64>, %<PRIu64>] 范围内"
 
-#: src/xz/util.c:257
-msgid "Empty filename, skipping"
-msgstr "空文件名，跳过"
-
-#: src/xz/util.c:271
+#: src/xz/util.c:269
 msgid "Compressed data cannot be read from a terminal"
 msgstr "压缩数据不能从终端读取"
 
-#: src/xz/util.c:284
+#: src/xz/util.c:282
 msgid "Compressed data cannot be written to a terminal"
 msgstr "压缩数据不能向终端写入"
 
-#: src/common/tuklib_exit.c:39
+#: src/common/tuklib_exit.c:40
 msgid "Writing to standard output failed"
 msgstr "写入标准输出失败"
 
-#: src/common/tuklib_exit.c:42
+#: src/common/tuklib_exit.c:43
 msgid "Unknown error"
 msgstr "未知错误"
+
+#~ msgid "Sandbox is disabled due to incompatible command line arguments"
+#~ msgstr "沙盒已因不兼容的命令行参数而禁用"
+
+#~ msgid "Sandbox was successfully enabled"
+#~ msgstr "已成功启用沙盒"
+
+#~ msgid "Memory usage limit for compression:    "
+#~ msgstr "用于压缩的内存用量限制：  "
+
+#~ msgid "  Streams:            %s\n"
+#~ msgstr "  流：                %s\n"
+
+#~ msgid "  Blocks:             %s\n"
+#~ msgstr "  块：                %s\n"
+
+#~ msgid "  Ratio:              %s\n"
+#~ msgstr "  压缩比：            %s\n"
+
+#~ msgid "  Check:              %s\n"
+#~ msgstr "  校验方式：          %s\n"
+
+#~ msgid ""
+#~ "  Streams:\n"
+#~ "    Stream    Blocks      CompOffset    UncompOffset        CompSize      UncompSize  Ratio  Check      Padding"
+#~ msgstr ""
+#~ "  流：\n"
+#~ "       流         块      压缩偏移量      解压偏移量        压缩大小        解压大小   比例   校验         填充"
+
+#~ msgid ""
+#~ "  Blocks:\n"
+#~ "    Stream     Block      CompOffset    UncompOffset       TotalSize      UncompSize  Ratio  Check"
+#~ msgstr ""
+#~ "  块：\n"
+#~ "        流        块      压缩偏移量      解压偏移量        总计大小        解压大小   比例   校验"
+
+#~ msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
+#~ msgstr "      CheckVal %*s   头部   标记        压缩大小    内存使用   过滤器"

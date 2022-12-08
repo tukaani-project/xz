@@ -23,6 +23,10 @@ lzma_block_header_decode(lzma_block *block,
 	// are invalid or over 63 bits, or if the header is too small
 	// to contain the claimed information.
 
+	// Catch unexpected NULL pointers.
+	if (block == NULL || block->filters == NULL || in == NULL)
+		return LZMA_PROG_ERROR;
+
 	// Initialize the filter options array. This way the caller can
 	// safely free() the options even if an error occurs in this function.
 	for (size_t i = 0; i <= LZMA_FILTERS_MAX; ++i) {

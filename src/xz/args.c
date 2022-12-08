@@ -31,7 +31,7 @@ const char stdin_filename[] = "(stdin)";
 
 /// Parse and set the memory usage limit for compression and/or decompression.
 static void
-parse_memlimit(const char *name, const char *name_percentage, char *str,
+parse_memlimit(const char *name, const char *name_percentage, const char *str,
 		bool set_compress, bool set_decompress)
 {
 	bool is_percentage = false;
@@ -39,9 +39,18 @@ parse_memlimit(const char *name, const char *name_percentage, char *str,
 
 	const size_t len = strlen(str);
 	if (len > 0 && str[len - 1] == '%') {
-		str[len - 1] = '\0';
+		// Make a copy so that we can get rid of %.
+		//
+		// In the past str wasn't const and we modified it directly
+		// but that modified argv[] and thus affected what was visible
+		// in "ps auxf" or similar tools which was confusing. For
+		// example, --memlimit=50% would show up as --memlimit=50
+		// since the percent sign was overwritten here.
+		char *s = xstrdup(str);
+		s[len - 1] = '\0';
 		is_percentage = true;
-		value = str_to_uint64(name_percentage, str, 1, 100);
+		value = str_to_uint64(name_percentage, s, 1, 100);
+		free(s);
 	} else {
 		// On 32-bit systems, SIZE_MAX would make more sense than
 		// UINT64_MAX. But use UINT64_MAX still so that scripts
@@ -56,8 +65,12 @@ parse_memlimit(const char *name, const char *name_percentage, char *str,
 
 
 static void
-parse_block_list(char *str)
+parse_block_list(const char *str_const)
 {
+	// We need a modifiable string in the for-loop.
+	char *str_start = xstrdup(str_const);
+	char *str = str_start;
+
 	// It must be non-empty and not begin with a comma.
 	if (str[0] == '\0' || str[0] == ',')
 		message_fatal(_("%s: Invalid argument to --block-list"), str);
@@ -112,6 +125,8 @@ parse_block_list(char *str)
 
 	// Terminate the array.
 	opt_block_list[count] = 0;
+
+	free(str_start);
 	return;
 }
 

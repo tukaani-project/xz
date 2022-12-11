@@ -49,13 +49,9 @@
 	 * Filter for SPARC binaries.
 	 */
 
-#define LZMA_FILTER_ARM64       LZMA_VLI_C(0x3FDB87B33B27020B)
+#define LZMA_FILTER_ARM64       LZMA_VLI_C(0x0A)
 	/**<
 	 * Filter for ARM64 binaries.
-	 *
-	 * \note    THIS IS AN EXPERIMENTAL VERSION WHICH WILL
-	 *          STILL CHANGE! FILES CREATED WITH THIS
-	 *          WILL NOT BE SUPPORTED IN THE FUTURE!
 	 */
 
 /**

@@ -19,6 +19,10 @@ Authors of XZ Utils
     Andrew Dudman helped adapting the scripts and their man pages for
     XZ Utils.
 
+    Other authors:
+      - Jonathan Nieder
+      - Joachim Henke
+
     The GNU Autotools-based build system contains files from many authors,
     which I'm not trying to list here.
 

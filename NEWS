@@ -2,6 +2,208 @@
 XZ Utils Release Notes
 ======================
 
+5.4.0 (2022-12-13)
+
+    This bumps the minor version of liblzma because new features were
+    added. The API and ABI are still backward compatible with liblzma
+    5.2.x and 5.0.x.
+
+    Since 5.3.5beta:
+
+    * All fixes from 5.2.10.
+
+    * The ARM64 filter is now stable. The xz option is now --arm64.
+      Decompression requires XZ Utils 5.4.0. In the future the ARM64
+      filter will be supported by XZ for Java, XZ Embedded (including
+      the version in Linux), LZMA SDK, and 7-Zip.
+
+    * Translations:
+
+        - Updated Catalan, Croatian, German, Romanian, and Turkish
+          translations.
+
+        - Updated German man page translations.
+
+        - Added Romanian man page translations.
+
+    Summary of new features added in the 5.3.x development releases:
+
+    * liblzma:
+
+        - Added threaded .xz decompressor lzma_stream_decoder_mt().
+          It can use multiple threads with .xz files that have multiple
+          Blocks with size information in Block Headers. The threaded
+          encoder in xz has always created such files.
+
+          Single-threaded encoder cannot store the size information in
+          Block Headers even if one used LZMA_FULL_FLUSH to create
+          multiple Blocks, so this threaded decoder cannot use multiple
+          threads with such files.
+
+          If there are multiple Streams (concatenated .xz files), one
+          Stream will be decompressed completely before starting the
+          next Stream.
+
+        - A new decoder flag LZMA_FAIL_FAST was added. It makes the
+          threaded decompressor report errors soon instead of first
+          flushing all pending data before the error location.
+
+        - New Filter IDs:
+            * LZMA_FILTER_ARM64 is for ARM64 binaries.
+            * LZMA_FILTER_LZMA1EXT is for raw LZMA1 streams that don't
+              necessarily use the end marker.
+
+        - Added lzma_str_to_filters(), lzma_str_from_filters(), and
+          lzma_str_list_filters() to convert a preset or a filter chain
+          string to a lzma_filter[] and vice versa. These should make
+          it easier to write applications that allow users to specify
+          custom compression options.
+
+        - Added lzma_filters_free() which can be convenient for freeing
+          the filter options in a filter chain (an array of lzma_filter
+          structures).
+
+        - lzma_file_info_decoder() to makes it a little easier to get
+          the Index field from .xz files. This helps in getting the
+          uncompressed file size but an easy-to-use random access
+          API is still missing which has existed in XZ for Java for
+          a long time.
+
+        - Added lzma_microlzma_encoder() and lzma_microlzma_decoder().
+          It is used by erofs-utils and may be used by others too.
+
+          The MicroLZMA format is a raw LZMA stream (without end marker)
+          whose first byte (always 0x00) has been replaced with
+          bitwise-negation of the LZMA properties (lc/lp/pb). It was
+          created for use in EROFS but may be used in other contexts
+          as well where it is important to avoid wasting bytes for
+          stream headers or footers. The format is also supported by
+          XZ Embedded (the XZ Embedded version in Linux got MicroLZMA
+          support in Linux 5.16).
+
+          The MicroLZMA encoder API in liblzma can compress into a
+          fixed-sized output buffer so that as much data is compressed
+          as can be fit into the buffer while still creating a valid
+          MicroLZMA stream. This is needed for EROFS.
+
+        - Added lzma_lzip_decoder() to decompress the .lz (lzip) file
+          format version 0 and the original unextended version 1 files.
+          Also lzma_auto_decoder() supports .lz files.
+
+        - lzma_filters_update() can now be used with the multi-threaded
+          encoder (lzma_stream_encoder_mt()) to change the filter chain
+          after LZMA_FULL_BARRIER or LZMA_FULL_FLUSH.
+
+        - In lzma_options_lzma, allow nice_len = 2 and 3 with the match
+          finders that require at least 3 or 4. Now it is internally
+          rounded up if needed.
+
+        - CLMUL-based CRC64 on x86-64 and E2K with runtime processor
+          detection. On 32-bit x86 it currently isn't available unless
+          --disable-assembler is used which can make the non-CLMUL
+          CRC64 slower; this might be fixed in the future.
+
+        - Building with --disable-threads --enable-small
+          is now thread-safe if the compiler supports
+          __attribute__((__constructor__)).
+
+    * xz:
+
+        - Using -T0 (--threads=0) will now use multi-threaded encoder
+          even on a single-core system. This is to ensure that output
+          from the same xz binary is identical on both single-core and
+          multi-core systems.
+
+        - --threads=+1 or -T+1 is now a way to put xz into
+          multi-threaded mode while using only one worker thread.
+          The + is ignored if the number is not 1.
+
+        - A default soft memory usage limit is now used for compression
+          when -T0 is used and no explicit limit has been specified.
+          This soft limit is used to restrict the number of threads
+          but if the limit is exceeded with even one thread then xz
+          will continue with one thread using the multi-threaded
+          encoder and this limit is ignored. If the number of threads
+          is specified manually then no default limit will be used;
+          this affects only -T0.
+
+          This change helps on systems that have very many cores and
+          using all of them for xz makes no sense. Previously xz -T0
+          could run out of memory on such systems because it attempted
+          to reserve memory for too many threads.
+
+          This also helps with 32-bit builds which don't have a large
+          amount of address space that would be required for many
+          threads. The default soft limit for -T0 is at most 1400 MiB
+          on all 32-bit platforms.
+
+        - Previously a low value in --memlimit-compress wouldn't cause
+          xz to switch from multi-threaded mode to single-threaded mode
+          if the limit cannot otherwise be met; xz failed instead. Now
+          xz can switch to single-threaded mode and then, if needed,
+          scale down the LZMA2 dictionary size too just like it already
+          did when it was started in single-threaded mode.
+
+        - The option --no-adjust no longer prevents xz from scaling down
+          the number of threads as that doesn't affect the compressed
+          output (only performance). Now --no-adjust only prevents
+          adjustments that affect compressed output, that is, with
+          --no-adjust xz won't switch from multi-threaded mode to
+          single-threaded mode and won't scale down the LZMA2
+          dictionary size.
+
+        - Added a new option --memlimit-mt-decompress=LIMIT. This is
+          used to limit the number of decompressor threads (possibly
+          falling back to single-threaded mode) but it will never make
+          xz refuse to decompress a file. This has a system-specific
+          default value because without any limit xz could end up
+          allocating memory for the whole compressed input file, the
+          whole uncompressed output file, multiple thread-specific
+          decompressor instances and so on. Basically xz could
+          attempt to use an insane amount of memory even with fairly
+          common files. The system-specific default value is currently
+          the same as the one used for compression with -T0.
+
+          The new option works together with the existing option
+          --memlimit-decompress=LIMIT. The old option sets a hard limit
+          that must not be exceeded (xz will refuse to decompress)
+          while the new option only restricts the number of threads.
+          If the limit set with --memlimit-mt-decompress is greater
+          than the limit set with --memlimit-compress, then the latter
+          value is used also for --memlimit-mt-decompress.
+
+        - Added new information to the output of xz --info-memory and
+          new fields to the output of xz --robot --info-memory.
+
+        - In --lzma2=nice=NUMBER allow 2 and 3 with all match finders
+          now that liblzma handles it.
+
+        - Don't mention endianness for ARM and ARM-Thumb filters in
+          --long-help. The filters only work for little endian
+          instruction encoding but modern ARM processors using
+          big endian data access still use little endian
+          instruction encoding. So the help text was misleading.
+          In contrast, the PowerPC filter is only for big endian
+          32/64-bit PowerPC code. Little endian PowerPC would need
+          a separate filter.
+
+        - Added decompression support for the .lz (lzip) file format
+          version 0 and the original unextended version 1. It is
+          autodetected by default. See also the option --format on
+          the xz man page.
+
+        - Sandboxing enabled by default:
+            * Capsicum (FreeBSD)
+            * pledge(2) (OpenBSD)
+
+    * Scripts now support the .lz format using xz.
+
+    * A few new tests were added.
+
+    * The liblzma-specific tests are now supported in CMake-based
+      builds too ("make test").
+
+
 5.3.5beta (2022-12-01)
 
     * All fixes from 5.2.9.

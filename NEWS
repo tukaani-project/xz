@@ -357,6 +357,18 @@ XZ Utils Release Notes
       (FreeBSD >= 10).
 
 
+5.2.10 (2022-12-13)
+
+    * xz: Don't modify argv[] when parsing the --memlimit* and
+      --block-list command line options. This fixes confusing
+      arguments in process listing (like "ps auxf").
+
+    * GNU/Linux only: Use __has_attribute(__symver__) to detect if
+      that attribute is supported. This fixes build on Mandriva where
+      Clang is patched to define __GNUC__ to 11 by default (instead
+      of 4 as used by Clang upstream).
+
+
 5.2.9 (2022-11-30)
 
     * liblzma:

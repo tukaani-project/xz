@@ -73,6 +73,13 @@
     uncompressed file is compress_prepared_bcj_sparc found from the tests
     directory.
 
+    good-1-arm64-lzma2-1.xz uses the ARM64 filter and LZMA2. The
+    uncompressed data is constructed so that it tests integer
+    wrap around and sign extension.
+
+    good-1-arm64-lzma2-2.xz is like good-1-arm64-lzma2-1.xz but with
+    non-zero start offset. XZ Embedded doesn't support this file.
+
     good-1-lzma2-1.xz has two LZMA2 chunks, of which the second sets
     new properties.
 

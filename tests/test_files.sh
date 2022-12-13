@@ -75,6 +75,11 @@ do
 			have_feature DECODER_X86 "$I" || continue
 			;;
 	esac
+	case $I in
+		*/good-1-arm64-lzma2-*.xz)
+			have_feature DECODER_ARM64 "$I" || continue
+			;;
+	esac
 
 	if test -z "$XZ" || "$XZ" $NO_WARN -dc "$I" > /dev/null; then
 		:

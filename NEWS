@@ -220,7 +220,7 @@ XZ Utils Release Notes
           from multithreaded mode to single-threaded mode and won't
           scale down the LZMA2 dictionary size.
 
-        - Added a new option --memlimit-decompress-mt=LIMIT. This is
+        - Added a new option --memlimit-mt-decompress=LIMIT. This is
           used to limit the number of decompressor threads (possibly
           falling back to single-threaded mode) but it will never make
           xz refuse to decompress a file. This has a system-specific

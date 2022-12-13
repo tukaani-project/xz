@@ -69,7 +69,7 @@
     uncompressed file is compress_prepared_bcj_x86 found from the tests
     directory.
 
-    good-1-sparc-lzma2.xz uses the SPARC filter and LZMA. The
+    good-1-sparc-lzma2.xz uses the SPARC filter and LZMA2. The
     uncompressed file is compress_prepared_bcj_sparc found from the tests
     directory.
 

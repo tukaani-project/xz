@@ -142,12 +142,10 @@ XZ Utils Installation
 
     If it is enough to build liblzma (no command line tools):
 
-      - There is experimental CMake support. As it is, it should be
-        good enough to build static liblzma with Visual Studio.
-        Building liblzma.dll might work too (if it doesn't, it should
-        be fixed). The CMake support may work with MinGW or MinGW-w64.
-        Read the comment in the beginning of CMakeLists.txt before
-        running CMake!
+      - There is CMake support. It should be good enough to build
+        static liblzma or liblzma.dll with Visual Studio. The CMake
+        support may work with MinGW or MinGW-w64. Read the comment
+        in the beginning of CMakeLists.txt before running CMake!
 
       - There are Visual Studio project files under the "windows"
         directory. See windows/INSTALL-MSVC.txt. In the future the

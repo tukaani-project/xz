@@ -122,7 +122,7 @@ global:
 	lzma_stream_encoder_mt_memusage;
 } XZ_5.1.2alpha;
 
-XZ_5.3.5beta {
+XZ_5.4 {
 global:
 	lzma_file_info_decoder;
 	lzma_filters_free;

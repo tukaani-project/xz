@@ -33,6 +33,8 @@ build-aux/ltmain.sh
 build-aux/missing
 build-aux/test-driver
 
+/doc/html
+
 /src/liblzma/liblzma.pc
 /src/lzmainfo/lzmainfo
 /src/xz/xz

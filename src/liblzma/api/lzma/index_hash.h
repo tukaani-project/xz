@@ -1,6 +1,9 @@
 /**
  * \file        lzma/index_hash.h
  * \brief       Validate Index by using a hash function
+ * \note        Never include this file directly. Use <lzma.h> instead.
+ *
+ * See ../lzma.h for information about liblzma as a whole.
  *
  * Hashing makes it possible to use constant amount of memory to validate
  * Index of arbitrary size.
@@ -11,8 +14,6 @@
  *
  * This file has been put into the public domain.
  * You can do whatever you want with this file.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 #ifndef LZMA_H_INTERNAL

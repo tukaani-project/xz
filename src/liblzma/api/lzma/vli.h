@@ -1,6 +1,9 @@
 /**
  * \file        lzma/vli.h
  * \brief       Variable-length integer handling
+ * \note        Never include this file directly. Use <lzma.h> instead.
+ *
+ * See ../lzma.h for information about liblzma as a whole.
  *
  * In the .xz format, most integers are encoded in a variable-length
  * representation, which is sometimes called little endian base-128 encoding.
@@ -19,8 +22,6 @@
  *
  * This file has been put into the public domain.
  * You can do whatever you want with this file.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 #ifndef LZMA_H_INTERNAL

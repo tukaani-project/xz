@@ -154,13 +154,11 @@ if(NOT WIN32 AND NOT DEFINED HAVE_CLOCK_GETTIME)
     endif()
     if(HAVE_CLOCK_GETTIME)
         # Check if CLOCK_MONOTONIC is available for clock_gettime().
-        check_symbol_exists(CLOCK_MONOTONIC time.h HAVE_DECL_CLOCK_MONOTONIC)
+        check_symbol_exists(CLOCK_MONOTONIC time.h HAVE_CLOCK_MONOTONIC)
 
-        # HAVE_DECL_CLOCK_MONOTONIC should always be defined to 0 or 1
-        # when clock_gettime is available.
         add_compile_definitions(
             HAVE_CLOCK_GETTIME
-            HAVE_DECL_CLOCK_MONOTONIC=$<BOOL:"${HAVE_DECL_CLOCK_MONOTONIC}">
+            HAVE_CLOCK_MONOTONIC
         )
     endif()
 endif()
@@ -184,7 +182,7 @@ else()
     add_compile_definitions(MYTHREAD_POSIX)
 
     # Check if pthread_condattr_setclock() exists to use CLOCK_MONOTONIC.
-    if(HAVE_DECL_CLOCK_MONOTONIC)
+    if(HAVE_CLOCK_MONOTONIC)
         list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
         check_symbol_exists(pthread_condattr_setclock pthread.h
                             HAVE_PTHREAD_CONDATTR_SETCLOCK)

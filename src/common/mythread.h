@@ -100,11 +100,17 @@ mythread_sigmask(int how, const sigset_t *restrict set,
 // Using pthreads //
 ////////////////////
 
-#include <sys/time.h>
 #include <pthread.h>
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
+
+// If clock_gettime() isn't available, use gettimeofday() from <sys/time.h>
+// as a fallback. gettimeofday() is in SUSv2 and thus is supported on all
+// relevant POSIX systems.
+#if !defined(HAVE_CLOCK_GETTIME)
+#	include <sys/time.h>
+#endif
 
 #define MYTHREAD_RET_TYPE void *
 #define MYTHREAD_RET_VALUE NULL

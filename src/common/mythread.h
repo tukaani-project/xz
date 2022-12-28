@@ -219,8 +219,8 @@ static inline int
 mythread_cond_init(mythread_cond *mycond)
 {
 #ifdef HAVE_CLOCK_GETTIME
-	// NOTE: HAVE_DECL_CLOCK_MONOTONIC is always defined to 0 or 1.
-#	if defined(HAVE_PTHREAD_CONDATTR_SETCLOCK) && HAVE_DECL_CLOCK_MONOTONIC
+#	if defined(HAVE_PTHREAD_CONDATTR_SETCLOCK) && \
+		defined(HAVE_CLOCK_MONOTONIC)
 	struct timespec ts;
 	pthread_condattr_t condattr;
 

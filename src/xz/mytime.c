@@ -12,7 +12,9 @@
 
 #include "private.h"
 
-#if !(defined(HAVE_CLOCK_GETTIME) && defined(HAVE_CLOCK_MONOTONIC))
+#if defined(HAVE_CLOCK_GETTIME) && defined(HAVE_CLOCK_MONOTONIC)
+#	include <time.h>
+#else
 #	include <sys/time.h>
 #endif
 

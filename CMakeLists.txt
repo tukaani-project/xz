@@ -801,6 +801,7 @@ if(BUILD_TESTING)
         test_filter_flags
         test_hardware
         test_index
+        test_index_hash
         test_memlimit
         test_stream_flags
         test_vli
@@ -812,6 +813,7 @@ if(BUILD_TESTING)
         target_include_directories("${TEST}" PRIVATE
             src/common
             src/liblzma/api
+            src/liblzma
             lib
         )
 

@@ -19,8 +19,12 @@
 #define DECODE_CHUNK_SIZE 1024
 
 
-// Avoiding using data buffers so we don't have to store the data buffers
-// as large hex strings. Instead, store the CRC32 value of the expected data.
+// The uncompressed data in the test files are short US-ASCII strings.
+// The tests check if the decompressed output is what it is expected to be.
+// Storing the strings here as text would break the tests on EBCDIC systems
+// and storing the strings as an array of hex values is inconvenient, so
+// store the CRC32 values of the expected data instead.
+//
 // CRC32 value of "Hello\nWorld\n"
 static const uint32_t hello_world_crc = 0x15A2A343;
 

@@ -640,7 +640,7 @@ case $enable_threads in
 		AC_CHECK_FUNCS([clock_gettime pthread_condattr_setclock])
 		AC_CHECK_DECL([CLOCK_MONOTONIC], [AC_DEFINE(
 			[HAVE_CLOCK_MONOTONIC], [1], [Define to 1 if
-			CLOCK_MONOTONIC is declared in <time.h>])], [],
+			`CLOCK_MONOTONIC' is declared in <time.h>.])], [],
 			[[#include <time.h>]])
 		CFLAGS=$OLD_CFLAGS
 		;;

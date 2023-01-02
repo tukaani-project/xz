@@ -21,5 +21,8 @@
 
 AC_DEFUN_ONCE([TUKLIB_PROGNAME], [
 AC_REQUIRE([TUKLIB_COMMON])
-AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
+AC_CHECK_DECL([program_invocation_name], [AC_DEFINE(
+	[HAVE_PROGRAM_INVOCATION_NAME], [1],
+	[Define to 1 if PROGRAM_INVOCATION_NAME is declared in <errno.h>])],
+	[], [#include <errno.h>])
 ])dnl

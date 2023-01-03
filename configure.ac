@@ -1132,7 +1132,6 @@ xz=`echo xz | sed "$program_transform_name"`
 AC_SUBST([xz])
 
 AC_CONFIG_FILES([
-	Doxyfile
 	Makefile
 	po/Makefile.in
 	lib/Makefile

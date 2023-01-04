@@ -24,7 +24,7 @@
 // Avoid re-creating the test files every time the tests are run.
 #define maybe_create_test(argc, argv, name) \
 do { \
-	if ((argc < 2 || strcmp(argv[1], #name) == 0) \
+	if ((argc < 2 || strcmp(argv[1], "compress_generated_" #name) == 0) \
 			&& !file_exists("compress_generated_" #name)) { \
 		FILE *file = file_create("compress_generated_" #name); \
 		write_ ## name(file); \

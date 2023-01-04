@@ -84,15 +84,17 @@ XZDEC="../src/xzdec/xzdec" # No memory usage limiter available
 test -x ../src/xzdec/xzdec || XZDEC=
 
 # Create the required input file if needed.
-FILE=$1
+#
 # Derive temporary filenames for compressed and uncompressed outputs
 # from the input filename. This is needed when multiple tests are
 # run in parallel.
+FILE=$1
 TMP_COMP="tmp_comp_$FILE"
 TMP_UNCOMP="tmp_uncomp_$FILE"
+
 case $FILE in
-#	compress_generated files will be created in the build directory
-#	in the /tests/ sub-directory.
+	# compress_generated files will be created in the build directory
+	# in the /tests/ sub-directory.
 	compress_generated_*)
 		if ./create_compress_files "$FILE" ; then
 			:
@@ -102,8 +104,8 @@ case $FILE in
 			exit 1
 		fi
 		;;
-#	compress_prepared files exist in the source directory since they
-#       do not need to be copied or regenerated.
+	# compress_prepared files exist in the source directory since they
+	# do not need to be copied or regenerated.
 	compress_prepared_*)
 		FILE="$srcdir/$FILE"
 		;;

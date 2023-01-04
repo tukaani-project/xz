@@ -85,9 +85,16 @@ test -x ../src/xzdec/xzdec || XZDEC=
 
 # Create the required input file if needed.
 FILE=$1
+# Derive temporary filenames for compressed and uncompressed outputs
+# from the input filename. This is needed when multiple tests are
+# run in parallel.
+TMP_COMP="tmp_comp_$FILE"
+TMP_UNCOMP="tmp_uncomp_$FILE"
 case $FILE in
+#	compress_generated files will be created in the build directory
+#	in the /tests/ sub-directory.
 	compress_generated_*)
-		if ./create_compress_files "${FILE#compress_generated_}" ; then
+		if ./create_compress_files "$FILE" ; then
 			:
 		else
 			rm -f "$FILE"
@@ -95,17 +102,16 @@ case $FILE in
 			exit 1
 		fi
 		;;
+#	compress_prepared files exist in the source directory since they
+#       do not need to be copied or regenerated.
+	compress_prepared_*)
+		FILE="$srcdir/$FILE"
+		;;
 	'')
 		echo "No test file was specified."
 		exit 1
 		;;
 esac
-
-# Derive temporary filenames for compressed and uncompressed outputs
-# from the input filename. This is needed when multiple tests are
-# run in parallel.
-TMP_COMP="tmp_comp_${FILE##*/}"
-TMP_UNCOMP="tmp_uncomp_${FILE##*/}"
 
 # Remove temporary now (in case they are something weird), and on exit.
 rm -f "$TMP_COMP" "$TMP_UNCOMP"

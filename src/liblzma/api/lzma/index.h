@@ -271,19 +271,19 @@ typedef enum {
 /**
  * \brief Mask for return value from lzma_index_checks() for check none
  */
-#define LZMA_INDEX_CHECK_MASK_NONE (1U << LZMA_CHECK_NONE)
+#define LZMA_INDEX_CHECK_MASK_NONE (UINT32_C(1) << LZMA_CHECK_NONE)
 /**
  * \brief Mask for return value from lzma_index_checks() for check CRC32
  */
-#define LZMA_INDEX_CHECK_MASK_CRC32 (1U << LZMA_CHECK_CRC32)
+#define LZMA_INDEX_CHECK_MASK_CRC32 (UINT32_C(1) << LZMA_CHECK_CRC32)
 /**
  * \brief Mask for return value from lzma_index_checks() for check CRC64
  */
-#define LZMA_INDEX_CHECK_MASK_CRC64 (1U << LZMA_CHECK_CRC64)
+#define LZMA_INDEX_CHECK_MASK_CRC64 (UINT32_C(1) << LZMA_CHECK_CRC64)
 /**
  * \brief Mask for return value from lzma_index_checks() for check SHA256
  */
-#define LZMA_INDEX_CHECK_MASK_SHA256 (1U << LZMA_CHECK_SHA256)
+#define LZMA_INDEX_CHECK_MASK_SHA256 (UINT32_C(1) << LZMA_CHECK_SHA256)
 
 /**
  * \brief       Calculate memory usage of lzma_index

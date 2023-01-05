@@ -140,13 +140,15 @@ coder_add_filter(lzma_vli id, void *options)
 extern void
 coder_add_filters_from_str(const char *filter_str)
 {
-	// Forget presets and previously defined filter chain.
+	// Forget presets and previously defined filter chain. See
+	// coder_add_filter() above for why preset_number must be reset too.
 	forget_filter_chain();
 	preset_number = LZMA_PRESET_DEFAULT;
+
 	string_to_filter_used = true;
 
+	// Include LZMA_STR_ALL_FILTERS so this can be used with --format=raw.
 	int error_pos;
-	// Include LZMA_STR_ALL_FILTERS so this can be used with --raw.
 	const char *err = lzma_str_to_filters(filter_str, &error_pos,
 			filters, LZMA_STR_ALL_FILTERS, NULL);
 
@@ -159,8 +161,8 @@ coder_add_filters_from_str(const char *filter_str)
 
 	// Set the filters_count to be the number of filters converted from
 	// the string.
-	for(filters_count = 0; filters[filters_count].id != LZMA_VLI_UNKNOWN;
-			filters_count++);
+	for (filters_count = 0; filters[filters_count].id != LZMA_VLI_UNKNOWN;
+			++filters_count) ;
 
 	assert(filters_count > 0);
 	return;

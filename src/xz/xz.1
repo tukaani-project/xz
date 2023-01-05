@@ -1295,15 +1295,24 @@ in the chain.
 Depending on the filter, this limitation is either inherent to
 the filter design or exists to prevent security issues.
 .PP
-A custom filter chain is specified by using one or more
-filter options in the order they are wanted in the filter chain.
-That is, the order of filter options is significant!
+A custom filter chain is specified in two different ways.
+The option
+.BI \-\-filters= filters
+allows specifying the entire filter chain in one option.
+Alternatively, filter chains can be specified by using one or more
+individual filter options in the order they are wanted in the filter chain.
+That is, the order of individual filter options is significant!
 When decoding raw streams
 .RB ( \-\-format=raw ),
-the filter chain is specified in the same order as
+the filter chain must be specified in the same order as
 it was specified when compressing.
+Any individual filters or presets specified before the full chain option
+(\fB\-\-filters=\fIfilters\fR)
+will be forgotten.
+Individual filters specified after the full chain option will reset the
+filter chain.
 .PP
-Filters take filter-specific
+Both the full and individual filter options take filter-specific
 .I options
 as a comma-separated list.
 Extra commas in
@@ -1320,6 +1329,28 @@ use
 .B \-\-verbose
 twice).
 This works also for viewing the filter chain options used by presets.
+.TP
+\fB\-\-filters\fR\fB=\fIfilters\fR
+.PD
+Specify the full filter chain or a preset in a single option.
+Each filter can be separated by spaces or two dashes
+.RB ( \-\- ).
+.I filters
+may need to be quoted on the shell command line so it is
+parsed as a single option.
+To denote
+.IR options ,
+use
+.B :
+or
+.BR = .
+A preset can be prefixed with a
+.B \-
+and followed with zero or more flags.
+The only supported flag is
+.B e
+to apply the same options as
+.BR \-\-extreme .
 .TP
 \fB\-\-lzma1\fR[\fB=\fIoptions\fR]
 .PD 0

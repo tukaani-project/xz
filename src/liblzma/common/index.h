@@ -2,6 +2,13 @@
 //
 /// \file       index.h
 /// \brief      Handling of Index
+/// \note       This header file does not include common.h or lzma.h because
+///             this file is needed by both liblzma internally and by the
+///             tests. Including common.h will include and define many things
+///             the tests do not need and prevents issues with header file
+///             include order. This way, if lzma.h or common.h are not
+///             included before this file it will break on every OS instead
+///             of causing more subtle errors.
 //
 //  Author:     Lasse Collin
 //
@@ -12,8 +19,6 @@
 
 #ifndef LZMA_INDEX_H
 #define LZMA_INDEX_H
-
-#include "common.h"
 
 
 /// Minimum Unpadded Size

@@ -153,6 +153,11 @@ coder_add_filters_from_str(const char *filter_str)
 			filters, LZMA_STR_ALL_FILTERS, NULL);
 
 	if (err != NULL) {
+		// FIXME? The message in err isn't translated.
+		// Including the translations in the xz translations is
+		// slightly ugly but possible. Creating a new domain for
+		// liblzma might not be worth it especially since on some
+		// OSes it adds extra dependencies to translation libraries.
 		message(V_ERROR, _("Error in --filters=FILTERS option:"));
 		message(V_ERROR, "%s", filter_str);
 		message(V_ERROR, "%*s^", error_pos, "");

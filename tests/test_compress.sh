@@ -133,17 +133,17 @@ test_filter()
 	grep "define HAVE_ENCODER_$1 1" ../config.h > /dev/null || return
 	grep "define HAVE_DECODER_$1 1" ../config.h > /dev/null || return
 	shift
-	test_xz "$@" --lzma2=dict=64KiB,nice=32,mode=fast
+	test_xz --filters="$* lzma2:dict=64KiB,nice=32,mode=fast"
 }
 
-test_filter DELTA --delta=dist=1
-test_filter DELTA --delta=dist=4
-test_filter DELTA --delta=dist=256
-test_filter X86 --x86
-test_filter POWERPC --power
-test_filter IA64 --ia64
-test_filter ARM --arm
-test_filter ARMTHUMB --armthumb
-test_filter SPARC --sparc
+test_filter DELTA delta:dist=1
+test_filter DELTA delta:dist=4
+test_filter DELTA delta:dist=256
+test_filter X86 x86
+test_filter POWERPC powerpc
+test_filter IA64 ia64
+test_filter ARM arm
+test_filter ARMTHUMB armthumb
+test_filter SPARC sparc
 
 exit 0

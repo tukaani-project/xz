@@ -1296,18 +1296,17 @@ Depending on the filter, this limitation is either inherent to
 the filter design or exists to prevent security issues.
 .PP
 A custom filter chain is specified in two different ways.
-The filters option
-.RB ( \-\-filters=FILTERS)
+The option
+.BI \-\-filters= filters
 allows specifying the entire filter chain in one option.
 Alternatively, filter chains can be specified by using one or more
 individual filter options in the order they are wanted in the filter chain.
 That is, the order of individual filter options is significant!
-When decoding raw streams
-.RB ( \-\-format=raw ),
+When decoding raw streams (\fB\-\-format=\fIraw\fR),
 the filter chain must be specified in the same order as
 it was specified when compressing.
 Any individual filters or presets specified before the full chain option
-.RB ( \-\-filters=FILTERS)
+(\fB\-\-filters=\fIfilters\fR)
 will be forgotten.
 Individual filters specified after the full chain option will reset the
 filter chain.
@@ -1333,8 +1332,8 @@ This works also for viewing the filter chain options used by presets.
 \fB\-\-filters\fR\fB=\fIfilters\fR
 .PD
 Specify the full filter chain or a preset in a single option.
-Each filter can be separated by either a space or
-.B = .
+The filters can be separated by either a space or two dashes
+.RB ( \-\- ).
 If you choose to separate your filters with a space, be sure to use quotes
 around your filter string.
 To denote
@@ -1342,9 +1341,9 @@ To denote
 you can either use
 .B :
 or
-.B = .
+.BR = .
 If a preset is used, the preset number can be prefixed with a
-.B -
+.B \-
 and followed with zero or more flags.
 Currently, the only supported flag is
 .B e

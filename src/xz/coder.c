@@ -161,6 +161,9 @@ coder_add_filters_from_str(const char *filter_str)
 	// the string.
 	for(filters_count = 0; filters[filters_count].id != LZMA_VLI_UNKNOWN;
 			filters_count++);
+
+	assert(filters_count > 0);
+	return;
 }
 
 

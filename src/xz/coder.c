@@ -119,7 +119,8 @@ coder_add_filter(lzma_vli id, void *options)
 {
 	if (filters_count == LZMA_FILTERS_MAX)
 		message_fatal(_("Maximum number of filters is four"));
-	else if (string_to_filter_used) {
+
+	if (string_to_filter_used) {
 		forget_filter_chain();
 		string_to_filter_used = false;
 	}

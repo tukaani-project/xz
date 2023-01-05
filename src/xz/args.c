@@ -146,6 +146,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_DELTA,
 		OPT_LZMA1,
 		OPT_LZMA2,
+		OPT_FILTERS,
 
 		OPT_SINGLE_STREAM,
 		OPT_NO_SPARSE,
@@ -206,6 +207,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "best",         no_argument,       NULL,  '9' },
 
 		// Filters
+		{ "filters",      optional_argument, NULL,  OPT_FILTERS},
 		{ "lzma1",        optional_argument, NULL,  OPT_LZMA1 },
 		{ "lzma2",        optional_argument, NULL,  OPT_LZMA2 },
 		{ "x86",          optional_argument, NULL,  OPT_X86 },
@@ -422,6 +424,10 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_LZMA2:
 			coder_add_filter(LZMA_FILTER_LZMA2,
 					options_lzma(optarg));
+			break;
+
+		case OPT_FILTERS:
+			coder_add_filters_from_str(optarg);
 			break;
 
 		// Other

@@ -207,7 +207,6 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "best",         no_argument,       NULL,  '9' },
 
 		// Filters
-		{ "filters",      optional_argument, NULL,  OPT_FILTERS},
 		{ "lzma1",        optional_argument, NULL,  OPT_LZMA1 },
 		{ "lzma2",        optional_argument, NULL,  OPT_LZMA2 },
 		{ "x86",          optional_argument, NULL,  OPT_X86 },
@@ -218,6 +217,8 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "arm64",        optional_argument, NULL,  OPT_ARM64 },
 		{ "sparc",        optional_argument, NULL,  OPT_SPARC },
 		{ "delta",        optional_argument, NULL,  OPT_DELTA },
+
+		{ "filters",      optional_argument, NULL,  OPT_FILTERS},
 
 		// Other options
 		{ "quiet",        no_argument,       NULL,  'q' },

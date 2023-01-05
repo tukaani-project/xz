@@ -45,6 +45,11 @@ static uint32_t filters_count = 0;
 /// Number of the preset (0-9)
 static uint32_t preset_number = LZMA_PRESET_DEFAULT;
 
+/// Indicates if the current filter chain was set by the --filters
+/// option. The filter chain must be reset if a preset or single
+/// filter option is used.
+static bool string_to_filter_used;
+
 /// Integrity check type
 static lzma_check check;
 
@@ -55,11 +60,6 @@ static bool check_default = true;
 /// decoding has successfully finished. This is set for each file
 /// in coder_init().
 static bool allow_trailing_input;
-
-/// Indicates if the current filter chain was set by the --filters
-/// option. The filter chain must be reset if a preset or single
-/// filter option is used.
-static bool string_to_filter_used;
 
 #ifdef MYTHREAD_ENABLED
 static lzma_mt mt_options = {

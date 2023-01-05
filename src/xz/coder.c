@@ -45,6 +45,11 @@ static uint32_t filters_count = 0;
 /// Number of the preset (0-9)
 static uint32_t preset_number = LZMA_PRESET_DEFAULT;
 
+/// True if the current filter chain was set using the --filters option.
+/// The filter chain is reset if a preset option (like -9) or an old-style
+/// filter option (like --lzma2) is used after a --filters option.
+static bool string_to_filter_used = false;
+
 /// Integrity check type
 static lzma_check check;
 
@@ -77,14 +82,15 @@ coder_set_check(lzma_check new_check)
 static void
 forget_filter_chain(void)
 {
-	// Setting a preset makes us forget a possibly defined custom
-	// filter chain.
+	// Setting a preset or using --filters makes us forget
+	// the earlier custom filter chain (if any).
 	while (filters_count > 0) {
 		--filters_count;
 		free(filters[filters_count].options);
 		filters[filters_count].options = NULL;
 	}
 
+	string_to_filter_used = false;
 	return;
 }
 
@@ -114,6 +120,9 @@ coder_add_filter(lzma_vli id, void *options)
 	if (filters_count == LZMA_FILTERS_MAX)
 		message_fatal(_("Maximum number of filters is four"));
 
+	if (string_to_filter_used)
+		forget_filter_chain();
+
 	filters[filters_count].id = id;
 	filters[filters_count].options = options;
 	++filters_count;
@@ -124,6 +133,43 @@ coder_add_filter(lzma_vli id, void *options)
 	// the default 6, making the example equivalent to "xz -6e".
 	preset_number = LZMA_PRESET_DEFAULT;
 
+	return;
+}
+
+
+extern void
+coder_add_filters_from_str(const char *filter_str)
+{
+	// Forget presets and previously defined filter chain. See
+	// coder_add_filter() above for why preset_number must be reset too.
+	forget_filter_chain();
+	preset_number = LZMA_PRESET_DEFAULT;
+
+	string_to_filter_used = true;
+
+	// Include LZMA_STR_ALL_FILTERS so this can be used with --format=raw.
+	int error_pos;
+	const char *err = lzma_str_to_filters(filter_str, &error_pos,
+			filters, LZMA_STR_ALL_FILTERS, NULL);
+
+	if (err != NULL) {
+		// FIXME? The message in err isn't translated.
+		// Including the translations in the xz translations is
+		// slightly ugly but possible. Creating a new domain for
+		// liblzma might not be worth it especially since on some
+		// OSes it adds extra dependencies to translation libraries.
+		message(V_ERROR, _("Error in --filters=FILTERS option:"));
+		message(V_ERROR, "%s", filter_str);
+		message(V_ERROR, "%*s^", error_pos, "");
+		message_fatal("%s", err);
+	}
+
+	// Set the filters_count to be the number of filters converted from
+	// the string.
+	for (filters_count = 0; filters[filters_count].id != LZMA_VLI_UNKNOWN;
+			++filters_count) ;
+
+	assert(filters_count > 0);
 	return;
 }
 

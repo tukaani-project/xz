@@ -136,7 +136,8 @@ static void
 parse_real(args_info *args, int argc, char **argv)
 {
 	enum {
-		OPT_X86 = INT_MIN,
+		OPT_FILTERS = INT_MIN,
+		OPT_X86,
 		OPT_POWERPC,
 		OPT_IA64,
 		OPT_ARM,
@@ -206,6 +207,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "best",         no_argument,       NULL,  '9' },
 
 		// Filters
+		{ "filters",      optional_argument, NULL,  OPT_FILTERS},
 		{ "lzma1",        optional_argument, NULL,  OPT_LZMA1 },
 		{ "lzma2",        optional_argument, NULL,  OPT_LZMA2 },
 		{ "x86",          optional_argument, NULL,  OPT_X86 },
@@ -372,7 +374,10 @@ parse_real(args_info *args, int argc, char **argv)
 			opt_mode = MODE_COMPRESS;
 			break;
 
-		// Filter setup
+		// --filters
+		case OPT_FILTERS:
+			coder_add_filters_from_str(optarg);
+			break;
 
 		case OPT_X86:
 			coder_add_filter(LZMA_FILTER_X86,

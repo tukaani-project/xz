@@ -176,115 +176,115 @@ test_lzma_index_hash_decode(void)
 		500
 	};
 
-	// Add two entries to a index hash
+	// Add two Records to a index_hash
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 2);
 
-	const lzma_vli size_two_entries = lzma_index_hash_size(index_hash);
-	assert_uint(size_two_entries, >, 0);
-	uint8_t *index_two_entries = tuktest_malloc(size_two_entries);
+	const lzma_vli size_two_records = lzma_index_hash_size(index_hash);
+	assert_uint(size_two_records, >, 0);
+	uint8_t *index_two_records = tuktest_malloc(size_two_records);
 
-	generate_index(index_two_entries, unpadded_sizes, uncomp_sizes, 2,
-			size_two_entries);
+	generate_index(index_two_records, unpadded_sizes, uncomp_sizes, 2,
+			size_two_records);
 
 	// First test for basic buffer size error
-	in_pos = size_two_entries + 1;
+	in_pos = size_two_records + 1;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_two_entries, &in_pos,
-			size_two_entries), LZMA_BUF_ERROR);
+			index_two_records, &in_pos,
+			size_two_records), LZMA_BUF_ERROR);
 
 	// Next test for invalid Index Indicator
 	in_pos = 0;
-	index_two_entries[0] ^= 1;
+	index_two_records[0] ^= 1;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_two_entries, &in_pos,
-			size_two_entries), LZMA_DATA_ERROR);
-	index_two_entries[0] ^= 1;
+			index_two_records, &in_pos,
+			size_two_records), LZMA_DATA_ERROR);
+	index_two_records[0] ^= 1;
 
 	// Next verify the index_hash as expected
 	in_pos = 0;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_two_entries, &in_pos,
-			size_two_entries), LZMA_STREAM_END);
+			index_two_records, &in_pos,
+			size_two_records), LZMA_STREAM_END);
 
-	// Next test a three entry index hash
+	// Next test an index_hash with three Records
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 3);
 
-	const lzma_vli size_three_entries = lzma_index_hash_size(
+	const lzma_vli size_three_records = lzma_index_hash_size(
 			index_hash);
-	assert_uint(size_three_entries, >, 0);
-	uint8_t *index_three_entries = tuktest_malloc(size_three_entries);
+	assert_uint(size_three_records, >, 0);
+	uint8_t *index_three_records = tuktest_malloc(size_three_records);
 
-	generate_index(index_three_entries, unpadded_sizes, uncomp_sizes,
-			3, size_three_entries);
+	generate_index(index_three_records, unpadded_sizes, uncomp_sizes,
+			3, size_three_records);
 
 	in_pos = 0;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_three_entries, &in_pos,
-			size_three_entries), LZMA_STREAM_END);
+			index_three_records, &in_pos,
+			size_three_records), LZMA_STREAM_END);
 
-	// Next test a five entry index hash
+	// Next test an index_hash with five Records
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 5);
 
-	const lzma_vli size_five_entries = lzma_index_hash_size(
+	const lzma_vli size_five_records = lzma_index_hash_size(
 			index_hash);
-	assert_uint(size_five_entries, >, 0);
-	uint8_t *index_five_entries = tuktest_malloc(size_five_entries);
+	assert_uint(size_five_records, >, 0);
+	uint8_t *index_five_records = tuktest_malloc(size_five_records);
 
-	generate_index(index_five_entries, unpadded_sizes, uncomp_sizes, 5,
-			size_five_entries);
+	generate_index(index_five_records, unpadded_sizes, uncomp_sizes, 5,
+			size_five_records);
 
 	// Instead of testing all input at once, give input
 	// one byte at a time
 	in_pos = 0;
-	for (lzma_vli i = 0; i < size_five_entries - 1; ++i) {
+	for (lzma_vli i = 0; i < size_five_records - 1; ++i) {
 		assert_lzma_ret(lzma_index_hash_decode(index_hash,
-				index_five_entries, &in_pos, in_pos + 1),
+				index_five_records, &in_pos, in_pos + 1),
 				LZMA_OK);
 	}
 
 	// Last byte should return LZMA_STREAM_END
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_five_entries, &in_pos,
+			index_five_records, &in_pos,
 			in_pos + 1), LZMA_STREAM_END);
 
-	// Next test if the index hash is given an incorrect unpadded
-	// size. Should detect and report LZMA_DATA_ERROR
+	// Next test if the index_hash is given an incorrect Unpadded
+	// Size. Should detect and report LZMA_DATA_ERROR
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 5);
-	// The sixth entry will have invalid unpadded size
+	// The sixth Record will have an invalid Unpadded Size
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			unpadded_sizes[5] + 1,
 			uncomp_sizes[5]), LZMA_OK);
 
-	const lzma_vli size_six_entries = lzma_index_hash_size(
+	const lzma_vli size_six_records = lzma_index_hash_size(
 			index_hash);
 
-	assert_uint(size_six_entries, >, 0);
-	uint8_t *index_six_entries = tuktest_malloc(size_six_entries);
+	assert_uint(size_six_records, >, 0);
+	uint8_t *index_six_records = tuktest_malloc(size_six_records);
 
-	generate_index(index_six_entries, unpadded_sizes, uncomp_sizes, 6,
-			size_six_entries);
+	generate_index(index_six_records, unpadded_sizes, uncomp_sizes, 6,
+			size_six_records);
 	in_pos = 0;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_six_entries, &in_pos,
-			size_six_entries), LZMA_DATA_ERROR);
+			index_six_records, &in_pos,
+			size_six_records), LZMA_DATA_ERROR);
 
 	// Next test if the Index is corrupt (invalid CRC32).
 	// Should detect and report LZMA_DATA_ERROR
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 2);
 
-	index_two_entries[size_two_entries - 1] ^= 1;
+	index_two_records[size_two_records - 1] ^= 1;
 
 	in_pos = 0;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_two_entries, &in_pos,
-			size_two_entries), LZMA_DATA_ERROR);
+			index_two_records, &in_pos,
+			size_two_records), LZMA_DATA_ERROR);
 
-	// Next test with index and index_hash struct not matching
-	// an entry
+	// Next test with Index and index_hash struct not matching
+	// a Record
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 2);
 	// Recalculate Index with invalid Unpadded Size
@@ -293,13 +293,13 @@ test_lzma_index_hash_decode(void)
 		unpadded_sizes[1] + 1
 	};
 
-	generate_index(index_two_entries, unpadded_sizes_invalid,
-			uncomp_sizes, 2, size_two_entries);
+	generate_index(index_two_records, unpadded_sizes_invalid,
+			uncomp_sizes, 2, size_two_records);
 
 	in_pos = 0;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
-			index_two_entries, &in_pos,
-			size_two_entries), LZMA_DATA_ERROR);
+			index_two_records, &in_pos,
+			size_two_records), LZMA_DATA_ERROR);
 
 	lzma_index_hash_end(index_hash, NULL);
 #endif

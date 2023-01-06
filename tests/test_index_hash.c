@@ -367,6 +367,8 @@ test_lzma_index_hash_size(void)
 	// Total - 16 bytes
 	expected_size = 16;
 	assert_uint_eq(lzma_index_hash_size(index_hash), expected_size);
+
+	lzma_index_hash_end(index_hash, NULL);
 #endif
 }
 

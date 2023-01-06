@@ -249,6 +249,7 @@
     <ClCompile Include="..\..\src\liblzma\common\stream_buffer_decoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_buffer_encoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_decoder.c" />
+    <ClCompile Include="..\..\src\liblzma\common\stream_decoder_mt.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_encoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_encoder_mt.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_flags_common.c" />

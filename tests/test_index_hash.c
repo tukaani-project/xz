@@ -140,6 +140,9 @@ generate_index(uint8_t *buf, const lzma_vli *unpadded_sizes,
 
 	// Add the CRC32
 	write32le(buf + out_pos, lzma_crc32(buf, out_pos, 0));
+	out_pos += 4;
+
+	assert_uint_eq(out_pos, index_max_size);
 }
 #endif
 #endif

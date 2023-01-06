@@ -176,7 +176,7 @@ test_lzma_index_hash_decode(void)
 		500
 	};
 
-	// Add two Records to a index_hash
+	// Add two Records to an index_hash
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 2);
 
 	const lzma_vli size_two_records = lzma_index_hash_size(index_hash);

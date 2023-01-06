@@ -103,11 +103,11 @@ fill_index_hash(lzma_index_hash *index_hash, const lzma_vli *unpadded_sizes,
 
 
 #ifdef HAVE_ENCODERS
-// Set the index parameter to the expected index based on the
+// Set the contents of buf to the expected Index based on the
 // .xz specification. This needs the unpadded and uncompressed VLIs
 // to correctly create the Index.
 static void
-generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
+generate_index(uint8_t *buf, const lzma_vli *unpadded_sizes,
 		const lzma_vli *uncomp_sizes, uint32_t block_count,
 		size_t index_max_size)
 {
@@ -115,10 +115,10 @@ generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
 	size_t out_pos = 0;
 
 	// First set Index Indicator
-	index[out_pos++] = INDEX_INDICATOR;
+	buf[out_pos++] = INDEX_INDICATOR;
 
 	// Next write out Number of Records
-	assert_lzma_ret(lzma_vli_encode(block_count, &in_pos, index,
+	assert_lzma_ret(lzma_vli_encode(block_count, &in_pos, buf,
 			&out_pos, index_max_size), LZMA_STREAM_END);
 
 	// Next write out each Record.
@@ -127,19 +127,19 @@ generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
 	for (uint32_t i = 0; i < block_count; ++i) {
 		in_pos = 0;
 		assert_lzma_ret(lzma_vli_encode(unpadded_sizes[i], &in_pos,
-			index, &out_pos, index_max_size), LZMA_STREAM_END);
+			buf, &out_pos, index_max_size), LZMA_STREAM_END);
 		in_pos = 0;
 		assert_lzma_ret(lzma_vli_encode(uncomp_sizes[i], &in_pos,
-			index, &out_pos, index_max_size), LZMA_STREAM_END);
+			buf, &out_pos, index_max_size), LZMA_STREAM_END);
 	}
 
 	// Add Index Padding
 	lzma_vli rounded_out_pos = vli_ceil4(out_pos);
-	memzero(index + out_pos, rounded_out_pos - out_pos);
+	memzero(buf + out_pos, rounded_out_pos - out_pos);
 	out_pos = rounded_out_pos;
 
 	// Add the CRC32
-	write32le(index + out_pos, lzma_crc32(index, out_pos, 0));
+	write32le(buf + out_pos, lzma_crc32(buf, out_pos, 0));
 }
 #endif
 #endif

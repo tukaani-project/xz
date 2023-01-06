@@ -60,7 +60,7 @@ test_lzma_index_hash_append(void)
 
 	// Test with invalid Unpadded Size
 	lzma_index_hash *index_hash = lzma_index_hash_init(NULL, NULL);
-	assert_true(index_hash);
+	assert_true(index_hash != NULL);
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN - 1, LZMA_VLI_MAX),
 			LZMA_PROG_ERROR);
@@ -152,7 +152,7 @@ test_lzma_index_hash_decode(void)
 	assert_skip("Encoder or decoder support disabled");
 #else
 	lzma_index_hash *index_hash = lzma_index_hash_init(NULL, NULL);
-	assert_true(index_hash);
+	assert_true(index_hash != NULL);
 
 	size_t in_pos = 0;
 
@@ -313,7 +313,7 @@ test_lzma_index_hash_size(void)
 	assert_skip("Decoder support disabled");
 #else
 	lzma_index_hash *index_hash = lzma_index_hash_init(NULL, NULL);
-	assert_true(index_hash);
+	assert_true(index_hash != NULL);
 
 	// First test empty index_hash
 	// Expected size should be:

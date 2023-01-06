@@ -111,7 +111,7 @@ generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
 	size_t in_pos = 0;
 	size_t out_pos = 0;
 	// First set index indicator
-	index[out_pos++] = 0;
+	index[out_pos++] = INDEX_INDICATOR;
 
 	// Next write out Number of Records
 	assert_lzma_ret(lzma_vli_encode(block_count, &in_pos, index,

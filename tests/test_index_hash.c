@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tests.h"
+
 // Needed for UNPADDED_SIZE_MIN and UNPADDED_SIZE_MAX macro definitions
 // and index_size and vli_ceil4 helper functions
 #include "common/index.h"
@@ -26,16 +27,16 @@ test_lzma_index_hash_init(void)
 #ifndef HAVE_DECODERS
 	assert_skip("Decoder support disabled");
 #else
-	// First test with NULL index hash
-	// This should create a fresh index hash
+	// First test with NULL index_hash.
+	// This should create a fresh index_hash.
 	lzma_index_hash *index_hash = lzma_index_hash_init(NULL, NULL);
 	assert_true(index_hash != NULL);
 
-	// Next test with non-NULL index hash
+	// Next test with non-NULL index_hash.
 	lzma_index_hash *second_hash = lzma_index_hash_init(index_hash, NULL);
 
-	// Should not create a new index_hash pointer
-	// Instead must just re-init the first index hash
+	// It should not create a new index_hash pointer.
+	// Instead it must just re-init the first index_hash.
 	assert_true(index_hash == second_hash);
 
 	lzma_index_hash_end(index_hash, NULL);
@@ -57,27 +58,28 @@ test_lzma_index_hash_append(void)
 	assert_lzma_ret(lzma_index_hash_append(NULL, UNPADDED_SIZE_MIN,
 			LZMA_VLI_MAX), LZMA_PROG_ERROR);
 
-	// Test with invalid unpadded size
+	// Test with invalid Unpadded Size
 	lzma_index_hash *index_hash = lzma_index_hash_init(NULL, NULL);
 	assert_true(index_hash);
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN - 1, LZMA_VLI_MAX),
 			LZMA_PROG_ERROR);
 
-	// Test with invalid uncompressed size
+	// Test with invalid Uncompressed Size
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN, LZMA_VLI_MAX + 1),
 			LZMA_PROG_ERROR);
 
-	// Append first a small "block" to the index, which should succeed
+	// First append a Record describing a small Block.
+	// This should succeed.
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN, 1), LZMA_OK);
 
-	// Append another small "block"
+	// Append another small Record.
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN, 1), LZMA_OK);
 
-	// Append a block that would cause the compressed size to grow
+	// Append a Record that would cause the compressed size to grow
 	// too big
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MAX, 1), LZMA_DATA_ERROR);
@@ -86,6 +88,7 @@ test_lzma_index_hash_append(void)
 #endif
 }
 
+
 #ifdef HAVE_DECODERS
 // Fill an index_hash with unpadded and uncompressed VLIs
 // by calling lzma_index_hash_append
@@ -93,7 +96,7 @@ static void
 fill_index_hash(lzma_index_hash *index_hash, const lzma_vli *unpadded_sizes,
 		const lzma_vli *uncomp_sizes, uint32_t block_count)
 {
-	for(uint32_t i = 0; i < block_count; i++)
+	for (uint32_t i = 0; i < block_count; ++i)
 		assert_lzma_ret(lzma_index_hash_append(index_hash,
 			unpadded_sizes[i], uncomp_sizes[i]), LZMA_OK);
 }
@@ -101,8 +104,8 @@ fill_index_hash(lzma_index_hash *index_hash, const lzma_vli *unpadded_sizes,
 
 #ifdef HAVE_ENCODERS
 // Set the index parameter to the expected index based on the
-// xz specification. Needs the unpadded and uncompressed VLIs
-// to correctly create the index
+// .xz specification. This needs the unpadded and uncompressed VLIs
+// to correctly create the Index.
 static void
 generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
 		const lzma_vli *uncomp_sizes, uint32_t block_count,
@@ -110,17 +113,18 @@ generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
 {
 	size_t in_pos = 0;
 	size_t out_pos = 0;
-	// First set index indicator
+
+	// First set Index Indicator
 	index[out_pos++] = INDEX_INDICATOR;
 
 	// Next write out Number of Records
 	assert_lzma_ret(lzma_vli_encode(block_count, &in_pos, index,
 			&out_pos, index_max_size), LZMA_STREAM_END);
 
-	// Next write out each record
-	// A record consists of unpadded size and uncompressed size
-	// written next to each other as VLIs
-	for (uint32_t i = 0; i < block_count; i++) {
+	// Next write out each Record.
+	// A Record consists of Unpadded Size and Uncompressed Size
+	// written next to each other as VLIs.
+	for (uint32_t i = 0; i < block_count; ++i) {
 		in_pos = 0;
 		assert_lzma_ret(lzma_vli_encode(unpadded_sizes[i], &in_pos,
 			index, &out_pos, index_max_size), LZMA_STREAM_END);
@@ -129,7 +133,7 @@ generate_index(uint8_t *index, const lzma_vli *unpadded_sizes,
 			index, &out_pos, index_max_size), LZMA_STREAM_END);
 	}
 
-	// Add index padding
+	// Add Index Padding
 	lzma_vli rounded_out_pos = vli_ceil4(out_pos);
 	memzero(index + out_pos, rounded_out_pos - out_pos);
 	out_pos = rounded_out_pos;
@@ -152,7 +156,7 @@ test_lzma_index_hash_decode(void)
 
 	size_t in_pos = 0;
 
-	// Six valid sizes for unpadded data sizes
+	// Six valid values for the Unpadded Size fields in an Index
 	const lzma_vli unpadded_sizes[6] = {
 		UNPADDED_SIZE_MIN,
 		1000,
@@ -162,7 +166,7 @@ test_lzma_index_hash_decode(void)
 		32000
 	};
 
-	// Six valid sizes for uncompressed data sizes
+	// Six valid values for the Uncompressed Size fields in an Index
 	const lzma_vli uncomp_sizes[6] = {
 		1,
 		500,
@@ -188,7 +192,7 @@ test_lzma_index_hash_decode(void)
 			index_two_entries, &in_pos,
 			size_two_entries), LZMA_BUF_ERROR);
 
-	// Next test for invalid index indicator
+	// Next test for invalid Index Indicator
 	in_pos = 0;
 	index_two_entries[0] ^= 1;
 	assert_lzma_ret(lzma_index_hash_decode(index_hash,
@@ -234,7 +238,7 @@ test_lzma_index_hash_decode(void)
 	// Instead of testing all input at once, give input
 	// one byte at a time
 	in_pos = 0;
-	for (lzma_vli i = 0; i < size_five_entries - 1; i++) {
+	for (lzma_vli i = 0; i < size_five_entries - 1; ++i) {
 		assert_lzma_ret(lzma_index_hash_decode(index_hash,
 				index_five_entries, &in_pos, in_pos + 1),
 				LZMA_OK);
@@ -267,7 +271,7 @@ test_lzma_index_hash_decode(void)
 			index_six_entries, &in_pos,
 			size_six_entries), LZMA_DATA_ERROR);
 
-	// Next test if the index is corrupt (invalid CRC)
+	// Next test if the Index is corrupt (invalid CRC32).
 	// Should detect and report LZMA_DATA_ERROR
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 2);
@@ -283,7 +287,7 @@ test_lzma_index_hash_decode(void)
 	// an entry
 	index_hash = lzma_index_hash_init(index_hash, NULL);
 	fill_index_hash(index_hash, unpadded_sizes, uncomp_sizes, 2);
-	// Recalculate index with invalid unpadded size
+	// Recalculate Index with invalid Unpadded Size
 	const lzma_vli unpadded_sizes_invalid[2] = {
 		unpadded_sizes[0],
 		unpadded_sizes[1] + 1
@@ -311,7 +315,7 @@ test_lzma_index_hash_size(void)
 	lzma_index_hash *index_hash = lzma_index_hash_init(NULL, NULL);
 	assert_true(index_hash);
 
-	// First test empty index hash
+	// First test empty index_hash
 	// Expected size should be:
 	// Index Indicator - 1 byte
 	// Number of Records - 1 byte
@@ -321,7 +325,7 @@ test_lzma_index_hash_size(void)
 	// Total - 8 bytes
 	assert_uint_eq(lzma_index_hash_size(index_hash), 8);
 
-	// Append a small block to the index hash
+	// Append a Record describing a small Block to the index_hash
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN, 1), LZMA_OK);
 
@@ -335,7 +339,7 @@ test_lzma_index_hash_size(void)
 	lzma_vli expected_size = 8;
 	assert_uint_eq(lzma_index_hash_size(index_hash), expected_size);
 
-	// Append additional small block
+	// Append additional small Record
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			UNPADDED_SIZE_MIN, 1), LZMA_OK);
 
@@ -349,7 +353,7 @@ test_lzma_index_hash_size(void)
 	expected_size = 12;
 	assert_uint_eq(lzma_index_hash_size(index_hash), expected_size);
 
-	// Append a larger block to the index hash (3 bytes for each vli)
+	// Append a larger Record to the index_hash (3 bytes for each VLI)
 	const lzma_vli three_byte_vli = 0x10000;
 	assert_lzma_ret(lzma_index_hash_append(index_hash,
 			three_byte_vli, three_byte_vli), LZMA_OK);

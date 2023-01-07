@@ -26,17 +26,54 @@ jobs:
   Linux-Autotools:
     # Just run on latest ubuntu
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        check_types: ["crc32", "crc32,crc64", "crc32,sha256", "crc32,crc64,sha256"]
-        disable: [encoders, decoders, bcj, delta, threads]
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: sudo apt-get install -y autoconf automake build-essential po4a autopoint
-      - name: Build
-        run: ./build-aux/ci_build.sh -b autotools -c ${{ matrix.check_types }} -d ${{ matrix.disable }}
+
+      # -b specifies the build system to use.
+      # -p specifies the phase (build or test) to help narrow down an error
+      #    if one occurs.
+      - name: Build with full features
+        run: ./build-aux/ci_build.sh -b autotools -p build
+      - name: Test with full features
+        run: ./build-aux/ci_build.sh -b autotools -p test
+
+      - name: Build without encoders
+        run: ./build-aux/ci_build.sh -b autotools -d encoders -p build
+      - name: Test without encoders
+        run: ./build-aux/ci_build.sh -b autotools -d encoders -p test
+
+      - name: Build without decoders
+        run: ./build-aux/ci_build.sh -b autotools -d decoders -p build
+      - name: Test without decoders
+        run: ./build-aux/ci_build.sh -b autotools -d decoders -p test
+
+      - name: Build without threads
+        run: ./build-aux/ci_build.sh -b autotools -d threads -p build
+      - name: Test without threads
+        run: ./build-aux/ci_build.sh -b autotools -d threads -p test
+
+      - name: Build without BCJ filters
+        run: ./build-aux/ci_build.sh -b autotools -d bcj -p build
+      - name: Test without BCJ filters
+        run: ./build-aux/ci_build.sh -b autotools -d bcj -p test
+
+      - name: Build without Delta filters
+        run: ./build-aux/ci_build.sh -b autotools -d delta -p build
+      - name: Test without Delta filters
+        run: ./build-aux/ci_build.sh -b autotools -d delta -p test
+
+      - name: Build without sha256 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p build
+      - name: Test without sha256 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p test
+
+      - name: Build without crc64 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p build
+      - name: Test without crc64 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p test
 
   Linux-CMake:
     runs-on: ubuntu-latest
@@ -49,17 +86,51 @@ jobs:
 
   MacOS-Autotools:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        check_types: ["crc32", "crc32,crc64", "crc32,sha256", "crc32,crc64,sha256"]
-        disable: [encoders, decoders, bcj, delta, threads]
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: brew install autoconf automake libtool po4a
-      - name: Build
-        run: ./build-aux/ci_build.sh -b autotools -c ${{ matrix.check_types }} -d ${{ matrix.disable }}
+
+      - name: Build with full features
+        run: ./build-aux/ci_build.sh -b autotools -p build
+      - name: Test with full features
+        run: ./build-aux/ci_build.sh -b autotools -p test
+
+      - name: Build without encoders
+        run: ./build-aux/ci_build.sh -b autotools -d encoders -p build
+      - name: Test without encoders
+        run: ./build-aux/ci_build.sh -b autotools -d encoders -p test
+
+      - name: Build without decoders
+        run: ./build-aux/ci_build.sh -b autotools -d decoders -p build
+      - name: Test without decoders
+        run: ./build-aux/ci_build.sh -b autotools -d decoders -p test
+
+      - name: Build without threads
+        run: ./build-aux/ci_build.sh -b autotools -d threads -p build
+      - name: Test without threads
+        run: ./build-aux/ci_build.sh -b autotools -d threads -p test
+
+      - name: Build without BCJ filters
+        run: ./build-aux/ci_build.sh -b autotools -d bcj -p build
+      - name: Test without BCJ filters
+        run: ./build-aux/ci_build.sh -b autotools -d bcj -p test
+
+      - name: Build without Delta filters
+        run: ./build-aux/ci_build.sh -b autotools -d delta -p build
+      - name: Test without Delta filters
+        run: ./build-aux/ci_build.sh -b autotools -d delta -p test
+
+      - name: Build without sha256 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p build
+      - name: Test without sha256 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p test
+
+      - name: Build without crc64 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p build
+      - name: Test without crc64 check
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p test
 
   MacOS-CMake:
     runs-on: macos-latest

@@ -565,6 +565,14 @@ if(HAVE_GETOPT_LONG)
 
     target_link_libraries(xzdec PRIVATE liblzma)
 
+    if(WIN32)
+        # Add the Windows resource file for xzdec.exe.
+        target_sources(xz PRIVATE src/xzdec/xzdec_w32res.rc)
+        set_target_properties(xz PROPERTIES
+            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+        )
+    endif()
+
     tuklib_progname(xzdec)
 
     install(TARGETS xzdec
@@ -635,6 +643,14 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
     target_link_libraries(xz PRIVATE liblzma)
 
     target_compile_definitions(xz PRIVATE ASSUME_RAM=128)
+
+    if(WIN32)
+        # Add the Windows resource file for xz.exe.
+        target_sources(xz PRIVATE src/xz/xz_w32res.rc)
+        set_target_properties(xz PROPERTIES
+            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+        )
+    endif()
 
     tuklib_progname(xz)
     tuklib_mbstr(xz)

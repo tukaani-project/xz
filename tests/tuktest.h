@@ -2,7 +2,7 @@
 //
 /// \file       tuktest.h
 /// \brief      Helper macros for writing simple test programs
-/// \version    2022-06-16
+/// \version    2023-01-08
 ///
 /// Some inspiration was taken from STest by Keith Nicholas.
 ///
@@ -349,7 +349,7 @@ static struct tuktest_malloc_record *tuktest_malloc_global = NULL;
 static void *
 tuktest_malloc_impl(size_t size, const char *filename, unsigned line)
 {
-	void *p = malloc(size);
+	void *p = malloc(size == 0 ? 1 : size);
 	struct tuktest_malloc_record *r = malloc(sizeof(*r));
 
 	if (p == NULL || r == NULL) {

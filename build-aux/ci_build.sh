@@ -16,7 +16,7 @@
 
 set -e
 
-USAGE="Usage: $0 -b [autotools|cmake] -c [crc32|crc64|sha256] -d [encoders,decoders,bcj,delta,threads] -l [destdir] -s [srcdir]"
+USAGE="Usage: $0 -b [autotools|cmake] -c [crc32|crc64|sha256] -d [encoders|decoders|bcj|delta|threads] -l [destdir] -s [srcdir] -p [all|build|test]"
 
 # Absolute path of script directory
 ABS_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
@@ -31,9 +31,10 @@ DECODERS="y"
 THREADS="y"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
+PHASE="all"
 
 # Parse arguments
-while getopts b:c:d:l:s: opt; do
+while getopts b:c:d:l:s:p: opt; do
 	# b option can have either value "autotools" OR "cmake"
 	case ${opt} in
 	b)
@@ -74,68 +75,79 @@ while getopts b:c:d:l:s: opt; do
 	;;
 	s) SRC_DIR="$OPTARG"
 	;;
+	p) PHASE="$OPTARG"
+	;;
 	esac
 done
 
-# Build based on arguments
-mkdir -p "$DEST_DIR"
-case $BUILD_SYSTEM in
-	autotools)
-	# Run autogen.sh script
-	cd "$SRC_DIR"
-	"./autogen.sh"
-	cd "$DEST_DIR"
-	# Generate configure option values
+if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then
+	# Build based on arguments
+	mkdir -p "$DEST_DIR"
+	case $BUILD_SYSTEM in
+		autotools)
+		# Run autogen.sh script
+		cd "$SRC_DIR"
+		"./autogen.sh"
+		cd "$DEST_DIR"
+		# Generate configure option values
 
-	EXTRA_OPTIONS=""
-	FILTER_LIST="lzma1,lzma2"
+		EXTRA_OPTIONS=""
+		FILTER_LIST="lzma1,lzma2"
 
-	if [ "$BCJ" = "y" ]
-	then
-		FILTER_LIST="$FILTER_LIST,x86,powerpc,ia64,arm,armthumb,arm64,sparc"
-	fi
+		if [ "$BCJ" = "y" ]
+		then
+			FILTER_LIST="$FILTER_LIST,x86,powerpc,ia64,arm,armthumb,arm64,sparc"
+		fi
 
-	if [ "$DELTA" = "y" ]
-	then
-		FILTER_LIST="$FILTER_LIST,delta"
-	fi
+		if [ "$DELTA" = "y" ]
+		then
+			FILTER_LIST="$FILTER_LIST,delta"
+		fi
 
-	if [ "$ENCODERS" = "y" ]
-	then
-		EXTRA_OPTIONS="$EXTRA_OPTIONS --enable-encoders=$FILTER_LIST"
-	else
-		EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-encoders"
-	fi
+		if [ "$ENCODERS" = "y" ]
+		then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --enable-encoders=$FILTER_LIST"
+		else
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-encoders"
+		fi
 
-	if [ "$DECODERS" = "y" ]
-	then
-		EXTRA_OPTIONS="$EXTRA_OPTIONS --enable-decoders=$FILTER_LIST"
-	else
-		EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-decoders"
-	fi
+		if [ "$DECODERS" = "y" ]
+		then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --enable-decoders=$FILTER_LIST"
+		else
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-decoders"
+		fi
 
-	if [ "$THREADS" = "n" ]
-	then
-		EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-threads"
-	fi
+		if [ "$THREADS" = "n" ]
+		then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-threads"
+		fi
 
-	# Run configure script
-	"$SRC_DIR"/configure --enable-checks=$CHECK_TYPE $EXTRA_OPTIONS
+		# Run configure script
+		"$SRC_DIR"/configure --enable-checks=$CHECK_TYPE $EXTRA_OPTIONS
 
-	# Build the project
-	make
+		# Build the project
+		make
+		;;
+		cmake)
+		# CMake currently does not support disabling encoders, decoders,
+		# threading, or check types. For now, just run the full build.
+		cd "$DEST_DIR"
+		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR"
+		make
+		;;
+	esac
+fi
 
-	# Run the tests
-	make check
-	;;
-
-	cmake)
-	# CMake currently does not support disabling encoders, decoders,
-	# threading, or check types. For now, just run the full build.
-	cd "$DEST_DIR"
-	cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR"
-	make
-	make test
-	;;
-
-esac
+if [ "$PHASE" = "all" ] || [ "$PHASE" = "test" ]; then
+	case $BUILD_SYSTEM in
+		autotools)
+			cd "$DEST_DIR"
+			make check
+		;;
+		cmake)
+			cd "$DEST_DIR"
+			make "test"
+		;;
+	esac
+fi

@@ -938,6 +938,8 @@ AC_CHECK_DECL([_mm_movemask_epi8],
 # For faster CRC on 32/64-bit x86 and E2K (see also crc64_fast.c):
 #
 #   - Check for the CLMUL intrinsic _mm_clmulepi64_si128 in <immintrin.h>.
+#     Check also for _mm_set_epi64x for consistency with CMake build
+#     where it's needed to disable CLMUL with VS2013.
 #
 #   - Check that __attribute__((__target__("ssse3,sse4.1,pclmul"))) works
 #     together with _mm_clmulepi64_si128 from <immintrin.h>. The attribute
@@ -965,13 +967,15 @@ else
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("ssse3,sse4.1,pclmul")))
 #endif
-__m128i my_clmul(__m128i a, __m128i b)
+__m128i my_clmul(__m128i a)
 {
+	const __m128i b = _mm_set_epi64x(1, 2);
 	return _mm_clmulepi64_si128(a, b, 0);
 }
 	]])], [
 		AC_DEFINE([HAVE_USABLE_CLMUL], [1],
-			[Define to 1 if _mm_clmulepi64_si128 is usable.
+			[Define to 1 if _mm_set_epi64x and
+			_mm_clmulepi64_si128 are usable.
 			See configure.ac for details.])
 		AC_MSG_RESULT([yes])
 	], [

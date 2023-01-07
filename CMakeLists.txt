@@ -434,8 +434,9 @@ if(HAVE_IMMINTRIN_H)
             #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
             __attribute__((__target__(\"ssse3,sse4.1,pclmul\")))
             #endif
-            __m128i my_clmul(__m128i a, __m128i b)
+            __m128i my_clmul(__m128i a)
             {
+                const __m128i b = _mm_set_epi64x(1, 2);
                 return _mm_clmulepi64_si128(a, b, 0);
             }
             int main(void) { return 0; }

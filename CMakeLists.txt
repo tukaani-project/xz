@@ -75,10 +75,29 @@ project(xz VERSION "${XZ_VERSION}" LANGUAGES C)
 # On Apple OSes, don't build executables as bundles:
 set(CMAKE_MACOSX_BUNDLE OFF)
 
+# String for PACKAGE_NAME macro in the C code and Windows resource files:
+#
+# windres from GNU binutils can be a bit tricky with command line arguments
+# that contain spaces or other funny characters because it will pass them
+# to a shell (cmd.exe or /bin/sh). CMake doesn't seem to handle the quoting
+# well enough either. Using \x20 to encode the US-ASCII space seems to work:
+# it should be compatible with both shell types, it works also with llvm-rc,
+# and CMake handles quoting the backslash too.
+#
+# For simplicity, use this workaround in all cases on Windows as it should
+# do no harm with other toolchains. Outside Windows use a regular space as
+# then we are compatible with EBCDIC too (if it will ever matter with CMake;
+# EBCDIC compatibility is important with the Autotools-based build though).
+if(WIN32)
+    set(PACKAGE_NAME "XZ\\x20Utils")
+else()
+    set(PACKAGE_NAME "XZ Utils")
+endif()
+
 # Definitions common to all targets:
 add_compile_definitions(
     # Package info:
-    PACKAGE_NAME="XZ Utils"
+    PACKAGE_NAME="${PACKAGE_NAME}"
     PACKAGE_BUGREPORT="xz@tukaani.org"
     PACKAGE_URL="https://tukaani.org/xz/"
 

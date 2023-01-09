@@ -567,8 +567,8 @@ if(HAVE_GETOPT_LONG)
 
     if(WIN32)
         # Add the Windows resource file for xzdec.exe.
-        target_sources(xz PRIVATE src/xzdec/xzdec_w32res.rc)
-        set_target_properties(xz PROPERTIES
+        target_sources(xzdec PRIVATE src/xzdec/xzdec_w32res.rc)
+        set_target_properties(xzdec PROPERTIES
             LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
         )
     endif()

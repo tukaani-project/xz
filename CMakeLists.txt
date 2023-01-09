@@ -75,22 +75,33 @@ project(xz VERSION "${XZ_VERSION}" LANGUAGES C)
 # On Apple OSes, don't build executables as bundles:
 set(CMAKE_MACOSX_BUNDLE OFF)
 
-# String for PACKAGE_NAME macro in the C code and Windows resource files:
+# windres from GNU binutils can be tricky with command line arguments
+# that contain spaces or other funny characters. Unfortunately we need
+# a space in PACKAGE_NAME. Using \x20 to encode the US-ASCII space seems
+# to work in both cmd.exe and /bin/sh.
 #
-# windres from GNU binutils can be a bit tricky with command line arguments
-# that contain spaces or other funny characters because it will pass them
-# to a shell (cmd.exe or /bin/sh). CMake doesn't seem to handle the quoting
-# well enough either. Using \x20 to encode the US-ASCII space seems to work:
-# it should be compatible with both shell types, it works also with llvm-rc,
-# and CMake handles quoting the backslash too.
+# However, even \x20 isn't enough in all situations, resulting in
+# "syntax error" from windres. Using --use-temp-file prevents windres
+# from using popen() and this seems to fix the problem.
 #
-# For simplicity, use this workaround in all cases on Windows as it should
-# do no harm with other toolchains. Outside Windows use a regular space as
-# then we are compatible with EBCDIC too (if it will ever matter with CMake;
-# EBCDIC compatibility is important with the Autotools-based build though).
-if(WIN32)
+# llvm-windres claims to be compatible with GNU windres but with that
+# the \x20 results in "XZx20Utils" in the compiled binary. (At the
+# same time it works correctly with clang (the C compiler).) The option
+# --use-temp-file makes no difference.
+#
+# CMake 3.25 doesn't have CMAKE_RC_COMPILER_ID so we rely on
+# CMAKE_C_COMPILER_ID. If Clang is used together with GNU windres
+# then it will fail, but this way the risk of a bad string in
+# the binary should be fairly low.
+if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    # Use workarounds with GNU windres. The \x20 in PACKAGE_NAME works
+    # with gcc too so we don't need to worry how to pass different flags
+    # to windres and gcc.
+    list(APPEND CMAKE_RC_FLAGS "--use-temp-file")
     set(PACKAGE_NAME "XZ\\x20Utils")
 else()
+    # Elsewhere a space is safe. This also keeps things compatible with
+    # EBCDIC in case CMake-based build is ever done on such a system.
     set(PACKAGE_NAME "XZ Utils")
 endif()
 

@@ -18,7 +18,11 @@ Introduction
 Building
 --------
 
-    The following files in this directory are for MSVC:
+    It is recommended to use CMake to generate build files for MSVC.
+    The project files in vs201x directories will be removed in the
+    future (5.4.x releases will include them still).
+
+    Descriptions of the files in the vs201x directories:
 
         config.h              liblzma configuration #defines for MSVC.
         liblzma.vcxproj       This builds static liblzma.
@@ -34,12 +38,8 @@ Building
     This means that you may need to either install Windows SDK 8.1 or
     you may need to set the target platform version before building.
 
-    Currently no test programs are built or run under MSVC.
-
-    MSVC gives a bunch of compiler warnings. Some warnings are specific
-    to 32-bit or 64-bit build and some appear for both builds. These
-    are known and shouldn't be a problem. Some of them will probably
-    be fixed in the future.
+    Currently no test programs are built or run under MSVC from the
+    project files. CMake-based builds include tests too.
 
 
 Notes
@@ -48,4 +48,9 @@ Notes
     liblzma API headers declare the functions with __declspec(dllimport)
     by default. To avoid this when using static liblzma from your code,
     #define LZMA_API_STATIC before #including <lzma.h>.
+
+    MSVC gives a bunch of compiler warnings. Some warnings are specific
+    to 32-bit or 64-bit build and some appear for both builds. These
+    are known and shouldn't be a problem. Some of them will probably
+    be fixed in the future.
 

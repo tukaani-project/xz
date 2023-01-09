@@ -279,6 +279,12 @@ crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
 	const __m128i initial_crc = _mm_cvtsi64_si128(~crc);
 #endif
 
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
+		&& defined(_M_IX86)
+	// Workaround for MSVC when compiling for 32-bit x86:
+        __asm  mov ebx, ebx  ; force store ebx: VS2015-2022 destroy it :(
+#endif
+
 	__m128i v0, v1, v2, v3;
 
 #ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS

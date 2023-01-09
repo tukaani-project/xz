@@ -2,6 +2,76 @@
 XZ Utils Release Notes
 ======================
 
+5.4.1 (2023-01-11)
+
+    * liblzma:
+
+        - Fixed the return value of lzma_microlzma_encoder() if the
+          LZMA options lc/lp/pb are invalid. Invalid lc/lp/pb options
+          made the function return LZMA_STREAM_END without encoding
+          anything instead of returning LZMA_OPTIONS_ERROR.
+
+        - Windows / Visual Studio: Workaround a possible compiler bug
+          when targeting 32-bit x86 and compiling the CLMUL version of
+          the CRC64 code. The CLMUL code isn't enabled by the Windows
+          project files but it is in the CMake-based builds.
+
+    * Build systems:
+
+        - Windows-specific CMake changes:
+
+            * Don't try to enable CLMUL CRC64 code if _mm_set_epi64x()
+              isn't available. This fixes CMake-based build with Visual
+              Studio 2013.
+
+            * Created a workaround for a build failure with windres
+              from GNU binutils. It is used only when the C compiler
+              is GCC (not Clang). The workaround is incompatible
+              with llvm-windres, resulting in "XZx20Utils" instead
+              of "XZ Utils" in the resource file, but without the
+              workaround llvm-windres works correctly. See the
+              comment in CMakeLists.txt for details.
+
+            * Included the resource files in the xz and xzdec build
+              rules. Building the command line tools is still
+              experimental but possible with MinGW-w64.
+
+        - Visual Studio: Added stream_decoder_mt.c to the project
+          files. Now the threaded decompressor lzma_stream_decoder_mt()
+          gets built. CMake-based build wasn't affected.
+
+        - Updated windows/INSTALL-MSVC.txt to mention that CMake-based
+          build is now the preferred method with Visual Studio. The
+          project files will probably be removed after 5.4.x releases.
+
+        - Changes to #defines in config.h:
+
+            * HAVE_DECL_CLOCK_MONOTONIC was replaced by
+              HAVE_CLOCK_MONOTONIC. The old macro was always defined
+              in configure-generated config.h to either 0 or 1. The
+              new macro is defined (to 1) only if the declaration of
+              CLOCK_MONOTONIC is available. This matches the way most
+              other config.h macros work and makes things simpler with
+              other build systems.
+
+            * HAVE_DECL_PROGRAM_INVOCATION_NAME was replaced by
+              HAVE_PROGRAM_INVOCATION_NAME for the same reason.
+
+    * Tests:
+
+        - Fixed test script compatibility with ancient /bin/sh
+          versions. Now the five test_compress_* tests should
+          no longer fail on Solaris 10.
+
+        - Added and refactored a few tests.
+
+    * Translations:
+
+        - Updated the Catalan and Esperanto translations.
+
+        - Added Korean and Ukrainian man page translations.
+
+
 5.4.0 (2022-12-13)
 
     This bumps the minor version of liblzma because new features were

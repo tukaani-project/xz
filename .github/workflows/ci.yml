@@ -30,7 +30,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Install Dependencies
-        run: sudo apt-get install -y autoconf automake build-essential po4a autopoint
+        run: sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib
 
       # -b specifies the build system to use.
       # -p specifies the phase (build or test) to help narrow down an error
@@ -74,6 +74,11 @@ jobs:
         run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p build
       - name: Test without crc64 check
         run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p test
+
+      - name: Build 32-bit
+        run: ./build-aux/ci_build.sh -b autotools -p build -f "-m32"
+      - name: Test 32-bit
+        run: ./build-aux/ci_build.sh -b autotools -p test -f "-m32"
 
   Linux-CMake:
     runs-on: ubuntu-latest

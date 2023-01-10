@@ -97,7 +97,7 @@ if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
     # Use workarounds with GNU windres. The \x20 in PACKAGE_NAME works
     # with gcc too so we don't need to worry how to pass different flags
     # to windres and gcc.
-    list(APPEND CMAKE_RC_FLAGS "--use-temp-file")
+    string(APPEND CMAKE_RC_FLAGS " --use-temp-file")
     set(PACKAGE_NAME "XZ\\x20Utils")
 else()
     # Elsewhere a space is safe. This also keeps things compatible with

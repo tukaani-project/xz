@@ -35,6 +35,9 @@ static lzma_filter filters_one[2] = {
 };
 
 
+// These filters are only used in test_lzma_block_header_decode()
+// which only runs if encoders and decoders are configured.
+#ifdef HAVE_DECODERS
 static lzma_filter filters_four[5] = {
 	{
 		.id = LZMA_FILTER_X86,
@@ -52,6 +55,7 @@ static lzma_filter filters_four[5] = {
 		.id = LZMA_VLI_UNKNOWN,
 	}
 };
+#endif
 
 
 static lzma_filter filters_five[6] = {

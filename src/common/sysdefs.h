@@ -127,7 +127,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-// Pre-C99 systems lack stdbool.h. All the code in LZMA Utils must be written
+// Pre-C99 systems lack stdbool.h. All the code in XZ Utils must be written
 // so that it works with fake bool type, for example:
 //
 //    bool foo = (flags & 0x100) != 0;

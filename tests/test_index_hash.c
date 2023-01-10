@@ -89,7 +89,7 @@ test_lzma_index_hash_append(void)
 }
 
 
-#ifdef HAVE_DECODERS
+#if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 // Fill an index_hash with unpadded and uncompressed VLIs
 // by calling lzma_index_hash_append
 static void
@@ -102,7 +102,6 @@ fill_index_hash(lzma_index_hash *index_hash, const lzma_vli *unpadded_sizes,
 }
 
 
-#ifdef HAVE_ENCODERS
 // Set the contents of buf to the expected Index based on the
 // .xz specification. This needs the unpadded and uncompressed VLIs
 // to correctly create the Index.
@@ -144,7 +143,6 @@ generate_index(uint8_t *buf, const lzma_vli *unpadded_sizes,
 
 	assert_uint_eq(out_pos, index_max_size);
 }
-#endif
 #endif
 
 

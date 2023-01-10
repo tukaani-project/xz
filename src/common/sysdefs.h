@@ -149,16 +149,12 @@ typedef unsigned char _Bool;
 #	define __bool_true_false_are_defined 1
 #endif
 
-// string.h should be enough but let's include strings.h and memory.h too if
-// they exists, since that shouldn't do any harm, but may improve portability.
+// string.h should be enough but let's include strings.h too if it exists
+// since that shouldn't do any harm but may improve portability.
 #include <string.h>
 
 #ifdef HAVE_STRINGS_H
 #	include <strings.h>
-#endif
-
-#ifdef HAVE_MEMORY_H
-#	include <memory.h>
 #endif
 
 // As of MSVC 2013, inline and restrict are supported with

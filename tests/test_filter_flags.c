@@ -108,7 +108,7 @@ test_lzma_filter_flags_size(void)
 	// If the BCJ filters are not configured and built, then ARRAY_SIZE()
 	// will return 0 and cause a warning because the for loop will never
 	// execute since any unsigned number cannot be < 0 (-Werror=type-limits).
-	const uint32_t bcj_array_size = ARRAY_SIZE(bcj_filters_decoders);
+	const uint32_t bcj_array_size = ARRAY_SIZE(bcj_filters_encoders);
 	for (uint32_t i = 0; i < bcj_array_size; i++) {
 		assert_lzma_ret(lzma_filter_flags_size(&size,
 				&bcj_filters_encoders[i]), LZMA_OK);
@@ -220,7 +220,7 @@ test_lzma_filter_flags_encode(void)
 		.start_offset = 257
 	};
 
-	const uint32_t bcj_array_size = ARRAY_SIZE(bcj_filters_decoders);
+	const uint32_t bcj_array_size = ARRAY_SIZE(bcj_filters_encoders);
 	for (uint32_t i = 0; i < bcj_array_size; i++) {
 		// NULL options should pass for bcj filters
 		verify_filter_flags_encode(&bcj_filters_encoders[i], true);

@@ -242,8 +242,8 @@ do { \
 /// \param      cur_match       Start position of the current match candidate
 /// \param      depth           Maximum length of the hash chain
 /// \param      son             lzma_mf.son (contains the hash chain)
-/// \param      cyclic_pos
-/// \param      cyclic_size
+/// \param      cyclic_pos      lzma_mf.cyclic_pos
+/// \param      cyclic_size     lzma_mf_cyclic_size
 /// \param      matches         Array to hold the matches.
 /// \param      len_best        The length of the longest match found so far.
 static lzma_match *

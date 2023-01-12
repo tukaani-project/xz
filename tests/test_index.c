@@ -86,7 +86,7 @@ test_lzma_index_memused(void)
 	assert_uint(lzma_index_memused(idx), <, UINT64_MAX);
 
 	// Append small blocks and then test again (should pass)
-	for (int i = 0; i < 10; i++)
+	for (lzma_vli i = 0; i < 10; i++)
 		assert_lzma_ret(lzma_index_append(idx, NULL,
 				UNPADDED_SIZE_MIN, 1), LZMA_OK);
 
@@ -650,7 +650,7 @@ test_lzma_index_iter_rewind(void)
 	lzma_index_iter_init(&iter, first);
 
 	// Append 3 blocks and iterate to them
-	for (int i = 0; i < 3; i++) {
+	for (uint32_t i = 0; i < 3; i++) {
 		assert_lzma_ret(lzma_index_append(first, NULL,
 				UNPADDED_SIZE_MIN, 1), LZMA_OK);
 		assert_false(lzma_index_iter_next(&iter,
@@ -661,7 +661,7 @@ test_lzma_index_iter_rewind(void)
 	// Rewind back to the begining and iterate over the blocks again
 	lzma_index_iter_rewind(&iter);
 
-	for (int i = 0; i < 3; i++) {
+	for (uint32_t i = 0; i < 3; i++) {
 		assert_false(lzma_index_iter_next(&iter,
 				LZMA_INDEX_ITER_BLOCK));
 		assert_uint_eq(iter.block.number_in_file, i + 1);
@@ -687,7 +687,7 @@ test_lzma_index_iter_rewind(void)
 
 	lzma_index_iter_rewind(&iter);
 
-	for (int i = 0; i < 3; i++) {
+	for (uint32_t i = 0; i < 3; i++) {
 		assert_false(lzma_index_iter_next(&iter,
 				LZMA_INDEX_ITER_STREAM));
 		assert_uint_eq(iter.stream.number, i + 1);
@@ -707,7 +707,7 @@ test_lzma_index_iter_next(void)
 	lzma_index_iter_init(&iter, first);
 
 	// First test bad mode values
-	for (int i = LZMA_INDEX_ITER_NONEMPTY_BLOCK + 1; i < 100; i++)
+	for (uint32_t i = LZMA_INDEX_ITER_NONEMPTY_BLOCK + 1; i < 100; i++)
 		assert_true(lzma_index_iter_next(&iter, i));
 
 	// Test iterating over blocks
@@ -1403,7 +1403,7 @@ generate_index_decode_buffer(void)
 		return;
 
 	// Add 4 blocks
-	for (int i = 1; i < 5; i++)
+	for (uint32_t i = 1; i < 5; i++)
 		if (lzma_index_append(decode_test_index, NULL,
 				0x1000 * i, 0x100 * i) != LZMA_OK)
 			return;

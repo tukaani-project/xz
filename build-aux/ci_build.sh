@@ -102,12 +102,17 @@ if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then
 	mkdir -p "$DEST_DIR"
 	case $BUILD_SYSTEM in
 		autotools)
-		# Run autogen.sh script
 		cd "$SRC_DIR"
-		"./autogen.sh"
-		cd "$DEST_DIR"
-		# Generate configure option values
 
+		# Run autogen.sh script if not already run
+		if [ ! -f configure ]
+		then 
+			"./autogen.sh"
+		fi
+
+		cd "$DEST_DIR"
+
+		# Generate configure option values
 		EXTRA_OPTIONS=""
 		FILTER_LIST="lzma1,lzma2"
 

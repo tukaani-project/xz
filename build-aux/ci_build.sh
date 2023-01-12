@@ -16,7 +16,14 @@
 
 set -e
 
-USAGE="Usage: $0 -b [autotools|cmake] -c [crc32|crc64|sha256] -d [encoders|decoders|bcj|delta|threads] -l [destdir] -s [srcdir] -p [all|build|test] -f[-m32]"
+USAGE="Usage: $0
+  -b [autotools|cmake]
+  -c [crc32|crc64|sha256]
+  -d [encoders|decoders|bcj|delta|threads]
+  -l [destdir]
+  -s [srcdir]
+  -p [all|build|test]
+  -f [CFLAGS]"
 
 # Absolute path of script directory
 ABS_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
@@ -34,9 +41,13 @@ DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
 
 # Parse arguments
-while getopts b:c:d:l:s:p:f: opt; do
+while getopts b:c:d:l:s:p:f:h opt; do
 	# b option can have either value "autotools" OR "cmake"
 	case ${opt} in
+	h)
+		echo "$USAGE"
+		exit 0
+	;;
 	b)
 		case "$OPTARG" in
 			autotools) ;;

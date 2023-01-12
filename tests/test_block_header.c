@@ -189,7 +189,7 @@ test_lzma_block_header_size(void)
 
 	// Use an invalid block option. The check type isn't stored in
 	// the Block Header and so _header_size ignores it.
-	block.check = 0x1000;
+	block.check = INVALID_LZMA_CHECK_ID;
 	block.ignore_check = false;
 
 	assert_lzma_ret(lzma_block_header_size(&block), LZMA_OK);
@@ -270,7 +270,7 @@ test_lzma_block_header_encode(void)
 	block.uncompressed_size = LZMA_VLI_UNKNOWN;
 
 	// Test invalid block check
-	block.check = 0x1000;
+	block.check = INVALID_LZMA_CHECK_ID;
 	block.ignore_check = false;
 	assert_lzma_ret(lzma_block_header_encode(&block, out),
 			LZMA_PROG_ERROR);
@@ -466,7 +466,7 @@ test_lzma_block_header_decode(void)
 	assert_uint_eq(decoded_block.version, 1);
 
 	// Test bad check type
-	decoded_block.check = LZMA_CHECK_ID_MAX + 1;
+	decoded_block.check = INVALID_LZMA_CHECK_ID;
 	assert_lzma_ret(lzma_block_header_decode(&decoded_block, NULL, out),
 			LZMA_PROG_ERROR);
 	decoded_block.check = LZMA_CHECK_CRC32;

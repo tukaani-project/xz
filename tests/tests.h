@@ -19,6 +19,15 @@
 #include "tuktest.h"
 
 
+// Invalid value for the lzma_check enumeration. This must be positive
+// but small enough to fit into signed char since the underlying type might
+// one some platform be a signed char.
+//
+// Don't put LZMA_ at the beginning of the name so that it is obvious that
+// this constant doesn't come from the API headers.
+#define INVALID_LZMA_CHECK_ID ((lzma_check)(LZMA_CHECK_ID_MAX + 1))
+
+
 #define memcrap(buf, size) memset(buf, 0xFD, size)
 
 

@@ -133,7 +133,7 @@ test_lzma_crc64(void)
 static void
 test_lzma_supported_checks(void)
 {
-	static const int expected_check_ids[] = {
+	static const lzma_check expected_check_ids[] = {
 		LZMA_CHECK_NONE,
 #ifdef HAVE_CHECK_CRC32
 		LZMA_CHECK_CRC32,
@@ -146,7 +146,7 @@ test_lzma_supported_checks(void)
 #endif
 	};
 
-	for (int i = 0; i <= LZMA_CHECK_ID_MAX + 1; i++) {
+	for (lzma_check i = 0; i <= LZMA_CHECK_ID_MAX + 1; i++) {
 		bool matched = false;
 		for (unsigned int j = 0; j < ARRAY_SIZE(expected_check_ids);
 				j++) {
@@ -173,7 +173,7 @@ test_lzma_check_size(void)
 			32, 32, 32, 64, 64, 64
 	};
 
-	for (unsigned int i = 0; i < ARRAY_SIZE(expected_check_sizes); i++)
+	for (lzma_check i = 0; i < ARRAY_SIZE(expected_check_sizes); i++)
 		assert_uint_eq(expected_check_sizes[i], lzma_check_size(i));
 
 	assert_uint_eq(lzma_check_size(LZMA_CHECK_ID_MAX + 1), UINT32_MAX);

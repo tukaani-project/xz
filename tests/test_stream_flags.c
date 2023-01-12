@@ -70,7 +70,7 @@ test_lzma_stream_header_encode(void)
 #ifndef HAVE_ENCODERS
 	assert_skip("Encoder support disabled");
 #else
-	for (int i = 0; i < LZMA_CHECK_ID_MAX; i++)
+	for (lzma_check i = 0; i < LZMA_CHECK_ID_MAX; i++)
 		stream_header_encode_helper(i);
 
 	lzma_stream_flags flags = {
@@ -152,7 +152,7 @@ test_lzma_stream_footer_encode(void)
 #ifndef HAVE_ENCODERS
 	assert_skip("Encoder support disabled");
 #else
-	for (int i = 0; i < LZMA_CHECK_ID_MAX; i++)
+	for (lzma_check i = 0; i < LZMA_CHECK_ID_MAX; i++)
 		stream_footer_encode_helper(i);
 
 	lzma_stream_flags flags = {
@@ -223,7 +223,7 @@ test_lzma_stream_header_decode(void)
 #if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
 	assert_skip("Encoder or decoder support disabled");
 #else
-	for (int i = 0; i < LZMA_CHECK_ID_MAX; i++)
+	for (lzma_check i = 0; i < LZMA_CHECK_ID_MAX; i++)
 		stream_header_decode_helper(i);
 
 	lzma_stream_flags flags = {
@@ -319,7 +319,7 @@ test_lzma_stream_footer_decode(void)
 #if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
 	assert_skip("Encoder or decoder support disabled");
 #else
-	for (int i = 0; i < LZMA_CHECK_ID_MAX; i++)
+	for (lzma_check i = 0; i < LZMA_CHECK_ID_MAX; i++)
 		stream_footer_decode_helper(i);
 
 	lzma_stream_flags flags = {
@@ -422,7 +422,7 @@ test_lzma_stream_flags_compare(void)
 	second.check = LZMA_CHECK_CRC32;
 
 	// Check types must be equal
-	for (uint32_t i = 0; i < LZMA_CHECK_ID_MAX; i++) {
+	for (lzma_check i = 0; i < LZMA_CHECK_ID_MAX; i++) {
 		first.check = i;
 		if (i == second.check)
 			assert_lzma_ret(lzma_stream_flags_compare(&first,

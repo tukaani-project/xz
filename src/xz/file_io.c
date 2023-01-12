@@ -140,7 +140,7 @@ io_write_to_user_abort_pipe(void)
 	// handler. So ignore the errors and try to avoid warnings with
 	// GCC and glibc when _FORTIFY_SOURCE=2 is used.
 	uint8_t b = '\0';
-	const int ret = write(user_abort_pipe[1], &b, 1);
+	const ssize_t ret = write(user_abort_pipe[1], &b, 1);
 	(void)ret;
 	return;
 }

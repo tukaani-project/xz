@@ -1029,26 +1029,35 @@ if test "$GCC" = yes ; then
 	#     backed up with "return LZMA_PROG_ERROR".
 	#   * -Wcast-qual would break various things where we need a non-const
 	#     pointer although we don't modify anything through it.
-	#   * -Wcast-align breaks optimized CRC32 and CRC64 implementation
-	#     on some architectures (not on x86), where this warning is bogus,
-	#     because we take care of correct alignment.
 	#   * -Winline, -Wdisabled-optimization, -Wunsafe-loop-optimizations
 	#     don't seem so useful here; at least the last one gives some
 	#     warnings which are not bugs.
+	#   * -Wconversion still shows too many warnings.
+	#
+	# The flags before the empty line are for GCC and many of them
+	# are supported by Clang too. The flags after the empty line are
+	# for Clang.
 	for NEW_FLAG in \
 			-Wall \
 			-Wextra \
 			-Wvla \
+			-Wc99-c11-compat \
 			-Wformat=2 \
 			-Winit-self \
 			-Wmissing-include-dirs \
-			-Wstrict-aliasing \
+			-Wshift-overflow=2 \
+			-Wstrict-overflow=3 \
+			-Walloc-zero \
+			-Wduplicated-cond \
 			-Wfloat-equal \
 			-Wundef \
 			-Wshadow \
 			-Wpointer-arith \
 			-Wbad-function-cast \
 			-Wwrite-strings \
+			-Wdate-time \
+			-Wsign-conversion \
+			-Wfloat-conversion \
 			-Wlogical-op \
 			-Waggregate-return \
 			-Wstrict-prototypes \
@@ -1056,7 +1065,24 @@ if test "$GCC" = yes ; then
 			-Wmissing-prototypes \
 			-Wmissing-declarations \
 			-Wmissing-noreturn \
-			-Wredundant-decls
+			-Wredundant-decls \
+			\
+			-Wc99-compat \
+			-Wc11-extensions \
+			-Wc2x-compat \
+			-Wc2x-extensions \
+			-Wpre-c2x-compat \
+			-Warray-bounds-pointer-arithmetic \
+			-Wassign-enum \
+			-Wconditional-uninitialized \
+			-Wdocumentation \
+			-Wduplicate-enum \
+			-Wempty-translation-unit \
+			-Wflexible-array-extensions \
+			-Wmissing-variable-declarations \
+			-Wnewline-eof \
+			-Wshift-sign-overflow \
+			-Wstring-conversion
 	do
 		AC_MSG_CHECKING([if $CC accepts $NEW_FLAG])
 		OLD_CFLAGS="$CFLAGS"

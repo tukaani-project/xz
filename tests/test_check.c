@@ -176,7 +176,7 @@ test_lzma_check_size(void)
 	for (lzma_check i = 0; i < ARRAY_SIZE(expected_check_sizes); i++)
 		assert_uint_eq(expected_check_sizes[i], lzma_check_size(i));
 
-	assert_uint_eq(lzma_check_size(LZMA_CHECK_ID_MAX + 1), UINT32_MAX);
+	assert_uint_eq(lzma_check_size(INVALID_LZMA_CHECK_ID), UINT32_MAX);
 }
 
 

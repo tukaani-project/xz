@@ -56,8 +56,8 @@ basic_lzip_decode(const char *src, const uint32_t expected_crc) {
 		ret = lzma_code(&strm, LZMA_RUN);
 		if (strm.avail_out == 0) {
 			checksum = lzma_crc32(output_buffer,
-					strm.next_out - output_buffer,
-					checksum);
+				(size_t)(strm.next_out - output_buffer),
+				checksum);
 			// No need to free output_buffer because it will
 			// automatically be freed at the end of the test by
 			// tuktest.
@@ -70,7 +70,8 @@ basic_lzip_decode(const char *src, const uint32_t expected_crc) {
 	assert_lzma_ret(ret, LZMA_STREAM_END);
 	assert_uint_eq(strm.total_in, file_size);
 
-	checksum = lzma_crc32(output_buffer, strm.next_out - output_buffer,
+	checksum = lzma_crc32(output_buffer,
+			(size_t)(strm.next_out - output_buffer),
 			checksum);
 	assert_uint_eq(checksum, expected_crc);
 
@@ -133,8 +134,8 @@ trailing_helper(const char *src, const uint32_t expected_data_checksum,
 		ret = lzma_code(&strm, LZMA_RUN);
 		if (strm.avail_out == 0) {
 			checksum = lzma_crc32(output_buffer,
-					strm.next_out - output_buffer,
-					checksum);
+				(size_t)(strm.next_out - output_buffer),
+				checksum);
 			// No need to free output_buffer because it will
 			// automatically be freed at the end of the test by
 			// tuktest.
@@ -148,7 +149,7 @@ trailing_helper(const char *src, const uint32_t expected_data_checksum,
 	assert_uint(strm.total_in, <, file_size);
 
 	checksum = lzma_crc32(output_buffer,
-			strm.next_out - output_buffer,
+			(size_t)(strm.next_out - output_buffer),
 			checksum);
 
 	assert_uint_eq(checksum, expected_data_checksum);

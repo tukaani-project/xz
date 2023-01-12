@@ -46,39 +46,39 @@ jobs:
         run: ./build-aux/ci_build.sh -b autotools -p test -f "-m32"
 
       - name: Build without encoders
-        run: ./build-aux/ci_build.sh -b autotools -d encoders -p build
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p build
       - name: Test without encoders
-        run: ./build-aux/ci_build.sh -b autotools -d encoders -p test
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test
 
       - name: Build without decoders
-        run: ./build-aux/ci_build.sh -b autotools -d decoders -p build
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p build
       - name: Test without decoders
-        run: ./build-aux/ci_build.sh -b autotools -d decoders -p test
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test
 
       - name: Build without threads
-        run: ./build-aux/ci_build.sh -b autotools -d threads -p build
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.sh -b autotools -d threads -p test
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test
 
       - name: Build without BCJ filters
-        run: ./build-aux/ci_build.sh -b autotools -d bcj -p build
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p build
       - name: Test without BCJ filters
-        run: ./build-aux/ci_build.sh -b autotools -d bcj -p test
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test
 
       - name: Build without Delta filters
-        run: ./build-aux/ci_build.sh -b autotools -d delta -p build
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p build
       - name: Test without Delta filters
-        run: ./build-aux/ci_build.sh -b autotools -d delta -p test
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test
 
       - name: Build without sha256 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p build
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p build
       - name: Test without sha256 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test
 
       - name: Build without crc64 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p build
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p build
       - name: Test without crc64 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test
 
   Linux-CMake:
     runs-on: ubuntu-latest
@@ -105,39 +105,39 @@ jobs:
         run: ./build-aux/ci_build.sh -b autotools -p test
 
       - name: Build without encoders
-        run: ./build-aux/ci_build.sh -b autotools -d encoders -p build
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p build
       - name: Test without encoders
-        run: ./build-aux/ci_build.sh -b autotools -d encoders -p test
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test
 
       - name: Build without decoders
-        run: ./build-aux/ci_build.sh -b autotools -d decoders -p build
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p build
       - name: Test without decoders
-        run: ./build-aux/ci_build.sh -b autotools -d decoders -p test
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test
 
       - name: Build without threads
-        run: ./build-aux/ci_build.sh -b autotools -d threads -p build
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.sh -b autotools -d threads -p test
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test
 
       - name: Build without BCJ filters
-        run: ./build-aux/ci_build.sh -b autotools -d bcj -p build
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p build
       - name: Test without BCJ filters
-        run: ./build-aux/ci_build.sh -b autotools -d bcj -p test
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test
 
       - name: Build without Delta filters
-        run: ./build-aux/ci_build.sh -b autotools -d delta -p build
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p build
       - name: Test without Delta filters
-        run: ./build-aux/ci_build.sh -b autotools -d delta -p test
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test
 
       - name: Build without sha256 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p build
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p build
       - name: Test without sha256 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test
 
       - name: Build without crc64 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p build
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p build
       - name: Test without crc64 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test
 
   MacOS-CMake:
     runs-on: macos-latest

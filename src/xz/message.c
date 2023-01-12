@@ -1057,6 +1057,14 @@ message_help(bool long_help)
 		puts(_(
 "\n Custom filter chain for compression (alternative for using presets):"));
 
+		puts(_(
+"\n"
+"  --filters=FILTERS   list the chain of filters and options; each filter can\n"
+"                      be separated by a space or with --; the options are a\n"
+"                      comma-separated string and can be denoted with : or =\n"
+"                      following a filter name"
+		));
+
 #if defined(HAVE_ENCODER_LZMA1) || defined(HAVE_DECODER_LZMA1) \
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
 		// TRANSLATORS: The word "literal" in "literal context bits"

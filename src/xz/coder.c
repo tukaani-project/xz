@@ -56,6 +56,11 @@ static bool check_default = true;
 /// in coder_init().
 static bool allow_trailing_input;
 
+/// Indicates if the current filter chain was set by the --filters
+/// option. The filter chain must be reset if a preset or single
+/// filter option is used.
+static bool string_to_filter_used;
+
 #ifdef MYTHREAD_ENABLED
 static lzma_mt mt_options = {
 	.flags = 0,
@@ -95,6 +100,7 @@ coder_set_preset(uint32_t new_preset)
 	preset_number &= ~LZMA_PRESET_LEVEL_MASK;
 	preset_number |= new_preset;
 	forget_filter_chain();
+	string_to_filter_used = false;
 	return;
 }
 
@@ -113,6 +119,10 @@ coder_add_filter(lzma_vli id, void *options)
 {
 	if (filters_count == LZMA_FILTERS_MAX)
 		message_fatal(_("Maximum number of filters is four"));
+	else if (string_to_filter_used) {
+		forget_filter_chain();
+		string_to_filter_used = false;
+	}
 
 	filters[filters_count].id = id;
 	filters[filters_count].options = options;
@@ -125,6 +135,33 @@ coder_add_filter(lzma_vli id, void *options)
 	preset_number = LZMA_PRESET_DEFAULT;
 
 	return;
+}
+
+
+extern void
+coder_add_filters_from_str(const char *filter_str)
+{
+	// Forget presets and previously defined filter chain.
+	forget_filter_chain();
+	preset_number = LZMA_PRESET_DEFAULT;
+	string_to_filter_used = true;
+
+	int error_pos;
+	// Include LZMA_STR_ALL_FILTERS so this can be used with --raw.
+	const char *err = lzma_str_to_filters(filter_str, &error_pos,
+			filters, LZMA_STR_ALL_FILTERS, NULL);
+
+	if (err != NULL) {
+		message(V_ERROR, _("Error in --filters=FILTERS option:"));
+		message(V_ERROR, "%s", filter_str);
+		message(V_ERROR, "%*s^", error_pos, "");
+		message_fatal("%s", err);
+	}
+
+	// Set the filters_count to be the number of filters converted from
+	// the string.
+	for(filters_count = 0; filters[filters_count].id != LZMA_VLI_UNKNOWN;
+			filters_count++);
 }
 
 

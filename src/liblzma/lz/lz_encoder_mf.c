@@ -220,10 +220,11 @@ move_pending(lzma_mf *mf)
 /// of matches found.
 #define call_find(func, len_best) \
 do { \
-	matches_count = func(len_limit, pos, cur, cur_match, mf->depth, \
-				mf->son, mf->cyclic_pos, mf->cyclic_size, \
+	matches_count = (uint32_t)(func(len_limit, pos, cur, cur_match, \
+				mf->depth, mf->son, \
+				mf->cyclic_pos, mf->cyclic_size, \
 				matches + matches_count, len_best) \
-			- matches; \
+			- matches); \
 	move_pos(mf); \
 	return matches_count; \
 } while (0)

@@ -386,7 +386,7 @@ static void
 test_invalid_dictionary_size(void) {
 	// First file has too small dictionary size field
 	decode_expect_error("files/bad-1-v1-dict-1.lz", LZMA_DATA_ERROR);
-	
+
 	// Second file has too large dictionary size field
 	decode_expect_error("files/bad-1-v1-dict-2.lz", LZMA_DATA_ERROR);
 }
@@ -397,7 +397,7 @@ test_invalid_uncomp_size(void) {
 	// Test invalid v0 lzip file uncomp size
 	decode_expect_error("files/bad-1-v0-uncomp-size.lz",
 			LZMA_DATA_ERROR);
-	
+
 	// Test invalid v1 lzip file uncomp size
 	decode_expect_error("files/bad-1-v1-uncomp-size.lz",
 			LZMA_DATA_ERROR);

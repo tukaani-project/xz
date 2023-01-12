@@ -1064,7 +1064,6 @@ if test "$GCC" = yes ; then
 			-Wold-style-definition \
 			-Wmissing-prototypes \
 			-Wmissing-declarations \
-			-Wmissing-noreturn \
 			-Wredundant-decls \
 			\
 			-Wc99-compat \

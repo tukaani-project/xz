@@ -19,7 +19,7 @@ set -e
 USAGE="Usage: $0
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
-  -d [encoders|decoders|bcj|delta|threads]
+  -d [encoders|decoders|bcj|delta|threads|shared]
   -l [destdir]
   -s [srcdir]
   -p [all|build|test]
@@ -36,6 +36,7 @@ DELTA="y"
 ENCODERS="y"
 DECODERS="y"
 THREADS="y"
+SHARED="y"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
@@ -78,6 +79,7 @@ while getopts b:c:d:l:s:p:f:h opt; do
 		bcj) BCJ="n" ;;
 		delta) DELTA="n" ;;
 		threads) THREADS="n" ;;
+		shared) SHARED="n";;
 		*) echo "Invalid disable value: $disable_arg"; exit 1 ;;
 		esac
 	done	
@@ -136,6 +138,11 @@ if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then
 		if [ "$THREADS" = "n" ]
 		then
 			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-threads"
+		fi
+
+		if [ "$SHARED" = "n" ]
+		then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-shared"
 		fi
 
 		# Run configure script

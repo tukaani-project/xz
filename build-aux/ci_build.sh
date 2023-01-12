@@ -19,7 +19,7 @@ set -e
 USAGE="Usage: $0
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
-  -d [encoders|decoders|bcj|delta|threads|shared]
+  -d [encoders|decoders|bcj|delta|threads|shared|nls]
   -l [destdir]
   -s [srcdir]
   -p [all|build|test]
@@ -37,6 +37,7 @@ ENCODERS="y"
 DECODERS="y"
 THREADS="y"
 SHARED="y"
+NATIVE_LANG_SUPPORT="y"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
@@ -80,6 +81,7 @@ while getopts b:c:d:l:s:p:f:h opt; do
 		delta) DELTA="n" ;;
 		threads) THREADS="n" ;;
 		shared) SHARED="n";;
+		nls) NATIVE_LANG_SUPPORT="n";;
 		*) echo "Invalid disable value: $disable_arg"; exit 1 ;;
 		esac
 	done	
@@ -148,6 +150,11 @@ if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then
 		if [ "$SHARED" = "n" ]
 		then
 			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-shared"
+		fi
+
+		if [ "$NATIVE_LANG_SUPPORT" = "n" ]
+		then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --disable-nls"
 		fi
 
 		# Run configure script

@@ -1872,7 +1872,7 @@ It is shown after a few seconds have passed since
 .B xz
 started processing the file.
 .IP \(bu 3
-Elapsed time in the format M:SS or H:MM:SS.
+Runtime time in the format M:SS or H:MM:SS.
 .IP \(bu 3
 Estimated remaining time is shown
 only when the size of the input file is
@@ -1888,10 +1888,10 @@ When standard error is not a terminal,
 will make
 .B xz
 print the filename, compressed size, uncompressed size,
-compression ratio, and possibly also the speed and elapsed time
+compression ratio, and possibly also the speed and runtime
 on a single line to standard error after compressing or
 decompressing the file.
-The speed and elapsed time are included only when
+The speed and runtime are included only when
 the operation took at least a few seconds.
 If the operation didn't finish, for example, due to user interruption,
 also the completion percentage is printed

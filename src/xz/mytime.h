@@ -27,8 +27,8 @@ extern uint64_t opt_flush_timeout;
 extern void mytime_set_start_time(void);
 
 
-/// \brief      Get the number of milliseconds since the operation started
-extern uint64_t mytime_get_elapsed(void);
+/// \brief      Get the operation runtime in milliseconds
+extern uint64_t mytime_get_runtime(void);
 
 
 /// \brief      Store the time of when compressor was flushed

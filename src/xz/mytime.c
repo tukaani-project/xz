@@ -57,7 +57,7 @@ mytime_set_start_time(void)
 
 
 extern uint64_t
-mytime_get_elapsed(void)
+mytime_get_runtime(void)
 {
 	return mytime_now() - start_time;
 }

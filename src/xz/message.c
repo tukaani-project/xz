@@ -104,7 +104,7 @@ progress_signal_handler(int sig lzma_attribute((__unused__)))
 /// variable name as above to avoid some ifdefs.
 static bool progress_needs_updating = false;
 
-/// Elapsed time when the next progress message update should be done.
+/// Runtime time when the next progress message update should be done.
 static uint64_t progress_next_update;
 
 #endif
@@ -348,11 +348,11 @@ progress_sizes(uint64_t compressed_pos, uint64_t uncompressed_pos, bool final)
 
 /// Make the string containing the processing speed of uncompressed data.
 static const char *
-progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
+progress_speed(uint64_t uncompressed_pos, uint64_t runtime)
 {
 	// Don't print the speed immediately, since the early values look
 	// somewhat random.
-	if (elapsed < 3000)
+	if (runtime < 3000)
 		return "";
 
 	// The first character of KiB/s, MiB/s, or GiB/s:
@@ -362,7 +362,7 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 
 	// Calculate the speed as KiB/s.
 	double speed = (double)(uncompressed_pos)
-			/ ((double)(elapsed) * (1024.0 / 1000.0));
+			/ ((double)(runtime) * (1024.0 / 1000.0));
 
 	// Adjust the unit of the speed if needed.
 	while (speed > 999.0) {
@@ -384,7 +384,7 @@ progress_speed(uint64_t uncompressed_pos, uint64_t elapsed)
 }
 
 
-/// Make a string indicating elapsed time. The format is either
+/// Make a string indicating runtime. The format is either
 /// M:SS or H:MM:SS depending on if the time is an hour or more.
 static const char *
 progress_time(uint64_t mseconds)
@@ -392,7 +392,7 @@ progress_time(uint64_t mseconds)
 	// 9999 hours = 416 days
 	static char buf[sizeof("9999:59:59")];
 
-	// 32-bit variable is enough for elapsed time (136 years).
+	// 32-bit variable is enough for runtime (136 years).
 	uint32_t seconds = (uint32_t)(mseconds / 1000);
 
 	// Don't show anything if the time is zero or ridiculously big.
@@ -420,7 +420,7 @@ progress_time(uint64_t mseconds)
 /// Return a string containing estimated remaining time when
 /// reasonably possible.
 static const char *
-progress_remaining(uint64_t in_pos, uint64_t elapsed)
+progress_remaining(uint64_t in_pos, uint64_t runtime)
 {
 	// Don't show the estimated remaining time when it wouldn't
 	// make sense:
@@ -431,14 +431,14 @@ progress_remaining(uint64_t in_pos, uint64_t elapsed)
 	//  - Only a few seconds has passed since we started (de)compressing,
 	//    so estimate would be too inaccurate.
 	if (expected_in_size == 0 || in_pos > expected_in_size
-			|| in_pos < (UINT64_C(1) << 19) || elapsed < 8000)
+			|| in_pos < (UINT64_C(1) << 19) || runtime < 8000)
 		return "";
 
 	// Calculate the estimate. Don't give an estimate of zero seconds,
 	// since it is possible that all the input has been already passed
 	// to the library, but there is still quite a bit of output pending.
 	uint32_t remaining = (uint32_t)((double)(expected_in_size - in_pos)
-			* ((double)(elapsed) / 1000.0) / (double)(in_pos));
+			* ((double)(runtime) / 1000.0) / (double)(in_pos));
 	if (remaining < 1)
 		remaining = 1;
 
@@ -545,13 +545,13 @@ message_progress_update(void)
 		return;
 
 	// Calculate how long we have been processing this file.
-	const uint64_t elapsed = mytime_get_elapsed();
+	const uint64_t runtime = mytime_get_runtime();
 
 #ifndef SIGALRM
-	if (progress_next_update > elapsed)
+	if (progress_next_update > runtime)
 		return;
 
-	progress_next_update = elapsed + 1000;
+	progress_next_update = runtime + 1000;
 #endif
 
 	// Get our current position in the stream.
@@ -573,9 +573,9 @@ message_progress_update(void)
 	const char *cols[5] = {
 		progress_percentage(in_pos),
 		progress_sizes(compressed_pos, uncompressed_pos, false),
-		progress_speed(uncompressed_pos, elapsed),
-		progress_time(elapsed),
-		progress_remaining(in_pos, elapsed),
+		progress_speed(uncompressed_pos, runtime),
+		progress_time(runtime),
+		progress_remaining(in_pos, runtime),
 	};
 	fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\r",
 			tuklib_mbstr_fw(cols[0], 6), cols[0],
@@ -644,7 +644,7 @@ progress_flush(bool finished)
 
 	progress_active = false;
 
-	const uint64_t elapsed = mytime_get_elapsed();
+	const uint64_t runtime = mytime_get_runtime();
 
 	signals_block();
 
@@ -655,9 +655,9 @@ progress_flush(bool finished)
 		const char *cols[5] = {
 			finished ? "100 %" : progress_percentage(in_pos),
 			progress_sizes(compressed_pos, uncompressed_pos, true),
-			progress_speed(uncompressed_pos, elapsed),
-			progress_time(elapsed),
-			finished ? "" : progress_remaining(in_pos, elapsed),
+			progress_speed(uncompressed_pos, runtime),
+			progress_time(runtime),
+			finished ? "" : progress_remaining(in_pos, runtime),
 		};
 		fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\n",
 				tuklib_mbstr_fw(cols[0], 6), cols[0],
@@ -682,14 +682,14 @@ progress_flush(bool finished)
 		fprintf(stderr, "%s", progress_sizes(
 				compressed_pos, uncompressed_pos, true));
 
-		// The speed and elapsed time aren't always shown.
-		const char *speed = progress_speed(uncompressed_pos, elapsed);
+		// The speed and runtime time aren't always shown.
+		const char *speed = progress_speed(uncompressed_pos, runtime);
 		if (speed[0] != '\0')
 			fprintf(stderr, ", %s", speed);
 
-		const char *elapsed_str = progress_time(elapsed);
-		if (elapsed_str[0] != '\0')
-			fprintf(stderr, ", %s", elapsed_str);
+		const char *runtime_str = progress_time(runtime);
+		if (runtime_str[0] != '\0')
+			fprintf(stderr, ", %s", runtime_str);
 
 		fputc('\n', stderr);
 	}

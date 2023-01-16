@@ -24,11 +24,17 @@ extern uint64_t opt_flush_timeout;
 /// \brief      Store the time when (de)compression was started
 ///
 /// The start time is also stored as the time of the first flush.
-extern void mytime_set_start_time(void);
+extern void mytime_start(void);
 
 
 /// \brief      Get the operation runtime in milliseconds
 extern uint64_t mytime_get_runtime(void);
+
+
+/// \brief      Pause the runtime.
+///
+/// To start the timer again, call mytime_start()
+extern void mytime_pause(void);
 
 
 /// \brief      Store the time of when compressor was flushed

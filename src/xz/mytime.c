@@ -20,7 +20,13 @@
 
 uint64_t opt_flush_timeout = 0;
 
+// Time in milliseconds since last pause
 static uint64_t start_time;
+
+// Total runtime in milliseconds before the last pause
+static uint64_t past_runtime;
+
+// Millisecond mark of the next flush
 static uint64_t next_flush;
 
 
@@ -49,7 +55,7 @@ mytime_now(void)
 
 
 extern void
-mytime_set_start_time(void)
+mytime_start(void)
 {
 	start_time = mytime_now();
 	return;
@@ -59,7 +65,16 @@ mytime_set_start_time(void)
 extern uint64_t
 mytime_get_runtime(void)
 {
-	return mytime_now() - start_time;
+	return (mytime_now() - start_time) + past_runtime;
+}
+
+
+extern void
+mytime_pause(void)
+{
+	if (start_time > 0)
+		past_runtime += mytime_now() - start_time;
+	return;
 }
 
 

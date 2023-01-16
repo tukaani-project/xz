@@ -1059,7 +1059,8 @@ coder_run(const char *filename)
 			if (opt_mode == MODE_TEST || !io_open_dest(pair)) {
 				// Remember the current time. It is needed
 				// for progress indicator.
-				mytime_set_start_time();
+				mytime_start();
+
 
 				// Initialize the progress indicator.
 				//

@@ -720,7 +720,8 @@ args_parse(args_info *args, int argc, char **argv)
 	// be done also when uncompressing raw data, since for raw decoding
 	// the options given on the command line are used to know what kind
 	// of raw data we are supposed to decode.
-	if (opt_mode == MODE_COMPRESS || opt_format == FORMAT_RAW)
+	if (opt_mode == MODE_COMPRESS || (opt_format == FORMAT_RAW
+			&& opt_mode != MODE_LIST))
 		coder_set_compression_settings();
 
 	// If no filenames are given, use stdin.

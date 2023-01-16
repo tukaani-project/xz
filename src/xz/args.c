@@ -23,6 +23,7 @@ bool opt_force = false;
 bool opt_keep_original = false;
 bool opt_robot = false;
 bool opt_ignore_check = false;
+bool opt_recursive = false;
 
 // We don't modify or free() this, but we need to assign it in some
 // non-const pointers.
@@ -182,7 +183,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "single-stream", no_argument,      NULL,  OPT_SINGLE_STREAM },
 		{ "no-sparse",    no_argument,       NULL,  OPT_NO_SPARSE },
 		{ "suffix",       required_argument, NULL,  'S' },
-		// { "recursive",      no_argument,       NULL,  'r' }, // TODO
+		{ "recursive",      no_argument,       NULL,  'r' },
 		{ "files",        optional_argument, NULL,  OPT_FILES },
 		{ "files0",       optional_argument, NULL,  OPT_FILES0 },
 
@@ -271,6 +272,11 @@ parse_real(args_info *args, int argc, char **argv)
 		// --suffix
 		case 'S':
 			suffix_set(optarg);
+			break;
+
+		// --recursive
+		case 'r':
+			opt_recursive = true;
 			break;
 
 		case 'T': {

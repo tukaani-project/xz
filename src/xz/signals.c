@@ -23,8 +23,7 @@ volatile sig_atomic_t user_abort = false;
 /// been done.
 static volatile sig_atomic_t exit_signal = 0;
 
-/// Mask of signals for which we have established a signal handler to set
-/// user_abort to true.
+/// Mask of signals for which we have established a signal handler.
 static sigset_t hooked_signals;
 
 /// True once signals_init() has finished. This is used to skip blocking

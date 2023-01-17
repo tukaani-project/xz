@@ -25,8 +25,8 @@ extern void signals_init(void);
 #	define signals_block() do { } while (0)
 #	define signals_unblock() do { } while (0)
 #else
-/// Block the signals which don't have SA_RESTART and which would just set
-/// user_abort to true. This is handy when we don't want to handle EINTR
+/// Block the signals with a signal handler which don't have SA_RESTART.
+/// This is handy when we don't want to handle EINTR
 /// and don't want SA_RESTART either.
 extern void signals_block(void);
 

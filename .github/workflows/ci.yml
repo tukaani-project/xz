@@ -35,15 +35,22 @@ jobs:
       # -b specifies the build system to use.
       # -p specifies the phase (build or test) to help narrow down an error
       #    if one occurs.
+      #
+      # Start with the 32-bit build because the autoconf cache must be reset
+      # after the build because the 32-bit build sets the CFLAGS env variable.
+      # By starting with the 32-bit build, we only have to clear the
+      # cache once.
+      - name: Build 32-bit
+        run: ./build-aux/ci_build.sh -b autotools -p build -f "-m32"
+      - name: Test 32-bit
+        run: |
+            ./build-aux/ci_build.sh -b autotools -p test -f "-m32"
+            cd ../xz_build && make distclean
+
       - name: Build with full features
         run: ./build-aux/ci_build.sh -b autotools -p build
       - name: Test with full features
         run: ./build-aux/ci_build.sh -b autotools -p test
-
-      - name: Build 32-bit
-        run: ./build-aux/ci_build.sh -b autotools -p build -f "-m32"
-      - name: Test 32-bit
-        run: ./build-aux/ci_build.sh -b autotools -p test -f "-m32"
 
       - name: Build without encoders
         run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p build

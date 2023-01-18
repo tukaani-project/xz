@@ -158,7 +158,7 @@ if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then
 		fi
 
 		# Run configure script
-		"$SRC_DIR"/configure --enable-werror --enable-checks=$CHECK_TYPE $EXTRA_OPTIONS
+		"$SRC_DIR"/configure --enable-werror --enable-checks=$CHECK_TYPE $EXTRA_OPTIONS --config-cache
 
 		# Build the project
 		make

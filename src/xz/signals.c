@@ -207,3 +207,52 @@ signals_init(void)
 }
 
 #endif
+
+
+#ifdef TERMINAL_STOP_SUPPORTED
+volatile sig_atomic_t terminal_stop_requested = false;
+
+
+static void
+terminal_stop_signal_handler(int sig lzma_attribute((__unused__)))
+{
+	terminal_stop_requested = true;
+	// Unblock SIGTSTP in case it was blocked.
+	// Since it is being removed from the hooked_signals, it would
+	// not be unblocked in the next call to signals_unblock()
+	sigset_t signal_stop_set;
+	sigemptyset(&signal_stop_set);
+	sigaddset(&signal_stop_set, SIGTSTP);
+	mythread_sigmask(SIG_UNBLOCK, &signal_stop_set, NULL);
+
+	sigdelset(&hooked_signals, SIGTSTP);
+	return;
+}
+
+
+extern void
+reset_terminal_stop_handler(void)
+{
+	// Use kill() because raise() may not be portable.
+	if (terminal_stop_requested) {
+		if (kill(getpid(), SIGTSTP) != 0)
+			message_warning(_("Cannot pause process: %s"),
+					strerror(errno));
+		// Reset the flag after the process continues
+		terminal_stop_requested = false;
+	}
+
+	struct sigaction my_sa;
+	// Use the SA_RESETHAND flag so the SIGTSTP signal is only caught
+	// one time. This way, we can use the default signal handler to
+	// pause the process after the timing code is paused.
+	my_sa.sa_flags = (int)SA_RESETHAND;
+	my_sa.sa_handler = &terminal_stop_signal_handler;
+	sigemptyset(&my_sa.sa_mask);
+
+	sigaddset(&hooked_signals, SIGTSTP);
+
+	if (sigaction(SIGTSTP, &my_sa, NULL))
+		message_signal_handler();
+}
+#endif

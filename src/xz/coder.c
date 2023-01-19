@@ -842,6 +842,16 @@ coder_normal(file_pair *pair)
 	strm.avail_out = IO_BUFFER_SIZE;
 
 	while (!user_abort) {
+#ifdef TERMINAL_STOP_SUPPORTED
+		if (terminal_stop_requested) {
+			// If a terminal stop signal is caught, then the
+			// timer needs to be paused until the process
+			// continues again.
+			mytime_pause();
+			reset_terminal_stop_handler();
+			mytime_start();
+		}
+#endif
 		// Fill the input buffer if it is empty and we aren't
 		// flushing or finishing.
 		if (strm.avail_in == 0 && action == LZMA_RUN) {
@@ -1003,7 +1013,13 @@ coder_passthru(file_pair *pair)
 	while (strm.avail_in != 0) {
 		if (user_abort)
 			return false;
-
+#ifdef TERMINAL_STOP_SUPPORTED
+		if (terminal_stop_requested) {
+			mytime_pause();
+			reset_terminal_stop_handler();
+			mytime_start();
+		}
+#endif
 		if (io_write(pair, &in_buf, strm.avail_in))
 			return false;
 
@@ -1061,6 +1077,15 @@ coder_run(const char *filename)
 				// for progress indicator.
 				mytime_start();
 
+#ifdef TERMINAL_STOP_SUPPORTED
+				// Start the terminal stop handler
+				// (signal SIGTSTP) before the coder can
+				// report message progress. This prevents
+				// incorrect runtime and compression speed
+				// stats from displaying if the process is
+				// paused with SIGTSTP.
+				reset_terminal_stop_handler();
+#endif
 
 				// Initialize the progress indicator.
 				//

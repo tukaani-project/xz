@@ -41,3 +41,16 @@ extern void signals_unblock(void);
 /// re-raise that signal to actually terminate the process.
 extern void signals_exit(void);
 #endif
+
+#if !(defined(_WIN32) && !defined(__CYGWIN__)) && defined(SIGTSTP)
+#	define TERMINAL_STOP_SUPPORTED
+
+/// Flag to indicate if the SIGTSTP signal was received. Because of signal
+/// safety concerns, this flag is set in the signal handler and the process
+/// is stopped later once the timing code is paused.
+extern volatile sig_atomic_t terminal_stop_requested;
+
+/// Setup the SIGTSTP signal handler and pause the process if
+/// the terminal_stop_requested flag is set.
+extern void reset_terminal_stop_handler(void);
+#endif

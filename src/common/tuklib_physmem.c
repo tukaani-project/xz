@@ -87,8 +87,17 @@ tuklib_physmem(void)
 		HMODULE kernel32 = GetModuleHandle(TEXT("kernel32.dll"));
 		if (kernel32 != NULL) {
 			typedef BOOL (WINAPI *gmse_type)(LPMEMORYSTATUSEX);
+#if TUKLIB_GNUC_REQ(8,1) || (defined(__clang__) \
+		&& __has_warning("-Wcast-function-type"))
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 			gmse_type gmse = (gmse_type)GetProcAddress(
 					kernel32, "GlobalMemoryStatusEx");
+#if TUKLIB_GNUC_REQ(8,1) || (defined(__clang__) \
+		&& __has_warning("-Wcast-function-type"))
+#	pragma GCC diagnostic pop
+#endif
 			if (gmse != NULL) {
 				MEMORYSTATUSEX meminfo;
 				meminfo.dwLength = sizeof(meminfo);

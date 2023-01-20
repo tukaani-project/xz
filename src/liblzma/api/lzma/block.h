@@ -224,20 +224,50 @@ typedef struct {
 	 * with the currently supported options, so it is safe to leave these
 	 * uninitialized.
 	 */
+
+	/** \private     Reserved field. */
 	void *reserved_ptr1;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr2;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr3;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int1;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int2;
+
+	/** \private     Reserved field. */
 	lzma_vli reserved_int3;
+
+	/** \private     Reserved field. */
 	lzma_vli reserved_int4;
+
+	/** \private     Reserved field. */
 	lzma_vli reserved_int5;
+
+	/** \private     Reserved field. */
 	lzma_vli reserved_int6;
+
+	/** \private     Reserved field. */
 	lzma_vli reserved_int7;
+
+	/** \private     Reserved field. */
 	lzma_vli reserved_int8;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum1;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum2;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum3;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum4;
 
 	/**
@@ -261,12 +291,25 @@ typedef struct {
 	 */
 	lzma_bool ignore_check;
 
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool2;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool3;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool4;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool5;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool6;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool7;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool8;
 
 } lzma_block;

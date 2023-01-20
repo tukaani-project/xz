@@ -547,9 +547,17 @@ typedef struct {
 	 * you should not touch these, because the names of these variables
 	 * may change.
 	 */
+
+	/** \private     Reserved field. */
 	void *reserved_ptr1;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr2;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr3;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr4;
 
 	/**
@@ -564,10 +572,19 @@ typedef struct {
 	 */
 	uint64_t seek_pos;
 
+	/** \private     Reserved field. */
 	uint64_t reserved_int2;
+
+	/** \private     Reserved field. */
 	size_t reserved_int3;
+
+	/** \private     Reserved field. */
 	size_t reserved_int4;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum1;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum2;
 
 } lzma_stream;

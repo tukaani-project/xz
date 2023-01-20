@@ -88,19 +88,47 @@ typedef struct {
 	 * is just two bytes plus Backward Size of four bytes. But it's
 	 * nice to have the proper types when they are needed.)
 	 */
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum1;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum2;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum3;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum4;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool1;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool2;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool3;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool4;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool5;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool6;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool7;
+
+	/** \private     Reserved field. */
 	lzma_bool reserved_bool8;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int1;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int2;
 
 } lzma_stream_flags;

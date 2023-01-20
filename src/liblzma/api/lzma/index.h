@@ -51,8 +51,13 @@ typedef struct {
 		 */
 		const lzma_stream_flags *flags;
 
+		/** \private     Reserved field. */
 		const void *reserved_ptr1;
+
+		/** \private     Reserved field. */
 		const void *reserved_ptr2;
+
+		/** \private     Reserved field. */
 		const void *reserved_ptr3;
 
 		/**
@@ -108,9 +113,17 @@ typedef struct {
 		 */
 		lzma_vli padding;
 
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli1;
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli2;
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli3;
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli4;
 	} stream;
 
@@ -197,14 +210,28 @@ typedef struct {
 		 */
 		lzma_vli total_size;
 
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli1;
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli2;
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli3;
+
+		/** \private     Reserved field. */
 		lzma_vli reserved_vli4;
 
+		/** \private     Reserved field. */
 		const void *reserved_ptr1;
+
+		/** \private     Reserved field. */
 		const void *reserved_ptr2;
+
+		/** \private     Reserved field. */
 		const void *reserved_ptr3;
+
+		/** \private     Reserved field. */
 		const void *reserved_ptr4;
 	} block;
 

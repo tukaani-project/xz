@@ -481,16 +481,38 @@ typedef struct {
 	 * with the currently supported options, so it is safe to leave these
 	 * uninitialized.
 	 */
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int4;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int5;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int6;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int7;
+
+	/** \private     Reserved field. */
 	uint32_t reserved_int8;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum1;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum2;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum3;
+
+	/** \private     Reserved field. */
 	lzma_reserved_enum reserved_enum4;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr1;
+
+	/** \private     Reserved field. */
 	void *reserved_ptr2;
 
 } lzma_options_lzma;

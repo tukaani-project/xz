@@ -139,7 +139,7 @@ typedef enum {
 		 */
 
 	LZMA_MEMLIMIT_ERROR     = 6,
-		/**
+		/**<
 		 * \brief       Memory usage limit was reached
 		 *
 		 * Decoder would need more memory than allowed by the

@@ -316,7 +316,7 @@ parse_lzma12_preset(const char **const str, const char *str_end,
 	assert(*str < str_end);
 	*preset = (uint32_t)(**str - '0');
 
-	// NOTE: Remember to update LZMA_PRESET_STR if this is modified!
+	// NOTE: Remember to update LZMA12_PRESET_STR if this is modified!
 	while (++*str < str_end) {
 		switch (**str) {
 		case 'e':
@@ -667,7 +667,7 @@ parse_options(const char **const str, const char *str_end,
 					&& *p >= '0' && *p <= '9');
 
 			if (p < name_eq_value_end) {
-				// Remember this position so that it an be
+				// Remember this position so that it can be
 				// used for error messages that are
 				// specifically about the suffix. (Out of
 				// range values are about the whole value

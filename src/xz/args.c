@@ -726,9 +726,9 @@ args_parse(args_info *args, int argc, char **argv)
 
 	// If raw format is used and a custom suffix is not provided,
 	// then only stdout mode can be used when compressing or decompressing.
-	if (opt_format == FORMAT_RAW && suffix_is_set() && !opt_stdout &&
-			(opt_mode == MODE_COMPRESS ||
-			opt_mode == MODE_DECOMPRESS))
+	if (opt_format == FORMAT_RAW && !suffix_is_set() && !opt_stdout
+			&& (opt_mode == MODE_COMPRESS
+				|| opt_mode == MODE_DECOMPRESS))
 		message_fatal(_("With --format=raw, --suffix=.SUF is "
 				"required unless writing to stdout"));
 

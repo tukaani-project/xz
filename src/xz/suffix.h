@@ -27,6 +27,7 @@ extern char *suffix_get_dest_name(const char *src_name);
 /// and forgotten.
 extern void suffix_set(const char *suffix);
 
+
 /// \brief      Check if a custom suffix has been set
 ///
 /// Returns true if the internal tracking of the suffix string has been set

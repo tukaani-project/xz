@@ -397,5 +397,5 @@ suffix_set(const char *suffix)
 extern bool
 suffix_is_set(void)
 {
-	return custom_suffix == NULL;
+	return custom_suffix != NULL;
 }

@@ -73,6 +73,17 @@
 #endif
 
 
+// With GCC >= 8.1 with -Wextra and Clang >= 13 with -Wcast-function-type
+// will warn about the Windows-specific code.
+#if TUKLIB_GNUC_REQ(8,1)
+#	define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
+#elif defined(__has_warning)
+#	if __has_warning("-Wcast-function-type")
+#		define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
+#	endif
+#endif
+
+
 extern uint64_t
 tuklib_physmem(void)
 {
@@ -87,15 +98,13 @@ tuklib_physmem(void)
 		HMODULE kernel32 = GetModuleHandle(TEXT("kernel32.dll"));
 		if (kernel32 != NULL) {
 			typedef BOOL (WINAPI *gmse_type)(LPMEMORYSTATUSEX);
-#if TUKLIB_GNUC_REQ(8,1) || (defined(__clang__) \
-		&& __has_warning("-Wcast-function-type"))
+#ifdef CAN_DISABLE_WCAST_FUNCTION_TYPE
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wcast-function-type"
 #endif
 			gmse_type gmse = (gmse_type)GetProcAddress(
 					kernel32, "GlobalMemoryStatusEx");
-#if TUKLIB_GNUC_REQ(8,1) || (defined(__clang__) \
-		&& __has_warning("-Wcast-function-type"))
+#ifdef CAN_DISABLE_WCAST_FUNCTION_TYPE
 #	pragma GCC diagnostic pop
 #endif
 			if (gmse != NULL) {

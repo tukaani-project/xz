@@ -68,11 +68,4 @@
 #	define TUKLIB_DOSLIKE 1
 #endif
 
-// Clang has a macro to check if the compiler supports a certain warning.
-// If this macro is used with a compiler that does not support this macro
-// (like gcc), then it will cause a preprocessor error.
-#ifndef __has_warning
-#	define __has_warning(warn) 0
-#endif
-
 #endif

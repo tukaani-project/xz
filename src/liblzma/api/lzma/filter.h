@@ -589,7 +589,7 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_decode(
  *                          be LZMA_FILTERS_MAX + 1 (that is, five) elements
  *                          in the array. The old contents are ignored so it
  *                          doesn't need to be initialized. This array is
- *                          modified only if this function returns LZMA_OK.
+ *                          modified only if this function returns NULL.
  *                          Once the allocated filter options are no longer
  *                          needed, lzma_filters_free() can be used to free the
  *                          options (it doesn't free the filters array itself).

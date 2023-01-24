@@ -913,7 +913,8 @@ str_to_filters(const char **const str, lzma_filter *filters, uint32_t flags,
 	//
 	// If LZMA_STR_ALL_FILTERS isn't used we allow only filters that
 	// can be used in .xz.
-	const bool only_xz = (flags & LZMA_STR_ALL_FILTERS) == 0;
+	const bool only_xz = (flags & (LZMA_STR_ALL_FILTERS
+			| LZMA_STR_NO_VALIDATION)) == 0;
 
 	// Use a temporary array so that we don't modify the caller-supplied
 	// one until we know that no errors occurred.

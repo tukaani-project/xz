@@ -294,6 +294,15 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  * This function is intended for those who just want to use the basic features
  * if liblzma (that is, most developers out there).
  *
+ * If initialization fails (return value is not LZMA_OK), all the memory
+ * allocated for *strm by liblzma is always freed. Thus, there is no need
+ * to call lzma_end() after failed initialization.
+ *
+ * If initialization succeeds, use lzma_code() to do the actual encoding.
+ * Valid values for `action' (the second argument of lzma_code()) are
+ * LZMA_RUN, LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, and LZMA_FINISH. In future,
+ * there may be compression levels or flags that don't support LZMA_SYNC_FLUSH.
+ *
  * \param       strm    Pointer to lzma_stream that is at least initialized
  *                      with LZMA_STREAM_INIT.
  * \param       preset  Compression preset to use. A preset consist of level
@@ -308,7 +317,8 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  *                      unsure. LZMA_CHECK_CRC32 is good too as long as the
  *                      uncompressed file is not many gigabytes.
  *
- * \return      - LZMA_OK: Initialization succeeded. Use lzma_code() to
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization succeeded. Use lzma_code() to
  *                encode your data.
  *              - LZMA_MEM_ERROR: Memory allocation failed.
  *              - LZMA_OPTIONS_ERROR: The given compression preset is not
@@ -317,15 +327,6 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  *                supported by this liblzma build.
  *              - LZMA_PROG_ERROR: One or more of the parameters have values
  *                that will never be valid. For example, strm == NULL.
- *
- * If initialization fails (return value is not LZMA_OK), all the memory
- * allocated for *strm by liblzma is always freed. Thus, there is no need
- * to call lzma_end() after failed initialization.
- *
- * If initialization succeeds, use lzma_code() to do the actual encoding.
- * Valid values for `action' (the second argument of lzma_code()) are
- * LZMA_RUN, LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, and LZMA_FINISH. In future,
- * there may be compression levels or flags that don't support LZMA_SYNC_FLUSH.
  */
 extern LZMA_API(lzma_ret) lzma_easy_encoder(
 		lzma_stream *strm, uint32_t preset, lzma_check check)
@@ -346,13 +347,14 @@ extern LZMA_API(lzma_ret) lzma_easy_encoder(
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
  * \param       in_size     Size of the input buffer
- * \param       out         Beginning of the output buffer
- * \param       out_pos     The next byte will be written to out[*out_pos].
+ * \param[out]  out         Beginning of the output buffer
+ * \param[out]  out_pos     The next byte will be written to out[*out_pos].
  *                          *out_pos is updated only if encoding succeeds.
  * \param       out_size    Size of the out buffer; the first byte into
  *                          which no data is written to is out[out_size].
  *
- * \return      - LZMA_OK: Encoding was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Encoding was successful.
  *              - LZMA_BUF_ERROR: Not enough output buffer space.
  *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
@@ -370,14 +372,16 @@ extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
 /**
  * \brief       Initialize .xz Stream encoder using a custom filter chain
  *
- * \param       strm    Pointer to properly prepared lzma_stream
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
  * \param       filters Array of filters. This must be terminated with
  *                      filters[n].id = LZMA_VLI_UNKNOWN. See filter.h for
  *                      more information.
  * \param       check   Type of the integrity check to calculate from
  *                      uncompressed data.
  *
- * \return      - LZMA_OK: Initialization was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR
  *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
@@ -417,10 +421,12 @@ extern LZMA_API(uint64_t) lzma_stream_encoder_mt_memusage(
  * LZMA_FULL_BARRIER, and LZMA_FINISH. Support for LZMA_SYNC_FLUSH might be
  * added in the future.
  *
- * \param       strm    Pointer to properly prepared lzma_stream
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
  * \param       options Pointer to multithreaded compression options
  *
- * \return      - LZMA_OK
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK
  *              - LZMA_MEM_ERROR
  *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
@@ -446,7 +452,12 @@ extern LZMA_API(lzma_ret) lzma_stream_encoder_mt(
  * No kind of flushing is supported, because the file format doesn't make
  * it possible.
  *
- * \return      - LZMA_OK
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
+ * \param       options Pointer to encoder options
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK
  *              - LZMA_MEM_ERROR
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_PROG_ERROR
@@ -477,6 +488,11 @@ extern LZMA_API(lzma_ret) lzma_alone_encoder(
  *              will) have larger maximum expansion when encoding
  *              uncompressible data. Currently there is no function to
  *              calculate the maximum expansion of multi-call encoding.
+ *
+ * \param       uncompressed_size   Size in bytes of the uncompressed
+ *                                  input data
+ *
+ * \return      Maximum number of bytes needed to store the compressed data.
  */
 extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size)
 		lzma_nothrow;
@@ -494,13 +510,14 @@ extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size)
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
  * \param       in_size     Size of the input buffer
- * \param       out         Beginning of the output buffer
- * \param       out_pos     The next byte will be written to out[*out_pos].
+ * \param[out]  out         Beginning of the output buffer
+ * \param[out]  out_pos     The next byte will be written to out[*out_pos].
  *                          *out_pos is updated only if encoding succeeds.
  * \param       out_size    Size of the out buffer; the first byte into
  *                          which no data is written to is out[out_size].
  *
- * \return      - LZMA_OK: Encoding was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Encoding was successful.
  *              - LZMA_BUF_ERROR: Not enough output buffer space.
  *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
@@ -556,7 +573,12 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(
  * uses too where many small streams are needed. XZ Embedded includes a
  * decoder for this format.
  *
- * \return      - LZMA_STREAM_END: All good. Check the amounts of input used
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
+ * \param       options Pointer to encoder options
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_STREAM_END: All good. Check the amounts of input used
  *                and output produced. Store the amount of input used
  *                (uncompressed size) as it needs to be known to decompress
  *                the data.
@@ -673,7 +695,8 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
 /**
  * \brief       Initialize .xz Stream decoder
  *
- * \param       strm        Pointer to properly prepared lzma_stream
+ * \param       strm        Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
  * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
  *                          to effectively disable the limiter. liblzma
  *                          5.2.3 and earlier don't allow 0 here and return
@@ -684,7 +707,8 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
  *                          LZMA_TELL_ANY_CHECK, LZMA_IGNORE_CHECK,
  *                          LZMA_CONCATENATED, LZMA_FAIL_FAST
  *
- * \return      - LZMA_OK: Initialization was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
  *              - LZMA_OPTIONS_ERROR: Unsupported flags
  *              - LZMA_PROG_ERROR
@@ -696,9 +720,6 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder(
 
 /**
  * \brief       Initialize multithreaded .xz Stream decoder
- *
- * \param       strm        Pointer to properly prepared lzma_stream
- * \param       options     Pointer to multithreaded compression options
  *
  * The decoder can decode multiple Blocks in parallel. This requires that each
  * Block Header contains the Compressed Size and Uncompressed size fields
@@ -713,7 +734,12 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder(
  * This function behaves like lzma_stream_decoder() when options->threads == 1
  * and options->memlimit_threading <= 1.
  *
- * \return      - LZMA_OK: Initialization was successful.
+ * \param       strm        Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
+ * \param       options     Pointer to multithreaded compression options
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
  *              - LZMA_MEMLIMIT_ERROR: Memory usage limit was reached.
  *              - LZMA_OPTIONS_ERROR: Unsupported flags.
@@ -740,7 +766,8 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder_mt(
  * as it doesn't support any decoder flags. It will return LZMA_STREAM_END
  * after one .lzma stream.)
  *
- * \param       strm        Pointer to properly prepared lzma_stream
+  * \param       strm       Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
  * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
  *                          to effectively disable the limiter. liblzma
  *                          5.2.3 and earlier don't allow 0 here and return
@@ -751,7 +778,8 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder_mt(
  *                          LZMA_TELL_ANY_CHECK, LZMA_IGNORE_CHECK,
  *                          LZMA_CONCATENATED, LZMA_FAIL_FAST
  *
- * \return      - LZMA_OK: Initialization was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
  *              - LZMA_OPTIONS_ERROR: Unsupported flags
  *              - LZMA_PROG_ERROR
@@ -764,18 +792,20 @@ extern LZMA_API(lzma_ret) lzma_auto_decoder(
 /**
  * \brief       Initialize .lzma decoder (legacy file format)
  *
- * \param       strm        Pointer to properly prepared lzma_stream
+ * Valid `action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
+ * There is no need to use LZMA_FINISH, but it's allowed because it may
+ * simplify certain types of applications.
+ *
+ * \param       strm        Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
  * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
  *                          to effectively disable the limiter. liblzma
  *                          5.2.3 and earlier don't allow 0 here and return
  *                          LZMA_PROG_ERROR; later versions treat 0 as if 1
  *                          had been specified.
  *
- * Valid `action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
- * There is no need to use LZMA_FINISH, but it's allowed because it may
- * simplify certain types of applications.
- *
- * \return      - LZMA_OK
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK
  *              - LZMA_MEM_ERROR
  *              - LZMA_PROG_ERROR
  */
@@ -786,18 +816,6 @@ extern LZMA_API(lzma_ret) lzma_alone_decoder(
 
 /**
  * \brief       Initialize .lz (lzip) decoder (a foreign file format)
- *
- * \param       strm        Pointer to properly prepared lzma_stream
- * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
- *                          to effectively disable the limiter.
- * \param       flags       Bitwise-or of flags, or zero for no flags.
- *                          All decoder flags listed above are supported
- *                          although only LZMA_CONCATENATED and (in very rare
- *                          cases) LZMA_IGNORE_CHECK are actually useful.
- *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
- *                          and LZMA_FAIL_FAST do nothing. LZMA_TELL_ANY_CHECK
- *                          is supported for consistency only as CRC32 is
- *                          always used in the .lz format.
  *
  * This decoder supports the .lz format version 0 and the unextended .lz
  * format version 1:
@@ -832,7 +850,21 @@ extern LZMA_API(lzma_ret) lzma_alone_decoder(
  * one should ensure that none of the first four bytes of trailing data are
  * equal to the magic bytes because lzip >= 1.20 requires it by default.
  *
- * \return      - LZMA_OK: Initialization was successful.
+ * \param       strm        Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
+ * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
+ *                          to effectively disable the limiter.
+ * \param       flags       Bitwise-or of flags, or zero for no flags.
+ *                          All decoder flags listed above are supported
+ *                          although only LZMA_CONCATENATED and (in very rare
+ *                          cases) LZMA_IGNORE_CHECK are actually useful.
+ *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
+ *                          and LZMA_FAIL_FAST do nothing. LZMA_TELL_ANY_CHECK
+ *                          is supported for consistency only as CRC32 is
+ *                          always used in the .lz format.
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization was successful.
  *              - LZMA_MEM_ERROR: Cannot allocate memory.
  *              - LZMA_OPTIONS_ERROR: Unsupported flags
  *              - LZMA_PROG_ERROR
@@ -861,13 +893,14 @@ extern LZMA_API(lzma_ret) lzma_lzip_decoder(
  *                          *in_pos is updated only if decoding succeeds.
  * \param       in_size     Size of the input buffer; the first byte that
  *                          won't be read is in[in_size].
- * \param       out         Beginning of the output buffer
- * \param       out_pos     The next byte will be written to out[*out_pos].
+ * \param[out]  out         Beginning of the output buffer
+ * \param[out]  out_pos     The next byte will be written to out[*out_pos].
  *                          *out_pos is updated only if decoding succeeds.
  * \param       out_size    Size of the out buffer; the first byte into
  *                          which no data is written to is out[out_size].
  *
- * \return      - LZMA_OK: Decoding was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Decoding was successful.
  *              - LZMA_FORMAT_ERROR
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_DATA_ERROR
@@ -897,7 +930,8 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
  * The lzma_code() usage with this decoder is completely normal. The
  * special behavior of lzma_code() applies to lzma_microlzma_encoder() only.
  *
- * \param       strm        Pointer to properly prepared lzma_stream
+ * \param       strm        Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
  * \param       comp_size   Compressed size of the MicroLZMA stream.
  *                          The caller must somehow know this exactly.
  * \param       uncomp_size Uncompressed size of the MicroLZMA stream.
@@ -922,6 +956,12 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
  *                          the implementation in XZ Embedded it doesn't
  *                          affect the memory usage if one specifies bigger
  *                          dictionary than actually required.)
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_microlzma_decoder(
 		lzma_stream *strm, uint64_t comp_size,

@@ -925,7 +925,7 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
 /**
  * \brief       MicroLZMA decoder
  *
- * See lzma_microlzma_decoder() for more information.
+ * See lzma_microlzma_encoder() for more information.
  *
  * The lzma_code() usage with this decoder is completely normal. The
  * special behavior of lzma_code() applies to lzma_microlzma_encoder() only.

@@ -75,12 +75,12 @@
 
 // With GCC >= 8.1 with -Wextra and Clang >= 13 with -Wcast-function-type
 // will warn about the Windows-specific code.
-#if TUKLIB_GNUC_REQ(8,1)
-#	define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
-#elif defined(__has_warning)
+#if defined(__has_warning)
 #	if __has_warning("-Wcast-function-type")
 #		define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
 #	endif
+#elif TUKLIB_GNUC_REQ(8,1)
+#	define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
 #endif
 
 

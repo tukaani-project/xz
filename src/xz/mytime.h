@@ -21,6 +21,12 @@
 extern uint64_t opt_flush_timeout;
 
 
+#ifdef USE_SIGTSTP_HANDLER
+/// \brief      Signal handler for SIGTSTP
+extern void mytime_sigtstp_handler(int sig);
+#endif
+
+
 /// \brief      Store the time when (de)compression was started
 ///
 /// The start time is also stored as the time of the first flush.

@@ -49,6 +49,18 @@
 #	define ENABLE_SANDBOX 1
 #endif
 
+// Handling SIGTSTP keeps time-keeping for progress indicator correct
+// if xz is stopped. It requires use of clock_gettime() as that is
+// async-signal safe in POSIX. Require also SIGALRM support since
+// on systems where SIGALRM isn't available, progress indicator code
+// polls the time and the SIGTSTP handling adds slight overhead to
+// that code. Most (all?) systems that have SIGTSTP also have SIGALRM
+// so this requirement won't exclude many systems.
+#if defined(HAVE_CLOCK_GETTIME) && defined(HAVE_CLOCK_MONOTONIC) \
+		&& defined(SIGTSTP) && defined(SIGALRM)
+#	define USE_SIGTSTP_HANDLER 1
+#endif
+
 #include "main.h"
 #include "mytime.h"
 #include "coder.h"

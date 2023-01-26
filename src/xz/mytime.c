@@ -20,7 +20,12 @@
 
 uint64_t opt_flush_timeout = 0;
 
+#ifdef USE_SIGTSTP_HANDLER
+static volatile uint64_t start_time;
+#else
 static uint64_t start_time;
+#endif
+
 static uint64_t next_flush;
 
 
@@ -48,10 +53,49 @@ mytime_now(void)
 }
 
 
+#ifdef USE_SIGTSTP_HANDLER
+extern void
+mytime_sigtstp_handler(int sig lzma_attribute((__unused__)))
+{
+	// Measure how long the process stays in the stopped state and add
+	// that amount to start_time. This way the the progress indicator
+	// won't count the stopped time as elapsed time and the estimated
+	// remaining time won't be confused by the time spent in the
+	// stopped state.
+	//
+	// FIXME? Is raising SIGSTOP the correct thing to do? POSIX.1-2017
+	// says that orphan processes shouldn't stop on SIGTSTP. So perhaps
+	// the most correct thing to do could be to revert to the default
+	// handler for SIGTSTP, unblock SIGTSTP, and then raise(SIGTSTP).
+	// It's quite a bit more complicated than just raising SIGSTOP though.
+	//
+	// The difference between raising SIGTSTP vs. SIGSTOP can be seen on
+	// the shell command line too by running "echo $?" after stopping
+	// a process but perhaps that doesn't matter.
+	const uint64_t t = mytime_now();
+	raise(SIGSTOP);
+	start_time += mytime_now() - t;
+	return;
+}
+#endif
+
+
 extern void
 mytime_set_start_time(void)
 {
+#ifdef USE_SIGTSTP_HANDLER
+	// Block the signals when accessing start_time so that we cannot
+	// end up with a garbage value. start_time is volatile but access
+	// to it isn't atomic at least on 32-bit systems.
+	signals_block();
+#endif
+
 	start_time = mytime_now();
+
+#ifdef USE_SIGTSTP_HANDLER
+	signals_unblock();
+#endif
+
 	return;
 }
 
@@ -59,7 +103,17 @@ mytime_set_start_time(void)
 extern uint64_t
 mytime_get_elapsed(void)
 {
-	return mytime_now() - start_time;
+#ifdef USE_SIGTSTP_HANDLER
+	signals_block();
+#endif
+
+	const uint64_t t = mytime_now() - start_time;
+
+#ifdef USE_SIGTSTP_HANDLER
+	signals_unblock();
+#endif
+
+	return t;
 }
 
 

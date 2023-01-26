@@ -533,10 +533,10 @@ AM_CONDITIONAL([COND_DOC], [test x$enable_doc != xno])
 # internals of xz and liblzma.
 
 AC_ARG_ENABLE([doxygen], [AS_HELP_STRING([--enable-doxygen=SCOPE],
-		[Doxygen SCOPE can be `all`, or `api`.
-		The default is `api`, which will generate doxygen html
-		for liblzma API. The `all` option will generate doxygen
-		html for every .c and .h file.])],
+			[Doxygen SCOPE can be `all', or `api'.
+			The default is `api', which will generate doxygen html
+			for liblzma API. The `all' option will generate doxygen
+			html for every .c and .h file.])],
 		[], [enable_doxygen=api])
 case $enable_doxygen in
 	api)
@@ -550,7 +550,7 @@ case $enable_doxygen in
 		doxygen_input_path=src
 		;;
 	*)
-		AC_MSG_ERROR([--enable-doxygen only accepts `all` or `api])
+		AC_MSG_ERROR([--enable-doxygen only accepts `all' or `api'])
 		;;
 esac
 

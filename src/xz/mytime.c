@@ -12,7 +12,7 @@
 
 #include "private.h"
 
-#if defined(HAVE_CLOCK_GETTIME) && defined(HAVE_CLOCK_MONOTONIC)
+#ifdef HAVE_CLOCK_GETTIME
 #	include <time.h>
 #else
 #	include <sys/time.h>
@@ -35,14 +35,19 @@ static uint64_t next_flush;
 static uint64_t
 mytime_now(void)
 {
-#if defined(HAVE_CLOCK_GETTIME) && defined(HAVE_CLOCK_MONOTONIC)
+#ifdef HAVE_CLOCK_GETTIME
+	struct timespec tv;
+
+#	ifdef HAVE_CLOCK_MONOTONIC
 	// If CLOCK_MONOTONIC was available at compile time but for some
 	// reason isn't at runtime, fallback to CLOCK_REALTIME which
 	// according to POSIX is mandatory for all implementations.
 	static clockid_t clk_id = CLOCK_MONOTONIC;
-	struct timespec tv;
 	while (clock_gettime(clk_id, &tv))
 		clk_id = CLOCK_REALTIME;
+#	else
+	clock_gettime(CLOCK_REALTIME, &tv);
+#	endif
 
 	return (uint64_t)tv.tv_sec * 1000 + (uint64_t)(tv.tv_nsec / 1000000);
 #else

@@ -56,8 +56,7 @@
 // polls the time and the SIGTSTP handling adds slight overhead to
 // that code. Most (all?) systems that have SIGTSTP also have SIGALRM
 // so this requirement won't exclude many systems.
-#if defined(HAVE_CLOCK_GETTIME) && defined(HAVE_CLOCK_MONOTONIC) \
-		&& defined(SIGTSTP) && defined(SIGALRM)
+#if defined(HAVE_CLOCK_GETTIME) && defined(SIGTSTP) && defined(SIGALRM)
 #	define USE_SIGTSTP_HANDLER 1
 #endif
 

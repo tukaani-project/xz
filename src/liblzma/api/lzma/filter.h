@@ -475,8 +475,9 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_decode(
  *
  * By default lzma_str_to_filters() can return an error if the filter chain
  * as a whole isn't usable in the .xz format or in the raw encoder or decoder.
- * With this flag the validation is skipped (this doesn't affect the handling
- * of the individual filter options).
+ * With this flag, this validation is skipped. This flag doesn't affect the
+ * handling of the individual filter options. To allow non-.xz filters also
+ * LZMA_STR_ALL_FILTERS is needed.
  */
 #define LZMA_STR_NO_VALIDATION  UINT32_C(0x02)
 

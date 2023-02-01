@@ -62,7 +62,7 @@ while getopts b:c:d:l:n:s:p:f:h opt; do
 	;;
 	# c options can be a comma separated list of check types to support
 	c)
-	for crc in $(echo $OPTARG | sed "s/,/ /g"); do 
+	for crc in $(echo "$OPTARG" | sed "s/,/ /g"); do
 		case "$crc" in
 		crc32) ;;
 		crc64) ;;
@@ -75,7 +75,7 @@ while getopts b:c:d:l:n:s:p:f:h opt; do
 	# d options can be a comma separated list of things to disable at
 	# configure time
 	d)
-	for disable_arg in $(echo $OPTARG | sed "s/,/ /g"); do 
+	for disable_arg in $(echo "$OPTARG" | sed "s/,/ /g"); do
 		case "$disable_arg" in
 		encoders) ENCODERS="n" ;;
 		decoders) DECODERS="n" ;;
@@ -162,7 +162,7 @@ if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then
 		fi
 
 		# Run configure script
-		"$SRC_DIR"/configure --enable-werror --enable-checks=$CHECK_TYPE $EXTRA_OPTIONS --config-cache
+		"$SRC_DIR"/configure --enable-werror --enable-checks="$CHECK_TYPE" $EXTRA_OPTIONS --config-cache
 
 		# Build the project
 		make

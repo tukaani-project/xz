@@ -20,10 +20,11 @@ USAGE="Usage: $0
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
   -d [encoders|decoders|bcj|delta|threads|shared|nls]
+  -f [CFLAGS]
   -l [destdir]
-  -s [srcdir]
+  -n [ARTIFACTS_DIR_NAME]
   -p [all|build|test]
-  -f [CFLAGS]"
+  -s [srcdir]"
 
 # Absolute path of script directory
 ABS_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
@@ -41,9 +42,10 @@ NATIVE_LANG_SUPPORT="y"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
+ARTIFACTS_DIR_NAME="output"
 
 # Parse arguments
-while getopts b:c:d:l:s:p:f:h opt; do
+while getopts b:c:d:l:n:s:p:f:h opt; do
 	# b option can have either value "autotools" OR "cmake"
 	case ${opt} in
 	h)
@@ -87,6 +89,8 @@ while getopts b:c:d:l:s:p:f:h opt; do
 	done	
 	;;
 	l) DEST_DIR="$OPTARG"
+	;;
+	n) ARTIFACTS_DIR_NAME="$OPTARG"
 	;;
 	s) SRC_DIR="$OPTARG"
 	;;
@@ -177,11 +181,26 @@ if [ "$PHASE" = "all" ] || [ "$PHASE" = "test" ]; then
 	case $BUILD_SYSTEM in
 		autotools)
 			cd "$DEST_DIR"
-			make check
+			# If the tests fail, copy the test logs into the artifacts folder
+			if make check
+			then
+				:
+			else
+				mkdir -p "$SRC_DIR/build-aux/artifacts/$ARTIFACTS_DIR_NAME"
+				cp ./tests/*.log "$SRC_DIR/build-aux/artifacts/$ARTIFACTS_DIR_NAME"
+				exit 1
+			fi
 		;;
 		cmake)
 			cd "$DEST_DIR"
-			make "test"
+			if make test
+			then
+				:
+			else
+				mkdir -p "$SRC_DIR/build-aux/artifacts/$ARTIFACTS_DIR_NAME"
+				cp ./Testing/Temporary/*.log "$SRC_DIR/build-aux/artifacts/$ARTIFACTS_DIR_NAME"
+				exit 1
+			fi
 		;;
 	esac
 fi

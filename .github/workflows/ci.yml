@@ -44,48 +44,55 @@ jobs:
         run: ./build-aux/ci_build.sh -b autotools -p build -f "-m32"
       - name: Test 32-bit
         run: |
-            ./build-aux/ci_build.sh -b autotools -p test -f "-m32"
+            ./build-aux/ci_build.sh -b autotools -p test -f "-m32" -n 32_bit
             cd ../xz_build && make distclean
 
       - name: Build with full features
         run: ./build-aux/ci_build.sh -b autotools -p build
       - name: Test with full features
-        run: ./build-aux/ci_build.sh -b autotools -p test
+        run: ./build-aux/ci_build.sh -b autotools -p test -n full_features
 
       - name: Build without encoders
         run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p build
       - name: Test without encoders
-        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test -n no_encoders
 
       - name: Build without decoders
         run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p build
       - name: Test without decoders
-        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test -n no_decoders
 
       - name: Build without threads
         run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test -n no_threads
 
       - name: Build without BCJ filters
         run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p build
       - name: Test without BCJ filters
-        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test -n no_bcj
 
       - name: Build without Delta filters
         run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p build
       - name: Test without Delta filters
-        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test -n no_delta
 
       - name: Build without sha256 check
         run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p build
       - name: Test without sha256 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test -n no_sha256
 
       - name: Build without crc64 check
         run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p build
       - name: Test without crc64 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test -n no_crc64
+
+      # Attempt to upload the test logs as artifacts if any step has failed
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: Linux Autotools Test Logs
+          path: build-aux/artifacts
 
   Linux-CMake:
     runs-on: ubuntu-latest
@@ -97,6 +104,12 @@ jobs:
         run: ./build-aux/ci_build.sh -b cmake -p build
       - name: Test
         run: ./build-aux/ci_build.sh -b cmake -p test
+      # Attempt to upload the test logs as artifacts if any step has failed
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: Linux CMake Test Logs
+          path: build-aux/artifacts
 
   MacOS-Autotools:
     runs-on: macos-latest
@@ -109,42 +122,49 @@ jobs:
       - name: Build with full features
         run: ./build-aux/ci_build.sh -b autotools -p build
       - name: Test with full features
-        run: ./build-aux/ci_build.sh -b autotools -p test
+        run: ./build-aux/ci_build.sh -b autotools -p test -n full_features
 
       - name: Build without encoders
         run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p build
       - name: Test without encoders
-        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test -n no_encoders
 
       - name: Build without decoders
         run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p build
       - name: Test without decoders
-        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test -n no_decoders
 
       - name: Build without threads
         run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test -n no_threads
 
       - name: Build without BCJ filters
         run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p build
       - name: Test without BCJ filters
-        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test -n no_bcj
 
       - name: Build without Delta filters
         run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p build
       - name: Test without Delta filters
-        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test -n no_delta
 
       - name: Build without sha256 check
         run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p build
       - name: Test without sha256 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test -n no_sha256
 
       - name: Build without crc64 check
         run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p build
       - name: Test without crc64 check
-        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test -n no_crc64
+
+      # Attempt to upload the test logs as artifacts if any step has failed
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: MacOS Autotools Test Logs
+          path: build-aux/artifacts
 
   MacOS-CMake:
     runs-on: macos-latest
@@ -156,4 +176,10 @@ jobs:
         run: ./build-aux/ci_build.sh -b cmake -p build
       - name: Test
         run: ./build-aux/ci_build.sh -b cmake -p test
+      # Attempt to upload the test logs as artifacts if any step has failed
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: MacOS CMake Test Logs
+          path: build-aux/artifacts
     

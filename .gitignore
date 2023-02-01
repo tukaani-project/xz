@@ -25,6 +25,7 @@ Makefile.in
 /libtool
 /stamp-h1
 
+build-aux/artifacts
 build-aux/compile
 build-aux/config.guess
 build-aux/config.rpath

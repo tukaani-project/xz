@@ -337,7 +337,7 @@ typedef struct {
  * Note that if the first byte is 0x00, it indicates beginning of Index; use
  * this macro only when the byte is not 0x00.
  *
- * There is no encoding macro, because lzma_block_header_size() and
+ * There is no encoding macro because lzma_block_header_size() and
  * lzma_block_header_encode() should be used.
  */
 #define lzma_block_header_size_decode(b) (((uint32_t)(b) + 1) * 4)
@@ -358,8 +358,7 @@ typedef struct {
  *              filter chain, consider using lzma_memlimit_encoder() which as
  *              a side-effect validates the filter chain.
  *
- * \param       block   Block options: block->version and block->filters
- *                      must have been initialized.
+ * \param       block   Block options
  *
  * \return      Possible lzma_ret values:
  *              - LZMA_OK: Size calculated successfully and stored to
@@ -519,6 +518,10 @@ extern LZMA_API(lzma_vli) lzma_block_total_size(const lzma_block *block)
  * Valid actions for lzma_code() are LZMA_RUN, LZMA_SYNC_FLUSH (only if the
  * filter chain supports it), and LZMA_FINISH.
  *
+ * The Block encoder encodes the Block Data, Block Padding, and Check value.
+ * It does NOT encode the Block Header which can be encoded with
+ * lzma_block_header_encode().
+ *
  * \param       strm    Pointer to lzma_stream that is at least initialized
  *                      with LZMA_STREAM_INIT.
  * \param       block   Block options: block->version, block->check,
@@ -544,9 +547,13 @@ extern LZMA_API(lzma_ret) lzma_block_encoder(
  * Valid actions for lzma_code() are LZMA_RUN and LZMA_FINISH. Using
  * LZMA_FINISH is not required. It is supported only for convenience.
  *
+ * The Block decoder decodes the Block Data, Block Padding, and Check value.
+ * It does NOT decode the Block Header which can be decoded with
+ * lzma_block_header_decode().
+ *
  * \param       strm    Pointer to lzma_stream that is at least initialized
  *                      with LZMA_STREAM_INIT.
- * \param       block   Block options.
+ * \param       block   Block options
  *
  * \return      Possible lzma_ret values:
  *              - LZMA_OK: All good, continue with lzma_code().

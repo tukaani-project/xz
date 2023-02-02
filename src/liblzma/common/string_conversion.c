@@ -1131,6 +1131,13 @@ lzma_str_from_filters(char **output_str, const lzma_filter *filters,
 	const char *opt_delim = (flags & LZMA_STR_GETOPT_LONG) ? "=" : ":";
 
 	for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+		// If we reach LZMA_FILTERS_MAX, then the filters array
+		// is too large since the ID cannot be LZMA_VLI_UNKNOWN here.
+		if (i == LZMA_FILTERS_MAX) {
+			str_free(&dest, allocator);
+			return LZMA_OPTIONS_ERROR;
+		}
+
 		// Don't add a space between filters if the caller
 		// doesn't want them.
 		if (i > 0 && !(flags & LZMA_STR_NO_SPACES))

@@ -43,6 +43,7 @@ check_PROGRAMS = \
 	test_hardware \
 	test_stream_flags \
 	test_filter_flags \
+	test_filter_str \
 	test_block_header \
 	test_index \
 	test_index_hash \
@@ -56,6 +57,7 @@ TESTS = \
 	test_hardware \
 	test_stream_flags \
 	test_filter_flags \
+	test_filter_str \
 	test_block_header \
 	test_index \
 	test_index_hash \

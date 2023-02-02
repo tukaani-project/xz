@@ -324,7 +324,8 @@ typedef struct {
  * Note that if the first byte is 0x00, it indicates beginning of Index; use
  * this macro only when the byte is not 0x00.
  *
- * There is no encoding macro, because Block Header encoder is enough for that.
+ * There is no encoding macro, because lzma_block_header_size() and
+ * lzma_block_header_encode() should be used.
  */
 #define lzma_block_header_size_decode(b) (((uint32_t)(b) + 1) * 4)
 

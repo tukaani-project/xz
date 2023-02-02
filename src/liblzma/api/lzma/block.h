@@ -154,6 +154,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_uncomp_encode()
 	 *  - lzma_block_buffer_decode()
 	 */
 	lzma_vli compressed_size;
@@ -178,6 +179,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_uncomp_encode()
 	 *  - lzma_block_buffer_decode()
 	 */
 	lzma_vli uncompressed_size;
@@ -223,6 +225,7 @@ typedef struct {
 	 *  - lzma_block_encoder()
 	 *  - lzma_block_decoder()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_uncomp_encode()
 	 *  - lzma_block_buffer_decode()
 	 */
 	uint8_t raw_check[LZMA_CHECK_SIZE_MAX];

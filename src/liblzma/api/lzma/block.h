@@ -338,17 +338,21 @@ typedef struct {
  * four and doesn't exceed LZMA_BLOCK_HEADER_SIZE_MAX. Increasing header_size
  * just means that lzma_block_header_encode() will add Header Padding.
  *
- * \return      - LZMA_OK: Size calculated successfully and stored to
- *                block->header_size.
- *              - LZMA_OPTIONS_ERROR: Unsupported version, filters or
- *                filter options.
- *              - LZMA_PROG_ERROR: Invalid values like compressed_size == 0.
- *
  * \note        This doesn't check that all the options are valid i.e. this
  *              may return LZMA_OK even if lzma_block_header_encode() or
  *              lzma_block_encoder() would fail. If you want to validate the
  *              filter chain, consider using lzma_memlimit_encoder() which as
  *              a side-effect validates the filter chain.
+ *
+ * \param       block   Block options: block->version and block->filters
+ *                      must have been initialized.
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Size calculated successfully and stored to
+ *                block->header_size.
+ *              - LZMA_OPTIONS_ERROR: Unsupported version, filters or
+ *                filter options.
+ *              - LZMA_PROG_ERROR: Invalid values like compressed_size == 0.
  */
 extern LZMA_API(lzma_ret) lzma_block_header_size(lzma_block *block)
 		lzma_nothrow lzma_attr_warn_unused_result;
@@ -362,11 +366,12 @@ extern LZMA_API(lzma_ret) lzma_block_header_size(lzma_block *block)
  * lzma_block_header_size() is used, the Block Header will be padded to the
  * specified size.
  *
- * \param       out         Beginning of the output buffer. This must be
- *                          at least block->header_size bytes.
  * \param       block       Block options to be encoded.
+ * \param[out]  out         Beginning of the output buffer. This must be
+ *                          at least block->header_size bytes.
  *
- * \return      - LZMA_OK: Encoding was successful. block->header_size
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Encoding was successful. block->header_size
  *                bytes were written to output buffer.
  *              - LZMA_OPTIONS_ERROR: Invalid or unsupported options.
  *              - LZMA_PROG_ERROR: Invalid arguments, for example
@@ -398,14 +403,15 @@ extern LZMA_API(lzma_ret) lzma_block_header_encode(
  * block->filters must have been allocated, but they don't need to be
  * initialized (possible existing filter options are not freed).
  *
- * \param       block       Destination for Block options.
+ * \param[out]  block       Destination for Block options
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() (and also free()
  *                          if an error occurs).
  * \param       in          Beginning of the input buffer. This must be
  *                          at least block->header_size bytes.
  *
- * \return      - LZMA_OK: Decoding was successful. block->header_size
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Decoding was successful. block->header_size
  *                bytes were read from the input buffer.
  *              - LZMA_OPTIONS_ERROR: The Block Header specifies some
  *                unsupported options such as unsupported filters. This can
@@ -442,7 +448,12 @@ extern LZMA_API(lzma_ret) lzma_block_header_decode(lzma_block *block,
  *              field so that it can properly validate Compressed Size if it
  *              was present in Block Header.
  *
- * \return      - LZMA_OK: block->compressed_size was set successfully.
+ * \param       block           Block options: block->header_size must
+ *                              already be set with lzma_block_header_size().
+ * \param       unpadded_size   Unpadded Size from the Index field in bytes
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: block->compressed_size was set successfully.
  *              - LZMA_DATA_ERROR: unpadded_size is too small compared to
  *                block->header_size and lzma_check_size(block->check).
  *              - LZMA_PROG_ERROR: Some values are invalid. For example,
@@ -463,6 +474,9 @@ extern LZMA_API(lzma_ret) lzma_block_compressed_size(
  * Compressed Size, and size of the Check field. This is where this function
  * is needed.
  *
+ * \param       block   Block options: block->header_size must already be
+ *                      set with lzma_block_header_size().
+ *
  * \return      Unpadded Size on success, or zero on error.
  */
 extern LZMA_API(lzma_vli) lzma_block_unpadded_size(const lzma_block *block)
@@ -474,6 +488,9 @@ extern LZMA_API(lzma_vli) lzma_block_unpadded_size(const lzma_block *block)
  *
  * This is equivalent to lzma_block_unpadded_size() except that the returned
  * value includes the size of the Block Padding field.
+ *
+ * \param       block   Block options: block->header_size must already be
+ *                      set with lzma_block_header_size().
  *
  * \return      On success, total encoded size of the Block. On error,
  *              zero is returned.
@@ -488,7 +505,13 @@ extern LZMA_API(lzma_vli) lzma_block_total_size(const lzma_block *block)
  * Valid actions for lzma_code() are LZMA_RUN, LZMA_SYNC_FLUSH (only if the
  * filter chain supports it), and LZMA_FINISH.
  *
- * \return      - LZMA_OK: All good, continue with lzma_code().
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
+ * \param       block   Block options: block->version, block->check,
+ *                      and block->filters must have been initialized.
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: All good, continue with lzma_code().
  *              - LZMA_MEM_ERROR
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_UNSUPPORTED_CHECK: block->check specifies a Check ID
@@ -507,7 +530,12 @@ extern LZMA_API(lzma_ret) lzma_block_encoder(
  * Valid actions for lzma_code() are LZMA_RUN and LZMA_FINISH. Using
  * LZMA_FINISH is not required. It is supported only for convenience.
  *
- * \return      - LZMA_OK: All good, continue with lzma_code().
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
+ * \param       block   Block options.
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: All good, continue with lzma_code().
  *              - LZMA_PROG_ERROR
  *              - LZMA_MEM_ERROR
  */
@@ -521,6 +549,11 @@ extern LZMA_API(lzma_ret) lzma_block_decoder(
  *
  * This is equivalent to lzma_stream_buffer_bound() but for .xz Blocks.
  * See the documentation of lzma_stream_buffer_bound().
+ *
+ * \param       uncompressed_size   Size of the data to be encoded with the
+ *                                  single-call Block encoder.
+ *
+ * \return      Maximum output size in bytes for single-call Block encoding.
  */
 extern LZMA_API(size_t) lzma_block_buffer_bound(size_t uncompressed_size)
 		lzma_nothrow;
@@ -549,13 +582,14 @@ extern LZMA_API(size_t) lzma_block_buffer_bound(size_t uncompressed_size)
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
  * \param       in_size     Size of the input buffer
- * \param       out         Beginning of the output buffer
- * \param       out_pos     The next byte will be written to out[*out_pos].
+ * \param[out]  out         Beginning of the output buffer
+ * \param[out]  out_pos     The next byte will be written to out[*out_pos].
  *                          *out_pos is updated only if encoding succeeds.
  * \param       out_size    Size of the out buffer; the first byte into
  *                          which no data is written to is out[out_size].
  *
- * \return      - LZMA_OK: Encoding was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Encoding was successful.
  *              - LZMA_BUF_ERROR: Not enough output buffer space.
  *              - LZMA_UNSUPPORTED_CHECK
  *              - LZMA_OPTIONS_ERROR
@@ -581,6 +615,25 @@ extern LZMA_API(lzma_ret) lzma_block_buffer_encode(
  * Since the data won't be compressed, this function ignores block->filters.
  * This function doesn't take lzma_allocator because this function doesn't
  * allocate any memory from the heap.
+ *
+ * \param       block       Block options: block->version, block->check,
+ *                          and block->filters must have been initialized.
+ * \param       in          Beginning of the input buffer
+ * \param       in_size     Size of the input buffer
+ * \param[out]  out         Beginning of the output buffer
+ * \param[out]  out_pos     The next byte will be written to out[*out_pos].
+ *                          *out_pos is updated only if encoding succeeds.
+ * \param       out_size    Size of the out buffer; the first byte into
+ *                          which no data is written to is out[out_size].
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Encoding was successful.
+ *              - LZMA_BUF_ERROR: Not enough output buffer space.
+ *              - LZMA_UNSUPPORTED_CHECK
+ *              - LZMA_OPTIONS_ERROR
+ *              - LZMA_MEM_ERROR
+ *              - LZMA_DATA_ERROR
+ *              - LZMA_PROG_ERROR
  */
 extern LZMA_API(lzma_ret) lzma_block_uncomp_encode(lzma_block *block,
 		const uint8_t *in, size_t in_size,
@@ -594,7 +647,7 @@ extern LZMA_API(lzma_ret) lzma_block_uncomp_encode(lzma_block *block,
  * This is single-call equivalent of lzma_block_decoder(), and requires that
  * the caller has already decoded Block Header and checked its memory usage.
  *
- * \param       block       Block options just like with lzma_block_decoder().
+ * \param       block       Block options
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
@@ -602,13 +655,14 @@ extern LZMA_API(lzma_ret) lzma_block_uncomp_encode(lzma_block *block,
  *                          *in_pos is updated only if decoding succeeds.
  * \param       in_size     Size of the input buffer; the first byte that
  *                          won't be read is in[in_size].
- * \param       out         Beginning of the output buffer
- * \param       out_pos     The next byte will be written to out[*out_pos].
+ * \param[out]  out         Beginning of the output buffer
+ * \param[out]  out_pos     The next byte will be written to out[*out_pos].
  *                          *out_pos is updated only if encoding succeeds.
  * \param       out_size    Size of the out buffer; the first byte into
  *                          which no data is written to is out[out_size].
  *
- * \return      - LZMA_OK: Decoding was successful.
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Decoding was successful.
  *              - LZMA_OPTIONS_ERROR
  *              - LZMA_DATA_ERROR
  *              - LZMA_MEM_ERROR

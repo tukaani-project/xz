@@ -846,6 +846,7 @@ if(BUILD_TESTING)
         test_block_header
         test_check
         test_filter_flags
+        test_filter_str
         test_hardware
         test_index
         test_index_hash

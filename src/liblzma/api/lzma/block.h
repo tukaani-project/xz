@@ -62,7 +62,7 @@ typedef struct {
 	uint32_t version;
 
 	/**
-	 * \brief       Size of the Block Header field
+	 * \brief       Size of the Block Header field in bytes
 	 *
 	 * This is always a multiple of four.
 	 *
@@ -78,6 +78,7 @@ typedef struct {
 	 * Written by:
 	 *  - lzma_block_header_size()
 	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_uncomp_encode()
 	 */
 	uint32_t header_size;
 #	define LZMA_BLOCK_HEADER_SIZE_MIN 8

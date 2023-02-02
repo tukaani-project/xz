@@ -44,8 +44,17 @@ typedef struct {
 	 * with any version value).
 	 *
 	 * Read by:
-	 *  - All functions that take pointer to lzma_block as argument,
-	 *    including lzma_block_header_decode().
+	 *  - lzma_block_header_size()
+	 *  - lzma_block_header_encode()
+	 *  - lzma_block_header_decode()
+	 *  - lzma_block_compressed_size()
+	 *  - lzma_block_unpadded_size()
+	 *  - lzma_block_total_size()
+	 *  - lzma_block_encoder()
+	 *  - lzma_block_decoder()
+	 *  - lzma_block_buffer_encode()
+	 *  - lzma_block_uncomp_encode()
+	 *  - lzma_block_buffer_decode()
 	 *
 	 * Written by:
 	 *  - lzma_block_header_decode()

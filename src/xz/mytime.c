@@ -20,6 +20,11 @@
 
 uint64_t opt_flush_timeout = 0;
 
+// The start_time variable will not represent the actual start time
+// if mytime_sigtstp_handler() executes. The signal handler measures
+// the amount of time spent stopped and adds it to start_time.
+// So, care must be taken in the future if the actual start time needs
+// to be displayed for any reason.
 #ifdef USE_SIGTSTP_HANDLER
 static volatile uint64_t start_time;
 #else

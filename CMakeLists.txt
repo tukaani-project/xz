@@ -64,7 +64,9 @@ file(READ src/liblzma/api/lzma/version.h XZ_VERSION)
 string(REGEX REPLACE
 "^.*\n\
 #define LZMA_VERSION_MAJOR ([0-9]+)\n\
+.*\
 #define LZMA_VERSION_MINOR ([0-9]+)\n\
+.*\
 #define LZMA_VERSION_PATCH ([0-9]+)\n\
 .*$"
        "\\1.\\2.\\3" XZ_VERSION "${XZ_VERSION}")

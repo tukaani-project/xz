@@ -173,9 +173,7 @@ extern LZMA_API(void) lzma_filters_free(
  *                          .id == LZMA_VLI_UNKNOWN.
  *
  * \return      Number of bytes of memory required for the given
- *              filter chain when encoding. If an error occurs,
- *              for example due to unsupported filter chain,
- *              UINT64_MAX is returned.
+ *              filter chain when encoding or UINT64_MAX on error.
  */
 extern LZMA_API(uint64_t) lzma_raw_encoder_memusage(const lzma_filter *filters)
 		lzma_nothrow lzma_attr_pure;
@@ -192,9 +190,7 @@ extern LZMA_API(uint64_t) lzma_raw_encoder_memusage(const lzma_filter *filters)
  *                          .id == LZMA_VLI_UNKNOWN.
  *
  * \return      Number of bytes of memory required for the given
- *              filter chain when decoding. If an error occurs,
- *              for example due to unsupported filter chain,
- *              UINT64_MAX is returned.
+ *              filter chain when decoding or UINT64_MAX on error.
  */
 extern LZMA_API(uint64_t) lzma_raw_decoder_memusage(const lzma_filter *filters)
 		lzma_nothrow lzma_attr_pure;

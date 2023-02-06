@@ -73,9 +73,12 @@ typedef struct {
 	 * Encoder: No flags are currently supported.
 	 *
 	 * Decoder: Bitwise-or of zero or more of the decoder flags:
-	 * LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
-	 * LZMA_TELL_ANY_CHECK, LZMA_IGNORE_CHECK,
-	 * LZMA_CONCATENATED, LZMA_FAIL_FAST
+	 * - LZMA_TELL_NO_CHECK
+	 * - LZMA_TELL_UNSUPPORTED_CHECK
+	 * - LZMA_TELL_ANY_CHECK
+	 * - LZMA_IGNORE_CHECK
+	 * - LZMA_CONCATENATED
+	 * - LZMA_FAIL_FAST
 	 */
 	uint32_t flags;
 

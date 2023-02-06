@@ -30,7 +30,7 @@
 /**
  * \brief       Filter options
  *
- * This structure is used to pass Filter ID and a pointer filter's
+ * This structure is used to pass a Filter ID and a pointer to the filter's
  * options to liblzma. A few functions work with a single lzma_filter
  * structure, while most functions expect a filter chain.
  *
@@ -38,8 +38,8 @@
  * The array is terminated with .id = LZMA_VLI_UNKNOWN. Thus, the filter
  * array must have LZMA_FILTERS_MAX + 1 elements (that is, five) to
  * be able to hold any arbitrary filter chain. This is important when
- * using lzma_block_header_decode() from block.h, because too small
- * array would make liblzma write past the end of the filters array.
+ * using lzma_block_header_decode() from block.h, because a filter array
+ * that is too small would make liblzma write past the end of the array.
  */
 typedef struct {
 	/**
@@ -149,8 +149,8 @@ extern LZMA_API(lzma_ret) lzma_filters_copy(
  *   - options will be set to NULL.
  *   - id will be set to LZMA_VLI_UNKNOWN.
  *
- * If filters is NULL, this does nothing but remember that this never frees
- * the filters array itself.
+ * If filters is NULL, this does nothing. Again, this never frees the
+ * filters array itself.
  *
  * \param       filters     Array of filters terminated with
  *                          .id == LZMA_VLI_UNKNOWN.

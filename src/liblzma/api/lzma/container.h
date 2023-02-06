@@ -267,8 +267,7 @@ typedef struct {
  * \param       preset  Compression preset (level and possible flags)
  *
  * \return      Number of bytes of memory required for the given
- *              preset when encoding. If an error occurs, for example
- *              due to unsupported preset, UINT64_MAX is returned.
+ *              preset when encoding or UINT64_MAX on error.
  */
 extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
 		lzma_nothrow lzma_attr_pure;
@@ -282,9 +281,8 @@ extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
  * \param       preset  Compression preset (level and possible flags)
  *
  * \return      Number of bytes of memory required to decompress a file
- *              that was compressed using the given preset. If an error
- *              occurs, for example due to unsupported preset, UINT64_MAX
- *              is returned.
+ *              that was compressed using the given preset or UINT64_MAX
+ *              on error.
  */
 extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
 		lzma_nothrow lzma_attr_pure;
@@ -376,9 +374,9 @@ extern LZMA_API(lzma_ret) lzma_easy_buffer_encode(
  *
  * \param       strm    Pointer to lzma_stream that is at least initialized
  *                      with LZMA_STREAM_INIT.
- * \param       filters Array of filters. This must be terminated with
- *                      filters[n].id = LZMA_VLI_UNKNOWN. See filter.h for
- *                      more information.
+ * \param       filters Array of filters terminated with
+ *                      .id == LZMA_VLI_UNKNOWN. See filters.h for more
+ *                      information.
  * \param       check   Type of the integrity check to calculate from
  *                      uncompressed data.
  *
@@ -503,9 +501,9 @@ extern LZMA_API(size_t) lzma_stream_buffer_bound(size_t uncompressed_size)
 /**
  * \brief       Single-call .xz Stream encoder
  *
- * \param       filters     Array of filters. This must be terminated with
- *                          filters[n].id = LZMA_VLI_UNKNOWN. See filter.h
- *                          for more information.
+ * \param       filters     Array of filters terminated with
+ *                          .id == LZMA_VLI_UNKNOWN. See filters.h for more
+ *                          information.
  * \param       check       Type of the integrity check to calculate from
  *                          uncompressed data.
  * \param       allocator   lzma_allocator for custom allocator functions.

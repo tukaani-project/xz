@@ -744,7 +744,7 @@ extern LZMA_API(lzma_ret) lzma_str_from_filters(
  *
  *   - If LZMA_STR_ENCODER or LZMA_STR_DECODER is used then filters and
  *     the supported options are listed one filter per line. There won't
- *     be a '\n' after the last filter.
+ *     be a newline after the last filter.
  *
  *   - If LZMA_STR_ALL_FILTERS is used then the list will include also
  *     those filters that cannot be used in the .xz format (LZMA1).

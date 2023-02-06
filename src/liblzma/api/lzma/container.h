@@ -52,7 +52,7 @@
  *
  * This flag modifies the preset to make the encoding significantly slower
  * while improving the compression ratio only marginally. This is useful
- * when you don't mind wasting time to get as small result as possible.
+ * when you don't mind spending time to get as small result as possible.
  *
  * This flag doesn't affect the memory usage requirements of the decoder (at
  * least not significantly). The memory usage of the encoder may be increased
@@ -115,7 +115,7 @@ typedef struct {
 	/**
 	 * \brief       Timeout to allow lzma_code() to return early
 	 *
-	 * Multithreading can make liblzma to consume input and produce
+	 * Multithreading can make liblzma consume input and produce
 	 * output in a very bursty way: it may first read a lot of input
 	 * to fill internal buffers, then no input or output occurs for
 	 * a while.
@@ -132,14 +132,13 @@ typedef struct {
 	 * LZMA_OK. Reasonable values are 100 ms or more. The xz command
 	 * line tool uses 300 ms.
 	 *
-	 * If long blocking times are fine for you, set timeout to a special
-	 * value of 0, which will disable the timeout mechanism and will make
+	 * If long blocking times are acceptable, set timeout to a special
+	 * value of 0. This will disable the timeout mechanism and will make
 	 * lzma_code() block until all the input is consumed or the output
 	 * buffer has been filled.
 	 *
 	 * \note        Even with a timeout, lzma_code() might sometimes take
-	 *              somewhat long time to return. No timing guarantees
-	 *              are made.
+	 *              a long time to return. No timing guarantees are made.
 	 */
 	uint32_t timeout;
 
@@ -295,7 +294,7 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  * \brief       Initialize .xz Stream encoder using a preset number
  *
  * This function is intended for those who just want to use the basic features
- * if liblzma (that is, most developers out there).
+ * of liblzma (that is, most developers out there).
  *
  * If initialization fails (return value is not LZMA_OK), all the memory
  * allocated for *strm by liblzma is always freed. Thus, there is no need

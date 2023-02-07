@@ -76,7 +76,7 @@
 // too (which doesn't support __symver__) so use it to detect if __symver__
 // is available. This should be far more reliable than looking at compiler
 // version macros as nowadays especially __GNUC__ is defined by many compilers.
-#	if lzma_has_attribute(__symver__)
+#	if defined(HAVE_SYMVER_ATTRIBUTE)
 #		define LZMA_SYMVER_API(extnamever, type, intname) \
 			extern __attribute__((__symver__(extnamever))) \
 					LZMA_API(type) intname

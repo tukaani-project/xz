@@ -791,6 +791,15 @@ else
 				time with Libtool if neither --with-pic nor
 				--without-pic is used). This define must be
 				used together with liblzma_linux.map.])
+			OLD_CFLAGS="$CFLAGS"
+			CFLAGS="$CFLAGS -Werror"  # we need -Werror to make sure the attribute is not ignored
+			AC_COMPILE_IFELSE([AC_LANG_SOURCE(
+				[__attribute__ ((symver ("test@TEST"))) void foo(void) { }
+				])],
+				[AC_DEFINE([HAVE_SYMVER_ATTRIBUTE], [1],
+					[Define to 1 if GCC supports the symver attribute])],
+				[])
+			CFLAGS="$OLD_CFLAGS"
 			;;
 		*)
 			enable_symbol_versions=generic

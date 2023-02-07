@@ -20,11 +20,16 @@
 
 uint64_t opt_flush_timeout = 0;
 
-// The start_time variable will not represent the actual start time
-// if mytime_sigtstp_handler() executes. The signal handler measures
-// the amount of time spent stopped and adds it to start_time.
-// So, care must be taken in the future if the actual start time needs
-// to be displayed for any reason.
+// start_time holds the time when the (de)compression was started.
+// It's from mytime_now() and thus only useful for calculating relative
+// time differences (elapsed time). start_time is initialized by calling
+// mytime_set_start_time() and modified by mytime_sigtstp_handler().
+//
+// When mytime_sigtstp_handler() is used, start_time is made volatile.
+// I'm not sure if that is really required since access to it is guarded
+// by signals_block()/signals_unblock() since accessing an uint64_t isn't
+// atomic on all systems. But since the variable isn't accessed very
+// frequently making it volatile doesn't hurt.
 #ifdef USE_SIGTSTP_HANDLER
 static volatile uint64_t start_time;
 #else

@@ -235,14 +235,21 @@ typedef struct {
 		const void *reserved_ptr4;
 	} block;
 
-	/*
+	/** 
+	 * \private     Internal struct.
+	 *
 	 * Internal data which is used to store the state of the iterator.
 	 * The exact format may vary between liblzma versions, so don't
 	 * touch these in any way.
 	 */
 	union {
+		/** \private     Internal field. */
 		const void *p;
+
+		/** \private     Internal field. */
 		size_t s;
+
+		/** \private     Internal field. */
 		lzma_vli v;
 	} internal[6];
 } lzma_index_iter;

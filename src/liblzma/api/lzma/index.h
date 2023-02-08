@@ -307,13 +307,13 @@ typedef enum {
  * \brief       Calculate memory usage of lzma_index
  *
  * On disk, the size of the Index field depends on both the number of Records
- * stored and how big values the Records store (due to variable-length integer
+ * stored and the size of the Records (due to variable-length integer
  * encoding). When the Index is kept in lzma_index structure, the memory usage
  * depends only on the number of Records/Blocks stored in the Index(es), and
  * in case of concatenated lzma_indexes, the number of Streams. The size in
  * RAM is almost always significantly bigger than in the encoded form on disk.
  *
- * This function calculates an approximate amount of memory needed hold
+ * This function calculates an approximate amount of memory needed to hold
  * the given number of Streams and Blocks in lzma_index structure. This
  * value may vary between CPU architectures and also between liblzma versions
  * if the internal implementation is modified.

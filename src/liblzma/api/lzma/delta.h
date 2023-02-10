@@ -58,7 +58,15 @@ typedef struct {
 	 *  - 24-bit RGB image data: distance = 3 bytes
 	 */
 	uint32_t dist;
+
+	/**
+	 * \brief       Minimum value for the dist field in lzma_options_delta.
+	 */
 #	define LZMA_DELTA_DIST_MIN 1
+
+	/** 
+	 * \brief       Maximum value for the dist field in lzma_options_delta.
+	 */
 #	define LZMA_DELTA_DIST_MAX 256
 
 	/*

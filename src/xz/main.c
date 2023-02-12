@@ -13,6 +13,14 @@
 #include "private.h"
 #include <ctype.h>
 
+// An attempt at being portable with different path separators.
+#ifdef TUKLIB_DOSLIKE
+#	define PATH_SEP '\\'
+#else
+#	define PATH_SEP '/'
+#endif
+
+
 /// Exit status to use. This can be changed with set_exit_status().
 static enum exit_status_type exit_status = E_SUCCESS;
 
@@ -138,6 +146,117 @@ read_name(const args_info *args)
 	return NULL;
 }
 
+// Prototype the process_entry() function since process_directory() and
+// process_entry() recursively call each other.
+static void process_entry(const char *path);
+
+
+// Process an entire directory in recursive mode.
+static void
+process_directory(const char* path)
+{
+	// Read all entries into a character array. Individual entries
+	// are processed after reading all entries to prevent the system
+	// from running out of file descriptors in the case of deep recursion.
+	char *dir_str = dir_to_stream(path);
+	if (dir_str == NULL)
+		return;
+
+	// Loop through entries, extend by path, and call process_entry().
+	size_t entry_len = 0;
+	const size_t path_len = strlen(path);
+
+	for (char *entry = dir_str; *entry; entry += entry_len + 1) {
+		entry_len = strlen(entry);
+
+		// Skip any empty entries.
+		if (entry_len == 0)
+			continue;
+
+		// Ignore all files begining with "." when recursing in
+		// compression mode unless the --keep option is used.
+		// It could cause problems if the user accidentally deletes
+		// certain "." files while recursing.
+		// (ssh keys, git files, bash files, etc.)
+		//
+		// If --keep is not used, then only "." and ".." need to be
+		// ignored.
+		if ((!opt_keep_original && opt_mode == MODE_COMPRESS
+				&& entry[0] == '.')
+				|| !strcmp(entry, ".")
+				|| !strcmp(entry, ".."))
+			continue;
+
+		const size_t new_path_length = entry_len + path_len + 2;
+
+		// Check for overflow on the path length
+		if (new_path_length < path_len)
+			continue;
+
+		// Allocate the path dynamically instead of trying to guess
+		// the max path length on the platform. Also, it could lead
+		// to a lot of wasted stack space if the recursion is deep.
+		char *new_path = xmalloc(new_path_length);
+
+		// Copy the path of the directory
+		memcpy(new_path, path, path_len);
+
+		// Add separator for new entry in the directory
+		new_path[path_len] = PATH_SEP;
+
+		// Copy the next entry name
+		memcpy(new_path + (path_len + 1), entry, entry_len);
+
+		// NULL terminate the string
+		new_path[path_len + entry_len + 1] = '\0';
+
+		process_entry(new_path);
+
+		free(new_path);
+	}
+
+	free(dir_str);
+}
+
+
+// Process a single entry specified by the user at the command line,
+// standard in, or from a file when --files or --files0 is used.
+// If recursive mode is used, the entry can be either a file or a directory.
+// If recursive mode is not used, it will return after the failed call to
+// io_open_src() if the entry is a directory.
+static void
+process_entry(const char *path)
+{
+	// Set and possibly print the filename for the progress message.
+	message_filename(path);
+
+	// Open the entry
+	file_pair *pair = io_open_src(path);
+	if (pair == NULL)
+		return;
+
+	// pair->directory can only be true if --recursive mode is used.
+	if (pair->directory) {
+		process_directory(path);
+		return;
+	}
+
+#ifdef HAVE_DECODERS
+	if (opt_mode == MODE_LIST) {
+		if (path == stdin_filename) {
+			message_error(_("--list does not support reading from "
+					"standard input"));
+			return;
+		}
+
+		list_file(pair);
+		return;
+	}
+#endif
+
+	coder_run(pair);
+}
+
 
 int
 main(int argc, char **argv)
@@ -190,7 +309,7 @@ main(int argc, char **argv)
 
 	// Tell the message handling code how many input files there are if
 	// we know it. This way the progress indicator can show it.
-	if (args.files_name != NULL)
+	if (args.files_name != NULL || opt_recursive)
 		message_set_files(0);
 	else
 		message_set_files(args.arg_count);
@@ -237,12 +356,18 @@ main(int argc, char **argv)
 		io_allow_sandbox();
 #endif
 
-	// coder_run() handles compression, decompression, and testing.
-	// list_file() is for --list.
-	void (*run)(const char *filename) = &coder_run;
 #ifdef HAVE_DECODERS
-	if (opt_mode == MODE_LIST)
-		run = &list_file;
+	if (opt_mode == MODE_LIST) {
+		if (opt_format != FORMAT_XZ && opt_format != FORMAT_AUTO)
+			message_fatal(_("--list works only on .xz files "
+					"(--format=xz or --format=auto)"));
+
+		// Unset opt_stdout so that io_open_src() won't accept
+		// special files. Set opt_force so that io_open_src() will
+		// follow symlinks.
+		opt_stdout = false;
+		opt_force = true;
+	}
 #endif
 
 	// Process the files given on the command line. Note that if no names
@@ -279,7 +404,7 @@ main(int argc, char **argv)
 		}
 
 		// Do the actual compression or decompression.
-		run(args.arg_names[i]);
+		process_entry(args.arg_names[i]);
 	}
 
 	// If --files or --files0 was used, process the filenames from the
@@ -295,7 +420,7 @@ main(int argc, char **argv)
 
 			// read_name() doesn't return empty names.
 			assert(name[0] != '\0');
-			run(name);
+			process_entry(name);
 		}
 
 		if (args.files_name != stdin_filename)

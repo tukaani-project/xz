@@ -1021,16 +1021,8 @@ coder_passthru(file_pair *pair)
 
 
 extern void
-coder_run(const char *filename)
+coder_run(file_pair *pair)
 {
-	// Set and possibly print the filename for the progress message.
-	message_filename(filename);
-
-	// Try to open the input file.
-	file_pair *pair = io_open_src(filename);
-	if (pair == NULL)
-		return;
-
 	// Assume that something goes wrong.
 	bool success = false;
 

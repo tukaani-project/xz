@@ -19,6 +19,9 @@
 #	include <immintrin.h>
 #endif
 
+#if defined(_M_X64) // MSVC or Intel C compiler on Windows
+#	include <intrin.h>
+#endif
 
 /// Find out how many equal bytes the two buffers have.
 ///

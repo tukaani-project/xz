@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib
 
@@ -97,7 +97,7 @@ jobs:
   Linux-CMake:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: sudo apt-get install -y build-essential cmake
       - name: Build
@@ -115,7 +115,7 @@ jobs:
     runs-on: macos-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: brew install autoconf automake libtool po4a
 
@@ -169,7 +169,7 @@ jobs:
   MacOS-CMake:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: brew install cmake
       - name: Build
@@ -182,4 +182,91 @@ jobs:
         with:
           name: MacOS CMake Test Logs
           path: build-aux/artifacts
-    
+
+  Windows-Autotools:
+    # Just run on latest Windows
+    runs-on: windows-latest
+    steps:
+      # Fixes line engings, which fails compilation
+      # https://github.com/actions/checkout/issues/226
+      # https://github.com/actions/checkout/issues/135
+      - name: Prepare git
+        run: git config --global core.autocrlf false
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-ucrt-x86_64-toolchain
+            git
+            autoconf
+            automake
+            mingw-w64-ucrt-x86_64-autotools
+            po4a
+
+      - name: Build with full features
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -p build
+      - name: Test with full features
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -p test -n full_features
+
+      - name: Build without encoders
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p build
+      - name: Test without encoders
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d encoders,shared -p test -n no_encoders
+
+      - name: Build without decoders
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p build
+      - name: Test without decoders
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d decoders,shared -p test -n no_decoders
+
+      - name: Build without threads
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p build
+      - name: Test without threads
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d threads,shared -p test -n no_threads
+
+      - name: Build without BCJ filters
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p build
+      - name: Test without BCJ filters
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d bcj,shared,nls -p test -n no_bcj
+
+      - name: Build without Delta filters
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p build
+      - name: Test without Delta filters
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -d delta,shared,nls -p test -n no_delta
+
+      - name: Build without sha256 check
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p build
+      - name: Test without sha256 check
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,crc64 -d shared,nls -p test -n no_sha256
+
+      - name: Build without crc64 check
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p build
+      - name: Test without crc64 check
+        shell: msys2 {0}
+        run: ./build-aux/ci_build.sh -b autotools -c crc32,sha256 -d shared,nls -p test -n no_crc64
+
+      # Attempt to upload the test logs as artifacts if any step has failed
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: Windows Autotools Test Logs
+          path: build-aux/artifacts

@@ -698,9 +698,29 @@ io_open_src_real(file_pair *pair)
 #endif
 
 	if (S_ISDIR(pair->src_st.st_mode)) {
-		message_warning(_("%s: Is a directory, skipping"),
-				pair->src_name);
-		goto error;
+		if (!opt_recursive) {
+			message_warning(_("%s: Is a directory, skipping"),
+					pair->src_name);
+			goto error;
+		}
+
+		// Do not allow symlinks with recursive mode because this
+		// could lead to a loop in the file system and thus infinite
+		// recursion. If a symlink is detected, skip it.
+		if (follow_symlinks) {
+			if (lstat(pair->src_name, &pair->src_st) != 0)
+				goto error_msg;
+
+			if (S_ISLNK(pair->src_st.st_mode)) {
+				message_warning(_("%s: Is a symlink to a "
+				"directory, skipping"), pair->src_name);
+				goto error;
+			}
+		}
+
+		(void)close(pair->src_fd);
+		pair->directory = true;
+		return false;
 	}
 
 	if (reg_files_only && !S_ISREG(pair->src_st.st_mode)) {
@@ -798,6 +818,7 @@ io_open_src(const char *src_name)
 		.src_has_seen_input = false,
 		.flush_needed = false,
 		.dest_try_sparse = false,
+		.directory = false,
 		.dest_pending_sparse = 0,
 	};
 

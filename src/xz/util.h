@@ -117,3 +117,15 @@ extern bool is_tty_stdin(void);
 /// If stdout is a terminal, an error message is printed and exit status set
 /// to EXIT_ERROR.
 extern bool is_tty_stdout(void);
+
+/// \brief      Convert a directory's contents to a single stream.
+///
+/// Each file or directory name is added to a character array and returned.
+/// Individual entries in the stream are delimited by NULL, and the end
+/// of the stream is denoted by two NULL bytes.
+///
+/// \param      path    Path to the directory
+///
+/// \return     Character array representation of the directory.
+///             Must be freed by the caller. Returns NULL on error.
+extern char *dir_to_stream(const char *path);

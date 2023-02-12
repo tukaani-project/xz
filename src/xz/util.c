@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
+#include <dirent.h>
 #include <stdarg.h>
 
 
@@ -283,4 +284,74 @@ is_tty_stdout(void)
 				"a terminal"));
 
 	return ret;
+}
+
+
+extern char *
+dir_to_stream(const char *path)
+{
+	// On some OSes, opendir can result be interrupted and return EINTR,
+	// so it is safest to block signals.
+	signals_block();
+	DIR *dir = opendir(path);
+	signals_unblock();
+
+	if (dir == NULL) {
+		message_error("Error opening directory: %s", strerror(errno));
+		return NULL;
+	}
+
+	size_t size = 512;
+	size_t position = 0;
+	char *buf = xmalloc(size);
+
+	while (true) {
+		// readdir() will set errno if there is an error, so it
+		// needs to be cleared first. If readdir() returns NULL,
+		// we have to check errno to determine if the directory
+		// is actually done being read or if an error occurred.
+		errno = 0;
+		struct dirent *entry = readdir(dir);
+		if (entry == NULL) {
+			if (errno != 0) {
+				message_error(_("Error reading from directory:"
+						" %s"), strerror(errno));
+				return NULL;
+			}
+
+			break;
+		}
+
+		// Each entry consists of the string and a NULL terminator.
+		size_t entry_len = strlen(entry->d_name) + 1;
+
+		// Check for overflow on the string position (unlikely to
+		// happen in practice, but we should check for it anyway).
+		if ((entry_len + position + 1) < position) {
+			message_error(_("Error parsing directory into "
+					"string.""Directory entry names "
+					"are too long."));
+			return NULL;
+		}
+
+		// Using + 1 allows for space for the extra NULL terminator
+		// to denote the end of the entire string. We must always
+		// have space for it.
+		if ((entry_len + position + 1) > size) {
+			size <<= 1;
+			buf = xrealloc(buf, size);
+		}
+
+		memcpy(buf + position, entry->d_name, entry_len);
+		position += entry_len;
+	}
+
+	buf[position] = 0;
+
+	// closedir() can also return EINTR.
+	signals_block();
+	(void)closedir(dir);
+	signals_unblock();
+
+	return buf;
 }

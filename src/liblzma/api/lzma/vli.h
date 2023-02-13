@@ -88,7 +88,7 @@ typedef uint64_t lzma_vli;
  * integer has been encoded.
  *
  * \param       vli       Integer to be encoded
- * \param       vli_pos   How many VLI-encoded bytes have already been written
+ * \param[out]  vli_pos   How many VLI-encoded bytes have already been written
  *                        out. When starting to encode a new integer in
  *                        multi-call mode, *vli_pos must be set to zero.
  *                        To use single-call encoding, set vli_pos to NULL.

@@ -138,16 +138,20 @@ typedef enum {
 /**
  * \brief       Test if given match finder is supported
  *
- * Return true if the given match finder is supported by this liblzma build.
- * Otherwise false is returned. It is safe to call this with a value that
- * isn't listed in lzma_match_finder enumeration; the return value will be
- * false.
+ * It is safe to call this with a value that isn't listed in
+ * lzma_match_finder enumeration; the return value will be false.
  *
  * There is no way to list which match finders are available in this
  * particular liblzma version and build. It would be useless, because
  * a new match finder, which the application developer wasn't aware,
  * could require giving additional options to the encoder that the older
  * match finders don't need.
+ *
+ * \param       match_finder    Match finder ID
+ *
+ * \return      lzma_bool:
+ *              - true if the match finder is supported by this liblzma build.
+ *              - false otherwise.
  */
 extern LZMA_API(lzma_bool) lzma_mf_is_supported(lzma_match_finder match_finder)
 		lzma_nothrow lzma_attr_const;
@@ -182,14 +186,20 @@ typedef enum {
 /**
  * \brief       Test if given compression mode is supported
  *
- * Return true if the given compression mode is supported by this liblzma
- * build. Otherwise false is returned. It is safe to call this with a value
- * that isn't listed in lzma_mode enumeration; the return value will be false.
+ * It is safe to call this with a value that isn't listed in lzma_mode
+ * enumeration; the return value will be false.
  *
  * There is no way to list which modes are available in this particular
  * liblzma version and build. It would be useless, because a new compression
  * mode, which the application developer wasn't aware, could require giving
  * additional options to the encoder that the older modes don't need.
+ *
+ * \param       mode    Mode ID.
+ *
+ * \return      lzma_bool:
+ *              - true if the compression mode is supported by this liblzma
+ *                build.
+ *              - false otherwise.
  */
 extern LZMA_API(lzma_bool) lzma_mode_is_supported(lzma_mode mode)
 		lzma_nothrow lzma_attr_const;
@@ -545,8 +555,12 @@ do { \
  * This function is available only if LZMA1 or LZMA2 encoder has been enabled
  * when building liblzma.
  *
- * \return      On success, false is returned. If the preset is not
- *              supported, true is returned.
+ * \param[out]  options Pointer to LZMA12 options to be filled
+ * \param       preset  Preset value between 0-9 ORed with preset flags
+ *
+ * \return      lzma_bool:
+ *              - true if the preset is not supported (failure).
+ *              - false otherwise (success).
  */
 extern LZMA_API(lzma_bool) lzma_lzma_preset(
 		lzma_options_lzma *options, uint32_t preset) lzma_nothrow;

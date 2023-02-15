@@ -528,6 +528,18 @@ the suffix must always be specified unless
 writing to standard output,
 because there is no default suffix for raw streams.
 .TP
+.BR \-r ", " \-\-recursive
+Operate recursively on directories.
+If a directory is specified as a target file in any operation
+mode, then it is traversed recursively into all files the
+directory and any subdirectories contain.
+When traversing recursively in compression mode all filenames
+and directories beginning with
+.B .
+are ignored, unless
+.BR \-\-keep
+is used, to prevent accidentally removing important files.
+.TP
 \fB\-\-files\fR[\fB=\fIfile\fR]
 Read the filenames to process from
 .IR file ;
@@ -541,6 +553,10 @@ is taken as a regular filename; it doesn't mean standard input.
 If filenames are given also as command line arguments, they are
 processed before the filenames read from
 .IR file .
+In
+.BR \-\-recursive
+mode directories can be used and are
+traversed recursively.
 .TP
 \fB\-\-files0\fR[\fB=\fIfile\fR]
 This is identical to \fB\-\-files\fR[\fB=\fIfile\fR] except

@@ -994,12 +994,17 @@ message_help(bool long_help)
 "                      ignore possible remaining input data"));
 		puts(_(
 "      --no-sparse     do not create sparse files when decompressing\n"
-"  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
+"  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files"));
+	}
+
+	puts(_(
+"  -r, --recursive     operate recursively on directories"));
+	if (long_help)
+		puts(_(
 "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"
 "      --files0[=FILE] like --files but use the null character as terminator"));
-	}
 
 	if (long_help) {
 		puts(_("\n Basic file format and compression options:\n"));

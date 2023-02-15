@@ -11,6 +11,7 @@ EXTRA_DIST = \
 	tuktest.h \
 	tests.h \
 	test_files.sh \
+	test_recursive.sh \
 	test_compress.sh \
 	test_compress_prepared_bcj_sparc \
 	test_compress_prepared_bcj_x86 \
@@ -66,6 +67,7 @@ TESTS = \
 	test_lzip_decoder \
 	test_vli \
 	test_files.sh \
+	test_recursive.sh \
 	test_compress_prepared_bcj_sparc \
 	test_compress_prepared_bcj_x86 \
 	test_compress_generated_abc \

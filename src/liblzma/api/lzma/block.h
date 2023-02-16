@@ -33,11 +33,11 @@ typedef struct {
 	 * \brief       Block format version
 	 *
 	 * To prevent API and ABI breakages when new features are needed,
-	 * a version number is used to indicate which fields in this
+	 * a version number is used to indicate which members in this
 	 * structure are in use:
 	 *   - liblzma >= 5.0.0: version = 0 is supported.
 	 *   - liblzma >= 5.1.4beta: Support for version = 1 was added,
-	 *     which adds the ignore_check field.
+	 *     which adds the ignore_check member.
 	 *
 	 * If version is greater than one, most Block related functions
 	 * will return LZMA_OPTIONS_ERROR (lzma_block_header_decode() works
@@ -286,7 +286,7 @@ typedef struct {
 	/**
 	 * \brief       A flag to Block decoder to not verify the Check field
 	 *
-	 * This field is supported by liblzma >= 5.1.4beta if .version >= 1.
+	 * This member is supported by liblzma >= 5.1.4beta if .version >= 1.
 	 *
 	 * If this is set to true, the integrity check won't be calculated
 	 * and verified. Unless you know what you are doing, you should

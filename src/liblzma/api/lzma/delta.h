@@ -77,22 +77,22 @@ typedef struct {
 	 * uninitialized.
 	 */
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int4;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr2;
 
 } lzma_options_delta;

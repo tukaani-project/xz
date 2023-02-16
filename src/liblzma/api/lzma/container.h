@@ -172,25 +172,25 @@ typedef struct {
 	 * with the currently supported options, so it is safe to leave these
 	 * uninitialized.
 	 */
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int4;
 
 	/**
@@ -236,22 +236,22 @@ typedef struct {
 	 */
 	uint64_t memlimit_stop;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint64_t reserved_int7;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint64_t reserved_int8;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr4;
 
 } lzma_mt;

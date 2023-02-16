@@ -70,12 +70,12 @@ typedef struct {
 	lzma_vli backward_size;
 
 	/**
-	 * \brief       Minimum size of the backward_size field
+	 * \brief       Minimum size of the backward_size member
 	 */
 #	define LZMA_BACKWARD_SIZE_MIN 4
 
 	/**
-	 * \brief       Maximum size of the backward_size field
+	 * \brief       Maximum size of the backward_size member
 	 */
 #	define LZMA_BACKWARD_SIZE_MAX (LZMA_VLI_C(1) << 34)
 
@@ -97,46 +97,46 @@ typedef struct {
 	 * nice to have the proper types when they are needed.)
 	 */
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum4;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool4;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool5;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool6;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool7;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_bool reserved_bool8;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int2;
 
 } lzma_stream_flags;

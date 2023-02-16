@@ -492,37 +492,37 @@ typedef struct {
 	 * uninitialized.
 	 */
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int4;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int5;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int6;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int7;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	uint32_t reserved_int8;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum2;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum3;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	lzma_reserved_enum reserved_enum4;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr1;
 
-	/** \private     Reserved field. */
+	/** \private     Reserved member. */
 	void *reserved_ptr2;
 
 } lzma_options_lzma;
@@ -550,13 +550,13 @@ do { \
  * The flags are defined in container.h, because the flags are used also
  * with lzma_easy_encoder().
  *
- * The preset values are subject to changes between liblzma versions.
+ * The preset levels are subject to changes between liblzma versions.
  *
  * This function is available only if LZMA1 or LZMA2 encoder has been enabled
  * when building liblzma.
  *
- * \param[out]  options Pointer to LZMA12 options to be filled
- * \param       preset  Preset value between 0-9 ORed with preset flags
+ * \param[out]  options Pointer to LZMA1 or LZMA2 options to be filled
+ * \param       preset  Preset level bitwse-ORed with preset flags
  *
  * \return      lzma_bool:
  *              - true if the preset is not supported (failure).

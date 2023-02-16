@@ -235,7 +235,7 @@ typedef struct {
 		const void *reserved_ptr4;
 	} block;
 
-	/** 
+	/**
 	 * \private     Internal struct.
 	 *
 	 * Internal data which is used to store the state of the iterator.
@@ -243,13 +243,13 @@ typedef struct {
 	 * touch these in any way.
 	 */
 	union {
-		/** \private     Internal field. */
+		/** \private     Internal member. */
 		const void *p;
 
-		/** \private     Internal field. */
+		/** \private     Internal member. */
 		size_t s;
 
-		/** \private     Internal field. */
+		/** \private     Internal member. */
 		lzma_vli v;
 	} internal[6];
 } lzma_index_iter;
@@ -505,7 +505,7 @@ extern LZMA_API(lzma_vli) lzma_index_size(const lzma_index *i)
  * If multiple lzma_indexes have been combined, this works as if the Blocks
  * were in a single Stream. This is useful if you are going to combine
  * Blocks from multiple Streams into a single new Stream.
- * 
+ *
  * \param       i   Pointer to lzma_index structure
  *
  * \return      Size in bytes of the Stream (if all Blocks are combined

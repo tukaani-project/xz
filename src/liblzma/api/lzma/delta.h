@@ -60,12 +60,12 @@ typedef struct {
 	uint32_t dist;
 
 	/**
-	 * \brief       Minimum value for the dist field in lzma_options_delta.
+	 * \brief       Minimum value for lzma_options_delta.dist.
 	 */
 #	define LZMA_DELTA_DIST_MIN 1
 
-	/** 
-	 * \brief       Maximum value for the dist field in lzma_options_delta.
+	/**
+	 * \brief       Maximum value for lzma_options_delta.dist.
 	 */
 #	define LZMA_DELTA_DIST_MAX 256
 

@@ -37,7 +37,7 @@ typedef struct {
 	 *
 	 * To prevent API and ABI breakages if new features are needed in
 	 * Stream Header or Stream Footer, a version number is used to
-	 * indicate which fields in this structure are in use. For now,
+	 * indicate which members in this structure are in use. For now,
 	 * version must always be zero. With non-zero version, the
 	 * lzma_stream_header_encode() and lzma_stream_footer_encode()
 	 * will return LZMA_OPTIONS_ERROR.
@@ -70,12 +70,12 @@ typedef struct {
 	lzma_vli backward_size;
 
 	/**
-	 * \brief       Minimum size of the backward_size member
+	 * \brief       Minimum value for lzma_stream_flags.backward_size
 	 */
 #	define LZMA_BACKWARD_SIZE_MIN 4
 
 	/**
-	 * \brief       Maximum size of the backward_size member
+	 * \brief       Maximum value for lzma_stream_flags.backward_size
 	 */
 #	define LZMA_BACKWARD_SIZE_MAX (LZMA_VLI_C(1) << 34)
 

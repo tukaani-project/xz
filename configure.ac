@@ -758,8 +758,16 @@ elif test "x$enable_shared" = xno ; then
 	enable_symbol_versions=no
 	AC_MSG_RESULT([no (not building a shared library)])
 else
-	case $host_os in
-		linux*)
+	case "$host_cpu-$host_os" in
+		microblaze*)
+			# GCC 12 on MicroBlaze doesn't support __symver__
+			# attribute. It's simplest and safest to use the
+			# generic version on that platform since then only
+			# the linker script is needed. The RHEL/CentOS 7
+			# compatibility symbols don't matter on MicroBlaze.
+			enable_symbol_versions=generic
+			;;
+		*-linux*)
 			case "$pic_mode-$enable_static" in
 				default-*)
 					# Use symvers if PIC is defined.

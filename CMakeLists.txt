@@ -850,6 +850,7 @@ if(BUILD_TESTING)
         test_hardware
         test_index
         test_index_hash
+        test_lzip_decoder
         test_memlimit
         test_stream_flags
         test_vli

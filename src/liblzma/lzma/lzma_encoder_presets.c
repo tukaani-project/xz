@@ -60,5 +60,18 @@ lzma_lzma_preset(lzma_options_lzma *options, uint32_t preset)
 		}
 	}
 
+#ifndef HAVE_MF_HC3
+	if (options->mf == LZMA_MF_HC3)
+		return true;
+#endif
+#ifndef HAVE_MF_HC4
+	if (options->mf == LZMA_MF_HC4)
+		return true;
+#endif
+#ifndef HAVE_MF_BT4
+	if (options->mf == LZMA_MF_BT4)
+		return true;
+#endif
+
 	return false;
 }

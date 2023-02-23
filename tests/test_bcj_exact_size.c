@@ -41,7 +41,9 @@ test_exact_size(void)
 	// it has fixed 4-byte alignment which makes triggering the potential
 	// bug easy.
 	lzma_options_lzma opt_lzma2;
-	assert_false(lzma_lzma_preset(&opt_lzma2, 0));
+	if (lzma_lzma_preset(&opt_lzma2, 0))
+		assert_skip("Preset 0 is not supported by this liblzma "
+				"configuration.");
 
 	lzma_filter filters[3] = {
 		{ .id = LZMA_FILTER_POWERPC, .options = NULL },

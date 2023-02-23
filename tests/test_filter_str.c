@@ -206,38 +206,45 @@ test_lzma_str_to_filters(void)
 	lzma_filters_free(filters, NULL);
 
 	// Test preset with and without leading "-", and with "e".
-	assert_true(lzma_str_to_filters("-3", &error_pos, filters,
-			0, NULL) == NULL);
+	lzma_options_lzma options;
+	if (!lzma_lzma_preset(&options, 3)) {
+		assert_true(lzma_str_to_filters("-3", &error_pos, filters,
+				0, NULL) == NULL);
 
-	assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
-	assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
+		assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
+		assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
 
-	lzma_filters_free(filters, NULL);
+		lzma_filters_free(filters, NULL);
+	}
 
-	assert_true(lzma_str_to_filters("4", &error_pos, filters,
-			0, NULL) == NULL);
+	if (!lzma_lzma_preset(&options, 4)) {
+		assert_true(lzma_str_to_filters("4", &error_pos, filters,
+				0, NULL) == NULL);
 
-	assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
-	assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
+		assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
+		assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
 
-	lzma_filters_free(filters, NULL);
+		lzma_filters_free(filters, NULL);
+	}
 
-	assert_true(lzma_str_to_filters("9e", &error_pos, filters,
-			0, NULL) == NULL);
+	if (!lzma_lzma_preset(&options, 9 | LZMA_PRESET_EXTREME)) {
+		assert_true(lzma_str_to_filters("9e", &error_pos, filters,
+				0, NULL) == NULL);
 
-	assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
-	assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
+		assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
+		assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
 
-	lzma_filters_free(filters, NULL);
+		lzma_filters_free(filters, NULL);
 
-	// Test using a preset as an lzma2 option.
-	assert_true(lzma_str_to_filters("lzma2:preset=9e", &error_pos, filters,
-			0, NULL) == NULL);
+		// Test using a preset as an lzma2 option.
+		assert_true(lzma_str_to_filters("lzma2:preset=9e", &error_pos, filters,
+				0, NULL) == NULL);
 
-	assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
-	assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
+		assert_uint_eq(filters[0].id, LZMA_FILTER_LZMA2);
+		assert_uint_eq(filters[1].id, LZMA_VLI_UNKNOWN);
 
-	lzma_filters_free(filters, NULL);
+		lzma_filters_free(filters, NULL);
+	}
 
 	// Test setting dictionary size with invalid modifier suffix.
 	assert_true(lzma_str_to_filters("lzma2:dict=4096ZiB", &error_pos, filters,
@@ -385,33 +392,37 @@ test_lzma_str_from_filters(void)
 #endif
 
 	lzma_options_lzma opts;
-	assert_false(lzma_lzma_preset(&opts, LZMA_PRESET_DEFAULT));
-	// Test with too many Filters (array terminated after 4+ filters).
-	lzma_filter oversized_filters[LZMA_FILTERS_MAX + 2];
+	if (!lzma_lzma_preset(&opts, LZMA_PRESET_DEFAULT)) {
+		// Test with too many Filters (array terminated after
+		// 4+ filters).
+		lzma_filter oversized_filters[LZMA_FILTERS_MAX + 2];
 
-	for (uint32_t i = 0; i < ARRAY_SIZE(oversized_filters) - 1; i++) {
-		oversized_filters[i].id = LZMA_FILTER_LZMA2;
-		oversized_filters[i].options = &opts;
+		for (uint32_t i = 0; i < ARRAY_SIZE(oversized_filters) - 1;
+				i++) {
+			oversized_filters[i].id = LZMA_FILTER_LZMA2;
+			oversized_filters[i].options = &opts;
+		}
+
+		oversized_filters[LZMA_FILTERS_MAX + 1].id = LZMA_VLI_UNKNOWN;
+		oversized_filters[LZMA_FILTERS_MAX + 1].options = NULL;
+
+		assert_lzma_ret(lzma_str_from_filters(&output_str,
+				oversized_filters, 0, NULL),
+				LZMA_OPTIONS_ERROR);
+
+		// Test with NULL filter options (when they cannot be NULL).
+		filters[0].id = LZMA_FILTER_LZMA2;
+		filters[0].options = NULL;
+		filters[1].id = LZMA_VLI_UNKNOWN;
+
+		assert_lzma_ret(lzma_str_from_filters(&output_str, filters,
+				LZMA_STR_ENCODER, NULL), LZMA_OPTIONS_ERROR);
+
+		// Test with bad Filter ID.
+		filters[0].id = LZMA_VLI_UNKNOWN - 1;
+		assert_lzma_ret(lzma_str_from_filters(&output_str, filters,
+				LZMA_STR_ENCODER, NULL), LZMA_OPTIONS_ERROR);
 	}
-
-	oversized_filters[LZMA_FILTERS_MAX + 1].id = LZMA_VLI_UNKNOWN;
-	oversized_filters[LZMA_FILTERS_MAX + 1].options = NULL;
-
-	assert_lzma_ret(lzma_str_from_filters(&output_str, oversized_filters,
-			0, NULL), LZMA_OPTIONS_ERROR);
-
-	// Test with NULL filter options (when they cannot be NULL).
-	filters[0].id = LZMA_FILTER_LZMA2;
-	filters[0].options = NULL;
-	filters[1].id = LZMA_VLI_UNKNOWN;
-
-	assert_lzma_ret(lzma_str_from_filters(&output_str, filters,
-			LZMA_STR_ENCODER, NULL), LZMA_OPTIONS_ERROR);
-
-	// Test with bad Filter ID.
-	filters[0].id = LZMA_VLI_UNKNOWN - 1;
-	assert_lzma_ret(lzma_str_from_filters(&output_str, filters,
-			LZMA_STR_ENCODER, NULL), LZMA_OPTIONS_ERROR);
 }
 
 

@@ -500,14 +500,20 @@ main(int argc, char **argv)
 	if (lzma_filter_encoder_is_supported(LZMA_FILTER_LZMA1)) {
 		lzma_options_lzma *options = tuktest_malloc(
 				sizeof(lzma_options_lzma));
-		lzma_lzma_preset(options, LZMA_PRESET_DEFAULT);
+		if (lzma_lzma_preset(options, LZMA_PRESET_DEFAULT))
+			tuktest_early_skip("Preset %d is not supported by "
+					"this liblzma configuration.",
+					LZMA_PRESET_DEFAULT);
 		lzma1_filter.options = options;
 	}
 
 	if (lzma_filter_encoder_is_supported(LZMA_FILTER_LZMA2)) {
 		lzma_options_lzma *options = tuktest_malloc(
 				sizeof(lzma_options_lzma));
-		lzma_lzma_preset(options, LZMA_PRESET_DEFAULT);
+		if (lzma_lzma_preset(options, LZMA_PRESET_DEFAULT))
+			tuktest_early_skip("Preset %d is not supported by "
+					"this liblzma configuration.",
+					LZMA_PRESET_DEFAULT);
 		lzma2_filter.options = options;
 	}
 

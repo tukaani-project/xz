@@ -166,36 +166,37 @@ test_lzma_block_header_size(void)
 	// because the size of the LZMA2 properties is known by liblzma
 	// without reading any of the options so it doesn't validate them.
 	lzma_options_lzma bad_ops;
-	assert_false(lzma_lzma_preset(&bad_ops, 1));
-	bad_ops.pb = 0x1000;
+	if (!lzma_lzma_preset(&bad_ops, 1)) {
+		bad_ops.pb = 0x1000;
 
-	lzma_filter bad_filters[2] = {
-		{
-			.id = LZMA_FILTER_LZMA2,
-			.options = &bad_ops
-		},
-		{
-			.id = LZMA_VLI_UNKNOWN,
-			.options = NULL
-		}
-	};
+		lzma_filter bad_filters[2] = {
+			{
+				.id = LZMA_FILTER_LZMA2,
+				.options = &bad_ops
+			},
+			{
+				.id = LZMA_VLI_UNKNOWN,
+				.options = NULL
+			}
+		};
 
-	block.filters = bad_filters;
+		block.filters = bad_filters;
 
-	assert_lzma_ret(lzma_block_header_size(&block), LZMA_OK);
-	assert_uint(block.header_size, >=, LZMA_BLOCK_HEADER_SIZE_MIN);
-	assert_uint(block.header_size, <=, LZMA_BLOCK_HEADER_SIZE_MAX);
-	assert_uint_eq(block.header_size % 4, 0);
+		assert_lzma_ret(lzma_block_header_size(&block), LZMA_OK);
+		assert_uint(block.header_size, >=, LZMA_BLOCK_HEADER_SIZE_MIN);
+		assert_uint(block.header_size, <=, LZMA_BLOCK_HEADER_SIZE_MAX);
+		assert_uint_eq(block.header_size % 4, 0);
 
-	// Use an invalid block option. The check type isn't stored in
-	// the Block Header and so _header_size ignores it.
-	block.check = INVALID_LZMA_CHECK_ID;
-	block.ignore_check = false;
+		// Use an invalid block option. The check type isn't stored in
+		// the Block Header and so _header_size ignores it.
+		block.check = INVALID_LZMA_CHECK_ID;
+		block.ignore_check = false;
 
-	assert_lzma_ret(lzma_block_header_size(&block), LZMA_OK);
-	assert_uint(block.header_size, >=, LZMA_BLOCK_HEADER_SIZE_MIN);
-	assert_uint(block.header_size, <=, LZMA_BLOCK_HEADER_SIZE_MAX);
-	assert_uint_eq(block.header_size % 4, 0);
+		assert_lzma_ret(lzma_block_header_size(&block), LZMA_OK);
+		assert_uint(block.header_size, >=, LZMA_BLOCK_HEADER_SIZE_MIN);
+		assert_uint(block.header_size, <=, LZMA_BLOCK_HEADER_SIZE_MAX);
+		assert_uint_eq(block.header_size % 4, 0);
+	}
 #endif
 }
 
@@ -504,7 +505,8 @@ main(int argc, char **argv)
 	tuktest_start(argc, argv);
 
 	if (lzma_lzma_preset(&opt_lzma, 1))
-		tuktest_error("lzma_lzma_preset() failed");
+		tuktest_early_skip("Preset 1 is not supported by this "
+				"liblzma configuration.");
 
 	tuktest_run(test_lzma_block_header_size);
 	tuktest_run(test_lzma_block_header_encode);

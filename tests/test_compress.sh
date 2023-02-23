@@ -28,6 +28,18 @@ else
 	exit 77
 fi
 
+# xz compression tests are used with presets 1-4.
+# Presets 1-3 require LZMA_MF_HC4, and preset 4 requires LZMA_MF_BT4.
+# The preset levels are subject to change, so this will need to be updated
+# if the presets match finder requirements change.
+if grep 'define HAVE_MF_HC4' ../config.h > /dev/null \
+		&& grep 'define HAVE_MF_BT4' ../config.h > /dev/null ; then
+	:
+else
+	echo "Match finder HC4 or BT4 support is disabled, skipping this test."
+	exit 77
+fi
+
 # Find out if our shell supports functions.
 eval 'unset foo ; foo() { return 42; } ; foo'
 if test $? != 42 ; then

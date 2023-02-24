@@ -17,6 +17,7 @@
 // VLI can have between 1 and 9 bytes when encoded
 // They are encoded little endian where all but the last
 // byte must have the leading 1 bit set
+#if defined(HAVE_ENCODERS) || defined(HAVE_DECODERS)
 static const uint8_t one_byte[1] = {0x25};
 static const lzma_vli one_byte_value = 37;
 
@@ -46,6 +47,7 @@ static const lzma_vli eight_byte_value = 55818443594433425;
 static const uint8_t nine_bytes[9] = {0x81, 0x91, 0xA1, 0xB1, 0xC1, 0xD1,
 				0xE1, 0xF1, 0x1};
 static const lzma_vli nine_byte_value = 136100349976529025;
+#endif
 
 
 static void

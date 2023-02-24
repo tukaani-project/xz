@@ -555,6 +555,11 @@ do { \
  * This function is available only if LZMA1 or LZMA2 encoder has been enabled
  * when building liblzma.
  *
+ * If features (like certain match finders) have been disabled at build time,
+ * then the function may return success (false) even though the resulting
+ * LZMA1/LZMA2 options may not be usable for encoder initialization
+ * (LZMA_OPTIONS_ERROR).
+ *
  * \param[out]  options Pointer to LZMA1 or LZMA2 options to be filled
  * \param       preset  Preset level bitwse-ORed with preset flags
  *

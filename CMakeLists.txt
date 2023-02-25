@@ -122,49 +122,24 @@ add_compile_definitions(
     PACKAGE_BUGREPORT="xz@tukaani.org"
     PACKAGE_URL="https://tukaani.org/xz/"
 
-    # Features:
-    HAVE_CHECK_CRC32
-    HAVE_CHECK_CRC64
-    HAVE_CHECK_SHA256
-    HAVE_DECODERS
-    HAVE_DECODER_ARM
-    HAVE_DECODER_ARMTHUMB
-    HAVE_DECODER_ARM64
-    HAVE_DECODER_DELTA
-    HAVE_DECODER_IA64
-    HAVE_DECODER_LZMA1
-    HAVE_DECODER_LZMA2
-    HAVE_DECODER_POWERPC
-    HAVE_DECODER_SPARC
-    HAVE_DECODER_X86
-    HAVE_ENCODERS
-    HAVE_ENCODER_ARM
-    HAVE_ENCODER_ARMTHUMB
-    HAVE_ENCODER_ARM64
-    HAVE_ENCODER_DELTA
-    HAVE_ENCODER_IA64
-    HAVE_ENCODER_LZMA1
-    HAVE_ENCODER_LZMA2
-    HAVE_ENCODER_POWERPC
-    HAVE_ENCODER_SPARC
-    HAVE_ENCODER_X86
-    HAVE_MF_BT2
-    HAVE_MF_BT3
-    HAVE_MF_BT4
-    HAVE_MF_HC3
-    HAVE_MF_HC4
-    HAVE_LZIP_DECODER
-
     # Standard headers and types are available:
     HAVE_STDBOOL_H
     HAVE__BOOL
     HAVE_STDINT_H
     HAVE_INTTYPES_H
 
+    # Always enable CRC32 since liblzma should never build without it.
+    HAVE_CHECK_CRC32
+
     # Disable assert() checks when no build type has been specified. Non-empty
     # build types like "Release" and "Debug" handle this by default.
     $<$<CONFIG:>:NDEBUG>
 )
+
+
+######################
+# System definitions #
+######################
 
 # _GNU_SOURCE and such definitions. This specific macro is special since
 # it also adds the definitions to CMAKE_REQUIRED_DEFINITIONS.
@@ -203,7 +178,11 @@ if(NOT WIN32 AND NOT DEFINED HAVE_CLOCK_GETTIME)
     endif()
 endif()
 
-# Threading support:
+
+#############
+# Threading #
+#############
+
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 if(CMAKE_USE_WIN32_THREADS_INIT)
@@ -270,128 +249,25 @@ add_library(liblzma
     src/liblzma/api/lzma/vli.h
     src/liblzma/check/check.c
     src/liblzma/check/check.h
-    src/liblzma/check/crc32_fast.c
-    src/liblzma/check/crc32_table.c
-    src/liblzma/check/crc32_table_be.h
-    src/liblzma/check/crc32_table_le.h
-    src/liblzma/check/crc64_fast.c
-    src/liblzma/check/crc64_table.c
-    src/liblzma/check/crc64_table_be.h
-    src/liblzma/check/crc64_table_le.h
     src/liblzma/check/crc_macros.h
-    src/liblzma/check/sha256.c
-    src/liblzma/common/alone_decoder.c
-    src/liblzma/common/alone_decoder.h
-    src/liblzma/common/alone_encoder.c
-    src/liblzma/common/auto_decoder.c
-    src/liblzma/common/block_buffer_decoder.c
-    src/liblzma/common/block_buffer_encoder.c
-    src/liblzma/common/block_buffer_encoder.h
-    src/liblzma/common/block_decoder.c
-    src/liblzma/common/block_decoder.h
-    src/liblzma/common/block_encoder.c
-    src/liblzma/common/block_encoder.h
-    src/liblzma/common/block_header_decoder.c
-    src/liblzma/common/block_header_encoder.c
     src/liblzma/common/block_util.c
     src/liblzma/common/common.c
     src/liblzma/common/common.h
-    src/liblzma/common/easy_buffer_encoder.c
-    src/liblzma/common/easy_decoder_memusage.c
-    src/liblzma/common/easy_encoder.c
-    src/liblzma/common/easy_encoder_memusage.c
     src/liblzma/common/easy_preset.c
     src/liblzma/common/easy_preset.h
-    src/liblzma/common/file_info.c
-    src/liblzma/common/filter_buffer_decoder.c
-    src/liblzma/common/filter_buffer_encoder.c
     src/liblzma/common/filter_common.c
     src/liblzma/common/filter_common.h
-    src/liblzma/common/filter_decoder.c
-    src/liblzma/common/filter_decoder.h
-    src/liblzma/common/filter_encoder.c
-    src/liblzma/common/filter_encoder.h
-    src/liblzma/common/filter_flags_decoder.c
-    src/liblzma/common/filter_flags_encoder.c
     src/liblzma/common/hardware_cputhreads.c
     src/liblzma/common/hardware_physmem.c
     src/liblzma/common/index.c
     src/liblzma/common/index.h
-    src/liblzma/common/index_decoder.c
-    src/liblzma/common/index_decoder.h
-    src/liblzma/common/index_encoder.c
-    src/liblzma/common/index_encoder.h
-    src/liblzma/common/index_hash.c
-    src/liblzma/common/lzip_decoder.c
-    src/liblzma/common/lzip_decoder.h
     src/liblzma/common/memcmplen.h
-    src/liblzma/common/microlzma_decoder.c
-    src/liblzma/common/microlzma_encoder.c
     src/liblzma/common/outqueue.c
     src/liblzma/common/outqueue.h
-    src/liblzma/common/stream_buffer_decoder.c
-    src/liblzma/common/stream_buffer_encoder.c
-    src/liblzma/common/stream_decoder.c
-    src/liblzma/common/stream_decoder_mt.c
-    src/liblzma/common/stream_decoder.h
-    src/liblzma/common/stream_encoder.c
-    src/liblzma/common/stream_encoder_mt.c
     src/liblzma/common/stream_flags_common.c
     src/liblzma/common/stream_flags_common.h
-    src/liblzma/common/stream_flags_decoder.c
-    src/liblzma/common/stream_flags_encoder.c
     src/liblzma/common/string_conversion.c
-    src/liblzma/common/vli_decoder.c
-    src/liblzma/common/vli_encoder.c
     src/liblzma/common/vli_size.c
-    src/liblzma/delta/delta_common.c
-    src/liblzma/delta/delta_common.h
-    src/liblzma/delta/delta_decoder.c
-    src/liblzma/delta/delta_decoder.h
-    src/liblzma/delta/delta_encoder.c
-    src/liblzma/delta/delta_encoder.h
-    src/liblzma/delta/delta_private.h
-    src/liblzma/lz/lz_decoder.c
-    src/liblzma/lz/lz_decoder.h
-    src/liblzma/lz/lz_encoder.c
-    src/liblzma/lz/lz_encoder.h
-    src/liblzma/lz/lz_encoder_hash.h
-    src/liblzma/lz/lz_encoder_hash_table.h
-    src/liblzma/lz/lz_encoder_mf.c
-    src/liblzma/lzma/fastpos.h
-    src/liblzma/lzma/fastpos_table.c
-    src/liblzma/lzma/lzma2_decoder.c
-    src/liblzma/lzma/lzma2_decoder.h
-    src/liblzma/lzma/lzma2_encoder.c
-    src/liblzma/lzma/lzma2_encoder.h
-    src/liblzma/lzma/lzma_common.h
-    src/liblzma/lzma/lzma_decoder.c
-    src/liblzma/lzma/lzma_decoder.h
-    src/liblzma/lzma/lzma_encoder.c
-    src/liblzma/lzma/lzma_encoder.h
-    src/liblzma/lzma/lzma_encoder_optimum_fast.c
-    src/liblzma/lzma/lzma_encoder_optimum_normal.c
-    src/liblzma/lzma/lzma_encoder_presets.c
-    src/liblzma/lzma/lzma_encoder_private.h
-    src/liblzma/rangecoder/price.h
-    src/liblzma/rangecoder/price_table.c
-    src/liblzma/rangecoder/range_common.h
-    src/liblzma/rangecoder/range_decoder.h
-    src/liblzma/rangecoder/range_encoder.h
-    src/liblzma/simple/arm.c
-    src/liblzma/simple/armthumb.c
-    src/liblzma/simple/arm64.c
-    src/liblzma/simple/ia64.c
-    src/liblzma/simple/powerpc.c
-    src/liblzma/simple/simple_coder.c
-    src/liblzma/simple/simple_coder.h
-    src/liblzma/simple/simple_decoder.c
-    src/liblzma/simple/simple_decoder.h
-    src/liblzma/simple/simple_encoder.c
-    src/liblzma/simple/simple_encoder.h
-    src/liblzma/simple/simple_private.h
-    src/liblzma/simple/sparc.c
-    src/liblzma/simple/x86.c
 )
 
 target_include_directories(liblzma PRIVATE
@@ -405,6 +281,384 @@ target_include_directories(liblzma PRIVATE
     src/liblzma/simple
     src/common
 )
+
+
+######################
+# Size optimizations #
+######################
+
+option(ENABLE_SMALL "Reduce code size at expense of speed. \
+This may be useful together with CMAKE_BUILD_TYPE=MinSizeRel.")
+
+if(ENABLE_SMALL)
+    add_compile_definitions(HAVE_SMALL)
+endif()
+
+
+##########
+# Checks #
+##########
+
+set(ADDITIONAL_SUPPORTED_CHECKS crc64 sha256)
+
+set(ADDITIONAL_CHECK_TYPES "${ADDITIONAL_SUPPORTED_CHECKS}" CACHE STRING
+    "Additional check types to support (crc32 is always built)")
+
+foreach(CHECK IN LISTS ADDITIONAL_CHECK_TYPES)
+    if(NOT CHECK IN_LIST ADDITIONAL_SUPPORTED_CHECKS)
+        message(SEND_ERROR "'${CHECK}' is not a supported check type")
+    endif()
+endforeach()
+
+if(ENABLE_SMALL)
+    target_sources(liblzma PRIVATE src/liblzma/check/crc32_small.c)
+else()
+    target_sources(liblzma PRIVATE
+        src/liblzma/check/crc32_fast.c
+        src/liblzma/check/crc32_table.c
+        src/liblzma/check/crc32_table_be.h
+        src/liblzma/check/crc32_table_le.h
+    )
+endif()
+
+if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
+    add_compile_definitions("HAVE_CHECK_CRC64")
+
+    if(ENABLE_SMALL)
+        target_sources(liblzma PRIVATE src/liblzma/check/crc64_small.c)
+    else()
+        target_sources(liblzma PRIVATE
+            src/liblzma/check/crc64_fast.c
+            src/liblzma/check/crc64_table.c
+            src/liblzma/check/crc64_table_be.h
+            src/liblzma/check/crc64_table_le.h
+        )
+    endif()
+endif()
+
+if("sha256" IN_LIST ADDITIONAL_CHECK_TYPES)
+    add_compile_definitions("HAVE_CHECK_SHA256")
+    target_sources(liblzma PRIVATE src/liblzma/check/sha256.c)
+endif()
+
+
+#################
+# Match finders #
+#################
+
+set(SUPPORTED_MATCH_FINDERS hc3 hc4 bt2 bt3 bt4)
+
+set(MATCH_FINDERS "${SUPPORTED_MATCH_FINDERS}" CACHE STRING
+    "Match finders to support (at least one is required for LZMA1 or LZMA2)")
+
+foreach(MF IN LISTS MATCH_FINDERS)
+    if(MF IN_LIST SUPPORTED_MATCH_FINDERS)
+        string(TOUPPER "${MF}" MF_UPPER)
+        add_compile_definitions("HAVE_MF_${MF_UPPER}")
+    else()
+        message(SEND_ERROR "'${MF}' is not a supported match finder")
+    endif()
+endforeach()
+
+
+############
+# Encoders #
+############
+
+set(SIMPLE_FILTERS
+    x86
+    arm
+    armthumb
+    arm64
+    powerpc
+    ia64
+    sparc
+)
+
+# The SUPPORTED_FILTERS are shared between Encoders and Decoders
+# since only lzip does not appear in both lists. lzip is a special
+# case anyway, so it is handled separately in the Decoders section.
+set(SUPPORTED_FILTERS
+    lzma1
+    lzma2
+    delta
+    "${SIMPLE_FILTERS}"
+)
+
+set(ENCODERS "${SUPPORTED_FILTERS}" CACHE STRING "Encoders to support")
+
+# If LZMA2 is enabled, then LZMA1 must also be enabled.
+if(NOT "lzma1" IN_LIST ENCODERS AND "lzma2" IN_LIST ENCODERS)
+    message(SEND_ERROR "LZMA2 encoder requires that LZMA1 is also enabled")
+endif()
+
+# If LZMA1 is enabled, then at least one match finder must be enabled.
+if(MATCH_FINDERS STREQUAL "" AND "lzma1" IN_LIST ENCODERS)
+    message(SEND_ERROR "At least 1 match finder is required for an "
+                       "LZ-based encoder")
+endif()
+
+set(HAVE_DELTA_CODER OFF)
+set(SIMPLE_ENCODERS OFF)
+set(HAVE_ENCODERS OFF)
+
+foreach(ENCODER IN LISTS ENCODERS)
+    if(ENCODER IN_LIST SUPPORTED_FILTERS)
+        set(HAVE_ENCODERS ON)
+
+        if(NOT SIMPLE_ENCODERS AND ENCODER IN_LIST SIMPLE_FILTERS)
+            set(SIMPLE_ENCODERS ON)
+        endif()
+
+        string(TOUPPER "${ENCODER}" ENCODER_UPPER)
+        add_compile_definitions("HAVE_ENCODER_${ENCODER_UPPER}")
+    else()
+        message(SEND_ERROR "'${ENCODER}' is not a supported encoder")
+    endif()
+endforeach()
+
+if(HAVE_ENCODERS)
+    add_compile_definitions(HAVE_ENCODERS)
+
+    target_sources(liblzma PRIVATE
+        src/liblzma/common/alone_encoder.c
+        src/liblzma/common/block_buffer_encoder.c
+        src/liblzma/common/block_buffer_encoder.h
+        src/liblzma/common/block_encoder.c
+        src/liblzma/common/block_encoder.h
+        src/liblzma/common/block_header_encoder.c
+        src/liblzma/common/easy_buffer_encoder.c
+        src/liblzma/common/easy_encoder.c
+        src/liblzma/common/easy_encoder_memusage.c
+        src/liblzma/common/filter_buffer_encoder.c
+        src/liblzma/common/filter_encoder.c
+        src/liblzma/common/filter_encoder.h
+        src/liblzma/common/filter_flags_encoder.c
+        src/liblzma/common/index_encoder.c
+        src/liblzma/common/index_encoder.h
+        src/liblzma/common/stream_buffer_encoder.c
+        src/liblzma/common/stream_encoder.c
+        src/liblzma/common/stream_encoder_mt.c
+        src/liblzma/common/stream_flags_encoder.c
+        src/liblzma/common/vli_encoder.c
+    )
+
+    if(SIMPLE_ENCODERS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/simple/simple_encoder.c
+            src/liblzma/simple/simple_encoder.h
+        )
+    endif()
+
+    if("lzma1" IN_LIST ENCODERS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/lzma/lzma_encoder.c
+            src/liblzma/lzma/lzma_encoder.h
+            src/liblzma/lzma/lzma_encoder_optimum_fast.c
+            src/liblzma/lzma/lzma_encoder_optimum_normal.c
+            src/liblzma/lzma/lzma_encoder_private.h
+            src/liblzma/lzma/fastpos.h
+            src/liblzma/lz/lz_encoder.c
+            src/liblzma/lz/lz_encoder.h
+            src/liblzma/lz/lz_encoder_hash.h
+            src/liblzma/lz/lz_encoder_hash_table.h
+            src/liblzma/lz/lz_encoder_mf.c
+            src/liblzma/rangecoder/price.h
+            src/liblzma/rangecoder/price_table.c
+            src/liblzma/rangecoder/range_encoder.h
+        )
+
+        if(NOT ENABLE_SMALL)
+            target_sources(liblzma PRIVATE src/liblzma/lzma/fastpos_table.c)
+        endif()
+    endif()
+
+    if("lzma2" IN_LIST ENCODERS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/lzma/lzma2_encoder.c
+            src/liblzma/lzma/lzma2_encoder.h
+        )
+    endif()
+
+    if("delta" IN_LIST ENCODERS)
+        set(HAVE_DELTA_CODER ON)
+        target_sources(liblzma PRIVATE
+            src/liblzma/delta/delta_encoder.c
+            src/liblzma/delta/delta_encoder.h
+        )
+    endif()
+endif()
+
+
+############
+# Decoders #
+############
+
+set(DECODERS "${SUPPORTED_FILTERS}" CACHE STRING "Decoders to support")
+
+set(SIMPLE_DECODERS OFF)
+set(HAVE_DECODERS OFF)
+
+foreach(DECODER IN LISTS DECODERS)
+    if(DECODER IN_LIST SUPPORTED_FILTERS)
+        set(HAVE_DECODERS ON)
+
+        if(NOT SIMPLE_DECODERS AND DECODER IN_LIST SIMPLE_FILTERS)
+            set(SIMPLE_DECODERS ON)
+        endif()
+
+        string(TOUPPER "${DECODER}" DECODER_UPPER)
+        add_compile_definitions("HAVE_DECODER_${DECODER_UPPER}")
+    else()
+        message(SEND_ERROR "'${DECODER}' is not a supported decoder")
+    endif()
+endforeach()
+
+if(HAVE_DECODERS)
+    add_compile_definitions(HAVE_DECODERS)
+
+    target_sources(liblzma PRIVATE
+        src/liblzma/common/alone_decoder.c
+        src/liblzma/common/alone_decoder.h
+        src/liblzma/common/auto_decoder.c
+        src/liblzma/common/block_buffer_decoder.c
+        src/liblzma/common/block_decoder.c
+        src/liblzma/common/block_decoder.h
+        src/liblzma/common/block_header_decoder.c
+        src/liblzma/common/easy_decoder_memusage.c
+        src/liblzma/common/file_info.c
+        src/liblzma/common/filter_buffer_decoder.c
+        src/liblzma/common/filter_decoder.c
+        src/liblzma/common/filter_decoder.h
+        src/liblzma/common/filter_flags_decoder.c
+        src/liblzma/common/index_decoder.c
+        src/liblzma/common/index_decoder.h
+        src/liblzma/common/index_hash.c
+        src/liblzma/common/stream_buffer_decoder.c
+        src/liblzma/common/stream_decoder.c
+        src/liblzma/common/stream_flags_decoder.c
+        src/liblzma/common/stream_decoder_mt.c
+        src/liblzma/common/stream_decoder.h
+        src/liblzma/common/vli_decoder.c
+    )
+
+    if(SIMPLE_DECODERS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/simple/simple_decoder.c
+            src/liblzma/simple/simple_decoder.h
+        )
+    endif()
+
+    if("lzma1" IN_LIST DECODERS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/lzma/lzma_decoder.c
+            src/liblzma/lzma/lzma_decoder.h
+            src/liblzma/rangecoder/range_decoder.h
+            src/liblzma/lz/lz_decoder.c
+            src/liblzma/lz/lz_decoder.h
+        )
+    endif()
+
+    if("lzma2" IN_LIST DECODERS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/lzma/lzma2_decoder.c
+            src/liblzma/lzma/lzma2_decoder.h
+        )
+    endif()
+
+    if("delta" IN_LIST DECODERS)
+        set(HAVE_DELTA_CODER ON)
+        target_sources(liblzma PRIVATE
+            src/liblzma/delta/delta_decoder.c
+            src/liblzma/delta/delta_decoder.h
+        )
+    endif()
+endif()
+
+# Some sources must appear if the filter is configured as either
+# an encoder or decoder.
+if("lzma1" IN_LIST ENCODERS OR "lzma1" IN_LIST DECODERS)
+    target_sources(liblzma PRIVATE
+        src/liblzma/rangecoder/range_common.h
+        src/liblzma/lzma/lzma_encoder_presets.c
+        src/liblzma/lzma/lzma_common.h
+    )
+endif()
+
+if(HAVE_DELTA_CODER)
+    target_sources(liblzma PRIVATE
+        src/liblzma/delta/delta_common.c
+        src/liblzma/delta/delta_common.h
+        src/liblzma/delta/delta_private.h
+    )
+endif()
+
+if(SIMPLE_ENCODERS OR SIMPLE_DECODERS)
+    target_sources(liblzma PRIVATE
+        src/liblzma/simple/simple_coder.c
+        src/liblzma/simple/simple_coder.h
+        src/liblzma/simple/simple_private.h
+    )
+endif()
+
+foreach(SIMPLE_CODER IN LISTS SIMPLE_FILTERS)
+    if(SIMPLE_CODER IN_LIST ENCODERS OR SIMPLE_CODER IN_LIST DECODERS)
+        target_sources(liblzma PRIVATE "src/liblzma/simple/${SIMPLE_CODER}.c")
+    endif()
+endforeach()
+
+
+#############
+# MicroLZMA #
+#############
+
+option(MICROLZMA_ENCODER
+       "MicroLZMA encoder (needed by specific applications only)" ON)
+
+option(MICROLZMA_DECODER
+       "MicroLZMA decoder (needed by specific applications only)" ON)
+
+if(MICROLZMA_ENCODER)
+    if(NOT "lzma1" IN_LIST ENCODERS)
+        message(SEND_ERROR "The LZMA1 encoder is required to support the "
+                           "MicroLZMA encoder")
+    endif()
+
+    target_sources(liblzma PRIVATE src/liblzma/common/microlzma_encoder.c)
+endif()
+
+if(MICROLZMA_DECODER)
+    if(NOT "lzma1" IN_LIST DECODERS)
+        message(SEND_ERROR "The LZMA1 decoder is required to support the "
+                           "MicroLZMA decoder")
+    endif()
+
+    target_sources(liblzma PRIVATE src/liblzma/common/microlzma_decoder.c)
+endif()
+
+
+#############################
+# lzip (.lz) format support #
+#############################
+
+option(LZIP_DECODER "Support lzip decoder" ON)
+
+if(LZIP_DECODER)
+    # If lzip decoder support is requested, make sure LZMA1 decoder is enabled.
+    if(NOT "lzma1" IN_LIST DECODERS)
+        message(SEND_ERROR "The LZMA1 decoder is required to support the "
+                           "lzip decoder")
+    endif()
+
+    add_compile_definitions(HAVE_LZIP_DECODER)
+
+    target_sources(liblzma PRIVATE
+        src/liblzma/common/lzip_decoder.c
+        src/liblzma/common/lzip_decoder.h
+    )
+endif()
+
+###
 
 target_link_libraries(liblzma Threads::Threads)
 

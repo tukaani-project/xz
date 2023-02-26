@@ -397,6 +397,7 @@ target_include_directories(liblzma PRIVATE
 )
 
 target_link_libraries(liblzma Threads::Threads)
+target_compile_features(liblzma PRIVATE c_std_99)
 
 # Put the tuklib functions under the lzma_ namespace.
 target_compile_definitions(liblzma PRIVATE TUKLIB_SYMBOL_PREFIX=lzma_)

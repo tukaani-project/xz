@@ -69,6 +69,14 @@ string(REGEX REPLACE
 # Among other things, this gives us variables xz_VERSION and xz_VERSION_MAJOR.
 project(xz VERSION "${XZ_VERSION}" LANGUAGES C)
 
+# We need a compiler that supports enough C99 or newer (variable-length arrays
+# aren't needed, those are optional in C17). Setting CMAKE_C_STANDARD here
+# makes it the default for all targets. It doesn't affect the INTERFACE so
+# liblzma::liblzma won't end up with INTERFACE_COMPILE_FEATURES "c_std_99"
+# (the API headers are C89 and C++ compatible).
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 # On Apple OSes, don't build executables as bundles:
 set(CMAKE_MACOSX_BUNDLE OFF)
 

@@ -238,6 +238,8 @@ capsicum_error:
 	// implement the capability system calls, then the capsicum system
 	// calls will fail and set errno to ENOSYS.
 	if (errno == ENOSYS) {
+		message_warning(_("%s: Cannot enable the sandbox"),
+				strerror(errno));
 		sandbox_allowed = false;
 		return;
 	}

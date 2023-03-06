@@ -193,24 +193,24 @@ io_sandbox_enter(int src_fd)
 	cap_rights_t rights;
 
 	if (cap_enter())
-		goto error;
+		goto capsicum_error;
 
 	if (cap_rights_limit(src_fd, cap_rights_init(&rights,
 			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
-		goto error;
+		goto capsicum_error;
 
 	if (cap_rights_limit(STDOUT_FILENO, cap_rights_init(&rights,
 			CAP_EVENT, CAP_FCNTL, CAP_FSTAT, CAP_LOOKUP,
 			CAP_WRITE, CAP_SEEK)))
-		goto error;
+		goto capsicum_error;
 
 	if (cap_rights_limit(user_abort_pipe[0], cap_rights_init(&rights,
 			CAP_EVENT)))
-		goto error;
+		goto capsicum_error;
 
 	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
 			CAP_WRITE)))
-		goto error;
+		goto capsicum_error;
 
 #elif defined(HAVE_PLEDGE)
 	// pledge() was introduced in OpenBSD 5.9.
@@ -230,6 +230,18 @@ io_sandbox_enter(int src_fd)
 	// This message is annoying in xz -lvv.
 	//message(V_DEBUG, _("Sandbox was successfully enabled"));
 	return;
+
+#ifdef HAVE_CAPSICUM
+capsicum_error:
+	// Even though it is undocumented, if a kernel is configured without
+	// capability mode support or used in an emulator that does not
+	// implement the capability system calls, then the capsicum system
+	// calls will fail and set errno to ENOSYS.
+	if (errno == ENOSYS) {
+		sandbox_allowed = false;
+		return;
+	}
+#endif
 
 error:
 	message_fatal(_("Failed to enable the sandbox"));

@@ -199,9 +199,17 @@ io_sandbox_enter(int src_fd)
 			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
 		goto capsicum_error;
 
+	if (src_fd != STDIN_FILENO && cap_rights_limit(
+			STDIN_FILENO, cap_rights_clear(&rights)))
+		goto capsicum_error;
+
 	if (cap_rights_limit(STDOUT_FILENO, cap_rights_init(&rights,
 			CAP_EVENT, CAP_FCNTL, CAP_FSTAT, CAP_LOOKUP,
 			CAP_WRITE, CAP_SEEK)))
+		goto capsicum_error;
+
+	if (cap_rights_limit(STDERR_FILENO, cap_rights_init(&rights,
+			CAP_WRITE)))
 		goto capsicum_error;
 
 	if (cap_rights_limit(user_abort_pipe[0], cap_rights_init(&rights,

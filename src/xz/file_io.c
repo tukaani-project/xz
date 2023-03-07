@@ -243,9 +243,9 @@ capsicum_error:
 		sandbox_allowed = false;
 		return;
 	}
-#endif
-
+#else
 error:
+#endif
 	message_fatal(_("Failed to enable the sandbox"));
 }
 #endif // ENABLE_SANDBOX

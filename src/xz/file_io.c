@@ -192,6 +192,9 @@ io_sandbox_enter(int src_fd)
 	// Capsicum needs FreeBSD 10.0 or later.
 	cap_rights_t rights;
 
+	if (cap_enter())
+		goto error;
+
 	if (cap_rights_limit(src_fd, cap_rights_init(&rights,
 			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
 		goto error;
@@ -207,9 +210,6 @@ io_sandbox_enter(int src_fd)
 
 	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
 			CAP_WRITE)))
-		goto error;
-
-	if (cap_enter())
 		goto error;
 
 #elif defined(HAVE_PLEDGE)
@@ -232,6 +232,15 @@ io_sandbox_enter(int src_fd)
 	return;
 
 error:
+#ifdef HAVE_CAPSICUM
+	// If a kernel is configured without capability mode support or
+	// used in an emulator that does not implement the capability
+	// system calls, then the Capsicum system calls will fail and set
+	// errno to ENOSYS. In that case xz will silently run without
+	// the sandbox.
+	if (errno == ENOSYS)
+		return;
+#endif
 	message_fatal(_("Failed to enable the sandbox"));
 }
 #endif // ENABLE_SANDBOX

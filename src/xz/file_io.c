@@ -193,32 +193,32 @@ io_sandbox_enter(int src_fd)
 	cap_rights_t rights;
 
 	if (cap_enter())
-		goto capsicum_error;
+		goto error;
 
 	if (cap_rights_limit(src_fd, cap_rights_init(&rights,
 			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
-		goto capsicum_error;
+		goto error;
 
 	if (src_fd != STDIN_FILENO && cap_rights_limit(
 			STDIN_FILENO, cap_rights_clear(&rights)))
-		goto capsicum_error;
+		goto error;
 
 	if (cap_rights_limit(STDOUT_FILENO, cap_rights_init(&rights,
 			CAP_EVENT, CAP_FCNTL, CAP_FSTAT, CAP_LOOKUP,
 			CAP_WRITE, CAP_SEEK)))
-		goto capsicum_error;
+		goto error;
 
 	if (cap_rights_limit(STDERR_FILENO, cap_rights_init(&rights,
 			CAP_WRITE)))
-		goto capsicum_error;
+		goto error;
 
 	if (cap_rights_limit(user_abort_pipe[0], cap_rights_init(&rights,
 			CAP_EVENT)))
-		goto capsicum_error;
+		goto error;
 
 	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
 			CAP_WRITE)))
-		goto capsicum_error;
+		goto error;
 
 #elif defined(HAVE_PLEDGE)
 	// pledge() was introduced in OpenBSD 5.9.
@@ -239,18 +239,15 @@ io_sandbox_enter(int src_fd)
 	//message(V_DEBUG, _("Sandbox was successfully enabled"));
 	return;
 
+error:
 #ifdef HAVE_CAPSICUM
-capsicum_error:
 	// If a kernel is configured without capability mode support or
 	// used in an emulator that does not implement the capability
-	// system calls, then the capsicum system calls will fail and set
-	// errno to ENOSYS.
-	if (errno == ENOSYS) {
-		sandbox_allowed = false;
+	// system calls, then the Capsicum system calls will fail and set
+	// errno to ENOSYS. In that case xz will silently run without
+	// the sandbox.
+	if (errno == ENOSYS)
 		return;
-	}
-#else
-error:
 #endif
 	message_fatal(_("Failed to enable the sandbox"));
 }

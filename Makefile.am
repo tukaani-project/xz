@@ -47,15 +47,15 @@ dist_examplesold_DATA = \
 
 # Install the Doxygen generated documentation if they were built.
 install-data-local:
-	if test -d "$(srcdir)/doc/liblzma" ; then \
-		$(MKDIR_P) "$(DESTDIR)$(docdir)/liblzma" && \
-		$(INSTALL_DATA) "$(srcdir)"/doc/liblzma/* \
-			"$(DESTDIR)$(docdir)/liblzma"; \
+	if test -d "$(srcdir)/doc/api" ; then \
+		$(MKDIR_P) "$(DESTDIR)$(docdir)/api" && \
+		$(INSTALL_DATA) "$(srcdir)"/doc/api/* \
+			"$(DESTDIR)$(docdir)/api"; \
 	fi
 
 # Remove the Doxygen generated documentation when uninstalling.
 uninstall-local:
-	rm -rf "$(DESTDIR)$(docdir)/liblzma"
+	rm -rf "$(DESTDIR)$(docdir)/api"
 endif
 
 EXTRA_DIST = \
@@ -112,10 +112,10 @@ dist-hook:
 				> "$$dest/txt/$$BASE.txt"; \
 		done; \
 	fi
-	if test -d "$(srcdir)/doc/liblzma" ; then \
-		$(MKDIR_P) "$(distdir)/doc/liblzma" && \
-		$(INSTALL_DATA) "$(srcdir)"/doc/liblzma/* \
-			"$(distdir)/doc/liblzma"; \
+	if test -d "$(srcdir)/doc/api" ; then \
+		$(MKDIR_P) "$(distdir)/doc/api" && \
+		$(INSTALL_DATA) "$(srcdir)"/doc/api/* \
+			"$(distdir)/doc/api"; \
 	fi
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.

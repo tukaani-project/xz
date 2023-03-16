@@ -2,8 +2,6 @@
  * \file        lzma/delta.h
  * \brief       Delta filter
  * \note        Never include this file directly. Use <lzma.h> instead.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 /*

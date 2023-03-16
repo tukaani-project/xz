@@ -2,8 +2,6 @@
  * \file        lzma/base.h
  * \brief       Data types and functions used in many places in liblzma API
  * \note        Never include this file directly. Use <lzma.h> instead.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 /*

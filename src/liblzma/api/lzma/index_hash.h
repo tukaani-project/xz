@@ -3,8 +3,6 @@
  * \brief       Validate Index by using a hash function
  * \note        Never include this file directly. Use <lzma.h> instead.
  *
- * See ../lzma.h for information about liblzma as a whole.
- *
  * Hashing makes it possible to use constant amount of memory to validate
  * Index of arbitrary size.
  */
@@ -118,7 +116,7 @@ extern LZMA_API(lzma_ret) lzma_index_hash_decode(lzma_index_hash *index_hash,
  * This is needed to verify the Backward Size field in the Stream Footer.
  *
  * \param       index_hash      Pointer to a lzma_index_hash structure
- * 
+ *
  * \return      Size of the Index field in bytes.
  */
 extern LZMA_API(lzma_vli) lzma_index_hash_size(

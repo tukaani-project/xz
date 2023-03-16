@@ -2,8 +2,6 @@
  * \file        lzma/bcj.h
  * \brief       Branch/Call/Jump conversion filters
  * \note        Never include this file directly. Use <lzma.h> instead.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 /*

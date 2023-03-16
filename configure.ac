@@ -520,45 +520,6 @@ AC_ARG_ENABLE([doc], [AS_HELP_STRING([--disable-doc],
 AM_CONDITIONAL([COND_DOC], [test x$enable_doc != xno])
 
 
-###########
-# Doxygen #
-###########
-
-# Doxygen can be enabled in two different modes:
-# api - Only generate Doxygen html pages for liblzma API headers.
-# all - Generate Doxygen html pages for every file.
-# api mode is the default because the primary purpose for the doxygen
-# documentation is to publicaly describe liblzma's API. The other html
-# pages are only useful for those who want to understand or alter the
-# internals of xz and liblzma.
-
-AC_ARG_ENABLE([doxygen], [AS_HELP_STRING([--enable-doxygen=SCOPE],
-			[Doxygen SCOPE can be `all', or `api'.
-			The default is `api', which will generate doxygen html
-			for liblzma API. The `all' option will generate doxygen
-			html for every .c and .h file.])],
-		[], [enable_doxygen=api])
-case $enable_doxygen in
-	api)
-		doxygen_project_name="liblzma ($PACKAGE_NAME)"
-		doxygen_extract_private=NO
-		doxygen_input_path=src/liblzma/api
-		;;
-	all)
-		doxygen_project_name="$PACKAGE_NAME"
-		doxygen_extract_private=YES
-		doxygen_input_path=src
-		;;
-	*)
-		AC_MSG_ERROR([--enable-doxygen only accepts `all' or `api'])
-		;;
-esac
-
-AC_SUBST([doxygen_project_name])
-AC_SUBST([doxygen_extract_private])
-AC_SUBST([doxygen_input_path])
-
-
 ##############
 # Sandboxing #
 ##############
@@ -1171,7 +1132,6 @@ xz=`echo xz | sed "$program_transform_name"`
 AC_SUBST([xz])
 
 AC_CONFIG_FILES([
-	Doxyfile
 	Makefile
 	po/Makefile.in
 	lib/Makefile

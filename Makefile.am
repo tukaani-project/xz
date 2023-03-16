@@ -55,7 +55,6 @@ EXTRA_DIST = \
 	cmake \
 	CMakeLists.txt \
 	autogen.sh \
-	Doxyfile.in \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
 	COPYING.LGPLv2.1 \

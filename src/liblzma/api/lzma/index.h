@@ -2,8 +2,6 @@
  * \file        lzma/index.h
  * \brief       Handling of .xz Index and related information
  * \note        Never include this file directly. Use <lzma.h> instead.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 /*

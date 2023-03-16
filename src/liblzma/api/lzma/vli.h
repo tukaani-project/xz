@@ -3,8 +3,6 @@
  * \brief       Variable-length integer handling
  * \note        Never include this file directly. Use <lzma.h> instead.
  *
- * See ../lzma.h for information about liblzma as a whole.
- *
  * In the .xz format, most integers are encoded in a variable-length
  * representation, which is sometimes called little endian base-128 encoding.
  * This saves space when smaller values are more likely than bigger values.

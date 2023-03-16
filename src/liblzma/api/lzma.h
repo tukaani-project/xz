@@ -1,6 +1,7 @@
 /**
  * \file        api/lzma.h
  * \brief       The public API of liblzma data compression library
+ * \mainpage
  *
  * liblzma is a public domain general-purpose data compression library with
  * a zlib-like API. The native file format is .xz, but also the old .lzma

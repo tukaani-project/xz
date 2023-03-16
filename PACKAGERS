@@ -44,6 +44,8 @@ Information to packagers of XZ Utils
                         lzmadec binary for compatibility with LZMA Utils
         liblzma         liblzma.so.*
         liblzma-devel   liblzma.so, liblzma.a, API headers
+        liblzma-doc     Doxygen-generated liblzma API docs (HTML),
+                        example programs
 
 
 2. Package description
@@ -109,6 +111,13 @@ Information to packagers of XZ Utils
         This package includes the API headers, static library, and
         other development files related to liblzma.
 
+    liblzma-doc:
+
+        liblzma API documentation in HTML and example usage
+
+        This package includes the Doxygen-generated liblzma API
+        HTML docs and example programs showing how to use liblzma.
+
 
 3. License
 ----------
@@ -160,12 +169,13 @@ Information to packagers of XZ Utils
     can be replaced with a symlink if your distro ships with shared
     copies of the common license texts.
 
-    liblzma API is currently only documented using Doxygen tags in the
-    API headers. It hasn't been tested much how good results Doxygen
-    is able to make from the tags (e.g. Doxyfile might need tweaking,
-    the tagging may need to be improved etc.), so it might be simpler
-    to just let people read docs directly from the .h files for now,
-    and also save quite a bit in package size at the same time.
+    The Doxygen-generated documentation (HTML) for the liblzma API
+    headers is included in the source release and will be installed by
+    "make install" to $docdir/liblzma. All JavaScript is removed to
+    simplify license compliance and to reduce the install size. If the
+    liblzma API documentation is not desired, either run configure with
+    --disable-doc or remove the doc/liblzma directory before running
+    "make install".
 
 
 6. Extra files

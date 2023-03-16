@@ -44,12 +44,25 @@ examplesolddir = $(docdir)/examples_old
 dist_examplesold_DATA = \
 	doc/examples_old/xz_pipe_comp.c \
 	doc/examples_old/xz_pipe_decomp.c
+
+# Install the Doxygen generated documentation if they were built.
+install-data-local:
+	if test -d "$(srcdir)/doc/liblzma" ; then \
+		$(MKDIR_P) "$(DESTDIR)$(docdir)/liblzma" && \
+		$(INSTALL_DATA) "$(srcdir)"/doc/liblzma/* \
+			"$(DESTDIR)$(docdir)/liblzma"; \
+	fi
+
+# Remove the Doxygen generated documentation when uninstalling.
+uninstall-local:
+	rm -rf "$(DESTDIR)$(docdir)/liblzma"
 endif
 
 EXTRA_DIST = \
 	po4a \
 	extra \
 	dos \
+	doxygen \
 	windows \
 	macosx \
 	cmake \
@@ -98,6 +111,11 @@ dist-hook:
 				< "$(srcdir)/$$FILE" \
 				> "$$dest/txt/$$BASE.txt"; \
 		done; \
+	fi
+	if test -d "$(srcdir)/doc/liblzma" ; then \
+		$(MKDIR_P) "$(distdir)/doc/liblzma" && \
+		$(INSTALL_DATA) "$(srcdir)"/doc/liblzma/* \
+			"$(distdir)/doc/liblzma"; \
 	fi
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.

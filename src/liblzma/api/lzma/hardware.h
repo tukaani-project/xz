@@ -3,8 +3,6 @@
  * \brief       Hardware information
  * \note        Never include this file directly. Use <lzma.h> instead.
  *
- * See ../lzma.h for information about liblzma as a whole.
- *
  * Since liblzma can consume a lot of system resources, it also provides
  * ways to limit the resource usage. Applications linking against liblzma
  * need to do the actual decisions how much resources to let liblzma to use.

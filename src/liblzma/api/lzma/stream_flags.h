@@ -2,8 +2,6 @@
  * \file        lzma/stream_flags.h
  * \brief       .xz Stream Header and Stream Footer encoder and decoder
  * \note        Never include this file directly. Use <lzma.h> instead.
- *
- * See ../lzma.h for information about liblzma as a whole.
  */
 
 /*

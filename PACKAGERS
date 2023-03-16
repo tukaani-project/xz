@@ -171,10 +171,10 @@ Information to packagers of XZ Utils
 
     The Doxygen-generated documentation (HTML) for the liblzma API
     headers is included in the source release and will be installed by
-    "make install" to $docdir/liblzma. All JavaScript is removed to
+    "make install" to $docdir/api. All JavaScript is removed to
     simplify license compliance and to reduce the install size. If the
     liblzma API documentation is not desired, either run configure with
-    --disable-doc or remove the doc/liblzma directory before running
+    --disable-doc or remove the doc/api directory before running
     "make install".
 
 

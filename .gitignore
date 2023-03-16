@@ -38,7 +38,7 @@ build-aux/test-driver
 coverage
 
 /doc/internal
-/doc/liblzma
+/doc/api
 
 /src/liblzma/liblzma.pc
 /src/lzmainfo/lzmainfo

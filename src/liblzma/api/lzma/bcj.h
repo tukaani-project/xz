@@ -55,7 +55,7 @@
 
 
 /**
- * \brief       Options for BCJ filters (except ARM64)
+ * \brief       Options for BCJ filters
  *
  * The BCJ filters never change the size of the data. Specifying options
  * for them is optional: if pointer to options is NULL, default value is

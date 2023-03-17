@@ -325,6 +325,8 @@ add_library(liblzma
     src/liblzma/common/lzip_decoder.c
     src/liblzma/common/lzip_decoder.h
     src/liblzma/common/memcmplen.h
+    src/liblzma/common/microlzma_decoder.c
+    src/liblzma/common/microlzma_encoder.c
     src/liblzma/common/outqueue.c
     src/liblzma/common/outqueue.h
     src/liblzma/common/stream_buffer_decoder.c

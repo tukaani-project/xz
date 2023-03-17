@@ -277,6 +277,8 @@
     <ClCompile Include="..\..\src\liblzma\common\index_encoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\index_hash.c" />
     <ClCompile Include="..\..\src\liblzma\common\lzip_decoder.c" />
+    <ClCompile Include="..\..\src\liblzma\common\microlzma_decoder.c" />
+    <ClCompile Include="..\..\src\liblzma\common\microlzma_encoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\outqueue.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_buffer_decoder.c" />
     <ClCompile Include="..\..\src\liblzma\common\stream_buffer_encoder.c" />

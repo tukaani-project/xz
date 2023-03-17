@@ -2,7 +2,7 @@
 #
 # Very limited CMake support for building some parts of XZ Utils
 #
-# For now, this is indented to be useful to build static or shared liblzma
+# For now, this is intended to be useful to build static or shared liblzma
 # on Windows with MSVC (to avoid the need to maintain Visual Studio project
 # files). Building liblzma on a few other platforms should work too but it
 # is somewhat experimental and not as portable as using ./configure.

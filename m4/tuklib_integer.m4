@@ -8,8 +8,8 @@
 #   Checks for tuklib_integer.h:
 #     - Endianness
 #     - Does the compiler or the operating system provide byte swapping macros
-#     - Does the hardware support fast unaligned access to 16-bit
-#       and 32-bit integers
+#     - Does the hardware support fast unaligned access to 16-bit, 32-bit,
+#       and 64-bit integers
 #
 # COPYING
 #

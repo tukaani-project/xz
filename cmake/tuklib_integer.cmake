@@ -59,9 +59,8 @@ function(tuklib_integer TARGET_OR_ALL)
         endif()
     endif()
 
-    # 16-bit and 32-bit unaligned access is fast on x86(-64),
-    # big endian PowerPC, and usually on 32/64-bit ARM too.
-    # There are others too and ARM could be a false match.
+    # Unaligned access is fast on x86(-64), big endian PowerPC, and usually on
+    # 32/64-bit ARM too. There are others too and ARM could be a false match.
     #
     # Guess the default value for the option.
     # CMake's ability to give info about the target arch seems bad.
@@ -81,7 +80,7 @@ function(tuklib_integer TARGET_OR_ALL)
     endif()
     option(TUKLIB_FAST_UNALIGNED_ACCESS
            "Enable if the system supports *fast* unaligned memory access \
-with 16-bit and 32-bit integers."
+with 16-bit, 32-bit, and 64-bit integers."
            "${FAST_UNALIGNED_GUESS}")
     tuklib_add_definition_if("${TARGET_OR_ALL}" TUKLIB_FAST_UNALIGNED_ACCESS)
 

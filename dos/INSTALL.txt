@@ -17,7 +17,7 @@ Introduction
 
 Getting and Installing DJGPP
 
-    You may use <http://www.delorie.com/djgpp/zip-picker.html> to help
+    You may use <https://www.delorie.com/djgpp/zip-picker.html> to help
     deciding what to download. If you are only interested in building
     XZ Utils, the zip-picker may list files that you don't strictly
     need. However, using the zip-picker can still be worth it to get a
@@ -25,7 +25,7 @@ Getting and Installing DJGPP
     from readme.1st too).
 
     For a more manual method, first select a mirror from
-    <http://www.delorie.com/djgpp/getting.html> and go the
+    <https://www.delorie.com/djgpp/getting.html> and go the
     subdirectory named "current". You need the following files:
 
         unzip32.exe  (if you don't already have a LFN-capable unzipper)

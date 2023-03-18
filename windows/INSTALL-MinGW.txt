@@ -32,7 +32,7 @@ Installing the toolchain(s)
     So you need to pick between MinGW and MinGW-w32 when building
     32-bit version. You don't need both.
 
-    You might find 7-Zip <http://7-zip.org/> handy when extracting
+    You might find 7-Zip <https://7-zip.org/> handy when extracting
     some files. The ready-made build script build.bash will also use
     7-Zip to create the distributable .zip and .7z files.
 
@@ -50,7 +50,7 @@ Installing MSYS
 
     You can download MSYS from MinGW's Sourceforge page:
 
-        http://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/
+        https://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/
 
     I recommend using MSYS 1.0.11 (MSYS-1.0.11.exe or
     msysCORE-1.0.11-bin.tar.gz) because that package includes all the
@@ -69,7 +69,7 @@ Installing MinGW
 
     You can download the required packages from MinGW's Sourceforge page:
 
-        http://sourceforge.net/projects/mingw/files/
+        https://sourceforge.net/projects/mingw/files/
 
     These version numbers were the latest when I wrote this document, but
     you probably should pick the latest versions:
@@ -94,9 +94,9 @@ Installing MinGW-w32 or MinGW-w64
     toolchain. For XZ Utils 5.2.0 I used the packages from these
     directories:
 
-        http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.9.2/threads-win32/sjlj/
+        https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.9.2/threads-win32/sjlj/
 
-        http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.9.2/threads-win32/sjlj/
+        https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.9.2/threads-win32/sjlj/
 
     If you install both MinGW-w32 and MinGW-w64, remember to extract
     them into different directories. build.bash looks at

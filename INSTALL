@@ -596,7 +596,7 @@ XZ Utils Installation
     a fallback xzdiff will use mkdir to securely create a temporary
     directory. Having mktemp available is still recommended since the
     mkdir fallback method isn't as robust as mktemp is. The original
-    mktemp can be found from <http://www.mktemp.org/>. On GNU, most will
+    mktemp can be found from <https://www.mktemp.org/>. On GNU, most will
     use the mktemp program from GNU coreutils instead of the original
     implementation. Both mktemp versions are fine.
 

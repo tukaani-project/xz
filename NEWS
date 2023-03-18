@@ -2,6 +2,54 @@
 XZ Utils Release Notes
 ======================
 
+5.4.2 (2023-03-18)
+
+    * All fixes from 5.2.11 that were not included in 5.4.1.
+
+    * If xz is built with support for the Capsicum sandbox but running
+      in an environment that doesn't support Capsicum, xz now runs
+      normally without sandboxing instead of exiting with an error.
+
+    * liblzma:
+
+        - Documentation was updated to improve the style, consistency,
+          and completeness of the liblzma API headers.
+
+        - The Doxygen-generated HTML documentation for the liblzma API
+          header files is now included in the source release and is
+          installed as part of "make install". All JavaScript is
+          removed to simplify license compliance and to reduce the
+          install size.
+
+        - Fixed a minor bug in lzma_str_from_filters() that produced
+          too many filters in the output string instead of reporting
+          an error if the input array had more than four filters. This
+          bug did not affect xz.
+
+    * Build systems:
+
+        - autogen.sh now invokes the doxygen tool via the new wrapper
+          script doxygen/update-doxygen, unless the command line option
+          --no-doxygen is used.
+
+        - Added microlzma_encoder.c and microlzma_decoder.c to the
+          VS project files for Windows and to the CMake build. These
+          should have been included in 5.3.2alpha.
+
+    * Tests:
+
+        - Added a test to the CMake build that was forgotten in the
+          previous release.
+
+        - Added and refactored a few tests.
+
+    * Translations:
+
+        - Updated the Brazilian Portuguese translation.
+
+        - Added Brazilian Portuguese man page translation.
+
+
 5.4.1 (2023-01-11)
 
     * liblzma:

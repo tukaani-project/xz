@@ -816,7 +816,7 @@ TUKLIB_MBSTR
 sha256_header_found=no
 sha256_type_found=no
 sha256_func_found=no
-if test "x$enable_external_sha256" = "xyes"; then
+AS_IF([test "x$enable_external_sha256" = "xyes"], [
 	# Test for Common Crypto before others, because Darwin has sha256.h
 	# too and we don't want to use that, because on older versions it
 	# uses OpenSSL functions, whose SHA256_Init is not guaranteed to
@@ -846,7 +846,7 @@ if test "x$enable_external_sha256" = "xyes"; then
 				[sha256_func_found=yes ; break])
 		fi
 	fi
-fi
+])
 AM_CONDITIONAL([COND_INTERNAL_SHA256], [test "x$sha256_func_found" = xno])
 if test "x$enable_external_sha256$sha256_func_found" = xyesno; then
 	AC_MSG_ERROR([--enable-external-sha256 was specified but no supported external SHA-256 implementation was found])
@@ -865,11 +865,11 @@ AC_CHECK_DECL([_mm_movemask_epi8],
 #endif])
 
 # Check for sandbox support. If one is found, set enable_sandbox=found.
-case $enable_sandbox in
-	auto | capsicum)
+AS_CASE([$enable_sandbox],
+	[auto | capsicum], [
 		AX_CHECK_CAPSICUM([enable_sandbox=found], [:])
-		;;
-esac
+	]
+)
 
 # If a specific sandboxing method was explicitly requested and it wasn't
 # found, give an error.
@@ -898,7 +898,7 @@ if test -n "$CFLAG_VISIBILITY" && test "$is_w32" = no; then
 	AM_CFLAGS="$AM_CFLAGS $CFLAG_VISIBILITY"
 fi
 
-if test "$GCC" = yes ; then
+AS_IF([test "$GCC" = yes], [
 	# Enable as much warnings as possible. These commented warnings won't
 	# work for this package though:
 	#   * -Wunreachable-code breaks several assert(0) cases, which are
@@ -954,7 +954,7 @@ if test "$GCC" = yes ; then
 	if test "x$enable_werror" = "xyes"; then
 		AM_CFLAGS="$AM_CFLAGS -Werror"
 	fi
-fi
+])
 
 
 ###############################################################################

@@ -602,6 +602,9 @@ echo "Initializing Automake:"
 AM_INIT_AUTOMAKE([1.12 foreign tar-v7 filename-length-max=99 -Wno-unsupported])
 AC_PROG_LN_S
 
+dnl # Autoconf >= 2.70 warns that AC_PROG_CC_C99 is obsolete. However,
+dnl # we have to keep using AC_PROG_CC_C99 instead of AC_PROG_CC
+dnl # as long as we try to be compatible with Autoconf 2.69.
 AC_PROG_CC_C99
 if test x$ac_cv_prog_cc_c99 = xno ; then
 	AC_MSG_ERROR([No C99 compiler was found.])

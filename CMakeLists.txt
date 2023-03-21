@@ -958,8 +958,6 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
         src/xz/file_io.h
         src/xz/hardware.c
         src/xz/hardware.h
-        src/xz/list.c
-        src/xz/list.h
         src/xz/main.c
         src/xz/main.h
         src/xz/message.c
@@ -981,6 +979,13 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
         src/common
         src/liblzma/api
     )
+
+    if(HAVE_DECODERS)
+        target_sources(xz PRIVATE
+            src/xz/list.c
+            src/xz/list.h
+        )
+    endif()
 
     target_link_libraries(xz PRIVATE liblzma)
 

@@ -559,8 +559,8 @@ AM_PROG_CC_C_O
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
 
-case $enable_threads in
-	posix)
+AS_CASE([$enable_threads],
+	[posix], [
 		echo
 		echo "POSIX threading support:"
 		AX_PTHREAD([:]) dnl We don't need the HAVE_PTHREAD macro.
@@ -588,19 +588,19 @@ case $enable_threads in
 		AC_CHECK_FUNCS([clock_gettime pthread_condattr_setclock])
 		AC_CHECK_DECLS([CLOCK_MONOTONIC], [], [], [[#include <time.h>]])
 		CFLAGS=$OLD_CFLAGS
-		;;
-	win95)
+	],
+	[win95], [
 		AC_DEFINE([MYTHREAD_WIN95], [1], [Define to 1 when using
 			Windows 95 (and thus XP) compatible threads.
 			This avoids use of features that were added in
 			Windows Vista.])
-		;;
-	vista)
+	],
+	[vista], [
 		AC_DEFINE([MYTHREAD_VISTA], [1], [Define to 1 when using
 			Windows Vista compatible threads. This uses
 			features that are not available on Windows XP.])
-		;;
-esac
+	]
+)
 AM_CONDITIONAL([COND_THREADS], [test "x$enable_threads" != xno])
 
 echo

@@ -7,12 +7,9 @@
 
 EXTRA_DIST += lzma/fastpos_tablegen.c
 
-liblzma_la_SOURCES += lzma/lzma_common.h
-
-if COND_FILTER_LZMA1
 liblzma_la_SOURCES += \
+	lzma/lzma_common.h \
 	lzma/lzma_encoder_presets.c
-endif
 
 if COND_ENCODER_LZMA1
 liblzma_la_SOURCES += \

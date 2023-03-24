@@ -887,7 +887,7 @@ check_symbol_exists(getopt_long getopt.h HAVE_GETOPT_LONG)
 # xzdec
 #############################################################################
 
-if(HAVE_GETOPT_LONG)
+if(HAVE_GETOPT_LONG AND HAVE_DECODERS)
     add_executable(xzdec
         src/common/sysdefs.h
         src/common/tuklib_common.h

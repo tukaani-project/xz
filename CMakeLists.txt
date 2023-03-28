@@ -178,37 +178,6 @@ if(NOT WIN32 AND NOT DEFINED HAVE_CLOCK_GETTIME)
     endif()
 endif()
 
-
-#############
-# Threading #
-#############
-
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-find_package(Threads REQUIRED)
-if(CMAKE_USE_WIN32_THREADS_INIT)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        # Define to 1 when using Windows 95 (and thus XP) compatible threads. This
-        # avoids use of features that were added in Windows Vista.
-        # This is used for 32-bit x86 builds for compatibility reasons since it
-        # makes no measurable difference in performance compared to Vista threads.
-        add_compile_definitions(MYTHREAD_WIN95)
-    else()
-        # Define to 1 when using Windows Vista compatible threads. This uses features
-        # that are not available on Windows XP.
-        add_compile_definitions(MYTHREAD_VISTA)
-    endif()
-else()
-    add_compile_definitions(MYTHREAD_POSIX)
-
-    # Check if pthread_condattr_setclock() exists to use CLOCK_MONOTONIC.
-    if(HAVE_CLOCK_MONOTONIC)
-        list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
-        check_symbol_exists(pthread_condattr_setclock pthread.h
-                            HAVE_PTHREAD_CONDATTR_SETCLOCK)
-        tuklib_add_definition_if(ALL HAVE_PTHREAD_CONDATTR_SETCLOCK)
-    endif()
-endif()
-
 # Options for new enough GCC or Clang on any arch or operating system:
 if(CMAKE_C_COMPILER_ID MATCHES GNU|Clang)
     # configure.ac has a long list but it won't be copied here:
@@ -227,8 +196,6 @@ add_library(liblzma
     src/common/sysdefs.h
     src/common/tuklib_common.h
     src/common/tuklib_config.h
-    src/common/tuklib_cpucores.c
-    src/common/tuklib_cpucores.h
     src/common/tuklib_integer.h
     src/common/tuklib_physmem.c
     src/common/tuklib_physmem.h
@@ -257,13 +224,10 @@ add_library(liblzma
     src/liblzma/common/easy_preset.h
     src/liblzma/common/filter_common.c
     src/liblzma/common/filter_common.h
-    src/liblzma/common/hardware_cputhreads.c
     src/liblzma/common/hardware_physmem.c
     src/liblzma/common/index.c
     src/liblzma/common/index.h
     src/liblzma/common/memcmplen.h
-    src/liblzma/common/outqueue.c
-    src/liblzma/common/outqueue.h
     src/liblzma/common/stream_flags_common.c
     src/liblzma/common/stream_flags_common.h
     src/liblzma/common/string_conversion.c
@@ -361,6 +325,98 @@ foreach(MF IN LISTS MATCH_FINDERS)
 endforeach()
 
 
+#############
+# Threading #
+#############
+
+# Supported thread methods:
+# ON    - autodetect the best threading method. The autodetection will
+#         prefer Windows threading (win95 or vista) over posix if both are
+#         available. vista threads will be used over win95 unless it is a
+#         32-bit build.
+# OFF   - Disable threading.
+# posix - Use posix threading, or throw an error if not available.
+# win95 - Use Windows win95 threading, or throw an error if not available.
+# vista - Use Windows vista threading, or throw an error if not available.
+set(SUPPORTED_THREAD_METHODS ON OFF posix win95 vista)
+
+set(ENABLE_THREADS ON CACHE STRING
+        "Threading method type to support. Set to 'OFF' to disable threading")
+
+# Create dropdown in CMake GUI since only 1 threading method is possible
+# to select in a build.
+set_property(CACHE ENABLE_THREADS
+        PROPERTY STRINGS "${SUPPORTED_THREAD_METHODS}")
+
+if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREAD_METHODS)
+    message(SEND_ERROR "'${ENABLE_THREADS}' is not a supported thread type")
+endif()
+
+if(ENABLE_THREADS)
+    # Also set THREADS_PREFER_PTHREAD_FLAG since the flag has no effect
+    # for Windows threading.
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
+
+    # If both Windows and posix threading are available, prefer Windows.
+    if(CMAKE_USE_WIN32_THREADS_INIT AND NOT ENABLE_THREADS STREQUAL "posix")
+        if(ENABLE_THREADS STREQUAL "win95"
+                OR (ENABLE_THREADS STREQUAL "ON"
+                AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+            # Use Windows 95 (and thus XP) compatible threads.
+            # This avoids use of features that were added in
+            # Windows Vista. This is used for 32-bit x86 builds for
+            # compatibility reasons since it makes no measurable difference
+            # in performance compared to Vista threads.
+            #
+            # The Win95 threading lacks thread-safe one-time initialization
+            # function.
+            if (ENABLE_SMALL)
+                message(SEND_ERROR "Threading method win95 and ENABLE_SMALL "
+                                   "cannot be used at the same time")
+            endif()
+
+            add_compile_definitions(MYTHREAD_WIN95)
+        else()
+            add_compile_definitions(MYTHREAD_VISTA)
+        endif()
+    elseif(CMAKE_USE_PTHREADS_INIT)
+        if(ENABLE_THREADS STREQUAL "posix" OR ENABLE_THREADS STREQUAL "ON")
+            # Overwrite ENABLE_THREADS in case it was set to "ON".
+            # The threading library only needs to be explicitly linked
+            # for posix threads, so this is needed for creating
+            # liblzma-config.cmake later.
+            set(ENABLE_THREADS "posix")
+
+            target_link_libraries(liblzma Threads::Threads)
+            add_compile_definitions(MYTHREAD_POSIX)
+
+            # Check if pthread_condattr_setclock() exists to use CLOCK_MONOTONIC.
+            if(HAVE_CLOCK_MONOTONIC)
+                list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
+                check_symbol_exists(pthread_condattr_setclock pthread.h
+                                    HAVE_PTHREAD_CONDATTR_SETCLOCK)
+                tuklib_add_definition_if(ALL HAVE_PTHREAD_CONDATTR_SETCLOCK)
+            endif()
+        else()
+            message(SEND_ERROR
+                    "Windows thread method requested, but a compatible "
+                    "library could not be found")
+        endif()
+    else()
+        message(SEND_ERROR "No supported threading library found")
+    endif()
+
+    target_sources(liblzma PRIVATE
+        src/common/tuklib_cpucores.c
+        src/common/tuklib_cpucores.h
+        src/liblzma/common/hardware_cputhreads.c
+        src/liblzma/common/outqueue.c
+        src/liblzma/common/outqueue.h
+    )
+endif()
+
+
 ############
 # Encoders #
 ############
@@ -438,10 +494,15 @@ if(HAVE_ENCODERS)
         src/liblzma/common/index_encoder.h
         src/liblzma/common/stream_buffer_encoder.c
         src/liblzma/common/stream_encoder.c
-        src/liblzma/common/stream_encoder_mt.c
         src/liblzma/common/stream_flags_encoder.c
         src/liblzma/common/vli_encoder.c
     )
+
+    if(ENABLE_THREADS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/common/stream_encoder_mt.c
+        )
+    endif()
 
     if(SIMPLE_ENCODERS)
         target_sources(liblzma PRIVATE
@@ -537,10 +598,15 @@ if(HAVE_DECODERS)
         src/liblzma/common/stream_buffer_decoder.c
         src/liblzma/common/stream_decoder.c
         src/liblzma/common/stream_flags_decoder.c
-        src/liblzma/common/stream_decoder_mt.c
         src/liblzma/common/stream_decoder.h
         src/liblzma/common/vli_decoder.c
     )
+
+    if(ENABLE_THREADS)
+        target_sources(liblzma PRIVATE
+            src/liblzma/common/stream_decoder_mt.c
+        )
+    endif()
 
     if(SIMPLE_DECODERS)
         target_sources(liblzma PRIVATE
@@ -659,8 +725,6 @@ if(LZIP_DECODER)
 endif()
 
 ###
-
-target_link_libraries(liblzma Threads::Threads)
 
 # Put the tuklib functions under the lzma_ namespace.
 target_compile_definitions(liblzma PRIVATE TUKLIB_SYMBOL_PREFIX=lzma_)

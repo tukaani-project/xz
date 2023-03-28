@@ -89,12 +89,9 @@ jobs:
       - name: Test without decoders
         run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -d decoders,shared -p test -n no_decoders
 
-      # Our CMake build cannot disable threads yet.
       - name: Build without threads
-        if: ${{ matrix.build_system == 'autotools' }}
         run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -d threads,shared -p build
       - name: Test without threads
-        if: ${{ matrix.build_system == 'autotools' }}
         run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -d threads,shared -p test -n no_threads
 
       - name: Build without BCJ filters

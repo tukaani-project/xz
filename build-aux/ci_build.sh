@@ -202,12 +202,12 @@ then
 		make
 	;;
 	cmake)
-		# The CMake build currently does not support disabling
-		# threading.
 		cd "$DEST_DIR"
 
 		add_to_filter_list "$BCJ" ";x86;powerpc;ia64;arm;armthumb;arm64;sparc"
 		add_to_filter_list "$DELTA" ";delta"
+
+		add_extra_option "$THREADS" "-DENABLE_THREADS=ON" "-DENABLE_THREADS=OFF"
 
 		# Disable MicroLZMA if encoders are not configured.
 		add_extra_option "$ENCODERS" "-DENCODERS=$FILTER_LIST" "-DENCODERS= -DMICROLZMA_ENCODER=OFF"

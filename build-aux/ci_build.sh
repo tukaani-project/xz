@@ -218,6 +218,8 @@ then
 		# CMake disables the shared library by default.
 		add_extra_option "$SHARED" "-DBUILD_SHARED_LIBS=ON" ""
 
+		# Remove old cache file to clear previous settings.
+		rm -f "CMakeCache.txt"
 		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR" $EXTRA_OPTIONS -DADDITIONAL_CHECK_TYPES="$CHECK_TYPE"
 		make
 	;;

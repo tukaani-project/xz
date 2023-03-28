@@ -870,10 +870,7 @@ set_target_properties(liblzma PROPERTIES
     PREFIX ""
 )
 
-# Create liblzma-config-version.cmake. We use this spelling instead of
-# liblzmaConfig.cmake to make find_package work in case insensitive manner
-# even with case sensitive file systems. This gives more consistent behavior
-# between operating systems.
+# Create liblzma-config-version.cmake.
 #
 # FIXME: SameMajorVersion is correct for stable releases but it is wrong
 # for development releases where each release may have incompatible changes.
@@ -883,13 +880,14 @@ write_basic_package_version_file(
     VERSION "${liblzma_VERSION}"
     COMPATIBILITY SameMajorVersion)
 
-# Create liblzma-config.cmake.
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
-"include(CMakeFindDependencyMacro)
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-find_dependency(Threads)
-
-include(\"\${CMAKE_CURRENT_LIST_DIR}/liblzma-targets.cmake\")
+# Create liblzma-config.cmake. We use this spelling instead of
+# liblzmaConfig.cmake to make find_package work in case insensitive
+# manner even with case sensitive file systems. This gives more consistent
+# behavior between operating systems. This optionally includes a dependency
+# on a threading library, so the contents are created in two separate parts.
+# The "second half" is always needed, so create it first.
+set(LZMA_CONFIG_CONTENTS
+"include(\"\${CMAKE_CURRENT_LIST_DIR}/liblzma-targets.cmake\")
 
 # Be compatible with the spelling used by the FindLibLZMA module. This
 # doesn't use ALIAS because it would make CMake resolve LibLZMA::LibLZMA
@@ -899,6 +897,19 @@ add_library(LibLZMA::LibLZMA INTERFACE IMPORTED)
 set_target_properties(LibLZMA::LibLZMA PROPERTIES
                       INTERFACE_LINK_LIBRARIES liblzma::liblzma)
 ")
+
+if(ENABLE_THREADS STREQUAL "posix")
+    set(LZMA_CONFIG_CONTENTS
+"include(CMakeFindDependencyMacro)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_dependency(Threads)
+
+${LZMA_CONFIG_CONTENTS}
+")
+endif()
+
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
+        "${LZMA_CONFIG_CONTENTS}")
 
 # Set CMAKE_INSTALL_LIBDIR and friends.
 include(GNUInstallDirs)

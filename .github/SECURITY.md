@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Security updates are applied only to the latest release.
+We provide security updates to all development branches and the current stable branch. Security updates apply to XZ Utils and our website at https://tukaani.org/xz.
 
 ## Reporting a Vulnerability
 

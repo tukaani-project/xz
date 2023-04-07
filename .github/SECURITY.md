@@ -8,7 +8,7 @@ branches. Security patches for old releases are available on the
 
 ## Reporting a Vulnerability
 
-If discover a security vulnerability in this project, please
+If you discover a security vulnerability in this project, please
 report it privately. **Do not disclose it as a public issue.** This gives
 us time to work with you to fix the issue before public exposure, reducing
 the chance that the exploit will be used before a patch is released.

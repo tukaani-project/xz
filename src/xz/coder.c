@@ -137,6 +137,27 @@ coder_add_filter(lzma_vli id, void *options)
 }
 
 
+static void
+str_to_filter(const char *str, lzma_filter *filter, uint32_t flags)
+{
+	int error_pos;
+	const char *err = lzma_str_to_filters(str, &error_pos, filter,
+			flags, NULL);
+
+	if (err != NULL) {
+		// FIXME? The message in err isn't translated.
+		// Including the translations in the xz translations is
+		// slightly ugly but possible. Creating a new domain for
+		// liblzma might not be worth it especially since on some
+		// OSes it adds extra dependencies to translation libraries.
+		message(V_ERROR, _("Error in --filters=FILTERS option:"));
+		message(V_ERROR, "%s", str);
+		message(V_ERROR, "%*s^", error_pos, "");
+		message_fatal("%s", err);
+	}
+}
+
+
 extern void
 coder_add_filters_from_str(const char *filter_str)
 {
@@ -148,21 +169,7 @@ coder_add_filters_from_str(const char *filter_str)
 	string_to_filter_used = true;
 
 	// Include LZMA_STR_ALL_FILTERS so this can be used with --format=raw.
-	int error_pos;
-	const char *err = lzma_str_to_filters(filter_str, &error_pos,
-			filters, LZMA_STR_ALL_FILTERS, NULL);
-
-	if (err != NULL) {
-		// FIXME? The message in err isn't translated.
-		// Including the translations in the xz translations is
-		// slightly ugly but possible. Creating a new domain for
-		// liblzma might not be worth it especially since on some
-		// OSes it adds extra dependencies to translation libraries.
-		message(V_ERROR, _("Error in --filters=FILTERS option:"));
-		message(V_ERROR, "%s", filter_str);
-		message(V_ERROR, "%*s^", error_pos, "");
-		message_fatal("%s", err);
-	}
+	str_to_filter(filter_str, filters, LZMA_STR_ALL_FILTERS);
 
 	// Set the filters_count to be the number of filters converted from
 	// the string.

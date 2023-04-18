@@ -30,6 +30,18 @@ enum format_type {
 };
 
 
+/// Simple struct to track Block metadata specified through the
+/// --block-list option.
+typedef struct {
+	/// Uncompressed size of the Block
+	uint64_t size;
+
+	/// Index into the filters[] representing the filter chain to use
+	/// for this Block.
+	uint32_t filters_index;
+} block_list_entry;
+
+
 /// Operation mode of the command line tool. This is set in args.c and read
 /// in several files.
 extern enum operation_mode opt_mode;
@@ -50,9 +62,8 @@ extern bool opt_single_stream;
 /// of input. This has an effect only when compressing to the .xz format.
 extern uint64_t opt_block_size;
 
-/// This is non-NULL if --block-list was used. This contains the Block sizes
-/// as an array that is terminated with 0.
-extern uint64_t *opt_block_list;
+/// List of block size and filter chain pointer pairs.
+extern block_list_entry *opt_block_list;
 
 /// Set the integrity check type used when compressing
 extern void coder_set_check(lzma_check check);
@@ -80,3 +91,6 @@ extern void coder_free(void);
 
 /// Create filter chain from string
 extern void coder_add_filters_from_str(const char *filter_str);
+
+/// Add or overwrite a filter that can be used by the block-list.
+extern void coder_add_block_filters(const char *str, size_t slot);

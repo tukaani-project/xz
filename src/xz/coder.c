@@ -26,28 +26,40 @@ enum format_type opt_format = FORMAT_AUTO;
 bool opt_auto_adjust = true;
 bool opt_single_stream = false;
 uint64_t opt_block_size = 0;
-uint64_t *opt_block_list = NULL;
-
+block_list_entry *opt_block_list = NULL;
 
 /// Stream used to communicate with liblzma
 static lzma_stream strm = LZMA_STREAM_INIT;
 
-/// Filters needed for all encoding all formats, and also decoding in raw data
-static lzma_filter filters[LZMA_FILTERS_MAX + 1];
+/// Maximum number of filter chains. The first filter chain is the default,
+/// and 9 other filter chains can be specified with --filtersX.
+#define NUM_FILTER_CHAIN_MAX 10
+
+/// The default filter chain is in filters[0]. It is used for encoding
+/// in all supported formats and also for decdoing raw streams. The other
+/// filter chains are set by --filtersX to support changing filters with
+/// the --block-list option.
+static lzma_filter filters[NUM_FILTER_CHAIN_MAX][LZMA_FILTERS_MAX + 1];
+
+/// Bit mask representing the filters specified through --filtersX. This
+/// is needed to verify that an entry in the --block-list option does not
+/// try to reference a filter chain that was not initialized.
+static uint32_t filters_init_mask = 1;
 
 /// Input and output buffers
 static io_buf in_buf;
 static io_buf out_buf;
 
-/// Number of filters. Zero indicates that we are using a preset.
+/// Number of filters in the default filter chain. Zero indicates that
+/// we are using a preset.
 static uint32_t filters_count = 0;
 
 /// Number of the preset (0-9)
 static uint32_t preset_number = LZMA_PRESET_DEFAULT;
 
-/// True if the current filter chain was set using the --filters option.
-/// The filter chain is reset if a preset option (like -9) or an old-style
-/// filter option (like --lzma2) is used after a --filters option.
+/// True if the current default filter chain was set using the --filters
+/// option. The filter chain is reset if a preset option (like -9) or an
+/// old-style filter option (like --lzma2) is used after a --filters option.
 static bool string_to_filter_used = false;
 
 /// Integrity check type
@@ -65,7 +77,6 @@ static bool allow_trailing_input;
 static lzma_mt mt_options = {
 	.flags = 0,
 	.timeout = 300,
-	.filters = filters,
 };
 #endif
 
@@ -85,7 +96,7 @@ forget_filter_chain(void)
 	// Setting a preset or using --filters makes us forget
 	// the earlier custom filter chain (if any).
 	if (filters_count > 0) {
-		lzma_filters_free(filters, NULL);
+		lzma_filters_free(filters[0], NULL);
 		filters_count = 0;
 	}
 
@@ -122,11 +133,11 @@ coder_add_filter(lzma_vli id, void *options)
 	if (string_to_filter_used)
 		forget_filter_chain();
 
-	filters[filters_count].id = id;
-	filters[filters_count].options = options;
+	filters[0][filters_count].id = id;
+	filters[0][filters_count].options = options;
 	// Terminate the filter chain with LZMA_VLI_UNKNOWN to simplify
 	// implementation of forget_filter_chain().
-	filters[++filters_count].id = LZMA_VLI_UNKNOWN;
+	filters[0][++filters_count].id = LZMA_VLI_UNKNOWN;
 
 	// Setting a custom filter chain makes us forget the preset options.
 	// This makes a difference if one specifies e.g. "xz -9 --lzma2 -e"
@@ -139,19 +150,24 @@ coder_add_filter(lzma_vli id, void *options)
 
 
 static void
-str_to_filter(const char *str, lzma_filter *filter, uint32_t flags)
+str_to_filters(const char *str, uint32_t index, uint32_t flags)
 {
 	int error_pos;
-	const char *err = lzma_str_to_filters(str, &error_pos, filter,
-			flags, NULL);
+	const char *err = lzma_str_to_filters(str, &error_pos,
+			filters[index], flags, NULL);
 
 	if (err != NULL) {
+		char filter_num[2] = "";
+		if (index > 0)
+			filter_num[0] = '0' + index;
+
 		// FIXME? The message in err isn't translated.
 		// Including the translations in the xz translations is
 		// slightly ugly but possible. Creating a new domain for
 		// liblzma might not be worth it especially since on some
 		// OSes it adds extra dependencies to translation libraries.
-		message(V_ERROR, _("Error in --filters=FILTERS option:"));
+		message(V_ERROR, _("Error in --filters%s=FILTERS option:"),
+				filter_num);
 		message(V_ERROR, "%s", str);
 		message(V_ERROR, "%*s^", error_pos, "");
 		message_fatal("%s", err);
@@ -170,15 +186,29 @@ coder_add_filters_from_str(const char *filter_str)
 	string_to_filter_used = true;
 
 	// Include LZMA_STR_ALL_FILTERS so this can be used with --format=raw.
-	str_to_filter(filter_str, filters, LZMA_STR_ALL_FILTERS);
+	str_to_filters(filter_str, 0, LZMA_STR_ALL_FILTERS);
 
 	// Set the filters_count to be the number of filters converted from
 	// the string.
-	for (filters_count = 0; filters[filters_count].id != LZMA_VLI_UNKNOWN;
+	for (filters_count = 0; filters[0][filters_count].id
+			!= LZMA_VLI_UNKNOWN;
 			++filters_count) ;
 
 	assert(filters_count > 0);
 	return;
+}
+
+
+extern void
+coder_add_block_filters(const char *str, size_t slot)
+{
+	// Free old filters first, if they were previously allocated.
+	if (filters_init_mask & (1 << slot))
+		lzma_filters_free(filters[slot], NULL);
+
+	str_to_filters(str, slot, 0);
+
+	filters_init_mask |= 1 << slot;
 }
 
 
@@ -192,6 +222,17 @@ memlimit_too_small(uint64_t memory_usage)
 }
 
 
+// For a given opt_block_list index, validate that the filter has been
+// set. If it has not been set, we must exit with error to avoid using
+// an uninitialized filter chain.
+static void
+validate_block_list_filter(const uint32_t filter_num)
+{
+         if (!(filters_init_mask & (1 << filter_num)))
+		message_fatal(_("filter chain %u used by --block-list, but "
+				"not specified with --filters%u="),
+				(unsigned)filter_num, (unsigned)filter_num);
+}
 extern void
 coder_set_compression_settings(void)
 {
@@ -199,6 +240,11 @@ coder_set_compression_settings(void)
 	// .lz compression isn't supported.
 	assert(opt_format != FORMAT_LZIP);
 #endif
+
+	if (opt_block_list != NULL)
+		for (uint32_t i = 0; opt_block_list[i].size != 0; i++)
+			validate_block_list_filter(
+					opt_block_list[i].filters_index);
 
 	// The default check type is CRC64, but fallback to CRC32
 	// if CRC64 isn't supported by the copy of liblzma we are
@@ -211,6 +257,10 @@ coder_set_compression_settings(void)
 
 	// Options for LZMA1 or LZMA2 in case we are using a preset.
 	static lzma_options_lzma opt_lzma;
+
+	// The first filter in the filters[] array is for the default
+	// filter chain.
+	lzma_filter *default_filters = filters[0];
 
 	if (filters_count == 0) {
 		// We are using a preset. This is not a good idea in raw mode
@@ -232,20 +282,20 @@ coder_set_compression_settings(void)
 			message_bug();
 
 		// Use LZMA2 except with --format=lzma we use LZMA1.
-		filters[0].id = opt_format == FORMAT_LZMA
+		default_filters[0].id = opt_format == FORMAT_LZMA
 				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
-		filters[0].options = &opt_lzma;
+		default_filters[0].options = &opt_lzma;
 
 		filters_count = 1;
 
 		// Terminate the filter options array.
-		filters[1].id = LZMA_VLI_UNKNOWN;
+		default_filters[1].id = LZMA_VLI_UNKNOWN;
 	}
 
 	// If we are using the .lzma format, allow exactly one filter
 	// which has to be LZMA1.
 	if (opt_format == FORMAT_LZMA && (filters_count != 1
-			|| filters[0].id != LZMA_FILTER_LZMA1))
+			|| default_filters[0].id != LZMA_FILTER_LZMA1))
 		message_fatal(_("The .lzma format supports only "
 				"the LZMA1 filter"));
 
@@ -253,19 +303,19 @@ coder_set_compression_settings(void)
 	// filter to prevent LZMA_PROG_ERROR.
 	if (opt_format == FORMAT_XZ)
 		for (size_t i = 0; i < filters_count; ++i)
-			if (filters[i].id == LZMA_FILTER_LZMA1)
+			if (default_filters[i].id == LZMA_FILTER_LZMA1)
 				message_fatal(_("LZMA1 cannot be used "
 						"with the .xz format"));
 
-	// Print the selected filter chain.
-	message_filters_show(V_DEBUG, filters);
+	// Print the selected default filter chain.
+	message_filters_show(V_DEBUG, default_filters);
 
 	// The --flush-timeout option requires LZMA_SYNC_FLUSH support
-	// from the filter chain. Currently threaded encoder doesn't support
-	// LZMA_SYNC_FLUSH so single-threaded mode must be used.
+	// from the filter chain. Currently the threaded encoder doesn't
+	// support LZMA_SYNC_FLUSH so single-threaded mode must be used.
 	if (opt_mode == MODE_COMPRESS && opt_flush_timeout != 0) {
 		for (size_t i = 0; i < filters_count; ++i) {
-			switch (filters[i].id) {
+			switch (default_filters[i].id) {
 			case LZMA_FILTER_LZMA2:
 			case LZMA_FILTER_DELTA:
 				break;
@@ -307,12 +357,12 @@ coder_set_compression_settings(void)
 		} else
 #	endif
 		{
-			memory_usage = lzma_raw_encoder_memusage(filters);
+			memory_usage = lzma_raw_encoder_memusage(default_filters);
 		}
 #endif
 	} else {
 #ifdef HAVE_DECODERS
-		memory_usage = lzma_raw_decoder_memusage(filters);
+		memory_usage = lzma_raw_decoder_memusage(default_filters);
 #endif
 	}
 
@@ -327,7 +377,7 @@ coder_set_compression_settings(void)
 	message_mem_needed(V_DEBUG, memory_usage);
 #ifdef HAVE_DECODERS
 	if (opt_mode == MODE_COMPRESS) {
-		const uint64_t decmem = lzma_raw_decoder_memusage(filters);
+		const uint64_t decmem = lzma_raw_decoder_memusage(default_filters);
 		if (decmem != UINT64_MAX)
 			message(V_DEBUG, _("Decompression will need "
 					"%s MiB of memory."), uint64_to_str(
@@ -407,7 +457,7 @@ coder_set_compression_settings(void)
 		// the multithreaded mode but the output
 		// is also different.
 		hardware_threads_set(1);
-		memory_usage = lzma_raw_encoder_memusage(filters);
+		memory_usage = lzma_raw_encoder_memusage(default_filters);
 		message(V_WARNING, _("Switching to single-threaded mode "
 			"to not exceed the memory usage limit of %s MiB"),
 			uint64_to_str(round_up_to_mib(memory_limit), 0));
@@ -425,9 +475,9 @@ coder_set_compression_settings(void)
 	// Look for the last filter if it is LZMA2 or LZMA1, so we can make
 	// it use less RAM. With other filters we don't know what to do.
 	size_t i = 0;
-	while (filters[i].id != LZMA_FILTER_LZMA2
-			&& filters[i].id != LZMA_FILTER_LZMA1) {
-		if (filters[i].id == LZMA_VLI_UNKNOWN)
+	while (default_filters[i].id != LZMA_FILTER_LZMA2
+			&& default_filters[i].id != LZMA_FILTER_LZMA1) {
+		if (default_filters[i].id == LZMA_VLI_UNKNOWN)
 			memlimit_too_small(memory_usage);
 
 		++i;
@@ -435,7 +485,7 @@ coder_set_compression_settings(void)
 
 	// Decrease the dictionary size until we meet the memory
 	// usage limit. First round down to full mebibytes.
-	lzma_options_lzma *opt = filters[i].options;
+	lzma_options_lzma *opt = default_filters[i].options;
 	const uint32_t orig_dict_size = opt->dict_size;
 	opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
 	while (true) {
@@ -448,7 +498,7 @@ coder_set_compression_settings(void)
 		if (opt->dict_size < (UINT32_C(1) << 20))
 			memlimit_too_small(memory_usage);
 
-		memory_usage = lzma_raw_encoder_memusage(filters);
+		memory_usage = lzma_raw_encoder_memusage(default_filters);
 		if (memory_usage == UINT64_MAX)
 			message_bug();
 
@@ -466,7 +516,7 @@ coder_set_compression_settings(void)
 	message(V_WARNING, _("Adjusted LZMA%c dictionary size "
 			"from %s MiB to %s MiB to not exceed "
 			"the memory usage limit of %s MiB"),
-			filters[i].id == LZMA_FILTER_LZMA2
+			default_filters[i].id == LZMA_FILTER_LZMA2
 				? '2' : '1',
 			uint64_to_str(orig_dict_size >> 20, 0),
 			uint64_to_str(opt->dict_size >> 20, 1),
@@ -566,6 +616,13 @@ coder_init(file_pair *pair)
 	// These will be handled later in this function.
 	allow_trailing_input = false;
 
+	// Set the first filter chain. If the --block-list option is not
+	// used then use the default filter chain (filters[0]).
+	// Otherwise, use first filter chain from the block list.
+	lzma_filter *active_filters = opt_block_list == NULL
+			? filters[0]
+			: filters[opt_block_list[0].filters_index];
+
 	if (opt_mode == MODE_COMPRESS) {
 #ifdef HAVE_ENCODERS
 		switch (opt_format) {
@@ -576,17 +633,19 @@ coder_init(file_pair *pair)
 
 		case FORMAT_XZ:
 #	ifdef MYTHREAD_ENABLED
+			mt_options.filters = active_filters;
 			if (hardware_threads_is_mt())
 				ret = lzma_stream_encoder_mt(
 						&strm, &mt_options);
 			else
 #	endif
 				ret = lzma_stream_encoder(
-						&strm, filters, check);
+						&strm, active_filters, check);
 			break;
 
 		case FORMAT_LZMA:
-			ret = lzma_alone_encoder(&strm, filters[0].options);
+			ret = lzma_alone_encoder(&strm,
+					active_filters[0].options);
 			break;
 
 #	ifdef HAVE_LZIP_DECODER
@@ -598,7 +657,7 @@ coder_init(file_pair *pair)
 #	endif
 
 		case FORMAT_RAW:
-			ret = lzma_raw_encoder(&strm, filters);
+			ret = lzma_raw_encoder(&strm, active_filters);
 			break;
 		}
 #endif
@@ -722,7 +781,7 @@ coder_init(file_pair *pair)
 		case FORMAT_RAW:
 			// Memory usage has already been checked in
 			// coder_set_compression_settings().
-			ret = lzma_raw_decoder(&strm, filters);
+			ret = lzma_raw_decoder(&strm, active_filters);
 			break;
 		}
 
@@ -800,12 +859,39 @@ split_block(uint64_t *block_remaining,
 
 	} else {
 		// The Block at *list_pos has been finished. Go to the next
-		// entry in the list. If the end of the list has been reached,
-		// reuse the size of the last Block.
-		if (opt_block_list[*list_pos + 1] != 0)
+		// entry in the list. If the end of the list has been
+		// reached, reuse the size and filters of the last Block.
+		if (opt_block_list[*list_pos + 1].size != 0) {
 			++*list_pos;
 
-		*block_remaining = opt_block_list[*list_pos];
+			// Update the filters if needed.
+			if (opt_block_list[*list_pos - 1].filters_index
+				!= opt_block_list[*list_pos].filters_index) {
+				const uint32_t filter_idx = opt_block_list
+						[*list_pos].filters_index;
+				const lzma_filter *next = filters[filter_idx];
+				const lzma_ret ret = lzma_filters_update(
+						&strm, next);
+
+				if (ret != LZMA_OK) {
+					// This message is only possible if
+					// the filter chain has unsupported
+					// options since the filter chain is
+					// validated using
+					// lzma_raw_encoder_memusage() or
+					// lzma_stream_encoder_mt_memusage().
+					// Some options are not validated until
+					// the encoders are initialized.
+					message_fatal(
+						_("Error changing to "
+						"filter chain %u: %s"),
+						(unsigned)filter_idx,
+						message_strm(ret));
+				}
+			}
+		}
+
+		*block_remaining = opt_block_list[*list_pos].size;
 
 		// If in single-threaded mode, split up the Block if needed.
 		// This is not needed in multi-threaded mode because liblzma
@@ -883,12 +969,14 @@ coder_normal(file_pair *pair)
 		// output is still not identical because in single-threaded
 		// mode the size info isn't written into Block Headers.
 		if (opt_block_list != NULL) {
-			if (block_remaining < opt_block_list[list_pos]) {
+			if (block_remaining < opt_block_list[list_pos].size) {
 				assert(!hardware_threads_is_mt());
-				next_block_remaining = opt_block_list[list_pos]
+				next_block_remaining =
+						opt_block_list[list_pos].size
 						- block_remaining;
 			} else {
-				block_remaining = opt_block_list[list_pos];
+				block_remaining =
+						opt_block_list[list_pos].size;
 			}
 		}
 	}

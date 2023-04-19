@@ -52,6 +52,12 @@
 // and such functions.
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1500)
 #	include <immintrin.h>
+// Only include <intrin.h> when it is needed. GCC and Clang can both
+// use __builtin's, so we only need Windows instrincs when using MSVC.
+// GCC and Clang can set _MSC_VER on Windows, so we need to exclude these
+// cases explicitly.
+#elif defined(_MSC_VER) && !TUKLIB_GNUC_REQ(3, 4) && !defined(__clang__)
+#	include <intrin.h>
 #endif
 
 

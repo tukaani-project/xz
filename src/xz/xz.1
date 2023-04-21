@@ -915,36 +915,77 @@ The lack of size information also means that a future version of
 .B xz
 won't be able decompress the files in multi-threaded mode.
 .TP
-.BI \-\-block\-list= sizes
+.BI \-\-block\-list= items
 When compressing to the
 .B .xz
-format, start a new block after
+format, start a new block with an optional custom filter chain after
 the given intervals of uncompressed data.
 .IP ""
-The uncompressed
-.I sizes
-of the blocks are specified as a comma-separated list.
-Omitting a size (two or more consecutive commas) is a shorthand
-to use the size of the previous block.
+The
+.I items
+are a comma-separated list.
+Each item consists of an optional filter chain number
+between 0 and 9 followed by a colon
+.RB ( : )
+and a required size of uncompressed data.
+Omitting an item (two or more consecutive commas) is a
+shorthand to use the size and filters of the previous item.
 .IP ""
 If the input file is bigger than the sum of
-.IR sizes ,
-the last value in
-.I sizes
-is repeated until the end of the file.
+the sizes in
+.IR items ,
+the last item is repeated until the end of the file.
 A special value of
 .B 0
-may be used as the last value to indicate that
+may be used as the last size to indicate that
 the rest of the file should be encoded as a single block.
 .IP ""
-If one specifies
-.I sizes
-that exceed the encoder's block size
+An alternative custom filter chain for each block can be
+specified in combination with the
+.BI \-\-filters1= filters
+\&...\&
+.BI \-\-filters9= filters
+options.
+These options define filter chains with an identifier
+between 1\(en9.
+Filter chain 0 can be used to refer to the default filter chain,
+which is the same as not specifying a filter chain.
+The filter chain identifier can be used before the uncompressed
+size, followed by a colon
+.RB ( : ).
+For example, if one specifies
+.B \-\-block\-list=1:2MiB,3:2MiB,2:4MiB,,2MiB,0:4MiB
+then blocks will be created using:
+.RS
+.IP \(bu 3
+The filter chain specified by
+.B \-\-filters1
+and 2 MiB input
+.IP \(bu 3
+The filter chain specified by
+.B \-\-filters3
+and 2 MiB input
+.IP \(bu 3
+The filter chain specified by
+.B \-\-filters2
+and 4 MiB input
+.IP \(bu 3
+The filter chain specified by
+.B \-\-filters2
+and 4 MiB input
+.IP \(bu 3
+The default filter chain and 2 MiB input
+.IP \(bu 3
+The default filter chain and 4 MiB input for every block until
+end of input.
+.RE
+.IP ""
+If one specifies a size that exceeds the encoder's block size
 (either the default value in threaded mode or
 the value specified with \fB\-\-block\-size=\fIsize\fR),
 the encoder will create additional blocks while
 keeping the boundaries specified in
-.IR sizes .
+.IR items .
 For example, if one specifies
 .B \-\-block\-size=10MiB
 .B \-\-block\-list=5MiB,10MiB,8MiB,12MiB,24MiB
@@ -1295,18 +1336,24 @@ in the chain.
 Depending on the filter, this limitation is either inherent to
 the filter design or exists to prevent security issues.
 .PP
-A custom filter chain is specified in two different ways.
-The option
+A custom filter chain can be specified in two different ways.
+The options
 .BI \-\-filters= filters
-allows specifying the entire filter chain in one option.
-Alternatively, filter chains can be specified by using one or more
+and
+.BI \-\-filters1= filters
+\&...\&
+.BI \-\-filters9= filters
+allows specifying an entire filter chain in one option using the
+liblzma filter string syntax.
+Alternatively, a filter chain can be specified by using one or more
 individual filter options in the order they are wanted in the filter chain.
-That is, the order of individual filter options is significant!
+That is, the order of the individual filter options is significant!
 When decoding raw streams
 .RB ( \-\-format=raw ),
 the filter chain must be specified in the same order as
 it was specified when compressing.
-Any individual filters or presets specified before the full chain option
+Any individual filter or preset options specified before the full
+chain option
 (\fB\-\-filters=\fIfilters\fR)
 will be forgotten.
 Individual filters specified after the full chain option will reset the
@@ -1318,8 +1365,8 @@ as a comma-separated list.
 Extra commas in
 .I options
 are ignored.
-Every option has a default value, so you need to
-specify only those you want to change.
+Every option has a default value, so
+specify those you want to change.
 .PP
 To see the whole filter chain and
 .IR options ,
@@ -1330,8 +1377,7 @@ use
 twice).
 This works also for viewing the filter chain options used by presets.
 .TP
-\fB\-\-filters\fR\fB=\fIfilters\fR
-.PD
+.BI \-\-filters= filters
 Specify the full filter chain or a preset in a single option.
 Each filter can be separated by spaces or two dashes
 .RB ( \-\- ).
@@ -1351,6 +1397,14 @@ The only supported flag is
 .B e
 to apply the same options as
 .BR \-\-extreme .
+.TP
+\fB\-\-filters1\fR=\fIfilters\fR ... \fB\-\-filters9\fR=\fIfilters
+Specify up to nine additional filter chains that can be used with
+.BR \-\-block\-list .
+.IP ""
+For example, when compressing an archive with executable files
+followed by text files, the executable part could use a filter
+chain with a BCJ filter and the text part only the LZMA2 filter.
 .TP
 \fB\-\-lzma1\fR[\fB=\fIoptions\fR]
 .PD 0

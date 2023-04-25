@@ -19,7 +19,7 @@ set -e
 USAGE="Usage: $0
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
-  -d [encoders|decoders|bcj|delta|threads|shared|nls]
+  -d [encoders|decoders|bcj|delta|threads|shared|nls|small]
   -f [CFLAGS]
   -l [destdir]
   -n [ARTIFACTS_DIR_NAME]
@@ -39,6 +39,7 @@ DECODERS="y"
 THREADS="y"
 SHARED="y"
 NATIVE_LANG_SUPPORT="y"
+SMALL="n"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
@@ -78,6 +79,7 @@ while getopts b:c:d:l:n:s:p:f:h opt; do
 		threads) THREADS="n" ;;
 		shared) SHARED="n";;
 		nls) NATIVE_LANG_SUPPORT="n";;
+		small) SMALL="y";;
 		*) echo "Invalid disable value: $disable_arg"; exit 1 ;;
 		esac
 	done
@@ -194,6 +196,7 @@ then
 		add_extra_option "$THREADS" "" "--disable-threads"
 		add_extra_option "$SHARED" "" "--disable-shared"
 		add_extra_option "$NATIVE_LANG_SUPPORT" "" "--disable-nls"
+		add_extra_option "$SMALL" "--enable-small" ""
 
 		# Run configure script
 		"$SRC_DIR"/configure --enable-werror --enable-checks="$CHECK_TYPE" $EXTRA_OPTIONS --config-cache
@@ -217,6 +220,8 @@ then
 
 		# CMake disables the shared library by default.
 		add_extra_option "$SHARED" "-DBUILD_SHARED_LIBS=ON" ""
+
+		add_extra_option "$SMALL" "-DHAVE_SMALL=ON" ""
 
 		# Remove old cache file to clear previous settings.
 		rm -f "CMakeCache.txt"

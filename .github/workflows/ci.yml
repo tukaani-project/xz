@@ -114,6 +114,11 @@ jobs:
       - name: Test without crc64 check
         run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -c crc32,sha256 -d shared,nls -p test -n no_crc64
 
+      - name: Build small
+        run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -d small -p build
+      - name: Test small
+        run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -d small -p test -n small
+
       # Attempt to upload the test logs as artifacts if any step has failed
       - uses: actions/upload-artifact@v3
         if: ${{ failure() }}

@@ -2,6 +2,16 @@
 XZ Utils Release Notes
 ======================
 
+5.4.3 (2023-05-04)
+
+    * All fixes from 5.2.12
+
+    * Features in the CMake build can now be disabled as CMake cache
+      variables, similar to the Autotools build.
+
+    * Minor update to the Croatian translation.
+
+
 5.4.2 (2023-03-18)
 
     * All fixes from 5.2.11 that were not included in 5.4.1.

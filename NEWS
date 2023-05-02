@@ -2,6 +2,20 @@
 XZ Utils Release Notes
 ======================
 
+5.2.12 (2023-05-04)
+
+    * Fixed a build system bug that prevented building liblzma as a
+      shared library when configured with --disable-threads. This bug
+      affected releases 5.2.6 to 5.2.11 and 5.4.0 to 5.4.2.
+
+    * Include <intrin.h> for Windows intrinsic functions where they are
+      needed. This fixed a bug that prevented building liblzma using
+      clang-cl on Windows.
+
+    * Minor update to the Croatian translation. The small change
+      applies to a string in both 5.2 and 5.4 branches.
+
+
 5.2.11 (2023-03-18)
 
     * Removed all possible cases of null pointer + 0. It is undefined

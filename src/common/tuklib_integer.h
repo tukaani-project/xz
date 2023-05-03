@@ -742,10 +742,10 @@ ctz32(uint32_t n)
 #if defined(__INTEL_COMPILER)
 	return _bit_scan_forward(n);
 
-#elif TUKLIB_GNUC_REQ(3, 4) && UINT_MAX >= UINT32_MAX
+#elif (TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) && UINT_MAX >= UINT32_MAX
 	return (uint32_t)__builtin_ctz(n);
 
-#elif (TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) && UINT_MAX == UINT32_MAX
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 	uint32_t i;
 	__asm__("bsfl %1, %0" : "=r" (i) : "rm" (n));
 	return i;

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: xz 5.2.4\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
 "POT-Creation-Date: 2018-04-29 18:19+0300\n"
-"PO-Revision-Date: 2022-11-06 17:39-0800\n"
+"PO-Revision-Date: 2023-05-01 16:13-0700\n"
 "Last-Translator: Božidar Putanec <bozidarp@yahoo.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "Language: hr\n"
@@ -578,7 +578,7 @@ msgstr ""
 
 #: src/xz/message.c:1086
 msgid "Mandatory arguments to long options are mandatory for short options too.\n"
-msgstr "Obvezni argumenti za duge opcije obvezni su također i za kratke opcije.\n"
+msgstr "Obvezni argumenti za duge opcije, obvezni su i za kratke opcije.\n"
 
 #: src/xz/message.c:1090
 msgid " Operation mode:\n"

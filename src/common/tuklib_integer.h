@@ -636,7 +636,7 @@ bsr32(uint32_t n)
 #if defined(__INTEL_COMPILER)
 	return _bit_scan_reverse(n);
 
-#elif (TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) && UINT_MAX == UINT32_MAX
+#elif (TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) && UINT_MAX >= UINT32_MAX
 	// GCC >= 3.4 has __builtin_clz(), which gives good results on
 	// multiple architectures. On x86, __builtin_clz() ^ 31U becomes
 	// either plain BSR (so the XOR gets optimized away) or LZCNT and
@@ -690,7 +690,7 @@ clz32(uint32_t n)
 #if defined(__INTEL_COMPILER)
 	return _bit_scan_reverse(n) ^ 31U;
 
-#elif (TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) && UINT_MAX == UINT32_MAX
+#elif (TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) && UINT_MAX >= UINT32_MAX
 	return (uint32_t)__builtin_clz(n);
 
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))

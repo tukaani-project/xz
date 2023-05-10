@@ -829,6 +829,7 @@ coder_init(file_pair *pair)
 }
 
 
+#ifdef HAVE_ENCODERS
 /// Resolve conflicts between opt_block_size and opt_block_list in single
 /// threaded mode. We want to default to opt_block_list, except when it is
 /// larger than opt_block_size. If this is the case for the current Block
@@ -904,6 +905,7 @@ split_block(uint64_t *block_remaining,
 		}
 	}
 }
+#endif
 
 
 static bool
@@ -936,6 +938,7 @@ coder_normal(file_pair *pair)
 	// Assume that something goes wrong.
 	bool success = false;
 
+#ifdef HAVE_ENCODERS
 	// block_remaining indicates how many input bytes to encode before
 	// finishing the current .xz Block. The Block size is set with
 	// --block-size=SIZE and --block-list. They have an effect only when
@@ -980,6 +983,7 @@ coder_normal(file_pair *pair)
 			}
 		}
 	}
+#endif
 
 	strm.next_out = out_buf.u8;
 	strm.avail_out = IO_BUFFER_SIZE;
@@ -989,17 +993,22 @@ coder_normal(file_pair *pair)
 		// flushing or finishing.
 		if (strm.avail_in == 0 && action == LZMA_RUN) {
 			strm.next_in = in_buf.u8;
-			strm.avail_in = io_read(pair, &in_buf,
-					my_min(block_remaining,
-						IO_BUFFER_SIZE));
+#ifdef HAVE_ENCODERS
+			const size_t read_size = my_min(block_remaining,
+					IO_BUFFER_SIZE);
+#else
+			const size_t read_size = IO_BUFFER_SIZE;
+#endif
+			strm.avail_in = io_read(pair, &in_buf, read_size);
 
 			if (strm.avail_in == SIZE_MAX)
 				break;
 
 			if (pair->src_eof) {
 				action = LZMA_FINISH;
-
-			} else if (block_remaining != UINT64_MAX) {
+			}
+#ifdef HAVE_ENCODERS
+			else if (block_remaining != UINT64_MAX) {
 				// Start a new Block after every
 				// opt_block_size bytes of input.
 				block_remaining -= strm.avail_in;
@@ -1009,17 +1018,18 @@ coder_normal(file_pair *pair)
 
 			if (action == LZMA_RUN && pair->flush_needed)
 				action = LZMA_SYNC_FLUSH;
+#endif
 		}
 
 		// Let liblzma do the actual work.
 		ret = lzma_code(&strm, action);
 
 		// Write out if the output buffer became full.
-		if (strm.avail_out == 0) {
+		if (strm.avail_out == 0)
 			if (coder_write_output(pair))
 				break;
-		}
 
+#ifdef HAVE_ENCODERS
 		if (ret == LZMA_STREAM_END && (action == LZMA_SYNC_FLUSH
 				|| action == LZMA_FULL_BARRIER)) {
 			if (action == LZMA_SYNC_FLUSH) {
@@ -1049,8 +1059,9 @@ coder_normal(file_pair *pair)
 			// Start a new Block after LZMA_FULL_FLUSH or continue
 			// the same block after LZMA_SYNC_FLUSH.
 			action = LZMA_RUN;
-
-		} else if (ret != LZMA_OK) {
+		} else
+#endif
+		if (ret != LZMA_OK) {
 			// Determine if the return value indicates that we
 			// won't continue coding. LZMA_NO_CHECK would be
 			// here too if LZMA_TELL_ANY_CHECK was used.

@@ -1245,6 +1245,16 @@ coder_run(const char *filename)
 extern void
 coder_free(void)
 {
+	// Free starting from the second filter chain since the default
+	// filter chain may have its options set from a static variable
+	// in coder_set_compression_settings(). Since this is only run in
+	// debug mode and will be freed when the process ends anyway, we
+	// don't worry about freeing it.
+	for (uint32_t i = 1; i < ARRAY_SIZE(filters); i++) {
+		if (filters_init_mask & (1 << i))
+			lzma_filters_free(filters[i], NULL);
+	}
+
 	lzma_end(&strm);
 	return;
 }

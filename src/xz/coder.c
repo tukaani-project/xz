@@ -376,15 +376,23 @@ coder_set_compression_settings(void)
 	// from the filter chain. Currently the threaded encoder doesn't
 	// support LZMA_SYNC_FLUSH so single-threaded mode must be used.
 	if (opt_mode == MODE_COMPRESS && opt_flush_timeout != 0) {
-		for (size_t i = 0; i < filters_count; ++i) {
-			switch (default_filters[i].id) {
-			case LZMA_FILTER_LZMA2:
-			case LZMA_FILTER_DELTA:
-				break;
+		for (uint32_t i = 0; i < ARRAY_SIZE(filters); ++i) {
+			if (!(filters_init_mask & (1 << i)))
+				continue;
 
-			default:
-				message_fatal(_("The filter chain is "
-					"incompatible with --flush-timeout"));
+			const lzma_filter *fc = filters[i];
+			for (size_t j = 0; fc[j].id != LZMA_VLI_UNKNOWN; j++) {
+				switch (fc[j].id) {
+				case LZMA_FILTER_LZMA2:
+				case LZMA_FILTER_DELTA:
+					break;
+
+				default:
+					message_fatal(_("Filter chain %u is "
+							"incompatible with "
+							"--flush-timeout"),
+							(unsigned)i);
+				}
 			}
 		}
 

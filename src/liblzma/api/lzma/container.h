@@ -615,7 +615,8 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_encode(
  *                output space (6 bytes) to create a valid MicroLZMA stream.
  */
 extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
-		lzma_stream *strm, const lzma_options_lzma *options);
+		lzma_stream *strm, const lzma_options_lzma *options)
+		lzma_nothrow;
 
 
 /************
@@ -992,4 +993,4 @@ extern LZMA_API(lzma_ret) lzma_stream_buffer_decode(
 extern LZMA_API(lzma_ret) lzma_microlzma_decoder(
 		lzma_stream *strm, uint64_t comp_size,
 		uint64_t uncomp_size, lzma_bool uncomp_size_is_exact,
-		uint32_t dict_size);
+		uint32_t dict_size) lzma_nothrow;

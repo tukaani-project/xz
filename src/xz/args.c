@@ -180,6 +180,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_FILTERS7,
 		OPT_FILTERS8,
 		OPT_FILTERS9,
+		OPT_FILTERS_HELP,
 
 		OPT_X86,
 		OPT_POWERPC,
@@ -261,6 +262,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "filters7",     optional_argument, NULL,  OPT_FILTERS7},
 		{ "filters8",     optional_argument, NULL,  OPT_FILTERS8},
 		{ "filters9",     optional_argument, NULL,  OPT_FILTERS9},
+		{ "filters-help", optional_argument, NULL,  OPT_FILTERS_HELP},
 
 		{ "lzma1",        optional_argument, NULL,  OPT_LZMA1 },
 		{ "lzma2",        optional_argument, NULL,  OPT_LZMA2 },
@@ -445,6 +447,12 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_FILTERS9:
 			coder_add_block_filters(optarg,
 					(size_t)(c - OPT_FILTERS));
+			break;
+
+		// --filters-help
+		case OPT_FILTERS_HELP:
+			// This doesn't return.
+			message_filters_help();
 			break;
 
 		case OPT_X86:

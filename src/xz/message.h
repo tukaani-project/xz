@@ -107,6 +107,11 @@ extern void message_version(void) lzma_attribute((__noreturn__));
 extern void message_help(bool long_help) lzma_attribute((__noreturn__));
 
 
+/// Prints a help message specifically for using the --filters and
+/// --filtersX command line options.
+extern void message_filters_help(void);
+
+
 /// \brief      Set the total number of files to be processed
 ///
 /// Standard input is counted as a file here. This is used when printing

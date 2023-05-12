@@ -1071,6 +1071,11 @@ message_help(bool long_help)
 "                      string syntax to use with --block-list"
 		));
 
+		puts(_(
+"  --filters-help      display more information about the liblzma filter string\n"
+"                      syntax and exit."
+		));
+
 #if defined(HAVE_ENCODER_LZMA1) || defined(HAVE_DECODER_LZMA1) \
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
 		// TRANSLATORS: The word "literal" in "literal context bits"
@@ -1155,6 +1160,31 @@ message_help(bool long_help)
 	puts(_(
 "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."));
 #endif
+
+	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
+}
+
+
+extern void
+message_filters_help(void)
+{
+	char *encoder_options;
+	if (lzma_str_list_filters(&encoder_options, LZMA_VLI_UNKNOWN,
+			LZMA_STR_ENCODER, NULL) != LZMA_OK)
+		message_bug();
+
+	if (!opt_robot) {
+		puts(_(
+"Filter chains are set using the --filters=FILTERS or\n"
+"--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
+"can be separated by spaces or `--'. Alternatively a preset <0-9>[e] can be\n"
+"specified instead of a filter chain.\n"
+		));
+
+		puts(_("The supported filters and their options are:"));
+	}
+
+	puts(encoder_options);
 
 	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }

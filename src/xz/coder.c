@@ -46,6 +46,12 @@ static lzma_filter filters[NUM_FILTER_CHAIN_MAX][LZMA_FILTERS_MAX + 1];
 /// try to reference a filter chain that was not initialized.
 static uint32_t filters_init_mask = 1;
 
+#ifdef HAVE_ENCODERS
+/// Track the memory usage for all filter chains (default or --filtersX).
+/// The memory usage may need to be scaled down depending on the memory limit.
+static uint64_t filter_memusages[ARRAY_SIZE(filters)];
+#endif
+
 /// Input and output buffers
 static io_buf in_buf;
 static io_buf out_buf;
@@ -222,6 +228,7 @@ memlimit_too_small(uint64_t memory_usage)
 }
 
 
+#ifdef HAVE_ENCODERS
 // For a given opt_block_list index, validate that the filter has been
 // set. If it has not been set, we must exit with error to avoid using
 // an uninitialized filter chain.
@@ -233,6 +240,59 @@ validate_block_list_filter(const uint32_t filter_num)
 				"not specified with --filters%u="),
 				(unsigned)filter_num, (unsigned)filter_num);
 }
+
+
+// Sets the memory usage for each filter chain. It will return the maximum
+// memory usage of all of the filter chains.
+static uint64_t
+filters_memusage_max(const lzma_mt *mt, bool encode)
+{
+	uint64_t max_memusage = 0;
+
+#ifdef MYTHREAD_ENABLED
+	// Copy multithreaded options to a temporary struct since the
+	// filters member needs to be changed
+	lzma_mt mt_local;
+	if (mt != NULL)
+		mt_local = *mt;
+#else
+	(void)mt;
+#endif
+
+	for (uint32_t i = 0; i < ARRAY_SIZE(filters); i++) {
+		if (!(filters_init_mask & (1 << i)))
+			continue;
+
+		uint64_t memusage = UINT64_MAX;
+#ifdef MYTHREAD_ENABLED
+		if (mt != NULL) {
+			mt_local.filters = filters[i];
+			memusage = lzma_stream_encoder_mt_memusage(&mt_local);
+			filter_memusages[i] = memusage;
+		}
+		else
+#endif
+
+		if (encode) {
+			memusage = lzma_raw_encoder_memusage(filters[i]);
+			filter_memusages[i] = memusage;
+		}
+
+#ifdef HAVE_DECODERS
+		else {
+			memusage = lzma_raw_decoder_memusage(filters[i]);
+		}
+#endif
+
+		if (memusage > max_memusage)
+			max_memusage = memusage;
+	}
+
+	return max_memusage;
+}
+#endif
+
+
 extern void
 coder_set_compression_settings(void)
 {
@@ -241,11 +301,13 @@ coder_set_compression_settings(void)
 	assert(opt_format != FORMAT_LZIP);
 #endif
 
+#ifdef HAVE_ENCODERS
 	if (opt_block_list != NULL)
-		for (uint32_t i = 0; opt_block_list[i].size != 0; i++)
+		for (uint32_t i = 0; opt_block_list[i].size != 0; i++) {
 			validate_block_list_filter(
 					opt_block_list[i].filters_index);
-
+		}
+#endif
 	// The default check type is CRC64, but fallback to CRC32
 	// if CRC64 isn't supported by the copy of liblzma we are
 	// using. CRC32 is always supported.
@@ -333,11 +395,15 @@ coder_set_compression_settings(void)
 		}
 	}
 
-	// Get the memory usage. Note that if --format=raw was used,
-	// we can be decompressing.
+	// Get the memory usage and memory limit. The memory usage is the
+	// maximum of the default filters[] and any filters specified by
+	// --filtersX.
+	// Note that if --format=raw was used, we can be decompressing and
+	// do not need to account for any filter chains created
+	// with --filtersX.
 	//
-	// If multithreaded .xz compression is done, this value will be
-	// replaced.
+	// If multithreaded .xz compression is done, the memory limit
+	// will be replaced.
 	uint64_t memory_limit = hardware_memlimit_get(opt_mode);
 	uint64_t memory_usage = UINT64_MAX;
 	if (opt_mode == MODE_COMPRESS) {
@@ -348,8 +414,9 @@ coder_set_compression_settings(void)
 			mt_options.threads = hardware_threads_get();
 			mt_options.block_size = opt_block_size;
 			mt_options.check = check;
-			memory_usage = lzma_stream_encoder_mt_memusage(
-					&mt_options);
+
+			memory_usage = filters_memusage_max(
+						&mt_options, true);
 			if (memory_usage != UINT64_MAX)
 				message(V_DEBUG, _("Using up to %" PRIu32
 						" threads."),
@@ -357,7 +424,7 @@ coder_set_compression_settings(void)
 		} else
 #	endif
 		{
-			memory_usage = lzma_raw_encoder_memusage(default_filters);
+			memory_usage = filters_memusage_max(NULL, true);
 		}
 #endif
 	} else {
@@ -377,7 +444,16 @@ coder_set_compression_settings(void)
 	message_mem_needed(V_DEBUG, memory_usage);
 #ifdef HAVE_DECODERS
 	if (opt_mode == MODE_COMPRESS) {
-		const uint64_t decmem = lzma_raw_decoder_memusage(default_filters);
+#ifdef HAVE_ENCODERS
+		const uint64_t decmem =
+				filters_memusage_max(NULL, false);
+#else
+		// If encoders are not enabled, then --block-list is never
+		// usable, so the other filter chains 1-9 can never be used.
+		// So there is no need to find the maximum decoder memory
+		// required in this case.
+		const uint64_t decmem = lzma_raw_decoder_memusage(filters[0]);
+#endif
 		if (decmem != UINT64_MAX)
 			message(V_DEBUG, _("Decompression will need "
 					"%s MiB of memory."), uint64_to_str(
@@ -404,8 +480,8 @@ coder_set_compression_settings(void)
 			// Reduce the number of threads by one and check
 			// the memory usage.
 			--mt_options.threads;
-			memory_usage = lzma_stream_encoder_mt_memusage(
-					&mt_options);
+			memory_usage = filters_memusage_max(
+					&mt_options, true);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
 
@@ -457,7 +533,7 @@ coder_set_compression_settings(void)
 		// the multithreaded mode but the output
 		// is also different.
 		hardware_threads_set(1);
-		memory_usage = lzma_raw_encoder_memusage(default_filters);
+		memory_usage = filters_memusage_max(NULL, true);
 		message(V_WARNING, _("Switching to single-threaded mode "
 			"to not exceed the memory usage limit of %s MiB"),
 			uint64_to_str(round_up_to_mib(memory_limit), 0));
@@ -472,55 +548,138 @@ coder_set_compression_settings(void)
 	if (!opt_auto_adjust)
 		memlimit_too_small(memory_usage);
 
-	// Look for the last filter if it is LZMA2 or LZMA1, so we can make
-	// it use less RAM. With other filters we don't know what to do.
-	size_t i = 0;
-	while (default_filters[i].id != LZMA_FILTER_LZMA2
-			&& default_filters[i].id != LZMA_FILTER_LZMA1) {
-		if (default_filters[i].id == LZMA_VLI_UNKNOWN)
-			memlimit_too_small(memory_usage);
+	// Decrease the dictionary size until we meet the memory usage limit.
+	// The struct is used to track data needed to correctly reduce the
+	// memory usage and report which filters were adjusted.
+	typedef struct {
+		// Pointer to the filter chain that needs to be reduced.
+		// NULL indicates that this filter chain was either never
+		// set or was never above the memory limit.
+		lzma_filter *filters;
 
-		++i;
+		// Original dictionary sizes are used to show how each
+		// filter's dictionary was reduced.
+		uint64_t orig_dict_size;
+
+		// Index of the LZMA filter in the filters member. We only
+		// adjust this filter's memusage because we don't know how
+		// to reduce the memory usage of the other filters.
+		uint32_t lzma_idx;
+
+		// Indicates if the filter's dictionary size needs to be
+		// reduced to fit under the memory limit (true) or if the
+		// filter chain is unused or is already under the memory
+		// limit (false).
+		bool reduce_dict_size;
+	} memusage_reduction_data;
+
+	memusage_reduction_data memusage_reduction[ARRAY_SIZE(filters)];
+
+	// Counter represents how many filter chains are above the memory
+	// limit.
+	size_t count = 0;
+
+	for (uint32_t i = 0; i < ARRAY_SIZE(filters); i++) {
+		// The short var name "r" will reduce the number of lines
+		// of code needed since less lines will stretch past 80
+		// characters.
+		memusage_reduction_data *r = &memusage_reduction[i];
+		r->filters = NULL;
+		r->reduce_dict_size = false;
+
+		if (!(filters_init_mask & (1 << i)))
+			continue;
+
+		for (uint32_t j = 0; filters[i][j].id != LZMA_VLI_UNKNOWN;
+				j++)
+			if ((filters[i][j].id == LZMA_FILTER_LZMA2
+					|| filters[i][j].id
+						== LZMA_FILTER_LZMA1)
+					&& filter_memusages[i]
+						> memory_limit) {
+				count++;
+				r->filters = filters[i];
+				r->lzma_idx = j;
+				r->reduce_dict_size = true;
+
+				lzma_options_lzma *opt = r->filters
+						[r->lzma_idx].options;
+				r->orig_dict_size = opt->dict_size;
+				opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
+			}
 	}
 
-	// Decrease the dictionary size until we meet the memory
-	// usage limit. First round down to full mebibytes.
-	lzma_options_lzma *opt = default_filters[i].options;
-	const uint32_t orig_dict_size = opt->dict_size;
-	opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
-	while (true) {
-		// If it is below 1 MiB, auto-adjusting failed. We could be
-		// more sophisticated and scale it down even more, but let's
-		// see if many complain about this version.
-		//
-		// FIXME: Displays the scaled memory usage instead
-		// of the original.
-		if (opt->dict_size < (UINT32_C(1) << 20))
-			memlimit_too_small(memory_usage);
+	// Loop until all filters use <= memory_limit, or exit.
+	while (count > 0) {
+		for (uint32_t i = 0; i < ARRAY_SIZE(memusage_reduction); i++) {
+			memusage_reduction_data *r = &memusage_reduction[i];
 
-		memory_usage = lzma_raw_encoder_memusage(default_filters);
-		if (memory_usage == UINT64_MAX)
-			message_bug();
+			if (!r->reduce_dict_size)
+				continue;
 
-		// Accept it if it is low enough.
-		if (memory_usage <= memory_limit)
-			break;
+			lzma_options_lzma *opt =
+					r->filters[r->lzma_idx].options;
 
-		// Otherwise 1 MiB down and try again. I hope this
-		// isn't too slow method for cases where the original
-		// dict_size is very big.
-		opt->dict_size -= UINT32_C(1) << 20;
+			// If it is below 1 MiB, auto-adjusting failed.
+			// We could be more sophisticated and scale it
+			// down even more, but nobody has complained so far.
+			if (opt->dict_size < (UINT32_C(1) << 20))
+				memlimit_too_small(memory_usage);
+
+			uint64_t filt_mem_usage =
+					lzma_raw_encoder_memusage(r->filters);
+
+			if (filt_mem_usage == UINT64_MAX)
+				message_bug();
+
+			if (filt_mem_usage < memory_limit) {
+				r->reduce_dict_size = false;
+				count--;
+			}
+			else {
+				opt->dict_size -= UINT32_C(1) << 20;
+			}
+		}
 	}
 
-	// Tell the user that we decreased the dictionary size.
-	message(V_WARNING, _("Adjusted LZMA%c dictionary size "
-			"from %s MiB to %s MiB to not exceed "
-			"the memory usage limit of %s MiB"),
-			default_filters[i].id == LZMA_FILTER_LZMA2
-				? '2' : '1',
-			uint64_to_str(orig_dict_size >> 20, 0),
-			uint64_to_str(opt->dict_size >> 20, 1),
-			uint64_to_str(round_up_to_mib(memory_limit), 2));
+	// Tell the user that we decreased the dictionary size for
+	// each filter that was adjusted.
+	for (uint32_t i = 0; i < ARRAY_SIZE(memusage_reduction); i++) {
+		memusage_reduction_data *r = &memusage_reduction[i];
+
+		// If the filters were never set, then the memory usage
+		// was never adjusted.
+		if (r->filters == NULL)
+			continue;
+
+		lzma_filter *filter_lzma = &(r->filters[r->lzma_idx]);
+		lzma_options_lzma *opt = filter_lzma->options;
+
+		// The first index is the default filter chain. The message
+		// should be slightly different if the default filter chain
+		// or if --filtersX was adjusted.
+		if (i == 0)
+			message(V_WARNING, _("Adjusted LZMA%c dictionary "
+				"size from %s MiB to %s MiB to not exceed the "
+				"memory usage limit of %s MiB"),
+				filter_lzma->id == LZMA_FILTER_LZMA2
+					? '2' : '1',
+				uint64_to_str(r->orig_dict_size >> 20, 0),
+				uint64_to_str(opt->dict_size >> 20, 1),
+				uint64_to_str(round_up_to_mib(
+					memory_limit), 2));
+		else
+			message(V_WARNING, _("Adjusted LZMA%c dictionary size "
+				"for --filters%u from %s MiB to %s MiB to not "
+				"exceed the memory usage limit of %s MiB"),
+				filter_lzma->id == LZMA_FILTER_LZMA2
+					? '2' : '1',
+				(unsigned)i,
+				uint64_to_str(r->orig_dict_size >> 20, 0),
+				uint64_to_str(opt->dict_size >> 20, 1),
+				uint64_to_str(round_up_to_mib(
+					memory_limit), 2));
+	}
 #endif
 
 	return;

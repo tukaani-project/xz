@@ -731,7 +731,7 @@ extern LZMA_API(lzma_ret) lzma_str_from_filters(
  *
  * If a filter_id is given then only one line is created which contains the
  * filter name. If LZMA_STR_ENCODER or LZMA_STR_DECODER is used then the
- * options required for encoding or decoding are listed on the same line too.
+ * options read by the encoder or decoder are printed on the same line.
  *
  * If filter_id is LZMA_VLI_UNKNOWN then all supported .xz-compatible filters
  * are listed:

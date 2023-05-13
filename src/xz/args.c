@@ -788,6 +788,17 @@ args_parse(args_info *args, int argc, char **argv)
 	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_AUTO)
 		opt_format = FORMAT_XZ;
 
+	// Set opt_block_list to NULL if we are not compressing to the .xz
+	// format. This option cannot be used outside of this case, and
+	// simplifies the implementation later.
+	if ((opt_mode != MODE_COMPRESS || opt_format != FORMAT_XZ)
+			&& opt_block_list != NULL) {
+		message(V_WARNING, _("--block-list is ignored unless "
+				"compressing to the .xz format"));
+		free(opt_block_list);
+		opt_block_list = NULL;
+	}
+
 	// Compression settings need to be validated (options themselves and
 	// their memory usage) when compressing to any file format. It has to
 	// be done also when uncompressing raw data, since for raw decoding

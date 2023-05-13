@@ -50,6 +50,13 @@ static uint32_t filters_init_mask = 1;
 /// Track the memory usage for all filter chains (default or --filtersX).
 /// The memory usage may need to be scaled down depending on the memory limit.
 static uint64_t filter_memusages[ARRAY_SIZE(filters)];
+
+#	ifdef MYTHREAD_ENABLED
+/// Represents the largest Block size specified with --block-list. This
+/// is needed to help reduce the Block size in the multithreaded encoder
+/// so memory is not wasted.
+static uint64_t max_block_list_size = 0;
+#	endif
 #endif
 
 /// Input and output buffers
@@ -290,6 +297,18 @@ filters_memusage_max(const lzma_mt *mt, bool encode)
 
 	return max_memusage;
 }
+
+
+#	ifdef MYTHREAD_ENABLED
+static void
+filter_chain_error(const uint32_t index, const char *msg)
+{
+	if (index == 0)
+		message_fatal(_("Error in the filter chain: %s"), msg);
+	else
+		message_fatal(_("Error in --filters%d: %s"), index, msg);
+}
+#	endif
 #endif
 
 
@@ -306,6 +325,11 @@ coder_set_compression_settings(void)
 		for (uint32_t i = 0; opt_block_list[i].size != 0; i++) {
 			validate_block_list_filter(
 					opt_block_list[i].filters_index);
+
+#	ifdef MYTHREAD_ENABLED
+			if (opt_block_list[i].size > max_block_list_size)
+				max_block_list_size = opt_block_list[i].size;
+#	endif
 		}
 #endif
 	// The default check type is CRC64, but fallback to CRC32
@@ -420,7 +444,49 @@ coder_set_compression_settings(void)
 		if (opt_format == FORMAT_XZ && hardware_threads_is_mt()) {
 			memory_limit = hardware_memlimit_mtenc_get();
 			mt_options.threads = hardware_threads_get();
-			mt_options.block_size = opt_block_size;
+
+			uint64_t block_size = opt_block_size;
+			// If opt_block_size is not set, find the maximum
+			// recommended Block size based on the filter chains
+			if (block_size == 0) {
+				for (uint32_t i = 0; i < ARRAY_SIZE(filters);
+						i++) {
+					if (!(filters_init_mask & (1 << i)))
+						continue;
+
+					uint64_t size = lzma_mt_block_size(
+							filters[i]);
+
+					// If this returns an error, then one
+					// of the filter chains in use is
+					// invalid, so there is no point in
+					// progressing further.
+					if (size == UINT64_MAX)
+						filter_chain_error(i,
+							message_strm(
+							LZMA_OPTIONS_ERROR));
+
+					if (size > block_size)
+						block_size = size;
+				}
+
+				// If the largest block size specified
+				// with --block-list is less than the
+				// recommended Block size, then it is a waste
+				// of RAM to use a larger Block size. It may
+				// even allow more threads to be used in some
+				// situations. If the special 0 Block size is
+				// used (encode all remaining data in 1 Block)
+				// then max_block_list_size will be set to
+				// UINT64_MAX, so the recommended Block size
+				// will always be used in this case.
+				if (max_block_list_size > 0
+						&& max_block_list_size
+						< block_size)
+					block_size = max_block_list_size;
+			}
+
+			mt_options.block_size = block_size;
 			mt_options.check = check;
 
 			memory_usage = filters_memusage_max(

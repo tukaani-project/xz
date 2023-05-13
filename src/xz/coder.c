@@ -84,10 +84,9 @@ forget_filter_chain(void)
 {
 	// Setting a preset or using --filters makes us forget
 	// the earlier custom filter chain (if any).
-	while (filters_count > 0) {
-		--filters_count;
-		free(filters[filters_count].options);
-		filters[filters_count].options = NULL;
+	if (filters_count > 0) {
+		lzma_filters_free(filters, NULL);
+		filters_count = 0;
 	}
 
 	string_to_filter_used = false;
@@ -125,7 +124,9 @@ coder_add_filter(lzma_vli id, void *options)
 
 	filters[filters_count].id = id;
 	filters[filters_count].options = options;
-	++filters_count;
+	// Terminate the filter chain with LZMA_VLI_UNKNOWN to simplify
+	// implementation of forget_filter_chain().
+	filters[++filters_count].id = LZMA_VLI_UNKNOWN;
 
 	// Setting a custom filter chain makes us forget the preset options.
 	// This makes a difference if one specifies e.g. "xz -9 --lzma2 -e"
@@ -234,11 +235,12 @@ coder_set_compression_settings(void)
 		filters[0].id = opt_format == FORMAT_LZMA
 				? LZMA_FILTER_LZMA1 : LZMA_FILTER_LZMA2;
 		filters[0].options = &opt_lzma;
-		filters_count = 1;
-	}
 
-	// Terminate the filter options array.
-	filters[filters_count].id = LZMA_VLI_UNKNOWN;
+		filters_count = 1;
+
+		// Terminate the filter options array.
+		filters[1].id = LZMA_VLI_UNKNOWN;
+	}
 
 	// If we are using the .lzma format, allow exactly one filter
 	// which has to be LZMA1.

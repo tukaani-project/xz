@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.4.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2023-01-03 20:44+0800\n"
-"PO-Revision-Date: 2023-01-02 12:16-0500\n"
+"POT-Creation-Date: 2022-12-01 21:23+0200\n"
+"PO-Revision-Date: 2023-05-15 18:14-0400\n"
 "Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
 "Language: eo\n"
@@ -17,48 +17,48 @@ msgstr ""
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/xz/args.c:77
+#: src/xz/args.c:64
 #, c-format
 msgid "%s: Invalid argument to --block-list"
 msgstr "%s: Nevalida parametro por --block-list"
 
-#: src/xz/args.c:87
+#: src/xz/args.c:74
 #, c-format
 msgid "%s: Too many arguments to --block-list"
 msgstr "%s: Tro da argumentoj por --block-list"
 
-#: src/xz/args.c:116
+#: src/xz/args.c:103
 msgid "0 can only be used as the last element in --block-list"
 msgstr "0 povas nur esti uzata kiel la lasta elemento en --block-list"
 
-#: src/xz/args.c:451
+#: src/xz/args.c:436
 #, c-format
 msgid "%s: Unknown file format type"
 msgstr "%s: Nekonata dosierformata tipo"
 
-#: src/xz/args.c:474 src/xz/args.c:482
+#: src/xz/args.c:459 src/xz/args.c:467
 #, c-format
 msgid "%s: Unsupported integrity check type"
 msgstr "%s: Nekomprenata tipo de integra kontrolo"
 
-#: src/xz/args.c:518
+#: src/xz/args.c:503
 msgid "Only one file can be specified with `--files' or `--files0'."
 msgstr "Nur oni dosiero estas specifebla per `--files' aŭ `--files0'."
 
-#: src/xz/args.c:586
+#: src/xz/args.c:571
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "La medivariablo %s enhavas troajn argumentojn"
 
-#: src/xz/args.c:688
+#: src/xz/args.c:673
 msgid "Compression support was disabled at build time"
 msgstr "Rego de kunpremado estas malaktivigita dum muntotempo"
 
-#: src/xz/args.c:695
+#: src/xz/args.c:680
 msgid "Decompression support was disabled at build time"
 msgstr "Rego de malkunpremado estas malaktivigita dum muntotempo"
 
-#: src/xz/args.c:701
+#: src/xz/args.c:686
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "Ne povas kunpremi lzip-dosierojn (.lz)"
 
@@ -315,7 +315,7 @@ msgstr "Nekunpremita grando:"
 
 #: src/xz/list.c:72
 msgid "Ratio:"
-msgstr "Proporcio"
+msgstr "Proporcio:"
 
 #: src/xz/list.c:73
 msgid "Check:"
@@ -347,7 +347,7 @@ msgstr "Bloko"
 
 #: src/xz/list.c:124
 msgid "Blocks"
-msgstr "Floko"
+msgstr "Blokoj"
 
 #: src/xz/list.c:125
 msgid "CompOffset"
@@ -395,7 +395,7 @@ msgstr "Flago"
 
 #: src/xz/list.c:136
 msgid "MemUsage"
-msgstr "Mumazado"
+msgstr "Memuzado"
 
 #: src/xz/list.c:137
 msgid "Filters"
@@ -937,7 +937,7 @@ msgstr ""
 #: src/xz/message.c:1127
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
-msgstr "Raporti cimojn al <%s> (en la angla aŭ la suoma).\n"
+msgstr "Raporti programerarojn al <%s> (en la angla aŭ la suoma).\n"
 
 #: src/xz/message.c:1129
 #, c-format
@@ -951,7 +951,7 @@ msgstr "ĈI TIU ESTAS DISVOLVA REDAKCIO, NE CELATA POR ĈIUTAGA UZADO."
 #: src/xz/options.c:86
 #, c-format
 msgid "%s: Options must be `name=value' pairs separated with commas"
-msgstr "%s: Elektoj devas esti paroj de `name=value`, apartigitaj de komoj"
+msgstr "%s: Elektoj devas esti paroj de `name=value`, apartigitaj per komoj"
 
 #: src/xz/options.c:93
 #, c-format

@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the XZ Utils package.
 # This file is put in the public domain.
 #
-# Yuri Chornoivan <yurchor@ukr.net>, 2022.
+# Yuri Chornoivan <yurchor@ukr.net>, 2022, 2023.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man-5.4.0-pre2\n"
-"POT-Creation-Date: 2022-12-01 21:23+0200\n"
-"PO-Revision-Date: 2022-12-27 17:33+0200\n"
+"Project-Id-Version: xz-man-5.4.3\n"
+"POT-Creation-Date: 2023-05-04 22:33+0800\n"
+"PO-Revision-Date: 2023-05-16 17:47+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -3239,8 +3239,8 @@ msgstr "Вбудовуваний XZ: E<lt>https://tukaani.org/xz/embedded.htmlE<
 
 #. type: Plain text
 #: ../src/xz/xz.1:3020
-msgid "LZMA SDK: E<lt>http://7-zip.org/sdk.htmlE<gt>"
-msgstr "LZMA SDK: E<lt>http://7-zip.org/sdk.htmlE<gt>"
+msgid "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
+msgstr "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
 
 #. type: TH
 #: ../src/xzdec/xzdec.1:7

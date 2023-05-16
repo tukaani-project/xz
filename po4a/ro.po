@@ -1,18 +1,19 @@
 # Mesajele în limba română pentru pachetul xz-man.
 # This file is put in the public domain.
 #
-# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022.
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022 - 2023.
 #
 # Cronologia traducerii fișierului „xz-man”:
 # Traducerea inițială, făcută de R-GC, pentru versiunea xz-man 5.4.0-pre1.
-# Actualizare a traducerii pentru versiunea 5.4.0-pre2, făcută de R-GC, 2022.
-# Actualizare a traducerii pentru versiunea Y, făcută de X, Z(anul).
+# Actualizare a traducerii pentru versiunea 5.4.0-pre2, făcută de R-GC, dec-2022.
+# Actualizare a traducerii pentru versiunea 5.4.3, făcută de R-GC, mai-2023.
+# Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.4.0-pre2\n"
-"POT-Creation-Date: 2022-12-01 21:23+0200\n"
-"PO-Revision-Date: 2022-12-05 20:22+0100\n"
+"Project-Id-Version: xz-man 5.4.3\n"
+"POT-Creation-Date: 2023-05-04 22:33+0800\n"
+"PO-Revision-Date: 2023-05-16 16:31+0200\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: plural=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #. type: TH
 #: ../src/xz/xz.1:8
@@ -3252,8 +3253,8 @@ msgstr "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
 
 #. type: Plain text
 #: ../src/xz/xz.1:3020
-msgid "LZMA SDK: E<lt>http://7-zip.org/sdk.htmlE<gt>"
-msgstr "LZMA SDK: E<lt>http://7-zip.org/sdk.htmlE<gt>"
+msgid "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
+msgstr "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
 
 #. type: TH
 #: ../src/xzdec/xzdec.1:7

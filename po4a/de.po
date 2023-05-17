@@ -1,13 +1,13 @@
 # XZ Utils man pages German translation
 # This file is put in the public domain.
 #
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2015, 2019-2020, 2022.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2015, 2019-2020, 2022-2023.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.4.0-pre2\n"
+"Project-Id-Version: xz-man 5.4.3\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2022-12-01 21:23+0200\n"
-"PO-Revision-Date: 2022-12-07 20:17+0100\n"
+"POT-Creation-Date: 2023-05-04 22:33+0800\n"
+"PO-Revision-Date: 2023-05-17 16:51+0200\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 22.08.3\n"
+"X-Generator: Lokalize 23.04.0\n"
 
 #. type: TH
 #: ../src/xz/xz.1:8
@@ -124,12 +124,12 @@ msgstr "B<xz> ist ein Allzweckwerkzeug zur Datenkompression, dessen Befehlszeile
 #. type: Plain text
 #: ../src/xz/xz.1:92
 msgid "B<xz> compresses or decompresses each I<file> according to the selected operation mode.  If no I<files> are given or I<file> is B<->, B<xz> reads from standard input and writes the processed data to standard output.  B<xz> will refuse (display an error and skip the I<file>)  to write compressed data to standard output if it is a terminal.  Similarly, B<xz> will refuse to read compressed data from standard input if it is a terminal."
-msgstr "B<xz> komprimiert oder dekomprimierte jede I<Datei> entsprechend des gewählten Vorgangsmodus. Falls entweder B<-> oder keine Datei angegeben ist, liest B<xz> aus der Standardeingabe und leitet die verarbeiteten Dateien in die Standardausgabe. Wenn die Standardausgabe kein Terminal ist, verweigert B<xz> das Schreiben komprimierter Daten in die Standardausgabe. Dabei wird eine Fehlermeldung angezeigt und die I<Datei> übersprungen. Ebenso verweigert B<xz> das Lesen komprimierter Daten aus der Standardeingabe, wenn diese ein Terminal ist."
+msgstr "B<xz> komprimiert oder dekomprimiert jede I<Datei> entsprechend des gewählten Vorgangsmodus. Falls entweder B<-> oder keine Datei angegeben ist, liest B<xz> aus der Standardeingabe und leitet die verarbeiteten Dateien in die Standardausgabe. Wenn die Standardausgabe kein Terminal ist, verweigert B<xz> das Schreiben komprimierter Daten in die Standardausgabe. Dabei wird eine Fehlermeldung angezeigt und die I<Datei> übersprungen. Ebenso verweigert B<xz> das Lesen komprimierter Daten aus der Standardeingabe, wenn diese ein Terminal ist."
 
 #. type: Plain text
 #: ../src/xz/xz.1:102
 msgid "Unless B<--stdout> is specified, I<files> other than B<-> are written to a new file whose name is derived from the source I<file> name:"
-msgstr "I<Dateien>, die nicht als B<-> angegeben sind, werden in eine neue Datei geschrieben, deren Name aus den Namen der Quell-I<Datei> abgeleitet wird (außer wenn B<--stdout> angegeben ist):"
+msgstr "I<Dateien>, die nicht als B<-> angegeben sind, werden in eine neue Datei geschrieben, deren Name aus dem Namen der Quell-I<Datei> abgeleitet wird (außer wenn B<--stdout> angegeben ist):"
 
 #. type: IP
 #: ../src/xz/xz.1:102 ../src/xz/xz.1:108 ../src/xz/xz.1:133 ../src/xz/xz.1:138
@@ -167,7 +167,7 @@ msgstr "Außer beim Schreiben in die Standardausgabe zeigt B<xz> eine Warnung an
 #. type: Plain text
 #: ../src/xz/xz.1:138
 msgid "I<File> is not a regular file.  Symbolic links are not followed, and thus they are not considered to be regular files."
-msgstr "Die I<Datei> ist keine reguläre Datei. Symbolischen Verknüpfungen wird nicht gefolgt und daher nicht zu den regulären Dateien gezählt."
+msgstr "Die I<Datei> ist keine reguläre Datei. Symbolischen Verknüpfungen wird nicht gefolgt und diese daher nicht zu den regulären Dateien gezählt."
 
 #. type: Plain text
 #: ../src/xz/xz.1:141
@@ -365,7 +365,7 @@ msgstr "gibt Informationen zu den komprimierten I<Dateien> aus. Es werden keine 
 #. type: Plain text
 #: ../src/xz/xz.1:391
 msgid "The default listing shows basic information about I<files>, one file per line.  To get more detailed information, use also the B<--verbose> option.  For even more information, use B<--verbose> twice, but note that this may be slow, because getting all the extra information requires many seeks.  The width of verbose output exceeds 80 characters, so piping the output to, for example, B<less\\ -S> may be convenient if the terminal isn't wide enough."
-msgstr "Die Liste zeigt in der Standardeinstellung grundlegende Informationen zu den I<Dateien> an, zeilenweise pro Datei. Detailliertere Informationen erhalten Sie mit der Option B<--verbose>. Wenn Sie diese Option zweimal angeben, werden noch ausführlichere Informationen ausgegeben. Das kann den Vorgang allerdings deutlich verlangsamen, da die Ermittlung der zusätzlichen Informationen zahlreiche Suchvorgänge erfordert. Die Breite der ausführlichen Ausgabe ist breiter als 80 Zeichen, daher könnte die Weiterleitung in beispielsweise\\& B<less\\ -S> sinnvoll sein, falls das Terminal nicht breit genug ist."
+msgstr "Die Liste zeigt in der Standardeinstellung grundlegende Informationen zu den I<Dateien> an, zeilenweise pro Datei. Detailliertere Informationen erhalten Sie mit der Option B<--verbose>. Wenn Sie diese Option zweimal angeben, werden noch ausführlichere Informationen ausgegeben. Das kann den Vorgang allerdings deutlich verlangsamen, da die Ermittlung der zusätzlichen Informationen zahlreiche Suchvorgänge erfordert. Die Breite der ausführlichen Ausgabe übersteigt 80 Zeichen, daher könnte die Weiterleitung in beispielsweise\\& B<less\\ -S> sinnvoll sein, falls das Terminal nicht breit genug ist."
 
 #. type: Plain text
 #: ../src/xz/xz.1:398
@@ -570,7 +570,7 @@ msgstr "Akzeptiert nur B<.lz>-Dateien bei der Dekompression. Kompression wird ni
 #. type: Plain text
 #: ../src/xz/xz.1:604
 msgid "The B<.lz> format version 0 and the unextended version 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18."
-msgstr "Das B<.lz>-Format wird in Version 0 und der unerweiterten Version 1 unterstützt. Dateien der Version 0 wurden B<lzip> 1.3 und älter erstellt. Solche Dateien sind nicht sehr weit verbreitet, können aber in Dateiarchiven gefunden werden, da einige Quellpakete in diesem Format veröffentlicht wurden. Es ist auch möglich, dass Benutzer alte persönliche Dateien in diesem Format haben. Die Dekompressionsunterstützung für das Format der Version 0 wurde mit der Version 1.18 aus B<lzip> entfernt."
+msgstr "Das B<.lz>-Format wird in Version 0 und der unerweiterten Version 1 unterstützt. Dateien der Version 0 wurden von B<lzip> 1.3 und älter erstellt. Solche Dateien sind nicht sehr weit verbreitet, können aber in Dateiarchiven gefunden werden, da einige Quellpakete in diesem Format veröffentlicht wurden. Es ist auch möglich, dass Benutzer alte persönliche Dateien in diesem Format haben. Die Dekompressionsunterstützung für das Format der Version 0 wurde mit der Version 1.18 aus B<lzip> entfernt."
 
 #. type: Plain text
 #: ../src/xz/xz.1:613
@@ -3245,8 +3245,8 @@ msgstr "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
 
 #. type: Plain text
 #: ../src/xz/xz.1:3020
-msgid "LZMA SDK: E<lt>http://7-zip.org/sdk.htmlE<gt>"
-msgstr "LZMA-SDK: E<lt>http://7-zip.org/sdk.htmlE<gt>"
+msgid "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
+msgstr "LZMA-SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
 
 #. type: TH
 #: ../src/xzdec/xzdec.1:7
@@ -3680,31 +3680,3 @@ msgstr "Eine Liste der bei der Betrachtung von Dateiinhalten verfügbaren Tastat
 #: ../src/scripts/xzmore.1:55
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
-
-#~ msgid "2020-02-01"
-#~ msgstr "1. Februar 2020"
-
-#~ msgid "Display an error and exit if the compression settings exceed the memory usage limit.  The default is to adjust the settings downwards so that the memory usage limit is not exceeded.  Automatic adjusting is always disabled when creating raw streams (B<--format=raw>)."
-#~ msgstr "zeigt einen Fehler an und bricht die Ausführung ab, falls die Kompressionseinstellungen die Begrenzung der Speichernutzung überschreiten. Standardmäßig werden die Einstellungen nach unten korrigiert, so dass diese Grenze nicht überschritten wird. Bei der Erzeugung von Rohdatenströmen (B<--format=raw>) ist die automatische Korrektur stets deaktiviert."
-
-#~ msgid "It is fine to apply a BCJ filter on a whole executable; there's no need to apply it only on the executable section.  Applying a BCJ filter on an archive that contains both executable and non-executable files may or may not give good results, so it generally isn't good to blindly apply a BCJ filter when compressing binary packages for distribution."
-#~ msgstr "Es ist in Ordnung, einen BCJ-Filter auf eine gesamte Binärdatei anzuwenden; es ist nicht nötig, dies nur auf den binären Bereich zu beschränken. Die Anwendung eines BCJ-Filters auf ein Archiv, das sowohl binäre als auch nicht-binäre Dateien enthält, kann gute Ergebnisse liefern, muss es aber nicht. Daher ist es generell nicht gut, einen BCJ-Filter blindlings anzuwenden, wenn Sie Binärpakete zwecks Weitergabe komprimieren wollen."
-
-#~ msgid "These BCJ filters are very fast and use insignificant amount of memory.  If a BCJ filter improves compression ratio of a file, it can improve decompression speed at the same time.  This is because, on the same hardware, the decompression speed of LZMA2 is roughly a fixed number of bytes of compressed data per second."
-#~ msgstr "Diese BCJ-Filter sind sehr schnell und erhöhen den Speicherbedarf nur unerheblich. Wenn ein BCJ-Filter das Kompressionsverhältnis einer Datei verbessert, kann er auch gleichzeitig die Dekompressionsgeschwindigkeit verbessern. Das kommt daher, dass auf der gleichen Hardware die Dekompressionsgeschwindigkeit von LZMA2 ungefähr eine feste Anzahl Byte an komprimierten Daten pro Sekunde ist."
-
-#~ msgid "Applying a BCJ filter on an archive containing multiple similar executables can make the compression ratio worse than not using a BCJ filter.  This is because the BCJ filter doesn't detect the boundaries of the executable files, and doesn't reset the address conversion counter for each executable."
-#~ msgstr "Bei der Anwendung eines BCJ-Filters auf ein Archiv, das mehrere ähnliche Binärdateien enthält, kann das Kompressionsverhältnis schlechter sein als ohne BCJ-Filter. Das kommt daher, weil der BCJ-Filter die Grenzen der Binärdateien nicht erkennt und den Zähler der Adressumwandlung für jede Binärdatei nicht zurücksetzt."
-
-#~ msgid "Both of the above problems will be fixed in the future in a new filter.  The old BCJ filters will still be useful in embedded systems, because the decoder of the new filter will be bigger and use more memory."
-#~ msgstr "Beide der oben genannten Probleme werden in der Zukunft in einem neuen Filter nicht mehr auftreten. Die alten BCJ-Filter werden noch in eingebetteten Systemen von Nutzen sein, weil der Dekoder des neuen Filters größer sein und mehr Speicher beanspruchen wird."
-
-# FIXME have have
-#~ msgid "Different instruction sets have different alignment:"
-#~ msgstr "Verschiedene Befehlssätze haben unterschiedliche Ausrichtungen:"
-
-#~ msgid "Little endian only"
-#~ msgstr "Nur Little Endian"
-
-#~ msgid "Big or little endian"
-#~ msgstr "Big oder Little Endian"

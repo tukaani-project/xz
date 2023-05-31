@@ -889,13 +889,15 @@ write_basic_package_version_file(
 set(LZMA_CONFIG_CONTENTS
 "include(\"\${CMAKE_CURRENT_LIST_DIR}/liblzma-targets.cmake\")
 
-# Be compatible with the spelling used by the FindLibLZMA module. This
-# doesn't use ALIAS because it would make CMake resolve LibLZMA::LibLZMA
-# to liblzma::liblzma instead of keeping the original spelling. Keeping
-# the original spelling is important for good FindLibLZMA compatibility.
-add_library(LibLZMA::LibLZMA INTERFACE IMPORTED)
-set_target_properties(LibLZMA::LibLZMA PROPERTIES
-                      INTERFACE_LINK_LIBRARIES liblzma::liblzma)
+if(NOT TARGET LibLZMA::LibLZMA)
+       # Be compatible with the spelling used by the FindLibLZMA module. This
+       # doesn't use ALIAS because it would make CMake resolve LibLZMA::LibLZMA
+       # to liblzma::liblzma instead of keeping the original spelling. Keeping
+       # the original spelling is important for good FindLibLZMA compatibility.
+       add_library(LibLZMA::LibLZMA INTERFACE IMPORTED)
+       set_target_properties(LibLZMA::LibLZMA PROPERTIES
+                             INTERFACE_LINK_LIBRARIES liblzma::liblzma)
+endif()
 ")
 
 if(ENABLE_THREADS STREQUAL "posix")

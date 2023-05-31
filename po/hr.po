@@ -654,7 +654,7 @@ msgid ""
 msgstr ""
 "  -k, --keep          zadrži (ne briše) navedene ulazne datoteke\n"
 "  -f, --force         piše preko izlaznih datoteka i\n"
-"                        preko (de)komprimiranih poveznica \n"
+"                        preko (de)komprimiranih poveznica\n"
 "  -c, --stdout        piše na standardni izlaz i ne briše\n"
 "                        ulazne datoteke"
 

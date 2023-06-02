@@ -76,6 +76,9 @@ if COND_SCRIPTS
 TESTS += test_scripts.sh
 endif
 
+build-PROGRAMS: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+
 clean-local:
 	-rm -f compress_generated_* \
 		xzgrep_test_output xzgrep_test_1.xz xzgrep_test_2.xz

@@ -36,7 +36,9 @@ jobs:
       # Install Autotools on Linux
       - name: Install Dependencies
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
-        run: sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen
 
       # Install Autotools on Mac
       - name: Install Dependencies
@@ -46,7 +48,9 @@ jobs:
       # Install CMake on Linux
       - name: Install Dependencies
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'cmake' }}
-        run: sudo apt-get install -y build-essential cmake
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y build-essential cmake
 
       # Install CMake on Mac
       - name: Install Dependencies

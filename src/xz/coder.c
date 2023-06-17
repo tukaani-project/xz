@@ -41,10 +41,13 @@ static lzma_stream strm = LZMA_STREAM_INIT;
 /// the --block-list option.
 static lzma_filter filters[NUM_FILTER_CHAIN_MAX][LZMA_FILTERS_MAX + 1];
 
-/// Bit mask representing the filters specified through --filtersX. This
-/// is needed to verify that an entry in the --block-list option does not
-/// try to reference a filter chain that was not initialized.
-static uint32_t filters_init_mask = 1;
+/// Bit mask representing the filters that are actually used when encoding
+/// in the xz format. This is needed since a filter chain could be
+/// specified in --filtersX (or the default filter chain), but never used
+/// in --block-list. The default filter chain is always assumed to be used,
+/// unless --block-list is specified and does not have a block using the
+/// default filter chain.
+static uint32_t filters_used_mask = 1;
 
 #ifdef HAVE_ENCODERS
 /// Track the memory usage for all filter chains (default or --filtersX).
@@ -216,12 +219,12 @@ extern void
 coder_add_block_filters(const char *str, size_t slot)
 {
 	// Free old filters first, if they were previously allocated.
-	if (filters_init_mask & (1 << slot))
+	if (filters_used_mask & (1 << slot))
 		lzma_filters_free(filters[slot], NULL);
 
 	str_to_filters(str, slot, 0);
 
-	filters_init_mask |= 1 << slot;
+	filters_used_mask |= 1 << slot;
 }
 
 
@@ -242,7 +245,7 @@ memlimit_too_small(uint64_t memory_usage)
 static void
 validate_block_list_filter(const uint32_t filter_num)
 {
-         if (!(filters_init_mask & (1 << filter_num)))
+         if (!(filters_used_mask & (1 << filter_num)))
 		message_fatal(_("filter chain %u used by --block-list, but "
 				"not specified with --filters%u="),
 				(unsigned)filter_num, (unsigned)filter_num);
@@ -267,7 +270,7 @@ filters_memusage_max(const lzma_mt *mt, bool encode)
 #endif
 
 	for (uint32_t i = 0; i < ARRAY_SIZE(filters); i++) {
-		if (!(filters_init_mask & (1 << i)))
+		if (!(filters_used_mask & (1 << i)))
 			continue;
 
 		uint64_t memusage = UINT64_MAX;
@@ -321,16 +324,39 @@ coder_set_compression_settings(void)
 #endif
 
 #ifdef HAVE_ENCODERS
-	if (opt_block_list != NULL)
+	if (opt_block_list != NULL) {
+		// This mask tracks the filters actually referenced in
+		// --block-list. It is used to help remove bits from
+		// filters_used_mask when a filter chain was specified
+		// but never actually used.
+		uint32_t filters_ref_mask = 0;
+
 		for (uint32_t i = 0; opt_block_list[i].size != 0; i++) {
 			validate_block_list_filter(
 					opt_block_list[i].filters_index);
+
+			// Mark the current filter as referenced.
+			filters_ref_mask |= 1 <<
+					opt_block_list[i].filters_index;
 
 #	ifdef MYTHREAD_ENABLED
 			if (opt_block_list[i].size > max_block_list_size)
 				max_block_list_size = opt_block_list[i].size;
 #	endif
 		}
+
+		assert(filters_ref_mask != 0);
+		// Note: The filters that were initialized but not used do
+		//       not free their options and do not have the filter
+		//       IDs set to LZMA_VLI_UNKNOWN. Filter chains are not
+		//       freed outside of debug mode and the default filter
+		//       chain is never freed.
+		filters_used_mask = filters_ref_mask;
+	} else {
+		// Reset filters used mask in case --block-list is not
+		// used, but --filtersX is used.
+		filters_used_mask = 1;
+	}
 #endif
 	// The default check type is CRC64, but fallback to CRC32
 	// if CRC64 isn't supported by the copy of liblzma we are
@@ -348,7 +374,7 @@ coder_set_compression_settings(void)
 	// filter chain.
 	lzma_filter *default_filters = filters[0];
 
-	if (filters_count == 0) {
+	if (filters_count == 0 && filters_used_mask & 1) {
 		// We are using a preset. This is not a good idea in raw mode
 		// except when playing around with things. Different versions
 		// of this software may use different options in presets, and
@@ -379,7 +405,9 @@ coder_set_compression_settings(void)
 	}
 
 	// If we are using the .lzma format, allow exactly one filter
-	// which has to be LZMA1.
+	// which has to be LZMA1. There is no need to check if the default
+	// filter chain is being used since it can only be disabled if
+	// --block-list is used, which is incompatible with FORMAT_LZMA.
 	if (opt_format == FORMAT_LZMA && (filters_count != 1
 			|| default_filters[0].id != LZMA_FILTER_LZMA1))
 		message_fatal(_("The .lzma format supports only "
@@ -387,21 +415,23 @@ coder_set_compression_settings(void)
 
 	// If we are using the .xz format, make sure that there is no LZMA1
 	// filter to prevent LZMA_PROG_ERROR.
-	if (opt_format == FORMAT_XZ)
+	if (opt_format == FORMAT_XZ && filters_used_mask & 1)
 		for (size_t i = 0; i < filters_count; ++i)
 			if (default_filters[i].id == LZMA_FILTER_LZMA1)
 				message_fatal(_("LZMA1 cannot be used "
 						"with the .xz format"));
 
-	// Print the selected default filter chain.
-	message_filters_show(V_DEBUG, default_filters);
+	if (filters_used_mask & 1) {
+		// Print the selected default filter chain.
+		message_filters_show(V_DEBUG, default_filters);
+	}
 
 	// The --flush-timeout option requires LZMA_SYNC_FLUSH support
 	// from the filter chain. Currently the threaded encoder doesn't
 	// support LZMA_SYNC_FLUSH so single-threaded mode must be used.
 	if (opt_mode == MODE_COMPRESS && opt_flush_timeout != 0) {
 		for (uint32_t i = 0; i < ARRAY_SIZE(filters); ++i) {
-			if (!(filters_init_mask & (1 << i)))
+			if (!(filters_used_mask & (1 << i)))
 				continue;
 
 			const lzma_filter *fc = filters[i];
@@ -451,7 +481,7 @@ coder_set_compression_settings(void)
 			if (block_size == 0) {
 				for (uint32_t i = 0; i < ARRAY_SIZE(filters);
 						i++) {
-					if (!(filters_init_mask & (1 << i)))
+					if (!(filters_used_mask & (1 << i)))
 						continue;
 
 					uint64_t size = lzma_mt_block_size(
@@ -661,7 +691,7 @@ coder_set_compression_settings(void)
 		r->filters = NULL;
 		r->reduce_dict_size = false;
 
-		if (!(filters_init_mask & (1 << i)))
+		if (!(filters_used_mask & (1 << i)))
 			continue;
 
 		for (uint32_t j = 0; filters[i][j].id != LZMA_VLI_UNKNOWN;
@@ -1495,7 +1525,7 @@ coder_free(void)
 	// debug mode and will be freed when the process ends anyway, we
 	// don't worry about freeing it.
 	for (uint32_t i = 1; i < ARRAY_SIZE(filters); i++) {
-		if (filters_init_mask & (1 << i))
+		if (filters_used_mask & (1 << i))
 			lzma_filters_free(filters[i], NULL);
 	}
 

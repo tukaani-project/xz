@@ -2049,106 +2049,12 @@ easier to parse by other programs.
 Currently
 .B \-\-robot
 is supported only together with
-.BR \-\-version ,
+.BR \-\-list ,
 .BR \-\-info\-memory ,
 and
-.BR \-\-list .
+.BR \-\-version .
 It will be supported for compression and
 decompression in the future.
-.
-.SS Version
-.B "xz \-\-robot \-\-version"
-will print the version number of
-.B xz
-and liblzma in the following format:
-.PP
-.BI XZ_VERSION= XYYYZZZS
-.br
-.BI LIBLZMA_VERSION= XYYYZZZS
-.TP
-.I X
-Major version.
-.TP
-.I YYY
-Minor version.
-Even numbers are stable.
-Odd numbers are alpha or beta versions.
-.TP
-.I ZZZ
-Patch level for stable releases or
-just a counter for development releases.
-.TP
-.I S
-Stability.
-0 is alpha, 1 is beta, and 2 is stable.
-.I S
-should be always 2 when
-.I YYY
-is even.
-.PP
-.I XYYYZZZS
-are the same on both lines if
-.B xz
-and liblzma are from the same XZ Utils release.
-.PP
-Examples: 4.999.9beta is
-.B 49990091
-and
-5.0.0 is
-.BR 50000002 .
-.
-.SS "Memory limit information"
-.B "xz \-\-robot \-\-info\-memory"
-prints a single line with three tab-separated columns:
-.IP 1. 4
-Total amount of physical memory (RAM) in bytes.
-.IP 2. 4
-Memory usage limit for compression in bytes
-.RB ( \-\-memlimit\-compress ).
-A special value of
-.B 0
-indicates the default setting
-which for single-threaded mode is the same as no limit.
-.IP 3. 4
-Memory usage limit for decompression in bytes
-.RB ( \-\-memlimit\-decompress ).
-A special value of
-.B 0
-indicates the default setting
-which for single-threaded mode is the same as no limit.
-.IP 4. 4
-Since
-.B xz
-5.3.4alpha:
-Memory usage for multi-threaded decompression in bytes
-.RB ( \-\-memlimit\-mt\-decompress ).
-This is never zero because a system-specific default value
-shown in the column 5
-is used if no limit has been specified explicitly.
-This is also never greater than the value in the column 3
-even if a larger value has been specified with
-.BR \-\-memlimit\-mt\-decompress .
-.IP 5. 4
-Since
-.B xz
-5.3.4alpha:
-A system-specific default memory usage limit
-that is used to limit the number of threads
-when compressing with an automatic number of threads
-.RB ( \-\-threads=0 )
-and no memory usage limit has been specified
-.RB ( \-\-memlimit\-compress ).
-This is also used as the default value for
-.BR \-\-memlimit\-mt\-decompress .
-.IP 6. 4
-Since
-.B xz
-5.3.4alpha:
-Number of available processor threads.
-.PP
-In the future, the output of
-.B "xz \-\-robot \-\-info\-memory"
-may have more columns, but never more than a single line.
 .
 .SS "List mode"
 .B "xz \-\-robot \-\-list"
@@ -2433,6 +2339,100 @@ version required to decompress the file
 Future versions may add new line types and
 new columns can be added to the existing line types,
 but the existing columns won't be changed.
+.
+.SS "Memory limit information"
+.B "xz \-\-robot \-\-info\-memory"
+prints a single line with three tab-separated columns:
+.IP 1. 4
+Total amount of physical memory (RAM) in bytes.
+.IP 2. 4
+Memory usage limit for compression in bytes
+.RB ( \-\-memlimit\-compress ).
+A special value of
+.B 0
+indicates the default setting
+which for single-threaded mode is the same as no limit.
+.IP 3. 4
+Memory usage limit for decompression in bytes
+.RB ( \-\-memlimit\-decompress ).
+A special value of
+.B 0
+indicates the default setting
+which for single-threaded mode is the same as no limit.
+.IP 4. 4
+Since
+.B xz
+5.3.4alpha:
+Memory usage for multi-threaded decompression in bytes
+.RB ( \-\-memlimit\-mt\-decompress ).
+This is never zero because a system-specific default value
+shown in the column 5
+is used if no limit has been specified explicitly.
+This is also never greater than the value in the column 3
+even if a larger value has been specified with
+.BR \-\-memlimit\-mt\-decompress .
+.IP 5. 4
+Since
+.B xz
+5.3.4alpha:
+A system-specific default memory usage limit
+that is used to limit the number of threads
+when compressing with an automatic number of threads
+.RB ( \-\-threads=0 )
+and no memory usage limit has been specified
+.RB ( \-\-memlimit\-compress ).
+This is also used as the default value for
+.BR \-\-memlimit\-mt\-decompress .
+.IP 6. 4
+Since
+.B xz
+5.3.4alpha:
+Number of available processor threads.
+.PP
+In the future, the output of
+.B "xz \-\-robot \-\-info\-memory"
+may have more columns, but never more than a single line.
+.
+.SS Version
+.B "xz \-\-robot \-\-version"
+will print the version number of
+.B xz
+and liblzma in the following format:
+.PP
+.BI XZ_VERSION= XYYYZZZS
+.br
+.BI LIBLZMA_VERSION= XYYYZZZS
+.TP
+.I X
+Major version.
+.TP
+.I YYY
+Minor version.
+Even numbers are stable.
+Odd numbers are alpha or beta versions.
+.TP
+.I ZZZ
+Patch level for stable releases or
+just a counter for development releases.
+.TP
+.I S
+Stability.
+0 is alpha, 1 is beta, and 2 is stable.
+.I S
+should be always 2 when
+.I YYY
+is even.
+.PP
+.I XYYYZZZS
+are the same on both lines if
+.B xz
+and liblzma are from the same XZ Utils release.
+.PP
+Examples: 4.999.9beta is
+.B 49990091
+and
+5.0.0 is
+.BR 50000002 .
 .
 .SH "EXIT STATUS"
 .TP

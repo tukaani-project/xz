@@ -940,7 +940,7 @@ A special value of
 may be used as the last size to indicate that
 the rest of the file should be encoded as a single block.
 .IP ""
-An alternative custom filter chain for each block can be
+An alternative filter chain for each block can be
 specified in combination with the
 .BI \-\-filters1= filters
 \&...\&
@@ -1343,7 +1343,7 @@ and
 .BI \-\-filters1= filters
 \&...\&
 .BI \-\-filters9= filters
-allows specifying an entire filter chain in one option using the
+allow specifying an entire filter chain in one option using the
 liblzma filter string syntax.
 Alternatively, a filter chain can be specified by using one or more
 individual filter options in the order they are wanted in the filter chain.
@@ -2050,6 +2050,7 @@ Currently
 .B \-\-robot
 is supported only together with
 .BR \-\-list ,
+.BR \-\-filters\-help ,
 .BR \-\-info\-memory ,
 and
 .BR \-\-version .
@@ -2339,6 +2340,33 @@ version required to decompress the file
 Future versions may add new line types and
 new columns can be added to the existing line types,
 but the existing columns won't be changed.
+.
+.SS "Filters help"
+.B "xz \-\-robot \-\-filters-help"
+prints the supported filters in the following format:
+.PP
+\fIfilter\fB:\fIoption\fB=<\fIvalue\fB>,\fIoption\fB=<\fIvalue\fB>\fR...
+.TP
+.I filter
+Name of the filter
+.TP
+.I option
+Name of a filter specific option
+.TP
+.I value
+Numeric
+.I value
+ranges appear as
+\fB<\fImin\fB\-\fImax\fB>\fR.
+String
+.I value
+choices are shown within
+.B "< >"
+and separated by a
+.B |
+character.
+.PP
+Each filter is printed on its own line.
 .
 .SS "Memory limit information"
 .B "xz \-\-robot \-\-info\-memory"

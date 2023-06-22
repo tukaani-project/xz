@@ -438,22 +438,25 @@ is_clmul_supported(void)
 }
 
 
-#ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
-#	define CRC64_FUNC_INIT
-#	define CRC64_SET_FUNC_ATTR __attribute__((__constructor__))
-#else
-#	define CRC64_FUNC_INIT = &crc64_dispatch
-#	define CRC64_SET_FUNC_ATTR
-static uint64_t crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc);
-#endif
+#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC)
+// The resolver must accept no arguments (void), and must specify the return
+// and parameter types in order to avoid warnings. The resolved function return
+// type appears where a regular function's return type would be, and the
+// resolved functions parameters appear after the resolver's arguments (void).
+static uint64_t
+(*crc64_resolver(void)) (const uint8_t*, size_t, uint64_t)
+{
+	return is_clmul_supported() ? crc64_clmul : crc64_generic;
+}
 
+// The resolved function can be called as crc64_func().
+static uint64_t crc64_func(const uint8_t *buf, size_t size, uint64_t crc)
+		__attribute__ ((__ifunc__ ("crc64_resolver")));
 
-// Pointer to the the selected CRC64 method.
-static uint64_t (*crc64_func)(const uint8_t *buf, size_t size, uint64_t crc)
-		CRC64_FUNC_INIT;
+#elif defined(HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
+static uint64_t (*crc64_func)(const uint8_t *buf, size_t size, uint64_t crc);
 
-
-CRC64_SET_FUNC_ATTR
+__attribute__((__constructor__))
 static void
 crc64_set_func(void)
 {
@@ -461,20 +464,26 @@ crc64_set_func(void)
 	return;
 }
 
+#else
+static uint64_t crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc);
 
-#ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+static uint64_t (*crc64_func)(const uint8_t *buf, size_t size, uint64_t crc)
+		= &crc64_dispatch;
+
 static uint64_t
 crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc)
 {
-	// When __attribute__((__constructor__)) isn't supported, set the
+	// When __attribute__((__ifunc__())) and
+	// __attribute__((__constructor__)) aren't supported, set the
 	// function pointer without any locking. If multiple threads run
 	// the detection code in parallel, they will all end up setting
 	// the pointer to the same value. This avoids the use of
 	// mythread_once() on every call to lzma_crc64() but this likely
 	// isn't strictly standards compliant. Let's change it if it breaks.
-	crc64_set_func();
+	crc64_func = is_clmul_supported() ? &crc64_clmul : &crc64_generic;
 	return crc64_func(buf, size, crc);
 }
+
 #endif
 #endif
 
@@ -503,15 +512,6 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 	if (size <= 16)
 		return crc64_generic(buf, size, crc);
 #endif
-
-/*
-#ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
-	// See crc64_dispatch(). This would be the alternative which uses
-	// locking and doesn't use crc64_dispatch(). Note that on Windows
-	// this method needs Vista threads.
-	mythread_once(crc64_set_func);
-#endif
-*/
 
 	return crc64_func(buf, size, crc);
 

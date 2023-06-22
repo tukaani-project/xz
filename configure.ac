@@ -859,7 +859,35 @@ AC_COMPILE_IFELSE([
 ], [
 	AC_MSG_RESULT([no])
 ])
+
 CFLAGS="$OLD_CFLAGS"
+
+# __attribute__((__ifunc__())) can be used for one-time initializations,
+# similar to __attribute__((__constructor__)).
+AC_ARG_ENABLE([ifunc], [AS_HELP_STRING([--disable-ifunc],
+		[do not use __attribute__((__ifunc__()))])],
+	[], [enable_ifunc=yes])
+
+if test "x$enable_ifunc" = xyes ; then
+	OLD_CFLAGS="$CFLAGS"
+	CFLAGS="$CFLAGS -Werror"
+	AC_MSG_CHECKING([if __attribute__((__ifunc__())) can be used])
+	AC_COMPILE_IFELSE([
+		static void func(void) { return; }
+		static void (*resolve_func (void)) (void) { return func; }
+		void func_ifunc (void)
+				__attribute__ ((__ifunc__ ("resolve_func")));
+	], [
+		AC_DEFINE([HAVE_FUNC_ATTRIBUTE_IFUNC], [1],
+			[Define to 1 if __attribute__((__ifunc__()))
+			is supported for functions.])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
+
+	CFLAGS="$OLD_CFLAGS"
+fi
 
 
 ###############################################################################

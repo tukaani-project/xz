@@ -438,26 +438,34 @@ is_clmul_supported(void)
 }
 
 
+typedef uint64_t (*crc64_func_type)(
+		const uint8_t *buf, size_t size, uint64_t crc);
+
+
+static crc64_func_type
+crc64_resolve(void)
+{
+	return is_clmul_supported() ? &crc64_clmul : &crc64_generic;
+}
+
+
+#ifndef HAVE_FUNC_ATTRIBUTE_IFUNC
+
 #ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
-#	define CRC64_FUNC_INIT
 #	define CRC64_SET_FUNC_ATTR __attribute__((__constructor__))
+static crc64_func_type crc64_func;
 #else
-#	define CRC64_FUNC_INIT = &crc64_dispatch
 #	define CRC64_SET_FUNC_ATTR
 static uint64_t crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc);
+static crc64_func_type crc64_func = &crc64_dispatch;
 #endif
-
-
-// Pointer to the the selected CRC64 method.
-static uint64_t (*crc64_func)(const uint8_t *buf, size_t size, uint64_t crc)
-		CRC64_FUNC_INIT;
 
 
 CRC64_SET_FUNC_ATTR
 static void
 crc64_set_func(void)
 {
-	crc64_func = is_clmul_supported() ? &crc64_clmul : &crc64_generic;
+	crc64_func = crc64_resolve();
 	return;
 }
 
@@ -466,7 +474,8 @@ crc64_set_func(void)
 static uint64_t
 crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc)
 {
-	// When __attribute__((__constructor__)) isn't supported, set the
+	// When __attribute__((__ifunc__(...))) and
+	// __attribute__((__constructor__)) isn't supported, set the
 	// function pointer without any locking. If multiple threads run
 	// the detection code in parallel, they will all end up setting
 	// the pointer to the same value. This avoids the use of
@@ -477,8 +486,15 @@ crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc)
 }
 #endif
 #endif
+#endif
 
 
+#if defined(CRC_GENERIC) && defined(CRC_CLMUL) \
+		&& defined(HAVE_FUNC_ATTRIBUTE_IFUNC)
+extern LZMA_API(uint64_t)
+lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
+		__attribute__((__ifunc__("crc64_resolve")));
+#else
 extern LZMA_API(uint64_t)
 lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 {
@@ -528,3 +544,4 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 	return crc64_generic(buf, size, crc);
 #endif
 }
+#endif

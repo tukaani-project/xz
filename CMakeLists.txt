@@ -764,10 +764,10 @@ cmake_pop_check_state()
 tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
 
 # Check for __attribute__((__ifunc__())) support.
-option(CHECK_ATTR_IFUNC "Use __attribute__((__ifunc__())) if supported by \
-the system" ON)
+option(ALLOW_ATTR_IFUNC "Allow use of __attribute__((__ifunc__())) if \
+supported by the system" ON)
 
-if (CHECK_ATTR_IFUNC)
+if(ALLOW_ATTR_IFUNC)
     cmake_push_check_state()
     set(CMAKE_REQUIRED_FLAGS "-Werror")
     check_c_source_compiles("

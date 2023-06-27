@@ -859,11 +859,12 @@ AC_COMPILE_IFELSE([
 ], [
 	AC_MSG_RESULT([no])
 ])
-
 CFLAGS="$OLD_CFLAGS"
 
-# __attribute__((__ifunc__())) can be used for one-time initializations,
-# similar to __attribute__((__constructor__)).
+# __attribute__((__ifunc__())) can be used to choose between different
+# implementations of the same function at runtime. This is slightly more
+# efficient than using __attribute__((__constructor__)) and setting
+# a function pointer.
 AC_ARG_ENABLE([ifunc], [AS_HELP_STRING([--disable-ifunc],
 		[do not use __attribute__((__ifunc__()))])],
 	[], [enable_ifunc=yes])
@@ -876,7 +877,7 @@ if test "x$enable_ifunc" = xyes ; then
 		static void func(void) { return; }
 		static void (*resolve_func (void)) (void) { return func; }
 		void func_ifunc (void)
-				__attribute__ ((__ifunc__ ("resolve_func")));
+				__attribute__((__ifunc__("resolve_func")));
 	], [
 		AC_DEFINE([HAVE_FUNC_ATTRIBUTE_IFUNC], [1],
 			[Define to 1 if __attribute__((__ifunc__()))

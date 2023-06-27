@@ -380,6 +380,14 @@ XZ Utils Installation
                 required extensions (-msse4.1 -mpclmul) then runtime
                 detection isn't used and the generic code is omitted.
 
+    --disable-ifunc
+                Disable the use of __attribute__((__ifunc__())) for
+                function dispatching even if support is detected.
+
+                The ifunc attribute is incompatible with
+                -fsanitize=address so it may need to be disabled in
+                debug builds with extra instrumentation.
+
     --enable-unaligned-access
                 Allow liblzma to use unaligned memory access for 16-bit,
                 32-bit, and 64-bit loads and stores. This should be

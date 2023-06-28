@@ -648,6 +648,8 @@ test_lzma_index_iter_init(void)
 	assert_false(lzma_index_iter_next(&iter, LZMA_INDEX_ITER_STREAM));
 	assert_false(lzma_index_iter_next(&iter, LZMA_INDEX_ITER_STREAM));
 	assert_uint_eq(iter.stream.number, 3);
+
+	lzma_index_end(first, NULL);
 }
 
 
@@ -1157,6 +1159,9 @@ test_lzma_index_cat(void)
 	assert_lzma_ret(lzma_index_cat(dest, src, NULL), LZMA_DATA_ERROR);
 
 	// Check for compressed size overflow
+	lzma_index_end(src, NULL);
+	lzma_index_end(dest, NULL);
+
 	dest = lzma_index_init(NULL);
 	assert_true(dest != NULL);
 
@@ -1297,6 +1302,7 @@ test_lzma_index_dup(void)
 	assert_true(copy != NULL);
 	assert_true(index_is_equal(idx, copy));
 
+	lzma_index_end(copy, NULL);
 	lzma_index_end(idx, NULL);
 }
 
@@ -1428,6 +1434,7 @@ test_lzma_index_encoder(void)
 
 	verify_index_buffer(idx, buffer, buffer_size);
 
+	lzma_index_end(idx, NULL);
 	lzma_end(&strm);
 #endif
 }
@@ -1589,6 +1596,8 @@ test_lzma_index_buffer_encode(void)
 
 	// Validate results
 	verify_index_buffer(idx, buffer, buffer_size);
+
+	lzma_index_end(idx, NULL);
 #endif
 }
 
@@ -1638,6 +1647,8 @@ test_lzma_index_buffer_decode(void)
 			decode_buffer, &in_pos, decode_buffer_size), LZMA_OK);
 
 	assert_true(index_is_equal(decode_test_index, idx));
+
+	lzma_index_end(idx, NULL);
 
 	// Test too small memlimit
 	in_pos = 0;

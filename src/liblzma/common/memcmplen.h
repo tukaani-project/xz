@@ -69,11 +69,13 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 	while (len < limit) {
 		const uint64_t x = read64ne(buf1 + len) - read64ne(buf2 + len);
 		if (x != 0) {
-#	if defined(_M_X64) // MSVC or Intel C compiler on Windows
+	// MSVC or Intel C compiler on Windows
+#	if defined(_M_X64) && defined(_MSC_VER)
 			unsigned long tmp;
 			_BitScanForward64(&tmp, x);
 			len += (uint32_t)tmp >> 3;
-#	else // GCC, clang, or Intel C compiler
+	// GCC, clang, or Intel C compiler
+#	else
 			len += (uint32_t)__builtin_ctzll(x) >> 3;
 #	endif
 			return my_min(len, limit);

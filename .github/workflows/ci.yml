@@ -27,7 +27,7 @@ jobs:
         build_system: [autotools, cmake]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       ########################
       # Install Dependencies #

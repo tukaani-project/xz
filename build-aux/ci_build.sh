@@ -19,7 +19,7 @@ set -e
 USAGE="Usage: $0
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
-  -d [encoders|decoders|bcj|delta|threads|shared|nls|small]
+  -d [encoders|decoders|bcj|delta|threads|shared|nls|small|ifunc|clmul]
   -f [CFLAGS]
   -l [destdir]
   -n [ARTIFACTS_DIR_NAME]
@@ -40,6 +40,8 @@ THREADS="y"
 SHARED="y"
 NATIVE_LANG_SUPPORT="y"
 SMALL="n"
+IFUNC="y"
+CLMUL="y"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
@@ -80,6 +82,8 @@ while getopts b:c:d:l:n:s:p:f:h opt; do
 		shared) SHARED="n";;
 		nls) NATIVE_LANG_SUPPORT="n";;
 		small) SMALL="y";;
+		ifunc) IFUNC="n";;
+		clmul) CLMUL="n";;
 		*) echo "Invalid disable value: $disable_arg"; exit 1 ;;
 		esac
 	done
@@ -197,6 +201,8 @@ then
 		add_extra_option "$SHARED" "" "--disable-shared"
 		add_extra_option "$NATIVE_LANG_SUPPORT" "" "--disable-nls"
 		add_extra_option "$SMALL" "--enable-small" ""
+		add_extra_option "$IFUNC" "" "--disable-ifunc"
+		add_extra_option "$CLMUL" "" "--disable-clmul-crc"
 
 		# Run configure script
 		"$SRC_DIR"/configure --enable-werror --enable-checks="$CHECK_TYPE" $EXTRA_OPTIONS --config-cache

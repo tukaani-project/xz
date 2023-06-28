@@ -65,10 +65,10 @@ jobs:
       # -p specifies the phase (build or test) to help narrow down an error
       #    if one occurs.
       #
-      # Start with the 32-bit build because the autoconf cache must be reset
-      # after the build because the 32-bit build sets the CFLAGS env variable.
-      # By starting with the 32-bit build, we only have to clear the
-      # cache once. The 32-bit build is only tested on Autotools Linux.
+      # The first two builds/tests are only run on Autotools Linux and
+      # affect the CFLAGS. Resetting the CFLAGS requires clearing the
+      # config cache between runs, so the tests that require CFLAGS are
+      # done first.
       - name: Build 32-bit
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: ./build-aux/ci_build.sh -b autotools -p build -f "-m32"
@@ -76,6 +76,21 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
             ./build-aux/ci_build.sh -b autotools -p test -f "-m32" -n 32_bit
+            cd ../xz_build && make distclean
+
+      # ifunc and clmul must be disabled for this test because they will
+      # fail with -fsanitize=address. __attribute__ ifunc is incompatible
+      # with -fsanitize=address.CLMUL optimizations will read past the
+      # bounds of small buffers and mask out the unneeded values. This
+      # triggers -fsanitize=address to report an error even though the
+      # operation is safe.
+      - name: Build with -fsanitize=address,undefined
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d ifunc,clmul
+      - name: Test with -fsanitize=address,undefined
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        run: |
+            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc,clmul
             cd ../xz_build && make distclean
 
       - name: Build with full features

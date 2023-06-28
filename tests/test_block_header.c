@@ -17,6 +17,20 @@
 static lzma_options_lzma opt_lzma;
 
 
+// Used in test_lzma_block_header_decode() between tests to ensure
+// no artifacts are leftover in the block struct that could influence
+// later tests.
+#define RESET_BLOCK(block, buf) \
+do { \
+	lzma_filter *filters_ = (block).filters; \
+	lzma_filters_free(filters_, NULL); \
+	memzero((buf), sizeof((buf))); \
+	memzero(&(block), sizeof(lzma_block)); \
+	(block).filters = filters_; \
+	(block).check = LZMA_CHECK_CRC32; \
+} while (0);
+
+
 #ifdef HAVE_ENCODERS
 static lzma_filter filters_none[1] = {
 	{
@@ -411,10 +425,7 @@ test_lzma_block_header_decode(void)
 	compare_blocks(&block, &decoded_block);
 
 	// Reset output buffer and decoded_block
-	memzero(out, LZMA_BLOCK_HEADER_SIZE_MAX);
-	memzero(&decoded_block, sizeof(lzma_block));
-	decoded_block.filters = decoded_filters;
-	decoded_block.check = LZMA_CHECK_CRC32;
+	RESET_BLOCK(decoded_block, out);
 
 	// Test with compressed size set
 	block.compressed_size = 4096;
@@ -425,10 +436,7 @@ test_lzma_block_header_decode(void)
 			LZMA_OK);
 	compare_blocks(&block, &decoded_block);
 
-	memzero(out, LZMA_BLOCK_HEADER_SIZE_MAX);
-	memzero(&decoded_block, sizeof(lzma_block));
-	decoded_block.filters = decoded_filters;
-	decoded_block.check = LZMA_CHECK_CRC32;
+	RESET_BLOCK(decoded_block, out);
 
 	// Test with uncompressed size set
 	block.uncompressed_size = 4096;
@@ -439,10 +447,7 @@ test_lzma_block_header_decode(void)
 			LZMA_OK);
 	compare_blocks(&block, &decoded_block);
 
-	memzero(out, LZMA_BLOCK_HEADER_SIZE_MAX);
-	memzero(&decoded_block, sizeof(lzma_block));
-	decoded_block.filters = decoded_filters;
-	decoded_block.check = LZMA_CHECK_CRC32;
+	RESET_BLOCK(decoded_block, out);
 
 	// Test with multiple filters
 	block.filters = filters_four;
@@ -453,10 +458,7 @@ test_lzma_block_header_decode(void)
 			LZMA_OK);
 	compare_blocks(&block, &decoded_block);
 
-	memzero(&decoded_block, sizeof(lzma_block));
-	decoded_block.filters = decoded_filters;
-	decoded_block.check = LZMA_CHECK_CRC32;
-	decoded_block.header_size = lzma_block_header_size_decode(out[0]);
+	lzma_filters_free(decoded_filters, NULL);
 
 	// Test with too high version. The decoder will set it to a version
 	// that it supports.
@@ -464,6 +466,10 @@ test_lzma_block_header_decode(void)
 	assert_lzma_ret(lzma_block_header_decode(&decoded_block, NULL, out),
 			LZMA_OK);
 	assert_uint_eq(decoded_block.version, 1);
+
+	// Free the filters for the last time since all other cases should
+	// result in an error.
+	lzma_filters_free(decoded_filters, NULL);
 
 	// Test bad check type
 	decoded_block.check = INVALID_LZMA_CHECK_ID;

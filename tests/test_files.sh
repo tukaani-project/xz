@@ -35,7 +35,7 @@ fi
 EXIT_STATUS=0
 have_feature()
 {
-	grep "define HAVE_$1" ../config.h > /dev/null && return 0
+	grep "define HAVE_$1 1" ../config.h > /dev/null && return 0
 	printf '%s: Skipping because HAVE_%s is not enabled\n' "$2" "$1"
 	EXIT_STATUS=77
 	return 1

@@ -130,8 +130,8 @@ test_xz -4
 
 test_filter()
 {
-	grep "define HAVE_ENCODER_$1" ../config.h > /dev/null || return
-	grep "define HAVE_DECODER_$1" ../config.h > /dev/null || return
+	grep "define HAVE_ENCODER_$1 1" ../config.h > /dev/null || return
+	grep "define HAVE_DECODER_$1 1" ../config.h > /dev/null || return
 	shift
 	test_xz "$@" --lzma2=dict=64KiB,nice=32,mode=fast
 }

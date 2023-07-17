@@ -3,7 +3,8 @@
 /// \file       coder.h
 /// \brief      Compresses or uncompresses a file
 //
-//  Author:     Lasse Collin
+//  Authors:    Lasse Collin
+//              Jia Tan
 //
 //  This file has been put into the public domain.
 //  You can do whatever you want with this file.

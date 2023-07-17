@@ -3,7 +3,8 @@
 /// \file       message.c
 /// \brief      Printing messages
 //
-//  Author:     Lasse Collin
+//  Authors:    Lasse Collin
+//              Jia Tan
 //
 //  This file has been put into the public domain.
 //  You can do whatever you want with this file.

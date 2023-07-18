@@ -466,9 +466,9 @@ static const struct {
 	/// If the flag LZMA_STR_ENCODER is used then the first
 	/// strfy_encoder elements of optmap are stringified.
 	/// With LZMA_STR_DECODER strfy_decoder is used.
-	/// Currently encoders use all flags that decoders do but if
+	/// Currently encoders use all options that decoders do but if
 	/// that changes then this needs to be changed too, for example,
-	/// add a new OPTMAP flag to skip printing some decoder-only flags.
+	/// add a new OPTMAP flag to skip printing some decoder-only options.
 	const option_map *optmap;
 	uint8_t strfy_encoder;
 	uint8_t strfy_decoder;

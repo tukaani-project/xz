@@ -23,9 +23,9 @@
 // on Windows when using an MSVC compatible compiler. The Intel compiler
 // can use the intrinsics without the header file.
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
-		&& (defined(_MSC_VER) \
+		&& defined(_MSC_VER) \
 		&& defined(_M_X64) \
-		&& !defined(__INTEL_COMPILER))
+		&& !defined(__INTEL_COMPILER)
 #	include <intrin.h>
 #endif
 

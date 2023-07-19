@@ -441,6 +441,13 @@ is_clmul_supported(void)
 typedef uint64_t (*crc64_func_type)(
 		const uint8_t *buf, size_t size, uint64_t crc);
 
+// Clang 16.0.0 and older has a bug where it marks the ifunc resolver
+// function as unused since it is static and never used outside of
+// __attribute__((__ifunc__())).
+#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wunused-function"
+#endif
 
 static crc64_func_type
 crc64_resolve(void)
@@ -448,6 +455,9 @@ crc64_resolve(void)
 	return is_clmul_supported() ? &crc64_clmul : &crc64_generic;
 }
 
+#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif
 
 #ifndef HAVE_FUNC_ATTRIBUTE_IFUNC
 

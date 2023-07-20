@@ -144,6 +144,7 @@ test_filter POWERPC powerpc
 test_filter IA64 ia64
 test_filter ARM arm
 test_filter ARMTHUMB armthumb
+test_filter ARM64 arm64
 test_filter SPARC sparc
 
 exit 0

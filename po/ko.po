@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.3\n"
+"Project-Id-Version: xz 5.4.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2023-05-04 22:32+0800\n"
-"PO-Revision-Date: 2023-05-17 11:02+0900\n"
+"POT-Creation-Date: 2023-07-18 23:34+0800\n"
+"PO-Revision-Date: 2023-07-20 10:59+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
 "Language: ko\n"
@@ -46,24 +46,35 @@ msgstr "%s: 지원하지 않는 무결성 검사 형식"
 msgid "Only one file can be specified with `--files' or `--files0'."
 msgstr "`--files' 또는 `--files0' 옵션으로 하나의 파일만 지정할 수 있습니다."
 
-#: src/xz/args.c:586
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/args.c:533 src/xz/coder.c:691 src/xz/coder.c:707 src/xz/coder.c:967
+#: src/xz/coder.c:970 src/xz/file_io.c:605 src/xz/file_io.c:679
+#: src/xz/file_io.c:769 src/xz/file_io.c:940 src/xz/list.c:369
+#: src/xz/list.c:415 src/xz/list.c:477 src/xz/list.c:581 src/xz/list.c:590
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/args.c:589
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "%s 환경 변수에 너무 많은 인자 값이 들어있습니다"
 
-#: src/xz/args.c:688
+#: src/xz/args.c:691
 msgid "Compression support was disabled at build time"
 msgstr "빌드 시점에 압축 기능을 비활성했습니다"
 
-#: src/xz/args.c:695
+#: src/xz/args.c:698
 msgid "Decompression support was disabled at build time"
 msgstr "빌드 시점에 압축 해제 기능을 비활성했습니다"
 
-#: src/xz/args.c:701
+#: src/xz/args.c:704
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "lzip 파일(.lz) 압축은 지원하지 않습니다"
 
-#: src/xz/args.c:732
+#: src/xz/args.c:735
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgstr "표준 출력으로 기록하지 않는 한 --format=raw, --suffix=.SUF 옵션이 필요합니다"
 
@@ -480,41 +491,41 @@ msgstr "%s: 유효한 .xz 파일로 보기에는 너무 작습니다"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:730
+#: src/xz/list.c:731
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "스트림   블록         압축     압축해제 압축율  검사    파일 이름"
 
-#: src/xz/list.c:1025 src/xz/list.c:1203
+#: src/xz/list.c:1026 src/xz/list.c:1204
 msgid "Yes"
 msgstr "예"
 
 # 주: 아니오가 아니라 아니요가 맞는 표현
-#: src/xz/list.c:1025 src/xz/list.c:1203
+#: src/xz/list.c:1026 src/xz/list.c:1204
 msgid "No"
 msgstr "아니요"
 
-#: src/xz/list.c:1027 src/xz/list.c:1205
+#: src/xz/list.c:1028 src/xz/list.c:1206
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "  최소 XZ Utils 버전: %s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:1178
+#: src/xz/list.c:1179
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
 msgstr[0] "파일 %s개\n"
 
-#: src/xz/list.c:1191
+#: src/xz/list.c:1192
 msgid "Totals:"
 msgstr "총:"
 
-#: src/xz/list.c:1269
+#: src/xz/list.c:1270
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "--list 옵션은 .xz 파일에만 동작합니다(--format=xz 또는 --format=auto)"
 
-#: src/xz/list.c:1275
+#: src/xz/list.c:1276
 msgid "--list does not support reading from standard input"
 msgstr "--list 옵션은 표준 입력 읽기를 지원하지 않습니다"
 
@@ -545,7 +556,7 @@ msgstr "표준 출력에서 파일 이름을 읽을 때 표준 입력에서 데�
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c:725
+#: src/xz/message.c:670 src/xz/message.c:725
 #, c-format
 msgid "%s: "
 msgstr "%s: "

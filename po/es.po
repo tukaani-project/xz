@@ -1,13 +1,13 @@
-# Spanish translation for xz-5.4.3.
+# Spanish translation for xz-5.4.4-pre1.
 # This file is put in the public domain.
 # Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.3\n"
+"Project-Id-Version: xz 5.4.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2023-05-04 22:32+0800\n"
-"PO-Revision-Date: 2023-05-16 08:56-0600\n"
+"POT-Creation-Date: 2023-07-18 23:34+0800\n"
+"PO-Revision-Date: 2023-07-19 11:31-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -45,24 +45,35 @@ msgstr "%s: No se admite el tipo de verificación de integridad"
 msgid "Only one file can be specified with `--files' or `--files0'."
 msgstr "Solo se puede especificar un fichero con `--files' o `--files0'."
 
-#: src/xz/args.c:586
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/args.c:533 src/xz/coder.c:691 src/xz/coder.c:707 src/xz/coder.c:967
+#: src/xz/coder.c:970 src/xz/file_io.c:605 src/xz/file_io.c:679
+#: src/xz/file_io.c:769 src/xz/file_io.c:940 src/xz/list.c:369
+#: src/xz/list.c:415 src/xz/list.c:477 src/xz/list.c:581 src/xz/list.c:590
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/args.c:589
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "La variable de ambiente %s contiene demasiados argumentos"
 
-#: src/xz/args.c:688
+#: src/xz/args.c:691
 msgid "Compression support was disabled at build time"
 msgstr "Se desactivó el soporte para compresión en el momento de compilación"
 
-#: src/xz/args.c:695
+#: src/xz/args.c:698
 msgid "Decompression support was disabled at build time"
 msgstr "Se desactivó el soporte para descompresión en el momento de compilación"
 
-#: src/xz/args.c:701
+#: src/xz/args.c:704
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "No se admite la compresión de ficheros lzip (.lz)"
 
-#: src/xz/args.c:732
+#: src/xz/args.c:735
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgstr "Con --format=raw, se requiere --suffix=.SUF a menos que se escriba a la salida estándar"
 
@@ -479,41 +490,41 @@ msgstr "%s: Demasiado pequeño para ser un fichero .xz válido"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:730
+#: src/xz/list.c:731
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "Flujos Bloques  Comprimido Sin-Comprimir Relac  Verif   Nombre-Fichero"
 
-#: src/xz/list.c:1025 src/xz/list.c:1203
+#: src/xz/list.c:1026 src/xz/list.c:1204
 msgid "Yes"
 msgstr "Sí"
 
-#: src/xz/list.c:1025 src/xz/list.c:1203
+#: src/xz/list.c:1026 src/xz/list.c:1204
 msgid "No"
 msgstr "No"
 
-#: src/xz/list.c:1027 src/xz/list.c:1205
+#: src/xz/list.c:1028 src/xz/list.c:1206
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "  Versión de herramientas XZ mínima: %s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:1178
+#: src/xz/list.c:1179
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
 msgstr[0] "%s fichero\n"
 msgstr[1] "%s ficheros\n"
 
-#: src/xz/list.c:1191
+#: src/xz/list.c:1192
 msgid "Totals:"
 msgstr "Totales:"
 
-#: src/xz/list.c:1269
+#: src/xz/list.c:1270
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "--list solo funciona con ficheros .xz (--format=xz o --format=auto)"
 
-#: src/xz/list.c:1275
+#: src/xz/list.c:1276
 msgid "--list does not support reading from standard input"
 msgstr "--list no admite leer de la entrada estándar"
 
@@ -544,7 +555,7 @@ msgstr "No se pueden leer datos de la entrada estándar cuando se leen nombres d
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c:725
+#: src/xz/message.c:670 src/xz/message.c:725
 #, c-format
 msgid "%s: "
 msgstr "%s: "

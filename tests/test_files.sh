@@ -174,7 +174,7 @@ done
 # .lz #
 #######
 
-if grep 'define HAVE_LZIP_DECODER' ../config.h > /dev/null ; then
+if have_feature LZIP_DECODER ".lz files" ; then
 	for I in "$srcdir"/files/good-*.lz
 	do
 		if test -z "$XZ" || "$XZ" -dc "$I" > /dev/null; then

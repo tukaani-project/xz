@@ -17,6 +17,7 @@
 set -e
 
 USAGE="Usage: $0
+  -a [autogen flags]
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
   -d [encoders|decoders|bcj|delta|threads|shared|nls|small|ifunc|clmul]
@@ -30,6 +31,7 @@ USAGE="Usage: $0
 ABS_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
 
 # Default CLI option values
+AUTOGEN_FLAGS=""
 BUILD_SYSTEM="autotools"
 CHECK_TYPE="crc32,crc64,sha256"
 BCJ="y"
@@ -52,12 +54,15 @@ ARTIFACTS_DIR_NAME="output"
 # Parse arguments #
 ###################
 
-while getopts b:c:d:l:n:s:p:f:h opt; do
+while getopts a:b:c:d:l:n:s:p:f:h opt; do
 	# b option can have either value "autotools" OR "cmake"
 	case ${opt} in
 	h)
 		echo "$USAGE"
 		exit 0
+	;;
+	a)
+		AUTOGEN_FLAGS="$OPTARG"
 	;;
 	b)
 		case "$OPTARG" in
@@ -187,7 +192,7 @@ then
 		# Run autogen.sh script if not already run
 		if [ ! -f configure ]
 		then
-			"./autogen.sh"
+			./autogen.sh "$AUTOGEN_FLAGS"
 		fi
 
 		cd "$DEST_DIR"

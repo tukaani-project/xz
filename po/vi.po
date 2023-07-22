@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.3\n"
+"Project-Id-Version: xz 5.4.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2023-05-04 22:32+0800\n"
-"PO-Revision-Date: 2023-07-08 08:56+0700\n"
+"POT-Creation-Date: 2023-07-18 23:34+0800\n"
+"PO-Revision-Date: 2023-07-22 10:00+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
 "Language: vi\n"
@@ -46,24 +46,35 @@ msgstr "%s: Không hỗ trợ kiểu kiểm tra toàn vẹn"
 msgid "Only one file can be specified with `--files' or `--files0'."
 msgstr "Chỉ được đưa ra một tập tin cho “--files” hay “--files0”."
 
-#: src/xz/args.c:586
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/args.c:533 src/xz/coder.c:691 src/xz/coder.c:707 src/xz/coder.c:967
+#: src/xz/coder.c:970 src/xz/file_io.c:605 src/xz/file_io.c:679
+#: src/xz/file_io.c:769 src/xz/file_io.c:940 src/xz/list.c:369
+#: src/xz/list.c:415 src/xz/list.c:477 src/xz/list.c:581 src/xz/list.c:590
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/args.c:589
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "Biến môi trường %s chứa quá nhiều đối số"
 
-#: src/xz/args.c:688
+#: src/xz/args.c:691
 msgid "Compression support was disabled at build time"
 msgstr "Hỗ trợ nén đã bị vô hiệu hóa tại thời điểm biên dịch"
 
-#: src/xz/args.c:695
+#: src/xz/args.c:698
 msgid "Decompression support was disabled at build time"
 msgstr "Hỗ trợ giải nén đã bị vô hiệu hóa tại thời điểm biên dịch"
 
-#: src/xz/args.c:701
+#: src/xz/args.c:704
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "Nén tệp lzip (.lz) không được hỗ trợ"
 
-#: src/xz/args.c:732
+#: src/xz/args.c:735
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgstr "Với --format=raw, --suffix=.SUF được yêu cầu trừ trường hợp ghi ra đầu ra tiêu chuẩn"
 
@@ -480,40 +491,40 @@ msgstr "%s: Là quá nhỏ đối với tập tin .xz hợp lệ"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:730
+#: src/xz/list.c:731
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "Luồng    Khối          Nén     Giải nén  Tỷ lệ  Ktra    Tập tin"
 
-#: src/xz/list.c:1025 src/xz/list.c:1203
+#: src/xz/list.c:1026 src/xz/list.c:1204
 msgid "Yes"
 msgstr "Có"
 
-#: src/xz/list.c:1025 src/xz/list.c:1203
+#: src/xz/list.c:1026 src/xz/list.c:1204
 msgid "No"
 msgstr "Không"
 
-#: src/xz/list.c:1027 src/xz/list.c:1205
+#: src/xz/list.c:1028 src/xz/list.c:1206
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "  Phiên bản “XZ Utils” tối thiểu: %s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:1178
+#: src/xz/list.c:1179
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
 msgstr[0] "%s tập tin\n"
 
-#: src/xz/list.c:1191
+#: src/xz/list.c:1192
 msgid "Totals:"
 msgstr "Tổng cộng:"
 
-#: src/xz/list.c:1269
+#: src/xz/list.c:1270
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "--list chỉ hoạt động trên các tập tin .xz (--format=xz hay --format=auto)"
 
-#: src/xz/list.c:1275
+#: src/xz/list.c:1276
 msgid "--list does not support reading from standard input"
 msgstr "--list không hỗ trợ đọc từ đầu vào tiêu chuẩn"
 
@@ -544,7 +555,7 @@ msgstr "Không thể đọc dữ liệu từ đầu vào tiêu chuẩn khi đọ
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c:725
+#: src/xz/message.c:670 src/xz/message.c:725
 #, c-format
 msgid "%s: "
 msgstr "%s: "

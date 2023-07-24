@@ -24,6 +24,7 @@ jobs:
           - mingw64
           - mingw32
           - ucrt64
+          - clang64
           - msys
 
     # Set the shell to be msys2 as a default to avoid setting it for

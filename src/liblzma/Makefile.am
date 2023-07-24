@@ -72,11 +72,15 @@ endif
 # static liblzma, we overwrite the static object file with an object file
 # compiled from empty input. Note that GNU-specific features are OK here,
 # because on Windows we are compiled with the GNU toolchain.
+#
+# The typedef in empty.c will prevent an empty translation unit, which is
+# not allowed by the C standard. It results in a warning with
+# -Wempty-translation-unit with Clang or -pedantic for GCC.
 .rc.lo:
 	$(LIBTOOL) --mode=compile $(RC) $(DEFS) $(DEFAULT_INCLUDES) \
 		$(INCLUDES) $(liblzma_la_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) \
 		-i $< -o $@
-	echo > empty.c
+	echo "typedef void empty;" > empty.c
 	$(COMPILE) -c empty.c -o $(*D)/$(*F).o
 
 # Remove ordinals from the generated .def file. People must link by name,

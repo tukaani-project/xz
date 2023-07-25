@@ -20,12 +20,7 @@ jobs:
         # them and we want to ensure that we support all potential users.
         # clang64 currently fails due to a warning, so support will be
         # added later.
-        system:
-          - mingw64
-          - mingw32
-          - ucrt64
-          - clang64
-          - msys
+        msys2_env: [mingw64, mingw32, ucrt64, clang64, msys]
 
     # Set the shell to be msys2 as a default to avoid setting it for
     # every individual run command.
@@ -44,7 +39,7 @@ jobs:
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: ${{ matrix.system }}
+          msystem: ${{ matrix.msys2_env }}
           update: true
           install: pactoys
 
@@ -70,11 +65,11 @@ jobs:
         # the packages possible in matrix setup without a burdensome amount
         # of ifs.
       - name: Install Dependencies
-        if: ${{ matrix.system == 'msys' }}
+        if: ${{ matrix.msys2_env == 'msys' }}
         run: pacman --noconfirm -S --needed autotools base-devel doxygen gettext-devel gcc
 
       - name: Install Dependencies
-        if: ${{ matrix.system != 'msys' }}
+        if: ${{ matrix.msys2_env != 'msys' }}
         run: pacboy --noconfirm -S --needed autotools:p gcc:p clang:p make:p doxygen:p
 
 
@@ -116,5 +111,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
-          name: ${{ matrix.os }} ${{ matrix.build_system }} Test Logs
+          name: ${{ matrix.msys2_env }} ${{ matrix.build_system }} Test Logs
           path: build-aux/artifacts

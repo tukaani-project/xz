@@ -21,6 +21,7 @@ jobs:
         # clang64 currently fails due to a warning, so support will be
         # added later.
         msys2_env: [mingw64, mingw32, ucrt64, clang64, msys]
+        build_system: [autotools, cmake]
 
     # Set the shell to be msys2 as a default to avoid setting it for
     # every individual run command.
@@ -65,42 +66,49 @@ jobs:
         # the packages possible in matrix setup without a burdensome amount
         # of ifs.
       - name: Install Dependencies
-        if: ${{ matrix.msys2_env == 'msys' }}
+        if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'autotools' }}
         run: pacman --noconfirm -S --needed autotools base-devel doxygen gettext-devel gcc
 
       - name: Install Dependencies
-        if: ${{ matrix.msys2_env != 'msys' }}
+        if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'autotools' }}
         run: pacboy --noconfirm -S --needed autotools:p gcc:p clang:p make:p doxygen:p
 
+      - name: Install Dependencies
+        if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'cmake' }}
+        run: pacman --noconfirm -S --needed cmake base-devel gcc
+
+      - name: Install Dependencies
+        if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'cmake' }}
+        run: pacboy --noconfirm -S --needed cmake:p gcc:p clang:p make:p
 
       ##################
       # Build and Test #
       ##################
 
       - name: Build with full features
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -p build
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -p build
       - name: Test with full features
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -p test -n full_features
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -p test -n full_features
 
       - name: Build without threads
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -d threads,shared -p build
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -d threads,shared -p test -n no_threads
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p test -n no_threads
 
       - name: Build without encoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -d encoders,shared -p build
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p build
       - name: Test without encoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -d encoders,shared -p test -n no_encoders
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p test -n no_encoders
 
       - name: Build without decoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -d decoders,shared -p build
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p build
       - name: Test without decoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -d decoders,shared -p test -n no_decoders
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p test -n no_decoders
 
       - name: Build with only crc32 check
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -c crc32 -d shared,nls -p build
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p build
       - name: Test with only crc32 check
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b autotools -c crc32 -d shared,nls -p test -n crc32_only
+        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p test -n crc32_only
 
 
       ###############

@@ -10,6 +10,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "mythread.h"
 #include "filter_encoder.h"
 #include "easy_preset.h"
 #include "block_encoder.h"

@@ -11,6 +11,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "mythread.h"
 #include "common.h"
 #include "block_decoder.h"
 #include "stream_decoder.h"

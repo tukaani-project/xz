@@ -106,3 +106,7 @@ coverage
 /xzcat
 /xzcat.1
 /xzdec
+
+/windows/*/.vs
+/windows/*/liblzma.vcxproj.user
+/.vscode/

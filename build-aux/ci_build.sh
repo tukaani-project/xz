@@ -236,8 +236,8 @@ then
 
 		# Remove old cache file to clear previous settings.
 		rm -f "CMakeCache.txt"
-		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR" $EXTRA_OPTIONS -DADDITIONAL_CHECK_TYPES="$CHECK_TYPE"
-		make
+		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR" $EXTRA_OPTIONS -DADDITIONAL_CHECK_TYPES="$CHECK_TYPE" -G "Unix Makefiles"
+		cmake --build "$DEST_DIR"
 	;;
 	esac
 fi

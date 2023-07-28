@@ -42,7 +42,7 @@ jobs:
         with:
           msystem: ${{ matrix.msys2_env }}
           update: true
-          install: pactoys
+          install: pactoys make
 
       - name: Checkout code
         # Need to explicitly set the shell here since we set the default
@@ -71,7 +71,7 @@ jobs:
 
       - name: Install Dependencies
         if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'autotools' }}
-        run: pacboy --noconfirm -S --needed autotools:p gcc:p clang:p make:p doxygen:p
+        run: pacboy --noconfirm -S --needed autotools:p toolchain:p doxygen:p
 
       - name: Install Dependencies
         if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'cmake' }}
@@ -79,7 +79,7 @@ jobs:
 
       - name: Install Dependencies
         if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'cmake' }}
-        run: pacboy --noconfirm -S --needed cmake:p gcc:p clang:p make:p
+        run: pacboy --noconfirm -S --needed cmake:p toolchain:p
 
       ##################
       # Build and Test #

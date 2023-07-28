@@ -1156,6 +1156,62 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
             list(APPEND XZ_LINKS "lzma" "unlzma" "lzcat")
         endif()
 
+        # With Windows Cygwin and MSYS2 the symlinking is complicated. Both
+        # of these environments set the UNIX variable so they will try to
+        # make the symlinks. The ability for Cygwin and MSYS2 to make
+        # broken symlinks is determined by the CYGWIN and MSYS2 environment
+        # variables, repectively. Broken symlinks are needed for the man
+        # page symlinks and for determining if the xz and lzma symlinks need
+        # to depend on the xz target or not. If broken symlinks cannot be
+        # made then the xz binary must be created before the symlinks.
+        set(ALLOW_BROKEN_SYMLINKS ON)
+
+        if(CMAKE_SYSTEM_NAME STREQUAL "CYGWIN")
+            # The Cygwin env variable can be set to four possible values:
+            #
+            # 1. "lnk". Create symlinks as Windows shortcuts.
+            #
+            # 2. "native". Create symlinks as native Windows symlinks
+            #    if supported by the system. Fallback to "lnk" if native
+            #    symlinks are not supported.
+            #
+            # 3. "nativestrict". Create symlinks as native Windows symlinks
+            #    if supported by the system. If the target of the symlink
+            #    does not exist or the creation of the symlink fails for any
+            #    reason, do not create the symlink.
+            #
+            # 4. "sys". Create symlinks as plain files with a special
+            #    system attribute containing the path to the symlink target.
+            #
+            # So, the only case we care about for broken symlinks is
+            # "nativestrict" since all other values mean that broken
+            # symlinks are allowed. If the env variable is not set the
+            # default is "native". If the env varaiable is set but not
+            # assigned one of the four values, then the default is the same
+            # as option 1 "lnk".
+            string(FIND "$ENV{CYGWIN}" "winsymlinks:nativestrict" SYMLINK_POS)
+            if(SYMLINK_POS GREATER -1)
+                set(ALLOW_BROKEN_SYMLINKS OFF)
+            endif()
+        elseif(CMAKE_SYSTEM_NAME STREQUAL "MSYS")
+            # The MSYS env variable behaves similar to the CYGWIN but has a
+            # different default behavior. If winsymlinks is set but not
+            # assigned one of the four supported values, the default is to
+            # *copy* the target to the symlink destination. This will fail
+            # if the target does not exist so broken symlinks cannot be
+            # allowed.
+            string(FIND "$ENV{MSYS}" "winsymlinks" SYMLINK_POS)
+            if(SYMLINK_POS GREATER -1)
+                string(FIND "$ENV{MSYS}" "winsymlinks:nativestrict"
+                        SYMLINK_POS)
+                if(SYMLINK_POS GREATER -1)
+                    set(ALLOW_BROKEN_SYMLINKS OFF)
+                endif()
+            else()
+                set(ALLOW_BROKEN_SYMLINKS OFF)
+            endif()
+        endif()
+
         # Create symlinks in the build directory and then install them.
         #
         # The symlinks do not likely need any special extension since
@@ -1170,13 +1226,25 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
             install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
                     DESTINATION "${CMAKE_INSTALL_BINDIR}"
                     COMPONENT xz)
-            add_custom_target("${LINK}.1" ALL
-                "${CMAKE_COMMAND}" -E create_symlink "xz.1" "${LINK}.1"
-                BYPRODUCTS "${LINK}.1"
-                VERBATIM)
-            install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}.1"
-                    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
-                    COMPONENT xz)
+
+            # Only create the man page symlinks if the symlinks can be
+            # created broken. The symlinks will not be valid until install
+            # so they cannot be created on these system environments.
+            if(ALLOW_BROKEN_SYMLINKS)
+                add_custom_target("${LINK}.1" ALL
+                    "${CMAKE_COMMAND}" -E create_symlink "xz.1" "${LINK}.1"
+                    BYPRODUCTS "${LINK}.1"
+                    VERBATIM)
+                install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}.1"
+                        DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+                        COMPONENT xz)
+            else()
+                # Add the xz target as dependency when broken symlinks
+                # cannot be made. This ensures parallel builds do not fail
+                # since it will enforce the order of creating xz first, then
+                # the symlinks.
+                add_dependencies("${LINK}" xz)
+            endif()
         endforeach()
     endif()
 endif()

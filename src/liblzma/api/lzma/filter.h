@@ -254,7 +254,7 @@ extern LZMA_API(lzma_ret) lzma_raw_decoder(
  *    chain to be used for the next Block(s).
  *
  *  - After LZMA_SYNC_FLUSH: Raw encoder (lzma_raw_encoder()),
- *    Block encocder (lzma_block_encoder()), and single-threaded .xz Stream
+ *    Block encoder (lzma_block_encoder()), and single-threaded .xz Stream
  *    encoder (lzma_stream_encoder()) allow changing certain filter-specific
  *    options in the middle of encoding. The actual filters in the chain
  *    (Filter IDs) must not be changed! Currently only the lc, lp, and pb

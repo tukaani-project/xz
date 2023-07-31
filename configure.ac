@@ -711,7 +711,7 @@ fi
 # used when creating a static library.
 #
 # Libtool always uses -DPIC when building shared libraries by default and
-# doesn't use it for static libs by default. This can be overriden with
+# doesn't use it for static libs by default. This can be overridden with
 # --with-pic and --without-pic though. As long as neither --with-pic nor
 # --without-pic is used then we can use #ifdef PIC to detect if the file is
 # being built for a shared library.

@@ -958,7 +958,7 @@ XZ Utils Release Notes
           of the deprecated egrep and fgrep commands.
 
         - Fixed parsing of the options -E, -F, -G, -P, and -X. The
-          problem occurred when multiple options were specied in
+          problem occurred when multiple options were specified in
           a single argument, for example,
 
               echo foo | xzgrep -Fe foo

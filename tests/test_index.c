@@ -672,7 +672,7 @@ test_lzma_index_iter_rewind(void)
 		assert_uint_eq(iter.block.number_in_file, i + 1);
 	}
 
-	// Rewind back to the begining and iterate over the Blocks again
+	// Rewind back to the beginning and iterate over the Blocks again
 	lzma_index_iter_rewind(&iter);
 
 	// Should be able to re-iterate over the Blocks again.

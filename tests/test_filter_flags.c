@@ -50,7 +50,7 @@ static lzma_filter bcj_filters_encoders[] = {
 #endif
 };
 
-// HAVE_ENCODERS ifdef not termianted here because decoders are
+// HAVE_ENCODERS ifdef not terminated here because decoders are
 // only used if encoders are, but encoders can still be used
 // even if decoders are not.
 
@@ -174,7 +174,7 @@ verify_filter_flags_encode(lzma_filter *filter, bool should_encode)
 			&filter_id_vli_size, size), LZMA_OK);
 	assert_uint_eq(filter->id, filter_id);
 
-	// Next decode the Size of Properites and ensure it equals
+	// Next decode the Size of Properties and ensure it equals
 	// the expected size.
 	// Expected size should be:
 	// total filter flag length - size of filter id VLI + size of

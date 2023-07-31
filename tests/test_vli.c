@@ -90,7 +90,7 @@ encode_single_call_mode(lzma_vli input, const uint8_t *expected,
 
 // Helper function for test_lzma_vli_encode
 // Encodes an input VLI one byte at a time with the multi call
-// method. Then compares agaist a pre-computed value
+// method. Then compares against a pre-computed value
 static void
 encode_multi_call_mode(lzma_vli input, const uint8_t *expected,
 		uint32_t expected_len)

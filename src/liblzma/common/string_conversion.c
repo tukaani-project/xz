@@ -197,7 +197,7 @@ typedef struct {
 /// (default is uint32_t).
 ///
 /// Stringifying a filter is done by processing a given number of options
-/// in oder from the beginning of an option_map array. The integer is
+/// in order from the beginning of an option_map array. The integer is
 /// read from filter_options at .offset using the type from .type.
 ///
 /// If the integer is zero and .flags has OPTMAP_NO_STRFY_ZERO then the
@@ -538,7 +538,7 @@ static const struct {
 ///
 /// The input string starts at *str and the address in str_end is the first
 /// char that is not part of the string anymore. So no '\0' terminator is
-/// used. *str is advanced everytime something has been decoded successfully.
+/// used. *str is advanced every time something has been decoded successfully.
 static const char *
 parse_options(const char **const str, const char *str_end,
 		void *filter_options,
@@ -844,7 +844,7 @@ parse_filter(const char **const str, const char *str_end, lzma_filter *filter,
 
 /// Converts the string to a filter chain (array of lzma_filter structures).
 ///
-/// *str is advanced everytime something has been decoded successfully.
+/// *str is advanced every time something has been decoded successfully.
 /// This way the caller knows where in the string a possible error occurred.
 static const char *
 str_to_filters(const char **const str, lzma_filter *filters, uint32_t flags,

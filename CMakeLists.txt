@@ -1179,7 +1179,7 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
         # of these environments set the UNIX variable so they will try to
         # make the symlinks. The ability for Cygwin and MSYS2 to make
         # broken symlinks is determined by the CYGWIN and MSYS2 environment
-        # variables, repectively. Broken symlinks are needed for the man
+        # variables, respectively. Broken symlinks are needed for the man
         # page symlinks and for determining if the xz and lzma symlinks need
         # to depend on the xz target or not. If broken symlinks cannot be
         # made then the xz binary must be created before the symlinks.
@@ -1205,7 +1205,7 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
             # So, the only case we care about for broken symlinks is
             # "nativestrict" since all other values mean that broken
             # symlinks are allowed. If the env variable is not set the
-            # default is "native". If the env varaiable is set but not
+            # default is "native". If the env variable is set but not
             # assigned one of the four values, then the default is the same
             # as option 1 "lnk".
             string(FIND "$ENV{CYGWIN}" "winsymlinks:nativestrict" SYMLINK_POS)

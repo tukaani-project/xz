@@ -2,6 +2,49 @@
 XZ Utils Release Notes
 ======================
 
+5.4.4 (2023-08-02)
+
+    * liblzma and xzdec can now build against WASI SDK when threading
+      support is disabled. xz and tests don't build yet.
+
+    * CMake:
+
+        - Fixed a bug preventing other projects from including liblzma
+          multiple times using find_package().
+
+        - Don't create broken symlinks in Cygwin and MSYS2 unless
+          supported by the environment. This prevented building for the
+          default MSYS2 environment. The problem was introduced in
+          xz 5.4.0.
+
+    * Documentation:
+
+        - Small improvements to man pages.
+
+        - Small improvements and typo fixes for liblzma API
+          documentation.
+
+    * Tests:
+
+        - Added a new section to INSTALL to describe basic test usage
+          and address recent questions about building the tests when
+          cross compiling.
+
+        - Small fixes and improvements to the tests.
+
+    * Translations:
+
+        - Fixed a mistake that caused one of the error messages to not
+          be translated. This only affected versions 5.4.2 and 5.4.3.
+
+        - Updated the Chinese (simplified), Croatian, Esperanto, German,
+          Korean, Polish, Romanian, Spanish, Swedish, Ukrainian, and
+          Vietnamese translations.
+
+        - Updated the German, Korean, Romanian, and Ukrainian man page
+          translations.
+
+
 5.4.3 (2023-05-04)
 
     * All fixes from 5.2.12

@@ -38,10 +38,10 @@ s/^\\.PD\$/.PD $PD/"
 
 case $FORMAT in
 	ascii)
-		groff -t -mandoc -Tascii | col -bx
+		groff -t -mandoc -Tascii -P-c | col -bx
 		;;
 	utf8)
-		groff -t -mandoc -Tutf8 | col -bx
+		groff -t -mandoc -Tutf8 -P-c | col -bx
 		;;
 	ps)
 		sed "$SED_PD" | groff -dpaper=$PAPER -t -mandoc \

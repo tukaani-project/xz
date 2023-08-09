@@ -458,8 +458,10 @@ XZ Utils Installation
                         win95   Use Windows 95 compatible threads. This
                                 is compatible with Windows XP and later
                                 too. This is the default for 32-bit x86
-                                Windows builds. The `win95' threading is
-                                incompatible with --enable-small.
+                                Windows builds. Unless the compiler
+                                supports __attribute__((__constructor__)),
+                                the `win95' threading is incompatible with
+                                --enable-small.
 
                         vista   Use Windows Vista compatible threads. The
                                 resulting binaries won't run on Windows XP

@@ -348,6 +348,11 @@ set(ENABLE_THREADS ON CACHE STRING
 set_property(CACHE ENABLE_THREADS
         PROPERTY STRINGS "${SUPPORTED_THREAD_METHODS}")
 
+# This is a flag variable set when win95 threads are used. We must ensure
+# the combination of enable_small and win95 threads is not used without a
+# compiler supporting attribute __constructor__.
+set(USE_WIN95_THREADS OFF)
+
 if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREAD_METHODS)
     message(SEND_ERROR "'${ENABLE_THREADS}' is not a supported thread type")
 endif()
@@ -368,14 +373,7 @@ if(ENABLE_THREADS)
             # Windows Vista. This is used for 32-bit x86 builds for
             # compatibility reasons since it makes no measurable difference
             # in performance compared to Vista threads.
-            #
-            # The Win95 threading lacks thread-safe one-time initialization
-            # function.
-            if(ENABLE_SMALL)
-                message(SEND_ERROR "Threading method win95 and ENABLE_SMALL "
-                                   "cannot be used at the same time")
-            endif()
-
+            set(USE_WIN95_THREADS ON)
             add_compile_definitions(MYTHREAD_WIN95)
         else()
             add_compile_definitions(MYTHREAD_VISTA)
@@ -762,6 +760,20 @@ check_c_source_compiles("
     HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
 cmake_pop_check_state()
 tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
+
+# The Win95 threading lacks a thread-safe one-time initialization function.
+# The one-time initialization is needed for crc32_small.c and crc64_small.c
+# create the CRC tables. So if small mode is enabled, the threading mode is
+# win95, and the compiler does not support attribute constructor, then we
+# would end up with a multithreaded build that is thread-unsafe. As a
+# result this configuration is not allowed.
+if(USE_WIN95_THREADS AND ENABLE_SMALL AND NOT HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
+    message(SEND_ERROR "Threading method win95 and ENABLE_SMALL "
+                        "cannot be used at the same time with a compiler "
+                        "that doesn't support "
+                        "__attribute__((__constructor__))")
+endif()
+
 
 # Check for __attribute__((__ifunc__())) support.
 option(ALLOW_ATTR_IFUNC "Allow use of __attribute__((__ifunc__())) if \

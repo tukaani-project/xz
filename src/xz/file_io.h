@@ -31,6 +31,19 @@ typedef union {
 } io_buf;
 
 
+#if defined(_MSC_VER) && _MSC_VER >= 1500
+typedef struct _stat64 xz_stat_t;
+typedef int64_t xz_off_t;
+#define xz_fstat _fstat64
+#define xz_stat _stat64
+#else
+typedef struct stat xz_stat_t;
+typedef off_t xz_off_t;
+#define xz_fstat fstat
+#define xz_stat stat
+#endif
+
+
 typedef struct {
 	/// Name of the source filename (as given on the command line) or
 	/// pointer to static "(stdin)" when reading from standard input.
@@ -63,13 +76,13 @@ typedef struct {
 	/// This is used only if dest_try_sparse is true. This holds the
 	/// number of zero bytes we haven't written out, because we plan
 	/// to make that byte range a sparse chunk.
-	off_t dest_pending_sparse;
+	xz_off_t dest_pending_sparse;
 
 	/// Stat of the source file.
-	struct stat src_st;
+	xz_stat_t src_st;
 
 	/// Stat of the destination file.
-	struct stat dest_st;
+	xz_stat_t dest_st;
 
 } file_pair;
 

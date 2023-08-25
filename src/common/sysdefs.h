@@ -32,6 +32,14 @@
 // size_t and NULL
 #include <stddef.h>
 
+#ifdef _MSC_VER
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#else
+typedef int ssize_t;
+#endif
+#endif
+
 #ifdef HAVE_INTTYPES_H
 #	include <inttypes.h>
 #endif
@@ -41,6 +49,8 @@
 #ifdef HAVE_STDINT_H
 #	include <stdint.h>
 #endif
+
+typedef int mode_t;
 
 // Some pre-C99 systems have SIZE_MAX in limits.h instead of stdint.h. The
 // limits are also used to figure out some macros missing from pre-C99 systems.

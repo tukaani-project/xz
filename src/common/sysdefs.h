@@ -50,7 +50,9 @@ typedef int ssize_t;
 #	include <stdint.h>
 #endif
 
+#ifdef _MSC_VER
 typedef int mode_t;
+#endif
 
 // Some pre-C99 systems have SIZE_MAX in limits.h instead of stdint.h. The
 // limits are also used to figure out some macros missing from pre-C99 systems.

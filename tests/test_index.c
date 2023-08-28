@@ -141,18 +141,18 @@ test_lzma_index_append(void)
 	assert_lzma_ret(lzma_index_append(idx, NULL, UNPADDED_SIZE_MAX,
 			1), LZMA_DATA_ERROR);
 
-	// Test compressed size growing too large.
+	// Test uncompressed size growing too large.
 	// Should result in LZMA_DATA_ERROR.
 	assert_lzma_ret(lzma_index_append(idx, NULL,
 			UNPADDED_SIZE_MIN, LZMA_VLI_MAX), LZMA_OK);
 	assert_lzma_ret(lzma_index_append(idx, NULL,
 			UNPADDED_SIZE_MIN, 1), LZMA_DATA_ERROR);
 
+	lzma_index_end(idx, NULL);
+
 	// Currently not testing for error case when the size of the Index
 	// grows too large to be stored. This was not practical to test for
 	// since too many Blocks needed to be created to cause this.
-
-	lzma_index_end(idx, NULL);
 }
 
 

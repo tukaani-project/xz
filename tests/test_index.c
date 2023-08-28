@@ -134,15 +134,35 @@ test_lzma_index_append(void)
 
 	lzma_index_end(idx, NULL);
 
-	// Test uncompressed .xz file size growing too large.
+	// Test compressed .xz file size growing too large. This also tests
+	// a failing assert fixed in 68bda971bb8b666a009331455fcedb4e18d837a4.
 	// Should result in LZMA_DATA_ERROR.
 	idx = lzma_index_init(NULL);
 
-	assert_lzma_ret(lzma_index_append(idx, NULL, UNPADDED_SIZE_MAX,
-			1), LZMA_DATA_ERROR);
+	// The calculation for maximum unpadded size is to make room for the
+	// second stream when lzma_index_cat() is called. The
+	// 4 * LZMA_STREAM_HEADER_SIZE is for the header and footer of
+	// both streams. The extra 24 bytes are for the size of the indexes
+	// for both streams. This allows us to maximize the unpadded sum
+	// during the lzma_index_append() call after the indexes have been
+	// concatenated.
+	assert_lzma_ret(lzma_index_append(idx, NULL, UNPADDED_SIZE_MAX
+			- ((4 * LZMA_STREAM_HEADER_SIZE) + 24), 1), LZMA_OK);
+
+	lzma_index *second = lzma_index_init(NULL);
+	assert_true(second != NULL);
+
+	assert_lzma_ret(lzma_index_cat(second, idx, NULL), LZMA_OK);
+
+	assert_lzma_ret(lzma_index_append(second, NULL, UNPADDED_SIZE_MAX, 1),
+			LZMA_DATA_ERROR);
+
+	lzma_index_end(second, NULL);
 
 	// Test uncompressed size growing too large.
 	// Should result in LZMA_DATA_ERROR.
+	idx = lzma_index_init(NULL);
+
 	assert_lzma_ret(lzma_index_append(idx, NULL,
 			UNPADDED_SIZE_MIN, LZMA_VLI_MAX), LZMA_OK);
 	assert_lzma_ret(lzma_index_append(idx, NULL,

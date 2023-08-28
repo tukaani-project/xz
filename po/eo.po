@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: xz 5.4.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2023-07-18 23:34+0800\n"
-"PO-Revision-Date: 2023-08-25 22:57-0400\n"
+"PO-Revision-Date: 2023-08-26 11:30-0400\n"
 "Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
 "Language: eo\n"
@@ -52,7 +52,7 @@ msgstr "Nur oni dosiero estas specifebla per `--files' aŭ `--files0'."
 #: src/xz/coder.c:970 src/xz/file_io.c:605 src/xz/file_io.c:679
 #: src/xz/file_io.c:769 src/xz/file_io.c:940 src/xz/list.c:369
 #: src/xz/list.c:415 src/xz/list.c:477 src/xz/list.c:581 src/xz/list.c:590
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 

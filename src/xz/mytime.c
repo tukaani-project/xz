@@ -12,7 +12,7 @@
 
 #include "private.h"
 
-#ifdef HAVE_CLOCK_GETTIME
+#if defined(HAVE_CLOCK_GETTIME) || defined(_WIN32)
 #	include <time.h>
 #else
 #	include <sys/time.h>
@@ -39,6 +39,47 @@ static uint64_t start_time;
 static uint64_t next_flush;
 
 
+#ifdef _WIN32
+
+#define FILETIME_N_100NS_SINCE_16010101 (116444736000000000ULL)
+
+#if defined(_WIN32_WINNT_WIN8) && _WIN32_WINNT >= _WIN32_WINNT_WIN8
+// Already targeting Windows 8 or later, no need to dynamically find the API.
+#define win_GetSystemTimePreciseAsFileTime(lpSystemTimeAsFileTime) \
+	(GetSystemTimePreciseAsFileTime(lpSystemTimeAsFileTime), true)
+#else
+static bool
+win_GetSystemTimePreciseAsFileTime(LPFILETIME lpSystemTimeAsFileTime)
+{
+	static long __initlock = 0;
+	static int volatile __inited = -1;
+	typedef VOID (WINAPI *PFN_GetSystemTimePreciseAsFileTime)(LPFILETIME lpSystemTimeAsFileTime);
+	static PFN_GetSystemTimePreciseAsFileTime pfn_GetSystemTimePreciseAsFileTime = NULL;
+
+	if (InterlockedBitTestAndSet(&__initlock, 0) == 0)
+	{
+		HMODULE hKernel32 = NULL;
+		if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+				      (LPCTSTR)(GetModuleHandle) /* Intentionally using function pointer */,
+				      &hKernel32))
+			pfn_GetSystemTimePreciseAsFileTime = (PFN_GetSystemTimePreciseAsFileTime)
+				GetProcAddress(hKernel32, "GetSystemTimePreciseAsFileTime");
+		__inited = 1;
+	}
+	else
+	{
+		while (__inited < 0) Sleep(0);
+	}
+
+	return (pfn_GetSystemTimePreciseAsFileTime)
+		? (pfn_GetSystemTimePreciseAsFileTime(lpSystemTimeAsFileTime), true)
+		: false;
+}
+#endif // WIN8
+
+#endif // _WIN32
+
+
 /// \brief      Get the current time as milliseconds
 ///
 /// It's relative to some point but not necessarily to the UNIX Epoch.
@@ -60,6 +101,14 @@ mytime_now(void)
 #	endif
 
 	return (uint64_t)tv.tv_sec * 1000 + (uint64_t)(tv.tv_nsec / 1000000);
+#elif defined(_WIN32)
+	FILETIME ft;
+	if (!win_GetSystemTimePreciseAsFileTime(&ft))
+		return (uint64_t)time(NULL) * 1000; // Very bad luck.
+	ULARGE_INTEGER li;
+	li.HighPart = ft.dwHighDateTime;
+	li.LowPart = ft.dwLowDateTime;
+	return (li.QuadPart - FILETIME_N_100NS_SINCE_16010101) / (10 * 1000);
 #else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);

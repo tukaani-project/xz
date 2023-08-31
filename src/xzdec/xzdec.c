@@ -16,7 +16,9 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <stdio.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #include "getopt.h"
 #include "tuklib_progname.h"
@@ -25,6 +27,8 @@
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
 #	include <io.h>
+#define fileno	_fileno
+#define setmode	_setmode
 #endif
 
 

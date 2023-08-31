@@ -13,6 +13,10 @@
 #include "private.h"
 #include <stdarg.h>
 
+#ifdef _MSC_VER
+#include <io.h>
+#define isatty _isatty
+#endif
 
 /// Buffers for uint64_to_str() and uint64_to_nicestr()
 static char bufs[4][128];

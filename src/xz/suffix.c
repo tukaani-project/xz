@@ -21,7 +21,11 @@
 #	ifdef HAVE_STRINGS_H
 #		include <strings.h>
 #	endif
-#	define strcmp strcasecmp
+#ifdef _MSC_VER
+#	define suffix_strcmp _stricmp
+#else
+#	define suffix_strcmp strcasecmp
+#endif
 #endif
 
 
@@ -98,7 +102,7 @@ test_suffix(const char *suffix, const char *src_name, size_t src_len)
 			|| is_dir_sep(src_name[src_len - suffix_len - 1]))
 		return 0;
 
-	if (strcmp(suffix, src_name + src_len - suffix_len) == 0)
+	if (suffix_strcmp(suffix, src_name + src_len - suffix_len) == 0)
 		return src_len - suffix_len;
 
 	return 0;

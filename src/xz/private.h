@@ -21,7 +21,9 @@
 #include <signal.h>
 #include <locale.h>
 #include <stdio.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #include "tuklib_gettext.h"
 #include "tuklib_progname.h"
@@ -34,15 +36,27 @@
 #endif
 
 #ifndef STDIN_FILENO
+#ifdef _MSC_VER
+#	define STDIN_FILENO (_fileno(stdin))
+#else
 #	define STDIN_FILENO (fileno(stdin))
+#endif
 #endif
 
 #ifndef STDOUT_FILENO
+#ifdef _MSC_VER
+#	define STDOUT_FILENO (_fileno(stdout))
+#else
 #	define STDOUT_FILENO (fileno(stdout))
+#endif
 #endif
 
 #ifndef STDERR_FILENO
+#ifdef _MSC_VER
+#	define STDERR_FILENO (_fileno(stderr))
+#else
 #	define STDERR_FILENO (fileno(stderr))
+#endif
 #endif
 
 #if defined(HAVE_CAPSICUM) || defined(HAVE_PLEDGE)
@@ -74,4 +88,8 @@
 
 #ifdef HAVE_DECODERS
 #	include "list.h"
+#endif
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#define snprintf _snprintf
 #endif

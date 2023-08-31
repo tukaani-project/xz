@@ -1157,8 +1157,7 @@ io_fix_src_pos(file_pair *pair, size_t rewind_size)
 extern size_t
 io_read(file_pair *pair, io_buf *buf, size_t size)
 {
-	// We use small buffers here.
-	assert(size < SSIZE_MAX);
+	assert(size <= IO_BUFFER_SIZE);
 
 	size_t pos = 0;
 
@@ -1285,7 +1284,7 @@ is_sparse(const io_buf *buf)
 static bool
 io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 {
-	assert(size < SSIZE_MAX);
+	assert(size <= IO_BUFFER_SIZE);
 
 	while (size > 0) {
 		const ssize_t amount = write(pair->dest_fd, buf, size);

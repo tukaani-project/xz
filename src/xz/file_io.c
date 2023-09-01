@@ -41,11 +41,7 @@ static bool warn_fchown;
 
 #ifdef _MSC_VER
 #define close	_close
-#if _MSC_VER >= 1500
 #define lseek	_lseeki64
-#else
-#define lseek	_lseek
-#endif
 #define open	_open
 #define read	_read
 #define setmode	_setmode

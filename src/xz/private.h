@@ -35,28 +35,20 @@
 #	include <windows.h>
 #endif
 
-#ifndef STDIN_FILENO
 #ifdef _MSC_VER
-#	define STDIN_FILENO (_fileno(stdin))
-#else
-#	define STDIN_FILENO (fileno(stdin))
+#define fileno _fileno
 #endif
+
+#ifndef STDIN_FILENO
+#	define STDIN_FILENO (fileno(stdin))
 #endif
 
 #ifndef STDOUT_FILENO
-#ifdef _MSC_VER
-#	define STDOUT_FILENO (_fileno(stdout))
-#else
 #	define STDOUT_FILENO (fileno(stdout))
-#endif
 #endif
 
 #ifndef STDERR_FILENO
-#ifdef _MSC_VER
-#	define STDERR_FILENO (_fileno(stderr))
-#else
 #	define STDERR_FILENO (fileno(stderr))
-#endif
 #endif
 
 #if defined(HAVE_CAPSICUM) || defined(HAVE_PLEDGE)

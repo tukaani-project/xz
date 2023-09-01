@@ -21,11 +21,13 @@
 #	ifdef HAVE_STRINGS_H
 #		include <strings.h>
 #	endif
-#ifdef _MSC_VER
-#	define suffix_strcmp _stricmp
+#	ifdef _MSC_VER
+#		define suffix_strcmp _stricmp
+#	else
+#		define suffix_strcmp strcasecmp
+#	endif
 #else
-#	define suffix_strcmp strcasecmp
-#endif
+#	define suffix_strcmp strcmp
 #endif
 
 

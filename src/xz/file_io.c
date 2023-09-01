@@ -55,14 +55,6 @@ static bool warn_fchown;
 #define S_ISREG(m)	(((m) & _S_IFMT) == _S_IFREG)
 #endif
 
-#ifndef SSIZE_MAX
-#ifdef _WIN64
-#define SSIZE_MAX INT64_MAX
-#else
-#define SSIZE_MAX INT32_MAX
-#endif
-#endif
-
 #ifndef O_BINARY
 #	define O_BINARY 0
 #endif

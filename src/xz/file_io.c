@@ -1182,12 +1182,10 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 	size_t pos = 0;
 
 	while (pos < size) {
-		const size_t _readsz = size - pos;
 #ifdef _MSC_VER
-		const unsigned int readsz = (_readsz <= (size_t)UINT32_MAX)
-			? ((unsigned int)_readsz) : UINT32_MAX;
+		const unsigned int readsz = (unsigned int)(size - pos);
 #else
-		const size_t readsz = _readsz;
+		const size_t readsz = size - pos;
 #endif
 		const ssize_t amount = read(
 				pair->src_fd, buf->u8 + pos, readsz);
@@ -1314,12 +1312,10 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 	assert(size <= IO_BUFFER_SIZE);
 
 	while (size > 0) {
-		const size_t _writesz = size;
 #ifdef _MSC_VER
-		const unsigned int writesz = (_writesz <= (size_t)UINT32_MAX)
-			? ((unsigned int)_writesz) : UINT32_MAX;
+		const unsigned int writesz = (unsigned int)size;
 #else
-		const size_t writesz = _writesz;
+		const size_t writesz = size;
 #endif
 		const ssize_t amount = write(pair->dest_fd, buf, writesz);
 		if (amount == -1) {

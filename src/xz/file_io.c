@@ -958,7 +958,7 @@ io_open_dest_real(file_pair *pair)
 		flags |= O_NONBLOCK;
 #endif
 #ifdef _MSC_VER
-		const mode_t mode = _S_IREAD | _S_IWRITE;
+		const int mode = _S_IREAD | _S_IWRITE;
 #else
 		const mode_t mode = S_IRUSR | S_IWUSR;
 #endif

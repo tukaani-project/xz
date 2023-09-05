@@ -18,6 +18,16 @@
 #	define IO_BUFFER_SIZE (BUFSIZ & ~7U)
 #endif
 
+#ifdef _MSC_VER
+	// The first one renames both "struct stat" -> "struct _stat64"
+	// and stat() -> _stat64(). The documentation mentions only
+	// "struct __stat64", not "struct _stat64", but the latter
+	// works too.
+#	define stat _stat64
+#	define fstat _fstat64
+#	define off_t __int64
+#endif
+
 
 /// is_sparse() accesses the buffer as uint64_t for maximum speed.
 /// The u32 and u64 members must only be access through this union

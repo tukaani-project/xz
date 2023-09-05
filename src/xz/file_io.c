@@ -39,6 +39,32 @@ static bool warn_fchown;
 
 #include "tuklib_open_stdxxx.h"
 
+#ifdef _MSC_VER
+#	ifdef _WIN64
+		typedef __int64 ssize_t;
+#	else
+		typedef int ssize_t;
+#	endif
+
+	typedef int mode_t;
+#	define S_IRUSR _S_IREAD
+#	define S_IWUSR _S_IWRITE
+
+#	define setmode _setmode
+#	define open _open
+#	define close _close
+#	define lseek _lseeki64
+#	define unlink _unlink
+
+	// The casts are to silence warnings.
+	// The sizes are known to be small enough.
+#	define read(fd, buf, size) _read(fd, buf, (unsigned int)(size))
+#	define write(fd, buf, size) _write(fd, buf, (unsigned int)(size))
+
+#	define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
+#	define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
+#endif
+
 #ifndef O_BINARY
 #	define O_BINARY 0
 #endif

@@ -36,6 +36,10 @@
 #	include <windows.h>
 #endif
 
+#ifdef _MSC_VER
+#	define fileno _fileno
+#endif
+
 #ifndef STDIN_FILENO
 #	define STDIN_FILENO (fileno(stdin))
 #endif

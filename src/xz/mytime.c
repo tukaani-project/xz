@@ -12,7 +12,9 @@
 
 #include "private.h"
 
-#ifdef HAVE_CLOCK_GETTIME
+#if defined(_MSC_VER)
+	// Nothing
+#elif defined(HAVE_CLOCK_GETTIME)
 #	include <time.h>
 #else
 #	include <sys/time.h>
@@ -45,7 +47,11 @@ static uint64_t next_flush;
 static uint64_t
 mytime_now(void)
 {
-#ifdef HAVE_CLOCK_GETTIME
+#if defined(_MSC_VER)
+	// NOTE: This requires Windows Vista or later.
+	return GetTickCount64();
+
+#elif defined(HAVE_CLOCK_GETTIME)
 	struct timespec tv;
 
 #	ifdef HAVE_CLOCK_MONOTONIC
@@ -60,6 +66,7 @@ mytime_now(void)
 #	endif
 
 	return (uint64_t)tv.tv_sec * 1000 + (uint64_t)(tv.tv_nsec / 1000000);
+
 #else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);

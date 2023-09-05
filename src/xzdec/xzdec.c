@@ -28,6 +28,10 @@
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
 #	include <io.h>
+#	ifdef _MSC_VER
+#		define fileno _fileno
+#		define setmode _setmode
+#	endif
 #endif
 
 

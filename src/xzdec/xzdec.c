@@ -16,7 +16,10 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <stdio.h>
-#include <unistd.h>
+
+#ifndef _MSC_VER
+#	include <unistd.h>
+#endif
 
 #include "getopt.h"
 #include "tuklib_progname.h"

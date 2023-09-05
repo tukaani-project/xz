@@ -21,7 +21,10 @@
 #include <signal.h>
 #include <locale.h>
 #include <stdio.h>
-#include <unistd.h>
+
+#ifndef _MSC_VER
+#	include <unistd.h>
+#endif
 
 #include "tuklib_gettext.h"
 #include "tuklib_progname.h"

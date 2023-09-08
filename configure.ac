@@ -1086,7 +1086,6 @@ AS_IF([test "$GCC" = yes], [
 			-Wall \
 			-Wextra \
 			-Wvla \
-			-Wc99-c11-compat \
 			-Wformat=2 \
 			-Winit-self \
 			-Wmissing-include-dirs \

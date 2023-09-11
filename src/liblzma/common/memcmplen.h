@@ -49,7 +49,8 @@
 ///             It's rounded up to 2^n. This extra amount needs to be
 ///             allocated in the buffers being used. It needs to be
 ///             initialized too to keep Valgrind quiet.
-static inline uint32_t lzma_attribute((__always_inline__))
+lzma_attribute((__always_inline__))
+static inline uint32_t
 lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 		uint32_t len, uint32_t limit)
 {

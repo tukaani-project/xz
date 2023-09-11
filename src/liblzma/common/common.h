@@ -280,12 +280,12 @@ struct lzma_internal_s {
 
 /// Allocates memory
 extern void *lzma_alloc(size_t size, const lzma_allocator *allocator)
-		lzma_attribute((__malloc__)) lzma_attr_alloc_size(1);
+		lzma_attr_alloc_size(1);
 
 /// Allocates memory and zeroes it (like calloc()). This can be faster
 /// than lzma_alloc() + memzero() while being backward compatible with
 /// custom allocators.
-extern void * lzma_attribute((__malloc__)) lzma_attr_alloc_size(1)
+extern void * lzma_attr_alloc_size(1)
 		lzma_alloc_zero(size_t size, const lzma_allocator *allocator);
 
 /// Frees memory

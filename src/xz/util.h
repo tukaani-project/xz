@@ -19,8 +19,8 @@
 
 
 /// \brief      Safe realloc() that never returns NULL
-extern void *xrealloc(void *ptr, size_t size)
-		lzma_attr_alloc_size(2);
+lzma_attr_alloc_size(2)
+extern void *xrealloc(void *ptr, size_t size);
 
 
 /// \brief      Safe strdup() that never returns NULL
@@ -101,8 +101,8 @@ extern const char *uint64_to_nicestr(uint64_t value,
 ///
 /// A maximum of *left bytes is written starting from *pos. *pos and *left
 /// are updated accordingly.
-extern void my_snprintf(char **pos, size_t *left, const char *fmt, ...)
-		lzma_attribute((__format__(__printf__, 3, 4)));
+lzma_attribute((__format__(__printf__, 3, 4)))
+extern void my_snprintf(char **pos, size_t *left, const char *fmt, ...);
 
 
 /// \brief      Check if filename is empty and print an error message

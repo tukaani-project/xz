@@ -10,7 +10,6 @@
 # On some platforms this builds also xz and xzdec, but these are
 # highly experimental and meant for testing only:
 #   - No large file support on those 32-bit platforms that need it
-#   - No replacement getopt_long(), libc must have it
 #   - No sandboxing support
 #   - No translations
 #
@@ -984,18 +983,59 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
 
 
 #############################################################################
-# getopt_long
+# libgnu (getopt_long)
 #############################################################################
 
-# The command line tools needs this.
+# This mirrors how the Autotools build system handles the getopt_long
+# replacement, calling the object library libgnu since the replacement
+# version comes from Gnulib.
+add_library(libgnu OBJECT)
+
+# CMake requires that even an object library must have at least once source
+# file. So we give it a header file that results in no output files.
+target_sources(libgnu PRIVATE lib/getopt.in.h)
+
+# Create /lib directory in the build directory and add it to the include path.
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+target_include_directories(libgnu PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib")
+
+# The command line tools need getopt_long in order to parse arguments. If
+# the system does not have a getopt_long implementation we can use the one
+# from Gnulib instead.
 check_symbol_exists(getopt_long getopt.h HAVE_GETOPT_LONG)
+
+if(NOT HAVE_GETOPT_LONG)
+    # Set the __GETOPT_PREFIX definition to "rpl_" (replacement) to avoid
+    # name conflicts with libc symbols. The same prefix is set if using
+    # the Autotools build (m4/getopt.m4).
+    target_compile_definitions(libgnu PUBLIC "__GETOPT_PREFIX=rpl_")
+
+    # Create a custom copy command to copy the getopt header to the build
+    # directory and re-copy it if it is updated. (Gnulib does it this way
+    # because it allows choosing which .in.h files to actually use in the
+    # build. We need just getopt.h so this is a bit overcomplicated for
+    # a single header file only.)
+    add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/getopt.in.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
+        MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/lib/getopt.in.h"
+        VERBATIM)
+
+    target_sources(libgnu PRIVATE
+        lib/getopt1.c
+        lib/getopt.c
+        lib/getopt_int.h
+        "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
+    )
+endif()
 
 
 #############################################################################
 # xzdec
 #############################################################################
 
-if(HAVE_GETOPT_LONG AND HAVE_DECODERS)
+if(HAVE_DECODERS)
     add_executable(xzdec
         src/common/sysdefs.h
         src/common/tuklib_common.h
@@ -1013,7 +1053,7 @@ if(HAVE_GETOPT_LONG AND HAVE_DECODERS)
         src/liblzma/api
     )
 
-    target_link_libraries(xzdec PRIVATE liblzma)
+    target_link_libraries(xzdec PRIVATE liblzma libgnu)
 
     if(WIN32)
         # Add the Windows resource file for xzdec.exe.
@@ -1041,7 +1081,7 @@ endif()
 # xz
 #############################################################################
 
-if(NOT MSVC AND HAVE_GETOPT_LONG)
+if(NOT MSVC)
     add_executable(xz
         src/common/mythread.h
         src/common/sysdefs.h
@@ -1095,7 +1135,7 @@ if(NOT MSVC AND HAVE_GETOPT_LONG)
         )
     endif()
 
-    target_link_libraries(xz PRIVATE liblzma)
+    target_link_libraries(xz PRIVATE liblzma libgnu)
 
     target_compile_definitions(xz PRIVATE ASSUME_RAM=128)
 

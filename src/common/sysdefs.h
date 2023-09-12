@@ -151,13 +151,16 @@ typedef unsigned char _Bool;
 
 #include <string.h>
 
-// As of MSVC 2013, inline and restrict are supported with
-// non-standard keywords.
-#if defined(_WIN32) && defined(_MSC_VER)
-#	ifndef inline
+// Visual Studio 2013 update 2 supports only __inline, not inline.
+// MSVC v19.0 / VS 2015 and newer support both.
+//
+// MSVC v19.27 (VS 2019 version 16.7) added support for restrict.
+// Older ones support only __restrict.
+#ifdef _MSC_VER
+#	if _MSC_VER < 1900 && !defined(inline)
 #		define inline __inline
 #	endif
-#	ifndef restrict
+#	if _MSC_VER < 1927 && !defined(restrict)
 #		define restrict __restrict
 #	endif
 #endif

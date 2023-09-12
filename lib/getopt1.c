@@ -20,7 +20,9 @@
 #ifdef _LIBC
 # include <getopt.h>
 #else
-# include <config.h>
+# ifdef HAVE_CONFIG_H
+#  include <config.h>
+# endif
 # include "getopt.h"
 #endif
 #include "getopt_int.h"

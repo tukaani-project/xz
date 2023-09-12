@@ -1081,7 +1081,7 @@ endif()
 # xz
 #############################################################################
 
-if(NOT MSVC)
+if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
     add_executable(xz
         src/common/mythread.h
         src/common/sysdefs.h

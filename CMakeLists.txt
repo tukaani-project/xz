@@ -168,13 +168,11 @@ if(NOT WIN32 AND NOT DEFINED HAVE_CLOCK_GETTIME)
         endif()
     endif()
     if(HAVE_CLOCK_GETTIME)
+        add_compile_definitions(HAVE_CLOCK_GETTIME)
+
         # Check if CLOCK_MONOTONIC is available for clock_gettime().
         check_symbol_exists(CLOCK_MONOTONIC time.h HAVE_CLOCK_MONOTONIC)
-
-        add_compile_definitions(
-            HAVE_CLOCK_GETTIME
-            HAVE_CLOCK_MONOTONIC
-        )
+        tuklib_add_definition_if(ALL HAVE_CLOCK_MONOTONIC)
     endif()
 endif()
 

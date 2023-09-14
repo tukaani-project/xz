@@ -78,19 +78,15 @@ jobs:
             ./build-aux/ci_build.sh -b autotools -p test -f "-m32" -n 32_bit
             cd ../xz_build && make distclean
 
-      # ifunc and clmul must be disabled for this test because they will
-      # fail with -fsanitize=address. __attribute__ ifunc is incompatible
-      # with -fsanitize=address.CLMUL optimizations will read past the
-      # bounds of small buffers and mask out the unneeded values. This
-      # triggers -fsanitize=address to report an error even though the
-      # operation is safe.
+      # ifunc must be disabled for this test because __attribute__ ifunc is
+      # incompatible with -fsanitize=address.
       - name: Build with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
-        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d ifunc,clmul
+        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d ifunc
       - name: Test with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
-            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc,clmul
+            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc
             cd ../xz_build && make distclean
 
       - name: Build with full features

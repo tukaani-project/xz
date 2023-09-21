@@ -944,20 +944,41 @@ io_open_dest_real(file_pair *pair)
 		}
 	}
 
-#ifndef TUKLIB_DOSLIKE
-	// dest_st isn't used on DOS-like systems except as a dummy
-	// argument to io_unlink(), so don't fstat() on such systems.
 	if (fstat(pair->dest_fd, &pair->dest_st)) {
 		// If fstat() really fails, we have a safe fallback here.
-#	if defined(__VMS)
+#if defined(__VMS)
 		pair->dest_st.st_ino[0] = 0;
 		pair->dest_st.st_ino[1] = 0;
 		pair->dest_st.st_ino[2] = 0;
-#	else
+#else
 		pair->dest_st.st_dev = 0;
 		pair->dest_st.st_ino = 0;
-#	endif
-	} else if (try_sparse && opt_mode == MODE_DECOMPRESS) {
+#endif
+	}
+#if defined(TUKLIB_DOSLIKE) && !defined(__DJGPP__)
+	// Check that the output file is a regular file. We open with O_EXCL
+	// but that doesn't prevent open()/_open() on Windows from opening
+	// files like "con" or "nul".
+	//
+	// With DJGPP this check is done with stat() even before opening
+	// the output file. That method or a variant of it doesn't work on
+	// Windows because on Windows stat()/_stat64() sets st.st_mode so
+	// that S_ISREG(st.st_mode) will be true even for special files.
+	// With fstat()/_fstat64() it works.
+	else if (pair->dest_fd != STDOUT_FILENO
+			&& !S_ISREG(pair->dest_st.st_mode)) {
+		message_error("%s: Destination is not a regular file",
+				pair->dest_name);
+
+		// dest_fd needs to be reset to -1 to keep io_close() working.
+		(void)close(pair->dest_fd);
+		pair->dest_fd = -1;
+
+		free(pair->dest_name);
+		return true;
+	}
+#elif !defined(TUKLIB_DOSLIKE)
+	else if (try_sparse && opt_mode == MODE_DECOMPRESS) {
 		// When writing to standard output, we need to be extra
 		// careful:
 		//  - It may be connected to something else than

@@ -363,6 +363,7 @@ if(ENABLE_THREADS)
     find_package(Threads REQUIRED)
 
     # If both Windows and posix threading are available, prefer Windows.
+    # Note that on Cygwin CMAKE_USE_WIN32_THREADS_INIT is false.
     if(CMAKE_USE_WIN32_THREADS_INIT AND NOT ENABLE_THREADS STREQUAL "posix")
         if(ENABLE_THREADS STREQUAL "win95"
                 OR (ENABLE_THREADS STREQUAL "ON"

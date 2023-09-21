@@ -389,9 +389,11 @@ if(ENABLE_THREADS)
             target_link_libraries(liblzma Threads::Threads)
             add_compile_definitions(MYTHREAD_POSIX)
 
-            # Check if pthread_condattr_setclock() exists to use CLOCK_MONOTONIC.
+            # Check if pthread_condattr_setclock() exists to
+            # use CLOCK_MONOTONIC.
             if(HAVE_CLOCK_MONOTONIC)
-                list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
+                list(INSERT CMAKE_REQUIRED_LIBRARIES 0
+                     "${CMAKE_THREAD_LIBS_INIT}")
                 check_symbol_exists(pthread_condattr_setclock pthread.h
                                     HAVE_PTHREAD_CONDATTR_SETCLOCK)
                 tuklib_add_definition_if(ALL HAVE_PTHREAD_CONDATTR_SETCLOCK)

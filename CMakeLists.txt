@@ -1035,7 +1035,7 @@ endif()
 # xzdec
 #############################################################################
 
-if(HAVE_DECODERS)
+if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
     add_executable(xzdec
         src/common/sysdefs.h
         src/common/tuklib_common.h

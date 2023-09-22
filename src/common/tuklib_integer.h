@@ -454,6 +454,40 @@ write32le(uint8_t *buf, uint32_t num)
 #endif
 
 
+#ifndef write64be
+static inline void
+write64be(uint8_t *buf, uint64_t num)
+{
+	buf[0] = (uint8_t)(num >> 56);
+	buf[1] = (uint8_t)(num >> 48);
+	buf[2] = (uint8_t)(num >> 40);
+	buf[3] = (uint8_t)(num >> 32);
+	buf[4] = (uint8_t)(num >> 24);
+	buf[5] = (uint8_t)(num >> 16);
+	buf[6] = (uint8_t)(num >> 8);
+	buf[7] = (uint8_t)num;
+	return;
+}
+#endif
+
+
+#ifndef write64le
+static inline void
+write64le(uint8_t *buf, uint64_t num)
+{
+	buf[0] = (uint8_t)num;
+	buf[1] = (uint8_t)(num >> 8);
+	buf[2] = (uint8_t)(num >> 16);
+	buf[3] = (uint8_t)(num >> 24);
+	buf[4] = (uint8_t)(num >> 32);
+	buf[5] = (uint8_t)(num >> 40);
+	buf[6] = (uint8_t)(num >> 48);
+	buf[7] = (uint8_t)(num >> 56);
+	return;
+}
+#endif
+
+
 //////////////////////////////
 // Aligned reads and writes //
 //////////////////////////////

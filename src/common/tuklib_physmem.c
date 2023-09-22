@@ -73,23 +73,20 @@
 #endif
 
 
-// With GCC >= 8.1 with -Wextra and Clang >= 13 with -Wcast-function-type
-// will warn about the Windows-specific code.
-#if defined(__has_warning)
-#	if __has_warning("-Wcast-function-type")
-#		define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
-#	endif
-#elif TUKLIB_GNUC_REQ(8,1)
-#	define CAN_DISABLE_WCAST_FUNCTION_TYPE 1
-#endif
-
-
 extern uint64_t
 tuklib_physmem(void)
 {
 	uint64_t ret = 0;
 
 #if defined(_WIN32) || defined(__CYGWIN__)
+	// This requires Windows 2000 or later.
+	MEMORYSTATUSEX meminfo;
+	meminfo.dwLength = sizeof(meminfo);
+	if (GlobalMemoryStatusEx(&meminfo))
+		ret = meminfo.ullTotalPhys;
+
+/*
+	// Old version that is compatible with even Win95:
 	if ((GetVersion() & 0xFF) >= 5) {
 		// Windows 2000 and later have GlobalMemoryStatusEx() which
 		// supports reporting values greater than 4 GiB. To keep the
@@ -125,6 +122,7 @@ tuklib_physmem(void)
 		GlobalMemoryStatus(&meminfo);
 		ret = meminfo.dwTotalPhys;
 	}
+*/
 
 #elif defined(__OS2__)
 	unsigned long mem;

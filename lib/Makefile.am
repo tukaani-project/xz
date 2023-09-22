@@ -21,7 +21,17 @@ libgnu_a_SOURCES =
 libgnu_a_DEPENDENCIES = $(LIBOBJS)
 libgnu_a_LIBADD = $(LIBOBJS)
 
-EXTRA_DIST = getopt.in.h getopt.c getopt1.c getopt_int.h
+EXTRA_DIST = \
+	getopt.in.h \
+	getopt.c \
+	getopt1.c \
+	getopt_int.h \
+	getopt-cdefs.h \
+	getopt-core.h \
+	getopt-ext.h \
+	getopt-pfx-core.h \
+	getopt-pfx-ext.h
+
 BUILT_SOURCES = $(GETOPT_H)
 MOSTLYCLEANFILES = getopt.h getopt.h-t
 

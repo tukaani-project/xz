@@ -20,10 +20,8 @@ Introduction
 Package contents
 ----------------
 
-    All executables and libraries in this package require msvcrt.dll.
-    It's included in all recent Windows versions. (On Windows 95 it
-    might be missing, but once you get it somewhere, the i686 binaries
-    should run even on Windows 95 if the processor is new enough.)
+    All executables and libraries in this package require msvcrt.dll,
+    not Universal CRT (UCRT).
 
     There is a SSE2 optimization in the compression code but this
     version of XZ Utils doesn't include run-time processor detection.
@@ -31,8 +29,8 @@ Package contents
 
     There is one directory for each type of executable and library files:
 
-        bin_i686        32-bit x86 (i686 and newer), Windows 95 and later
-        bin_i686-sse2   32-bit x86 (i686 with SSE2), Windows 98 and later
+        bin_i686        32-bit x86 (i686 and newer), Windows 2000 and later
+        bin_i686-sse2   32-bit x86 (i686 with SSE2), Windows 2000 and later
         bin_x86-64      64-bit x86-64, Windows Vista and later
 
     Each of the above directories have the following files:

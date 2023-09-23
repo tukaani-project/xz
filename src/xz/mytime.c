@@ -12,7 +12,7 @@
 
 #include "private.h"
 
-#if defined(_MSC_VER)
+#if defined(MYTHREAD_VISTA) || defined(_MSC_VER)
 	// Nothing
 #elif defined(HAVE_CLOCK_GETTIME)
 #	include <time.h>
@@ -47,8 +47,16 @@ static uint64_t next_flush;
 static uint64_t
 mytime_now(void)
 {
-#if defined(_MSC_VER)
-	// NOTE: This requires Windows Vista or later.
+#if defined(MYTHREAD_VISTA) || defined(_MSC_VER)
+	// Since there is no SIGALRM on Windows, this function gets
+	// called frequently when the progress indicator is in use.
+	// Progress indicator doesn't need high-resolution time.
+	// GetTickCount64() has very low overhead but needs at least WinVista.
+	//
+	// MinGW-w64 provides the POSIX functions clock_gettime() and
+	// gettimeofday() in a manner that allow xz to run on older
+	// than WinVista. If the threading method needs WinVista anyway,
+	// there's no reason to avoid a WinVista API here either.
 	return GetTickCount64();
 
 #elif defined(HAVE_CLOCK_GETTIME)

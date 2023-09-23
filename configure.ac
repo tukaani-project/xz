@@ -622,21 +622,10 @@ AS_CASE([$enable_threads],
 		AC_DEFINE([MYTHREAD_POSIX], [1],
 			[Define to 1 when using POSIX threads (pthreads).])
 
-		# These are nice to have but not mandatory.
-		#
-		# FIXME: xz uses clock_gettime if it is available and can do
-		# it even when threading is disabled. Moving this outside
-		# of pthread detection may be undesirable because then
-		# liblzma may get linked against librt even when librt isn't
-		# needed by liblzma.
+		# This is nice to have but not mandatory.
 		OLD_CFLAGS=$CFLAGS
 		CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-		AC_SEARCH_LIBS([clock_gettime], [rt])
-		AC_CHECK_FUNCS([clock_gettime pthread_condattr_setclock])
-		AC_CHECK_DECL([CLOCK_MONOTONIC], [AC_DEFINE(
-			[HAVE_CLOCK_MONOTONIC], [1], [Define to 1 if
-			`CLOCK_MONOTONIC' is declared in <time.h>.])], [],
-			[[#include <time.h>]])
+		AC_CHECK_FUNCS([pthread_condattr_setclock])
 		CFLAGS=$OLD_CFLAGS
 	],
 	[win95], [
@@ -915,6 +904,22 @@ fi
 
 # Gnulib replacements as needed
 gl_GETOPT
+
+# If clock_gettime() is available, liblzma with pthreads may use it, and
+# xz may use it even when threading support is disabled. In XZ Utils 5.4.x
+# and older, configure checked for clock_gettime() only when using pthreads.
+# This way non-threaded builds of liblzma didn't get a useless dependency on
+# librt which further had a dependency on libpthread. Avoiding these was
+# useful when a small build was needed, for example, for initramfs use.
+#
+# The above reasoning is thoroughly obsolete: On GNU/Linux, librt hasn't
+# been needed for clock_gettime() since glibc 2.17 (2012-12-25).
+# Solaris 10 needs librt but Solaris 11 doesn't anymore.
+AC_SEARCH_LIBS([clock_gettime], [rt])
+AC_CHECK_FUNCS([clock_gettime])
+AC_CHECK_DECL([CLOCK_MONOTONIC], [AC_DEFINE([HAVE_CLOCK_MONOTONIC], [1],
+	[Define to 1 if 'CLOCK_MONOTONIC' is declared in <time.h>.])], [],
+	[[#include <time.h>]])
 
 # Find the best function to set timestamps.
 AC_CHECK_FUNCS([futimens futimes futimesat utimes _futime utime], [break])

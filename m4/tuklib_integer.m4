@@ -65,22 +65,42 @@ AC_MSG_CHECKING([if unaligned memory access should be used])
 AC_ARG_ENABLE([unaligned-access], AS_HELP_STRING([--enable-unaligned-access],
 		[Enable if the system supports *fast* unaligned memory access
 		with 16-bit, 32-bit, and 64-bit integers. By default,
-		this is enabled only on x86, x86_64, big endian PowerPC,
-		and some ARM systems.]),
+		this is enabled on x86, x86-64,
+		32/64-bit big endian PowerPC,
+		64-bit little endian PowerPC,
+		and some ARM, ARM64, and RISC-V systems.]),
 	[], [enable_unaligned_access=auto])
 if test "x$enable_unaligned_access" = xauto ; then
-	# TODO: There may be other architectures, on which unaligned access
-	# is OK.
+	# NOTE: There might be other architectures on which unaligned access
+	# is fast.
 	case $host_cpu in
-		i?86|x86_64|powerpc|powerpc64)
+		i?86|x86_64|powerpc|powerpc64|powerpc64le)
 			enable_unaligned_access=yes
 			;;
-		arm*|aarch64*)
+		arm*|aarch64*|riscv*)
 			# On 32-bit and 64-bit ARM, GCC and Clang
 			# #define __ARM_FEATURE_UNALIGNED if
 			# unaligned access is supported.
+			#
+			# Exception: GCC at least up to 13.2.0
+			# defines it even when using -mstrict-align
+			# so in that case this autodetection goes wrong.
+			# Most of the time -mstrict-align isn't used so it
+			# shouldn't be a common problem in practice. See:
+			# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+			#
+			# RISC-V C API Specification says that if
+			# __riscv_misaligned_fast is defined then
+			# unaligned access is known to be fast.
+			#
+			# MSVC is handled as a special case: We assume that
+			# 32/64-bit ARM supports fast unaligned access.
+			# If MSVC gets RISC-V support then this will assume
+			# fast unaligned access on RISC-V too.
 			AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-#ifndef __ARM_FEATURE_UNALIGNED
+#if !defined(__ARM_FEATURE_UNALIGNED) \
+		&& !defined(__riscv_misaligned_fast) \
+		&& !defined(_MSC_VER)
 compile error
 #endif
 int main(void) { return 0; }

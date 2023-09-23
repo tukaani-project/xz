@@ -400,8 +400,43 @@ XZ Utils Installation
                 slow. This option shouldn't be used on systems that
                 rely on such emulation.
 
-                Unaligned access is enabled by default on x86, x86-64,
-                big endian PowerPC, some ARM, and some ARM64 systems.
+                Unaligned access is enabled by default on these:
+                  - 32-bit x86
+                  - 64-bit x86-64
+                  - 32-bit big endian PowerPC
+                  - 64-bit big endian PowerPC
+                  - 64-bit little endian PowerPC
+                  - some RISC-V [1]
+                  - some 32-bit ARM [2]
+                  - some 64-bit ARM64 [2] (NOTE: Autodetection bug
+                    if using GCC -mstrict-align, see below.)
+
+                [1] Unaligned access is enabled by default if
+                    configure sees that the C compiler
+                    #defines __riscv_misaligned_fast.
+
+                [2] Unaligned access is enabled by default if
+                    configure sees that the C compiler
+                    #defines __ARM_FEATURE_UNALIGNED:
+
+                      - ARMv7 + GCC or Clang: It works. The options
+                        -munaligned-access and -mno-unaligned-access
+                        affect this macro correctly.
+
+                      - ARM64 + Clang: It works. The options
+                        -munaligned-access, -mno-unaligned-access,
+                        and -mstrict-align affect this macro correctly.
+                        Clang >= 17 supports -mno-strict-align too.
+
+                      - ARM64 + GCC: It partially works. The macro
+                        is always #defined by GCC versions at least
+                        up to 13.2, even when using -mstrict-align.
+                        If building for strict-align ARM64, the
+                        configure option --disable-unaligned-access
+                        should be used if using a GCC version that has
+                        this issue because otherwise the performance
+                        may be degraded. It likely won't crash due to
+                        how unaligned access is done in the C code.
 
     --enable-unsafe-type-punning
                 This enables use of code like

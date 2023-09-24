@@ -1,43 +1,30 @@
 /* getopt_long and getopt_long_only entry points for GNU getopt.
-   Copyright (C) 1987,88,89,90,91,92,93,94,96,97,98,2004,2006
-     Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+   Copyright (C) 1987-2023 Free Software Foundation, Inc.
+   This file is part of the GNU C Library and is also part of gnulib.
+   Patches to this file should be submitted to both projects.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as published by
-   the Free Software Foundation; either version 2.1, or (at your option)
-   any later version.
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   The GNU C Library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Lesser General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <https://www.gnu.org/licenses/>.  */
 
-#ifdef _LIBC
-# include <getopt.h>
-#else
+#ifndef _LIBC
 # ifdef HAVE_CONFIG_H
 #  include <config.h>
 # endif
-# include "getopt.h"
 #endif
+
+#include "getopt.h"
 #include "getopt_int.h"
-
-#include <stdio.h>
-
-/* This needs to come after some library #include
-   to get __GNU_LIBRARY__ defined.  */
-#ifdef __GNU_LIBRARY__
-#include <stdlib.h>
-#endif
-
-#ifndef	NULL
-#define NULL 0
-#endif
 
 int
 getopt_long (int argc, char *__getopt_argv_const *argv, const char *options,
@@ -53,7 +40,7 @@ _getopt_long_r (int argc, char **argv, const char *options,
 		struct _getopt_data *d)
 {
   return _getopt_internal_r (argc, argv, options, long_options, opt_index,
-			     0, 0, d);
+			     0, d, 0);
 }
 
 /* Like getopt_long, but '-' as well as '--' can indicate a long option.
@@ -76,13 +63,14 @@ _getopt_long_only_r (int argc, char **argv, const char *options,
 		     struct _getopt_data *d)
 {
   return _getopt_internal_r (argc, argv, options, long_options, opt_index,
-			     1, 0, d);
+			     1, d, 0);
 }
 
 
 #ifdef TEST
 
 #include <stdio.h>
+#include <stdlib.h>
 
 int
 main (int argc, char **argv)
@@ -94,7 +82,7 @@ main (int argc, char **argv)
     {
       int this_option_optind = optind ? optind : 1;
       int option_index = 0;
-      static struct option long_options[] =
+      static const struct option long_options[] =
       {
 	{"add", 1, 0, 0},
 	{"append", 0, 0, 0},
@@ -144,11 +132,11 @@ main (int argc, char **argv)
 	  break;
 
 	case 'c':
-	  printf ("option c with value `%s'\n", optarg);
+	  printf ("option c with value '%s'\n", optarg);
 	  break;
 
 	case 'd':
-	  printf ("option d with value `%s'\n", optarg);
+	  printf ("option d with value '%s'\n", optarg);
 	  break;
 
 	case '?':

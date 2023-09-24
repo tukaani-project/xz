@@ -194,7 +194,7 @@ elif test $# -eq 2; then
     esac;;
   esac
 else
-  printf '%s\n' "$0: Invalid number of operands; try \`${0##*/} --help' for help" >&2
+  printf '%s\n' "$0: Invalid number of operands; try '${0##*/} --help' for help" >&2
   exit 2
 fi
 

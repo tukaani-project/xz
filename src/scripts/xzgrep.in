@@ -156,7 +156,7 @@ done
 eval "set -- $operands "'${1+"$@"}'
 
 if test $have_pat -eq 0; then
-  case ${1?"Missing pattern; try \`${0##*/} --help' for help"} in
+  case ${1?"Missing pattern; try '${0##*/} --help' for help"} in
   (*\'*)
     grep="$grep -e '"$(printf '%sX\n' "$1" | LC_ALL=C sed "$escape");;
   (*)

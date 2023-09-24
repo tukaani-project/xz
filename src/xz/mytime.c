@@ -14,7 +14,8 @@
 
 #if defined(MYTHREAD_VISTA) || defined(_MSC_VER)
 	// Nothing
-#elif defined(HAVE_CLOCK_GETTIME) && !defined(__MINGW32__)
+#elif defined(HAVE_CLOCK_GETTIME) \
+		&& (!defined(__MINGW32__) || defined(MYTHREAD_POSIX))
 #	include <time.h>
 #else
 #	include <sys/time.h>
@@ -59,9 +60,11 @@ mytime_now(void)
 	// there's no reason to avoid a WinVista API here either.
 	return GetTickCount64();
 
-#elif defined(HAVE_CLOCK_GETTIME) && !defined(__MINGW32__)
+#elif defined(HAVE_CLOCK_GETTIME) \
+		&& (!defined(__MINGW32__) || defined(MYTHREAD_POSIX))
 	// MinGW-w64: clock_gettime() is defined in winpthreads but we need
-	// nothing else from winpthreads. By avoiding clock_gettime(), we
+	// nothing else from winpthreads (unless, for some odd reason, POSIX
+	// threading has been selected). By avoiding clock_gettime(), we
 	// avoid the dependency on libwinpthread-1.dll or the need to link
 	// against the static version. The downside is that the fallback
 	// method, gettimeofday(), doesn't provide monotonic time.

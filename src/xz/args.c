@@ -124,7 +124,7 @@ parse_block_list(const char *str_const)
 			if (str[2] == '\0')
 				message_fatal(_("In --block-list, block "
 						"size is missing after "
-						"filter chain number `%c:'"),
+						"filter chain number '%c:'"),
 						str[0]);
 
 			int filter_num = str[0] - '0';
@@ -598,8 +598,8 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_FILES0:
 			if (args->files_name != NULL)
 				message_fatal(_("Only one file can be "
-						"specified with `--files' "
-						"or `--files0'."));
+						"specified with '--files' "
+						"or '--files0'."));
 
 			if (optarg == NULL) {
 				args->files_name = stdin_filename;

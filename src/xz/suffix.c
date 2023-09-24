@@ -184,7 +184,7 @@ uncompressed_name(const char *src_name, const size_t src_len)
 static void
 msg_suffix(const char *src_name, const char *suffix)
 {
-	message_warning(_("%s: File already has `%s' suffix, skipping"),
+	message_warning(_("%s: File already has '%s' suffix, skipping"),
 			src_name, suffix);
 	return;
 }

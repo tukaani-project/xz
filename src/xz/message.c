@@ -938,7 +938,7 @@ message_try_help(void)
 {
 	// Print this with V_WARNING instead of V_ERROR to prevent it from
 	// showing up when --quiet has been specified.
-	message(V_WARNING, _("Try `%s --help' for more information."),
+	message(V_WARNING, _("Try '%s --help' for more information."),
 			progname);
 	return;
 }
@@ -1000,7 +1000,7 @@ message_help(bool long_help)
 "                      ignore possible remaining input data"));
 		puts(_(
 "      --no-sparse     do not create sparse files when decompressing\n"
-"  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
+"  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
 "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"
@@ -1011,9 +1011,9 @@ message_help(bool long_help)
 		puts(_("\n Basic file format and compression options:\n"));
 		puts(_(
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
-"  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-"                      `crc32', `crc64' (default), or `sha256'"));
+"                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
+"  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
+"                      'crc32', 'crc64' (default), or 'sha256'"));
 		puts(_(
 "      --ignore-check  don't verify the integrity check when decompressing"));
 	}
@@ -1039,7 +1039,7 @@ message_help(bool long_help)
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
 "                      intervals of uncompressed data; optionally, specify a\n"
-"                      filter chain number (0-9) followed by a `:' before the\n"
+"                      filter chain number (0-9) followed by a ':' before the\n"
 "                      uncompressed data size"));
 		puts(_(
 "      --flush-timeout=TIMEOUT\n"
@@ -1183,7 +1183,7 @@ message_filters_help(void)
 		puts(_(
 "Filter chains are set using the --filters=FILTERS or\n"
 "--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
-"can be separated by spaces or `--'. Alternatively a preset <0-9>[e] can be\n"
+"can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
 "specified instead of a filter chain.\n"
 		));
 

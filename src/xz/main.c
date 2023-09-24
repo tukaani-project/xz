@@ -119,8 +119,8 @@ read_name(const args_info *args)
 			// newlines.
 			message_error(_("%s: Null character found when "
 					"reading filenames; maybe you meant "
-					"to use `--files0' instead "
-					"of `--files'?"), args->files_name);
+					"to use '--files0' instead "
+					"of '--files'?"), args->files_name);
 			return NULL;
 		}
 

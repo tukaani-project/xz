@@ -433,7 +433,7 @@ io_copy_attrs(const file_pair *pair)
 		message_warning(_("%s: Cannot set the file group: %s"),
 				pair->dest_name, strerror(errno));
 		// We can still safely copy some additional permissions:
-		// `group' must be at least as strict as `other' and
+		// 'group' must be at least as strict as 'other' and
 		// also vice versa.
 		//
 		// NOTE: After this, the owner of the source file may

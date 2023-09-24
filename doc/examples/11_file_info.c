@@ -33,7 +33,7 @@ print_file_size(lzma_stream *strm, FILE *infile, const char *filename)
 	// large files on 32-bit systems (POSIX versions fseeko() and
 	// ftello() can support large files).
 	if (fseek(infile, 0, SEEK_END)) {
-		fprintf(stderr, "Error seeking the file `%s': %s\n",
+		fprintf(stderr, "Error seeking the file '%s': %s\n",
 				filename, strerror(errno));
 		return false;
 	}
@@ -80,7 +80,7 @@ print_file_size(lzma_stream *strm, FILE *infile, const char *filename)
 
 			if (ferror(infile)) {
 				fprintf(stderr,
-					"Error reading from `%s': %s\n",
+					"Error reading from '%s': %s\n",
 					filename, strerror(errno));
 				return false;
 			}
@@ -104,7 +104,7 @@ print_file_size(lzma_stream *strm, FILE *infile, const char *filename)
 			// switch fseeko() or lseek().
 			if (fseek(infile, (long)(strm->seek_pos), SEEK_SET)) {
 				fprintf(stderr, "Error seeking the "
-						"file `%s': %s\n",
+						"file '%s': %s\n",
 						filename, strerror(errno));
 				return false;
 			}
@@ -133,24 +133,24 @@ print_file_size(lzma_stream *strm, FILE *infile, const char *filename)
 
 		case LZMA_FORMAT_ERROR:
 			// .xz magic bytes weren't found.
-			fprintf(stderr, "The file `%s' is not "
+			fprintf(stderr, "The file '%s' is not "
 					"in the .xz format\n", filename);
 			return false;
 
 		case LZMA_OPTIONS_ERROR:
-			fprintf(stderr, "The file `%s' has .xz headers that "
+			fprintf(stderr, "The file '%s' has .xz headers that "
 					"are not supported by this liblzma "
 					"version\n", filename);
 			return false;
 
 		case LZMA_DATA_ERROR:
-			fprintf(stderr, "The file `%s' is corrupt\n",
+			fprintf(stderr, "The file '%s' is corrupt\n",
 					filename);
 			return false;
 
 		case LZMA_MEM_ERROR:
 			fprintf(stderr, "Memory allocation failed when "
-					"decoding the file `%s'\n", filename);
+					"decoding the file '%s'\n", filename);
 			return false;
 
 		// LZMA_MEMLIMIT_ERROR shouldn't happen because we used
@@ -183,7 +183,7 @@ main(int argc, char **argv)
 		FILE *infile = fopen(argv[i], "rb");
 
 		if (infile == NULL) {
-			fprintf(stderr, "Cannot open the file `%s': %s\n",
+			fprintf(stderr, "Cannot open the file '%s': %s\n",
 					argv[i], strerror(errno));
 			success = false;
 		}

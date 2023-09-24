@@ -468,14 +468,14 @@ XZ Utils Installation
                                 too. This is the default for 32-bit x86
                                 Windows builds. Unless the compiler
                                 supports __attribute__((__constructor__)),
-                                the `win95' threading is incompatible with
+                                the 'win95' threading is incompatible with
                                 --enable-small.
 
                         vista   Use Windows Vista compatible threads. The
                                 resulting binaries won't run on Windows XP
                                 or older. This is the default for Windows
                                 excluding 32-bit x86 builds (that is, on
-                                x86-64 the default is `vista').
+                                x86-64 the default is 'vista').
 
                         no      Disable threading support. This is the
                                 same as using --disable-threads.
@@ -494,7 +494,7 @@ XZ Utils Installation
                 the options --files or --files0 weren't used. This is a
                 common use case, for example, (de)compressing .tar.xz
                 files via GNU tar. The sandbox is also used for
-                single-file `xz --test' or `xz --list'.
+                single-file 'xz --test' or 'xz --list'.
 
                 Supported METHODs:
 

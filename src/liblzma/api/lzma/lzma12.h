@@ -289,7 +289,7 @@ typedef struct {
 	 * \brief       Number of literal context bits
 	 *
 	 * How many of the highest bits of the previous uncompressed
-	 * eight-bit byte (also known as `literal') are taken into
+	 * eight-bit byte (also known as 'literal') are taken into
 	 * account when predicting the bits of the next literal.
 	 *
 	 * E.g. in typical English text, an upper-case letter is

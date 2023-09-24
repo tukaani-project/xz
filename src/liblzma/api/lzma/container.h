@@ -297,7 +297,7 @@ extern LZMA_API(uint64_t) lzma_easy_decoder_memusage(uint32_t preset)
  * to call lzma_end() after failed initialization.
  *
  * If initialization succeeds, use lzma_code() to do the actual encoding.
- * Valid values for `action' (the second argument of lzma_code()) are
+ * Valid values for 'action' (the second argument of lzma_code()) are
  * LZMA_RUN, LZMA_SYNC_FLUSH, LZMA_FULL_FLUSH, and LZMA_FINISH. In future,
  * there may be compression levels or flags that don't support LZMA_SYNC_FLUSH.
  *
@@ -679,13 +679,13 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
  * supported by liblzma, only the .xz and .lz formats allow concatenated
  * files. Concatenated files are not allowed with the legacy .lzma format.
  *
- * This flag also affects the usage of the `action' argument for lzma_code().
+ * This flag also affects the usage of the 'action' argument for lzma_code().
  * When LZMA_CONCATENATED is used, lzma_code() won't return LZMA_STREAM_END
- * unless LZMA_FINISH is used as `action'. Thus, the application has to set
+ * unless LZMA_FINISH is used as 'action'. Thus, the application has to set
  * LZMA_FINISH in the same way as it does when encoding.
  *
  * If LZMA_CONCATENATED is not used, the decoders still accept LZMA_FINISH
- * as `action' for lzma_code(), but the usage of LZMA_FINISH isn't required.
+ * as 'action' for lzma_code(), but the usage of LZMA_FINISH isn't required.
  */
 #define LZMA_CONCATENATED               UINT32_C(0x08)
 
@@ -819,7 +819,7 @@ extern LZMA_API(lzma_ret) lzma_auto_decoder(
 /**
  * \brief       Initialize .lzma decoder (legacy file format)
  *
- * Valid `action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
+ * Valid 'action' arguments to lzma_code() are LZMA_RUN and LZMA_FINISH.
  * There is no need to use LZMA_FINISH, but it's allowed because it may
  * simplify certain types of applications.
  *

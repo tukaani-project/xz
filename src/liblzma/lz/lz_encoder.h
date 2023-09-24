@@ -225,7 +225,7 @@ typedef struct {
 //  3. The literals and matches are encoded using e.g. LZMA.
 //
 // The bytes that have been ran through the match finder, but not encoded yet,
-// are called `read ahead'.
+// are called 'read ahead'.
 
 
 /// Get how many bytes the match finder hashes in its initial step.

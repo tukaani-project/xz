@@ -1029,6 +1029,11 @@ if(NOT HAVE_GETOPT_LONG)
         lib/getopt1.c
         lib/getopt.c
         lib/getopt_int.h
+        lib/getopt-cdefs.h
+        lib/getopt-core.h
+        lib/getopt-ext.h
+        lib/getopt-pfx-core.h
+        lib/getopt-pfx-ext.h
         "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
     )
 endif()

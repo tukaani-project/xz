@@ -213,7 +213,7 @@ process_long_option (int argc, char **argv, const char *optstring,
 
   for (nameend = d->__nextchar; *nameend && *nameend != '='; nameend++)
     /* Do nothing.  */ ;
-  namelen = nameend - d->__nextchar;
+  namelen = (size_t)(nameend - d->__nextchar);
 
   /* First look for an exact match, counting the options as a side
      effect.  */
@@ -260,7 +260,7 @@ process_long_option (int argc, char **argv, const char *optstring,
 		      {
 			if (__libc_use_alloca (n_options))
 			  ambig_set = alloca (n_options);
-			else if ((ambig_set = malloc (n_options)) == NULL)
+			else if ((ambig_set = malloc ((size_t)n_options)) == NULL)
 			  /* Fall back to simpler error message.  */
 			  ambig_fallback = 1;
 			else
@@ -268,7 +268,7 @@ process_long_option (int argc, char **argv, const char *optstring,
 
 			if (ambig_set)
 			  {
-			    memset (ambig_set, 0, n_options);
+			    memset (ambig_set, 0, (size_t)n_options);
 			    ambig_set[indfound] = 1;
 			  }
 		      }

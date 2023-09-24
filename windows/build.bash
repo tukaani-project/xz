@@ -125,7 +125,7 @@ txtcp()
 	shift 2
 	for SRCFILE; do
 		DESTFILE="$DESTDIR/${SRCFILE##*/}$SUFFIX"
-		echo "Converting \`$SRCFILE' -> \`$DESTFILE'"
+		echo "Converting '$SRCFILE' -> '$DESTFILE'"
 		u2d < "$SRCFILE" > "$DESTFILE"
 	done
 }

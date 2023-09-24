@@ -310,7 +310,7 @@ case $enable_microlzma in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-microlzma accepts only `yes' or `no'.])
+		AC_MSG_ERROR([--enable-microlzma accepts only 'yes' or 'no'.])
 		;;
 esac
 AM_CONDITIONAL(COND_MICROLZMA, test "x$enable_microlzma" = xyes)
@@ -364,7 +364,7 @@ case $enable_assembler in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-assembler accepts only `yes', `no', or `x86' (32-bit).])
+		AC_MSG_ERROR([--enable-assembler accepts only 'yes', 'no', or 'x86' (32-bit).])
 		;;
 esac
 AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
@@ -393,7 +393,7 @@ if test "x$enable_small" = xyes; then
 	AC_DEFINE([HAVE_SMALL], [1], [Define to 1 if optimizing for size.])
 elif test "x$enable_small" != xno; then
 	AC_MSG_RESULT([])
-	AC_MSG_ERROR([--enable-small accepts only `yes' or `no'])
+	AC_MSG_ERROR([--enable-small accepts only 'yes' or 'no'])
 fi
 AC_MSG_RESULT([$enable_small])
 AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
@@ -405,8 +405,8 @@ AM_CONDITIONAL(COND_SMALL, test "x$enable_small" = xyes)
 
 AC_MSG_CHECKING([if threading support is wanted])
 AC_ARG_ENABLE([threads], AS_HELP_STRING([--enable-threads=METHOD],
-		[Supported METHODS are `yes', `no', `posix', `win95', and
-		`vista'. The default is `yes'. Using `no' together with
+		[Supported METHODS are 'yes', 'no', 'posix', 'win95', and
+		'vista'. The default is 'yes'. Using 'no' together with
 		--enable-small makes liblzma thread unsafe.]),
 	[], [enable_threads=yes])
 
@@ -433,7 +433,7 @@ case $enable_threads in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-threads only accepts `yes', `no', `posix', `win95', or `vista'])
+		AC_MSG_ERROR([--enable-threads only accepts 'yes', 'no', 'posix', 'win95', or 'vista'])
 		;;
 esac
 
@@ -519,8 +519,8 @@ AM_CONDITIONAL([COND_DOC], [test x$enable_doc != xno])
 AC_MSG_CHECKING([if sandboxing should be used])
 AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
 		[Sandboxing METHOD can be
-		`auto', `no', `capsicum', or `pledge'.
-		The default is `auto' which enables sandboxing if
+		'auto', 'no', 'capsicum', or 'pledge'.
+		The default is 'auto' which enables sandboxing if
 		a supported sandboxing method is found.])],
 	[], [enable_sandbox=auto])
 case $enable_sandbox in
@@ -532,7 +532,7 @@ case $enable_sandbox in
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-sandbox only accepts `auto', `no', `capsicum', or `pledge'.])
+		AC_MSG_ERROR([--enable-sandbox only accepts 'auto', 'no', 'capsicum', or 'pledge'.])
 		;;
 esac
 

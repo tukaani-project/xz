@@ -47,7 +47,7 @@ AC_DEFUN([gl_GETOPT_CHECK_HEADERS],
   dnl the next version of POSIX.  We don't use that feature, so this
   dnl is not a problem for us. Thus, the respective test was removed here.
 
-  dnl Checks for getopt handling `-' as a leading character in an option
+  dnl Checks for getopt handling '-' as a leading character in an option
   dnl string were removed, since we also don't use that feature.
 
 ])

@@ -115,14 +115,14 @@
 /* Define to 1 if you have the <sys/time.h> header file. */
 #define HAVE_SYS_TIME_H 1
 
-/* Define to 1 if you have the `utimes' function. */
+/* Define to 1 if you have the 'utimes' function. */
 #define HAVE_UTIMES 1
 
 /* Define to 1 or 0, depending whether the compiler supports simple visibility
    declarations. */
 #define HAVE_VISIBILITY 0
 
-/* Define to 1 if the system has the type `_Bool'. */
+/* Define to 1 if the system has the type '_Bool'. */
 #define HAVE__BOOL 1
 
 /* Define to 1 if the GNU C extension __builtin_assume_aligned is supported.
@@ -145,7 +145,7 @@
 /* Define to the home page for this package. */
 #define PACKAGE_URL "https://tukaani.org/xz/"
 
-/* The size of `size_t', as computed by sizeof. */
+/* The size of 'size_t', as computed by sizeof. */
 #define SIZEOF_SIZE_T 4
 
 /* Define to 1 if the system supports fast unaligned access to 16-bit and

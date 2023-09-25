@@ -1040,7 +1040,6 @@ if(NOT HAVE_GETOPT_LONG)
         lib/getopt-pfx-ext.h
         "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
     )
-
 endif()
 
 

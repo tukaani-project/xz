@@ -1293,7 +1293,6 @@ if(BUILD_TESTING)
             src/common
             src/liblzma/api
             src/liblzma
-            lib
         )
 
         target_link_libraries("${TEST}" PRIVATE liblzma)

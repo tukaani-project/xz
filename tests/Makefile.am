@@ -26,14 +26,9 @@ EXTRA_DIST = \
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/liblzma/api \
-	-I$(top_srcdir)/src/liblzma \
-	-I$(top_builddir)/lib
+	-I$(top_srcdir)/src/liblzma
 
 LDADD = $(top_builddir)/src/liblzma/liblzma.la
-
-if COND_GNULIB
-LDADD += $(top_builddir)/lib/libgnu.a
-endif
 
 LDADD += $(LTLIBINTL)
 

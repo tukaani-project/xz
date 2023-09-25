@@ -1002,6 +1002,10 @@ target_sources(libgnu PRIVATE lib/getopt.in.h)
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 target_include_directories(libgnu PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
+# Include /lib from the source directory. It does no harm even if none of
+# the Gnulib replacements are used.
+target_include_directories(libgnu PUBLIC lib)
+
 # The command line tools need getopt_long in order to parse arguments. If
 # the system does not have a getopt_long implementation we can use the one
 # from Gnulib instead.
@@ -1036,6 +1040,7 @@ if(NOT HAVE_GETOPT_LONG)
         lib/getopt-pfx-ext.h
         "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
     )
+
 endif()
 
 

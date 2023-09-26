@@ -642,6 +642,32 @@ AM_PROG_CC_C_O
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
 
+# If using GCC or compatible compiler, verify that CFLAGS doesn't contain
+# something that makes -Werror unhappy. It's important to check this after
+# the above check for system extensions. It adds macros that can trigger,
+# for example, -Wunused-macros.
+if test "$GCC" = yes && test "x$SKIP_WERROR_CHECK" != xyes ; then
+	AC_MSG_CHECKING([if the -Werror option is usable])
+	OLD_CFLAGS=$CFLAGS
+	CFLAGS="$CFLAGS -Werror"
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[extern int foo; int foo;]])], [
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+		AC_MSG_ERROR([
+    CFLAGS contains something that makes -Werror complain (see config.log).
+    This would break certain checks in 'configure'. It is strongly
+    recommended to modify CFLAGS to fix this. If you want to use noisy
+    warning options, for example, -Weverything, it is still possible to
+    add them later when running 'make': make CFLAGS+=-Weverything
+
+    In case you really want to continue with the current CFLAGS, pass
+    'SKIP_WERROR_CHECK=yes' as an argument to 'configure'.
+		])
+	])
+	CFLAGS=$OLD_CFLAGS
+fi
+
 AS_CASE([$enable_threads],
 	[posix], [
 		echo

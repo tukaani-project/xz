@@ -882,6 +882,14 @@ if test "x$enable_ifunc" = xyes ; then
 		static void (*resolve_func (void)) (void) { return func; }
 		void func_ifunc (void)
 				__attribute__((__ifunc__("resolve_func")));
+		/*
+		 * 'clang -Wall' incorrectly warns that resolve_func is
+		 * unused (-Wunused-function). Correct assembly output is
+		 * still produced. This problem exists at least in Clang
+		 * versions 4 to 17. The following silences the bogus warning:
+		 */
+		void make_clang_quiet(void);
+		void make_clang_quiet(void) { resolve_func()(); }
 	]])], [
 		AC_DEFINE([HAVE_FUNC_ATTRIBUTE_IFUNC], [1],
 			[Define to 1 if __attribute__((__ifunc__()))

@@ -790,6 +790,14 @@ if(ALLOW_ATTR_IFUNC)
             void func_ifunc(void)
                     __attribute__((__ifunc__(\"resolve_func\")));
             int main(void) { return 0; }
+            /*
+             * 'clang -Wall' incorrectly warns that resolve_func is
+             * unused (-Wunused-function). Correct assembly output is
+             * still produced. This problem exists at least in Clang
+             * versions 4 to 17. The following silences the bogus warning:
+             */
+            void make_clang_quiet(void);
+            void make_clang_quiet(void) { resolve_func()(); }
         "
         HAVE_FUNC_ATTRIBUTE_IFUNC)
     cmake_pop_check_state()

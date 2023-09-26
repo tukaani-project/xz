@@ -834,15 +834,14 @@ AC_C_BIGENDIAN
 # Use -Werror because some compilers accept unknown attributes and just
 # give a warning. If it works this should give no warnings, even
 # clang -Weverything should be fine.
-# dnl This doesn't need AC_LANG_SOURCE, minimal code is enough.
 AC_MSG_CHECKING([if __attribute__((__constructor__)) can be used])
 have_func_attribute_constructor=no
 OLD_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Werror"
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 	__attribute__((__constructor__))
 	static void my_constructor_func(void) { return; }
-], [
+]])], [
 	AC_DEFINE([HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR], [1],
 		[Define to 1 if __attribute__((__constructor__))
 		is supported for functions.])

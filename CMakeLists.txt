@@ -9,7 +9,6 @@
 #
 # On some platforms this builds also xz and xzdec, but these are
 # highly experimental and meant for testing only:
-#   - No large file support on those 32-bit platforms that need it
 #   - No translations
 #
 # Other missing things:
@@ -51,6 +50,7 @@ include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
+include(cmake/tuklib_large_file_support.cmake)
 include(cmake/tuklib_integer.cmake)
 include(cmake/tuklib_cpucores.cmake)
 include(cmake/tuklib_physmem.cmake)
@@ -149,6 +149,11 @@ add_compile_definitions(
 # _GNU_SOURCE and such definitions. This specific macro is special since
 # it also adds the definitions to CMAKE_REQUIRED_DEFINITIONS.
 tuklib_use_system_extensions(ALL)
+
+# Check for large file support. It's required on some 32-bit platforms and
+# even on 64-bit MinGW-w64 to get 64-bit off_t. This can be forced off on
+# the CMake command line if needed: -DLARGE_FILE_SUPPORT=OFF
+tuklib_large_file_support(ALL)
 
 # This is needed by liblzma and xz.
 tuklib_integer(ALL)

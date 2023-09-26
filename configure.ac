@@ -926,13 +926,6 @@ AC_C_BIGENDIAN
 # __attribute__((__constructor__)) can be used for one-time initializations.
 # Use -Werror because some compilers accept unknown attributes and just
 # give a warning.
-#
-# FIXME? Unfortunately -Werror can cause trouble if CFLAGS contains options
-# that produce warnings for unrelated reasons. For example, GCC and Clang
-# support -Wunused-macros which will warn about "#define _GNU_SOURCE 1"
-# which will be among the #defines that Autoconf inserts to the beginning of
-# the test program. There seems to be no nice way to prevent Autoconf from
-# inserting the any defines to the test program.
 AC_MSG_CHECKING([if __attribute__((__constructor__)) can be used])
 have_func_attribute_constructor=no
 OLD_CFLAGS="$CFLAGS"

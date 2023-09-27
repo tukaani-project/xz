@@ -89,19 +89,21 @@ set(CMAKE_MACOSX_BUNDLE OFF)
 # "syntax error" from windres. Using --use-temp-file prevents windres
 # from using popen() and this seems to fix the problem.
 #
-# llvm-windres claims to be compatible with GNU windres but with that
-# the \x20 results in "XZx20Utils" in the compiled binary. (At the
-# same time it works correctly with clang (the C compiler).) The option
-# --use-temp-file makes no difference.
+# llvm-windres from Clang/LLVM 16.0.6 and older: The \x20 results
+# in "XZx20Utils" in the compiled binary. The option --use-temp-file
+# makes no difference.
 #
-# CMake 3.25 doesn't have CMAKE_RC_COMPILER_ID so we rely on
-# CMAKE_C_COMPILER_ID. If Clang is used together with GNU windres
-# then it will fail, but this way the risk of a bad string in
-# the binary should be fairly low.
-if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    # Use workarounds with GNU windres. The \x20 in PACKAGE_NAME works
-    # with gcc too so we don't need to worry how to pass different flags
-    # to windres and gcc.
+# llvm-windres 17.0.0 and later: It emulates GNU windres more accurately, so
+# the workarounds used with GNU windres must be used with llvm-windres too.
+#
+# CMake 3.27 doesn't have CMAKE_RC_COMPILER_ID so we rely on
+# CMAKE_C_COMPILER_ID.
+if((MINGW OR CYGWIN OR MSYS) AND (
+        NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "17"))
+    # Use workarounds with GNU windres and llvm-windres >= 17.0.0. The \x20
+    # in PACKAGE_NAME works with gcc and clang too so we don't need to worry
+    # how to pass different flags to windres and the C compiler.
     string(APPEND CMAKE_RC_FLAGS " --use-temp-file")
     set(PACKAGE_NAME "XZ\\x20Utils")
 else()

@@ -889,6 +889,26 @@ if(WIN32)
 
         # Export the public API symbols with __declspec(dllexport).
         target_compile_definitions(liblzma PRIVATE DLL_EXPORT)
+
+        if(NOT MSVC)
+            # Create a DEF file. The linker puts the ordinal numbers there
+            # too so the output from the linker isn't our final file.
+            target_link_options(liblzma PRIVATE
+                                "-Wl,--output-def,liblzma.def.in")
+
+            # Remove the ordinal numbers from the DEF file so that
+            # no one will create an import library that links by ordinal
+            # instead of by name. We don't maintain a DEF file so the
+            # ordinal numbers aren't stable.
+            add_custom_command(TARGET liblzma POST_BUILD
+                COMMAND "${CMAKE_COMMAND}"
+                    -DINPUT_FILE=liblzma.def.in
+                    -DOUTPUT_FILE=liblzma.def
+                    -P
+                    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/remove-ordinals.cmake"
+                BYPRODUCTS "liblzma.def"
+                VERBATIM)
+        endif()
     else()
         # Disable __declspec(dllimport) when linking against static liblzma.
         target_compile_definitions(liblzma INTERFACE LZMA_API_STATIC)

@@ -59,8 +59,12 @@ include(cmake/tuklib_physmem.cmake)
 include(cmake/tuklib_progname.cmake)
 include(cmake/tuklib_mbstr.cmake)
 
-# Get the package version from version.h into XZ_VERSION variable.
-file(READ src/liblzma/api/lzma/version.h XZ_VERSION)
+set(PACKAGE_NAME "XZ Utils")
+set(PACKAGE_BUGREPORT "xz@tukaani.org")
+set(PACKAGE_URL "https://tukaani.org/xz/")
+
+# Get the package version from version.h into PACKAGE_VERSION variable.
+file(READ src/liblzma/api/lzma/version.h PACKAGE_VERSION)
 string(REGEX REPLACE
 "^.*\n\
 #define LZMA_VERSION_MAJOR ([0-9]+)\n\
@@ -69,10 +73,10 @@ string(REGEX REPLACE
 .*\
 #define LZMA_VERSION_PATCH ([0-9]+)\n\
 .*$"
-       "\\1.\\2.\\3" XZ_VERSION "${XZ_VERSION}")
+       "\\1.\\2.\\3" PACKAGE_VERSION "${PACKAGE_VERSION}")
 
 # Among other things, this gives us variables xz_VERSION and xz_VERSION_MAJOR.
-project(xz VERSION "${XZ_VERSION}" LANGUAGES C)
+project(xz VERSION "${PACKAGE_VERSION}" LANGUAGES C)
 
 # We need a compiler that supports enough C99 or newer (variable-length arrays
 # aren't needed, those are optional in C17). Setting CMAKE_C_STANDARD here
@@ -107,22 +111,22 @@ if((MINGW OR CYGWIN OR MSYS) AND (
         NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "17"))
     # Use workarounds with GNU windres and llvm-windres >= 17.0.0. The \x20
-    # in PACKAGE_NAME works with gcc and clang too so we don't need to worry
-    # how to pass different flags to windres and the C compiler.
+    # in PACKAGE_NAME_DEFINITION works with gcc and clang too so we don't need
+    # to worry how to pass different flags to windres and the C compiler.
     string(APPEND CMAKE_RC_FLAGS " --use-temp-file")
-    set(PACKAGE_NAME "XZ\\x20Utils")
+    string(REPLACE " " "\\x20" PACKAGE_NAME_DEFINITION "${PACKAGE_NAME}")
 else()
     # Elsewhere a space is safe. This also keeps things compatible with
     # EBCDIC in case CMake-based build is ever done on such a system.
-    set(PACKAGE_NAME "XZ Utils")
+    set(PACKAGE_NAME_DEFINITION "${PACKAGE_NAME}")
 endif()
 
 # Definitions common to all targets:
 add_compile_definitions(
     # Package info:
-    PACKAGE_NAME="${PACKAGE_NAME}"
-    PACKAGE_BUGREPORT="xz@tukaani.org"
-    PACKAGE_URL="https://tukaani.org/xz/"
+    PACKAGE_NAME="${PACKAGE_NAME_DEFINITION}"
+    PACKAGE_BUGREPORT="${PACKAGE_BUGREPORT}"
+    PACKAGE_URL="${PACKAGE_URL}"
 
     # Standard headers and types are available:
     HAVE_STDBOOL_H

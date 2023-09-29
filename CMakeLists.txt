@@ -113,6 +113,7 @@ if((MINGW OR CYGWIN OR MSYS) AND (
     # Use workarounds with GNU windres and llvm-windres >= 17.0.0. The \x20
     # in PACKAGE_NAME_DEFINITION works with gcc and clang too so we don't need
     # to worry how to pass different flags to windres and the C compiler.
+    # Keep the original PACKAGE_NAME intact for generation of liblzma.pc.
     string(APPEND CMAKE_RC_FLAGS " --use-temp-file")
     string(REPLACE " " "\\x20" PACKAGE_NAME_DEFINITION "${PACKAGE_NAME}")
 else()
@@ -154,6 +155,9 @@ tuklib_use_system_extensions(ALL)
 # This is needed by liblzma and xz.
 tuklib_integer(ALL)
 
+# This is used for liblzma.pc generation to add -lrt if needed.
+set(LIBS)
+
 # Check for clock_gettime(). Do this before checking for threading so
 # that we know there if CLOCK_MONOTONIC is available.
 if(NOT WIN32)
@@ -170,6 +174,7 @@ if(NOT WIN32)
         # CMAKE_REQUIRED_LIBRARIES for further tests too.
         if(HAVE_CLOCK_GETTIME_LIBRT)
             link_libraries(rt)
+            set(LIBS "-lrt") # For liblzma.pc
         else()
             list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
         endif()
@@ -968,6 +973,16 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
 # Set CMAKE_INSTALL_LIBDIR and friends.
 include(GNUInstallDirs)
 
+# Create liblzma.pc.
+set(prefix "${CMAKE_INSTALL_PREFIX}")
+set(exec_prefix "${CMAKE_INSTALL_PREFIX}")
+set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
+set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+set(PTHREAD_CFLAGS "${CMAKE_THREAD_LIBS_INIT}")
+configure_file(src/liblzma/liblzma.pc.in liblzma.pc
+               @ONLY
+               NEWLINE_STYLE LF)
+
 # Install the library binary. The INCLUDES specifies the include path that
 # is exported for other projects to use but it doesn't install any files.
 install(TARGETS liblzma EXPORT liblzmaTargets
@@ -1002,6 +1017,12 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config-version.cmake"
         DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
+
+if(NOT MSVC)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma.pc"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+            COMPONENT liblzma_Development)
+endif()
 
 
 #############################################################################

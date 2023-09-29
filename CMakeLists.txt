@@ -1317,7 +1317,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         # even on Windows the symlink can still be executed without
         # the .exe extension.
         foreach(LINK IN LISTS XZ_LINKS)
-            add_custom_target("${LINK}" ALL
+            add_custom_target("create_${LINK}" ALL
                 "${CMAKE_COMMAND}" -E create_symlink
                     "$<TARGET_FILE_NAME:xz>" "${LINK}"
                 BYPRODUCTS "${LINK}"
@@ -1330,7 +1330,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
             # created broken. The symlinks will not be valid until install
             # so they cannot be created on these system environments.
             if(ALLOW_BROKEN_SYMLINKS)
-                add_custom_target("${LINK}.1" ALL
+                add_custom_target("create_${LINK}.1" ALL
                     "${CMAKE_COMMAND}" -E create_symlink "xz.1" "${LINK}.1"
                     BYPRODUCTS "${LINK}.1"
                     VERBATIM)
@@ -1342,7 +1342,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
                 # cannot be made. This ensures parallel builds do not fail
                 # since it will enforce the order of creating xz first, then
                 # the symlinks.
-                add_dependencies("${LINK}" xz)
+                add_dependencies("create_${LINK}" xz)
             endif()
         endforeach()
     endif()

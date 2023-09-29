@@ -18,9 +18,11 @@ jobs:
       matrix:
         # Test different environments since the code may change between
         # them and we want to ensure that we support all potential users.
-        # clang64 currently fails due to a warning, so support will be
-        # added later.
-        msys2_env: [mingw64, mingw32, ucrt64, clang64, msys]
+        # clang64 builds are currently broken when building static libraries
+        # due to a bug in ldd search path:
+        # https://github.com/llvm/llvm-project/issues/67779
+        # TODO - re-enable clang64 when this is resolved.
+        msys2_env: [mingw64, mingw32, ucrt64, msys]
         build_system: [autotools, cmake]
 
     # Set the shell to be msys2 as a default to avoid setting it for

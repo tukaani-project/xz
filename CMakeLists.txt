@@ -1008,6 +1008,12 @@ add_library(libgnu OBJECT)
 # file. So we give it a header file that results in no output files.
 target_sources(libgnu PRIVATE lib/getopt.in.h)
 
+# The Ninja Generator requires setting the linker language since it cannot
+# guess the programming language of just a header file. Setting this
+# property avoids needing an empty .c file or an non-empty unnecessary .c
+# file.
+set_target_properties(libgnu PROPERTIES LINKER_LANGUAGE C)
+
 # Create /lib directory in the build directory and add it to the include path.
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 target_include_directories(libgnu PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib")

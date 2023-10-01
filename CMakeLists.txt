@@ -895,6 +895,7 @@ set_target_properties(liblzma PROPERTIES
     # It's liblzma.so or liblzma.dll, not libliblzma.so or lzma.dll.
     # Avoid the name lzma.dll because it would conflict with LZMA SDK.
     PREFIX ""
+    IMPORT_PREFIX ""
 )
 
 # Create liblzma-config-version.cmake.

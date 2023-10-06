@@ -102,9 +102,9 @@ set(CMAKE_MACOSX_BUNDLE OFF)
 #
 # CMake 3.27 doesn't have CMAKE_RC_COMPILER_ID so we rely on
 # CMAKE_C_COMPILER_ID.
-if(WIN32 AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR (
-              CMAKE_C_COMPILER_ID STREQUAL "Clang" AND
-              CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "17")))
+if((MINGW OR CYGWIN OR MSYS) AND (
+        NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "17"))
     # Use workarounds with GNU windres and llvm-windres >= 17.0.0. The \x20
     # in PACKAGE_NAME works with gcc and clang too so we don't need to worry
     # how to pass different flags to windres and the C compiler.

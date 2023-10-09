@@ -29,12 +29,8 @@ static bool warn_fchown;
 #	include <utime.h>
 #endif
 
-#ifdef HAVE_CAPSICUM
-#	ifdef HAVE_SYS_CAPSICUM_H
-#		include <sys/capsicum.h>
-#	else
-#		include <sys/capability.h>
-#	endif
+#ifdef HAVE_CAP_RIGHTS_LIMIT
+#	include <sys/capsicum.h>
 #endif
 
 #include "tuklib_open_stdxxx.h"
@@ -214,8 +210,8 @@ io_sandbox_enter(int src_fd)
 	// characters have been loaded. This is needed at least with glibc.
 	tuklib_mbstr_width(dummy_str, NULL);
 
-#ifdef HAVE_CAPSICUM
-	// Capsicum needs FreeBSD 10.0 or later.
+#ifdef HAVE_CAP_RIGHTS_LIMIT
+	// Capsicum needs FreeBSD 10.2 or later.
 	cap_rights_t rights;
 
 	if (cap_enter())
@@ -266,7 +262,7 @@ io_sandbox_enter(int src_fd)
 	return;
 
 error:
-#ifdef HAVE_CAPSICUM
+#ifdef HAVE_CAP_RIGHTS_LIMIT
 	// If a kernel is configured without capability mode support or
 	// used in an emulator that does not implement the capability
 	// system calls, then the Capsicum system calls will fail and set

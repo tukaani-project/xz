@@ -1051,12 +1051,12 @@ AM_CONDITIONAL([COND_CRC_CLMUL], [test "x$enable_clmul_crc" = xyes])
 # Check for sandbox support. If one is found, set enable_sandbox=found.
 AS_CASE([$enable_sandbox],
 	[auto | capsicum], [
-		AX_CHECK_CAPSICUM([enable_sandbox=found], [:])
+		AC_CHECK_FUNCS([cap_rights_limit], [enable_sandbox=found])
 	]
 )
 AS_CASE([$enable_sandbox],
 	[auto | pledge], [
-		AC_CHECK_FUNCS([pledge], [enable_sandbox=found ; break])
+		AC_CHECK_FUNCS([pledge], [enable_sandbox=found])
 	]
 )
 

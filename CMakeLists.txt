@@ -331,32 +331,33 @@ endforeach()
 # Threading #
 #############
 
-# Supported thread methods:
+# Supported threading methods:
 # ON    - autodetect the best threading method. The autodetection will
 #         prefer Windows threading (win95 or vista) over posix if both are
 #         available. vista threads will be used over win95 unless it is a
 #         32-bit build.
 # OFF   - Disable threading.
-# posix - Use posix threading, or throw an error if not available.
+# posix - Use posix threading (pthreads), or throw an error if not available.
 # win95 - Use Windows win95 threading, or throw an error if not available.
 # vista - Use Windows vista threading, or throw an error if not available.
-set(SUPPORTED_THREAD_METHODS ON OFF posix win95 vista)
+set(SUPPORTED_THREADING_METHODS ON OFF posix win95 vista)
 
 set(ENABLE_THREADS ON CACHE STRING
-        "Threading method type to support. Set to 'OFF' to disable threading")
+    "Threading method: Set to 'ON' to autodetect, 'OFF' to disable threading.")
 
 # Create dropdown in CMake GUI since only 1 threading method is possible
 # to select in a build.
 set_property(CACHE ENABLE_THREADS
-        PROPERTY STRINGS "${SUPPORTED_THREAD_METHODS}")
+             PROPERTY STRINGS "${SUPPORTED_THREADING_METHODS}")
 
 # This is a flag variable set when win95 threads are used. We must ensure
 # the combination of enable_small and win95 threads is not used without a
 # compiler supporting attribute __constructor__.
 set(USE_WIN95_THREADS OFF)
 
-if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREAD_METHODS)
-    message(FATAL_ERROR "'${ENABLE_THREADS}' is not a supported thread type")
+if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREADING_METHODS)
+    message(FATAL_ERROR "'${ENABLE_THREADS}' is not a supported "
+                        "threading method")
 endif()
 
 if(ENABLE_THREADS)
@@ -370,7 +371,7 @@ if(ENABLE_THREADS)
     if(CMAKE_USE_WIN32_THREADS_INIT AND NOT ENABLE_THREADS STREQUAL "posix")
         if(ENABLE_THREADS STREQUAL "win95"
                 OR (ENABLE_THREADS STREQUAL "ON"
-                AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+                    AND CMAKE_SIZEOF_VOID_P EQUAL 4))
             # Use Windows 95 (and thus XP) compatible threads.
             # This avoids use of features that were added in
             # Windows Vista. This is used for 32-bit x86 builds for
@@ -403,7 +404,7 @@ if(ENABLE_THREADS)
             endif()
         else()
             message(SEND_ERROR
-                    "Windows thread method requested, but a compatible "
+                    "Windows threading method was requested but a compatible "
                     "library could not be found")
         endif()
     else()

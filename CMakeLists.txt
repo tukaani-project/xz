@@ -272,7 +272,7 @@ set(ADDITIONAL_CHECK_TYPES "${ADDITIONAL_SUPPORTED_CHECKS}" CACHE STRING
 
 foreach(CHECK IN LISTS ADDITIONAL_CHECK_TYPES)
     if(NOT CHECK IN_LIST ADDITIONAL_SUPPORTED_CHECKS)
-        message(SEND_ERROR "'${CHECK}' is not a supported check type")
+        message(FATAL_ERROR "'${CHECK}' is not a supported check type")
     endif()
 endforeach()
 
@@ -322,7 +322,7 @@ foreach(MF IN LISTS MATCH_FINDERS)
         string(TOUPPER "${MF}" MF_UPPER)
         add_compile_definitions("HAVE_MF_${MF_UPPER}")
     else()
-        message(SEND_ERROR "'${MF}' is not a supported match finder")
+        message(FATAL_ERROR "'${MF}' is not a supported match finder")
     endif()
 endforeach()
 
@@ -356,7 +356,7 @@ set_property(CACHE ENABLE_THREADS
 set(USE_WIN95_THREADS OFF)
 
 if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREAD_METHODS)
-    message(SEND_ERROR "'${ENABLE_THREADS}' is not a supported thread type")
+    message(FATAL_ERROR "'${ENABLE_THREADS}' is not a supported thread type")
 endif()
 
 if(ENABLE_THREADS)
@@ -448,13 +448,13 @@ set(ENCODERS "${SUPPORTED_FILTERS}" CACHE STRING "Encoders to support")
 
 # If LZMA2 is enabled, then LZMA1 must also be enabled.
 if(NOT "lzma1" IN_LIST ENCODERS AND "lzma2" IN_LIST ENCODERS)
-    message(SEND_ERROR "LZMA2 encoder requires that LZMA1 is also enabled")
+    message(FATAL_ERROR "LZMA2 encoder requires that LZMA1 is also enabled")
 endif()
 
 # If LZMA1 is enabled, then at least one match finder must be enabled.
 if(MATCH_FINDERS STREQUAL "" AND "lzma1" IN_LIST ENCODERS)
-    message(SEND_ERROR "At least 1 match finder is required for an "
-                       "LZ-based encoder")
+    message(FATAL_ERROR "At least 1 match finder is required for an "
+                        "LZ-based encoder")
 endif()
 
 set(HAVE_DELTA_CODER OFF)
@@ -472,7 +472,7 @@ foreach(ENCODER IN LISTS ENCODERS)
         string(TOUPPER "${ENCODER}" ENCODER_UPPER)
         add_compile_definitions("HAVE_ENCODER_${ENCODER_UPPER}")
     else()
-        message(SEND_ERROR "'${ENCODER}' is not a supported encoder")
+        message(FATAL_ERROR "'${ENCODER}' is not a supported encoder")
     endif()
 endforeach()
 
@@ -574,7 +574,7 @@ foreach(DECODER IN LISTS DECODERS)
         string(TOUPPER "${DECODER}" DECODER_UPPER)
         add_compile_definitions("HAVE_DECODER_${DECODER_UPPER}")
     else()
-        message(SEND_ERROR "'${DECODER}' is not a supported decoder")
+        message(FATAL_ERROR "'${DECODER}' is not a supported decoder")
     endif()
 endforeach()
 
@@ -689,8 +689,8 @@ option(MICROLZMA_DECODER
 
 if(MICROLZMA_ENCODER)
     if(NOT "lzma1" IN_LIST ENCODERS)
-        message(SEND_ERROR "The LZMA1 encoder is required to support the "
-                           "MicroLZMA encoder")
+        message(FATAL_ERROR "The LZMA1 encoder is required to support the "
+                            "MicroLZMA encoder")
     endif()
 
     target_sources(liblzma PRIVATE src/liblzma/common/microlzma_encoder.c)
@@ -698,8 +698,8 @@ endif()
 
 if(MICROLZMA_DECODER)
     if(NOT "lzma1" IN_LIST DECODERS)
-        message(SEND_ERROR "The LZMA1 decoder is required to support the "
-                           "MicroLZMA decoder")
+        message(FATAL_ERROR "The LZMA1 decoder is required to support the "
+                            "MicroLZMA decoder")
     endif()
 
     target_sources(liblzma PRIVATE src/liblzma/common/microlzma_decoder.c)
@@ -715,8 +715,8 @@ option(LZIP_DECODER "Support lzip decoder" ON)
 if(LZIP_DECODER)
     # If lzip decoder support is requested, make sure LZMA1 decoder is enabled.
     if(NOT "lzma1" IN_LIST DECODERS)
-        message(SEND_ERROR "The LZMA1 decoder is required to support the "
-                           "lzip decoder")
+        message(FATAL_ERROR "The LZMA1 decoder is required to support the "
+                            "lzip decoder")
     endif()
 
     add_compile_definitions(HAVE_LZIP_DECODER)

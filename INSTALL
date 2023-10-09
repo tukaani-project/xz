@@ -541,13 +541,18 @@ XZ Utils Installation
                         no      Disable sandboxing support.
 
                         capsicum
-                                Use Capsicum (FreeBSD >= 10) for
+                                Use Capsicum (FreeBSD >= 10.2) for
                                 sandboxing. If no Capsicum support
                                 is found, configure will give an error.
 
                         pledge  Use pledge(2) (OpenBSD >= 5.9) for
                                 sandboxing. If pledge(2) isn't found,
                                 configure will give an error.
+
+                        landlock
+                                Use Landlock (Linux >= 5.13) for
+                                sandboxing. If no Landlock support
+                                is found, configure will give an error.
 
     --enable-symbol-versions
                 Use symbol versioning for liblzma. This is enabled by

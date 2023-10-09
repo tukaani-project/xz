@@ -10,7 +10,6 @@
 # On some platforms this builds also xz and xzdec, but these are
 # highly experimental and meant for testing only:
 #   - No large file support on those 32-bit platforms that need it
-#   - No sandboxing support
 #   - No translations
 #
 # Other missing things:
@@ -1239,6 +1238,55 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
                 endif()
             endif()
         endif()
+    endif()
+
+    # Sandboxing:
+    # ON        Use sandboxing if a supported method is available in the OS.
+    # OFF       Disable sandboxing.
+    # capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
+    # pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
+    set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge)
+
+    set(ENABLE_SANDBOX ON CACHE STRING "Sandboxing method to use in 'xz'")
+
+    set_property(CACHE ENABLE_SANDBOX
+                 PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
+
+    if(NOT ENABLE_SANDBOX IN_LIST SUPPORTED_SANDBOX_METHODS)
+        message(FATAL_ERROR "'${ENABLE_SANDBOX}' is not a supported "
+                            "sandboxing method")
+    endif()
+
+    # When autodetecting, the search order is fixed and we must not find
+    # more than one method.
+    if(ENABLE_SANDBOX STREQUAL "OFF")
+        set(SANDBOX_FOUND ON)
+    else()
+        set(SANDBOX_FOUND OFF)
+    endif()
+
+    # Sandboxing: Capsicum
+    if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^capsicum$")
+        check_symbol_exists(cap_rights_limit sys/capsicum.h
+                            HAVE_CAP_RIGHTS_LIMIT)
+        if(HAVE_CAP_RIGHTS_LIMIT)
+            target_compile_definitions(xz PRIVATE HAVE_CAP_RIGHTS_LIMIT)
+            set(SANDBOX_FOUND ON)
+        endif()
+    endif()
+
+    # Sandboxing: pledge(2)
+    if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^pledge$")
+        check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
+        if(HAVE_PLEDGE)
+            target_compile_definitions(xz PRIVATE HAVE_PLEDGE)
+            set(SANDBOX_FOUND ON)
+        endif()
+    endif()
+
+    if(NOT SANDBOX_FOUND AND NOT ENABLE_SANDBOX MATCHES "^ON$|^OFF$")
+        message(SEND_ERROR "ENABLE_SANDBOX=${ENABLE_SANDBOX} was used but "
+                           "support for the sandboxing method wasn't found.")
     endif()
 
     install(TARGETS xz

@@ -33,6 +33,11 @@ static bool warn_fchown;
 #	include <sys/capsicum.h>
 #endif
 
+#ifdef HAVE_LINUX_LANDLOCK_H
+#	include <linux/landlock.h>
+#	include <sys/syscall.h>
+#endif
+
 #include "tuklib_open_stdxxx.h"
 
 #ifdef _MSC_VER
@@ -250,6 +255,59 @@ io_sandbox_enter(int src_fd)
 	// sandbox more strict.
 	if (pledge("stdio", ""))
 		goto error;
+
+	(void)src_fd;
+
+#elif defined(HAVE_LINUX_LANDLOCK_H)
+	int landlock_abi = syscall(SYS_landlock_create_ruleset,
+			(void *)NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
+
+	if (landlock_abi > 0) {
+		// We support ABI versions 1-3.
+		if (landlock_abi > 3)
+			landlock_abi = 3;
+
+		// We want to set all supported flags in handled_access_fs.
+		// This way the ruleset will initially forbid access to all
+		// actions that the available Landlock ABI version supports.
+		// Exceptions can be added using landlock_add_rule(2) to
+		// allow certain actions on certain files or directories.
+		//
+		// The same flag values are used on all archs. ABI v2 and v3
+		// both add one new flag.
+		//
+		// First in ABI v1: LANDLOCK_ACCESS_FS_EXECUTE = 1ULL << 0
+		// Last in ABI v1: LANDLOCK_ACCESS_FS_MAKE_SYM = 1ULL << 12
+		// Last in ABI v2: LANDLOCK_ACCESS_FS_REFER = 1ULL << 13
+		// Last in ABI v3: LANDLOCK_ACCESS_FS_TRUNCATE = 1ULL << 14
+		//
+		// This makes it simple to set the mask based on the ABI
+		// version and we don't need to care which flags are #defined
+		// in the installed <linux/landlock.h>.
+		const struct landlock_ruleset_attr attr = {
+			.handled_access_fs = (1ULL << (12 + landlock_abi)) - 1
+		};
+
+		const int ruleset_fd = syscall(SYS_landlock_create_ruleset,
+				&attr, sizeof(attr), 0U);
+		if (ruleset_fd < 0)
+			goto error;
+
+		// All files we need should have already been openend. Thus,
+		// we don't need to add any rules using landlock_add_rule(2)
+		// before activating the sandbox.
+		//
+		// NOTE: It's possible that the hack at the beginning of this
+		// function isn't be good enough. It tries to get translations
+		// and libc-specific files loaded but if it's not good enough
+		// then perhaps a Landlock rule to allow reading from /usr
+		// and/or the xz installation prefix would be needed.
+		//
+		// prctl(PR_SET_NO_NEW_PRIVS, ...) was already called in
+		// main() so we don't do it here again.
+		if (syscall(SYS_landlock_restrict_self, ruleset_fd, 0U) != 0)
+			goto error;
+	}
 
 	(void)src_fd;
 

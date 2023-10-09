@@ -13,6 +13,13 @@
 #include "private.h"
 #include <ctype.h>
 
+// prctl(PR_SET_NO_NEW_PRIVS, ...) is required with Landlock but it can be
+// activated even when conditions for strict sandboxing aren't met.
+#ifdef HAVE_LINUX_LANDLOCK_H
+#	include <sys/prctl.h>
+#endif
+
+
 /// Exit status to use. This can be changed with set_exit_status().
 static enum exit_status_type exit_status = E_SUCCESS;
 
@@ -154,6 +161,18 @@ main(int argc, char **argv)
 		fprintf(stderr, "%s: Failed to enable the sandbox\n", argv[0]);
 		return E_ERROR;
 	}
+#endif
+
+#ifdef HAVE_LINUX_LANDLOCK_H
+	// Prevent the process from gaining new privileges. This must be done
+	// before landlock_restrict_self(2) in file_io.c but since we will
+	// never need new privileges, this call can be done here already.
+	//
+	// This is supported since Linux 3.5. Ignore the return value to
+	// keep compatibility with old kernels. landlock_restrict_self(2)
+	// will fail if the no_new_privs attribute isn't set, thus if prctl()
+	// fails here the error will still be detected when it matters.
+	(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 #endif
 
 #if defined(_WIN32) && !defined(__CYGWIN__)

@@ -519,7 +519,7 @@ AM_CONDITIONAL([COND_DOC], [test x$enable_doc != xno])
 AC_MSG_CHECKING([if sandboxing should be used])
 AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
 		[Sandboxing METHOD can be
-		'auto', 'no', 'capsicum', or 'pledge'.
+		'auto', 'no', 'capsicum', 'pledge', or 'landlock'.
 		The default is 'auto' which enables sandboxing if
 		a supported sandboxing method is found.])],
 	[], [enable_sandbox=auto])
@@ -527,12 +527,12 @@ case $enable_sandbox in
 	auto)
 		AC_MSG_RESULT([maybe (autodetect)])
 		;;
-	no | capsicum | pledge)
+	no | capsicum | pledge | landlock)
 		AC_MSG_RESULT([$enable_sandbox])
 		;;
 	*)
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR([--enable-sandbox only accepts 'auto', 'no', 'capsicum', or 'pledge'.])
+		AC_MSG_ERROR([--enable-sandbox only accepts 'auto', 'no', 'capsicum', 'pledge', or 'landlock'.])
 		;;
 esac
 
@@ -1057,6 +1057,11 @@ AS_CASE([$enable_sandbox],
 AS_CASE([$enable_sandbox],
 	[auto | pledge], [
 		AC_CHECK_FUNCS([pledge], [enable_sandbox=found])
+	]
+)
+AS_CASE([$enable_sandbox],
+	[auto | landlock], [
+		AC_CHECK_HEADERS([linux/landlock.h], [enable_sandbox=found])
 	]
 )
 

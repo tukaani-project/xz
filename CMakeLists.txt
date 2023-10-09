@@ -1246,7 +1246,8 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
     # OFF       Disable sandboxing.
     # capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
     # pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
-    set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge)
+    # landlock  Require Landlock (Linux >= 5.13) and fail if not found.
+    set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge landlock)
 
     set(ENABLE_SANDBOX ON CACHE STRING "Sandboxing method to use in 'xz'")
 
@@ -1281,6 +1282,15 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
         if(HAVE_PLEDGE)
             target_compile_definitions(xz PRIVATE HAVE_PLEDGE)
+            set(SANDBOX_FOUND ON)
+        endif()
+    endif()
+
+    # Sandboxing: Landlock
+    if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^landlock$")
+        check_include_file(linux/landlock.h HAVE_LINUX_LANDLOCK_H)
+        if(HAVE_LINUX_LANDLOCK_H)
+            target_compile_definitions(xz PRIVATE HAVE_LINUX_LANDLOCK_H)
             set(SANDBOX_FOUND ON)
         endif()
     endif()

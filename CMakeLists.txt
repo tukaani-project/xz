@@ -355,6 +355,11 @@ set_property(CACHE ENABLE_THREADS
 # compiler supporting attribute __constructor__.
 set(USE_WIN95_THREADS OFF)
 
+# This is a flag variable set when posix threads (pthreads) are used.
+# It's needed when creating liblzma-config.cmake where dependency on
+# Threads::Threads is only needed with pthreads.
+set(USE_POSIX_THREADS OFF)
+
 if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREADING_METHODS)
     message(FATAL_ERROR "'${ENABLE_THREADS}' is not a supported "
                         "threading method")
@@ -384,11 +389,10 @@ if(ENABLE_THREADS)
         endif()
     elseif(CMAKE_USE_PTHREADS_INIT)
         if(ENABLE_THREADS STREQUAL "posix" OR ENABLE_THREADS STREQUAL "ON")
-            # Overwrite ENABLE_THREADS in case it was set to "ON".
             # The threading library only needs to be explicitly linked
             # for posix threads, so this is needed for creating
             # liblzma-config.cmake later.
-            set(ENABLE_THREADS "posix")
+            set(USE_POSIX_THREADS ON)
 
             target_link_libraries(liblzma Threads::Threads)
             add_compile_definitions(MYTHREAD_POSIX)
@@ -923,7 +927,7 @@ if(NOT TARGET LibLZMA::LibLZMA)
 endif()
 ")
 
-if(ENABLE_THREADS STREQUAL "posix")
+if(USE_POSIX_THREADS)
     set(LZMA_CONFIG_CONTENTS
 "include(CMakeFindDependencyMacro)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)

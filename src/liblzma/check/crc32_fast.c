@@ -17,7 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "check.h"
-#include "crc_macros.h"
+#include "crc_common.h"
 
 
 // If you make any changes, do some benchmarking! Seemingly unrelated

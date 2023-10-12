@@ -77,7 +77,7 @@
 
 #ifdef CRC_GENERIC
 
-#include "crc_macros.h"
+#include "crc_common.h"
 
 
 #ifdef WORDS_BIGENDIAN

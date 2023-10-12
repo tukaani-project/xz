@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       crc_macros.h
+/// \file       crc_common.h
 /// \brief      Some endian-dependent macros for CRC32 and CRC64
 //
 //  Author:     Lasse Collin

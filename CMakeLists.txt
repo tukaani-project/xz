@@ -217,7 +217,7 @@ add_library(liblzma
     src/liblzma/api/lzma/vli.h
     src/liblzma/check/check.c
     src/liblzma/check/check.h
-    src/liblzma/check/crc_macros.h
+    src/liblzma/check/crc_common.h
     src/liblzma/common/block_util.c
     src/liblzma/common/common.c
     src/liblzma/common/common.h

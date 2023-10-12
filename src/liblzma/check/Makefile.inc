@@ -12,7 +12,7 @@ EXTRA_DIST += \
 liblzma_la_SOURCES += \
 	check/check.c \
 	check/check.h \
-	check/crc_macros.h
+	check/crc_common.h
 
 if COND_CHECK_CRC32
 if COND_SMALL

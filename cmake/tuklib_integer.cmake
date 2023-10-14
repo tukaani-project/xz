@@ -59,25 +59,64 @@ function(tuklib_integer TARGET_OR_ALL)
         endif()
     endif()
 
-    # Unaligned access is fast on x86(-64), big endian PowerPC, and usually on
-    # 32/64-bit ARM too. There are others too and ARM could be a false match.
+    # Guess that unaligned access is fast on these archs:
+    #   - 32/64-bit x86 / x86-64
+    #   - 32/64-bit big endian PowerPC
+    #   - 64-bit little endian PowerPC
+    #   - Some 32-bit ARM
+    #   - Some 64-bit ARM64 (AArch64)
+    #   - Some 32/64-bit RISC-V
     #
-    # Guess the default value for the option.
-    # CMake's ability to give info about the target arch seems bad.
-    # The the same arch can have different name depending on the OS.
-    #
-    # FIXME: The regex is based on guessing, not on factual information!
-    #
-    # NOTE: Compared to the Autoconf test, this lacks the GCC/Clang test
-    #       on ARM and always assumes that unaligned is fast on ARM.
+    # CMake doesn't provide a standardized/normalized list of processor arch
+    # names. For example, x86-64 may be "x86_64" (Linux), "AMD64" (Windows),
+    # or even "EM64T" (64-bit WinXP).
     set(FAST_UNALIGNED_GUESS OFF)
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES
-       "[Xx3456]86|^[Xx]64|^[Aa][Mm][Dd]64|^[Aa][Rr][Mm]|^aarch|^powerpc|^ppc")
-        if(NOT WORDS_BIGENDIAN OR
-           NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^powerpc|^ppc")
-           set(FAST_UNALIGNED_GUESS ON)
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" PROCESSOR)
+
+    # There is no ^ in the first regex branch to allow "i" at the beginning
+    # so it can match "i386" to "i786", and "x86_64".
+    if(PROCESSOR MATCHES "[x34567]86|^x64|^amd64|^em64t")
+        set(FAST_UNALIGNED_GUESS ON)
+
+    elseif(PROCESSOR MATCHES "^powerpc|^ppc")
+        if(WORDS_BIGENDIAN OR PROCESSOR MATCHES "64")
+            set(FAST_UNALIGNED_GUESS ON)
+        endif()
+
+    elseif(PROCESSOR MATCHES "^arm|^aarch64|^riscv")
+        # On 32-bit and 64-bit ARM, GCC and Clang
+        # #define __ARM_FEATURE_UNALIGNED if
+        # unaligned access is supported.
+        #
+        # Exception: GCC at least up to 13.2.0
+        # defines it even when using -mstrict-align
+        # so in that case this autodetection goes wrong.
+        # Most of the time -mstrict-align isn't used so it
+        # shouldn't be a common problem in practice. See:
+        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+        #
+        # RISC-V C API Specification says that if
+        # __riscv_misaligned_fast is defined then
+        # unaligned access is known to be fast.
+        #
+        # MSVC is handled as a special case: We assume that
+        # 32/64-bit ARM supports fast unaligned access.
+        # If MSVC gets RISC-V support then this will assume
+        # fast unaligned access on RISC-V too.
+        check_c_source_compiles("
+                #if !defined(__ARM_FEATURE_UNALIGNED) \
+                        && !defined(__riscv_misaligned_fast) \
+                        && !defined(_MSC_VER)
+                compile error
+                #endif
+                int main(void) { return 0; }
+            "
+            TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+        if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+            set(FAST_UNALIGNED_GUESS ON)
         endif()
     endif()
+
     option(TUKLIB_FAST_UNALIGNED_ACCESS
            "Enable if the system supports *fast* unaligned memory access \
 with 16-bit, 32-bit, and 64-bit integers."

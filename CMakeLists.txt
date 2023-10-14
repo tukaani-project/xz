@@ -845,7 +845,11 @@ if(HAVE_IMMINTRIN_H)
             int main(void) { return 0; }
     "
     HAVE_USABLE_CLMUL)
-    tuklib_add_definition_if(liblzma HAVE_USABLE_CLMUL)
+
+    if(HAVE_USABLE_CLMUL)
+        target_sources(liblzma PRIVATE src/liblzma/check/crc_clmul.c)
+        target_compile_definitions(liblzma PRIVATE HAVE_USABLE_CLMUL)
+    endif()
 endif()
 
 # Support -fvisiblity=hidden when building shared liblzma.

@@ -31,12 +31,11 @@
 #include "check.h"
 #include "crc_common.h"
 
+#ifdef CRC_GENERIC
+
 /////////////////////////////////
 // Generic slice-by-four CRC64 //
 /////////////////////////////////
-
-#ifdef CRC_GENERIC
-
 
 #ifdef WORDS_BIGENDIAN
 #	define A1(x) ((x) >> 56)
@@ -93,125 +92,6 @@ crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 }
 #endif
 
-
-/////////////////////
-// x86 CLMUL CRC64 //
-/////////////////////
-
-#ifdef CRC_CLMUL
-
-#include <immintrin.h>
-
-
-/*
-// These functions were used to generate the constants
-// at the top of crc64_clmul().
-static uint64_t
-calc_lo(uint64_t poly)
-{
-	uint64_t a = poly;
-	uint64_t b = 0;
-
-	for (unsigned i = 0; i < 64; ++i) {
-		b = (b >> 1) | (a << 63);
-		a = (a >> 1) ^ (a & 1 ? poly : 0);
-	}
-
-	return b;
-}
-
-static uint64_t
-calc_hi(uint64_t poly, uint64_t a)
-{
-	for (unsigned i = 0; i < 64; ++i)
-		a = (a >> 1) ^ (a & 1 ? poly : 0);
-
-	return a;
-}
-*/
-
-
-// MSVC (VS2015 - VS2022) produces bad 32-bit x86 code from the CLMUL CRC
-// code when optimizations are enabled (release build). According to the bug
-// report, the ebx register is corrupted and the calculated result is wrong.
-// Trying to workaround the problem with "__asm mov ebx, ebx" didn't help.
-// The following pragma works and performance is still good. x86-64 builds
-// aren't affected by this problem.
-//
-// NOTE: Another pragma after the function restores the optimizations.
-// If the #if condition here is updated, the other one must be updated too.
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
-		&& defined(_M_IX86)
-#	pragma optimize("g", off)
-#endif
-
-// EDG-based compilers (Intel's classic compiler and compiler for E2K) can
-// define __GNUC__ but the attribute must not be used with them.
-// The new Clang-based ICX needs the attribute.
-//
-// NOTE: Build systems check for this too, keep them in sync with this.
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
-__attribute__((__target__("ssse3,sse4.1,pclmul")))
-#endif
-static uint64_t
-crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
-{
-	// The prototypes of the intrinsics use signed types while most of
-	// the values are treated as unsigned here. These warnings in this
-	// function have been checked and found to be harmless so silence them.
-#if TUKLIB_GNUC_REQ(4, 6) || defined(__clang__)
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wsign-conversion"
-#	pragma GCC diagnostic ignored "-Wconversion"
-#endif
-
-#ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
-	// The code assumes that there is at least one byte of input.
-	if (size == 0)
-		return crc;
-#endif
-
-	// const uint64_t poly = 0xc96c5795d7870f42; // CRC polynomial
-	const uint64_t p  = 0x92d8af2baf0e1e85; // (poly << 1) | 1
-	const uint64_t mu = 0x9c3e466c172963d5; // (calc_lo(poly) << 1) | 1
-	const uint64_t k2 = 0xdabe95afc7875f40; // calc_hi(poly, 1)
-	const uint64_t k1 = 0xe05dd497ca393ae4; // calc_hi(poly, k2)
-
-	const __m128i vfold8 = _mm_set_epi64x(p, mu);
-	const __m128i vfold16 = _mm_set_epi64x(k2, k1);
-
-	__m128i v0, v1, v2;
-
-#if defined(__i386__) || defined(_M_IX86)
-	crc_simd_body(buf,  size, &v0, &v1, vfold16, _mm_set_epi64x(0, ~crc));
-#else
-	// GCC and Clang would produce good code with _mm_set_epi64x
-	// but MSVC needs _mm_cvtsi64_si128 on x86-64.
-	crc_simd_body(buf,  size, &v0, &v1, vfold16, _mm_cvtsi64_si128(~crc));
-#endif
-
-	v1 = _mm_xor_si128(_mm_clmulepi64_si128(v0, vfold16, 0x10), v1);
-	v0 = _mm_clmulepi64_si128(v1, vfold8, 0x00);
-	v2 = _mm_clmulepi64_si128(v0, vfold8, 0x10);
-	v0 = _mm_xor_si128(_mm_xor_si128(v1, _mm_slli_si128(v0, 8)), v2);
-
-#if defined(__i386__) || defined(_M_IX86)
-	return ~(((uint64_t)(uint32_t)_mm_extract_epi32(v0, 3) << 32) |
-			(uint64_t)(uint32_t)_mm_extract_epi32(v0, 2));
-#else
-	return ~(uint64_t)_mm_extract_epi64(v0, 1);
-#endif
-
-#if TUKLIB_GNUC_REQ(4, 6) || defined(__clang__)
-#	pragma GCC diagnostic pop
-#endif
-}
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
-		&& defined(_M_IX86)
-#	pragma optimize("", on)
-#endif
-#endif
-
 #if defined(CRC_GENERIC) && defined(CRC_CLMUL)
 typedef uint64_t (*crc64_func_type)(
 		const uint8_t *buf, size_t size, uint64_t crc);
@@ -227,7 +107,7 @@ typedef uint64_t (*crc64_func_type)(
 static crc64_func_type
 crc64_resolve(void)
 {
-	return is_clmul_supported() ? &crc64_clmul : &crc64_generic;
+	return lzma_is_clmul_supported() ? &lzma_crc64_clmul : &crc64_generic;
 }
 
 #if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
@@ -322,7 +202,7 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 	//
 	// FIXME: Lookup table isn't currently omitted on 32-bit x86,
 	// see crc64_table.c.
-	return crc64_clmul(buf, size, crc);
+	return lzma_crc64_clmul(buf, size, crc);
 
 #else
 	return crc64_generic(buf, size, crc);

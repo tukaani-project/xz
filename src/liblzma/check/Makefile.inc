@@ -26,6 +26,9 @@ if COND_ASM_X86
 liblzma_la_SOURCES += check/crc32_x86.S
 else
 liblzma_la_SOURCES += check/crc32_fast.c
+if COND_CRC_CLMUL
+liblzma_la_SOURCES += check/crc_clmul.c
+endif
 endif
 endif
 endif

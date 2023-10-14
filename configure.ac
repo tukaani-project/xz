@@ -1035,11 +1035,13 @@ __m128i my_clmul(__m128i a)
 			[Define to 1 if _mm_set_epi64x and
 			_mm_clmulepi64_si128 are usable.
 			See configure.ac for details.])
-		AC_MSG_RESULT([yes])
+		enable_clmul_crc=yes
 	], [
-		AC_MSG_RESULT([no])
+		enable_clmul_crc=no
 	])
+	AC_MSG_RESULT([$enable_clmul_crc])
 ])
+AM_CONDITIONAL([COND_CRC_CLMUL], [test "x$enable_clmul_crc" = xyes])
 
 # Check for sandbox support. If one is found, set enable_sandbox=found.
 AS_CASE([$enable_sandbox],

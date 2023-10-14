@@ -274,8 +274,7 @@ crc64_dispatch(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 
 
-#if defined(CRC_GENERIC) && defined(CRC_CLMUL) \
-		&& defined(HAVE_FUNC_ATTRIBUTE_IFUNC)
+#ifdef CRC_USE_IFUNC
 extern LZMA_API(uint64_t)
 lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 		__attribute__((__ifunc__("crc64_resolve")));

@@ -34,6 +34,7 @@
 
 #undef CRC_GENERIC
 #undef CRC_CLMUL
+#undef CRC_USE_IFUNC
 #undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 
 // If CLMUL cannot be used then only the generic slice-by-four is built.
@@ -53,6 +54,10 @@
 #else
 #	define CRC_GENERIC 1
 #	define CRC_CLMUL 1
+
+#	ifdef HAVE_FUNC_ATTRIBUTE_IFUNC
+#		define CRC_USE_IFUNC 1
+#	endif
 
 /*
 	// The generic code is much faster with 1-8-byte inputs and has

@@ -2,25 +2,6 @@
 //
 /// \file       crc32.c
 /// \brief      CRC32 calculation
-///
-/// There are two methods in this file.
-/// crc32_generic uses the slice-by-eight algorithm.
-/// It is explained in this document:
-/// http://www.intel.com/technology/comms/perfnet/download/CRC_generators.pdf
-/// The code in this file is not the same as in Intel's paper, but
-/// the basic principle is identical.
-///
-/// crc32_clmul uses 32/64-bit x86 SSSE3, SSE4.1, and CLMUL instructions.
-/// It was derived from
-/// https://www.researchgate.net/publication/263424619_Fast_CRC_computation
-/// and the public domain code from https://github.com/rawrunprotected/crc
-/// (URLs were checked on 2023-09-29).
-///
-/// FIXME: Builds for 32-bit x86 use crc32_x86.S by default instead
-/// of this file and thus CLMUL version isn't available on 32-bit x86
-/// unless configured with --disable-assembler. Even then the lookup table
-/// isn't omitted in crc32_table.c since it doesn't know that assembly
-/// code has been disabled.
 //
 //  Authors:    Lasse Collin
 //              Ilya Kurdyukov
@@ -100,6 +81,38 @@ crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 #endif
 
 #if defined(CRC_GENERIC) && defined(CRC_CLMUL)
+
+//////////////////////////
+// Function dispatching //
+//////////////////////////
+
+// If both the generic and CLMUL implementations are built, then the
+// function to use is selected at runtime since system running the
+// binary may not have the CLMUL instructions.
+// The three dispatch methods in order of priority:
+//
+// 1. Indirect function (ifunc). This method is slightly more efficient
+//    than the constructor method because it will change the entry in the
+//    Procedure Linkage Table (PLT) for the function either at load time or
+//    at the first call. This avoids having to call the function through a
+//    function pointer and will treat the function call like a regular call
+//    through the PLT. ifuncs are created by using
+//    __attribute__((__ifunc__("resolver"))) on a function which has no
+//    body. The "resolver" is the name of the function that chooses at
+//    runtime which implementation to use.
+//
+// 2. Constructor. This method uses __attribute__((__constructor__)) to
+//    set crc32_func at load time. This avoids extra computation (and any
+//    unlikely threading bugs) on the first call to lzma_crc32() to decide
+//    which implementation should be used.
+//
+// 3. First Call Resolution. On the very first call to lzma_crc32(), the
+//    call will be directed to crc32_dispatch() instead. This will set the
+//    appropriate implementation function and will not be called again.
+//    This method does not use any kind of locking but is safe because if
+//    multiple threads run the dispatcher simultaneously then they will all
+//    set crc32_func to the same value.
+
 typedef uint32_t (*crc32_func_type)(
 		const uint8_t *buf, size_t size, uint32_t crc);
 
@@ -111,6 +124,9 @@ typedef uint32_t (*crc32_func_type)(
 #	pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 
+// This resolver is shared between all three dispatch methods. It serves as
+// the ifunc resolver if ifunc is supported, otherwise it is called as a
+// regular function by the constructor or first call resolution methods.
 static crc32_func_type
 crc32_resolve(void)
 {
@@ -124,9 +140,11 @@ crc32_resolve(void)
 #ifndef HAVE_FUNC_ATTRIBUTE_IFUNC
 
 #ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+// Constructor method.
 #	define CRC32_SET_FUNC_ATTR __attribute__((__constructor__))
 static crc32_func_type crc32_func;
 #else
+// First Call Resolution method.
 #	define CRC32_SET_FUNC_ATTR
 static uint32_t crc32_dispatch(const uint8_t *buf, size_t size, uint32_t crc);
 static crc32_func_type crc32_func = &crc32_dispatch;
@@ -190,6 +208,14 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 		return crc32_generic(buf, size, crc);
 #endif
 
+/*
+#ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+	// See crc32_dispatch(). This would be the alternative which uses
+	// locking and doesn't use crc32_dispatch(). Note that on Windows
+	// this method needs Vista threads.
+	mythread_once(crc64_set_func);
+#endif
+*/
 	return crc32_func(buf, size, crc);
 
 #elif defined(CRC_CLMUL)

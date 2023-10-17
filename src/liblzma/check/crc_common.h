@@ -13,6 +13,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef LZMA_CRC_COMMON_H
+#define LZMA_CRC_COMMON_H
+
 #ifdef WORDS_BIGENDIAN
 #	define A(x) ((x) >> 24)
 #	define B(x) (((x) >> 16) & 0xFF)
@@ -104,3 +107,5 @@ extern uint32_t lzma_crc32_clmul(const uint8_t *buf, size_t size,
 /// CRC64 implemented with the x86 CLMUL instruction.
 extern uint64_t lzma_crc64_clmul(const uint8_t *buf, size_t size,
 		uint64_t crc);
+
+#endif

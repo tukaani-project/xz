@@ -16,6 +16,9 @@
 #ifndef LZMA_CRC_COMMON_H
 #define LZMA_CRC_COMMON_H
 
+#include "common.h"
+
+
 #ifdef WORDS_BIGENDIAN
 #	define A(x) ((x) >> 24)
 #	define B(x) (((x) >> 16) & 0xFF)

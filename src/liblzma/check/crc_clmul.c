@@ -64,7 +64,7 @@ __attribute__((__target__("ssse3,sse4.1,pclmul")))
 #if lzma_has_attribute(__no_sanitize_address__)
 __attribute__((__no_sanitize_address__))
 #endif
-static inline void
+static crc_always_inline void
 crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 		const __m128i vfold16, const __m128i initial_crc)
 {

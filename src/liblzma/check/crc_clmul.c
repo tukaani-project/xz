@@ -42,21 +42,6 @@
 	MASK_H(in, mask, high)
 
 
-// MSVC (VS2015 - VS2022) produces bad 32-bit x86 code from the CLMUL CRC
-// code when optimizations are enabled (release build). According to the bug
-// report, the ebx register is corrupted and the calculated result is wrong.
-// Trying to workaround the problem with "__asm mov ebx, ebx" didn't help.
-// The following pragma works and performance is still good. x86-64 builds
-// aren't affected by this problem.
-//
-// NOTE: Another pragma after lzma_crc64_clmul() restores the optimizations.
-// If the #if condition here is updated, the other one must be updated too.
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
-		&& defined(_M_IX86)
-#	pragma optimize("g", off)
-#endif
-
-
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("ssse3,sse4.1,pclmul")))
 #endif
@@ -313,6 +298,21 @@ calc_hi(uint64_t poly, uint64_t a)
 */
 
 #ifdef HAVE_CHECK_CRC64
+
+// MSVC (VS2015 - VS2022) produces bad 32-bit x86 code from the CLMUL CRC
+// code when optimizations are enabled (release build). According to the bug
+// report, the ebx register is corrupted and the calculated result is wrong.
+// Trying to workaround the problem with "__asm mov ebx, ebx" didn't help.
+// The following pragma works and performance is still good. x86-64 builds
+// and CRC32 CLMUL aren't affected by this problem. The problem does not
+// happen in crc_simd_body() either (which is shared with CRC32 CLMUL anyway).
+//
+// NOTE: Another pragma after lzma_crc64_clmul() restores the optimizations.
+// If the #if condition here is updated, the other one must be updated too.
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
+		&& defined(_M_IX86)
+#	pragma optimize("g", off)
+#endif
 
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("ssse3,sse4.1,pclmul")))

@@ -89,7 +89,9 @@
 	// 16 bytes and CLMUL for bigger inputs. It saves a little in code
 	// size since the special cases for 0-16-byte inputs will be omitted
 	// from the CLMUL code.
-#	define CRC_USE_GENERIC_FOR_SMALL_INPUTS 1
+#	ifndef CRC_USE_IFUNC
+#		define CRC_USE_GENERIC_FOR_SMALL_INPUTS 1
+#	endif
 */
 
 #	if defined(_MSC_VER)

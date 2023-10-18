@@ -33,6 +33,21 @@
 #endif
 
 
+// The inline keyword is only a suggestion to the compiler to substitute the
+// body of the function into the places where it is called. If a function
+// is large and called multiple times then compiler may choose to ignore the
+// inline suggestion at a sometimes high performance cost.
+//
+// MSVC's __forceinline is a keyword that should be used in place of inline.
+// If both __forceinline and inline are used, MSVC will issue a warning.
+// Since MSVC's keyword is a replacement keyword, the lzma_always_inline
+// macro must also contain the inline keyword when its not used in MSVC.
+#ifdef _MSC_VER
+#	define crc_always_inline __forceinline
+#else
+#	define crc_always_inline __attribute__((__always_inline__)) inline
+#endif
+
 #undef CRC_GENERIC
 #undef CRC_CLMUL
 #undef CRC_USE_IFUNC

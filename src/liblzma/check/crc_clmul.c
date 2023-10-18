@@ -227,6 +227,9 @@ calc_hi(uint64_t p, uint64_t a, int n)
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("ssse3,sse4.1,pclmul")))
 #endif
+#if lzma_has_attribute(__no_sanitize_address__)
+__attribute__((__no_sanitize_address__))
+#endif
 extern uint32_t
 lzma_crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
 {
@@ -316,6 +319,9 @@ calc_hi(uint64_t poly, uint64_t a)
 
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("ssse3,sse4.1,pclmul")))
+#endif
+#if lzma_has_attribute(__no_sanitize_address__)
+__attribute__((__no_sanitize_address__))
 #endif
 extern uint64_t
 lzma_crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)

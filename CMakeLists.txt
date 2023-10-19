@@ -802,23 +802,29 @@ if(HAVE_IMMINTRIN_H)
     tuklib_add_definition_if(liblzma HAVE__MM_MOVEMASK_EPI8)
 
     # CLMUL intrinsic:
-    check_c_source_compiles("
-            #include <immintrin.h>
-            #if defined(__e2k__) && __iset__ < 6
-            #   error
-            #endif
-            #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
-            __attribute__((__target__(\"ssse3,sse4.1,pclmul\")))
-            #endif
-            __m128i my_clmul(__m128i a)
-            {
-                const __m128i b = _mm_set_epi64x(1, 2);
-                return _mm_clmulepi64_si128(a, b, 0);
-            }
-            int main(void) { return 0; }
-    "
-    HAVE_USABLE_CLMUL)
-    tuklib_add_definition_if(liblzma HAVE_USABLE_CLMUL)
+    option(ALLOW_CLMUL_CRC "Allow carryless multiplication for CRC \
+calculation if supported by the system" ON)
+
+    if(ALLOW_CLMUL_CRC)
+        check_c_source_compiles("
+                #include <immintrin.h>
+                #if defined(__e2k__) && __iset__ < 6
+                #   error
+                #endif
+                #if (defined(__GNUC__) || defined(__clang__)) \
+                        && !defined(__EDG__)
+                __attribute__((__target__(\"ssse3,sse4.1,pclmul\")))
+                #endif
+                __m128i my_clmul(__m128i a)
+                {
+                    const __m128i b = _mm_set_epi64x(1, 2);
+                    return _mm_clmulepi64_si128(a, b, 0);
+                }
+                int main(void) { return 0; }
+        "
+        HAVE_USABLE_CLMUL)
+        tuklib_add_definition_if(liblzma HAVE_USABLE_CLMUL)
+    endif()
 endif()
 
 # Support -fvisiblity=hidden when building shared liblzma.

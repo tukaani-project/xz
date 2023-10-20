@@ -1,11 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       crc_clmul.c
+/// \file       crc_x86_clmul.h
 /// \brief      CRC32 and CRC64 implementations using CLMUL instructions.
 ///
-/// lzma_crc32_clmul() and lzma_crc64_clmul() use 32/64-bit x86
-/// SSSE3, SSE4.1, and CLMUL instructions. This is compatible with
-/// Elbrus 2000 (E2K) too.
+/// crc32_clmul() and crc64_clmul() use 32/64-bit x86 SSSE3, SSE4.1, and
+/// CLMUL instructions. This is compatible with Elbrus 2000 (E2K) too.
 ///
 /// They were derived from
 /// https://www.researchgate.net/publication/263424619_Fast_CRC_computation
@@ -27,8 +26,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "crc_common.h"
+// This file must not be included more than once.
+#ifdef LZMA_CRC_X86_CLMUL_H
+#	error crc_x86_clmul.h was included twice.
+#endif
+#define LZMA_CRC_X86_CLMUL_H
+
 #include <immintrin.h>
+
+#if defined(_MSC_VER)
+#	include <intrin.h>
+#elif defined(HAVE_CPUID_H)
+#	include <cpuid.h>
+#endif
 
 
 // EDG-based compilers (Intel's classic compiler and compiler for E2K) can
@@ -225,12 +235,12 @@ calc_hi(uint64_t p, uint64_t a, int n)
 }
 */
 
-#ifdef HAVE_CHECK_CRC32
+#ifdef BUILDING_CRC32_CLMUL
 
 crc_attr_target
 crc_attr_no_sanitize_address
-extern uint32_t
-lzma_crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
+static uint32_t
+crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
 {
 #ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	// The code assumes that there is at least one byte of input.
@@ -265,7 +275,7 @@ lzma_crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
 	v0 = _mm_xor_si128(v0, v2);   // [2]
 	return ~(uint32_t)_mm_extract_epi32(v0, 2);
 }
-#endif // HAVE_CHECK_CRC32
+#endif // BUILDING_CRC32_CLMUL
 
 
 /////////////////////
@@ -299,7 +309,7 @@ calc_hi(uint64_t poly, uint64_t a)
 }
 */
 
-#ifdef HAVE_CHECK_CRC64
+#ifdef BUILDING_CRC64_CLMUL
 
 // MSVC (VS2015 - VS2022) produces bad 32-bit x86 code from the CLMUL CRC
 // code when optimizations are enabled (release build). According to the bug
@@ -318,8 +328,8 @@ calc_hi(uint64_t poly, uint64_t a)
 
 crc_attr_target
 crc_attr_no_sanitize_address
-extern uint64_t
-lzma_crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
+static uint64_t
+crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
 {
 #ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	// The code assumes that there is at least one byte of input.
@@ -366,4 +376,54 @@ lzma_crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
 #	pragma optimize("", on)
 #endif
 
-#endif // HAVE_CHECK_CRC64
+#endif // BUILDING_CRC64_CLMUL
+
+
+// is_clmul_supported() must be inlined in this header file because the
+// ifunc resolver function may not support calling a function in another
+// translation unit. Depending on compiler-toolchain and flags, a call to
+// a function defined in another translation unit could result in a
+// reference to the PLT, which is unsafe to do in an ifunc resolver. The
+// ifunc resolver runs very early when loading a shared library, so the PLT
+// entries may not be setup at that time. Inlining this function duplicates
+// the function body in crc32_resolve() and crc64_resolve(), but this is
+// acceptable because the function results in very few instructions.
+static inline bool
+is_clmul_supported(void)
+{
+	int success = 1;
+	uint32_t r[4]; // eax, ebx, ecx, edx
+
+#if defined(_MSC_VER)
+	// This needs <intrin.h> with MSVC. ICC has it as a built-in
+	// on all platforms.
+	__cpuid(r, 1);
+#elif defined(HAVE_CPUID_H)
+	// Compared to just using __asm__ to run CPUID, this also checks
+	// that CPUID is supported and saves and restores ebx as that is
+	// needed with GCC < 5 with position-independent code (PIC).
+	success = __get_cpuid(1, &r[0], &r[1], &r[2], &r[3]);
+#else
+	// Just a fallback that shouldn't be needed.
+	__asm__("cpuid\n\t"
+			: "=a"(r[0]), "=b"(r[1]), "=c"(r[2]), "=d"(r[3])
+			: "a"(1), "c"(0));
+#endif
+
+	// Returns true if these are supported:
+	// CLMUL (bit 1 in ecx)
+	// SSSE3 (bit 9 in ecx)
+	// SSE4.1 (bit 19 in ecx)
+	const uint32_t ecx_mask = (1 << 1) | (1 << 9) | (1 << 19);
+	return success && (r[2] & ecx_mask) == ecx_mask;
+
+	// Alternative methods that weren't used:
+	//   - ICC's _may_i_use_cpu_feature: the other methods should work too.
+	//   - GCC >= 6 / Clang / ICX __builtin_cpu_supports("pclmul")
+	//
+	// CPUID decding is needed with MSVC anyway and older GCC. This keeps
+	// the feature checks in the build system simpler too. The nice thing
+	// about __builtin_cpu_supports would be that it generates very short
+	// code as is it only reads a variable set at startup but a few bytes
+	// doesn't matter here.
+}

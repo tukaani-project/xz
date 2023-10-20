@@ -15,6 +15,11 @@
 #include "check.h"
 #include "crc_common.h"
 
+#ifdef CRC_CLMUL
+#	define BUILDING_CRC32_CLMUL
+#	include "crc_x86_clmul.h"
+#endif
+
 
 #ifdef CRC_GENERIC
 
@@ -132,7 +137,7 @@ typedef uint32_t (*crc32_func_type)(
 static crc32_func_type
 crc32_resolve(void)
 {
-	return is_clmul_supported() ? &lzma_crc32_clmul : &crc32_generic;
+	return is_clmul_supported() ? &crc32_clmul : &crc32_generic;
 }
 
 #if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
@@ -221,7 +226,7 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 	return crc32_func(buf, size, crc);
 
 #elif defined(CRC_CLMUL)
-	return lzma_crc32_clmul(buf, size, crc);
+	return crc32_clmul(buf, size, crc);
 
 #else
 	return crc32_generic(buf, size, crc);

@@ -229,6 +229,7 @@ add_library(liblzma
     src/liblzma/check/check.c
     src/liblzma/check/check.h
     src/liblzma/check/crc_common.h
+    src/liblzma/check/crc_x86_clmul.h
     src/liblzma/common/block_util.c
     src/liblzma/common/common.c
     src/liblzma/common/common.h
@@ -1000,11 +1001,7 @@ calculation if supported by the system" ON)
                 int main(void) { return 0; }
             "
             HAVE_USABLE_CLMUL)
-
-        if(HAVE_USABLE_CLMUL)
-            target_sources(liblzma PRIVATE src/liblzma/check/crc_clmul.c)
-            target_compile_definitions(liblzma PRIVATE HAVE_USABLE_CLMUL)
-        endif()
+        tuklib_add_definition_if(liblzma HAVE_USABLE_CLMUL)
     endif()
 endif()
 

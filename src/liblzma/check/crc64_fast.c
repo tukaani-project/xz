@@ -14,6 +14,11 @@
 #include "check.h"
 #include "crc_common.h"
 
+#ifdef CRC_CLMUL
+#	define BUILDING_CRC64_CLMUL
+#	include "crc_x86_clmul.h"
+#endif
+
 
 #ifdef CRC_GENERIC
 
@@ -97,7 +102,7 @@ typedef uint64_t (*crc64_func_type)(
 static crc64_func_type
 crc64_resolve(void)
 {
-	return is_clmul_supported() ? &lzma_crc64_clmul : &crc64_generic;
+	return is_clmul_supported() ? &crc64_clmul : &crc64_generic;
 }
 
 #if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
@@ -160,7 +165,7 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 	//
 	// FIXME: Lookup table isn't currently omitted on 32-bit x86,
 	// see crc64_table.c.
-	return lzma_crc64_clmul(buf, size, crc);
+	return crc64_clmul(buf, size, crc);
 
 #else
 	return crc64_generic(buf, size, crc);

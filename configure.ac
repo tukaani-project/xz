@@ -1086,7 +1086,6 @@ __m128i my_clmul(__m128i a)
 	])
 	AC_MSG_RESULT([$enable_clmul_crc])
 ])
-AM_CONDITIONAL([COND_CRC_CLMUL], [test "x$enable_clmul_crc" = xyes])
 
 # Check for sandbox support. If one is found, set enable_sandbox=found.
 #

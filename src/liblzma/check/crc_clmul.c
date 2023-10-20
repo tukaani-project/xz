@@ -365,10 +365,10 @@ lzma_crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
 	return ~(uint64_t)_mm_extract_epi64(v0, 1);
 #endif
 }
-#endif // HAVE_CHECK_CRC64
-
 
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
 		&& defined(_M_IX86)
 #	pragma optimize("", on)
 #endif
+
+#endif // HAVE_CHECK_CRC64

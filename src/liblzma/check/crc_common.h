@@ -39,6 +39,16 @@
 #endif
 
 
+// CRC CLMUL code needs this because accessing input buffers that aren't
+// aligned to the vector size will inherently trip the address sanitizer.
+#if lzma_has_attribute(__no_sanitize_address__)
+#	define crc_attr_no_sanitize_address \
+			__attribute__((__no_sanitize_address__))
+#else
+#	define crc_attr_no_sanitize_address
+#endif
+
+
 // The inline keyword is only a suggestion to the compiler to substitute the
 // body of the function into the places where it is called. If a function
 // is large and called multiple times then compiler may choose to ignore the

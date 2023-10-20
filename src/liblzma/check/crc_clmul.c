@@ -31,6 +31,19 @@
 #include <immintrin.h>
 
 
+// EDG-based compilers (Intel's classic compiler and compiler for E2K) can
+// define __GNUC__ but the attribute must not be used with them.
+// The new Clang-based ICX needs the attribute.
+//
+// NOTE: Build systems check for this too, keep them in sync with this.
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
+#	define crc_attr_target \
+		__attribute__((__target__("ssse3,sse4.1,pclmul")))
+#else
+#	define crc_attr_target
+#endif
+
+
 #define MASK_L(in, mask, r) r = _mm_shuffle_epi8(in, mask)
 
 #define MASK_H(in, mask, r) \
@@ -41,9 +54,7 @@
 	MASK_H(in, mask, high)
 
 
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
-__attribute__((__target__("ssse3,sse4.1,pclmul")))
-#endif
+crc_attr_target
 crc_attr_no_sanitize_address
 static crc_always_inline void
 crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
@@ -216,14 +227,7 @@ calc_hi(uint64_t p, uint64_t a, int n)
 
 #ifdef HAVE_CHECK_CRC32
 
-// EDG-based compilers (Intel's classic compiler and compiler for E2K) can
-// define __GNUC__ but the attribute must not be used with them.
-// The new Clang-based ICX needs the attribute.
-//
-// NOTE: Build systems check for this too, keep them in sync with this.
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
-__attribute__((__target__("ssse3,sse4.1,pclmul")))
-#endif
+crc_attr_target
 crc_attr_no_sanitize_address
 extern uint32_t
 lzma_crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
@@ -312,9 +316,7 @@ calc_hi(uint64_t poly, uint64_t a)
 #	pragma optimize("g", off)
 #endif
 
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
-__attribute__((__target__("ssse3,sse4.1,pclmul")))
-#endif
+crc_attr_target
 crc_attr_no_sanitize_address
 extern uint64_t
 lzma_crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)

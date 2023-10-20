@@ -14,6 +14,7 @@
 #include "check.h"
 #include "crc_common.h"
 
+
 #ifdef CRC_GENERIC
 
 /////////////////////////////////
@@ -75,7 +76,9 @@ crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 }
 #endif
 
+
 #if defined(CRC_GENERIC) && defined(CRC_CLMUL)
+
 //////////////////////////
 // Function dispatching //
 //////////////////////////

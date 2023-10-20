@@ -15,6 +15,7 @@
 #include "check.h"
 #include "crc_common.h"
 
+
 #ifdef CRC_GENERIC
 
 ///////////////////
@@ -79,6 +80,7 @@ crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 	return ~crc;
 }
 #endif
+
 
 #if defined(CRC_GENERIC) && defined(CRC_CLMUL)
 

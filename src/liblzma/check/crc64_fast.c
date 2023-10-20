@@ -94,7 +94,7 @@ typedef uint64_t (*crc64_func_type)(
 static crc64_func_type
 crc64_resolve(void)
 {
-	return lzma_is_clmul_supported() ? &lzma_crc64_clmul : &crc64_generic;
+	return is_clmul_supported() ? &lzma_crc64_clmul : &crc64_generic;
 }
 
 #if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)

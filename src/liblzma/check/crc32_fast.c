@@ -130,7 +130,7 @@ typedef uint32_t (*crc32_func_type)(
 static crc32_func_type
 crc32_resolve(void)
 {
-	return lzma_is_clmul_supported() ? &lzma_crc32_clmul : &crc32_generic;
+	return is_clmul_supported() ? &lzma_crc32_clmul : &crc32_generic;
 }
 
 #if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)

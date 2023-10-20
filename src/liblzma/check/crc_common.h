@@ -99,11 +99,57 @@
 #	elif defined(HAVE_CPUID_H)
 #		include <cpuid.h>
 #	endif
+
+// is_clmul_supported() must be inlined in this header file because the
+// ifunc resolver function may not support calling a function in another
+// translation unit. Depending on compiler-toolchain and flags, a call to
+// a function defined in another translation unit could result in a
+// reference to the PLT, which is unsafe to do in an ifunc resolver. The
+// ifunc resolver runs very early when loading a shared library, so the PLT
+// entries may not be setup at that time. Inlining this function duplicates
+// the function body in crc32_resolve() and crc64_resolve(), but this is
+// acceptable because the function results in very few instructions.
+static inline bool
+is_clmul_supported(void)
+{
+	int success = 1;
+	uint32_t r[4]; // eax, ebx, ecx, edx
+
+#if defined(_MSC_VER)
+	// This needs <intrin.h> with MSVC. ICC has it as a built-in
+	// on all platforms.
+	__cpuid(r, 1);
+#elif defined(HAVE_CPUID_H)
+	// Compared to just using __asm__ to run CPUID, this also checks
+	// that CPUID is supported and saves and restores ebx as that is
+	// needed with GCC < 5 with position-independent code (PIC).
+	success = __get_cpuid(1, &r[0], &r[1], &r[2], &r[3]);
+#else
+	// Just a fallback that shouldn't be needed.
+	__asm__("cpuid\n\t"
+			: "=a"(r[0]), "=b"(r[1]), "=c"(r[2]), "=d"(r[3])
+			: "a"(1), "c"(0));
 #endif
 
-/// Detect at runtime if the CPU supports the x86 CLMUL instruction when
-/// both the generic and CLMUL implementations are built.
-extern bool lzma_is_clmul_supported(void);
+	// Returns true if these are supported:
+	// CLMUL (bit 1 in ecx)
+	// SSSE3 (bit 9 in ecx)
+	// SSE4.1 (bit 19 in ecx)
+	const uint32_t ecx_mask = (1 << 1) | (1 << 9) | (1 << 19);
+	return success && (r[2] & ecx_mask) == ecx_mask;
+
+	// Alternative methods that weren't used:
+	//   - ICC's _may_i_use_cpu_feature: the other methods should work too.
+	//   - GCC >= 6 / Clang / ICX __builtin_cpu_supports("pclmul")
+	//
+	// CPUID decding is needed with MSVC anyway and older GCC. This keeps
+	// the feature checks in the build system simpler too. The nice thing
+	// about __builtin_cpu_supports would be that it generates very short
+	// code as is it only reads a variable set at startup but a few bytes
+	// doesn't matter here.
+}
+
+#endif
 
 /// CRC32 implemented with the x86 CLMUL instruction.
 extern uint32_t lzma_crc32_clmul(const uint8_t *buf, size_t size,

@@ -806,6 +806,28 @@ message_signal_handler(void)
 }
 
 
+#ifdef _MSC_VER
+extern void
+message_windows_error(const char* message, DWORD error_code)
+{
+	char *error_message;
+
+	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+		| FORMAT_MESSAGE_FROM_SYSTEM
+		| FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&error_message, 0, NULL)) {
+		message_error("%s: %s", message, error_message);
+	}
+	else {
+		message_error("%s\n", message);
+	}
+
+	LocalFree(error_message);
+}
+#endif
+
+
 extern const char *
 message_strm(lzma_ret code)
 {

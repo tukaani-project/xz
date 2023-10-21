@@ -84,6 +84,20 @@ tuklib_attr_noreturn
 extern void message_signal_handler(void);
 
 
+#ifdef _MSC_VER
+/// \brief     Print an error message using a Windows specific error code
+///
+/// The function uses message_error() internally, so it will set the
+/// exit code to 1 after printing.
+///
+/// \param     message     Message describing where the error occurred
+/// \param     error_code  Error number from GetLastError()
+extern void
+message_windows_error(const char* message, DWORD error_code);
+
+#endif
+
+
 /// Convert lzma_ret to a string.
 extern const char *message_strm(lzma_ret code);
 

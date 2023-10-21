@@ -786,6 +786,14 @@ args_parse(args_info *args, int argc, char **argv)
 	if (opt_mode != MODE_COMPRESS)
 		message_fatal(_("Decompression support was disabled "
 				"at build time"));
+#else
+	// List mode is only available when decoders are enabled and is
+	// only valid with .xz files.
+	if (opt_mode == MODE_LIST
+			&& opt_format != FORMAT_XZ
+			&& opt_format != FORMAT_AUTO)
+		message_fatal(_("--list works only on .xz files "
+				"(--format=xz or --format=auto)"));
 #endif
 
 #ifdef HAVE_LZIP_DECODER

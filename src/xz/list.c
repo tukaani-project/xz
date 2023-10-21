@@ -1276,10 +1276,6 @@ list_totals(void)
 extern void
 list_file(const char *filename)
 {
-	if (opt_format != FORMAT_XZ && opt_format != FORMAT_AUTO)
-		message_fatal(_("--list works only on .xz files "
-				"(--format=xz or --format=auto)"));
-
 	message_filename(filename);
 
 	if (filename == stdin_filename) {

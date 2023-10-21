@@ -1274,25 +1274,9 @@ list_totals(void)
 
 
 extern void
-list_file(const char *filename)
+list_file(file_pair *pair)
 {
-	message_filename(filename);
-
-	if (filename == stdin_filename) {
-		message_error(_("--list does not support reading from "
-				"standard input"));
-		return;
-	}
-
 	init_field_widths();
-
-	// Unset opt_stdout so that io_open_src() won't accept special files.
-	// Set opt_force so that io_open_src() will follow symlinks.
-	opt_stdout = false;
-	opt_force = true;
-	file_pair *pair = io_open_src(filename);
-	if (pair == NULL)
-		return;
 
 	xz_file_info xfi = XZ_FILE_INFO_INIT;
 	if (!parse_indexes(&xfi, pair)) {

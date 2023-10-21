@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /// \brief      List information about the given .xz file
-extern void list_file(const char *filename);
+extern void list_file(file_pair *pair);
 
 
 /// \brief      Show the totals after all files have been listed

@@ -146,6 +146,34 @@ read_name(const args_info *args)
 }
 
 
+static void
+process_entry(const char *path)
+{
+	// Set and possibly print the filename for the progress message.
+	message_filename(path);
+
+	// Open the entry
+	file_pair *pair = io_open_src(path);
+	if (pair == NULL)
+		return;
+
+#ifdef HAVE_DECODERS
+	if (opt_mode == MODE_LIST) {
+		if (path == stdin_filename) {
+			message_error(_("--list does not support reading from "
+					"standard input"));
+			return;
+		}
+
+		list_file(pair);
+		return;
+	}
+#endif
+
+	coder_run(pair);
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -256,14 +284,6 @@ main(int argc, char **argv)
 		io_allow_sandbox();
 #endif
 
-	// coder_run() handles compression, decompression, and testing.
-	// list_file() is for --list.
-	void (*run)(const char *filename) = &coder_run;
-#ifdef HAVE_DECODERS
-	if (opt_mode == MODE_LIST)
-		run = &list_file;
-#endif
-
 	// Process the files given on the command line. Note that if no names
 	// were given, args_parse() gave us a fake "-" filename.
 	for (unsigned i = 0; i < args.arg_count && !user_abort; ++i) {
@@ -298,7 +318,7 @@ main(int argc, char **argv)
 		}
 
 		// Do the actual compression or decompression.
-		run(args.arg_names[i]);
+		process_entry(args.arg_names[i]);
 	}
 
 	// If --files or --files0 was used, process the filenames from the
@@ -314,7 +334,7 @@ main(int argc, char **argv)
 
 			// read_name() doesn't return empty names.
 			assert(name[0] != '\0');
-			run(name);
+			process_entry(name);
 		}
 
 		if (args.files_name != stdin_filename)

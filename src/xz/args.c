@@ -789,11 +789,17 @@ args_parse(args_info *args, int argc, char **argv)
 #else
 	// List mode is only available when decoders are enabled and is
 	// only valid with .xz files.
-	if (opt_mode == MODE_LIST
-			&& opt_format != FORMAT_XZ
-			&& opt_format != FORMAT_AUTO)
-		message_fatal(_("--list works only on .xz files "
-				"(--format=xz or --format=auto)"));
+	if (opt_mode == MODE_LIST) {
+		if (opt_format != FORMAT_XZ && opt_format != FORMAT_AUTO)
+			message_fatal(_("--list works only on .xz files "
+					"(--format=xz or --format=auto)"));
+
+		// Unset opt_stdout so that io_open_src() won't accept
+		// special files.
+		opt_stdout = false;
+		// Set opt_force so that io_open_src() will follow symlinks.
+		opt_force = true;
+	}
 #endif
 
 #ifdef HAVE_LZIP_DECODER

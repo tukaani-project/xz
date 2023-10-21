@@ -83,7 +83,7 @@ extern void coder_add_filter(lzma_vli id, void *options);
 extern void coder_set_compression_settings(void);
 
 /// Compress or decompress the given file
-extern void coder_run(const char *filename);
+extern void coder_run(file_pair *pair);
 
 #ifndef NDEBUG
 /// Free the memory allocated for the coder and kill the worker threads.

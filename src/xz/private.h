@@ -70,11 +70,11 @@
 
 #include "main.h"
 #include "mytime.h"
+#include "file_io.h"
 #include "coder.h"
 #include "message.h"
 #include "args.h"
 #include "hardware.h"
-#include "file_io.h"
 #include "options.h"
 #include "signals.h"
 #include "suffix.h"

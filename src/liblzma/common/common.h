@@ -17,17 +17,28 @@
 #include "mythread.h"
 #include "tuklib_integer.h"
 
+// LZMA_API_EXPORT is used to mark the exported API functions.
+// It's used to define the LZMA_API macro.
+//
+// lzma_attr_visibility_hidden is used for marking *declarations* of extern
+// variables that are internal to liblzma (-fvisibility=hidden alone is
+// enough to hide the *definitions*). Such markings allow slightly more
+// efficient code to accesses those variables in ELF shared libraries.
 #if defined(_WIN32) || defined(__CYGWIN__)
 #	ifdef DLL_EXPORT
 #		define LZMA_API_EXPORT __declspec(dllexport)
 #	else
 #		define LZMA_API_EXPORT
 #	endif
+#	define lzma_attr_visibility_hidden
 // Don't use ifdef or defined() below.
 #elif HAVE_VISIBILITY
 #	define LZMA_API_EXPORT __attribute__((__visibility__("default")))
+#	define lzma_attr_visibility_hidden \
+			__attribute__((__visibility__("hidden")))
 #else
 #	define LZMA_API_EXPORT
+#	define lzma_attr_visibility_hidden
 #endif
 
 #define LZMA_API(type) LZMA_API_EXPORT type LZMA_API_CALL

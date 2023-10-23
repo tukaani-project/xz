@@ -80,13 +80,17 @@ jobs:
 
       # ifunc must be disabled for this test because __attribute__ ifunc is
       # incompatible with -fsanitize=address.
+      #
+      # The sandbox must also be disabled because it will prevent access to
+      # the /proc/ filesystem on Linux, which is used by the sanitizer's
+      # instrumentation.
       - name: Build with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
-        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d ifunc
+        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d ifunc,sandbox
       - name: Test with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
-            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc
+            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc,sandbox
             cd ../xz_build && make distclean
 
       - name: Build with full features

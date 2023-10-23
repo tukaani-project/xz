@@ -20,7 +20,7 @@ USAGE="Usage: $0
   -a [autogen flags]
   -b [autotools|cmake]
   -c [crc32|crc64|sha256]
-  -d [encoders|decoders|bcj|delta|threads|shared|nls|small|ifunc|clmul]
+  -d [encoders|decoders|bcj|delta|threads|shared|nls|small|ifunc|clmul|sandbox]
   -f [CFLAGS]
   -l [destdir]
   -n [ARTIFACTS_DIR_NAME]
@@ -44,6 +44,7 @@ NATIVE_LANG_SUPPORT="y"
 SMALL="n"
 IFUNC="y"
 CLMUL="y"
+SANDBOX="y"
 SRC_DIR="$ABS_DIR/../"
 DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
@@ -89,6 +90,7 @@ while getopts a:b:c:d:l:n:s:p:f:h opt; do
 		small) SMALL="y";;
 		ifunc) IFUNC="n";;
 		clmul) CLMUL="n";;
+		sandbox) SANDBOX="n";;
 		*) echo "Invalid disable value: $disable_arg"; exit 1 ;;
 		esac
 	done
@@ -208,6 +210,7 @@ then
 		add_extra_option "$SMALL" "--enable-small" ""
 		add_extra_option "$IFUNC" "" "--disable-ifunc"
 		add_extra_option "$CLMUL" "" "--disable-clmul-crc"
+		add_extra_option "$SANDBOX" "" "--enable-sandbox=no"
 
 		# Run configure script
 		"$SRC_DIR"/configure --enable-werror --enable-checks="$CHECK_TYPE" $EXTRA_OPTIONS --config-cache

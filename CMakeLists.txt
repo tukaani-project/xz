@@ -806,6 +806,14 @@ if(ALLOW_ATTR_IFUNC)
         HAVE_FUNC_ATTRIBUTE_IFUNC)
     cmake_pop_check_state()
     tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_IFUNC)
+
+    if(HAVE_FUNC_ATTRIBUTE_IFUNC AND CMAKE_C_FLAGS MATCHES "-fsanitize=")
+        message(SEND_ERROR
+                "CMAKE_C_FLAGS or the environment variable CFLAGS "
+                "contains '-fsanitize=' which is incompatible "
+                "with ifunc. Use -DALLOW_ATTR_IFUNC=OFF "
+                "as an argument to 'cmake' when using '-fsanitize'.")
+    endif()
 endif()
 
 # cpuid.h
@@ -1293,9 +1301,30 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
     # Sandboxing: Landlock
     if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^landlock$")
         check_include_file(linux/landlock.h HAVE_LINUX_LANDLOCK_H)
+
         if(HAVE_LINUX_LANDLOCK_H)
             target_compile_definitions(xz PRIVATE HAVE_LINUX_LANDLOCK_H)
             set(SANDBOX_FOUND ON)
+
+            # Of our three sandbox methods, only Landlock is incompatible
+            # with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
+            # -fsanitize=address,undefined and had no issues. OpenBSD (as
+            # of version 7.4) has minimal support for process instrumentation.
+            # OpenBSD does not distribute the additional libraries needed
+            # (libasan, libubsan, etc.) with GCC or Clang needed for runtime
+            # sanitization support and instead only support
+            # -fsanitize-minimal-runtime for minimal undefined behavior
+            # sanitization. This minimal support is compatible with our use
+            # of the Pledge sandbox. So only Landlock will result in a
+            # build that cannot compress or decompress a single file to
+            # standard out.
+            if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
+                message(SEND_ERROR
+                        "CMAKE_C_FLAGS or the environment variable CFLAGS "
+                        "contains '-fsanitize=' which is incompatible "
+                        "with Landlock sandboxing. Use -DENABLE_SANDBOX=OFF "
+                        "as an argument to 'cmake' when using '-fsanitize'.")
+            endif()
         endif()
     endif()
 

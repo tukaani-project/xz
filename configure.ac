@@ -523,11 +523,15 @@ AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
 		The default is 'auto' which enables sandboxing if
 		a supported sandboxing method is found.])],
 	[], [enable_sandbox=auto])
-case $enable_sandbox in
-	auto)
+case $enable_xz-$enable_sandbox in
+	no-*)
+		enable_sandbox=no
+		AC_MSG_RESULT([no, --disable-xz was used])
+		;;
+	*-auto)
 		AC_MSG_RESULT([maybe (autodetect)])
 		;;
-	no | capsicum | pledge | landlock)
+	*-no | *-capsicum | *-pledge | *-landlock)
 		AC_MSG_RESULT([$enable_sandbox])
 		;;
 	*)
@@ -890,6 +894,14 @@ if test "x$enable_ifunc" = xyes ; then
 			[Define to 1 if __attribute__((__ifunc__()))
 			is supported for functions.])
 		AC_MSG_RESULT([yes])
+
+		# ifunc explicitly does not work with -fsanitize=address.
+		# If configured, it will result in a liblzma build that
+		# will fail when liblzma is loaded at runtime (when the
+		# ifunc resolver executes).
+		AS_CASE([$CFLAGS], [*-fsanitize=*], [AC_MSG_ERROR([
+    CFLAGS contains '-fsanitize=' which is incompatible with ifunc.
+    Use --disable-ifunc when using '-fsanitize'.])])
 	], [
 		AC_MSG_RESULT([no])
 	])
@@ -1049,6 +1061,17 @@ __m128i my_clmul(__m128i a)
 AM_CONDITIONAL([COND_CRC_CLMUL], [test "x$enable_clmul_crc" = xyes])
 
 # Check for sandbox support. If one is found, set enable_sandbox=found.
+#
+# About -fsanitize: Of our three sandbox methods, only Landlock is
+# incompatible with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
+# -fsanitize=address,undefined and had no issues. OpenBSD (as of version
+# 7.4) has minimal support for process instrumentation. OpenBSD does not
+# distribute the additional libraries needed (libasan, libubsan, etc.) with
+# GCC or Clang needed for runtime sanitization support and instead only
+# support -fsanitize-minimal-runtime for minimal undefined behavior
+# sanitization. This minimal support is compatible with our use of the
+# Pledge sandbox. So only Landlock will result in a build that cannot
+# compress or decompress a single file to standard out.
 AS_CASE([$enable_sandbox],
 	[auto | capsicum], [
 		AC_CHECK_FUNCS([cap_rights_limit], [enable_sandbox=found])
@@ -1061,7 +1084,13 @@ AS_CASE([$enable_sandbox],
 )
 AS_CASE([$enable_sandbox],
 	[auto | landlock], [
-		AC_CHECK_HEADERS([linux/landlock.h], [enable_sandbox=found])
+		AC_CHECK_HEADERS([linux/landlock.h], [
+			enable_sandbox=found
+
+			AS_CASE([$CFLAGS], [*-fsanitize=*], [AC_MSG_ERROR([
+    CFLAGS contains '-fsanitize=' which is incompatible with the Landlock
+    sandboxing. Use --disable-sandbox when using '-fsanitize'.])])
+		])
 	]
 )
 

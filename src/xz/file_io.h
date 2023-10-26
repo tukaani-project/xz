@@ -70,6 +70,12 @@ typedef struct {
 	/// a sparse file.
 	bool dest_try_sparse;
 
+#if defined(_MSC_VER) || defined(HAVE_DIRENT_H)
+	/// If true, this entry is a directory, not a file. This can only
+	/// be set if the --recursive option is used.
+	bool is_directory;
+#endif
+
 	/// This is used only if dest_try_sparse is true. This holds the
 	/// number of zero bytes we haven't written out, because we plan
 	/// to make that byte range a sparse chunk.

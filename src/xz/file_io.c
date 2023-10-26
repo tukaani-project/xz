@@ -613,6 +613,48 @@ io_copy_attrs(const file_pair *pair)
 }
 
 
+#if defined(_MSC_VER) || (defined(_WIN32) && defined(HAVE_DIRENT_H))
+/// \brief       Tells whether the path is a directory and should be parsed.
+///
+/// On Windows, open() will return EACCES if the path is a directory. This
+/// function will print determine if the directory should be processed or
+/// print a better error message.
+static bool
+should_parse_dir_windows(const char *path)
+{
+	DWORD file_attr = GetFileAttributes(path);
+
+	// If there is an error, it won't change errno. If we wanted to
+	// know more information about the error we coud use
+	// message_windows_error() to show detailed error description.
+	// Instead we can let the code fall through since the errno from
+	// the original _open() call is likely descriptive enough.
+	if (file_attr != INVALID_FILE_ATTRIBUTES) {
+		if (file_attr & FILE_ATTRIBUTE_DIRECTORY) {
+			// The FILE_ATTRIBUTE_REPARSE_POINT means the
+			// directory is either a symlink or a reparse point.
+			// We do not want to recurse into either of these,
+			// especially a symlink to a directory since this
+			// could lead to an infinite directory processing loop.
+			if (opt_recursive && (file_attr
+					& FILE_ATTRIBUTE_REPARSE_POINT))
+				message_warning(_("%s: Is a symlink to a "
+					"directory, skipping"), path);
+			else if (opt_recursive)
+				return true;
+			else
+				message_warning(_("%s: Is a directory, skipping"),
+					path);
+		}
+	} else {
+		message_error("%s: %s", path, strerror(errno));
+	}
+
+	return false;
+}
+#endif
+
+
 /// Opens the source file. Returns false on success, true on error.
 static bool
 io_open_src_real(file_pair *pair)
@@ -751,14 +793,28 @@ io_open_src_real(file_pair *pair)
 
 		if (was_symlink)
 			message_warning(_("%s: Is a symbolic link, "
-					"skipping"), pair->src_name);
-		else
+				"skipping"), pair->src_name);
+		else {
 #endif
+		{
+#ifdef _WIN32
+			// The _open() function with MSVC will fail with
+			// EACCES if the path is a directory. We can give a
+			// more accurate error message in this case or, if
+			// in recursive mode, we can process the directory.
+			if (errno == EACCES) {
+				pair->is_directory = should_parse_dir_windows(
+						pair->src_name);
+				return pair->is_directory;
+			}
+#else
 			// Something else than O_NOFOLLOW failing
 			// (assuming that the race conditions didn't
 			// confuse us).
 			message_error(_("%s: %s"), pair->src_name,
 					strerror(errno));
+#endif
+		}
 
 		return true;
 	}
@@ -778,11 +834,37 @@ io_open_src_real(file_pair *pair)
 		goto error_msg;
 #endif
 
+#ifdef HAVE_DIRENT_H
+	// MSVC cannot open() directories, so this check is
+	// skipped in that case.
 	if (S_ISDIR(pair->src_st.st_mode)) {
-		message_warning(_("%s: Is a directory, skipping"),
-				pair->src_name);
-		goto error;
+		if (!opt_recursive) {
+			message_warning(_("%s: Is a directory, skipping"),
+					pair->src_name);
+			goto error;
+		}
+
+		// Do not allow symlinks with recursive mode because this
+		// could lead to a loop in the file system and thus infinite
+		// recursion. If a symlink is detected, skip it.
+		// S_ISLNK and lstat() are not available with MSVC so these need
+		// to be in an #ifdef
+		if (follow_symlinks) {
+			if (lstat(pair->src_name, &pair->src_st) != 0)
+				goto error_msg;
+
+			if (S_ISLNK(pair->src_st.st_mode)) {
+				message_warning(_("%s: Is a symlink to a "
+				"directory, skipping"), pair->src_name);
+				goto error;
+			}
+		}
+
+		(void)close(pair->src_fd);
+		pair->is_directory = true;
+		return false;
 	}
+#endif
 
 	if (reg_files_only && !S_ISREG(pair->src_st.st_mode)) {
 		message_warning(_("%s: Not a regular file, skipping"),
@@ -880,6 +962,9 @@ io_open_src(const char *src_name)
 		.flush_needed = false,
 		.dest_try_sparse = false,
 		.dest_pending_sparse = 0,
+#if defined(_MSC_VER) || defined(HAVE_DIRENT_H)
+		.is_directory = false,
+#endif
 	};
 
 	// Block the signals, for which we have a custom signal handler, so

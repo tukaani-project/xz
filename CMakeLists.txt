@@ -1326,7 +1326,7 @@ if(BUILD_TESTING)
         #
         # Set the return code for skipped tests to match Automake convention.
         set_tests_properties("${TEST}" PROPERTIES
-            ENVIRONMENT "srcdir=${CMAKE_CURRENT_LIST_DIR}/tests"
+            ENVIRONMENT "srcdir=${CMAKE_CURRENT_SOURCE_DIR}/tests"
             SKIP_RETURN_CODE 77
         )
     endforeach()

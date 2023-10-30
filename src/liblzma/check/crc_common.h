@@ -48,6 +48,11 @@
 // If both __forceinline and inline are used, MSVC will issue a warning.
 // Since MSVC's keyword is a replacement keyword, the lzma_always_inline
 // macro must also contain the inline keyword when its not used in MSVC.
+//
+// NOTE: This doesn't use lzma_always_inline for now as support for it is
+// detected using preprocessor macros which might miss a compiler that
+// does support it. All compilers that support the CLMUL code support
+// the attribute too; if not, we will hopefully get a bug report.
 #ifdef _MSC_VER
 #	define crc_always_inline __forceinline
 #else

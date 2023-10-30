@@ -98,6 +98,23 @@
 #	endif
 #endif
 
+// MSVC has __forceinline which shouldn't be combined with the inline keyword
+// (results in a warning).
+//
+// GCC 3.1 added always_inline attribute so we don't need to check
+// for __GNUC__ version. Similarly, all relevant Clang versions
+// support it (at least Clang 3.0.0 does already).
+// Other compilers might support too which also support __has_attribute
+// (Solaris Studio) so do that check too.
+#if defined(_MSC_VER)
+#	define lzma_always_inline __forceinline
+#elif defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER) \
+		|| lzma_has_attribute(__always_inline__)
+#	define lzma_always_inline inline __attribute__((__always_inline__))
+#else
+#	define lzma_always_inline inline
+#endif
+
 // These allow helping the compiler in some often-executed branches, whose
 // result is almost always the same.
 #ifdef __GNUC__

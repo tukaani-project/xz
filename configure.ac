@@ -865,11 +865,12 @@ CFLAGS="$OLD_CFLAGS"
 # win95, and the compiler does not support attribute constructor, then we
 # would end up with a multithreaded build that is thread-unsafe. As a
 # result this configuration is not allowed.
-if test "x$enable_small$enable_threads$have_func_attribute_constructor"\
+if test "x$enable_small$enable_threads$have_func_attribute_constructor" \
 		= xyeswin95no; then
-	AC_MSG_ERROR([--enable-threads=win95 and --enable-small cannot be
-		used at the same time with a compiler that doesn't support
-		__attribute__((__constructor__))])
+	AC_MSG_ERROR([
+    --enable-threads=win95 and --enable-small cannot be used
+    at the same time with a compiler that doesn't support
+    __attribute__((__constructor__))])
 fi
 
 ###############################################################################

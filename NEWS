@@ -2,6 +2,80 @@
 XZ Utils Release Notes
 ======================
 
+5.4.5 (2023-11-01)
+
+    * liblzma:
+
+        - Use __attribute__((__no_sanitize_address__)) to avoid address
+          sanitization with CRC64 CLMUL. It uses 16-byte-aligned reads
+          which can extend past the bounds of the input buffer and
+          inherently trigger address sanitization errors. This isn't
+          a bug.
+
+        - Fixed an assertion failure that could be triggered by a large
+          unpadded_size argument. It was verified that there was no
+          other bug than the assertion failure.
+
+        - Fixed a bug that prevented building with Windows Vista
+          threading when __attribute__((__constructor__)) is not
+          supported.
+
+    * xz now properly handles special files such as "con" or "nul" on
+      Windows. Before this fix, the following wrote "foo" to the
+      console and deleted the input file "con_xz":
+
+          echo foo | xz > con_xz
+          xz --suffix=_xz --decompress con_xz
+
+    * Build systems:
+
+        - Allow builds with Windows win95 threading and small mode when
+          __attribute__((__constructor__)) is supported.
+
+        - Added a new line to liblzma.pc for MSYS2 (Windows):
+
+              Cflags.private: -DLZMA_API_STATIC
+
+          When compiling code that will link against static liblzma,
+          the LZMA_API_STATIC macro needs to be defined on Windows.
+
+        - CMake specific changes:
+
+            * Fixed a bug that allowed CLOCK_MONOTONIC to be used even
+              if the check for it failed.
+
+            * Fixed a bug where configuring CMake multiple times
+              resulted in HAVE_CLOCK_GETTIME and HAVE_CLOCK_MONOTONIC
+              not being set.
+
+            * Fixed the build with MinGW-w64-based Clang/LLVM 17.
+              llvm-windres now has more accurate GNU windres emulation
+              so the GNU windres workaround from 5.4.1 is needed with
+              llvm-windres version 17 too.
+
+            * The import library on Windows is now properly named
+              "liblzma.dll.a" instead of "libliblzma.dll.a"
+
+            * Fixed a bug causing the Ninja Generator to fail on
+              UNIX-like systems. This bug was introduced in 5.4.0.
+
+            * Added a new option to disable CLMUL CRC64.
+
+            * A module-definition (.def) file is now created when
+              building liblzma.dll with MinGW-w64.
+
+            * The pkg-config liblzma.pc file is now installed on all
+              builds except when using MSVC on Windows.
+
+            * Added large file support by default for platforms that
+              need it to handle files larger than 2 GiB. This includes
+              MinGW-w64, even 64-bit builds.
+
+    * Small fixes and improvements to the tests.
+
+    * Updated translations: Chinese (simplified) and Esperanto.
+
+
 5.4.4 (2023-08-02)
 
     * liblzma and xzdec can now build against WASI SDK when threading

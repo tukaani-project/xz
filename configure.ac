@@ -793,6 +793,8 @@ AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
 # cpuid.h may be used for detecting x86 processor features at runtime.
 AC_CHECK_HEADERS([immintrin.h cpuid.h])
 
+# dirent.h allows for directory parsing in xz.
+AC_CHECK_HEADERS([dirent.h])
 
 ###############################################################################
 # Checks for typedefs, structures, and compiler characteristics.

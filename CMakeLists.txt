@@ -1006,6 +1006,15 @@ calculation if supported by the system" ON)
     endif()
 endif()
 
+# MSVC shouldn't have this header file anyway but this won't waste time
+# checking.
+if(NOT MSVC)
+    # dirent.h
+    check_include_file(dirent.h HAVE_DIRENT_H)
+    tuklib_add_definition_if(liblzma HAVE_DIRENT_H)
+endif()
+
+
 # Support -fvisiblity=hidden when building shared liblzma.
 # These lines do nothing on Windows (even under Cygwin).
 # HAVE_VISIBILITY should always be defined to 0 or 1.

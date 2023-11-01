@@ -21,6 +21,10 @@
 static bool warn_fchown;
 #endif
 
+#ifdef HAVE_DIRENT_H
+#	include <dirent.h>
+#endif
+
 #if defined(HAVE_FUTIMES) || defined(HAVE_FUTIMESAT) || defined(HAVE_UTIMES)
 #	include <sys/time.h>
 #elif defined(HAVE__FUTIME)
@@ -794,7 +798,7 @@ io_open_src_real(file_pair *pair)
 		if (was_symlink)
 			message_warning(_("%s: Is a symbolic link, "
 				"skipping"), pair->src_name);
-		else {
+		else
 #endif
 		{
 #ifdef _WIN32
@@ -805,7 +809,7 @@ io_open_src_real(file_pair *pair)
 			if (errno == EACCES) {
 				pair->is_directory = should_parse_dir_windows(
 						pair->src_name);
-				return pair->is_directory;
+				return !pair->is_directory;
 			}
 #else
 			// Something else than O_NOFOLLOW failing
@@ -815,7 +819,6 @@ io_open_src_real(file_pair *pair)
 					strerror(errno));
 #endif
 		}
-
 		return true;
 	}
 
@@ -847,9 +850,13 @@ io_open_src_real(file_pair *pair)
 		// Do not allow symlinks with recursive mode because this
 		// could lead to a loop in the file system and thus infinite
 		// recursion. If a symlink is detected, skip it.
-		// S_ISLNK and lstat() are not available with MSVC so these need
-		// to be in an #ifdef
+		// S_ISLNK and lstat() are not available with MSVC so these
+		// need to be in an #ifdef
 		if (follow_symlinks) {
+#ifdef _WIN32
+			if (!should_parse_dir_windows(pair->src_name))
+				goto error;
+#else
 			if (lstat(pair->src_name, &pair->src_st) != 0)
 				goto error_msg;
 
@@ -858,6 +865,7 @@ io_open_src_real(file_pair *pair)
 				"directory, skipping"), pair->src_name);
 				goto error;
 			}
+#endif
 		}
 
 		(void)close(pair->src_fd);
@@ -1567,3 +1575,161 @@ io_write(file_pair *pair, const io_buf *buf, size_t size)
 
 	return io_write_buf(pair, buf->u8, size);
 }
+
+
+#if defined(_MSC_VER) || defined(HAVE_DIRENT_H)
+struct directory_iter_s {
+#if defined(_MSC_VER)
+	HANDLE dir;
+
+	// The path must be saved because the call to
+	// directory_iterator_init() does not actually open
+	// the directory HANDLE. There is not a way to open
+	// the directory without reading the first entry.
+	// Instead, the search path is prepared in
+	// directory_iterator_init() so the first call to
+	// directory_iter_next() will be able to use the saved
+	// path.
+	char *path;
+
+	// Windows uses FindFirstFile() to do the first search and
+	// open the HANDLE to the directory. After that, FindNextFile()
+	// must be used to continue the search. So this flag marks if
+	// FindFirstFile() or FindNextFile() should be used.
+	bool first;
+#elif defined(HAVE_DIRENT_H)
+	DIR *dir;
+#endif
+};
+
+
+extern directory_iter *
+directory_iterator_init(const char *path)
+{
+	directory_iter *iter = xmalloc(sizeof(directory_iter));
+
+#ifdef _MSC_VER
+	iter->first = true;
+
+	const size_t path_len = strlen(path);
+	char* path_search = xmalloc(path_len + 3);
+	memcpy(path_search, path, path_len);
+
+	// The windows directory search functions take a regular expression
+	// instead of just the directory name. Since we want all files in
+	// the directory, we need to append the wildcard character (*) to
+	// the end of the path.
+	//
+	// Note: It does not matter if the path parameter ends with the
+	//       path separator. The search path is not displayed and the
+	//       proper path name extension is handled elsewhere.
+	path_search[path_len] = PATH_SEP;
+	path_search[path_len + 1] = '*';
+	path_search[path_len + 2] = '\0';
+
+	iter->path = path_search;
+#else
+	// On some platforms, opendir() interrupted so it is safest to
+	// block signals here.
+	signals_block();
+	iter->dir = opendir(path);
+	signals_unblock();
+
+	if (iter->dir == NULL) {
+		free(iter);
+		message_error(_("%s: Error opening the directory: %s"),
+				path, strerror(errno));
+		return NULL;
+	}
+#endif
+	return iter;
+}
+
+
+extern bool
+directory_iter_next(directory_iter *iter, char *entry, size_t *entry_len)
+{
+	bool next = true;
+	char *next_entry;
+
+#ifdef _MSC_VER
+	WIN32_FIND_DATA dir_entry;
+	if (iter->first) {
+		iter->dir = FindFirstFile(iter->path, &dir_entry);
+
+		// The existence of the directory is checked in
+		// io_open_src_real() so its most likely this
+		// is an empty directory.
+		if (iter->dir == INVALID_HANDLE_VALUE)
+			next = false;
+
+		iter->first = false;
+	}
+	else {
+		next = FindNextFile(iter->dir, &dir_entry);
+	}
+
+	next_entry = dir_entry.cFileName;
+#else
+	// The only way to check if an error occurred is by saving the
+	// old errno and comparing it to the errno after readdir()
+	// completes. readdir() will return NULL on error and if the
+	// directory has been parsed to completion.
+	int old_errno = errno;
+	struct dirent *dir_entry = readdir(iter->dir);
+
+	if (dir_entry == NULL) {
+		// readdir() is not supposed to change the errno based on
+		// the POSIX standard. However the implementation used by
+		// MinGW-w64 will set errno to 0 on success. So if the errno
+		// was previously set it will falsely indicate and error.
+		if(old_errno != errno && errno != 0)
+			message_error(_("Error reading directory entry: %s"),
+					strerror(errno));
+		next = false;
+	}
+
+	next_entry = dir_entry->d_name;
+#endif
+
+	if (next) {
+		const size_t next_entry_len = strlen(next_entry);
+
+		if (*entry_len <= next_entry_len) {
+			message_error(_("Unexpected directory entry "
+					"length."));
+			*entry_len = 0;
+			return true;
+		}
+
+		// Copy NULL terminator
+		memcpy(entry, next_entry, next_entry_len + 1);
+		*entry_len = next_entry_len;
+	}
+
+	return next;
+}
+
+
+extern void
+directory_iter_close(directory_iter *iter)
+{
+	if (iter != NULL) {
+#ifdef _MSC_VER
+		if (iter->dir != INVALID_HANDLE_VALUE
+				&& !FindClose(iter->dir)) {
+			DWORD err = GetLastError();
+			message_windows_error("Error closing directory", err);
+		}
+
+		free(iter->path);
+#else
+		if(closedir(iter->dir))
+			message_error(_("Error closing directory: %s"),
+					strerror(errno));
+#endif
+		free(iter);
+	}
+}
+
+#endif //defined(_MSC_VER) || defined(HAVE_DIRENT_H)

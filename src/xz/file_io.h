@@ -26,6 +26,9 @@
 #	define stat _stat64
 #	define fstat _fstat64
 #	define off_t __int64
+#	define PATH_SEP '\\'
+#else
+#	define PATH_SEP '/'
 #endif
 
 
@@ -193,3 +196,44 @@ extern bool io_pread(file_pair *pair, io_buf *buf, size_t size, uint64_t pos);
 /// \return     On success, zero is returned. On error, -1 is returned
 ///             and error message printed.
 extern bool io_write(file_pair *pair, const io_buf *buf, size_t size);
+
+/// Opaque struct representing a directory iterator. This should be used
+/// with directory_iterator_init(), directory_iter_next(), and
+/// directory_iter_close().
+typedef struct directory_iter_s directory_iter;
+
+
+/// @brief      Creates a Directory Iterator
+///
+///             This will create and initialize a directory_iter structure.
+///             The pointer should not be freed and should instead be passed
+///             to directory_iter_close() when it is no longer needed.
+///
+/// @param      path    String path to a directory
+///
+/// @return     On success, a pointer to the directory iterator.
+///             On error, NULL.
+extern directory_iter * directory_iterator_init(const char* path);
+
+
+/// @brief      Iterate to the next directory entry
+///
+/// @param      iter       Pointer to the iterator
+/// @param      entry      Buffer to receive the next directory entry
+/// @param      entry_len  Set this to the size of the entry buffer. On
+///                        success this is set to the string length of
+///                        the entry that was copied into entry (does not
+///                        count the NULL terminator).
+///
+/// @return                Returns true if there may be more entries.
+///                        Returns false otherwise.
+extern bool directory_iter_next(directory_iter *iter, char *entry,
+		size_t *entry_len);
+
+/// @brief      Close the Directory Iterator
+///
+///             The cleans up the iterator by closing files and freeing
+///             all needed memory.
+///
+/// @param      iter    Pointer to the iterator to close
+extern void directory_iter_close(directory_iter *iter);

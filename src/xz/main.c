@@ -19,6 +19,24 @@
 #	include <sys/prctl.h>
 #endif
 
+/// The directory_list type is used in recursive mode to keep track of all
+/// the directories that need processing. Its used a a queue to process
+/// directories in the order they are discovered. Files, on the other hand
+/// are processed right away to reduce the size of the queue and hence the
+/// amount of memory needed to be allocated at any one time.
+typedef struct directory_list_s {
+	/// Path to the directory. This is used as a pointer since it is
+	/// likely that most directories do not need the full possible file
+	/// path length allowed by systems. This saves memory in cases where
+	/// many directories need to be on the queue at the same time.
+	char *dir_path;
+
+	/// Pointer to the next directory in the queue. This is only a
+	/// singly linked list since we only ever need to process the queue
+	/// in one direction.
+	struct directory_list_s *next;
+} directory_list;
+
 
 /// Exit status to use. This can be changed with set_exit_status().
 static enum exit_status_type exit_status = E_SUCCESS;
@@ -149,27 +167,184 @@ read_name(const args_info *args)
 static void
 process_entry(const char *path)
 {
-	// Set and possibly print the filename for the progress message.
-	message_filename(path);
+#ifdef HAVE_DECODERS
+	if (opt_mode == MODE_LIST && path == stdin_filename) {
+		message_error(_("--list does not support reading from "
+				"standard input"));
+		return;
+	}
+#endif
 
 	// Open the entry
 	file_pair *pair = io_open_src(path);
 	if (pair == NULL)
 		return;
 
-#ifdef HAVE_DECODERS
-	if (opt_mode == MODE_LIST) {
-		if (path == stdin_filename) {
-			message_error(_("--list does not support reading from "
-					"standard input"));
-			return;
+#if defined(_MSC_VER) || defined(HAVE_DIRENT_H)
+	// io_open_src() will return NULL if the path points to a directory
+	// and we aren't in recursive mode. So there is no need to check
+	// for recursive mode here.
+	if (pair->is_directory) {
+		// Create the queue of directories to process. The first
+		// item in the queue will be the base entry. The first item
+		// is dynamically allocated to simplify the memory freeing
+		// code later on.
+		directory_list *dir_list = xmalloc(sizeof(directory_list));
+
+		dir_list->dir_path = xstrdup(path);
+
+		// Strip any trailing path separators at the end of the
+		// directory. This makes the path compatible with Windows
+		// MSVC search functions and makes the output look nicer.
+		for (size_t i = strlen(path) - 1; dir_list->dir_path[i]
+				== PATH_SEP && i > 1; i--) {
+			dir_list->dir_path[i] = '\0';
 		}
 
-		list_file(pair);
+		dir_list->next = NULL;
+
+		// The current pointer represents the directory we are
+		// currently processing. To start, it is initialzed as the
+		// base entry.
+		directory_list *current = dir_list;
+
+		// The pointer to the last item in the queue is used to
+		// append new directories.
+		directory_list *last = dir_list;
+		do {
+			directory_list* next;
+
+			// The iterator initialization will return NULL and
+			// print an error message if there is any kind of
+			// problem. In this case, we can simply continue on
+			// to the next directory to process.
+			directory_iter *iter = directory_iterator_init(
+					current->dir_path);
+
+			// The error message is printed during
+			// directory_iterator_init(), so no need to print
+			// anything before proceeding to the next iteration.
+			if (iter == NULL)
+				goto next_iteration;
+
+			const size_t dir_path_len = strlen(current->dir_path);
+
+			// Set ENTRY_LEN_MAX depending on the system. On
+			// POSIX systems, NAME_MAX will be defined in
+			// <limit.h>. On Windows, the directory parsing
+			// functions have buffers of size MAX_PATH.
+#ifdef TUKLIB_DOSLIKE
+#			define ENTRY_LEN_MAX MAX_PATH
+#else
+#			define ENTRY_LEN_MAX NAME_MAX
+#endif
+			char entry[ENTRY_LEN_MAX + 1];
+			size_t entry_len;
+
+			// The entry_len must be reset each iteration because
+			// directory_iter_next() will only write to the entry
+			// buffer if it can write the entire entry name. If the
+			// value is not reset each time, it will limit the
+			// next entry size based on the last entry's size.
+			while ((entry_len = ENTRY_LEN_MAX)
+					&& directory_iter_next(iter, entry,
+						&entry_len)) {
+				// Extend current directory path with
+				// new entry.
+				if (entry_len == 0)
+					continue;
+
+				// Check for '.' and '..' since there is no
+				// point in processing them.
+				if (entry[0] == '.' && ((entry[1] == '.'
+						&& entry[2] == '\0')
+						|| entry[1] == '\0'))
+					continue;
+
+				// The total entry size needs the "+2" to
+				// make room for the directory path separator
+				// and the NULL terminator.
+				const size_t total_size = entry_len + dir_path_len + 2;
+				char *entry_path = xmalloc(total_size);
+
+				memcpy(entry_path, current->dir_path, dir_path_len);
+
+				char *entry_copy_start = entry_path + dir_path_len;
+
+				entry_path[dir_path_len] = PATH_SEP;
+				entry_copy_start++;
+
+				memcpy(entry_copy_start, entry, entry_len + 1);
+
+				// Try to open the next entry. If it is a file
+				// it will be processed immediately. If it is a
+				// directory it will be added to the queue to
+				// be processed later. Processing files right
+				// away reduces the amount of memory needed
+				// for queue nodes and stored file paths.
+				// Exploring directories only increases the
+				// amount of memory needed so its better to
+				// prioritize processing files as early as
+				// possible.
+				pair = io_open_src(entry_path);
+
+				if (pair == NULL) {
+					free(entry_path);
+					continue;
+				}
+
+				if (pair->is_directory) {
+					directory_list *next_dir = xmalloc(
+						sizeof(directory_list));
+					next_dir->dir_path = entry_path;
+					next_dir->next = NULL;
+					last->next = next_dir;
+					last = next_dir;
+				} else if (entry[0] == '.'
+						&& opt_mode == MODE_COMPRESS
+						&& !opt_keep_original) {
+					message_warning(_("%s: Hidden file "
+						"skipped during recursive "
+						"compression mode. Use --keep "
+						"to process these files.\n"),
+						entry_path);
+					free(entry_path);
+				} else {
+
+					message_filename(entry_path);
+#ifdef HAVE_DECODERS
+					if (opt_mode == MODE_LIST)
+						list_file(pair);
+					else
+#endif
+					coder_run(pair);
+					free(entry_path);
+				}
+			}
+
+			directory_iter_close(iter);
+next_iteration:
+			next = current->next;
+
+			free(current->dir_path);
+			free(current);
+
+			current = next;
+		} while (current != NULL);
+
 		return;
 	}
-#endif
 
+#endif // defined(_MSC_VER) || defined(HAVE_DIRENT_H)
+
+// Set and possibly print the filename for the progress message.
+message_filename(path);
+
+#ifdef HAVE_DECODERS
+	if (opt_mode == MODE_LIST)
+		list_file(pair);
+	else
+#endif
 	coder_run(pair);
 }
 

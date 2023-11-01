@@ -814,6 +814,11 @@ args_parse(args_info *args, int argc, char **argv)
 				"is not supported"));
 #endif
 
+#if !defined(_MSC_VER) && !defined(HAVE_DIRENT_H)
+	if (opt_recursive)
+		message_fatal("Recursive mode is not supported");
+#endif
+
 	// Never remove the source file when the destination is not on disk.
 	// In test mode the data is written nowhere, but setting opt_stdout
 	// will make the rest of the code behave well.

@@ -455,7 +455,8 @@ main(int argc, char **argv)
 	// TODO: Make sandboxing work for other situations too.
 	if (args.files_name == NULL && args.arg_count == 1
 			&& (opt_stdout || strcmp("-", args.arg_names[0]) == 0
-				|| opt_mode == MODE_LIST))
+				|| opt_mode == MODE_LIST)
+				&& !opt_recursive)
 		io_allow_sandbox();
 #endif
 

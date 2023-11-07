@@ -6,7 +6,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2024-01-23" "Tukaani" "XZ Utils"
+.TH XZ 1 "2024-01-29" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -205,6 +205,16 @@ This has only limited use since when standard error
 is a terminal, using
 .B \-\-verbose
 will display an automatically updating progress indicator.
+.PP
+Recursive mode (
+.B \-\-recursive
+) allows directories to be processed. If a directory or any
+sub-directory is a symlink, it will be skipped.
+When compressing, files discovered in sub-directories that begin
+with '.' are skipped unless
+.B \-\-keep
+was specified.
+
 .
 .SS "Memory usage"
 The memory usage of
@@ -529,6 +539,18 @@ the suffix must always be specified unless
 writing to standard output,
 because there is no default suffix for raw streams.
 .TP
+.BR \-r ", " \-\-recursive
+Operate recursively on directories.
+If a directory is specified as a target file in any operation
+mode, then it is traversed recursively into all files the
+directory and any sub-directories contain.
+When traversing recursively in compression mode all filenames
+and directories beginning with
+.B .
+are skipped, unless
+.BR \-\-keep
+is used.
+.TP
 \fB\-\-files\fR[\fB=\fIfile\fR]
 Read the filenames to process from
 .IR file ;
@@ -542,6 +564,10 @@ is taken as a regular filename; it doesn't mean standard input.
 If filenames are given also as command line arguments, they are
 processed before the filenames read from
 .IR file .
+In
+.BR \-\-recursive
+mode directories can be used and are
+traversed recursively.
 .TP
 \fB\-\-files0\fR[\fB=\fIfile\fR]
 This is identical to \fB\-\-files\fR[\fB=\fIfile\fR] except

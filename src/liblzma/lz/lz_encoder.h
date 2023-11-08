@@ -153,9 +153,13 @@ typedef struct {
 	/// Maximum search depth
 	uint32_t depth;
 
-	/// TODO: Comment
+	/// Initial dictionary for the match finder to search.
 	const uint8_t *preset_dict;
 
+	/// If the preset dictionary is NULL, this value is ignored.
+	/// Otherwise this member must indicate the preset dictionary's
+	/// buffer size. If this size is larger than dict_size, then only
+	/// the dict_size sized tail of the preset_dict will be used.
 	uint32_t preset_dict_size;
 
 } lzma_lz_options;

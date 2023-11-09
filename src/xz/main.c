@@ -412,7 +412,7 @@ main(int argc, char **argv)
 
 	// Tell the message handling code how many input files there are if
 	// we know it. This way the progress indicator can show it.
-	if (args.files_name != NULL)
+	if (args.files_name != NULL || opt_recursive)
 		message_set_files(0);
 	else
 		message_set_files(args.arg_count);

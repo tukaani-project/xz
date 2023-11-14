@@ -842,6 +842,27 @@ args_parse(args_info *args, int argc, char **argv)
 		args->arg_count = (unsigned int)(argc - optind);
 	}
 
+	// If all of the filenames provided are "-" (more than one "-"
+	// could be specified) or no filenames are provided, then we are
+	// only going to be writing to standard out. However if --files or
+	// --files0 is used, then we will not be writing to standard out.
+	if (!opt_stdout && args->files_name == NULL) {
+		uint32_t i;
+
+		for (i = 0; i < args->arg_count; i++) {
+			const char *name = args->arg_names[i];
+
+			// getopt_long() will not give us an empty string
+			// as an argument name here so we don't need to
+			// check if name[0] is a NULL terminator.
+			if (name[0] != '-' && name[1] != '\0')
+				break;
+		}
+
+		// Set opt_stdout if the loop did not exit early.
+		opt_stdout = i == args->arg_count;
+	}
+
 	return;
 }
 

@@ -820,14 +820,6 @@ args_parse(args_info *args, int argc, char **argv)
 			&& opt_mode != MODE_LIST))
 		coder_set_compression_settings();
 
-	// If raw format is used and a custom suffix is not provided,
-	// then only stdout mode can be used when compressing or decompressing.
-	if (opt_format == FORMAT_RAW && !suffix_is_set() && !opt_stdout
-			&& (opt_mode == MODE_COMPRESS
-				|| opt_mode == MODE_DECOMPRESS))
-		message_fatal(_("With --format=raw, --suffix=.SUF is "
-				"required unless writing to stdout"));
-
 	// If no filenames are given, use stdin.
 	if (argv[optind] == NULL && args->files_name == NULL) {
 		// We don't modify or free() the "-" constant. The caller
@@ -862,6 +854,14 @@ args_parse(args_info *args, int argc, char **argv)
 		// Set opt_stdout if the loop did not exit early.
 		opt_stdout = i == args->arg_count;
 	}
+
+	// If raw format is used and a custom suffix is not provided,
+	// then only stdout mode can be used when compressing or decompressing.
+	if (opt_format == FORMAT_RAW && !suffix_is_set() && !opt_stdout
+			&& (opt_mode == MODE_COMPRESS
+				|| opt_mode == MODE_DECOMPRESS))
+		message_fatal(_("With --format=raw, --suffix=.SUF is "
+				"required unless writing to stdout"));
 
 	return;
 }

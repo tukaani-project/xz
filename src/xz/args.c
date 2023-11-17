@@ -811,6 +811,28 @@ args_parse(args_info *args, int argc, char **argv)
 		opt_block_list = NULL;
 	}
 
+	// If raw format is used and a custom suffix is not provided,
+	// then only stdout mode can be used when compressing or
+	// decompressing.
+	if (opt_format == FORMAT_RAW && !suffix_is_set() && !opt_stdout
+			&& (opt_mode == MODE_COMPRESS
+				|| opt_mode == MODE_DECOMPRESS)) {
+		if (args->files_name != NULL)
+			message_fatal(_("With --format=raw, "
+					"--suffix=.SUF is required "
+					"unless writing to stdout"));
+
+		// If all of the filenames provided are "-" (more than one
+		// "-" could be specified) or no filenames are provided,
+		// then we are only going to be writing to standard out.
+		for (int i = optind; i < argc; i++) {
+			if (strcmp(argv[i], "-") != 0)
+				message_fatal(_("With --format=raw, "
+						"--suffix=.SUF is required "
+						"unless writing to stdout"));
+		}
+	}
+
 	// Compression settings need to be validated (options themselves and
 	// their memory usage) when compressing to any file format. It has to
 	// be done also when uncompressing raw data, since for raw decoding
@@ -832,28 +854,6 @@ args_parse(args_info *args, int argc, char **argv)
 		// --files or --files0 was specified.
 		args->arg_names = argv + optind;
 		args->arg_count = (unsigned int)(argc - optind);
-	}
-
-	// If raw format is used and a custom suffix is not provided,
-	// then only stdout mode can be used when compressing or
-	// decompressing.
-	if (opt_format == FORMAT_RAW && !suffix_is_set() && !opt_stdout
-			&& (opt_mode == MODE_COMPRESS
-				|| opt_mode == MODE_DECOMPRESS)) {
-		if (args->files_name != NULL)
-			message_fatal(_("With --format=raw, "
-					"--suffix=.SUF is required "
-					"unless writing to stdout"));
-
-		// If all of the filenames provided are "-" (more than one
-		// "-" could be specified) or no filenames are provided,
-		// then we are only going to be writing to standard out.
-		for (unsigned int i = 0; i < args->arg_count; i++) {
-			if (strcmp(args->arg_names[i], "-") != 0)
-				message_fatal(_("With --format=raw, "
-						"--suffix=.SUF is required "
-						"unless writing to stdout"));
-		}
 	}
 
 	return;

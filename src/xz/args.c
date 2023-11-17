@@ -840,6 +840,11 @@ args_parse(args_info *args, int argc, char **argv)
 	if (opt_format == FORMAT_RAW && !suffix_is_set() && !opt_stdout
 			&& (opt_mode == MODE_COMPRESS
 				|| opt_mode == MODE_DECOMPRESS)) {
+		if (args->files_name != NULL)
+			message_fatal(_("With --format=raw, "
+					"--suffix=.SUF is required "
+					"unless writing to stdout"));
+
 		// If all of the filenames provided are "-" (more than one
 		// "-" could be specified) or no filenames are provided,
 		// then we are only going to be writing to standard out.

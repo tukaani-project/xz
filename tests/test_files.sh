@@ -9,7 +9,7 @@
 #
 ###############################################################################
 
-# If both xz and xzdec were not build, skip this test.
+# If both xz and xzdec were not built, skip this test.
 XZ=../src/xz/xz
 XZDEC=../src/xzdec/xzdec
 test -x "$XZ" || XZ=

@@ -869,15 +869,37 @@ fi
 # implementations of the same function at runtime. This is slightly more
 # efficient than using __attribute__((__constructor__)) and setting
 # a function pointer.
-AC_ARG_ENABLE([ifunc], [AS_HELP_STRING([--disable-ifunc],
-		[do not use __attribute__((__ifunc__()))])],
-	[], [enable_ifunc=yes])
+AC_ARG_ENABLE([ifunc], [AS_HELP_STRING([--enable-ifunc],
+		[Use __attribute__((__ifunc__())). Enabled by default on
+		GNU/Linux (glibc) and FreeBSD.])],
+	[], [enable_ifunc=auto])
 
-if test "x$enable_ifunc" = xyes ; then
+# When enable_ifunc is 'auto', allow the use of __attribute__((__ifunc__()))
+# if compiler support is detected and we are building for GNU/Linux (glibc)
+# or FreeBSD. uClibc and musl don't support ifunc in their dynamic linkers
+# but some compilers still accept the attribute when compiling for these
+# C libraries, which results in broken binaries. That's why we need to
+# check which libc is being used.
+if test "x$enable_ifunc" = xauto ; then
 	OLD_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS -Werror"
 	AC_MSG_CHECKING([if __attribute__((__ifunc__())) can be used])
 	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+		/*
+		 * Force a compilation error when not using glibc on Linux
+		 * or if we are not using FreeBSD. uClibc will define
+		 * __GLIBC__ but does not support ifunc, so we must have
+		 * an extra check to disable with uClibc.
+		 */
+		#if defined(__linux__)
+		#	include <features.h>
+		#	if !defined(__GLIBC__) || defined(__UCLIBC__)
+				compile error
+		#	endif
+		#elif !defined(__FreeBSD__)
+			compile error
+		#endif
+
 		static void func(void) { return; }
 		static void (*resolve_func (void)) (void) { return func; }
 		void func_ifunc (void)
@@ -891,23 +913,28 @@ if test "x$enable_ifunc" = xyes ; then
 		void make_clang_quiet(void);
 		void make_clang_quiet(void) { resolve_func()(); }
 	]])], [
-		AC_DEFINE([HAVE_FUNC_ATTRIBUTE_IFUNC], [1],
-			[Define to 1 if __attribute__((__ifunc__()))
-			is supported for functions.])
-		AC_MSG_RESULT([yes])
-
-		# ifunc explicitly does not work with -fsanitize=address.
-		# If configured, it will result in a liblzma build that
-		# will fail when liblzma is loaded at runtime (when the
-		# ifunc resolver executes).
-		AS_CASE([$CFLAGS], [*-fsanitize=*], [AC_MSG_ERROR([
-    CFLAGS contains '-fsanitize=' which is incompatible with ifunc.
-    Use --disable-ifunc when using '-fsanitize'.])])
+		enable_ifunc=yes
 	], [
-		AC_MSG_RESULT([no])
+		enable_ifunc=no
 	])
 
+	AC_MSG_RESULT([$enable_ifunc])
+
 	CFLAGS="$OLD_CFLAGS"
+fi
+
+if test "x$enable_ifunc" = xyes ; then
+	AC_DEFINE([HAVE_FUNC_ATTRIBUTE_IFUNC], [1],
+			[Define to 1 if __attribute__((__ifunc__()))
+			is supported for functions.])
+
+	# ifunc explicitly does not work with -fsanitize=address.
+	# If configured, it will result in a liblzma build that will fail
+	# when liblzma is loaded at runtime (when the ifunc resolver
+	# executes).
+	AS_CASE([$CFLAGS], [*-fsanitize=*], [AC_MSG_ERROR([
+    CFLAGS contains '-fsanitize=' which is incompatible with ifunc.
+    Use --disable-ifunc when using '-fsanitize'.])])
 fi
 
 

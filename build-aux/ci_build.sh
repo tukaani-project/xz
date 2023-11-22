@@ -23,6 +23,7 @@ USAGE="Usage: $0
   -d [encoders|decoders|bcj|delta|threads|shared|nls|small|ifunc|clmul|sandbox]
   -f [CFLAGS]
   -l [destdir]
+  -m [compiler]
   -n [ARTIFACTS_DIR_NAME]
   -p [all|build|test]
   -s [srcdir]"
@@ -55,7 +56,7 @@ ARTIFACTS_DIR_NAME="output"
 # Parse arguments #
 ###################
 
-while getopts a:b:c:d:l:n:s:p:f:h opt; do
+while getopts a:b:c:d:l:m:n:s:p:f:h opt; do
 	# b option can have either value "autotools" OR "cmake"
 	case ${opt} in
 	h)
@@ -96,6 +97,10 @@ while getopts a:b:c:d:l:n:s:p:f:h opt; do
 	done
 	;;
 	l) DEST_DIR="$OPTARG"
+	;;
+	m)
+		CC="$OPTARG"
+		export CC
 	;;
 	n) ARTIFACTS_DIR_NAME="$OPTARG"
 	;;
@@ -236,6 +241,10 @@ then
 		add_extra_option "$SHARED" "-DBUILD_SHARED_LIBS=ON" ""
 
 		add_extra_option "$SMALL" "-DHAVE_SMALL=ON" ""
+
+		if test -n "$CC" ; then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS -DCMAKE_C_COMPILER=$CC"
+		fi
 
 		# Remove old cache file to clear previous settings.
 		rm -f "CMakeCache.txt"

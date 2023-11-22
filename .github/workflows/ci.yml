@@ -38,7 +38,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
             sudo apt-get update
-            sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen
+            sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen musl-tools
 
       # Install Autotools on Mac
       - name: Install Dependencies
@@ -50,7 +50,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'cmake' }}
         run: |
             sudo apt-get update
-            sudo apt-get install -y build-essential cmake
+            sudo apt-get install -y build-essential cmake musl-tools
 
       # Install CMake on Mac
       - name: Install Dependencies
@@ -92,6 +92,21 @@ jobs:
         run: |
             ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc,sandbox
             cd ../xz_build && make distclean
+
+      # musl libc has some slight differences compared to glibc, including
+      # the lack of ifunc support. This tests if the ifunc detection
+      # functions properly since musl-gcc can compile with ifunc support,
+      # but will fail at runtime.
+      - name: Build with musl libc
+        if: ${{ matrix.os == 'ubuntu-latest'}}
+        run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -p build -m "/usr/bin/musl-gcc"
+      - name: Test with musl libc
+        if: ${{ matrix.os == 'ubuntu-latest'}}
+        run: |
+            ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -p test -m "/usr/bin/musl-gcc"
+      - name: Clean up musl libc run
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        run: cd ../xz_build && make distclean
 
       - name: Build with full features
         run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -p build

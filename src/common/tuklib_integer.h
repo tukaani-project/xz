@@ -251,7 +251,7 @@
 // was one instruction longer.
 //
 // Conclusion: At least in case of GCC and Clang, byte-by-byte code is
-// the best choise for strict-align archs to do unaligned access.
+// the best choice for strict-align archs to do unaligned access.
 //
 // See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111502
 //

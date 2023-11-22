@@ -796,13 +796,46 @@ endif()
 
 
 # Check for __attribute__((__ifunc__())) support.
-option(ALLOW_ATTR_IFUNC "Allow use of __attribute__((__ifunc__())) if \
-supported by the system" ON)
+# Supported values for USE_ATTR_IFUNC:
+#
+# auto (default) - Detect ifunc support with a compile test.
+# ON             - Always enable ifunc.
+# OFF            - Disable ifunc usage.
+set(USE_ATTR_IFUNC "auto" CACHE STRING "Use __attribute__((__ifunc__())).")
 
-if(ALLOW_ATTR_IFUNC)
+set(SUPPORTED_USE_ATTR_IFUNC auto ON OFF)
+
+if(NOT USE_ATTR_IFUNC IN_LIST SUPPORTED_USE_ATTR_IFUNC)
+    message(FATAL_ERROR "'${USE_ATTR_IFUNC}' is not a supported value for"
+                        "USE_ATTR_IFUNC")
+endif()
+
+# When USE_ATTR_IFUNC is 'auto', allow the use of __attribute__((__ifunc__()))
+# if compiler support is detected and we are building for GNU/Linux (glibc)
+# or FreeBSD. uClibc and musl don't support ifunc in their dynamic linkers
+# but some compilers still accept the attribute when compiling for these
+# C libraries, which results in broken binaries. That's why we need to
+# check which libc is being used.
+if(USE_ATTR_IFUNC STREQUAL "auto")
     cmake_push_check_state()
     set(CMAKE_REQUIRED_FLAGS "-Werror")
+
     check_c_source_compiles("
+            /*
+             * Force a compilation error when not using glibc on Linux
+             * or if we are not using FreeBSD. uClibc will define
+             * __GLIBC__ but does not support ifunc, so we must have
+             * an extra check to disable with uClibc.
+             */
+            #if defined(__linux__)
+            #   include <features.h>
+            #   if !defined(__GLIBC__) || defined(__UCLIBC__)
+            compile error
+            #   endif
+            #elif !defined(__FreeBSD__)
+            compile error
+            #endif
+
             static void func(void) { return; }
             static void (*resolve_func(void)) (void) { return func; }
             void func_ifunc(void)
@@ -817,15 +850,19 @@ if(ALLOW_ATTR_IFUNC)
             void make_clang_quiet(void);
             void make_clang_quiet(void) { resolve_func()(); }
         "
-        HAVE_FUNC_ATTRIBUTE_IFUNC)
-    cmake_pop_check_state()
-    tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_IFUNC)
+        SYSTEM_SUPPORTS_IFUNC)
 
-    if(HAVE_FUNC_ATTRIBUTE_IFUNC AND CMAKE_C_FLAGS MATCHES "-fsanitize=")
+        cmake_pop_check_state()
+endif()
+
+if(USE_ATTR_IFUNC STREQUAL "ON" OR SYSTEM_SUPPORTS_IFUNC)
+    tuklib_add_definitions(liblzma HAVE_FUNC_ATTRIBUTE_IFUNC)
+
+    if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
         message(SEND_ERROR
                 "CMAKE_C_FLAGS or the environment variable CFLAGS "
                 "contains '-fsanitize=' which is incompatible "
-                "with ifunc. Use -DALLOW_ATTR_IFUNC=OFF "
+                "with ifunc. Use -DUSE_ATTR_IFUNC=OFF "
                 "as an argument to 'cmake' when using '-fsanitize'.")
     endif()
 endif()

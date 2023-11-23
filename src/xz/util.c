@@ -267,8 +267,8 @@ is_tty(int fd)
 #if defined(_WIN32) && !defined(__CYGWIN__)
 	// There is no need to check if handle == INVALID_HANDLE_VALUE
 	// because it will return false anyway when used in GetConsoleMode().
-	// The resulting HANDLE does not need to be closed based on Windows
-	// API documentation.
+	// The resulting HANDLE is owned by the file descriptor.
+	// The HANDLE must not be closed here.
 	intptr_t handle = _get_osfhandle(fd);
 	DWORD mode;
 

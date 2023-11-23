@@ -15,11 +15,6 @@
 
 #include <stdarg.h>
 
-#ifdef _MSC_VER
-#	include <io.h>
-#	define isatty _isatty
-#endif
-
 
 /// Number of the current file
 static unsigned int files_pos = 0;
@@ -125,7 +120,7 @@ message_init(void)
 	// exception, even if --verbose was not used, user can send SIGALRM
 	// to make us print progress information once without automatic
 	// updating.
-	progress_automatic = isatty(STDERR_FILENO);
+	progress_automatic = is_tty(STDERR_FILENO);
 
 	// Commented out because COLUMNS is rarely exported to environment.
 	// Most users have at least 80 columns anyway, let's think something

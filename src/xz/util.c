@@ -273,9 +273,30 @@ is_empty_filename(const char *filename)
 
 
 extern bool
+is_tty(int fd)
+{
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	// There is no need to check if handle == INVALID_HANDLE_VALUE
+	// because it will return false anyway when used in GetConsoleMode().
+	// The resulting HANDLE is owned by the file descriptor.
+	// The HANDLE must not be closed here.
+	intptr_t handle = _get_osfhandle(fd);
+	DWORD mode;
+
+	// GetConsoleMode() is an easy way to tell if the HANDLE is a
+	// console or not. We do not care about the value of mode since we
+	// do not plan to use any further Windows console functions.
+	return GetConsoleMode((HANDLE)handle, &mode);
+#else
+	return isatty(fd);
+#endif
+}
+
+
+extern bool
 is_tty_stdin(void)
 {
-	const bool ret = isatty(STDIN_FILENO);
+	const bool ret = is_tty(STDIN_FILENO);
 
 	if (ret)
 		message_error(_("Compressed data cannot be read from "
@@ -288,7 +309,7 @@ is_tty_stdin(void)
 extern bool
 is_tty_stdout(void)
 {
-	const bool ret = isatty(STDOUT_FILENO);
+	const bool ret = is_tty(STDOUT_FILENO);
 
 	if (ret)
 		message_error(_("Compressed data cannot be written to "

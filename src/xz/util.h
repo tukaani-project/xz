@@ -109,6 +109,20 @@ extern void my_snprintf(char **pos, size_t *left, const char *fmt, ...);
 extern bool is_empty_filename(const char *filename);
 
 
+/// \brief      Test if file descriptor is a terminal
+///
+/// For POSIX systems, this is a simple wrapper around isatty(). However on
+/// Windows, isatty() returns true for all character devices, not just
+/// terminals.
+///
+/// \param      fd    File descriptor to test
+///
+/// \return     bool:
+///             - true if file descriptor is a terminal
+///             - false otherwise
+extern bool is_tty(int fd);
+
+
 /// \brief      Test if stdin is a terminal
 ///
 /// If stdin is a terminal, an error message is printed and exit status set

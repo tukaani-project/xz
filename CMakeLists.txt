@@ -909,8 +909,8 @@ calculation if supported by the system" ON)
                     return _mm_clmulepi64_si128(a, b, 0);
                 }
                 int main(void) { return 0; }
-        "
-        HAVE_USABLE_CLMUL)
+            "
+            HAVE_USABLE_CLMUL)
 
         if(HAVE_USABLE_CLMUL)
             target_sources(liblzma PRIVATE src/liblzma/check/crc_clmul.c)

@@ -383,14 +383,6 @@ XZ Utils Installation
                 required extensions (-msse4.1 -mpclmul) then runtime
                 detection isn't used and the generic code is omitted.
 
-    --disable-ifunc
-                Disable the use of __attribute__((__ifunc__())) for
-                function dispatching even if support is detected.
-
-                The ifunc attribute is incompatible with
-                -fsanitize=address so it may need to be disabled in
-                debug builds with extra instrumentation.
-
     --enable-unaligned-access
                 Allow liblzma to use unaligned memory access for 16-bit,
                 32-bit, and 64-bit loads and stores. This should be
@@ -521,6 +513,14 @@ XZ Utils Installation
                                 that is, if a multi-threaded application
                                 calls any liblzma functions from more than
                                 one thread, something bad may happen.
+
+    --enable-ifunc
+                Use __attribute__((__ifunc__())) in liblzma. This is
+                enabled by default on GNU/Linux and FreeBSD.
+
+                The ifunc attribute is incompatible with
+                -fsanitize=address. --disable-ifunc must be used
+                if any -fsanitize= option is specified in CFLAGS.
 
     --enable-sandbox=METHOD
                 There is limited sandboxing support in the xz tool. If

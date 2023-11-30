@@ -293,7 +293,7 @@ io_sandbox_enter(int src_fd)
 		if (ruleset_fd < 0)
 			goto error;
 
-		// All files we need should have already been openend. Thus,
+		// All files we need should have already been opened. Thus,
 		// we don't need to add any rules using landlock_add_rule(2)
 		// before activating the sandbox.
 		//

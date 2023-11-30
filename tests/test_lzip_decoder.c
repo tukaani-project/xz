@@ -233,7 +233,7 @@ test_v1_trailing(void)
 
 
 static void
-test_concatentated(void)
+test_concatenated(void)
 {
 	// First test a file with one v0 member and one v1 member
 	// The first member should contain "Hello\n" and
@@ -474,7 +474,7 @@ main(int argc, char **argv)
 	tuktest_run(test_v1_decode);
 	tuktest_run(test_v0_trailing);
 	tuktest_run(test_v1_trailing);
-	tuktest_run(test_concatentated);
+	tuktest_run(test_concatenated);
 	tuktest_run(test_crc);
 	tuktest_run(test_invalid_magic_bytes);
 	tuktest_run(test_invalid_version);

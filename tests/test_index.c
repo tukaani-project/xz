@@ -100,7 +100,7 @@ test_lzma_index_memused(void)
 static void
 test_lzma_index_append(void)
 {
-	// Basic input-ouput test done here.
+	// Basic input-output test done here.
 	// Less trivial tests for this function are done throughout
 	// other tests.
 

@@ -1,22 +1,20 @@
 # first 5 header bytes of .lzma archives based on the info from
-# https://github.com/tukaani-project/xz/blob/master/doc/lzma-file-format.txt
+# /doc/lzma-file-format.txt
 
-# byte 0 value (properties=0x5d) is created by encoding
-# common values (lc=3, lp=0, pb=2) using the algorithm,
-# described in the documentation above
+# byte 0 is created by encoding LZMA property values (lc, lp, pb)
+# using the algorithm described in the documentation above.
 
-
-# compression preset 1    (dictionary size = 0x00100000)
+# lc=3, lp=0, pb=2 and dictionary size = 0x00100000
 "\x5d\x00\x00\x10\x00"
-# compression preset 2    (dictionary size = 0x00200000)
-"\x5d\x00\x00\x20\x00"
-# compression preset 3, 4 (dictionary size = 0x00400000)
-"\x5d\x00\x00\x40\x00"
-# compression preset 5, 6 (dictionary size = 0x00800000)
-"\x5d\x00\x00\x80\x00"
-# compression preset 7    (dictionary size = 0x01000000)
-"\x5d\x00\x00\x00\x01"
-# compression preset 8    (dictionary size = 0x02000000)
-"\x5d\x00\x00\x00\x02"
-# compression preset 9    (dictionary size = 0x04000000)
-"\x5d\x00\x00\x00\x04"
+
+# lc=3, lp=1, pb=3 and dictionary size = 0x00100000
+"\x93\x00\x00\x10\x00"
+
+# lc=2, lp=2, pb=4 and dictionary size = 0x00100000
+"\xc8\x00\x00\x10\x00"
+
+# lc=1, lp=3, pb=1 and dictionary size = 0x00200000
+"\x49\x00\x00\x20\x00"
+
+# lc=0, lp=4, pb=0 and dictionary size = 0x00200000
+"\x24\x00\x00\x20\x00"

@@ -1,9 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       fuzz_decode_auto.c
-/// \brief      Fuzz test program for liblzma lzma_auto_decoder()
+/// \file       fuzz_common.h
+/// \brief      Common macros and functions needed by the fuzz targets
 //
-//  Author:     Maksym Vatsyk
+//  Authors:    Maksym Vatsyk
+//              Lasse Collin
 //
 //  This file has been put into the public domain.
 //  You can do whatever you want with this file.
@@ -21,13 +22,12 @@
 #define MEM_LIMIT (300 << 20) // 300 MiB
 
 
-// Output buffer for decompressed data. This is write only; nothing cares
-// about the actual data written here.
-static uint8_t outbuf[4096];
-
-
 static void
 fuzz_code(lzma_stream *stream, const uint8_t *inbuf, size_t inbuf_size) {
+	// Output buffer for decompressed data. This is write only; nothing
+	// cares about the actual data written here.
+	uint8_t outbuf[4096];
+
 	// Give the whole input buffer at once to liblzma.
 	// Output buffer isn't initialized as liblzma only writes to it.
 	stream->next_in = inbuf;

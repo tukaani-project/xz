@@ -1,11 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 /// \file       fuzz_encode_stream.c
-/// \brief      Fuzz test program for liblzma lzma_stream_encoder() w/ LZMA2
+/// \brief      Fuzz test program for .xz encoding
 //
-//  Author:     Maksym Vatsyk
-//
-//  Based on Lasse Collin's original fuzzer for liblzma
+//  Authors:    Maksym Vatsyk
+//              Lasse Collin
 //
 //  This file has been put into the public domain.
 //  You can do whatever you want with this file.
@@ -27,9 +26,15 @@ LLVMFuzzerTestOneInput(const uint8_t *inbuf, size_t inbuf_size)
 		return 0;
 	}
 
-	// set LZMA preset level based on the first input byte
+	// Set the LZMA options based on the first input byte. The fuzzer
+	// will learn through its mutational genetic algorithm with the
+	// code coverage feedback that the first byte must be one of the
+	// values with a switch case label. This allows us to have one fuzz
+	// target cover many critical code paths so the fuzz resources can
+	// be used efficiently.
 	uint32_t preset_level;
-	uint8_t decider = inbuf[0];
+	const uint8_t decider = inbuf[0];
+
 	switch (decider) {
 	case 0:
 	case 1:
@@ -53,21 +58,24 @@ LLVMFuzzerTestOneInput(const uint8_t *inbuf, size_t inbuf_size)
 		abort();
 	}
 
-	// Initialize filter chain for lzma_stream_decoder() call
-	// Use single LZMA2 filter for encoding
-	lzma_filter filters[2];
-	filters[0].id = LZMA_FILTER_LZMA2;
-	filters[0].options = &opt_lzma;
-	filters[1].id = LZMA_VLI_UNKNOWN;
+	// Set the filter chain as only LZMA2.
+	lzma_filter filters[2] = {
+		{
+			.id = LZMA_FILTER_LZMA2,
+			.options = &opt_lzma,
+		}, {
+			.id = LZMA_VLI_UNKNOWN,
+		}
+	};
 
 	// initialize empty LZMA stream
 	lzma_stream strm = LZMA_STREAM_INIT;
 
 	// Initialize the stream encoder using the above
 	// stream, filter chain and CRC64.
-	if (lzma_stream_encoder(&strm,
-			filters, LZMA_CHECK_CRC64) != LZMA_OK) {
-		fprintf(stderr, "lzma_stream_encoder() failed\n");
+	lzma_ret ret = lzma_stream_encoder(&strm, filters, LZMA_CHECK_CRC64);
+	if (ret != LZMA_OK) {
+		fprintf(stderr, "lzma_stream_encoder() failed (%d)\n", ret);
 		abort();
 	}
 

@@ -320,7 +320,7 @@ test_lzma_block_header_encode(void)
 	uint8_t flags = out[1];
 
 	// Should have number of filters = 1
-	assert_uint_eq((flags & 0x3) + 1, 1);
+	assert_uint_eq((flags & 0x3) + 1U, 1);
 
 	// Bits 2-7 must be empty not set
 	assert_uint_eq(flags & (0xFF - 0x3), 0);

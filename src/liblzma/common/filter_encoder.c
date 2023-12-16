@@ -200,17 +200,17 @@ lzma_filters_update(lzma_stream *strm, const lzma_filter *filters)
 
 extern lzma_ret
 lzma_raw_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
-		const lzma_filter *options)
+		const lzma_filter *filters)
 {
 	return lzma_raw_coder_init(next, allocator,
-			options, (lzma_filter_find)(&encoder_find), true);
+			filters, (lzma_filter_find)(&encoder_find), true);
 }
 
 
 extern LZMA_API(lzma_ret)
-lzma_raw_encoder(lzma_stream *strm, const lzma_filter *options)
+lzma_raw_encoder(lzma_stream *strm, const lzma_filter *filters)
 {
-	lzma_next_strm_init(lzma_raw_coder_init, strm, options,
+	lzma_next_strm_init(lzma_raw_coder_init, strm, filters,
 			(lzma_filter_find)(&encoder_find), true);
 
 	strm->internal->supported_actions[LZMA_RUN] = true;

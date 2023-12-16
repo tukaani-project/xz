@@ -620,6 +620,9 @@ static lzma_ret
 lzma_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
 		const void *options, lzma_lz_options *lz_options)
 {
+        if (options == NULL)
+                return LZMA_PROG_ERROR;
+
 	lz->code = &lzma_encode;
 	return lzma_lzma_encoder_create(
 			&lz->coder, allocator, options, lz_options);

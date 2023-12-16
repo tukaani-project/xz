@@ -712,6 +712,9 @@ static lzma_ret
 lzma_encoder_init(lzma_lz_encoder *lz, const lzma_allocator *allocator,
 		lzma_vli id, const void *options, lzma_lz_options *lz_options)
 {
+        if (options == NULL)
+                return LZMA_PROG_ERROR;
+
 	lz->code = &lzma_encode;
 	lz->set_out_limit = &lzma_lzma_set_out_limit;
 	return lzma_lzma_encoder_create(

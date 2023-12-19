@@ -112,6 +112,12 @@ int main(void) { return 0; }
 	esac
 fi
 if test "x$enable_unaligned_access" = xyes ; then
+	# NOTE: ARM64 support unaligned access and unsafe type punning by default. 
+	case $host_cpu in
+		aarch64*)
+			enable_unsafe_type_punning=yes
+	esac
+
 	AC_DEFINE([TUKLIB_FAST_UNALIGNED_ACCESS], [1], [Define to 1 if
 		the system supports fast unaligned access to 16-bit,
 		32-bit, and 64-bit integers.])

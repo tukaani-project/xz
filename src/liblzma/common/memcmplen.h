@@ -60,7 +60,8 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 		&& ((TUKLIB_GNUC_REQ(3, 4) && defined(__x86_64__)) \
 			|| (defined(__INTEL_COMPILER) && defined(__x86_64__)) \
 			|| (defined(__INTEL_COMPILER) && defined(_M_X64)) \
-			|| (defined(_MSC_VER) && defined(_M_X64)))
+			|| (defined(_MSC_VER) && defined(_M_X64)) \
+			|| (defined(__aarch64__)))
 	// I keep this x86-64 only for now since that's where I know this
 	// to be a good method. This may be fine on other 64-bit CPUs too.
 	// On big endian one should use xor instead of subtraction and switch

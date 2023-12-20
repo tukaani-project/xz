@@ -523,15 +523,15 @@ AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--enable-sandbox=METHOD],
 		The default is 'auto' which enables sandboxing if
 		a supported sandboxing method is found.])],
 	[], [enable_sandbox=auto])
-case $enable_xz-$enable_sandbox in
-	no-*)
+case $enable_xzdec-$enable_xz-$enable_sandbox in
+	no-no-*)
 		enable_sandbox=no
-		AC_MSG_RESULT([no, --disable-xz was used])
+		AC_MSG_RESULT([no, --disable-xz and --disable-xzdec was used])
 		;;
-	*-auto)
+	*-*-auto)
 		AC_MSG_RESULT([maybe (autodetect)])
 		;;
-	*-no | *-capsicum | *-pledge | *-landlock)
+	*-*-no | *-*-capsicum | *-*-pledge | *-*-landlock)
 		AC_MSG_RESULT([$enable_sandbox])
 		;;
 	*)

@@ -742,6 +742,95 @@ if(LZIP_DECODER)
     )
 endif()
 
+
+##############
+# Sandboxing #
+##############
+
+# ON        Use sandboxing if a supported method is available in the OS.
+# OFF       Disable sandboxing.
+# capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
+# pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
+# landlock  Require Landlock (Linux >= 5.13) and fail if not found.
+set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge landlock)
+
+set(ENABLE_SANDBOX ON CACHE STRING
+    "Sandboxing method to use in 'xz' and 'xzdec'")
+
+set_property(CACHE ENABLE_SANDBOX
+                PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
+
+if(NOT ENABLE_SANDBOX IN_LIST SUPPORTED_SANDBOX_METHODS)
+    message(FATAL_ERROR "'${ENABLE_SANDBOX}' is not a supported "
+                        "sandboxing method")
+endif()
+
+# When autodetecting, the search order is fixed and we must not find
+# more than one method.
+if(ENABLE_SANDBOX STREQUAL "OFF")
+    set(SANDBOX_FOUND ON)
+else()
+    set(SANDBOX_FOUND OFF)
+endif()
+
+# Since xz and xzdec can both use sandboxing, the compile definition needed
+# to use the sandbox must be added to both targets.
+set(SANDBOX_COMPILE_DEFINITION OFF)
+
+# Sandboxing: Capsicum
+if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^capsicum$")
+    check_symbol_exists(cap_rights_limit sys/capsicum.h
+                        HAVE_CAP_RIGHTS_LIMIT)
+    if(HAVE_CAP_RIGHTS_LIMIT)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_CAP_RIGHTS_LIMIT")
+        set(SANDBOX_FOUND ON)
+    endif()
+endif()
+
+# Sandboxing: pledge(2)
+if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^pledge$")
+    check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
+    if(HAVE_PLEDGE)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_PLEDGE")
+        set(SANDBOX_FOUND ON)
+    endif()
+endif()
+
+# Sandboxing: Landlock
+if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^landlock$")
+    check_include_file(linux/landlock.h HAVE_LINUX_LANDLOCK_H)
+
+    if(HAVE_LINUX_LANDLOCK_H)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK_H")
+        set(SANDBOX_FOUND ON)
+
+        # Of our three sandbox methods, only Landlock is incompatible
+        # with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
+        # -fsanitize=address,undefined and had no issues. OpenBSD (as
+        # of version 7.4) has minimal support for process instrumentation.
+        # OpenBSD does not distribute the additional libraries needed
+        # (libasan, libubsan, etc.) with GCC or Clang needed for runtime
+        # sanitization support and instead only support
+        # -fsanitize-minimal-runtime for minimal undefined behavior
+        # sanitization. This minimal support is compatible with our use
+        # of the Pledge sandbox. So only Landlock will result in a
+        # build that cannot compress or decompress a single file to
+        # standard out.
+        if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
+            message(SEND_ERROR
+                    "CMAKE_C_FLAGS or the environment variable CFLAGS "
+                    "contains '-fsanitize=' which is incompatible "
+                    "with Landlock sandboxing. Use -DENABLE_SANDBOX=OFF "
+                    "as an argument to 'cmake' when using '-fsanitize'.")
+        endif()
+    endif()
+endif()
+
+if(NOT SANDBOX_FOUND AND NOT ENABLE_SANDBOX MATCHES "^ON$|^OFF$")
+    message(SEND_ERROR "ENABLE_SANDBOX=${ENABLE_SANDBOX} was used but "
+                        "support for the sandboxing method wasn't found.")
+endif()
+
 ###
 
 # Put the tuklib functions under the lzma_ namespace.
@@ -1199,6 +1288,11 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
         )
     endif()
 
+    if(SANDBOX_COMPILE_DEFINITION)
+        target_compile_definitions(xzdec PRIVATE
+                                   "${SANDBOX_COMPILE_DEFINITION}")
+    endif()
+
     tuklib_progname(xzdec)
 
     install(TARGETS xzdec
@@ -1283,6 +1377,10 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         )
     endif()
 
+    if(SANDBOX_COMPILE_DEFINITION)
+        target_compile_definitions(xz PRIVATE "${SANDBOX_COMPILE_DEFINITION}")
+    endif()
+
     tuklib_progname(xz)
     tuklib_mbstr(xz)
 
@@ -1339,86 +1437,6 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
                 endif()
             endif()
         endif()
-    endif()
-
-    # Sandboxing:
-    # ON        Use sandboxing if a supported method is available in the OS.
-    # OFF       Disable sandboxing.
-    # capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
-    # pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
-    # landlock  Require Landlock (Linux >= 5.13) and fail if not found.
-    set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge landlock)
-
-    set(ENABLE_SANDBOX ON CACHE STRING "Sandboxing method to use in 'xz'")
-
-    set_property(CACHE ENABLE_SANDBOX
-                 PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
-
-    if(NOT ENABLE_SANDBOX IN_LIST SUPPORTED_SANDBOX_METHODS)
-        message(FATAL_ERROR "'${ENABLE_SANDBOX}' is not a supported "
-                            "sandboxing method")
-    endif()
-
-    # When autodetecting, the search order is fixed and we must not find
-    # more than one method.
-    if(ENABLE_SANDBOX STREQUAL "OFF")
-        set(SANDBOX_FOUND ON)
-    else()
-        set(SANDBOX_FOUND OFF)
-    endif()
-
-    # Sandboxing: Capsicum
-    if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^capsicum$")
-        check_symbol_exists(cap_rights_limit sys/capsicum.h
-                            HAVE_CAP_RIGHTS_LIMIT)
-        if(HAVE_CAP_RIGHTS_LIMIT)
-            target_compile_definitions(xz PRIVATE HAVE_CAP_RIGHTS_LIMIT)
-            set(SANDBOX_FOUND ON)
-        endif()
-    endif()
-
-    # Sandboxing: pledge(2)
-    if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^pledge$")
-        check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
-        if(HAVE_PLEDGE)
-            target_compile_definitions(xz PRIVATE HAVE_PLEDGE)
-            set(SANDBOX_FOUND ON)
-        endif()
-    endif()
-
-    # Sandboxing: Landlock
-    if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^landlock$")
-        check_include_file(linux/landlock.h HAVE_LINUX_LANDLOCK_H)
-
-        if(HAVE_LINUX_LANDLOCK_H)
-            target_compile_definitions(xz PRIVATE HAVE_LINUX_LANDLOCK_H)
-            set(SANDBOX_FOUND ON)
-
-            # Of our three sandbox methods, only Landlock is incompatible
-            # with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
-            # -fsanitize=address,undefined and had no issues. OpenBSD (as
-            # of version 7.4) has minimal support for process instrumentation.
-            # OpenBSD does not distribute the additional libraries needed
-            # (libasan, libubsan, etc.) with GCC or Clang needed for runtime
-            # sanitization support and instead only support
-            # -fsanitize-minimal-runtime for minimal undefined behavior
-            # sanitization. This minimal support is compatible with our use
-            # of the Pledge sandbox. So only Landlock will result in a
-            # build that cannot compress or decompress a single file to
-            # standard out.
-            if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
-                message(SEND_ERROR
-                        "CMAKE_C_FLAGS or the environment variable CFLAGS "
-                        "contains '-fsanitize=' which is incompatible "
-                        "with Landlock sandboxing. Use -DENABLE_SANDBOX=OFF "
-                        "as an argument to 'cmake' when using '-fsanitize'.")
-            endif()
-        endif()
-    endif()
-
-    if(NOT SANDBOX_FOUND AND NOT ENABLE_SANDBOX MATCHES "^ON$|^OFF$")
-        message(SEND_ERROR "ENABLE_SANDBOX=${ENABLE_SANDBOX} was used but "
-                           "support for the sandboxing method wasn't found.")
     endif()
 
     install(TARGETS xz

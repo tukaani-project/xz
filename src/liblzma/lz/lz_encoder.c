@@ -564,7 +564,11 @@ lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->update = &lz_encoder_update;
 		next->set_out_limit = &lz_encoder_set_out_limit;
 
-		memzero((&coder->lz), sizeof(lzma_lz_encoder));
+		coder->lz.coder = NULL;
+		coder->lz.code = NULL;
+		coder->lz.end = NULL;
+		coder->lz.options_update = NULL;
+		coder->lz.set_out_limit = NULL;
 
 		// mf.size is initialized to silence Valgrind
 		// when used on optimized binaries (GCC may reorder

@@ -523,13 +523,16 @@ XZ Utils Installation
                 if any -fsanitize= option is specified in CFLAGS.
 
     --enable-sandbox=METHOD
-                There is limited sandboxing support in the xz tool. If
-                built with sandbox support, it's used automatically when
-                (de)compressing exactly one file to standard output and
-                the options --files or --files0 weren't used. This is a
-                common use case, for example, (de)compressing .tar.xz
-                files via GNU tar. The sandbox is also used for
-                single-file 'xz --test' or 'xz --list'.
+                There is limited sandboxing support in the xz and xzdec
+                tools. If built with sandbox support, xz uses it
+                automatically when (de)compressing exactly one file to
+                standard output when the options --files or --files0 aren't
+                used. This is a common use case, for example,
+                (de)compressing .tar.xz files via GNU tar. The sandbox is
+                also used for single-file 'xz --test' or 'xz --list'.
+                xzdec always uses the sandbox, except when more than one
+                file are decompressed. In this case it will enable the
+                sandbox for the last file that is decompressed.
 
                 Supported METHODs:
 

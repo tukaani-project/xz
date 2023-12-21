@@ -226,6 +226,7 @@ io_sandbox_enter(int src_fd)
 			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
 		goto error;
 
+	// If not reading from stdin, remove all capabilities from it.
 	if (src_fd != STDIN_FILENO && cap_rights_limit(
 			STDIN_FILENO, cap_rights_clear(&rights)))
 		goto error;

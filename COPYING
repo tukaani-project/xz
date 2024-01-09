@@ -32,6 +32,9 @@ XZ Utils Licensing
             derived from the input used in their production;
             they are not affected by this license."
 
+      - The XZ logo included in the Doxygen documentation is under
+        the Creative Commons BY-SA 4.0 license.
+
       - Translated messages are in the public domain.
 
       - The build system contains public domain files, and files that
@@ -65,6 +68,8 @@ XZ Utils Licensing
       - COPYING.LGPLv2.1: GNU Lesser General Public License version 2.1
       - COPYING.GPLv2: GNU General Public License version 2
       - COPYING.GPLv3: GNU General Public License version 3
+      - COPYING.CC-BY-SA-4.0: Creative Commons Attribution-ShareAlike 4.0
+                              International Public License
 
     Note that the toolchain (compiler, linker etc.) may add some code
     pieces that are copyrighted. Thus, it is possible that e.g. liblzma

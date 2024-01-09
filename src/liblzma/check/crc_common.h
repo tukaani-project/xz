@@ -52,29 +52,33 @@
 #undef CRC_GENERIC
 #undef CRC_ARCH_OPTIMIZED
 #undef CRC_X86_CLMUL
+#undef CRC32_ARM64
 #undef CRC_USE_IFUNC
 #undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
-
-// If CLMUL cannot be used then only the generic slice-by-eight (CRC32)
-// or slice-by-four (CRC64) is built.
-#if !defined(HAVE_USABLE_CLMUL)
-#	define CRC_GENERIC 1
 
 // If CLMUL is allowed unconditionally in the compiler options then the
 // generic version can be omitted. Note that this doesn't work with MSVC
 // as I don't know how to detect the features here.
 //
 // NOTE: Keep this this in sync with crc32_table.c.
-#elif (defined(__SSSE3__) && defined(__SSE4_1__) && defined(__PCLMUL__)) \
+#if (defined(__SSSE3__) && defined(__SSE4_1__) && defined(__PCLMUL__)) \
 		|| (defined(__e2k__) && __iset__ >= 6)
 #	define CRC_ARCH_OPTIMIZED 1
 #	define CRC_X86_CLMUL 1
 
+#elif (defined(__aarch64__))
+#	define CRC_ARCH_OPTIMIZED 1
+#	define CRC32_ARM64 1
+// If CLMUL cannot be used then only the generic slice-by-eight (CRC32)
+// or slice-by-four (CRC64) is built.
+#elif !defined(HAVE_USABLE_CLMUL)
+#	define CRC_GENERIC 1
 // Otherwise build both and detect at runtime which version to use.
 #else
 #	define CRC_GENERIC 1
 #	define CRC_ARCH_OPTIMIZED 1
 #	define CRC_X86_CLMUL 1
+#	define CRC32_ARM64 1
 
 #	ifdef HAVE_FUNC_ATTRIBUTE_IFUNC
 #		define CRC_USE_IFUNC 1

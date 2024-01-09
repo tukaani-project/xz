@@ -61,6 +61,7 @@ endif
 EXTRA_DIST = \
 	po4a \
 	extra \
+	doc/logo \
 	dos \
 	doxygen \
 	windows \
@@ -68,6 +69,7 @@ EXTRA_DIST = \
 	cmake \
 	CMakeLists.txt \
 	autogen.sh \
+	COPYING.CC-BY-SA-4.0 \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
 	COPYING.LGPLv2.1 \

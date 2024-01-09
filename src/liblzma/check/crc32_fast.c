@@ -15,9 +15,12 @@
 #include "check.h"
 #include "crc_common.h"
 
-#ifdef CRC_X86_CLMUL
+#if defined(CRC_X86_CLMUL)
 #	define BUILDING_CRC32_CLMUL
 #	include "crc_x86_clmul.h"
+#elif defined(CRC32_ARM64)
+#	define BUILDING_CRC32_AARCH64
+#	include "crc32_aarch64.h"
 #endif
 
 

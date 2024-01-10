@@ -74,7 +74,8 @@
 #undef CRC_USE_IFUNC
 #undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 
-// If CLMUL cannot be used then only the generic slice-by-four is built.
+// If CLMUL cannot be used then only the generic slice-by-eight (CRC32)
+// or slice-by-four (CRC64) is built.
 #if !defined(HAVE_USABLE_CLMUL)
 #	define CRC_GENERIC 1
 

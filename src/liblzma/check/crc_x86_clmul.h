@@ -3,7 +3,7 @@
 /// \file       crc_x86_clmul.h
 /// \brief      CRC32 and CRC64 implementations using CLMUL instructions.
 ///
-/// crc32_clmul() and crc64_clmul() use 32/64-bit x86 SSSE3, SSE4.1, and
+/// The CRC32 and CRC64 implementations use 32/64-bit x86 SSSE3, SSE4.1, and
 /// CLMUL instructions. This is compatible with Elbrus 2000 (E2K) too.
 ///
 /// They were derived from
@@ -212,7 +212,7 @@ crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 
 /*
 // These functions were used to generate the constants
-// at the top of lzma_crc32_clmul().
+// at the top of crc32_arch_optimized().
 static uint64_t
 calc_lo(uint64_t p, uint64_t a, int n)
 {
@@ -240,7 +240,7 @@ calc_hi(uint64_t p, uint64_t a, int n)
 crc_attr_target
 crc_attr_no_sanitize_address
 static uint32_t
-crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
+crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 {
 #ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	// The code assumes that there is at least one byte of input.
@@ -284,7 +284,7 @@ crc32_clmul(const uint8_t *buf, size_t size, uint32_t crc)
 
 /*
 // These functions were used to generate the constants
-// at the top of lzma_crc64_clmul().
+// at the top of crc64_arch_optimized().
 static uint64_t
 calc_lo(uint64_t poly)
 {
@@ -319,8 +319,9 @@ calc_hi(uint64_t poly, uint64_t a)
 // and CRC32 CLMUL aren't affected by this problem. The problem does not
 // happen in crc_simd_body() either (which is shared with CRC32 CLMUL anyway).
 //
-// NOTE: Another pragma after lzma_crc64_clmul() restores the optimizations.
-// If the #if condition here is updated, the other one must be updated too.
+// NOTE: Another pragma after crc64_arch_optimized() restores
+// the optimizations. If the #if condition here is updated,
+// the other one must be updated too.
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
 		&& defined(_M_IX86)
 #	pragma optimize("g", off)
@@ -329,7 +330,7 @@ calc_hi(uint64_t poly, uint64_t a)
 crc_attr_target
 crc_attr_no_sanitize_address
 static uint64_t
-crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
+crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 {
 #ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	// The code assumes that there is at least one byte of input.
@@ -379,8 +380,8 @@ crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
 #endif // BUILDING_CRC64_CLMUL
 
 
-// is_clmul_supported() must be inlined in this header file because the
-// ifunc resolver function may not support calling a function in another
+// is_arch_extension_supported() must be inlined in this header file because
+// the ifunc resolver function may not support calling a function in another
 // translation unit. Depending on compiler-toolchain and flags, a call to
 // a function defined in another translation unit could result in a
 // reference to the PLT, which is unsafe to do in an ifunc resolver. The
@@ -389,7 +390,7 @@ crc64_clmul(const uint8_t *buf, size_t size, uint64_t crc)
 // the function body in crc32_resolve() and crc64_resolve(), but this is
 // acceptable because the function results in very few instructions.
 static inline bool
-is_clmul_supported(void)
+is_arch_extension_supported(void)
 {
 	int success = 1;
 	uint32_t r[4]; // eax, ebx, ecx, edx

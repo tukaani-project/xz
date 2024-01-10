@@ -14,7 +14,7 @@
 #include "check.h"
 #include "crc_common.h"
 
-#ifdef CRC_CLMUL
+#ifdef CRC_X86_CLMUL
 #	define BUILDING_CRC64_CLMUL
 #	include "crc_x86_clmul.h"
 #endif
@@ -82,7 +82,7 @@ crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 
 
-#if defined(CRC_GENERIC) && defined(CRC_CLMUL)
+#if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
 
 //////////////////////////
 // Function dispatching //
@@ -102,7 +102,8 @@ typedef uint64_t (*crc64_func_type)(
 static crc64_func_type
 crc64_resolve(void)
 {
-	return is_clmul_supported() ? &crc64_clmul : &crc64_generic;
+	return is_arch_extension_supported()
+			? &crc64_arch_optimized : &crc64_generic;
 }
 
 #if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
@@ -150,7 +151,7 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 extern LZMA_API(uint64_t)
 lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 {
-#if defined(CRC_GENERIC) && defined(CRC_CLMUL)
+#if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
 
 #ifdef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	if (size <= 16)
@@ -158,14 +159,14 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 	return crc64_func(buf, size, crc);
 
-#elif defined(CRC_CLMUL)
+#elif defined(CRC_ARCH_OPTIMIZED)
 	// If CLMUL is used unconditionally without runtime CPU detection
 	// then omitting the generic version and its 8 KiB lookup table
 	// makes the library smaller.
 	//
 	// FIXME: Lookup table isn't currently omitted on 32-bit x86,
 	// see crc64_table.c.
-	return crc64_clmul(buf, size, crc);
+	return crc64_arch_optimized(buf, size, crc);
 
 #else
 	return crc64_generic(buf, size, crc);

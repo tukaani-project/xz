@@ -70,7 +70,8 @@
 #endif
 
 #undef CRC_GENERIC
-#undef CRC_CLMUL
+#undef CRC_ARCH_OPTIMIZED
+#undef CRC_X86_CLMUL
 #undef CRC_USE_IFUNC
 #undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 
@@ -86,12 +87,14 @@
 // NOTE: Keep this this in sync with crc32_table.c.
 #elif (defined(__SSSE3__) && defined(__SSE4_1__) && defined(__PCLMUL__)) \
 		|| (defined(__e2k__) && __iset__ >= 6)
-#	define CRC_CLMUL 1
+#	define CRC_ARCH_OPTIMIZED 1
+#	define CRC_X86_CLMUL 1
 
 // Otherwise build both and detect at runtime which version to use.
 #else
 #	define CRC_GENERIC 1
-#	define CRC_CLMUL 1
+#	define CRC_ARCH_OPTIMIZED 1
+#	define CRC_X86_CLMUL 1
 
 #	ifdef HAVE_FUNC_ATTRIBUTE_IFUNC
 #		define CRC_USE_IFUNC 1

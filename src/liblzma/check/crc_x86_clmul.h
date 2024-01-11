@@ -66,7 +66,7 @@
 
 crc_attr_target
 crc_attr_no_sanitize_address
-static crc_always_inline void
+static lzma_always_inline void
 crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 		const __m128i vfold16, const __m128i initial_crc)
 {

@@ -93,10 +93,10 @@ crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 // Function dispatching //
 //////////////////////////
 
-// If both the generic and CLMUL implementations are built, then the
-// function to use is selected at runtime since system running the
-// binary may not have the CLMUL instructions.
-// The three dispatch methods in order of priority:
+// If both the generic and arch-optimized implementations are built, then
+// the function to use is selected at runtime because the system running
+// the binary might not have the arch-specific instruction set extension(s)
+// available. The three dispatch methods in order of priority:
 //
 // 1. Indirect function (ifunc). This method is slightly more efficient
 //    than the constructor method because it will change the entry in the
@@ -195,10 +195,10 @@ extern LZMA_API(uint32_t)
 lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 {
 #if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
-	// If CLMUL is available, it is the best for non-tiny inputs,
-	// being over twice as fast as the generic slice-by-four version.
-	// However, for size <= 16 it's different. In the extreme case
-	// of size == 1 the generic version can be five times faster.
+	// On x86-64, if CLMUL is available, it is the best for non-tiny
+	// inputs, being over twice as fast as the generic slice-by-four
+	// version. However, for size <= 16 it's different. In the extreme
+	// case of size == 1 the generic version can be five times faster.
 	// At size >= 8 the CLMUL starts to become reasonable. It
 	// varies depending on the alignment of buf too.
 	//

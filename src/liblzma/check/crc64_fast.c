@@ -88,8 +88,8 @@ crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 // Function dispatching //
 //////////////////////////
 
-// If both the generic and CLMUL implementations are usable, then the
-// function that is used is selected at runtime. See crc32_fast.c.
+// If both the generic and arch-optimized implementations are usable, then
+// the function that is used is selected at runtime. See crc32_fast.c.
 
 typedef uint64_t (*crc64_func_type)(
 		const uint8_t *buf, size_t size, uint64_t crc);
@@ -160,9 +160,9 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 	return crc64_func(buf, size, crc);
 
 #elif defined(CRC_ARCH_OPTIMIZED)
-	// If CLMUL is used unconditionally without runtime CPU detection
-	// then omitting the generic version and its 8 KiB lookup table
-	// makes the library smaller.
+	// If arch-optimized version is used unconditionally without runtime
+	// CPU detection then omitting the generic version and its 8 KiB
+	// lookup table makes the library smaller.
 	//
 	// FIXME: Lookup table isn't currently omitted on 32-bit x86,
 	// see crc64_table.c.

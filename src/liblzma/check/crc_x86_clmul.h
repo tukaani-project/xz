@@ -11,6 +11,12 @@
 /// and the public domain code from https://github.com/rawrunprotected/crc
 /// (URLs were checked on 2023-10-14).
 ///
+/// While this file has both CRC32 and CRC64 implementations, only one
+/// should be built at a time to ensure that crc_simd_body() is inlined
+/// even with compilers with which lzma_always_inline expands to plain inline.
+/// The version to build is selected by defining BUILDING_CRC32_CLMUL or
+/// BUILDING_CRC64_CLMUL before including this file.
+///
 /// FIXME: Builds for 32-bit x86 use the assembly .S files by default
 /// unless configured with --disable-assembler. Even then the lookup table
 /// isn't omitted in crc64_table.c since it doesn't know that assembly

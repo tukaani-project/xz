@@ -287,11 +287,11 @@ XZ Utils
     XZ Embedded is a limited implementation written for use in the Linux
     kernel, but it is also suitable for other embedded use.
 
-        https://tukaani.org/xz/embedded.html
+        https://xz.tukaani.org/xz-embedded/
 
     XZ for Java is a complete implementation written in pure Java.
 
-        https://tukaani.org/xz/java.html
+        https://xz.tukaani.org/xz-for-java/
 
 
 6. Contact information

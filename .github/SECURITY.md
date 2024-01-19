@@ -4,7 +4,7 @@
 
 We provide security updates to the development branch and the stable
 branches. Security patches for old releases are available on the
-[project website](https://tukaani.org/xz).
+[project website](https://xz.tukaani.org/xz-utils/).
 
 ## Reporting a Vulnerability
 

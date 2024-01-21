@@ -1007,6 +1007,56 @@ calculation if supported by the system" ON)
     endif()
 endif()
 
+# ARM64 C Language Extensions define CRC32 functions in arm_acle.h.
+# These are supported by at least GCC and Clang which both need
+# __attribute__((__target__("+crc"))), unless the needed compiler flags
+# are used to support the CRC instruction.
+option(ALLOW_ARM64_CRC32 "Allow ARM64 CRC32 instruction if supported by \
+the system" ON)
+
+if(ALLOW_ARM64_CRC32)
+    check_c_source_compiles("
+            #include <stdint.h>
+
+            #ifndef _MSC_VER
+            #include <arm_acle.h>
+            #endif
+
+            #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
+            __attribute__((__target__(\"+crc\")))
+            #endif
+            uint32_t my_crc(uint32_t a, uint64_t b)
+            {
+                return __crc32d(a, b);
+            }
+            int main(void) { return 0; }
+        "
+        HAVE_ARM64_CRC32)
+
+    if(HAVE_ARM64_CRC32)
+        target_compile_definitions(liblzma PRIVATE HAVE_ARM64_CRC32)
+
+        # Check for ARM64 CRC32 instruction runtime detection.
+        # getauxval() is supported on Linux.
+        check_symbol_exists(getauxval sys/auxv.h HAVE_GETAUXVAL)
+        tuklib_add_definition_if(liblzma HAVE_GETAUXVAL)
+
+        # elf_aux_info() is supported on FreeBSD.
+        check_symbol_exists(elf_aux_info sys/auxv.h HAVE_ELF_AUX_INFO)
+        tuklib_add_definition_if(liblzma HAVE_ELF_AUX_INFO)
+
+        # sysctlbyname("hw.optional.armv8_crc32", ...) is supported on Darwin
+        # (macOS, iOS, etc.). Note that sysctlbyname() is supported on FreeBSD,
+        # NetBSD, and possibly others too but the string is specific to
+        # Apple OSes. The C code is responsible for checking
+        # defined(__APPLE__) before using
+        # sysctlbyname("hw.optional.armv8_crc32", ...).
+        check_symbol_exists(sysctlbyname sys/sysctl.h HAVE_SYSCTLBYNAME)
+        tuklib_add_definition_if(liblzma HAVE_SYSCTLBYNAME)
+    endif()
+endif()
+
+
 # Support -fvisiblity=hidden when building shared liblzma.
 # These lines do nothing on Windows (even under Cygwin).
 # HAVE_VISIBILITY should always be defined to 0 or 1.

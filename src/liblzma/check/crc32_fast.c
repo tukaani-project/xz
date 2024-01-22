@@ -19,8 +19,7 @@
 #	define BUILDING_CRC32_CLMUL
 #	include "crc_x86_clmul.h"
 #elif defined(CRC32_ARM64)
-#	define BUILDING_CRC32_AARCH64
-#	include "crc32_aarch64.h"
+#	include "crc32_arm64.h"
 #endif
 
 

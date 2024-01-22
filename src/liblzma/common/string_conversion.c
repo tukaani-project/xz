@@ -509,6 +509,11 @@ static const struct {
 	  &parse_bcj,     bcj_optmap, 1, 1, true },
 #endif
 
+#if defined(HAVE_ENCODER_RISCV) || defined(HAVE_DECODER_RISCV)
+	{ "riscv",        sizeof(lzma_options_bcj),   LZMA_FILTER_RISCV,
+	  &parse_bcj,     bcj_optmap, 1, 1, true },
+#endif
+
 #if defined(HAVE_ENCODER_POWERPC) || defined(HAVE_DECODER_POWERPC)
 	{ "powerpc",      sizeof(lzma_options_bcj),   LZMA_FILTER_POWERPC,
 	  &parse_bcj,     bcj_optmap, 1, 1, true },

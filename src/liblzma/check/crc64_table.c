@@ -13,11 +13,16 @@
 #include "common.h"
 
 
-// FIXME: Compared to crc64_fast.c this has to check for __x86_64__ too
+// FIXME: Compared to crc_common.h this has to check for __x86_64__ too
 // so that in 32-bit builds crc64_x86.S won't break due to a missing table.
 #if (defined(__x86_64__) && defined(__SSSE3__) \
 			&& defined(__SSE4_1__) && defined(__PCLMUL__)) \
 		|| (defined(__e2k__) && __iset__ >= 6)
+#	define X86_CLMUL_NO_TABLE 1
+#endif
+
+
+#ifdef X86_CLMUL_NO_TABLE
 // No table needed. Use a typedef to avoid an empty translation unit.
 typedef void lzma_crc64_dummy;
 

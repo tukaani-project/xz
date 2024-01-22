@@ -146,5 +146,6 @@ test_filter ARM arm
 test_filter ARMTHUMB armthumb
 test_filter ARM64 arm64
 test_filter SPARC sparc
+test_filter RISCV riscv
 
 exit 0

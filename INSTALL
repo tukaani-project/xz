@@ -372,7 +372,7 @@ XZ Utils Installation
                 code.
 
     --disable-clmul-crc
-                Disable the use carryless multiplication for CRC
+                Disable the use of carryless multiplication for CRC
                 calculation even if compiler support for it is detected.
                 The code uses runtime detection of SSSE3, SSE4.1, and
                 CLMUL instructions on x86. On 32-bit x86 this currently
@@ -382,6 +382,16 @@ XZ Utils Installation
                 If using compiler options that unconditionally allow the
                 required extensions (-msse4.1 -mpclmul) then runtime
                 detection isn't used and the generic code is omitted.
+
+    --disable-arm64-crc32
+                Disable the use of the ARM64 CRC32 instruction extension
+                even if compiler support for it is detected. The code will
+                detect support for the instruction at runtime.
+
+                If using compiler options that unconditionally allow the
+                required extensions (-march=armv8-a+crc or -march=armv8.1-a
+                and later) then runtime detection isn't used and the
+                generic code is omitted.
 
     --enable-unaligned-access
                 Allow liblzma to use unaligned memory access for 16-bit,

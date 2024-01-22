@@ -24,7 +24,7 @@
 #endif
 
 
-#ifdef CRC_GENERIC
+#ifdef CRC32_GENERIC
 
 ///////////////////
 // Generic CRC32 //
@@ -90,7 +90,7 @@ crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 #endif
 
 
-#if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
+#if defined(CRC32_GENERIC) && defined(CRC32_ARCH_OPTIMIZED)
 
 //////////////////////////
 // Function dispatching //
@@ -197,7 +197,7 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 extern LZMA_API(uint32_t)
 lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 {
-#if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
+#if defined(CRC32_GENERIC) && defined(CRC32_ARCH_OPTIMIZED)
 	// On x86-64, if CLMUL is available, it is the best for non-tiny
 	// inputs, being over twice as fast as the generic slice-by-four
 	// version. However, for size <= 16 it's different. In the extreme
@@ -229,7 +229,7 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 */
 	return crc32_func(buf, size, crc);
 
-#elif defined(CRC_ARCH_OPTIMIZED)
+#elif defined(CRC32_ARCH_OPTIMIZED)
 	return crc32_arch_optimized(buf, size, crc);
 
 #else

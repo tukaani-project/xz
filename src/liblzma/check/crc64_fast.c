@@ -23,7 +23,7 @@
 #endif
 
 
-#ifdef CRC_GENERIC
+#ifdef CRC64_GENERIC
 
 /////////////////////////////////
 // Generic slice-by-four CRC64 //
@@ -85,7 +85,7 @@ crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 
 
-#if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
+#if defined(CRC64_GENERIC) && defined(CRC64_ARCH_OPTIMIZED)
 
 //////////////////////////
 // Function dispatching //
@@ -154,7 +154,7 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 extern LZMA_API(uint64_t)
 lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 {
-#if defined(CRC_GENERIC) && defined(CRC_ARCH_OPTIMIZED)
+#if defined(CRC64_GENERIC) && defined(CRC64_ARCH_OPTIMIZED)
 
 #ifdef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	if (size <= 16)
@@ -162,7 +162,7 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 	return crc64_func(buf, size, crc);
 
-#elif defined(CRC_ARCH_OPTIMIZED)
+#elif defined(CRC64_ARCH_OPTIMIZED)
 	// If arch-optimized version is used unconditionally without runtime
 	// CPU detection then omitting the generic version and its 8 KiB
 	// lookup table makes the library smaller.

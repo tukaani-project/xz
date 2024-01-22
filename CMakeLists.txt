@@ -448,6 +448,7 @@ set(SIMPLE_FILTERS
     powerpc
     ia64
     sparc
+    riscv
 )
 
 # The SUPPORTED_FILTERS are shared between Encoders and Decoders

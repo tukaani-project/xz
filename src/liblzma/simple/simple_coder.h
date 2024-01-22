@@ -78,4 +78,13 @@ extern lzma_ret lzma_simple_sparc_decoder_init(lzma_next_coder *next,
 		const lzma_allocator *allocator,
 		const lzma_filter_info *filters);
 
+
+extern lzma_ret lzma_simple_riscv_encoder_init(lzma_next_coder *next,
+		const lzma_allocator *allocator,
+		const lzma_filter_info *filters);
+
+extern lzma_ret lzma_simple_riscv_decoder_init(lzma_next_coder *next,
+		const lzma_allocator *allocator,
+		const lzma_filter_info *filters);
+
 #endif

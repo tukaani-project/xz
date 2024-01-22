@@ -49,3 +49,7 @@ endif
 if COND_FILTER_SPARC
 liblzma_la_SOURCES += simple/sparc.c
 endif
+
+if COND_FILTER_RISCV
+liblzma_la_SOURCES += simple/riscv.c
+endif

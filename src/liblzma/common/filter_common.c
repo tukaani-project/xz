@@ -122,6 +122,15 @@ static const struct {
 		.changes_size = false,
 	},
 #endif
+#if defined(HAVE_ENCODER_RISCV) || defined(HAVE_DECODER_RISCV)
+	{
+		.id = LZMA_FILTER_RISCV,
+		.options_size = sizeof(lzma_options_bcj),
+		.non_last_ok = true,
+		.last_ok = false,
+		.changes_size = false,
+	},
+#endif
 #if defined(HAVE_ENCODER_DELTA) || defined(HAVE_DECODER_DELTA)
 	{
 		.id = LZMA_FILTER_DELTA,

@@ -53,6 +53,11 @@
  */
 #define LZMA_FILTER_ARM64       LZMA_VLI_C(0x0A)
 
+/**
+ * \brief       Filter for RISC-V binaries
+ */
+#define LZMA_FILTER_RISCV       LZMA_VLI_C(0x0B)
+
 
 /**
  * \brief       Options for BCJ filters

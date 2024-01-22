@@ -121,6 +121,14 @@ static const lzma_filter_decoder decoders[] = {
 		.props_decode = &lzma_simple_props_decode,
 	},
 #endif
+#ifdef HAVE_DECODER_RISCV
+	{
+		.id = LZMA_FILTER_RISCV,
+		.init = &lzma_simple_riscv_decoder_init,
+		.memusage = NULL,
+		.props_decode = &lzma_simple_props_decode,
+	},
+#endif
 #ifdef HAVE_DECODER_DELTA
 	{
 		.id = LZMA_FILTER_DELTA,

@@ -370,28 +370,59 @@ riscv_encode(void *simple lzma_attribute((__unused__)),
 	// The loop is advanced by 2 bytes every iteration since the
 	// instruction stream may include 16-bit instructions (C extension).
 	for (i = 0; i <= size; i += 2) {
-		uint32_t inst = read32le(buffer + i);
+		uint32_t inst = buffer[i];
 
-		if ((inst & 0xDFF) == 0x0EF) {
-			// JAL with rd=x1(ra) or rd=x5(t0)
-			//
+		if (inst == 0xEF) {
+			// JAL
+			const uint32_t b1 = buffer[i + 1];
+
+			// Only filter rd=x1(ra) and rd=x5(t0).
+			if ((b1 & 0x0D) != 0)
+				continue;
+
 			// The 20-bit immediate is in four pieces.
 			// The encoder stores it in big endian form
 			// since it improves compression slightly.
-			uint32_t addr
-				= ((inst & 0x80000000) >> 11)
-				| ((inst & 0x7FE00000) >> 20)
-				| ((inst & 0x00100000) >> 9)
-				|  (inst & 0x000FF000);
+			const uint32_t b2 = buffer[i + 2];
+			const uint32_t b3 = buffer[i + 3];
+			const uint32_t pc = now_pos + (uint32_t)i;
 
-			addr += now_pos + (uint32_t)i;
+// The following chart shows the highest three bytes of JAL, focusing on
+// the 20-bit immediate field [31:12]. The first row of numbers is the
+// bit position in a 32-bit little endian instruction. The second row of
+// numbers shows the order of the immediate field in a J-type instruction.
+// The last row is the bit number in each byte.
+//
+// To determine the amount to shift each bit, subtract the value in
+// the last row from the value in the second last row. If the number
+// is positive, shift left. If negative, shift right.
+//
+// For example, at the rightmost side of the chart, the bit 4 in b1 is
+// the bit 12 of the address. Thus that bit needs to be shifted left
+// by 12 - 4 = 8 bits to put it in the right place in the addr variable.
+//
+// NOTE: The immediate of a J-type instruction holds bits [20:1] of
+// the address. The bit [0] is always 0 and not part of the immediate.
+//
+// |          b3             |          b2             |          b1         |
+// | 31 30 29 28 27 26 25 24 | 23 22 21 20 19 18 17 16 | 15 14 13 12 x x x x |
+// | 20 10  9  8  7  6  5  4 |  3  2  1 11 19 18 17 16 | 15 14 13 12 x x x x |
+// |  7  6  5  4  3  2  1  0 |  7  6  5  4  3  2  1  0 |  7  6  5  4 x x x x |
 
-			inst = (inst & 0xFFF)
-				| ((addr & 0x1E0000) >> 5)
-				| ((addr & 0x01FE00) << 7)
-				| ((addr & 0x0001FE) << 23);
+			uint32_t addr = ((b1 & 0xF0) << 8)
+					| ((b2 & 0x0F) << 16)
+					| ((b2 & 0x10) << 7)
+					| ((b2 & 0xE0) >> 4)
+					| ((b3 & 0x7F) << 4)
+					| ((b3 & 0x80) << 13);
 
-			write32le(buffer + i, inst);
+			addr += pc;
+
+			buffer[i + 1] = (uint8_t)((b1 & 0x0F)
+					| ((addr >> 13) & 0xF0));
+
+			buffer[i + 2] = (uint8_t)(addr >> 9);
+			buffer[i + 3] = (uint8_t)(addr >> 1);
 
 			// The "-2" is included because the for-loop will
 			// always increment by 2. In this case, we want to
@@ -401,7 +432,10 @@ riscv_encode(void *simple lzma_attribute((__unused__)),
 
 		} else if ((inst & 0x7F) == 0x17) {
 			// AUIPC
-			//
+			inst |= (uint32_t)buffer[i + 1] << 8;
+			inst |= (uint32_t)buffer[i + 2] << 16;
+			inst |= (uint32_t)buffer[i + 3] << 24;
+
 			// Branch based on AUIPC's rd. The bitmask test does
 			// the same thing as this:
 			//
@@ -587,29 +621,49 @@ riscv_decode(void *simple lzma_attribute((__unused__)),
 
 	size_t i;
 	for (i = 0; i <= size; i += 2) {
-		uint32_t inst = read32le(buffer + i);
+		uint32_t inst = buffer[i];
 
-		if ((inst & 0xDFF) == 0x0EF) {
-			// JAL with rd=x1(ra) or rd=x5(t0)
-			uint32_t addr
-				= ((inst <<  5) & 0x1E0000)
-				| ((inst >>  7) & 0x01FE00)
-				| ((inst >> 23) & 0x0001FE);
+		if (inst == 0xEF) {
+			// JAL
+			const uint32_t b1 = buffer[i + 1];
 
-			addr -= now_pos + (uint32_t)i;
+			// Only filter rd=x1(ra) and rd=x5(t0).
+			if ((b1 & 0x0D) != 0)
+				continue;
 
-			inst = (inst & 0xFFF)
-				| ((addr << 11) & 0x80000000)
-				| ((addr << 20) & 0x7FE00000)
-				| ((addr <<  9) & 0x00100000)
-				| ( addr        & 0x000FF000);
+			const uint32_t b2 = buffer[i + 2];
+			const uint32_t b3 = buffer[i + 3];
+			const uint32_t pc = now_pos + (uint32_t)i;
 
-			write32le(buffer + i, inst);
+// |          b3             |          b2             |          b1         |
+// | 31 30 29 28 27 26 25 24 | 23 22 21 20 19 18 17 16 | 15 14 13 12 x x x x |
+// | 20 10  9  8  7  6  5  4 |  3  2  1 11 19 18 17 16 | 15 14 13 12 x x x x |
+// |  7  6  5  4  3  2  1  0 |  7  6  5  4  3  2  1  0 |  7  6  5  4 x x x x |
+
+			uint32_t addr = ((b1 & 0xF0) << 13)
+					| (b2 << 9) | (b3 << 1);
+
+			addr -= pc;
+
+			buffer[i + 1] = (uint8_t)((b1 & 0x0F)
+					| ((addr >> 8) & 0xF0));
+
+			buffer[i + 2] = (uint8_t)(((addr >> 16) & 0x0F)
+					| ((addr >> 7) & 0x10)
+					| ((addr << 4) & 0xE0));
+
+			buffer[i + 3] = (uint8_t)(((addr >> 4) & 0x7F)
+					| ((addr >> 13) & 0x80));
+
 			i += 4 - 2;
 
 		} else if ((inst & 0x7F) == 0x17) {
 			// AUIPC
 			uint32_t inst2;
+
+			inst |= (uint32_t)buffer[i + 1] << 8;
+			inst |= (uint32_t)buffer[i + 2] << 16;
+			inst |= (uint32_t)buffer[i + 3] << 24;
 
 			if (inst & 0xE80) {
 				// AUIPC's rd doesn't equal x0 or x2.

@@ -128,7 +128,7 @@ typedef uint32_t (*crc32_func_type)(
 // Clang 16.0.0 and older has a bug where it marks the ifunc resolver
 // function as unused since it is static and never used outside of
 // __attribute__((__ifunc__())).
-#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
+#if defined(CRC_USE_IFUNC) && defined(__clang__)
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wunused-function"
 #endif
@@ -143,11 +143,11 @@ crc32_resolve(void)
 			? &crc32_arch_optimized : &crc32_generic;
 }
 
-#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
+#if defined(CRC_USE_IFUNC) && defined(__clang__)
 #	pragma GCC diagnostic pop
 #endif
 
-#ifndef HAVE_FUNC_ATTRIBUTE_IFUNC
+#ifndef CRC_USE_IFUNC
 
 #ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
 // Constructor method.

@@ -94,7 +94,7 @@ crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 typedef uint64_t (*crc64_func_type)(
 		const uint8_t *buf, size_t size, uint64_t crc);
 
-#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
+#if defined(CRC_USE_IFUNC) && defined(__clang__)
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wunused-function"
 #endif
@@ -106,11 +106,11 @@ crc64_resolve(void)
 			? &crc64_arch_optimized : &crc64_generic;
 }
 
-#if defined(HAVE_FUNC_ATTRIBUTE_IFUNC) && defined(__clang__)
+#if defined(CRC_USE_IFUNC) && defined(__clang__)
 #	pragma GCC diagnostic pop
 #endif
 
-#ifndef HAVE_FUNC_ATTRIBUTE_IFUNC
+#ifndef CRC_USE_IFUNC
 
 #ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
 #	define CRC64_SET_FUNC_ATTR __attribute__((__constructor__))

@@ -1303,6 +1303,15 @@ meet this condition,
 but files compressed in single-threaded mode don't even if
 .BI \-\-block\-size= size
 has been used.
+.IP ""
+The default value for
+.I threads
+is
+.BR 0 .
+In
+.B xz
+5.4.x and older the default is
+.BR 1 .
 .
 .SS "Custom compressor filter chains"
 A custom filter chain allows specifying

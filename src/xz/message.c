@@ -1022,8 +1022,8 @@ message_help(bool long_help)
 "                      does not affect decompressor memory requirements"));
 
 	puts(_(
-"  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-"                      to use as many threads as there are processor cores"));
+"  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
+"                      as many threads as there are processor cores"));
 
 	if (long_help) {
 		puts(_(

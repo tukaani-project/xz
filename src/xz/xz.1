@@ -6,7 +6,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2024-01-22" "Tukaani" "XZ Utils"
+.TH XZ 1 "2024-01-23" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -1866,14 +1866,38 @@ Since the BCJ-filtered data is usually compressed with LZMA2,
 the compression ratio may be improved slightly if
 the LZMA2 options are set to match the
 alignment of the selected BCJ filter.
-For example, with the IA-64 filter, it's good to set
-.B pb=4
-or even
+Examples:
+.RS
+.IP \(bu 3
+IA-64 filter has 16-byte alignment so
 .B pb=4,lp=4,lc=0
+is good
 with LZMA2 (2^4=16).
-The x86 filter is an exception;
-it's usually good to stick to LZMA2's default
-four-byte alignment when compressing x86 executables.
+.IP \(bu 3
+RISC-V code has 2-byte or 4-byte alignment
+depending on whether the file contains
+16-bit compressed instructions (the C extension).
+When 16-bit instructions are used,
+.B pb=2,lp=1,lc=3
+or
+.B pb=1,lp=1,lc=3
+is good.
+When 16-bit instructions aren't present,
+.B pb=2,lp=2,lc=2
+is the best.
+.B readelf \-h
+can be used to check if "RVC"
+appears on the "Flags" line.
+.IP \(bu 3
+ARM64 is always 4-byte aligned so
+.B pb=2,lp=2,lc=2
+is the best.
+.IP \(bu 3
+The x86 filter is an exception.
+It's usually good to stick to LZMA2's defaults
+.RB ( pb=2,lp=0,lc=3 )
+when compressing x86 executables.
+.RE
 .IP ""
 All BCJ filters support the same
 .IR options :

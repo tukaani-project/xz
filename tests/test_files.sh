@@ -80,6 +80,11 @@ do
 			have_feature DECODER_ARM64 "$I" || continue
 			;;
 	esac
+	case $I in
+		*/good-1-riscv-lzma2-*.xz)
+			have_feature DECODER_RISCV "$I" || continue
+			;;
+	esac
 
 	if test -z "$XZ" || "$XZ" $NO_WARN -dc "$I" > /dev/null; then
 		:

@@ -61,7 +61,7 @@ endif
 EXTRA_DIST = \
 	po4a \
 	extra \
-	doc/logo \
+	doc/xz-logo.png \
 	dos \
 	doxygen \
 	windows \

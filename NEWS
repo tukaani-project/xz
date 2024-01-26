@@ -2,6 +2,28 @@
 XZ Utils Release Notes
 ======================
 
+5.4.6 (2024-01-26)
+
+    * Fixed a bug involving internal function pointers in liblzma not
+      being initialized to NULL. The bug can only be triggered if
+      lzma_filters_update() is called on a LZMA1 encoder, so it does
+      not affect xz or any application known to us that uses liblzma.
+
+    * xz:
+
+        - Fixed a regression introduced in 5.4.2 that caused encoding
+          in the raw format to unnecessarily fail if --suffix was not
+          used. For instance, the following command no longer reports
+          that --suffix must be used:
+
+              echo foo | xz --format=raw --lzma2 | wc -c
+
+        - Fixed an issue on MinGW-w64 builds that prevented reading
+          from or writing to non-terminal character devices like NUL.
+
+    * Added a new test.
+
+
 5.4.5 (2023-11-31)
 
     * liblzma:

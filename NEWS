@@ -2,6 +2,86 @@
 XZ Utils Release Notes
 ======================
 
+5.5.1alpha (2024-01-26)
+
+    * Added a new filter for RISC-V binaries. The filter can be used
+      for 32-bit and 64-bit binaries with either little or big
+      endianness. In liblzma, the Filter ID is LZMA_FILTER_RISCV (0x0B)
+      and the xz option is --riscv. liblzma filter string syntax
+      recognizes this filter as "riscv".
+
+    * liblzma:
+
+        - Added lzma_mt_block_size() to recommend a Block size for
+          multithreaded encoding
+
+        - Added CLMUL-based CRC32 on x86-64 and E2K with runtime
+          processor detection. Similar to CRC64, on 32-bit x86 it
+          isn't available unless --disable-assembler is used.
+
+        - Implemented GNU indirect function (IFUNC) as a runtime
+          function dispatching method for CRC32 and CRC64 fast
+          implementations on x86. Only GNU/Linux (glibc) and FreeBSD
+          builds will use IFUNC, unless --enable-ifunc is specified to
+          configure.
+
+        - Added definitions of mask values like
+          LZMA_INDEX_CHECK_MASK_CRC32 to <lzma/index.h>.
+
+        - The XZ logo is now included in the Doxygen generated
+          documentation. It is licensed under Creative Commons
+          Attribution-ShareAlike 4.0.
+
+    * xz:
+
+        - Multithreaded mode is now the default. This improves
+          compression speed and creates .xz files that can be
+          decompressed multithreaded at the cost of increased memory
+          usage and slightly worse compression ratio.
+
+        - Added new command line option --filters to set the filter
+          chain using liblzma filter string syntax.
+
+        - Added new command line options --filters1 ... --filters9 to
+          set additional filter chains using liblzma filter string
+          syntax. The --block-list option now allows specifying filter
+          chains that were set using these new options.
+
+        - Added support for Linux Landlock as a sandboxing method.
+
+        - xzdec now supports pledge(2), Capsicum, and Linux Landlock as
+          sandboxing methods.
+
+        - Progress indicator time stats remain accurate after pausing
+          xz with SIGTSTP.
+
+        - Ported xz and xzdec to Windows MSVC. Visual Studio 2015 or
+          later is required.
+
+    * CMake Build:
+
+        - Supports pledge(2), Capsicum, and Linux Landlock sandboxing
+          methods.
+
+        - Replacement functions for getopt_long() are used on platforms
+          that do not have it.
+
+    * Enabled unaligned access by default on PowerPC64LE and on RISC-V
+      targets that define __riscv_misaligned_fast.
+
+    * Tests:
+
+        - Added two new fuzz targets to OSS-Fuzz.
+
+        - Implemented Continuous Integration (CI) testing using
+          GitHub Actions.
+
+    * Changed quoting style from `...' to '...' in all messages,
+      scripts, and documentation.
+
+    * Added basic Codespell support to help catch typo errors.
+
+
 5.4.6 (2024-01-26)
 
     * Fixed a bug involving internal function pointers in liblzma not

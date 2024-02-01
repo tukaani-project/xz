@@ -15,9 +15,9 @@
 
 // FIXME: Compared to crc_common.h this has to check for __x86_64__ too
 // so that in 32-bit builds crc32_x86.S won't break due to a missing table.
-#if (defined(__x86_64__) && defined(__SSSE3__) \
+#if defined(HAVE_USABLE_CLMUL) && ((defined(__x86_64__) && defined(__SSSE3__) \
 			&& defined(__SSE4_1__) && defined(__PCLMUL__)) \
-		|| (defined(__e2k__) && __iset__ >= 6)
+		|| (defined(__e2k__) && __iset__ >= 6))
 #	define X86_CLMUL_NO_TABLE 1
 #endif
 

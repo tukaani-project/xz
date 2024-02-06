@@ -2,7 +2,7 @@
 # Mesajele în limba română pentru pachetul xz.
 # This file is put in the public domain.
 #
-# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022 = 2023.
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022 - 2024.
 #
 # Cronologia traducerii fișierului „xz”:
 # Traducerea inițială, făcută de R-GC, pentru versiunea xz 5.2.5.
@@ -12,14 +12,15 @@
 # Actualizare a traducerii pentru versiunea 5.4.0-pre2, făcută de R-GC, dec-2022.
 # Actualizare a traducerii pentru versiunea 5.4.3, făcută de R-GC, mai-2023.
 # Actualizare a traducerii pentru versiunea 5.4.4-pre1, făcută de R-GC, iul-2023.
+# Actualizare a traducerii pentru versiunea 5.6.0-pre1, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.4-pre1\n"
+"Project-Id-Version: xz 5.6.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2023-07-18 23:34+0800\n"
-"PO-Revision-Date: 2023-07-19 19:34+0200\n"
+"POT-Creation-Date: 2024-01-26 19:40+0800\n"
+"PO-Revision-Date: 2024-02-06 15:40+0100\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -30,99 +31,125 @@ msgstr ""
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "X-Generator: Poedit 3.2.2\n"
 
-#: src/xz/args.c:77
+#: src/xz/args.c:78
 #, c-format
 msgid "%s: Invalid argument to --block-list"
 msgstr "%s: Argument nevalid pentru opțiunea „--block-list”"
 
-#: src/xz/args.c:87
+#: src/xz/args.c:88
 #, c-format
 msgid "%s: Too many arguments to --block-list"
 msgstr "%s: Prea multe argumente pentru opțiunea „--block-list”"
 
-#: src/xz/args.c:116
+#: src/xz/args.c:125
+#, c-format
+msgid "In --block-list, block size is missing after filter chain number '%c:'"
+msgstr "În „--block-list”, dimensiunea blocului lipsește după numărul lanțului de filtrare „%c”:"
+
+#: src/xz/args.c:151
 msgid "0 can only be used as the last element in --block-list"
 msgstr "0 poate fi folosit doar ca ultimul element din opțiunea „--block-list”"
 
-#: src/xz/args.c:451
+#: src/xz/args.c:540
 #, c-format
 msgid "%s: Unknown file format type"
 msgstr "%s: Tip de format de fișier necunoscut"
 
-#: src/xz/args.c:474 src/xz/args.c:482
+#: src/xz/args.c:563 src/xz/args.c:571
 #, c-format
 msgid "%s: Unsupported integrity check type"
 msgstr "%s: Tip de verificare a integrității neacceptat"
 
-#: src/xz/args.c:518
-msgid "Only one file can be specified with `--files' or `--files0'."
+#: src/xz/args.c:607
+msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Numai un fișier poate fi specificat cu „--files” sau „--files0”."
 
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
 #. before the colon ("%s : %s").
-#: src/xz/args.c:533 src/xz/coder.c:691 src/xz/coder.c:707 src/xz/coder.c:967
-#: src/xz/coder.c:970 src/xz/file_io.c:605 src/xz/file_io.c:679
-#: src/xz/file_io.c:769 src/xz/file_io.c:940 src/xz/list.c:369
-#: src/xz/list.c:415 src/xz/list.c:477 src/xz/list.c:581 src/xz/list.c:590
+#: src/xz/args.c:622 src/xz/coder.c:1059 src/xz/coder.c:1075
+#: src/xz/coder.c:1375 src/xz/coder.c:1378 src/xz/file_io.c:686
+#: src/xz/file_io.c:760 src/xz/file_io.c:850 src/xz/file_io.c:1021
+#: src/xz/list.c:369 src/xz/list.c:415 src/xz/list.c:477 src/xz/list.c:591
+#: src/xz/list.c:600
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: src/xz/args.c:589
+#: src/xz/args.c:678
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "Variabila de mediu „%s” conține prea multe argumente"
 
-#: src/xz/args.c:691
+#: src/xz/args.c:780
 msgid "Compression support was disabled at build time"
 msgstr "Suportul de comprimare a fost dezactivat în timpul construirii"
 
-#: src/xz/args.c:698
+#: src/xz/args.c:787
 msgid "Decompression support was disabled at build time"
 msgstr "Suportul de decomprimare a fost dezactivat în timpul construirii"
 
-#: src/xz/args.c:704
+#: src/xz/args.c:793
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "Comprimarea fișierelor lzip (.lz) nu este acceptată"
 
-#: src/xz/args.c:735
-msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "Cu --format=raw, este necesar --suffix=.SUF, cu excepția cazului în care se scrie la ieșirea standard(stdout)"
+#: src/xz/args.c:815
+msgid "--block-list is ignored unless compressing to the .xz format"
+msgstr "opțiunea „--block-list” este ignorată dacă nu se comprimă în formatul .xz"
 
-#: src/xz/coder.c:115
+#: src/xz/args.c:828 src/xz/args.c:837
+msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
+msgstr "Cu opțiunea „--format=raw”, este necesară opțiunea „--suffix=.SUF”, cu excepția cazului în care se scrie la ieșirea standard"
+
+#: src/xz/coder.c:141
 msgid "Maximum number of filters is four"
 msgstr "Numărul maxim de filtre este patru"
 
-#: src/xz/coder.c:134
+#: src/xz/coder.c:179
+#, c-format
+msgid "Error in --filters%s=FILTERS option:"
+msgstr "Eroare în opțiunea „--filters%s=FILTRE”:"
+
+#: src/xz/coder.c:229
 msgid "Memory usage limit is too low for the given filter setup."
 msgstr "Limita de utilizare a memoriei este prea mică pentru configurarea dată filtrului."
 
+#: src/xz/coder.c:244
+#, c-format
+msgid "filter chain %u used by --block-list but not specified with --filters%u="
+msgstr "lanțul de filtre %u este utilizat de „--block-list”, dar nu este specificat cu „--filters%u=”"
+
 # Notă:
 # cu toate că sunt împotriva americanismelor, am preferat folosirea cuvîntului american, „românizat”, pentru a avea o traducere fluidă, fără construcții încărcate și inecesare...
-#: src/xz/coder.c:169
+#: src/xz/coder.c:375
 msgid "Using a preset in raw mode is discouraged."
 msgstr "Utilizarea unei presetări în modul brut este descurajată."
 
-#: src/xz/coder.c:171
+#: src/xz/coder.c:377
 msgid "The exact options of the presets may vary between software versions."
 msgstr "Opțiunile exacte ale presetărilor pot varia între versiunile de software."
 
-#: src/xz/coder.c:194
+#: src/xz/coder.c:403
 msgid "The .lzma format supports only the LZMA1 filter"
 msgstr "Formatul .lzma acceptă numai filtrul LZMA1"
 
-#: src/xz/coder.c:202
+#: src/xz/coder.c:411
 msgid "LZMA1 cannot be used with the .xz format"
 msgstr "LZMA1 nu poate fi utilizat cu formatul .xz"
 
-#: src/xz/coder.c:219
-msgid "The filter chain is incompatible with --flush-timeout"
-msgstr "Lanțul de filtre este incompatibil cu opțiunea „--flush-timeout”"
+#: src/xz/coder.c:435
+#, c-format
+msgid "Filter chain %u is incompatible with --flush-timeout"
+msgstr "Lanțul de filtre %u este incompatibil cu opțiunea „--flush-timeout”"
 
-#: src/xz/coder.c:225
+#: src/xz/coder.c:444
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "Se trece la modul cu un singur fir de execuție datorită opțiunii „--flush-timeout”"
+
+#: src/xz/coder.c:485
+#, c-format
+msgid "Unsupported options in filter chain %u"
+msgstr "Opțiuni neacceptate în lanțul de filtre %u"
 
 # NOTĂ:
 # - să intru în contact cu dezvoltatorii, pentru ai ruga să introducă a doua formă de plural
@@ -133,50 +160,60 @@ msgstr "Se trece la modul cu un singur fir de execuție datorită opțiunii „-
 # procesoare/nuclee > 10
 # ===
 # cred că deja au apărut astfel de „monștrii”
-#: src/xz/coder.c:249
+#: src/xz/coder.c:516
 #, c-format
 msgid "Using up to %<PRIu32> threads."
 msgstr "Se utilizează până la %<PRIu32> fire de execuție."
 
-#: src/xz/coder.c:265
+#: src/xz/coder.c:532
 msgid "Unsupported filter chain or filter options"
 msgstr "Lanț de filtre sau opțiuni de filtrare neacceptate"
 
-#: src/xz/coder.c:277
+#: src/xz/coder.c:553
 #, c-format
 msgid "Decompression will need %s MiB of memory."
 msgstr "Decomprimarea va avea nevoie de %sMio de memorie."
 
-#: src/xz/coder.c:309
+#: src/xz/coder.c:585
 #, c-format
 msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
 msgstr "Numărul de fire de execuție a fost redus de la %s la %s pentru a nu se depăși limita de utilizare a memoriei de %sMio"
 
-#: src/xz/coder.c:329
+#: src/xz/coder.c:605
 #, c-format
 msgid "Reduced the number of threads from %s to one. The automatic memory usage limit of %s MiB is still being exceeded. %s MiB of memory is required. Continuing anyway."
 msgstr "S-a redus numărul de fire de execuție de la %s la unul. Limita automată de utilizare a memoriei de %sMio este încă depășită. Sunt necesari %sMio de memorie. Se continuă în ciuda acestui lucru."
 
-#: src/xz/coder.c:356
+#: src/xz/coder.c:632
 #, c-format
 msgid "Switching to single-threaded mode to not exceed the memory usage limit of %s MiB"
 msgstr "S-a trecut la modul cu un singur-fir de execuție pentru a nu se depăși limita de utilizare a memoriei de %sMio"
 
-#: src/xz/coder.c:411
+#: src/xz/coder.c:757
 #, c-format
 msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
 msgstr "S-a ajustat dimensiunea dicționarului LZMA%c de la %sMio la %sMio pentru a nu se depăși limita de utilizare a memoriei de %sMio"
 
-#: src/xz/file_io.c:110 src/xz/file_io.c:118
+#: src/xz/coder.c:767
+#, c-format
+msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+msgstr "S-a ajustat dimensiunea dicționarului LZMA%c pentru „--filters%u” de la %sMio la %sMio pentru a nu depăși limita de utilizare a memoriei de %sMio"
+
+#: src/xz/coder.c:1141
+#, c-format
+msgid "Error changing to filter chain %u: %s"
+msgstr "Eroare la schimbarea lanțului de filtrare %u: %s"
+
+#: src/xz/file_io.c:137 src/xz/file_io.c:145
 #, c-format
 msgid "Error creating a pipe: %s"
-msgstr "Eroare la crearea unei conducte(pipe): %s"
+msgstr "Eroare la crearea unei conducte: %s"
 
-#: src/xz/file_io.c:252
+#: src/xz/file_io.c:333
 msgid "Failed to enable the sandbox"
 msgstr "Nu s-a reușit activarea cutiei de probă(sandbox)"
 
-#: src/xz/file_io.c:294
+#: src/xz/file_io.c:375
 #, c-format
 msgid "%s: poll() failed: %s"
 msgstr "%s: poll() a eșuat: %s"
@@ -191,111 +228,111 @@ msgstr "%s: poll() a eșuat: %s"
 #. it is possible that the user has put a new file in place
 #. of the original file, and in that case it obviously
 #. shouldn't be removed.
-#: src/xz/file_io.c:361
+#: src/xz/file_io.c:442
 #, c-format
 msgid "%s: File seems to have been moved, not removing"
 msgstr "%s: Fișierul pare să fi fost mutat, nu eliminat"
 
-#: src/xz/file_io.c:368 src/xz/file_io.c:924
+#: src/xz/file_io.c:449 src/xz/file_io.c:1005
 #, c-format
 msgid "%s: Cannot remove: %s"
 msgstr "%s: Nu se poate elimina: %s"
 
-#: src/xz/file_io.c:394
+#: src/xz/file_io.c:475
 #, c-format
 msgid "%s: Cannot set the file owner: %s"
 msgstr "%s: Nu se poate configura proprietarul fișierului: %s"
 
-#: src/xz/file_io.c:407
+#: src/xz/file_io.c:488
 #, c-format
 msgid "%s: Cannot set the file group: %s"
 msgstr "%s: Nu se poate configura grupul proprietar al fișierului: %s"
 
-#: src/xz/file_io.c:426
+#: src/xz/file_io.c:507
 #, c-format
 msgid "%s: Cannot set the file permissions: %s"
 msgstr "%s: Nu se pot configura permisiunile fișierului: %s"
 
-#: src/xz/file_io.c:552
+#: src/xz/file_io.c:633
 #, c-format
 msgid "Error getting the file status flags from standard input: %s"
 msgstr "Eroare la obținerea indicatorilor de stare a fișierului de la intrarea standard: %s"
 
-#: src/xz/file_io.c:610 src/xz/file_io.c:672
+#: src/xz/file_io.c:691 src/xz/file_io.c:753
 #, c-format
 msgid "%s: Is a symbolic link, skipping"
 msgstr "%s: Este o legătură simbolică, se omite"
 
-#: src/xz/file_io.c:701
+#: src/xz/file_io.c:782
 #, c-format
 msgid "%s: Is a directory, skipping"
 msgstr "%s: Este un director, se omite"
 
-#: src/xz/file_io.c:707
+#: src/xz/file_io.c:788
 #, c-format
 msgid "%s: Not a regular file, skipping"
 msgstr "%s: Nu este un fișier obișnuit, se omite"
 
-#: src/xz/file_io.c:724
+#: src/xz/file_io.c:805
 #, c-format
 msgid "%s: File has setuid or setgid bit set, skipping"
 msgstr "%s: Fișierul are activați biții «setuid» sau «setgid», se omite"
 
-#: src/xz/file_io.c:731
+#: src/xz/file_io.c:812
 #, c-format
 msgid "%s: File has sticky bit set, skipping"
 msgstr "%s: Fișierul are activat bitul lipicios(sticky), se omite"
 
-#: src/xz/file_io.c:738
+#: src/xz/file_io.c:819
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
 msgstr "%s: Fișierul de intrare are mai mult de o legătură dură, se omite"
 
-#: src/xz/file_io.c:780
+#: src/xz/file_io.c:861
 msgid "Empty filename, skipping"
 msgstr "Numele fișierului este gol, se omite"
 
-#: src/xz/file_io.c:834
+#: src/xz/file_io.c:915
 #, c-format
 msgid "Error restoring the status flags to standard input: %s"
 msgstr "Eroare la restabilirea indicatorilor de stare la intrarea standard: %s"
 
-#: src/xz/file_io.c:882
+#: src/xz/file_io.c:963
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
 msgstr "Eroare la obținerea indicatorilor de stare a fișierului de la ieșirea standard: %s"
 
-#: src/xz/file_io.c:1060
+#: src/xz/file_io.c:1162
 #, c-format
 msgid "Error restoring the O_APPEND flag to standard output: %s"
 msgstr "Eroare la restabilirea indicatorului O_APPEND la ieșirea standard: %s"
 
-#: src/xz/file_io.c:1072
+#: src/xz/file_io.c:1174
 #, c-format
 msgid "%s: Closing the file failed: %s"
 msgstr "%s: Închiderea fișierului a eșuat: %s"
 
-#: src/xz/file_io.c:1108 src/xz/file_io.c:1371
+#: src/xz/file_io.c:1210 src/xz/file_io.c:1472
 #, c-format
 msgid "%s: Seeking failed when trying to create a sparse file: %s"
 msgstr "%s: Căutarea a eșuat când se încerca crearea unui fișier dispers(sparse): %s"
 
-#: src/xz/file_io.c:1209
+#: src/xz/file_io.c:1310
 #, c-format
 msgid "%s: Read error: %s"
 msgstr "%s: Eroare de citire: %s"
 
-#: src/xz/file_io.c:1239
+#: src/xz/file_io.c:1340
 #, c-format
 msgid "%s: Error seeking the file: %s"
 msgstr "%s: Eroare la căutarea fișierului: %s"
 
-#: src/xz/file_io.c:1263
+#: src/xz/file_io.c:1364
 #, c-format
 msgid "%s: Unexpected end of file"
 msgstr "%s: Sfârșit neașteptat al fișierului"
 
-#: src/xz/file_io.c:1322
+#: src/xz/file_io.c:1423
 #, c-format
 msgid "%s: Write error: %s"
 msgstr "%s: Eroare de scriere: %s"
@@ -322,7 +359,7 @@ msgstr "Decomprimare:"
 
 #: src/xz/hardware.c:273
 msgid "Multi-threaded decompression:"
-msgstr "Decomprimare multiple-fire de execuție:"
+msgstr "Decomprimare cu multiple-fire de execuție:"
 
 # R-GC, scrie:
 # ATENȚIE:
@@ -522,26 +559,26 @@ msgstr "%s: Prea mic pentru a fi un fișier .xz valid"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:731
+#: src/xz/list.c:741
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "Fluxuri Blocuri Comprimare Decomprimare Raport  Verificare Nume fișier"
 
-#: src/xz/list.c:1026 src/xz/list.c:1204
+#: src/xz/list.c:1036 src/xz/list.c:1214
 msgid "Yes"
 msgstr "Da"
 
-#: src/xz/list.c:1026 src/xz/list.c:1204
+#: src/xz/list.c:1036 src/xz/list.c:1214
 msgid "No"
 msgstr "Nu"
 
-#: src/xz/list.c:1028 src/xz/list.c:1206
+#: src/xz/list.c:1038 src/xz/list.c:1216
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "  Versiunea minimă XZ Utils: %s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:1179
+#: src/xz/list.c:1189
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
@@ -550,46 +587,46 @@ msgstr[1] "două fișiere\n"
 msgstr[2] "%s fișiere\n"
 msgstr[3] "%s de fișiere\n"
 
-#: src/xz/list.c:1192
+#: src/xz/list.c:1202
 msgid "Totals:"
 msgstr "Totaluri:"
 
-#: src/xz/list.c:1270
+#: src/xz/list.c:1280
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "--list funcționează numai pe fișierele .xz (--format=xz sau --format=auto)"
 
-#: src/xz/list.c:1276
+#: src/xz/list.c:1286
 msgid "--list does not support reading from standard input"
 msgstr "--list nu acceptă citirea de la intrarea standard"
 
-#: src/xz/main.c:89
+#: src/xz/main.c:96
 #, c-format
 msgid "%s: Error reading filenames: %s"
 msgstr "%s: Eroare la citirea numelor de fișiere: %s"
 
-#: src/xz/main.c:96
+#: src/xz/main.c:103
 #, c-format
 msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s: Sfârșit neașteptat al intrării la citirea numelor de fișiere"
 
 # Adaptînd sugestia făcută de Daniel Șerbănescu asupra traducerii cuvîntului „null”, am modificat
-# traducere de la:„Caracter nul găsit...”, la:
+# traducerea de la:„Caracter nul găsit...”, la:
 # „Caracter nul(null) găsit...”
 # Sugestia făcută de el în baza obiecției că în pagina web, «dexonline» definiția cuvîntului nul, este un pic ambiguă; nu are o bază prea solidă,
 # din următoarele motive:
 # - pagina în cauză e construită, alimentată și menținută de persoane voluntare, precum noi ca traducători de software.
 # - intrările pentru definiția cuvîntului „nul”, sînt extrase din dicționare de uz general; niciuna dintre ele, nu a ieșit dintr-un dicționar tehnic, cu atît mai puțin unul de informatică.
 # - utilizatorul software-ului «xz», direct de la linia de comandă, mă îndoiesc că va fi un utilizator ce nu este familiarizat cu nomenclatura din informatică (pentru restul utilizatorilor, acest mesaj nu va fi vizibil, pentru că-l vor utiliza din spatele unui software „IGU” «InterfațăGrafică(de)Utilizator»
-#: src/xz/main.c:120
+#: src/xz/main.c:127
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
+msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "%s: Caracter nul(null) găsit la citirea numelor de fișiere; poate ați vrut să utilizați „--files0” în loc de „--files”?"
 
-#: src/xz/main.c:188
+#: src/xz/main.c:207
 msgid "Compression and decompression with --robot are not supported yet."
 msgstr "Comprimarea și decomprimarea cu „--robot” nu sunt încă acceptate."
 
-#: src/xz/main.c:266
+#: src/xz/main.c:285
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Nu se pot citi date de la intrarea standard atunci când se citesc numele de fișiere de la intrarea standard"
 
@@ -597,68 +634,68 @@ msgstr "Nu se pot citi date de la intrarea standard atunci când se citesc numel
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c:670 src/xz/message.c:725
+#: src/xz/message.c:671 src/xz/message.c:726
 #, c-format
 msgid "%s: "
 msgstr "%s: "
 
-#: src/xz/message.c:797 src/xz/message.c:856
+#: src/xz/message.c:798 src/xz/message.c:857
 msgid "Internal error (bug)"
 msgstr "Eroare internă (bug)"
 
-#: src/xz/message.c:804
+#: src/xz/message.c:805
 msgid "Cannot establish signal handlers"
 msgstr "Nu se pot stabili operatorii de semnal"
 
-#: src/xz/message.c:813
+#: src/xz/message.c:814
 msgid "No integrity check; not verifying file integrity"
 msgstr "Fără verificare a integrității; nu se verifică integritatea fișierului"
 
-#: src/xz/message.c:816
+#: src/xz/message.c:817
 msgid "Unsupported type of integrity check; not verifying file integrity"
 msgstr "Tip neacceptat de verificare a integrității; nu se verifică integritatea fișierului"
 
-#: src/xz/message.c:823
+#: src/xz/message.c:824
 msgid "Memory usage limit reached"
 msgstr "Limita de utilizare a memoriei a fost atinsă"
 
-#: src/xz/message.c:826
+#: src/xz/message.c:827
 msgid "File format not recognized"
 msgstr "Formatul fișierului nu este recunoscut"
 
-#: src/xz/message.c:829
+#: src/xz/message.c:830
 msgid "Unsupported options"
 msgstr "Opțiuni neacceptate"
 
-#: src/xz/message.c:832
+#: src/xz/message.c:833
 msgid "Compressed data is corrupt"
 msgstr "Datele comprimate sunt corupte"
 
-#: src/xz/message.c:835
+#: src/xz/message.c:836
 msgid "Unexpected end of input"
 msgstr "Sfârșit neașteptat al intrării"
 
-#: src/xz/message.c:877
+#: src/xz/message.c:878
 #, c-format
 msgid "%s MiB of memory is required. The limiter is disabled."
-msgstr "Se necesită %s Mio de memorie. Limitarea este dezactivată."
+msgstr "Se necesită %sMio de memorie. Limitarea este dezactivată."
 
-#: src/xz/message.c:905
+#: src/xz/message.c:906
 #, c-format
 msgid "%s MiB of memory is required. The limit is %s."
 msgstr "Se necesită %sMio de memorie. Limita este de %s."
 
-#: src/xz/message.c:924
+#: src/xz/message.c:925
 #, c-format
 msgid "%s: Filter chain: %s\n"
 msgstr "%s: Lanț de filtre: %s\n"
 
-#: src/xz/message.c:935
+#: src/xz/message.c:936
 #, c-format
-msgid "Try `%s --help' for more information."
+msgid "Try '%s --help' for more information."
 msgstr "Încercați «%s --help» pentru mai multe informații."
 
-#: src/xz/message.c:961
+#: src/xz/message.c:962
 #, c-format
 msgid ""
 "Usage: %s [OPTION]... [FILE]...\n"
@@ -669,17 +706,17 @@ msgstr ""
 "Comprimă sau decomprimă FIȘIER(e) în formatul .xz.\n"
 "\n"
 
-#: src/xz/message.c:968
+#: src/xz/message.c:969
 msgid "Mandatory arguments to long options are mandatory for short options too.\n"
 msgstr ""
 "Argumentele obligatorii pentru opțiunile lungi sunt obligatorii și\n"
 "pentru opțiunile scurte.\n"
 
-#: src/xz/message.c:972
+#: src/xz/message.c:973
 msgid " Operation mode:\n"
 msgstr " Mod de operare:\n"
 
-#: src/xz/message.c:975
+#: src/xz/message.c:976
 msgid ""
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
@@ -691,7 +728,7 @@ msgstr ""
 "  -t, --test          testează integritatea fișierului comprimat\n"
 "  -l, --list          listează informații despre fișierele .xz"
 
-#: src/xz/message.c:981
+#: src/xz/message.c:982
 msgid ""
 "\n"
 " Operation modifiers:\n"
@@ -699,7 +736,7 @@ msgstr ""
 "\n"
 " Modificatori de operare:\n"
 
-#: src/xz/message.c:984
+#: src/xz/message.c:985
 msgid ""
 "  -k, --keep          keep (don't delete) input files\n"
 "  -f, --force         force overwrite of output file and (de)compress links\n"
@@ -711,7 +748,7 @@ msgstr ""
 "  -c, --stdout        scrie la ieșirea standard și nu șterge fișierele de\n"
 "                      intrare"
 
-#: src/xz/message.c:993
+#: src/xz/message.c:994
 msgid ""
 "      --single-stream decompress only the first stream, and silently\n"
 "                      ignore possible remaining input data"
@@ -719,10 +756,10 @@ msgstr ""
 "      --single-stream decomprimă doar primul flux și ignoră în tăcere\n"
 "                      posibilele date de intrare rămase"
 
-#: src/xz/message.c:996
+#: src/xz/message.c:997
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
-"  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
+"  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
 "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
 "                      filenames must be terminated with the newline character\n"
@@ -736,10 +773,9 @@ msgstr ""
 "                      de la intrarea standard; numele de fișiere trebuie să\n"
 "                      fie terminate cu caracterul de linie nouă\n"
 "      --files0[=FIȘIER]\n"
-"                      ca --files, dar folosește caracterul nul(null) ca\n"
-"                      terminator"
+"                      ca „--files”, dar folosește caracterul null ca terminator"
 
-#: src/xz/message.c:1005
+#: src/xz/message.c:1006
 msgid ""
 "\n"
 " Basic file format and compression options:\n"
@@ -747,12 +783,12 @@ msgstr ""
 "\n"
 " Formatul de bază al fișierului și opțiunile de comprimare:\n"
 
-#: src/xz/message.c:1007
+#: src/xz/message.c:1008
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
-"  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-"                      `crc32', `crc64' (default), or `sha256'"
+"                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
+"  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
+"                      'crc32', 'crc64' (default), or 'sha256'"
 msgstr ""
 "  -F, --format=FORMAT\n"
 "                      formatul de fișier pentru codificare sau decodificare;\n"
@@ -763,11 +799,11 @@ msgstr ""
 "                      cu precauție), „crc32”, „crc64” (implicit) sau\n"
 "                      „sha256”"
 
-#: src/xz/message.c:1012
+#: src/xz/message.c:1013
 msgid "      --ignore-check  don't verify the integrity check when decompressing"
 msgstr "      --ignore-check  nu se efectuează verificarea integrității la decomprimare"
 
-#: src/xz/message.c:1016
+#: src/xz/message.c:1017
 msgid ""
 "  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
 "                      decompressor memory usage into account before using 7-9!"
@@ -777,7 +813,7 @@ msgstr ""
 "                      comprimare *și* de instrumentul de decomprimare, înainte\n"
 "                      de a utiliza presetările 7-9!"
 
-#: src/xz/message.c:1020
+#: src/xz/message.c:1021
 msgid ""
 "  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
 "                      does not affect decompressor memory requirements"
@@ -786,17 +822,17 @@ msgstr ""
 "                      folosind mai mult timp CPU-ul; nu afectează cerințele\n"
 "                      de memorie ale instrumentului de decomprimare"
 
-#: src/xz/message.c:1024
+#: src/xz/message.c:1025
 msgid ""
-"  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-"                      to use as many threads as there are processor cores"
+"  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
+"                      as many threads as there are processor cores"
 msgstr ""
 "  -T, --threads=NUMĂR\n"
-"                      utilizați cel mult NUMĂR fire de execuție; implicit\n"
-"                      este 1; specificați valoarea 0 pentru a utiliza atâtea\n"
-"                      fire de execuție câte nuclee de procesor există"
+"                      utilizează cel mult NUMĂR fire de execuție; valoarea\n"
+"                      implicită este 0, care utilizează atâtea fire de execuție\n"
+"                      câte nuclee există în procesor"
 
-#: src/xz/message.c:1029
+#: src/xz/message.c:1030
 msgid ""
 "      --block-size=SIZE\n"
 "                      start a new .xz block after every SIZE bytes of input;\n"
@@ -807,17 +843,21 @@ msgstr ""
 "                      utilizați acest lucru pentru a stabili dimensiunea\n"
 "                      blocului pentru comprimarea cu fire de execuție"
 
-#: src/xz/message.c:1033
+#: src/xz/message.c:1034
 msgid ""
-"      --block-list=SIZES\n"
+"      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
-"                      intervals of uncompressed data"
+"                      intervals of uncompressed data; optionally, specify a\n"
+"                      filter chain number (0-9) followed by a ':' before the\n"
+"                      uncompressed data size"
 msgstr ""
-"      --block-list=DM\n"
+"      --block-list=BLOCURI\n"
 "                      începe un nou bloc .xz după intervalele date separate\n"
-"                      prin virgulă, de date necomprimate"
+"                      prin virgulă, de date necomprimate; opțional, specificați\n"
+"                      un număr de lanț de filtrare (0-9) urmat de „:” înainte\n"
+"                      de dimensiunea datelor necomprimate"
 
-#: src/xz/message.c:1037
+#: src/xz/message.c:1040
 msgid ""
 "      --flush-timeout=TIMEOUT\n"
 "                      when compressing, if more than TIMEOUT milliseconds has\n"
@@ -830,7 +870,7 @@ msgstr ""
 "                      multor intrări s-ar bloca, toate datele în așteptare\n"
 "                      sunt eliminate"
 
-#: src/xz/message.c:1043
+#: src/xz/message.c:1046
 #, no-c-format
 msgid ""
 "      --memlimit-compress=LIMIT\n"
@@ -850,7 +890,7 @@ msgstr ""
 "                      execuție sau toate acestea; LIMITA este exprimată în\n"
 "                      octeți, % din RAM sau 0 pt. a activa valoarea implicită"
 
-#: src/xz/message.c:1052
+#: src/xz/message.c:1055
 msgid ""
 "      --no-adjust     if compression settings exceed the memory usage limit,\n"
 "                      give an error instead of adjusting the settings downwards"
@@ -858,7 +898,7 @@ msgstr ""
 "      --no-adjust     dacă setările de comprimare depășesc limita de utilizare\n"
 "                      a memoriei, dă o eroare în loc să reducă val. stabilite"
 
-#: src/xz/message.c:1058
+#: src/xz/message.c:1061
 msgid ""
 "\n"
 " Custom filter chain for compression (alternative for using presets):"
@@ -867,7 +907,37 @@ msgstr ""
 " Lanț de filtrare personalizat pentru comprimare (alternativă la utilizarea\n"
 " presetărilor):"
 
-#: src/xz/message.c:1067
+#: src/xz/message.c:1064
+msgid ""
+"\n"
+"  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
+"                      syntax; use --filters-help for more information"
+msgstr ""
+"\n"
+"  --filters=FILTRE    definește lanțul de filtre folosind sintaxa șirului de\n"
+"                      filtre liblzma; utilizați „--filters-help” pentru mai\n"
+"                      multe informații"
+
+#: src/xz/message.c:1070
+msgid ""
+"  --filters1=FILTERS ... --filters9=FILTERS\n"
+"                      set additional filter chains using the liblzma filter\n"
+"                      string syntax to use with --block-list"
+msgstr ""
+"  --filters1=FILTRE ... --filters9=FILTRE\n"
+"                      definește lanțuri de filtre suplimentare folosind sintaxa\n"
+"                      șirului de filtre liblzma pentru a fi utilizate cu\n"
+"                      opțiunea „--block-list”"
+
+#: src/xz/message.c:1076
+msgid ""
+"  --filters-help      display more information about the liblzma filter string\n"
+"                      syntax and exit."
+msgstr ""
+"  --filters-help      afișează mai multe informații despre sintaxa șirului de\n"
+"                      filtre liblzma și iese"
+
+#: src/xz/message.c:1087
 msgid ""
 "\n"
 "  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
@@ -901,7 +971,7 @@ msgstr ""
 "                        depth=NUM  adâncimea maximă de căutare; 0=automată\n"
 "                                   (valoarea implicită)"
 
-#: src/xz/message.c:1082
+#: src/xz/message.c:1102
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -911,6 +981,7 @@ msgid ""
 "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
 "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
 "  --sparc[=OPTS]      SPARC BCJ filter\n"
+"  --riscv[=OPTS]      RISC-V BCJ filter\n"
 "                      Valid OPTS for all BCJ filters:\n"
 "                        start=NUM  start offset for conversions (default=0)"
 msgstr ""
@@ -922,10 +993,11 @@ msgstr ""
 "  --powerpc[=OPȚIUNI] filtru BCJ PowerPC (numai big endian)\n"
 "  --ia64[=OPȚIUNI]    filtru BCJ IA-64 (Itanium)\n"
 "  --sparc[=OPȚIUNI]   filtru BCJ SPARC\n"
+"  --riscv[=OPȚIUNI]   filtru RISC-V BCJ\n"
 "                      OPȚIUNI valide pentru toate filtrele BCJ:\n"
-"                      start=NUM poziția de pornire a conversiilor (implicit=0)"
+"                      start=NUM  poziția de pornire a conversiilor (implicit=0)"
 
-#: src/xz/message.c:1095
+#: src/xz/message.c:1116
 msgid ""
 "\n"
 "  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
@@ -937,7 +1009,7 @@ msgstr ""
 "                        dist=NUM   distanța dintre octeți fiind dedusă\n"
 "                                   scăzând un octet din celălalt (1-256; 1)"
 
-#: src/xz/message.c:1103
+#: src/xz/message.c:1124
 msgid ""
 "\n"
 " Other options:\n"
@@ -945,27 +1017,27 @@ msgstr ""
 "\n"
 " Alte opțiuni:\n"
 
-#: src/xz/message.c:1106
+#: src/xz/message.c:1127
 msgid ""
 "  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
 "  -v, --verbose       be verbose; specify twice for even more verbose"
 msgstr ""
-"  -q, --quiet         suprimă avertismentele; specificați de două ori pentru\n"
+"  -q, --quiet         suprimă avertismentele; specificați-o de două ori pentru\n"
 "                      a suprima și erorile\n"
-"  -v, --verbose       descriere detaliată; specificați de două ori pentru și\n"
+"  -v, --verbose       descriere detaliată; specificați-o de două ori pentru și\n"
 "                      mai multe detalii"
 
-#: src/xz/message.c:1111
+#: src/xz/message.c:1132
 msgid "  -Q, --no-warn       make warnings not affect the exit status"
 msgstr "  -Q, --no-warn       face ca avertismentele să nu afecteze starea de ieșire"
 
-#: src/xz/message.c:1113
+#: src/xz/message.c:1134
 msgid "      --robot         use machine-parsable messages (useful for scripts)"
 msgstr ""
 "      --robot         utilizează mesaje analizabile de mașină (utile pentru\n"
 "                      scripturi)"
 
-#: src/xz/message.c:1116
+#: src/xz/message.c:1137
 msgid ""
 "      --info-memory   display the total amount of RAM and the currently active\n"
 "                      memory usage limits, and exit"
@@ -973,7 +1045,7 @@ msgstr ""
 "      --info-memory   afișează cantitatea totală de memorie RAM și limitele de\n"
 "                      utilizare a memoriei active în prezent, și iese"
 
-#: src/xz/message.c:1119
+#: src/xz/message.c:1140
 msgid ""
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"
@@ -981,7 +1053,7 @@ msgstr ""
 "  -h, --help          afișează ajutorul scurt (enumeră doar opțiunile de bază)\n"
 "  -H, --long-help     afișează acest ajutor lung(detaliat) și iese"
 
-#: src/xz/message.c:1123
+#: src/xz/message.c:1144
 msgid ""
 "  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"
@@ -990,11 +1062,11 @@ msgstr ""
 "  -H, --long-help     afișează mesajul detaliat de ajutor (afișează și opțiunile\n"
 "                      avansate)"
 
-#: src/xz/message.c:1128
+#: src/xz/message.c:1149
 msgid "  -V, --version       display the version number and exit"
 msgstr "  -V, --version       afișează numărul versiunii, și iese"
 
-#: src/xz/message.c:1130
+#: src/xz/message.c:1151
 msgid ""
 "\n"
 "With no FILE, or when FILE is -, read standard input.\n"
@@ -1006,25 +1078,41 @@ msgstr ""
 #. for this package. Please add _another line_ saying
 #. "Report translation bugs to <...>\n" with the email or WWW
 #. address for translation bugs. Thanks.
-#: src/xz/message.c:1136
+#: src/xz/message.c:1157
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr ""
 "Raportați erorile la <%s> (în engleză sau finlandeză).\n"
 "Raportați erorile de traducere la <translation-team-ro@lists.sourceforge.net>\n"
 
-#: src/xz/message.c:1138
+#: src/xz/message.c:1159
 #, c-format
 msgid "%s home page: <%s>\n"
 msgstr "Pagina principală a %s: <%s>\n"
 
-#: src/xz/message.c:1142
+#: src/xz/message.c:1163
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
 msgstr "ACEASTA ESTE O VERSIUNE DE DEZVOLTARE, NEDESTINATĂ UTILIZĂRII ÎN PRODUCȚIE."
 
+#: src/xz/message.c:1180
+msgid ""
+"Filter chains are set using the --filters=FILTERS or\n"
+"--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
+"can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
+"specified instead of a filter chain.\n"
+msgstr ""
+"Lanțurile de filtre sunt definite cu ajutorul opțiunilor „--filters=FILTRE” sau\n"
+"„--filters1=FILTRE ... --filters9=FILTRE”. Fiecare filtru din lanț poate fi\n"
+"separat prin spații sau „--”. Alternativ, se poate specifica o presetare\n"
+"<0-9>[e] în locul unui lanț de filtre.\n"
+
+#: src/xz/message.c:1186
+msgid "The supported filters and their options are:"
+msgstr "Filtrele acceptate și opțiunile acestora sunt:"
+
 #: src/xz/options.c:86
 #, c-format
-msgid "%s: Options must be `name=value' pairs separated with commas"
+msgid "%s: Options must be 'name=value' pairs separated with commas"
 msgstr "%s: Opțiunile trebuie să fie perechi „nume=valoare” separate prin virgule"
 
 #: src/xz/options.c:93
@@ -1037,54 +1125,54 @@ msgstr "%s: Nume de opțiune nevalid"
 msgid "%s: Invalid option value"
 msgstr "%s: Valoare nevalidă a opțiunii"
 
-#: src/xz/options.c:247
+#: src/xz/options.c:248
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
 msgstr "Presetare LZMA1/LZMA2 neacceptată: %s"
 
-#: src/xz/options.c:355
+#: src/xz/options.c:356
 msgid "The sum of lc and lp must not exceed 4"
 msgstr "Suma de lc și lp nu trebuie să depășească 4"
 
-#: src/xz/suffix.c:160
+#: src/xz/suffix.c:166
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s: Numele fișierului are un sufix necunoscut, care se omite"
 
-#: src/xz/suffix.c:181
+#: src/xz/suffix.c:187
 #, c-format
-msgid "%s: File already has `%s' suffix, skipping"
+msgid "%s: File already has '%s' suffix, skipping"
 msgstr "%s: Fișierul are deja sufixul „%s”, se omite"
 
-#: src/xz/suffix.c:388
+#: src/xz/suffix.c:394
 #, c-format
 msgid "%s: Invalid filename suffix"
 msgstr "%s: Sufixul numelui de fișier nu este valid"
 
-#: src/xz/util.c:71
+#: src/xz/util.c:107
 #, c-format
 msgid "%s: Value is not a non-negative decimal integer"
 msgstr "%s: Valoarea nu este un număr întreg zecimal nenegativ"
 
-#: src/xz/util.c:113
+#: src/xz/util.c:149
 #, c-format
 msgid "%s: Invalid multiplier suffix"
 msgstr "%s: Sufix multiplicator nevalid"
 
-#: src/xz/util.c:115
-msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
+#: src/xz/util.c:151
+msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "Sufixele valide sunt „KiB” (2^10), „MiB” (2^20) și „GiB” (2^30)."
 
-#: src/xz/util.c:132
+#: src/xz/util.c:168
 #, c-format
-msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "Valoarea opțiunii „%s” trebuie să fie în intervalul [%<PRIu64>, %<PRIu64>]"
 
-#: src/xz/util.c:269
+#: src/xz/util.c:291
 msgid "Compressed data cannot be read from a terminal"
 msgstr "Datele comprimate nu pot fi citite de pe un terminal"
 
-#: src/xz/util.c:282
+#: src/xz/util.c:304
 msgid "Compressed data cannot be written to a terminal"
 msgstr "Datele comprimate nu pot fi scrise pe un terminal"
 

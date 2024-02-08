@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: xz 5.6.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2024-01-26 19:40+0800\n"
-"PO-Revision-Date: 2024-02-06 11:03-0600\n"
+"PO-Revision-Date: 2024-02-07 17:28-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -30,7 +30,7 @@ msgstr "%s: Demasiados argumentos para --block-list"
 #: src/xz/args.c:125
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr "En --block-list, falta el tamaño de bloque después del número de cadena de filtro '%c:'"
+msgstr "En --block-list, falta el tamaño de bloque después del número de cadena de filtros '%c:'"
 
 #: src/xz/args.c:151
 msgid "0 can only be used as the last element in --block-list"
@@ -98,7 +98,7 @@ msgstr "Error en la opción --filters%s=FILTROS:"
 
 #: src/xz/coder.c:229
 msgid "Memory usage limit is too low for the given filter setup."
-msgstr "El límite de uso de memoria es muy bajo para la configuración de filtro dada."
+msgstr "El límite de uso de memoria es demasiado bajo para la configuración de filtros dada."
 
 #: src/xz/coder.c:244
 #, c-format
@@ -142,7 +142,7 @@ msgstr "Se usan hasta %<PRIu32> hilos."
 
 #: src/xz/coder.c:532
 msgid "Unsupported filter chain or filter options"
-msgstr "No se admite las opciones de cadena de filtros o de filtro"
+msgstr "No se admiten las opciones de cadena de filtros o de filtro"
 
 #: src/xz/coder.c:553
 #, c-format
@@ -528,7 +528,7 @@ msgstr "%s: Demasiado pequeño para ser un fichero .xz válido"
 #. use two lines here. Test with "xz -l foo.xz".
 #: src/xz/list.c:741
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
-msgstr "Flujos Bloques  Comprimido Sin-Comprimir Relac  Verif   Nombre-Fichero"
+msgstr "Flujos Bloques  Comprimido Sin-Comprimir Tasa   Verif   Nombre-Fichero"
 
 #: src/xz/list.c:1036 src/xz/list.c:1214
 msgid "Yes"
@@ -650,7 +650,7 @@ msgstr "%s: Cadena de filtro: %s\n"
 #: src/xz/message.c:936
 #, c-format
 msgid "Try '%s --help' for more information."
-msgstr "Intente '%s --help' para obtener más información."
+msgstr "Pruebe '%s --help' para obtener más información."
 
 #: src/xz/message.c:962
 #, c-format
@@ -856,7 +856,7 @@ msgid ""
 " Custom filter chain for compression (alternative for using presets):"
 msgstr ""
 "\n"
-" Cadena de filtros para compresión (alternativa a valores predefinidos):"
+" Cadena de filtros para compresión (alternativa a usar valores predefinidos):"
 
 #: src/xz/message.c:1064
 msgid ""
@@ -904,7 +904,7 @@ msgid ""
 msgstr ""
 "\n"
 "  --lzma1[=OPCIONES]  LZMA1 o LZMA2; OPCIONES es una lista separada por comas\n"
-"  --lzma2[=OPCIONES]  de cero o más opciones (valores válidos; por defecto)\n"
+"  --lzma2[=OPCIONES]  de cero o más opciones (valores válidos; por defecto):\n"
 "                        preset=PRE inicia opciones con un valor predefinido\n"
 "                                     (0-9[e])\n"
 "                        dict=NÚM   tamaño de diccionario (4KiB - 1536MiB; 8MiB)\n"
@@ -953,9 +953,9 @@ msgid ""
 "                                   from each other (1-256; 1)"
 msgstr ""
 "\n"
-"  --delta[=OPCIONES]    Filtro delta; OPCIONES (valores válidos; por defecto):\n"
-"                          dist=NÚM   distancia entre bytes que se restan\n"
-"                                     uno del otro (1-256; 1)"
+"  --delta[=OPCIONES]  Filtro delta; OPCIONES (valores válidos; por defecto):\n"
+"                        dist=NÚM   distancia entre bytes que se restan\n"
+"                                   uno del otro (1-256; 1)"
 
 #: src/xz/message.c:1124
 msgid ""

@@ -48,7 +48,14 @@ if test "${LESSMETACHARS+set}" != set; then
 fi
 
 VER=$(less -V | { read _ ver _ && echo ${ver%%.*}; })
-if test "$VER" -ge 429; then
+if test "$VER" -ge 451; then
+	# less 451 or later: If the compressed file is valid but has
+	# zero bytes of uncompressed data, using two vertical bars ||- makes
+	# "less" check the exit status of xz and if it is zero then display
+	# an empty file. With a single vertical bar |- and no output from xz,
+	# "less" would attempt to display the raw input file instead.
+	LESSOPEN="||-$xz -cdfqQ -- %s"
+elif test "$VER" -ge 429; then
 	# less 429 or later: LESSOPEN pipe will be used on
 	# standard input if $LESSOPEN begins with |-.
 	LESSOPEN="|-$xz -cdfqQ -- %s"

@@ -40,11 +40,6 @@ dist_examples_DATA = \
 	doc/examples/04_compress_easy_mt.c \
 	doc/examples/Makefile
 
-examplesolddir = $(docdir)/examples_old
-dist_examplesold_DATA = \
-	doc/examples_old/xz_pipe_comp.c \
-	doc/examples_old/xz_pipe_decomp.c
-
 # Install the Doxygen generated documentation if they were built.
 install-data-local:
 	if test -d "$(srcdir)/doc/api" ; then \

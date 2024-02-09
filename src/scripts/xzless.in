@@ -47,13 +47,20 @@ if test "${LESSMETACHARS+set}" != set; then
 	LESSMETACHARS="$space$tab$nl'"';*?"()<>[|&^`#\$%=~'
 fi
 
-if test "$(less -V | { read _ ver _ && echo ${ver%%.*}; })" -ge 429; then
+VER=$(less -V | { read _ ver _ && echo ${ver%%.*}; })
+if test "$VER" -ge 429; then
 	# less 429 or later: LESSOPEN pipe will be used on
 	# standard input if $LESSOPEN begins with |-.
 	LESSOPEN="|-$xz -cdfqQ -- %s"
 else
 	LESSOPEN="|$xz -cdfqQ -- %s"
 fi
+
+SHOW_PREPROC_ERRORS=
+if test "$VER" -ge 632; then
+	SHOW_PREPROC_ERRORS=--show-preproc-errors
+fi
+
 export LESSMETACHARS LESSOPEN
 
-exec less "$@"
+exec less $SHOW_PREPROC_ERRORS "$@"

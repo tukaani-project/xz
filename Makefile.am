@@ -60,7 +60,6 @@ EXTRA_DIST = \
 	dos \
 	doxygen \
 	windows \
-	macosx \
 	cmake \
 	CMakeLists.txt \
 	autogen.sh \

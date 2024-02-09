@@ -61,7 +61,7 @@ crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 
 	// Process 8 bytes at a time. The end point is determined by
 	// ignoring the least significant three bits of size to ensure
-	// we do not process past the bounds of the buffer. This guarentees
+	// we do not process past the bounds of the buffer. This guarantees
 	// that limit is a multiple of 8 and is strictly less than size.
 	for (const uint8_t *limit = buf + (size & ~((size_t)7));
 			buf < limit; buf += 8)

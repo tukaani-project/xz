@@ -15,6 +15,11 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+
+// Make it compile without common.h.
+#define BUILDING_PRICE_TABLEGEN
+#define lzma_attr_visibility_hidden
+
 #include "range_common.h"
 #include "price.h"
 

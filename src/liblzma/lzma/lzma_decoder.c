@@ -307,24 +307,6 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 		might_finish_without_eopm = true;
 	}
 
-	// Lookup table used to update the literal state.
-	// Compared to other state updates, this would need two branches.
-	// The lookup table is used by both Resumable and Non-resumable modes.
-	static const lzma_lzma_state next_state[] = {
-		STATE_LIT_LIT,
-		STATE_LIT_LIT,
-		STATE_LIT_LIT,
-		STATE_LIT_LIT,
-		STATE_MATCH_LIT_LIT,
-		STATE_REP_LIT_LIT,
-		STATE_SHORTREP_LIT_LIT,
-		STATE_MATCH_LIT,
-		STATE_REP_LIT,
-		STATE_SHORTREP_LIT,
-		STATE_MATCH_LIT,
-		STATE_REP_LIT
-	};
-
 	// The main decoder loop. The "switch" is used to resume the decoder at
 	// correct location. Once resumed, the "switch" is no longer used.
 	// The decoder loops is split into two modes:
@@ -381,15 +363,17 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 					dict.pos, dict_get(&dict, 0));
 
 			if (is_literal_state(state)) {
+				update_literal_normal(state);
+
 				// Decode literal without match byte.
 				rc_bittree8(probs, 0);
 			} else {
+				update_literal_matched(state);
+
 				// Decode literal with match byte.
 				rc_matched_literal(probs,
 						dict_get(&dict, rep0));
 			}
-
-			state = next_state[state];
 
 			// Write decoded literal to dictionary
 			dict_put(&dict, symbol);
@@ -705,6 +689,8 @@ slow:
 			symbol = 1;
 
 			if (is_literal_state(state)) {
+				update_literal_normal(state);
+
 				// Decode literal without match byte.
 				// The "slow" version does not unroll
 				// the loop.
@@ -714,6 +700,8 @@ slow:
 							SEQ_LITERAL);
 				} while (symbol < (1 << 8));
 			} else {
+				update_literal_matched(state);
+
 				// Decode literal with match byte.
 				len = (uint32_t)(dict_get(&dict, rep0)) << 1;
 
@@ -741,8 +729,6 @@ slow:
 
 				} while (symbol < (1 << 8));
 			}
-
-			state = next_state[state];
 
 	case SEQ_LITERAL_WRITE:
 			if (dict_put_safe(&dict, symbol)) {

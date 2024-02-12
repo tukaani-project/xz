@@ -54,18 +54,18 @@ literal(lzma_lzma1_encoder *coder, lzma_mf *mf, uint32_t position)
 	if (is_literal_state(coder->state)) {
 		// Previous LZMA-symbol was a literal. Encode a normal
 		// literal without a match byte.
+		update_literal_normal(coder->state);
 		rc_bittree(&coder->rc, subcoder, 8, cur_byte);
 	} else {
 		// Previous LZMA-symbol was a match. Use the last byte of
 		// the match as a "match byte". That is, compare the bits
 		// of the current literal and the match byte.
+		update_literal_matched(coder->state);
 		const uint8_t match_byte = mf->buffer[
 				mf->read_pos - coder->reps[0] - 1
 				- mf->read_ahead];
 		literal_matched(&coder->rc, subcoder, match_byte, cur_byte);
 	}
-
-	update_literal(coder->state);
 }
 
 

@@ -25,21 +25,13 @@
 #ifdef HAVE_SMALL
 
 // Macros for (somewhat) size-optimized code.
-#define seq_4(seq) seq
-
-#define seq_6(seq) seq
-
-#define seq_8(seq) seq
-
-#define seq_len(seq) \
-	seq ## _CHOICE, \
-	seq ## _CHOICE2, \
-	seq ## _BITTREE
-
+// This is used to decode the match length (how many bytes must be repeated
+// from the dictionary). This version is used in the Resumable mode and
+// does not unroll any loops.
 #define len_decode(target, ld, pos_state, seq) \
 do { \
 case seq ## _CHOICE: \
-	rc_if_0(ld.choice, seq ## _CHOICE) { \
+	rc_if_0_safe(ld.choice, seq ## _CHOICE) { \
 		rc_update_0(ld.choice); \
 		probs = ld.low[pos_state];\
 		limit = LEN_LOW_SYMBOLS; \
@@ -47,7 +39,7 @@ case seq ## _CHOICE: \
 	} else { \
 		rc_update_1(ld.choice); \
 case seq ## _CHOICE2: \
-		rc_if_0(ld.choice2, seq ## _CHOICE2) { \
+		rc_if_0_safe(ld.choice2, seq ## _CHOICE2) { \
 			rc_update_0(ld.choice2); \
 			probs = ld.mid[pos_state]; \
 			limit = LEN_MID_SYMBOLS; \
@@ -63,97 +55,48 @@ case seq ## _CHOICE2: \
 	symbol = 1; \
 case seq ## _BITTREE: \
 	do { \
-		rc_bit(probs[symbol], , , seq ## _BITTREE); \
+		rc_bit_safe(probs[symbol], , , seq ## _BITTREE); \
 	} while (symbol < limit); \
 	target += symbol - limit; \
 } while (0)
 
-#else // HAVE_SMALL
 
-// Unrolled versions
-#define seq_4(seq) \
-	seq ## 0, \
-	seq ## 1, \
-	seq ## 2, \
-	seq ## 3
-
-#define seq_6(seq) \
-	seq ## 0, \
-	seq ## 1, \
-	seq ## 2, \
-	seq ## 3, \
-	seq ## 4, \
-	seq ## 5
-
-#define seq_8(seq) \
-	seq ## 0, \
-	seq ## 1, \
-	seq ## 2, \
-	seq ## 3, \
-	seq ## 4, \
-	seq ## 5, \
-	seq ## 6, \
-	seq ## 7
-
-#define seq_len(seq) \
-	seq ## _CHOICE, \
-	seq ## _LOW0, \
-	seq ## _LOW1, \
-	seq ## _LOW2, \
-	seq ## _CHOICE2, \
-	seq ## _MID0, \
-	seq ## _MID1, \
-	seq ## _MID2, \
-	seq ## _HIGH0, \
-	seq ## _HIGH1, \
-	seq ## _HIGH2, \
-	seq ## _HIGH3, \
-	seq ## _HIGH4, \
-	seq ## _HIGH5, \
-	seq ## _HIGH6, \
-	seq ## _HIGH7
-
-#define len_decode(target, ld, pos_state, seq) \
+// This is the faster version of the match length decoder that does not
+// worry about being resumable. It unrolls the bittree decoding loop.
+#define len_decode_fast(target, ld, pos_state) \
 do { \
 	symbol = 1; \
-case seq ## _CHOICE: \
-	rc_if_0(ld.choice, seq ## _CHOICE) { \
+	rc_if_0(ld.choice) { \
 		rc_update_0(ld.choice); \
-		rc_bit_case(ld.low[pos_state][symbol], , , seq ## _LOW0); \
-		rc_bit_case(ld.low[pos_state][symbol], , , seq ## _LOW1); \
-		rc_bit_case(ld.low[pos_state][symbol], , , seq ## _LOW2); \
+		rc_bit(ld.low[pos_state][symbol], , ); \
+		rc_bit(ld.low[pos_state][symbol], , ); \
+		rc_bit(ld.low[pos_state][symbol], , ); \
 		target = symbol - LEN_LOW_SYMBOLS + MATCH_LEN_MIN; \
 	} else { \
 		rc_update_1(ld.choice); \
-case seq ## _CHOICE2: \
-		rc_if_0(ld.choice2, seq ## _CHOICE2) { \
+		rc_if_0(ld.choice2) { \
 			rc_update_0(ld.choice2); \
-			rc_bit_case(ld.mid[pos_state][symbol], , , \
-					seq ## _MID0); \
-			rc_bit_case(ld.mid[pos_state][symbol], , , \
-					seq ## _MID1); \
-			rc_bit_case(ld.mid[pos_state][symbol], , , \
-					seq ## _MID2); \
+			rc_bit(ld.mid[pos_state][symbol], , ); \
+			rc_bit(ld.mid[pos_state][symbol], , ); \
+			rc_bit(ld.mid[pos_state][symbol], , ); \
 			target = symbol - LEN_MID_SYMBOLS \
 					+ MATCH_LEN_MIN + LEN_LOW_SYMBOLS; \
 		} else { \
 			rc_update_1(ld.choice2); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH0); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH1); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH2); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH3); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH4); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH5); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH6); \
-			rc_bit_case(ld.high[symbol], , , seq ## _HIGH7); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
+			rc_bit(ld.high[symbol], , ); \
 			target = symbol - LEN_HIGH_SYMBOLS \
 					+ MATCH_LEN_MIN \
 					+ LEN_LOW_SYMBOLS + LEN_MID_SYMBOLS; \
 		} \
 	} \
 } while (0)
-
-#endif // HAVE_SMALL
 
 
 /// Length decoder probabilities; see comments in lzma_common.h.
@@ -887,7 +830,6 @@ out:
 
 	return ret;
 }
-
 
 
 static void

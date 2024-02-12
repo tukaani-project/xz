@@ -80,10 +80,22 @@ do { \
 	((range_decoder).code == 0)
 
 
-/// Read the next input byte if needed. If more input is needed but there is
+// Read the next input byte if needed.
+#define rc_normalize() \
+do { \
+	if (rc.range < RC_TOP_VALUE) { \
+		rc.range <<= RC_SHIFT_BITS; \
+		rc.code = (rc.code << RC_SHIFT_BITS) | in[rc_in_pos++]; \
+	} \
+} while (0)
+
+
+/// If more input is needed but there is
 /// no more input available, "goto out" is used to jump out of the main
-/// decoder loop.
-#define rc_normalize(seq) \
+/// decoder loop. The "_safe" macros are used in the Resumable decoder
+/// mode in order to save the sequence to continue decoding from that
+/// point later.
+#define rc_normalize_safe(seq) \
 do { \
 	if (rc.range < RC_TOP_VALUE) { \
 		if (unlikely(rc_in_pos == in_size)) { \
@@ -99,7 +111,7 @@ do { \
 /// Start decoding a bit. This must be used together with rc_update_0()
 /// and rc_update_1():
 ///
-///     rc_if_0(prob, seq) {
+///     rc_if_0(prob) {
 ///         rc_update_0(prob);
 ///         // Do something
 ///     } else {
@@ -107,8 +119,14 @@ do { \
 ///         // Do something else
 ///     }
 ///
-#define rc_if_0(prob, seq) \
-	rc_normalize(seq); \
+#define rc_if_0(prob) \
+	rc_normalize(); \
+	rc_bound = (rc.range >> RC_BIT_MODEL_TOTAL_BITS) * (prob); \
+	if (rc.code < rc_bound)
+
+
+#define rc_if_0_safe(prob, seq) \
+	rc_normalize_safe(seq); \
 	rc_bound = (rc.range >> RC_BIT_MODEL_TOTAL_BITS) * (prob); \
 	if (rc.code < rc_bound)
 
@@ -136,9 +154,21 @@ do { \
 /// This macro is used as the last step in bittree reverse decoders since
 /// those don't use "symbol" for anything else than indexing the probability
 /// arrays.
-#define rc_bit_last(prob, action0, action1, seq) \
+#define rc_bit_last(prob, action0, action1) \
 do { \
-	rc_if_0(prob, seq) { \
+	rc_if_0(prob) { \
+		rc_update_0(prob); \
+		action0; \
+	} else { \
+		rc_update_1(prob); \
+		action1; \
+	} \
+} while (0)
+
+
+#define rc_bit_last_safe(prob, action0, action1, seq) \
+do { \
+	rc_if_0_safe(prob, seq) { \
 		rc_update_0(prob); \
 		action0; \
 	} else { \
@@ -150,26 +180,33 @@ do { \
 
 /// Decodes one bit, updates "symbol", and runs action0 or action1 depending
 /// on the decoded bit.
-#define rc_bit(prob, action0, action1, seq) \
+#define rc_bit(prob, action0, action1) \
 	rc_bit_last(prob, \
+		symbol <<= 1; action0, \
+		symbol = (symbol << 1) + 1; action1);
+
+
+#define rc_bit_safe(prob, action0, action1, seq) \
+	rc_bit_last_safe(prob, \
 		symbol <<= 1; action0, \
 		symbol = (symbol << 1) + 1; action1, \
 		seq);
 
-
-/// Like rc_bit() but add "case seq:" as a prefix. This makes the unrolled
-/// loops more readable because the code isn't littered with "case"
-/// statements. On the other hand this also makes it less readable, since
-/// spotting the places where the decoder loop may be restarted is less
-/// obvious.
-#define rc_bit_case(prob, action0, action1, seq) \
-	case seq: rc_bit(prob, action0, action1, seq)
-
-
 /// Decode a bit without using a probability.
-#define rc_direct(dest, seq) \
+#define rc_direct(dest) \
 do { \
-	rc_normalize(seq); \
+	rc_normalize(); \
+	rc.range >>= 1; \
+	rc.code -= rc.range; \
+	rc_bound = UINT32_C(0) - (rc.code >> 31); \
+	rc.code += rc.range & rc_bound; \
+	dest = (dest << 1) + (rc_bound + 1); \
+} while (0)
+
+
+#define rc_direct_safe(dest, seq) \
+do { \
+	rc_normalize_safe(seq); \
 	rc.range >>= 1; \
 	rc.code -= rc.range; \
 	rc_bound = UINT32_C(0) - (rc.code >> 31); \

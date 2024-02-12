@@ -187,7 +187,7 @@ dict_repeat(lzma_dict *dict, uint32_t distance, uint32_t *len)
 	if (!dict->has_wrapped)
 		dict->full = dict->pos - 2 * LZ_DICT_REPEAT_MAX;
 
-	return unlikely(*len != 0);
+	return *len != 0;
 }
 
 

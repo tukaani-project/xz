@@ -14,9 +14,9 @@ XZ Utils Licensing
         'lib' directory. The getopt_long code is under GNU LGPLv2.1+.
 
       - The scripts to grep, diff, and view compressed files have been
-        adapted from gzip. These scripts (xzgrep, xzdiff, xzless, and
-        xzmore) and their documentation are under GNU GPLv2+. The man
-        page of xzless ('xzless.1') is an exception: it's under 0BSD.
+        adapted from GNU gzip. These scripts (xzgrep, xzdiff, xzless,
+        and xzmore) are under GNU GPLv2+. The man pages of the scripts
+        are under 0BSD; they aren't based on the man pages of GNU gzip.
 
       - Most of the XZ Utils specific documentation that is in
         plain text files (like README, INSTALL, PACKAGERS, NEWS,

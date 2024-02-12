@@ -338,9 +338,12 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 		// Non-resumable Mode (fast) //
 		///////////////////////////////
 
-		// If there is not enough room for another LZMA symbol
-		// go to Resumable mode.
-		if (unlikely(!rc_is_fast_allowed() || dict.pos == dict.limit))
+		// Go to Resumable mode (1) if there is not enough input to
+		// safely decode any possible LZMA symbol or (2) if the
+		// dictionary is full, which may need special checks that
+		// are only done in the Resumable mode.
+		if (unlikely(!rc_is_fast_allowed()
+				|| dict.pos == dict.limit))
 			goto slow;
 
 		// Decode the first bit from the next LZMA symbol.

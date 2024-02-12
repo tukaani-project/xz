@@ -16,6 +16,17 @@
 #include "range_common.h"
 
 
+// Negative RC_BIT_MODEL_TOTAL but the lowest RC_MOVE_BITS are flipped.
+// This is useful for updating probability variables in branchless decoding:
+//
+//     uint32_t decoded_bit = ...;
+//     probability tmp = RC_BIT_MODEL_OFFSET;
+//     tmp &= decoded_bit - 1;
+//     prob -= (prob + tmp) >> RC_MOVE_BITS;
+#define RC_BIT_MODEL_OFFSET \
+	((UINT32_C(1) << RC_MOVE_BITS) - 1 - RC_BIT_MODEL_TOTAL)
+
+
 typedef struct {
 	uint32_t range;
 	uint32_t code;
@@ -52,7 +63,8 @@ rc_read_init(lzma_range_decoder *rc, const uint8_t *restrict in,
 /// variables 'in' and 'in_size' to be defined.
 #define rc_to_local(range_decoder, in_pos) \
 	lzma_range_decoder rc = range_decoder; \
-	size_t rc_in_pos = (in_pos); \
+	const uint8_t *rc_in_ptr = in + (in_pos); \
+	const uint8_t *rc_in_end = in + in_size; \
 	uint32_t rc_bound
 
 
@@ -60,7 +72,7 @@ rc_read_init(lzma_range_decoder *rc, const uint8_t *restrict in,
 #define rc_from_local(range_decoder, in_pos) \
 do { \
 	range_decoder = rc; \
-	in_pos = rc_in_pos; \
+	in_pos = (size_t)(rc_in_ptr - in); \
 } while (0)
 
 
@@ -85,7 +97,7 @@ do { \
 do { \
 	if (rc.range < RC_TOP_VALUE) { \
 		rc.range <<= RC_SHIFT_BITS; \
-		rc.code = (rc.code << RC_SHIFT_BITS) | in[rc_in_pos++]; \
+		rc.code = (rc.code << RC_SHIFT_BITS) | *rc_in_ptr++; \
 	} \
 } while (0)
 
@@ -98,12 +110,12 @@ do { \
 #define rc_normalize_safe(seq) \
 do { \
 	if (rc.range < RC_TOP_VALUE) { \
-		if (unlikely(rc_in_pos == in_size)) { \
+		if (rc_in_ptr == rc_in_end) { \
 			coder->sequence = seq; \
 			goto out; \
 		} \
 		rc.range <<= RC_SHIFT_BITS; \
-		rc.code = (rc.code << RC_SHIFT_BITS) | in[rc_in_pos++]; \
+		rc.code = (rc.code << RC_SHIFT_BITS) | *rc_in_ptr++; \
 	} \
 } while (0)
 
@@ -133,10 +145,14 @@ do { \
 
 /// Update the range decoder state and the used probability variable to
 /// match a decoded bit of 0.
+///
+/// The x86-64 assemly uses the commented method but it seems that,
+/// at least on x86-64, the first version is slightly faster as C code.
 #define rc_update_0(prob) \
 do { \
 	rc.range = rc_bound; \
 	prob += (RC_BIT_MODEL_TOTAL - (prob)) >> RC_MOVE_BITS; \
+	/* prob -= ((prob) + RC_BIT_MODEL_OFFSET) >> RC_MOVE_BITS; */ \
 } while (0)
 
 
@@ -192,19 +208,121 @@ do { \
 		symbol = (symbol << 1) + 1; action1, \
 		seq);
 
-/// Decode a bit without using a probability.
-#define rc_direct(dest) \
+// Unroll fixed-sized bittree decoding.
+//
+// A compile-time constant in final_add can be used to get rid of the high bit
+// from symbol that is used for the array indexing (1U << bittree_bits).
+// final_add may also be used to add offset to the result (LZMA length
+// decoder does that).
+//
+// The reason to have final_add here is that in the asm code the addition
+// can be done for free: in x86-64 there is SBB instruction with -1 as
+// the immediate value, and final_add is combined with that value.
+#define rc_bittree_bit(prob) \
+	rc_bit(prob, , )
+
+#define rc_bittree3(probs, final_add) \
 do { \
+	symbol = 1; \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	symbol += (uint32_t)(final_add); \
+} while (0)
+
+#define rc_bittree6(probs, final_add) \
+do { \
+	symbol = 1; \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	symbol += (uint32_t)(final_add); \
+} while (0)
+
+#define rc_bittree8(probs, final_add) \
+do { \
+	symbol = 1; \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	rc_bittree_bit(probs[symbol]); \
+	symbol += (uint32_t)(final_add); \
+} while (0)
+
+
+// Fixed-sized reverse bittree
+#define rc_bittree_rev4(probs) \
+do { \
+	symbol = 0; \
+	rc_bit_last(probs[symbol + 1], , symbol += 1); \
+	rc_bit_last(probs[symbol + 2], , symbol += 2); \
+	rc_bit_last(probs[symbol + 4], , symbol += 4); \
+	rc_bit_last(probs[symbol + 8], , symbol += 8); \
+} while (0)
+
+
+// Decode one bit from variable-sized reverse bittree.
+// The loop is done in the code that uses this macro.
+#define rc_bit_add_if_1(probs, dest, value_to_add_if_1) \
+	rc_bit(probs[symbol], \
+		, \
+		dest += value_to_add_if_1);
+
+
+// Matched literal
+#define decode_with_match_bit \
+		t_match_byte <<= 1; \
+		t_match_bit = t_match_byte & t_offset; \
+		t_subcoder_index = t_offset + t_match_bit + symbol; \
+		rc_bit(probs[t_subcoder_index], \
+				t_offset &= ~t_match_bit, \
+				t_offset &= t_match_bit)
+
+#define rc_matched_literal(probs_base_var, match_byte) \
+do { \
+	uint32_t t_match_byte = (match_byte); \
+	uint32_t t_match_bit; \
+	uint32_t t_subcoder_index; \
+	uint32_t t_offset = 0x100; \
+	symbol = 1; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+	decode_with_match_bit; \
+} while (0)
+
+
+/// Decode a bit without using a probability.
+//
+// NOTE: GCC 13 and Clang/LLVM 16 can, at least on x86-64, optimize the bound
+// calculation to use an arithmetic right shift so there's no need to provide
+// the alternative code which, according to C99/C11/C23 6.3.1.3-p3 isn't
+// perfectly portable: rc_bound = (uint32_t)((int32_t)rc.code >> 31);
+#define rc_direct(dest, count_var) \
+do { \
+	dest = (dest << 1) + 1; \
 	rc_normalize(); \
 	rc.range >>= 1; \
 	rc.code -= rc.range; \
 	rc_bound = UINT32_C(0) - (rc.code >> 31); \
+	dest += rc_bound; \
 	rc.code += rc.range & rc_bound; \
-	dest = (dest << 1) + (rc_bound + 1); \
-} while (0)
+} while (--count_var > 0)
 
 
-#define rc_direct_safe(dest, seq) \
+
+#define rc_direct_safe(dest, count_var, seq) \
 do { \
 	rc_normalize_safe(seq); \
 	rc.range >>= 1; \
@@ -212,10 +330,6 @@ do { \
 	rc_bound = UINT32_C(0) - (rc.code >> 31); \
 	rc.code += rc.range & rc_bound; \
 	dest = (dest << 1) + (rc_bound + 1); \
-} while (0)
-
-
-// NOTE: No macros are provided for bittree decoding. It seems to be simpler
-// to just write them open in the code.
+} while (--count_var > 0)
 
 #endif

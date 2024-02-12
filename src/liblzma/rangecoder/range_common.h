@@ -68,6 +68,10 @@
 ///
 /// I will be sticking to uint16_t unless some specific architectures
 /// are *much* faster (20-50 %) with uint32_t.
+///
+/// Update in 2024: The branchless C and x86-64 assembly was written so that
+/// probability is assumed to be uint16_t. (In contrast, LZMA SDK 23.01
+/// assembly supports both types.)
 typedef uint16_t probability;
 
 #endif

@@ -24,9 +24,8 @@
 
 // Minimum number of input bytes to safely decode one LZMA symbol.
 // The worst case is that we decode 22 bits using probabilities and 26
-// direct bits. This may decode at maximum 20 bytes of input plus one
-// extra byte after the final EOPM normalization.
-#define LZMA_IN_REQUIRED 21
+// direct bits. This may decode at maximum 20 bytes of input.
+#define LZMA_IN_REQUIRED 20
 
 
 // Macros for (somewhat) size-optimized code.
@@ -73,32 +72,22 @@ do { \
 	symbol = 1; \
 	rc_if_0(ld.choice) { \
 		rc_update_0(ld.choice); \
-		rc_bit(ld.low[pos_state][symbol], , ); \
-		rc_bit(ld.low[pos_state][symbol], , ); \
-		rc_bit(ld.low[pos_state][symbol], , ); \
-		target = symbol - LEN_LOW_SYMBOLS + MATCH_LEN_MIN; \
+		rc_bittree3(ld.low[pos_state], \
+				-LEN_LOW_SYMBOLS + MATCH_LEN_MIN); \
+		target = symbol; \
 	} else { \
 		rc_update_1(ld.choice); \
 		rc_if_0(ld.choice2) { \
 			rc_update_0(ld.choice2); \
-			rc_bit(ld.mid[pos_state][symbol], , ); \
-			rc_bit(ld.mid[pos_state][symbol], , ); \
-			rc_bit(ld.mid[pos_state][symbol], , ); \
-			target = symbol - LEN_MID_SYMBOLS \
-					+ MATCH_LEN_MIN + LEN_LOW_SYMBOLS; \
+			rc_bittree3(ld.mid[pos_state], -LEN_MID_SYMBOLS \
+					+ MATCH_LEN_MIN + LEN_LOW_SYMBOLS); \
+			target = symbol; \
 		} else { \
 			rc_update_1(ld.choice2); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			rc_bit(ld.high[symbol], , ); \
-			target = symbol - LEN_HIGH_SYMBOLS \
+			rc_bittree8(ld.high, -LEN_HIGH_SYMBOLS \
 					+ MATCH_LEN_MIN \
-					+ LEN_LOW_SYMBOLS + LEN_MID_SYMBOLS; \
+					+ LEN_LOW_SYMBOLS + LEN_MID_SYMBOLS); \
+			target = symbol; \
 		} \
 	} \
 } while (0)
@@ -369,8 +358,8 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 
 		// If there is not enough room for another LZMA symbol
 		// go to Resumable mode.
-		if (rc_in_pos + LZMA_IN_REQUIRED > in_size
-			|| dict.pos == dict.limit)
+		if (unlikely(rc_in_end - rc_in_ptr < LZMA_IN_REQUIRED
+				|| dict.pos == dict.limit))
 			goto slow;
 
 		// Decode the first bit from the next LZMA symbol.
@@ -390,64 +379,14 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 			probs = literal_subcoder(coder->literal,
 					literal_context_bits, literal_pos_mask,
 					dict.pos, dict_get(&dict, 0));
-			symbol = 1;
 
 			if (is_literal_state(state)) {
 				// Decode literal without match byte.
-				// We need to decode 8 bits, so instead
-				// of looping from 1 - 8, we unroll the
-				// loop for a speed optimization.
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
-				rc_bit(probs[symbol], , );
+				rc_bittree8(probs, 0);
 			} else {
 				// Decode literal with match byte.
-				//
-				// We store the byte we compare against
-				// ("match byte") to "len" to minimize the
-				// number of variables we need to store
-				// between decoder calls.
-
-				len = (uint32_t)(dict_get(&dict, rep0)) << 1;
-
-				// The usage of "offset" allows omitting some
-				// branches, which should give tiny speed
-				// improvement on some CPUs. "offset" gets
-				// set to zero if match_bit didn't match.
-				offset = 0x100;
-
-				// Unroll the loop.
-				uint32_t match_bit;
-				uint32_t subcoder_index;
-
-#	define decode_with_match_bit \
-			match_bit = len & offset; \
-			subcoder_index = offset + match_bit + symbol; \
-			rc_bit(probs[subcoder_index], \
-					offset &= ~match_bit, \
-					offset &= match_bit)
-
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-				len <<= 1;
-				decode_with_match_bit;
-#	undef decode_match_bit
+				rc_matched_literal(probs,
+						dict_get(&dict, rep0));
 			}
 
 			state = next_state[state];
@@ -501,18 +440,8 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 			// The next 6 bits determine how to decode the
 			// rest of the distance.
 			probs = coder->dist_slot[get_dist_state(len)];
-			symbol = 1;
 
-			rc_bit(probs[symbol], , );
-			rc_bit(probs[symbol], , );
-			rc_bit(probs[symbol], , );
-			rc_bit(probs[symbol], , );
-			rc_bit(probs[symbol], , );
-			rc_bit(probs[symbol], , );
-
-			// Get rid of the highest bit that was needed for
-			// indexing of the probability array.
-			symbol -= DIST_SLOTS;
+			rc_bittree6(probs, -DIST_SLOTS);
 			assert(symbol <= 63);
 
 			if (symbol < DIST_MODEL_START) {
@@ -540,6 +469,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 					assert(limit <= 5);
 					rep0 <<= limit;
 					assert(rep0 <= 96);
+
 					// -1 is fine, because we start
 					// decoding at probs[1], not probs[0].
 					// NOTE: This violates the C standard,
@@ -553,106 +483,51 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 					probs = coder->pos_special + rep0
 							- symbol - 1;
 					symbol = 1;
-					offset = 0;
+					offset = 1;
 
-					switch (limit) {
-					case 5:
-						assert(offset == 0);
-						rc_bit(probs[symbol], ,
-							rep0 += 1U);
-						++offset;
-						--limit;
-					case 4:
-						rc_bit(probs[symbol], ,
-							rep0 += 1U << offset);
-						++offset;
-						--limit;
-					case 3:
-						rc_bit(probs[symbol], ,
-							rep0 += 1U << offset);
-						++offset;
-						--limit;
-					case 2:
-						rc_bit(probs[symbol], ,
-							rep0 += 1U << offset);
-						++offset;
-						--limit;
-					case 1:
-						// We need "symbol" only for
-						// indexing the probability
-						// array, thus we can use
-						// rc_bit_last() here to
-						// omit the unneeded updating
-						// of "symbol".
-						rc_bit_last(probs[symbol], ,
-							rep0 += 1U << offset);
-					}
+					// Variable number (1-5) of bits
+					// from a reverse bittree. This
+					// isn't worth manual unrolling.
+					do {
+						rc_bit_add_if_1(probs,
+								rep0, offset);
+						offset <<= 1;
+					} while (--limit > 0);
 				} else {
 					// The distance is >= 128. Decode the
 					// lower bits without probabilities
 					// except the lowest four bits.
 					assert(symbol >= 14);
 					assert(limit >= 6);
+
 					limit -= ALIGN_BITS;
 					assert(limit >= 2);
 
-					// Not worth manual unrolling
-					do {
-						rc_direct(rep0);
-					} while (--limit > 0);
+					rc_direct(rep0, limit);
 
 					// Decode the lowest four bits using
 					// probabilities.
 					rep0 <<= ALIGN_BITS;
-					symbol = 1;
+					rc_bittree_rev4(coder->pos_align);
+					rep0 += symbol;
 
-					rc_bit(coder->pos_align[symbol], ,
-							rep0 += 1);
-
-					rc_bit(coder->pos_align[symbol], ,
-							rep0 += 2);
-
-					rc_bit(coder->pos_align[symbol], ,
-							rep0 += 4);
-
-					// Like when distance [4, 127], we
-					// don't need "symbol" for anything
-					// other than indexing the probability
-					// array.
-					rc_bit_last(
-						coder->pos_align[symbol], ,
-						rep0 += 8);
-
-					if (rep0 == UINT32_MAX) {
-						///////////////////////////
-						// End of payload marker //
-						///////////////////////////
-
-						// End of payload marker was
-						// found. It may only be
-						// present if
-						//   - uncompressed size is
-						//     unknown or
-						//   - after known uncompressed
-						//     size amount of bytes has
-						//     been decompressed and
-						//     caller has indicated
-						//     that EOPM might be used
-						//     (it's not allowed in
-						//     LZMA2).
-						if (!eopm_is_valid) {
-							ret = LZMA_DATA_ERROR;
-							goto out;
-						}
-
-						// LZMA1 stream with
-						// end-of-payload marker.
-						rc_normalize();
-						ret = rc_is_finished(rc)
-							? LZMA_STREAM_END
-							: LZMA_DATA_ERROR;
-						goto out;
-					}
+					// If the end of payload marker (EOPM)
+					// is detected, jump to the safe code.
+					// The EOPM handling isn't speed
+					// critical at all.
+					//
+					// A final normalization is needed
+					// after the EOPM (there can be a
+					// dummy byte to read in some cases).
+					// If the normalization was done here
+					// in the fast code, it would need to
+					// be taken into account in the value
+					// of LZMA_IN_REQUIRED. Using the
+					// safe code allows keeping
+					// LZMA_IN_REQUIRED as 20 instead of
+					// 21.
+					if (rep0 == UINT32_MAX)
+						goto eopm;
 				}
 			}
 
@@ -948,31 +823,48 @@ slow:
 					limit -= ALIGN_BITS;
 					assert(limit >= 2);
 	case SEQ_DIRECT:
-					do {
-						rc_direct_safe(rep0,
-								SEQ_DIRECT);
-					} while (--limit > 0);
+					rc_direct_safe(rep0, limit,
+							SEQ_DIRECT);
 
 					rep0 <<= ALIGN_BITS;
-					symbol = 1;
-
-					offset = 0;
+					symbol = 0;
+					offset = 1;
 	case SEQ_ALIGN:
 					do {
-						rc_bit_safe(coder->pos_align[
-								symbol], ,
-							rep0 += 1U << offset,
+						rc_bit_last_safe(
+							coder->pos_align[
+								offset
+								+ symbol],
+							,
+							symbol += offset,
 							SEQ_ALIGN);
-					} while (++offset < ALIGN_BITS);
+						offset <<= 1;
+					} while (offset < ALIGN_SIZE);
 
-					// End of payload marker
+					rep0 += symbol;
+
 					if (rep0 == UINT32_MAX) {
+						// End of payload marker was
+						// found. It may only be
+						// present if
+						//   - uncompressed size is
+						//     unknown or
+						//   - after known uncompressed
+						//     size amount of bytes has
+						//     been decompressed and
+						//     caller has indicated
+						//     that EOPM might be used
+						//     (it's not allowed in
+						//     LZMA2).
+eopm:
 						if (!eopm_is_valid) {
 							ret = LZMA_DATA_ERROR;
 							goto out;
 						}
 
 	case SEQ_EOPM:
+						// LZMA1 stream with
+						// end-of-payload marker.
 						rc_normalize_safe(SEQ_EOPM);
 						ret = rc_is_finished(rc)
 							? LZMA_STREAM_END

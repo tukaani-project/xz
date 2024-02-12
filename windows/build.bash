@@ -1,5 +1,6 @@
 #!/bin/bash
-#
+# SPDX-License-Identifier: 0BSD
+
 ###############################################################################
 #
 # Build a binary package on Windows with MinGW and MSYS

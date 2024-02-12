@@ -1,5 +1,6 @@
 #!/bin/bash
-#
+# SPDX-License-Identifier: 0BSD
+
 #############################################################################
 #
 # 7z2lzma.bash is very primitive .7z to .lzma converter. The input file must

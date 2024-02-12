@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: 0BSD */
+
 XZ_5.0 {
 global:
 	lzma_alone_decoder;

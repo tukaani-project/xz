@@ -1,5 +1,6 @@
 #!/bin/sh
-#
+# SPDX-License-Identifier: 0BSD
+
 #############################################################################
 #
 # Get the version string from version.h and print it out without

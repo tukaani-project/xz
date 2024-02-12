@@ -1,6 +1,5 @@
-##
+## SPDX-License-Identifier: 0BSD
 ## Author: Lasse Collin
-##
 
 # Use -n to prevent gzip from adding a timestamp to the .gz headers.
 GZIP_ENV = -9n

@@ -1,6 +1,5 @@
-##
+## SPDX-License-Identifier: 0BSD
 ## Author: Lasse Collin
-##
 
 if COND_ENCODER_LZ
 liblzma_la_SOURCES += \

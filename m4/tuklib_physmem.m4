@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: 0BSD
+
+#############################################################################
 #
 # SYNOPSIS
 #
@@ -29,10 +32,11 @@
 #     - sysinfo() works on Linux/dietlibc and probably on other Linux
 #       systems whose libc may lack sysconf().
 #
-# COPYING
+#############################################################################
 #
-#   Author: Lasse Collin
+# Author: Lasse Collin
 #
+#############################################################################
 
 AC_DEFUN_ONCE([TUKLIB_PHYSMEM], [
 AC_REQUIRE([TUKLIB_COMMON])

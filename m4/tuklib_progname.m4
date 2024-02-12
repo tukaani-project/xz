@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: 0BSD
+
+#############################################################################
 #
 # SYNOPSIS
 #
@@ -11,10 +14,11 @@
 #   This .m4 file is needed allow this module to use glibc's
 #   program_invocation_name.
 #
-# COPYING
+#############################################################################
 #
-#   Author: Lasse Collin
+# Author: Lasse Collin
 #
+#############################################################################
 
 AC_DEFUN_ONCE([TUKLIB_PROGNAME], [
 AC_REQUIRE([TUKLIB_COMMON])

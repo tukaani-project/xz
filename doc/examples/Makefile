@@ -1,6 +1,5 @@
-#
+# SPDX-License-Identifier: 0BSD
 # Author: Lasse Collin
-#
 
 CC = c99
 CFLAGS = -g

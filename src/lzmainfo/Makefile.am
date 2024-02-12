@@ -1,6 +1,5 @@
-##
+## SPDX-License-Identifier: 0BSD
 ## Author: Lasse Collin
-##
 
 bin_PROGRAMS = lzmainfo
 

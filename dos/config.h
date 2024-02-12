@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: 0BSD */
+
 /* How many MiB of RAM to assume if the real amount cannot be determined. */
 #define ASSUME_RAM 32
 

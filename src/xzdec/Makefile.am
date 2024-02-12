@@ -1,6 +1,5 @@
-##
+## SPDX-License-Identifier: 0BSD
 ## Author: Lasse Collin
-##
 
 # Windows resource compiler support. It's fine to use xz_CPPFLAGS
 # also for lzmadec.

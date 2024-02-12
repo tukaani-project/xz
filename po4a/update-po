@@ -1,5 +1,6 @@
 #!/bin/sh
-#
+# SPDX-License-Identifier: 0BSD
+
 #############################################################################
 #
 # Updates xz-man.pot and the *.po files, and generates translated man pages.

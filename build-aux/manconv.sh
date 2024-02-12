@@ -1,5 +1,6 @@
 #!/bin/sh
-#
+# SPDX-License-Identifier: 0BSD
+
 ###############################################################################
 #
 # Wrapper for GNU groff to convert man pages to a few formats

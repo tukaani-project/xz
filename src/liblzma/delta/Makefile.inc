@@ -1,6 +1,5 @@
-##
+## SPDX-License-Identifier: 0BSD
 ## Author: Lasse Collin
-##
 
 liblzma_la_SOURCES += \
 	delta/delta_common.c \

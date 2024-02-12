@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: 0BSD */
+
 /*
  * Speed-optimized CRC32 using slicing-by-eight algorithm
  *

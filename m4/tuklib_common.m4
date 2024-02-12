@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: 0BSD
+
+#############################################################################
 #
 # SYNOPSIS
 #
@@ -7,10 +10,11 @@
 #
 #   Common checks for tuklib.
 #
-# COPYING
+#############################################################################
 #
-#   Author: Lasse Collin
+# Author: Lasse Collin
 #
+#############################################################################
 
 AC_DEFUN_ONCE([TUKLIB_COMMON], [
 AC_REQUIRE([AC_CANONICAL_HOST])

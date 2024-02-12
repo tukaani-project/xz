@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: 0BSD
+
+#############################################################################
 #
 # tuklib_large_file_support.cmake
 #
@@ -8,6 +11,7 @@
 #
 # Author: Lasse Collin
 #
+#############################################################################
 
 include("${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake")
 include(CheckCSourceCompiles)

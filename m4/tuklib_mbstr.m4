@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: 0BSD
+
+#############################################################################
 #
 # SYNOPSIS
 #
@@ -15,10 +18,11 @@
 #   functions, but each function is put into a separate .c file so
 #   that it is possible to pick only what is strictly needed.
 #
-# COPYING
+#############################################################################
 #
-#   Author: Lasse Collin
+# Author: Lasse Collin
 #
+#############################################################################
 
 AC_DEFUN_ONCE([TUKLIB_MBSTR], [
 AC_REQUIRE([TUKLIB_COMMON])

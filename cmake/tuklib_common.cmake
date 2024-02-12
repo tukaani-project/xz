@@ -1,8 +1,12 @@
+# SPDX-License-Identifier: 0BSD
+
+#############################################################################
 #
 # tuklib_common.cmake - common functions and macros for tuklib_*.cmake files
 #
 # Author: Lasse Collin
 #
+#############################################################################
 
 function(tuklib_add_definitions TARGET_OR_ALL DEFINITIONS)
     # DEFINITIONS may be an empty string/list but it's fine here. There is

@@ -1,5 +1,6 @@
 #!/bin/bash
-#
+# SPDX-License-Identifier: 0BSD
+
 #############################################################################
 #
 # Script meant to be used for Continuous Integration automation for POSIX

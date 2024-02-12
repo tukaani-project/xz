@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: 0BSD
+
 #############################################################################
 #
 # Very limited CMake support for building some parts of XZ Utils

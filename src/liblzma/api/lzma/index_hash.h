@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: 0BSD */
+
 /**
  * \file        lzma/index_hash.h
  * \brief       Validate Index by using a hash function

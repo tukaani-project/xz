@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: 0BSD */
+
 /*
  * Speed-optimized CRC64 using slicing-by-four algorithm
  *

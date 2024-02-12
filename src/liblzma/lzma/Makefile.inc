@@ -1,6 +1,5 @@
-##
+## SPDX-License-Identifier: 0BSD
 ## Author: Lasse Collin
-##
 
 EXTRA_DIST += lzma/fastpos_tablegen.c
 

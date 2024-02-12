@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: 0BSD
+
 ###############################################################################
 #
 # Makefile to build XZ Utils using DJGPP

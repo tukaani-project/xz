@@ -360,7 +360,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 			// lc params.
 			probs = literal_subcoder(coder->literal,
 					literal_context_bits, literal_pos_mask,
-					dict.pos, dict_get(&dict, 0));
+					dict.pos, dict_get0(&dict));
 
 			if (is_literal_state(state)) {
 				update_literal_normal(state);
@@ -685,7 +685,7 @@ slow:
 
 			probs = literal_subcoder(coder->literal,
 					literal_context_bits, literal_pos_mask,
-					dict.pos, dict_get(&dict, 0));
+					dict.pos, dict_get0(&dict));
 			symbol = 1;
 
 			if (is_literal_state(state)) {

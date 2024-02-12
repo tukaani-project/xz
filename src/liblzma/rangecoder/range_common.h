@@ -13,7 +13,10 @@
 #ifndef LZMA_RANGE_COMMON_H
 #define LZMA_RANGE_COMMON_H
 
-#include "common.h"
+// Skip common.h if building price_tablegen.c.
+#ifndef BUILDING_PRICE_TABLEGEN
+#	include "common.h"
+#endif
 
 
 ///////////////

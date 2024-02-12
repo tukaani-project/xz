@@ -416,4 +416,495 @@ do { \
 			t_offset &= ~t_match_bit ^ rc_mask)
 */
 
+
+////////////
+// x86-64 //
+////////////
+
+#if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+
+// rc_asm_y and rc_asm_n are used as arguments to macros to control which
+// strings to include or omit.
+#define rc_asm_y(str) str
+#define rc_asm_n(str)
+
+// There are a few possible variations for normalization.
+// This is the smallest variant which is also used by LZMA SDK.
+//
+//   - This has partial register write (the MOV from (%[in_ptr])).
+//
+//   - INC saves one byte in code size over ADD. False dependency on
+//     partial flags from INC shouldn't become a problem on any processor
+//     because the instructions after normalization don't read the flags
+//     until SUB which sets all flags.
+//
+#define rc_asm_normalize \
+	"cmp	%[top_value], %[range]\n\t" \
+	"jae	1f\n\t" \
+	"shl	%[shift_bits], %[code]\n\t" \
+	"mov	(%[in_ptr]), %b[code]\n\t" \
+	"shl	%[shift_bits], %[range]\n\t" \
+	"inc	%[in_ptr]\n" \
+	"1:\n"
+
+// rc_asm_calc(prob) is roughly equivalent to the C version of rc_if_0(prob)...
+//
+//     rc_bound = (rc.range >> RC_BIT_MODEL_TOTAL_BITS) * (prob);
+//     if (rc.code < rc_bound)
+//
+// ...but the bound is stored in "range":
+//
+//     t0 = range;
+//     range = (range >> RC_BIT_MODEL_TOTAL_BITS) * (prob);
+//     t0 -= range;
+//     t1 = code;
+//     code -= range;
+//
+// The carry flag (CF) from the last subtraction holds the negation of
+// the decoded bit (if CF==0 then the decoded bit is 1).
+// The values in t0 and t1 are needed for rc_update_0(prob) and
+// rc_update_1(prob). If the bit is 0, rc_update_0(prob)...
+//
+//     rc.range = rc_bound;
+//
+// ...has already been done but the "code -= range" has to be reverted using
+// the old value stored in t1. (Also, prob needs to be updated.)
+//
+// If the bit is 1, rc_update_1(prob)...
+//
+//     rc.range -= rc_bound;
+//     rc.code -= rc_bound;
+//
+// ...is already done for "code" but the value for "range" needs to be taken
+// from t0. (Also, prob needs to be updated here as well.)
+//
+// The assignments from t0 and t1 can be done in a branchless manner with CMOV
+// after the instructions from this macro. The CF from SUB tells which moves
+// are needed.
+#define rc_asm_calc(prob) \
+		"mov	%[range], %[t0]\n\t" \
+		"shr	%[bit_model_total_bits], %[range]\n\t" \
+		"imul	%[" prob "], %[range]\n\t" \
+		"sub	%[range], %[t0]\n\t" \
+		"mov	%[code], %[t1]\n\t" \
+		"sub	%[range], %[code]\n\t"
+
+// Also, prob needs to be updated: The update math depends on the decoded bit.
+// It can be expressed in a few slightly different ways but this is fairly
+// convenient here:
+//
+//     prob -= (prob + (bit ? 0 : RC_BIT_MODEL_OFFSET)) >> RC_MOVE_BITS;
+//
+// To do it in branchless way when the negation of the decoded bit is in CF,
+// both "prob" and "prob + RC_BIT_MODEL_OFFSET" are needed. Then the desired
+// value can be picked with CMOV. The addition can be done using LEA without
+// affecting CF.
+//
+// (This prob update method is a tiny bit different from LZMA SDK 23.01.
+// In the LZMA SDK a single register is reserved solely for a constant to
+// be used with CMOV when updating prob. That is fine since there are enough
+// free registers to do so. The method used here uses one fewer register,
+// which is valuable with inline assembly.)
+//
+// * * *
+//
+// In bittree decoding, each (unrolled) loop iteration decodes one bit
+// and needs one prob variable. To make it faster, the prob variable of
+// the iteration N+1 is loaded during iteration N. There are two possible
+// prob variables to choose from for N+1. Both are loaded from memory and
+// the correct one is chosen with CMOV using the same CF as is used for
+// other things described above.
+//
+// This preloading/prefetching requires an extra register. To avoid
+// useless moves from "preloaded prob register" to "current prob register",
+// the macros swap between the two registers for odd and even iterations.
+//
+// * * *
+//
+// Finally, the decoded bit has to be stored in "symbol". Since the negation
+// of the bit is in CF, this can be done with SBB: symbol -= CF - 1. That is,
+// if the decoded bit is 0 (CF==1) the operation is a no-op "symbol -= 0"
+// and when bit is 1 (CF==0) the operation is "symbol -= 0 - 1" which is
+// the same as "symbol += 1".
+//
+// The instructions for all things are intertwined for a few reasons:
+//   - freeing temporary registers for new use
+//   - not modifying CF too early
+//   - instruction scheduling
+//
+// The first and last iterations can cheat a little. For example,
+// on the first iteration "symbol" is known to start from 1 so it
+// doesn't need to be read; it can even be immediately initialized
+// to 2 to prepare for the second iteration of the loop.
+//
+// * * *
+//
+// a = number of the current prob variable (0 or 1)
+// b = number of the next prob variable (1 or 0)
+// *_only = rc_asm_y or _n to include or exclude code marked with them
+#define rc_asm_bittree(a, b, first_only, middle_only, last_only) \
+	first_only( \
+		"movzw	2(%[probs_base]), %[prob" #a "]\n\t" \
+		"mov	$2, %[symbol]\n\t" \
+		"movzw	4(%[probs_base]), %[prob" #b "]\n\t" \
+	) \
+	middle_only( \
+		/* Note the scaling of 4 instead of 2: */ \
+		"movzw	(%[probs_base], %q[symbol], 4), %[prob" #b "]\n\t" \
+	) \
+	last_only( \
+		"add	%[symbol], %[symbol]\n\t" \
+	) \
+		\
+		rc_asm_normalize \
+		rc_asm_calc("prob" #a) \
+		\
+		"cmovae	%[t0], %[range]\n\t" \
+		\
+	first_only( \
+		"movzw	6(%[probs_base]), %[t0]\n\t" \
+		"cmovae	%[t0], %[prob" #b "]\n\t" \
+	) \
+	middle_only( \
+		"movzw	2(%[probs_base], %q[symbol], 4), %[t0]\n\t" \
+		"lea	(%q[symbol], %q[symbol]), %[symbol]\n\t" \
+		"cmovae	%[t0], %[prob" #b "]\n\t" \
+	) \
+	last_only( \
+		/*"lea	(%q[symbol], %q[symbol]), %[symbol]\n\t"*/ \
+	) \
+		\
+		"lea	%c[bit_model_offset](%q[prob" #a "]), %[t0]\n\t" \
+		"cmovb	%[t1], %[code]\n\t" \
+		"mov	%[symbol], %[t1]\n\t" \
+		"cmovae	%[prob" #a "], %[t0]\n\t" \
+		\
+	first_only( \
+		"sbb	$-1, %[symbol]\n\t" \
+	) \
+	middle_only( \
+		"sbb	$-1, %[symbol]\n\t" \
+	) \
+	last_only( \
+		"sbb	%[last_sbb], %[symbol]\n\t" \
+	) \
+		\
+		"shr	%[move_bits], %[t0]\n\t" \
+		"sub	%[t0], %[prob" #a "]\n\t" \
+		/* Scaling of 1 instead of 2 because symbol <<= 1. */ \
+		"mov	%w[prob" #a "], (%[probs_base], %q[t1], 1)\n\t"
+
+// NOTE: The order of variables in __asm__ can affect speed and code size.
+#define rc_asm_bittree_n(probs_base_var, final_add, asm_str) \
+do { \
+	uint32_t t0; \
+	uint32_t t1; \
+	uint32_t t_prob0; \
+	uint32_t t_prob1; \
+	\
+	__asm__( \
+		asm_str \
+		: \
+		[range]     "+&r"(rc.range), \
+		[code]      "+&r"(rc.code), \
+		[t0]        "=&r"(t0), \
+		[t1]        "=&r"(t1), \
+		[prob0]     "=&r"(t_prob0), \
+		[prob1]     "=&r"(t_prob1), \
+		[symbol]    "=&r"(symbol), \
+		[in_ptr]    "+&r"(rc_in_ptr) \
+		: \
+		[probs_base]           "r"(probs_base_var), \
+		[last_sbb]             "n"(-1 - (final_add)), \
+		[top_value]            "n"(RC_TOP_VALUE), \
+		[shift_bits]           "n"(RC_SHIFT_BITS), \
+		[bit_model_total_bits] "n"(RC_BIT_MODEL_TOTAL_BITS), \
+		[bit_model_offset]     "n"(RC_BIT_MODEL_OFFSET), \
+		[move_bits]            "n"(RC_MOVE_BITS) \
+		: \
+		"cc", "memory"); \
+} while (0)
+
+#undef rc_bittree3
+#define rc_bittree3(probs_base_var, final_add) \
+	rc_asm_bittree_n(probs_base_var, final_add, \
+		rc_asm_bittree(0, 1, rc_asm_y, rc_asm_n, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_n, rc_asm_y) \
+	)
+
+#undef rc_bittree6
+#define rc_bittree6(probs_base_var, final_add) \
+	rc_asm_bittree_n(probs_base_var, final_add, \
+		rc_asm_bittree(0, 1, rc_asm_y, rc_asm_n, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_n, rc_asm_y) \
+	)
+
+#undef rc_bittree8
+#define rc_bittree8(probs_base_var, final_add) \
+	rc_asm_bittree_n(probs_base_var, final_add, \
+		rc_asm_bittree(0, 1, rc_asm_y, rc_asm_n, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_y, rc_asm_n) \
+		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_n, rc_asm_y) \
+	)
+
+
+// Fixed-sized reverse bittree
+//
+// This uses the indexing that constructs the final value in symbol directly.
+// add    = 1,  2,   4,  8
+// dcur   = -,  4,   8, 16
+// dnext0 = 4,   8, 16,  -
+// dnext0 = 6,  12, 24,  -
+#define rc_asm_bittree_rev(a, b, add, dcur, dnext0, dnext1, \
+		first_only, middle_only, last_only) \
+	first_only( \
+		"movzw	2(%[probs_base]), %[prob" #a "]\n\t" \
+		"xor	%[symbol], %[symbol]\n\t" \
+		"movzw	4(%[probs_base]), %[prob" #b "]\n\t" \
+	) \
+	middle_only( \
+		"movzw	" #dnext0 "(%[probs_base], %q[symbol], 2), " \
+			"%[prob" #b "]\n\t" \
+	) \
+		\
+		rc_asm_normalize \
+		rc_asm_calc("prob" #a) \
+		\
+		"cmovae	%[t0], %[range]\n\t" \
+		\
+	first_only( \
+		"movzw	6(%[probs_base]), %[t0]\n\t" \
+		"cmovae	%[t0], %[prob" #b "]\n\t" \
+	) \
+	middle_only( \
+		"movzw	" #dnext1 "(%[probs_base], %q[symbol], 2), %[t0]\n\t" \
+		"cmovae	%[t0], %[prob" #b "]\n\t" \
+	) \
+		\
+		"lea	" #add "(%q[symbol]), %[t0]\n\t" \
+		"cmovb	%[t1], %[code]\n\t" \
+	middle_only( \
+		"mov	%[symbol], %[t1]\n\t" \
+	) \
+	last_only( \
+		"mov	%[symbol], %[t1]\n\t" \
+	) \
+		"cmovae	%[t0], %[symbol]\n\t" \
+		"lea	%c[bit_model_offset](%q[prob" #a "]), %[t0]\n\t" \
+		"cmovae	%[prob" #a "], %[t0]\n\t" \
+		\
+		"shr	%[move_bits], %[t0]\n\t" \
+		"sub	%[t0], %[prob" #a "]\n\t" \
+	first_only( \
+		"mov	%w[prob" #a "], 2(%[probs_base])\n\t" \
+	) \
+	middle_only( \
+		"mov	%w[prob" #a "], " \
+			#dcur "(%[probs_base], %q[t1], 2)\n\t" \
+	) \
+	last_only( \
+		"mov	%w[prob" #a "], " \
+			#dcur "(%[probs_base], %q[t1], 2)\n\t" \
+	)
+
+#undef rc_bittree_rev4
+#define rc_bittree_rev4(probs_base_var) \
+rc_asm_bittree_n(probs_base_var, 4, \
+	rc_asm_bittree_rev(0, 1, 1,  -,  4,  6, rc_asm_y, rc_asm_n, rc_asm_n) \
+	rc_asm_bittree_rev(1, 0, 2,  4,  8, 12, rc_asm_n, rc_asm_y, rc_asm_n) \
+	rc_asm_bittree_rev(0, 1, 4,  8, 16, 24, rc_asm_n, rc_asm_y, rc_asm_n) \
+	rc_asm_bittree_rev(1, 0, 8, 16,  -,  -, rc_asm_n, rc_asm_n, rc_asm_y) \
+)
+
+
+#undef rc_bit_add_if_1
+#define rc_bit_add_if_1(probs_base_var, dest_var, value_to_add_if_1) \
+do { \
+	uint32_t t0; \
+	uint32_t t1; \
+	uint32_t t2 = (value_to_add_if_1); \
+	uint32_t t_prob; \
+	uint32_t t_index; \
+	\
+	__asm__( \
+		"movzw	(%[probs_base], %q[symbol], 2), %[prob]\n\t" \
+		"mov	%[symbol], %[index]\n\t" \
+		\
+		"add	%[dest], %[t2]\n\t" \
+		"add	%[symbol], %[symbol]\n\t" \
+		\
+		rc_asm_normalize \
+		rc_asm_calc("prob") \
+		\
+		"cmovae	%[t0], %[range]\n\t" \
+		"lea	%c[bit_model_offset](%q[prob]), %[t0]\n\t" \
+		"cmovb	%[t1], %[code]\n\t" \
+		"cmovae	%[prob], %[t0]\n\t" \
+		\
+		"cmovae	%[t2], %[dest]\n\t" \
+		"sbb	$-1, %[symbol]\n\t" \
+		\
+		"sar	%[move_bits], %[t0]\n\t" \
+		"sub	%[t0], %[prob]\n\t" \
+		"mov	%w[prob], (%[probs_base], %q[index], 2)" \
+		: \
+		[range]     "+&r"(rc.range), \
+		[code]      "+&r"(rc.code), \
+		[t0]        "=&r"(t0), \
+		[t1]        "=&r"(t1), \
+		[prob]      "=&r"(t_prob), \
+		[index]     "=&r"(t_index), \
+		[symbol]    "+&r"(symbol), \
+		[t2]        "+&r"(t2), \
+		[dest]      "+&r"(dest_var), \
+		[in_ptr]    "+&r"(rc_in_ptr) \
+		: \
+		[probs_base]           "r"(probs_base_var), \
+		[top_value]            "n"(RC_TOP_VALUE), \
+		[shift_bits]           "n"(RC_SHIFT_BITS), \
+		[bit_model_total_bits] "n"(RC_BIT_MODEL_TOTAL_BITS), \
+		[bit_model_offset]     "n"(RC_BIT_MODEL_OFFSET), \
+		[move_bits]            "n"(RC_MOVE_BITS) \
+		: \
+		"cc", "memory"); \
+} while (0)
+
+
+// Literal decoding uses a normal 8-bit bittree but literal with match byte
+// is more complex in picking the probability variable from the correct
+// subtree. This doesn't use preloading/prefetching of the next prob because
+// there are four choices instead of two.
+//
+// FIXME? The first iteration starts with symbol = 1 so it could be optimized
+// by a tiny amount.
+#define rc_asm_matched_literal(nonlast_only) \
+		"add	%[offset], %[symbol]\n\t" \
+		"and	%[offset], %[match_bit]\n\t" \
+		"add	%[match_bit], %[symbol]\n\t" \
+		\
+		"movzw	(%[probs_base], %q[symbol], 2), %[prob]\n\t" \
+		\
+		"add	%[symbol], %[symbol]\n\t" \
+		\
+	nonlast_only( \
+		"xor	%[match_bit], %[offset]\n\t" \
+		"add	%[match_byte], %[match_byte]\n\t" \
+	) \
+		\
+		rc_asm_normalize \
+		rc_asm_calc("prob") \
+		\
+		"cmovae	%[t0], %[range]\n\t" \
+		"lea	%c[bit_model_offset](%q[prob]), %[t0]\n\t" \
+		"cmovb	%[t1], %[code]\n\t" \
+		"mov	%[symbol], %[t1]\n\t" \
+		"cmovae	%[prob], %[t0]\n\t" \
+		\
+	nonlast_only( \
+		"cmovae	%[match_bit], %[offset]\n\t" \
+		"mov	%[match_byte], %[match_bit]\n\t" \
+	) \
+		\
+		"sbb	$-1, %[symbol]\n\t" \
+		\
+		"shr	%[move_bits], %[t0]\n\t" \
+		/* Undo symbol += match_bit + offset: */ \
+		"and	$0x1FF, %[symbol]\n\t" \
+		"sub	%[t0], %[prob]\n\t" \
+		\
+		/* Scaling of 1 instead of 2 because symbol <<= 1. */ \
+		"mov	%w[prob], (%[probs_base], %q[t1], 1)\n\t"
+
+
+#undef rc_matched_literal
+#define rc_matched_literal(probs_base_var, match_byte_value) \
+do { \
+	uint32_t t0; \
+	uint32_t t1; \
+	uint32_t t_prob; \
+	uint32_t t_match_byte = (match_byte_value) << 1; \
+	uint32_t t_match_bit = t_match_byte; \
+	uint32_t t_offset = 0x100; \
+	symbol = 1; \
+	\
+	__asm__( \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_y) \
+		rc_asm_matched_literal(rc_asm_n) \
+		: \
+		[range]       "+&r"(rc.range), \
+		[code]        "+&r"(rc.code), \
+		[t0]          "=&r"(t0), \
+		[t1]          "=&r"(t1), \
+		[prob]        "=&r"(t_prob), \
+		[match_bit]   "+&r"(t_match_bit), \
+		[symbol]      "+&r"(symbol), \
+		[match_byte]  "+&r"(t_match_byte), \
+		[offset]      "+&r"(t_offset), \
+		[in_ptr]      "+&r"(rc_in_ptr) \
+		: \
+		[probs_base]           "r"(probs_base_var), \
+		[top_value]            "n"(RC_TOP_VALUE), \
+		[shift_bits]           "n"(RC_SHIFT_BITS), \
+		[bit_model_total_bits] "n"(RC_BIT_MODEL_TOTAL_BITS), \
+		[bit_model_offset]     "n"(RC_BIT_MODEL_OFFSET), \
+		[move_bits]            "n"(RC_MOVE_BITS) \
+		: \
+		"cc", "memory"); \
+} while (0)
+
+
+// Doing the loop in asm instead of C seems to help a little.
+#undef rc_direct
+#define rc_direct(dest_var, count_var) \
+do { \
+	uint32_t t0; \
+	uint32_t t1; \
+	\
+	__asm__( \
+		"2:\n\t" \
+		"add	%[dest], %[dest]\n\t" \
+		"lea	1(%q[dest]), %[t1]\n\t" \
+		\
+		rc_asm_normalize \
+		\
+		"shr	$1, %[range]\n\t" \
+		"mov	%[code], %[t0]\n\t" \
+		"sub	%[range], %[code]\n\t" \
+		"cmovns	%[t1], %[dest]\n\t" \
+		"cmovs	%[t0], %[code]\n\t" \
+		"dec	%[count]\n\t" \
+		"jnz	2b\n\t" \
+		: \
+		[range]       "+&r"(rc.range), \
+		[code]        "+&r"(rc.code), \
+		[t0]          "=&r"(t0), \
+		[t1]          "=&r"(t1), \
+		[dest]        "+&r"(dest_var), \
+		[count]       "+&r"(count_var), \
+		[in_ptr]      "+&r"(rc_in_ptr) \
+		: \
+		[top_value]   "n"(RC_TOP_VALUE), \
+		[shift_bits]  "n"(RC_SHIFT_BITS) \
+		: \
+		"cc", "memory"); \
+} while (0)
+
+#endif // x86_64
+
 #endif

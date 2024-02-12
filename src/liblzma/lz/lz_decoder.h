@@ -206,7 +206,7 @@ dict_put(lzma_dict *dict, uint8_t byte)
 static inline bool
 dict_put_safe(lzma_dict *dict, uint8_t byte)
 {
-	if (dict->pos == dict->limit)
+	if (unlikely(dict->pos == dict->limit))
 		return true;
 
 	dict_put(dict, byte);

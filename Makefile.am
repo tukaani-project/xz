@@ -50,6 +50,7 @@ uninstall-local:
 endif
 
 EXTRA_DIST = \
+	po/xz.pot-header \
 	po4a \
 	extra \
 	doc/xz-logo.png \

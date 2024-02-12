@@ -8,8 +8,10 @@ src/xz/hardware.c
 src/xz/list.c
 src/xz/main.c
 src/xz/message.c
+src/xz/mytime.c
 src/xz/options.c
 src/xz/signals.c
 src/xz/suffix.c
 src/xz/util.c
+src/lzmainfo/lzmainfo.c
 src/common/tuklib_exit.c

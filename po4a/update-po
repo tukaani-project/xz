@@ -39,5 +39,5 @@ set -x
 po4a --force --verbose \
 	--package-name="XZ Utils" \
 	--package-version="$PACKAGE_VERSION" \
-	--copyright-holder="[See the headers in the input files.]" \
+	--copyright-holder="The XZ Utils authors and contributors" \
 	po4a.conf

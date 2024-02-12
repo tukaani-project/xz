@@ -5,9 +5,6 @@
 //
 //  Author:     Igor Pavlov
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef LZMA_PRICE_H

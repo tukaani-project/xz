@@ -8,7 +8,8 @@
     .lzma (LZMA_Alone), and .lz (lzip) files in decoder implementations.
     Many of the files have been created by hand with a hex editor, thus
     there is no better "source code" than the files themselves. All the
-    test files and this README have been put into the public domain.
+    test files and this README may be distributed under the terms of
+    the BSD Zero Clause License (0BSD).
 
 
 1. File Types

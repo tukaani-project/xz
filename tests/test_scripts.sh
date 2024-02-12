@@ -4,9 +4,6 @@
 #
 # Author: Jonathan Nieder
 #
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
 ###############################################################################
 
 # If scripts weren't built, this test is skipped.

@@ -3,9 +3,6 @@
 #
 # Author: Lasse Collin
 #
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
 
 function(tuklib_add_definitions TARGET_OR_ALL DEFINITIONS)
     # DEFINITIONS may be an empty string/list but it's fine here. There is

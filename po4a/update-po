@@ -10,9 +10,6 @@
 #
 # Author: Lasse Collin
 #
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
 #############################################################################
 
 if type po4a > /dev/null 2>&1; then

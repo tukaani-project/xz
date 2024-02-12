@@ -38,9 +38,6 @@
 #
 # Author: Lasse Collin
 #
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
 #############################################################################
 
 cmake_minimum_required(VERSION 3.13...3.27 FATAL_ERROR)

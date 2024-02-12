@@ -5,9 +5,6 @@
 //
 //  Author:     Jia Tan
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tests.h"

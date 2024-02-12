@@ -11,11 +11,12 @@ Introduction
     <https://xz.tukaani.org/xz-utils/>.
 
     The parts of the XZ Utils source code, that are relevant to this
-    binary package, are in the public domain. XZ Utils have been built
-    for this package with MinGW-w64 and linked statically against its
-    runtime libraries. See COPYING-Windows.txt for the copyright and
-    license information that applies to the MinGW-w64 runtime. You must
-    include it when redistributing these XZ Utils binaries.
+    binary package, are under the BSD Zero Clause License (0BSD).
+    XZ Utils have been built for this package with MinGW-w64 and linked
+    statically against its runtime libraries. See COPYING-Windows.txt
+    for the copyright and license information that applies to the
+    MinGW-w64 runtime. You must include it when redistributing these
+    XZ Utils binaries.
 
 
 Package contents

@@ -7,9 +7,6 @@
  * Authors: Igor Pavlov (original CRC32 assembly code)
  *          Lasse Collin (CRC64 adaptation of the modified CRC32 code)
  *
- * This file has been put into the public domain.
- * You can do whatever you want with this file.
- *
  * This code needs lzma_crc64_table, which can be created using the
  * following C code:
 

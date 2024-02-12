@@ -5,9 +5,6 @@
 //
 //  Author:     Jonathan Nieder
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"

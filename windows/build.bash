@@ -21,9 +21,6 @@
 #
 # Author: Lasse Collin
 #
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
 ###############################################################################
 
 MINGW_DIR=/c/devel/tools/mingw

@@ -5,9 +5,6 @@
 //
 //  Author:     Lasse Collin
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 /// Possible exit status values. These are the same as used by gzip and bzip2.

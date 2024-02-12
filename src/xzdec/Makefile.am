@@ -1,9 +1,6 @@
 ##
 ## Author: Lasse Collin
 ##
-## This file has been put into the public domain.
-## You can do whatever you want with this file.
-##
 
 # Windows resource compiler support. It's fine to use xz_CPPFLAGS
 # also for lzmadec.

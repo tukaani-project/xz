@@ -124,14 +124,15 @@ Information to packagers of XZ Utils
 
     If the package manager supports a license field, you probably should
     put GPLv2+ there (GNU GPL v2 or later). The interesting parts of
-    XZ Utils are in the public domain, but some less important files
-    ending up into the binary package are under GPLv2+. So it is simplest
-    to just say GPLv2+ if you cannot specify "public domain and GPLv2+".
+    XZ Utils are under the BSD Zero Clause License (0BSD), but some less
+    important files ending up into the binary package are under GPLv2+.
+    So it is simplest to just say GPLv2+ if you cannot specify
+    "BSD0 and GPLv2+".
 
     If you split XZ Utils into multiple packages as described earlier
     in this file, liblzma and liblzma-dev packages will contain only
-    public domain code (from XZ Utils at least; compiler or linker may
-    add some third-party code, which may be copyrighted).
+    0BSD-licensed code from XZ Utils (compiler or linker may add some
+    third-party code which may have other licenses).
 
 
 4. configure options

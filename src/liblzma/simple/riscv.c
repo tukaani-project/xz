@@ -16,9 +16,6 @@
 //  Authors:    Lasse Collin
 //              Jia Tan
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 //  Special thanks:
 //
 //    - Chien Wong <m@xv97.com> provided a few early versions of RISC-V

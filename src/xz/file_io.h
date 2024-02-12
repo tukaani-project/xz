@@ -5,9 +5,6 @@
 //
 //  Author:     Lasse Collin
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 // Some systems have suboptimal BUFSIZ. Use a bit bigger value on them.

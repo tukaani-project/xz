@@ -4,9 +4,6 @@
 #
 # Author: Lasse Collin
 #
-# This file has been put into the public domain.
-# You can do whatever you want with this file.
-#
 ###############################################################################
 
 # For debugging, set comment "#define NDEBUG 1" from config.h to enable

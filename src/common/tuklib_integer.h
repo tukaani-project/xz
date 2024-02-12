@@ -37,9 +37,6 @@
 //  Authors:    Lasse Collin
 //              Joachim Henke
 //
-//  This file has been put into the public domain.
-//  You can do whatever you want with this file.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef TUKLIB_INTEGER_H

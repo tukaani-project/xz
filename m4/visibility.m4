@@ -1,3 +1,5 @@
+dnl SPDX-License-Identifier: FSFULLR
+
 # visibility.m4 serial 8
 dnl Copyright (C) 2005, 2008, 2010-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation

@@ -1,3 +1,5 @@
+dnl SPDX-License-Identifier: FSFULLR
+
 # Find a POSIX-conforming shell.
 
 # Copyright (C) 2007-2008 Free Software Foundation, Inc.

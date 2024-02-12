@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 /*
     scanlzma, scan for lzma compressed data in stdin and echo it to stdout.
     Copyright (C) 2006 Timo Lindfors

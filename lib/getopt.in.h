@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 /* Declarations for getopt.
    Copyright (C) 1989-2023 Free Software Foundation, Inc.
    This file is part of gnulib.

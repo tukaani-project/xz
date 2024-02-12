@@ -1,3 +1,5 @@
+dnl SPDX-License-Identifier: FSFULLR
+
 # getopt.m4 serial 49 (modified version)
 dnl Copyright (C) 2002-2006, 2008-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation

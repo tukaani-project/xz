@@ -261,7 +261,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 	const size_t dict_start = dict.pos;
 
 	// Range decoder
-	rc_to_local(coder->rc, *in_pos);
+	rc_to_local(coder->rc, *in_pos, LZMA_IN_REQUIRED);
 
 	// State
 	uint32_t state = coder->state;
@@ -340,8 +340,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 
 		// If there is not enough room for another LZMA symbol
 		// go to Resumable mode.
-		if (unlikely(rc_in_end - rc_in_ptr < LZMA_IN_REQUIRED
-				|| dict.pos == dict.limit))
+		if (unlikely(!rc_is_fast_allowed() || dict.pos == dict.limit))
 			goto slow;
 
 		// Decode the first bit from the next LZMA symbol.

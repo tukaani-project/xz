@@ -61,11 +61,19 @@ rc_read_init(lzma_range_decoder *rc, const uint8_t *restrict in,
 /// Makes local copies of range decoder and *in_pos variables. Doing this
 /// improves speed significantly. The range decoder macros expect also
 /// variables 'in' and 'in_size' to be defined.
-#define rc_to_local(range_decoder, in_pos) \
+#define rc_to_local(range_decoder, in_pos, fast_mode_in_required) \
 	lzma_range_decoder rc = range_decoder; \
 	const uint8_t *rc_in_ptr = in + (in_pos); \
 	const uint8_t *rc_in_end = in + in_size; \
+	const uint8_t *rc_in_fast_end \
+			= (rc_in_end - rc_in_ptr) <= (fast_mode_in_required) \
+			? rc_in_ptr \
+			: rc_in_end - (fast_mode_in_required); \
 	uint32_t rc_bound
+
+
+/// Evaluates to true if there is enough input remaining to use fast mode.
+#define rc_is_fast_allowed() (rc_in_ptr < rc_in_fast_end)
 
 
 /// Stores the local copes back to the range decoder structure.

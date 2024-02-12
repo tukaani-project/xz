@@ -340,4 +340,80 @@ do { \
 	dest = (dest << 1) + (rc_bound + 1); \
 } while (--count_var > 0)
 
+
+//////////////////
+// Branchless C //
+//////////////////
+
+/// Decode a bit using a branchless method. This reduces the number of
+/// mispredicted branches and thus can improve speed.
+#define rc_c_bit(prob, action_bit, action_neg) \
+do { \
+	probability *p = &(prob); \
+	rc_normalize(); \
+	rc_bound = (rc.range >> RC_BIT_MODEL_TOTAL_BITS) * *p; \
+	uint32_t rc_mask = rc.code >= rc_bound; /* rc_mask = decoded bit */ \
+	action_bit; /* action when rc_mask is 0 or 1 */ \
+	/* rc_mask becomes 0 if bit is 0 and 0xFFFFFFFF if bit is 1: */ \
+	rc_mask = 0U - rc_mask; \
+	rc.range &= rc_mask; /* If bit 0: set rc.range = 0 */ \
+	rc_bound ^= rc_mask; \
+	rc_bound -= rc_mask; /* If bit 1: rc_bound = 0U - rc_bound */ \
+	rc.range += rc_bound; \
+	rc_bound &= rc_mask; \
+	rc.code += rc_bound; \
+	action_neg; /* action when rc_mask is 0 or 0xFFFFFFFF */ \
+	rc_mask = ~rc_mask; /* If bit 0: all bits are set in rc_mask */ \
+	rc_mask &= RC_BIT_MODEL_OFFSET; \
+	*p -= (*p + rc_mask) >> RC_MOVE_BITS; \
+} while (0)
+
+
+// TODO: Testing on x86-64 give an impression that only the main bittrees are
+// worth the branchless C code. It should be tested on other archs for which
+// there isn't assembly code in this file.
+
+// Using addition in "(symbol << 1) + rc_mask" allows use of x86 LEA
+// or RISC-V SH1ADD instructions. Compilers might infer it from
+// "(symbol << 1) | rc_mask" too if they see that mask is 0 or 1 but
+// the use of addition doesn't require such analysis from compilers.
+#undef rc_bittree_bit
+#define rc_bittree_bit(prob) \
+	rc_c_bit(prob, \
+		symbol = (symbol << 1) + rc_mask, \
+		)
+
+#undef rc_bittree_rev4
+#define rc_bittree_rev4(probs) \
+do { \
+	symbol = 0; \
+	rc_c_bit(probs[symbol + 1], symbol += rc_mask, ); \
+	rc_c_bit(probs[symbol + 2], symbol += rc_mask << 1, ); \
+	rc_c_bit(probs[symbol + 4], symbol += rc_mask << 2, ); \
+	rc_c_bit(probs[symbol + 8], symbol += rc_mask << 3, ); \
+} while (0)
+
+
+// TODO: Test performance on platforms for which there is no assembly code.
+/*
+#undef rc_bit_add_if_1
+#define rc_bit_add_if_1(probs, dest, value_to_add_if_1) \
+	rc_c_bit(probs[symbol], \
+		symbol = (symbol << 1) + rc_mask, \
+		dest += (value_to_add_if_1) & rc_mask)
+*/
+
+
+// TODO: Test on platforms for which there is no assembly code.
+/*
+#undef decode_with_match_bit
+#define decode_with_match_bit \
+		t_match_byte <<= 1; \
+		t_match_bit = t_match_byte & t_offset; \
+		t_subcoder_index = t_offset + t_match_bit + symbol; \
+		rc_c_bit(probs[t_subcoder_index], \
+			symbol = (symbol << 1) + rc_mask, \
+			t_offset &= ~t_match_bit ^ rc_mask)
+*/
+
 #endif

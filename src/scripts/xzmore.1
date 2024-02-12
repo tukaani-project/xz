@@ -1,52 +1,63 @@
-.\" SPDX-License-Identifier: GPL-2.0-or-later
+.\" SPDX-License-Identifier: 0BSD
 .\"
-.\" Original zdiff.1 for gzip: Jean-loup Gailly
-.\" Modifications for XZ Utils: Lasse Collin
+.\" Authors: Andrew Dudman
+.\"          Lasse Collin
 .\"
-.TH XZMORE 1 "2013-06-30" "Tukaani" "XZ Utils"
+.\" (Note that this file is based on xzless.1 instead of gzip's zmore.1.)
+.\"
+.TH XZMORE 1 "2024-02-12" "Tukaani" "XZ Utils"
 .SH NAME
 xzmore, lzmore \- view xz or lzma compressed (text) files
+.
 .SH SYNOPSIS
 .B xzmore
-.RI [ file... ]
+.RI [ file ...]
 .br
 .B lzmore
-.RI [ file... ]
+.RI [ file ...]
+.
 .SH DESCRIPTION
-.B  xzmore
-is a filter which allows examination of
+.B xzmore
+displays text from compressed files to a terminal using
+.BR more (1).
+Files supported by
 .BR xz (1)
-or
-.BR lzma (1)
-compressed text files one screenful at a time
-on a soft-copy terminal.
+are decompressed;
+other files are assumed to be in uncompressed form already.
+If no
+.I files
+are given,
+.B xzmore
+reads from standard input.
+See the
+.BR more (1)
+manual for the keyboard commands.
 .PP
-To use a pager other than the default
-.B more,
-set environment variable
-.B PAGER
-to the name of the desired program.
-The name
+Note that scrolling backwards might not be possible
+depending on the implementation of
+.BR more (1).
+This is because
+.B xzmore
+uses a pipe to pass the decompressed data to
+.BR more (1).
+.BR xzless (1)
+uses
+.BR less (1)
+which provides more advanced features.
+.PP
+The command
 .B lzmore
 is provided for backward compatibility with LZMA Utils.
+.
+.SH ENVIRONMENT
 .TP
-.BR e " or " q
-When the prompt \-\-More\-\-(Next file:
-.IR file )
-is printed, this command causes
-.B xzmore
-to exit.
-.TP
-.B s
-When the prompt \-\-More\-\-(Next file:
-.IR file )
-is printed, this command causes
-.B xzmore
-to skip the next file and continue.
-.PP
-For list of keyboard commands supported while actually viewing the
-content of a file, refer to manual of the pager you use, usually
+.B PAGER
+If
+.B PAGER
+is set,
+it's value is used as the pager instead of
 .BR more (1).
+.
 .SH "SEE ALSO"
 .BR more (1),
 .BR xz (1),

@@ -1,66 +1,89 @@
-.\" SPDX-License-Identifier: GPL-2.0-or-later
+.\" SPDX-License-Identifier: 0BSD
 .\"
-.\" Original zdiff.1 for gzip: Jean-loup Gailly
+.\" Authors: Lasse Collin
+.\"          Jia Tan
 .\"
-.\" Modifications for XZ Utils: Lasse Collin
-.\"                             Andrew Dudman
+.\" (Note that this file is not based on gzip's zdiff.1.)
 .\"
-.TH XZDIFF 1 "2021-06-04" "Tukaani" "XZ Utils"
+.TH XZDIFF 1 "2024-02-12" "Tukaani" "XZ Utils"
 .SH NAME
 xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
+.
 .SH SYNOPSIS
 .B xzcmp
-.RI [ cmp_options "] " file1 " [" file2 ]
+.RI [ option... ]
+.I file1
+.RI [ file2 ]
 .br
 .B xzdiff
-.RI [ diff_options "] " file1 " [" file2 ]
+\&...
 .br
 .B lzcmp
-.RI [ cmp_options "] " file1 " [" file2 ]
+\&...
 .br
 .B lzdiff
-.RI [ diff_options "] " file1 " [" file2 ]
+\&...
+.
 .SH DESCRIPTION
 .B xzcmp
 and
 .B xzdiff
-invoke
+compare uncompressed contents of two files.
+Uncompressed data and options are passed to
 .BR cmp (1)
 or
 .BR diff (1)
-on files compressed with
+unless
+.B \-\-help
+or
+.B \-\-version
+is specified.
+.PP
+If both
+.I file1
+and
+.I file2
+are specified, they can be uncompressed files or files in formats that
 .BR xz (1),
-.BR lzma (1),
 .BR gzip (1),
 .BR bzip2 (1),
 .BR lzop (1),
 or
-.BR zstd (1).
-All options specified are passed directly to
-.BR cmp (1)
-or
-.BR diff (1).
-If only one file is specified, then the files compared are
+.BR zstd (1)
+can decompress.
+The required decompression commands are determined from
+the filename suffixes of
 .I file1
-(which must have a suffix of a supported compression format) and
-.I file1
-from which the compression format suffix has been stripped.
-If two files are specified,
-then they are uncompressed if necessary and fed to
-.BR cmp (1)
-or
-.BR diff (1).
-The exit status from
-.BR cmp (1)
-or
-.BR diff (1)
-is preserved unless a decompression error occurs; then exit status is 2.
+and
+.IR file2 .
+A file with an unknown suffix is assumed to be either uncompressed
+or in a format that
+.BR xz (1)
+can decompress.
 .PP
-The names
+If only one filename is provided,
+.I file1
+must have a suffix of a supported compression format and the name for
+.I file2
+is assumed to be
+.I file1
+with the compression format suffix removed.
+.PP
+The commands
 .B lzcmp
 and
 .B lzdiff
 are provided for backward compatibility with LZMA Utils.
+.
+.SH EXIT STATUS
+If a decompression error occurs, the exit status is
+.BR 2 .
+Otherwise the exit status of
+.BR cmp (1)
+or
+.BR diff (1)
+is used.
+.
 .SH "SEE ALSO"
 .BR cmp (1),
 .BR diff (1),
@@ -68,11 +91,4 @@ are provided for backward compatibility with LZMA Utils.
 .BR gzip (1),
 .BR bzip2 (1),
 .BR lzop (1),
-.BR zstd (1),
-.BR zdiff (1)
-.SH BUGS
-Messages from the
-.BR cmp (1)
-or
-.BR diff (1)
-programs refer to temporary filenames instead of those specified.
+.BR zstd (1)

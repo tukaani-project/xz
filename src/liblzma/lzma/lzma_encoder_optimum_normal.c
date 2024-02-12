@@ -23,7 +23,7 @@ get_literal_price(const lzma_lzma1_encoder *const coder, const uint32_t pos,
 		uint32_t match_byte, uint32_t symbol)
 {
 	const probability *const subcoder = literal_subcoder(coder->literal,
-			coder->literal_context_bits, coder->literal_pos_mask,
+			coder->literal_context_bits, coder->literal_mask,
 			pos, prev_byte);
 
 	uint32_t price = 0;

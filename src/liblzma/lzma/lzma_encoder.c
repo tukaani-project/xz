@@ -48,7 +48,7 @@ literal(lzma_lzma1_encoder *coder, lzma_mf *mf, uint32_t position)
 	const uint8_t cur_byte = mf->buffer[
 			mf->read_pos - mf->read_ahead];
 	probability *subcoder = literal_subcoder(coder->literal,
-			coder->literal_context_bits, coder->literal_pos_mask,
+			coder->literal_context_bits, coder->literal_mask,
 			position, mf->buffer[mf->read_pos - mf->read_ahead - 1]);
 
 	if (is_literal_state(coder->state)) {
@@ -282,7 +282,7 @@ encode_init(lzma_lzma1_encoder *coder, lzma_mf *mf)
 		mf_skip(mf, 1);
 		mf->read_ahead = 0;
 		rc_bit(&coder->rc, &coder->is_match[0][0], 0);
-		rc_bittree(&coder->rc, coder->literal[0], 8, mf->buffer[0]);
+		rc_bittree(&coder->rc, coder->literal + 0, 8, mf->buffer[0]);
 		++coder->uncomp_size;
 	}
 
@@ -534,7 +534,7 @@ lzma_lzma_encoder_reset(lzma_lzma1_encoder *coder,
 
 	coder->pos_mask = (1U << options->pb) - 1;
 	coder->literal_context_bits = options->lc;
-	coder->literal_pos_mask = (1U << options->lp) - 1;
+	coder->literal_mask = literal_mask_calc(options->lc, options->lp);
 
 	// Range coder
 	rc_reset(&coder->rc);

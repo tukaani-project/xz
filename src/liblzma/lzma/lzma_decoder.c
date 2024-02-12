@@ -109,7 +109,7 @@ typedef struct {
 	///////////////////
 
 	/// Literals; see comments in lzma_common.h.
-	probability literal[LITERAL_CODERS_MAX][LITERAL_CODER_SIZE];
+	probability literal[LITERAL_CODERS_MAX * LITERAL_CODER_SIZE];
 
 	/// If 1, it's a match. Otherwise it's a single 8-bit literal.
 	probability is_match[STATES][POS_STATES_MAX];
@@ -168,7 +168,7 @@ typedef struct {
 
 	uint32_t pos_mask; // (1U << pb) - 1
 	uint32_t literal_context_bits;
-	uint32_t literal_pos_mask;
+	uint32_t literal_mask;
 
 	/// Uncompressed size as bytes, or LZMA_VLI_UNKNOWN if end of
 	/// payload marker is expected.
@@ -280,7 +280,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 	uint32_t offset = coder->offset;
 	uint32_t len = coder->len;
 
-	const uint32_t literal_pos_mask = coder->literal_pos_mask;
+	const uint32_t literal_mask = coder->literal_mask;
 	const uint32_t literal_context_bits = coder->literal_context_bits;
 
 	// Temporary variables
@@ -359,7 +359,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 			// Get the correct probability array from lp and
 			// lc params.
 			probs = literal_subcoder(coder->literal,
-					literal_context_bits, literal_pos_mask,
+					literal_context_bits, literal_mask,
 					dict.pos, dict_get0(&dict));
 
 			if (is_literal_state(state)) {
@@ -684,7 +684,7 @@ slow:
 			rc_update_0(coder->is_match[state][pos_state]);
 
 			probs = literal_subcoder(coder->literal,
-					literal_context_bits, literal_pos_mask,
+					literal_context_bits, literal_mask,
 					dict.pos, dict_get0(&dict));
 			symbol = 1;
 
@@ -1034,7 +1034,7 @@ lzma_decoder_reset(void *coder_ptr, const void *opt)
 	literal_init(coder->literal, options->lc, options->lp);
 
 	coder->literal_context_bits = options->lc;
-	coder->literal_pos_mask = (1U << options->lp) - 1;
+	coder->literal_mask = literal_mask_calc(options->lc, options->lp);
 
 	// State
 	coder->state = STATE_LIT_LIT;

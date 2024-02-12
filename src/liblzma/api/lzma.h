@@ -15,10 +15,8 @@
  * Major parts of liblzma are based on Igor Pavlov's public domain LZMA SDK
  * <https://7-zip.org/sdk.html>.
  *
- * The SHA-256 implementation is based on the public domain code found from
- * 7-Zip <https://7-zip.org/>, which has a modified version of the public
- * domain SHA-256 code found from Crypto++ <https://www.cryptopp.com/>.
- * The SHA-256 code in Crypto++ was written by Kevin Springle and Wei Dai.
+ * The SHA-256 implementation in liblzma is based on code written by
+ * Wei Dai in Crypto++ Library <https://www.cryptopp.com/>.
  */
 
 /*

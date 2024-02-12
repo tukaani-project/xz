@@ -180,12 +180,22 @@ dict_repeat(lzma_dict *dict, uint32_t distance, uint32_t *len)
 }
 
 
+static inline void
+dict_put(lzma_dict *dict, uint8_t byte)
+{
+	dict->buf[dict->pos++] = byte;
+
+	if (dict->pos > dict->full)
+		dict->full = dict->pos;
+}
+
+
 /// Puts one byte into the dictionary. Returns true if the dictionary was
 /// already full and the byte couldn't be added.
 static inline bool
-dict_put(lzma_dict *dict, uint8_t byte)
+dict_put_safe(lzma_dict *dict, uint8_t byte)
 {
-	if (unlikely(dict->pos == dict->limit))
+	if (dict->pos == dict->limit)
 		return true;
 
 	dict->buf[dict->pos++] = byte;

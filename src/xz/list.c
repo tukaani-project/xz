@@ -1275,9 +1275,21 @@ list_totals(void)
 extern void
 list_file(const char *filename)
 {
-	if (opt_format != FORMAT_XZ && opt_format != FORMAT_AUTO)
-		message_fatal(_("--list works only on .xz files "
+	if (opt_format != FORMAT_XZ && opt_format != FORMAT_AUTO) {
+		// The 'lzmainfo' message is printed only when --format=lzma
+		// is used (it is implied if using "lzma" as the command
+		// name). Thus instead of using message_fatal(), print
+		// the messages separately and then call tuklib_exit()
+		// like message_fatal() does.
+		message(V_ERROR, _("--list works only on .xz files "
 				"(--format=xz or --format=auto)"));
+
+		if (opt_format == FORMAT_LZMA)
+			message(V_ERROR,
+				_("Try 'lzmainfo' with .lzma files."));
+
+		tuklib_exit(E_ERROR, E_ERROR, false);
+	}
 
 	message_filename(filename);
 

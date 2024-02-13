@@ -31,6 +31,24 @@ fi
 
 PACKAGE_VERSION=`cd .. && sh build-aux/version.sh` || exit 1
 
+# Put the author info from the .po files into the header comment of
+# the generated man pages.
+for FILE in *.po
+do
+	printf '%s\n.\\"\n' \
+'PO4A-HEADER: position=^\.\\" Author; mode=after; beginboundary=^\.\\"$' \
+		> "$FILE.authors"
+	sed '
+		/^[^#]/,$d
+		/: 0BSD$/d
+		/BSD Zero Clause License/d
+		/distributed under the same license/d
+		/in the public domain/d
+		/^#$/d
+		s/^#/.\\"/
+		' "$FILE" >> "$FILE.authors"
+done
+
 # Using --force to get up-to-date version numbers in the output files
 # when nothing else has changed. This makes it slower but it's fine
 # as long as this isn't run every time when "make" is run at the

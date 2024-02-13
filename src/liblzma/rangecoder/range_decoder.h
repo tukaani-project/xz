@@ -16,6 +16,35 @@
 #include "range_common.h"
 
 
+// Choose the range decoder variants to use using a bitmask.
+// If no bits are set, only the basic version is used.
+// If more than one version is selected for the same feature,
+// the last one on the list below is used.
+//
+// Bitwise-or of the following enable branchless C versions:
+//   0x01   normal bittrees
+//   0x02   fixed-sized reverse bittrees
+//   0x04   variable-sized reverse bittrees (disabled by default, not faster?)
+//   0x08   matched literal (disabled by default, not faster?)
+//
+// GCC & Clang compatible x86-64 inline assembly:
+//   0x010   normal bittrees
+//   0x020   fixed-sized reverse bittrees
+//   0x040   variable-sized reverse bittrees
+//   0x080   matched literal
+//   0x100   direct bits
+//
+// The default can be overriden at build time by defining
+// LZMA_RANGE_DECODER_CONFIG to the desired mask.
+#ifndef LZMA_RANGE_DECODER_CONFIG
+#	if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+#		define LZMA_RANGE_DECODER_CONFIG 0x1F0
+#	else
+#		define LZMA_RANGE_DECODER_CONFIG 0x03
+#	endif
+#endif
+
+
 // Negative RC_BIT_MODEL_TOTAL but the lowest RC_MOVE_BITS are flipped.
 // This is useful for updating probability variables in branchless decoding:
 //
@@ -369,20 +398,24 @@ do { \
 } while (0)
 
 
-// TODO: Testing on x86-64 give an impression that only the main bittrees are
-// worth the branchless C code. It should be tested on other archs for which
-// there isn't assembly code in this file.
+// Testing on x86-64 give an impression that only the normal bittrees and
+// the fixed-sized reverse bittrees are worth the branchless C code.
+// It should be tested on other archs for which there isn't assembly code
+// in this file.
 
 // Using addition in "(symbol << 1) + rc_mask" allows use of x86 LEA
 // or RISC-V SH1ADD instructions. Compilers might infer it from
 // "(symbol << 1) | rc_mask" too if they see that mask is 0 or 1 but
 // the use of addition doesn't require such analysis from compilers.
+#if LZMA_RANGE_DECODER_CONFIG & 0x01
 #undef rc_bittree_bit
 #define rc_bittree_bit(prob) \
 	rc_c_bit(prob, \
 		symbol = (symbol << 1) + rc_mask, \
 		)
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x01
 
+#if LZMA_RANGE_DECODER_CONFIG & 0x02
 #undef rc_bittree_rev4
 #define rc_bittree_rev4(probs) \
 do { \
@@ -392,20 +425,18 @@ do { \
 	rc_c_bit(probs[symbol + 4], symbol += rc_mask << 2, ); \
 	rc_c_bit(probs[symbol + 8], symbol += rc_mask << 3, ); \
 } while (0)
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x02
 
-
-// TODO: Test performance on platforms for which there is no assembly code.
-/*
+#if LZMA_RANGE_DECODER_CONFIG & 0x04
 #undef rc_bit_add_if_1
 #define rc_bit_add_if_1(probs, dest, value_to_add_if_1) \
 	rc_c_bit(probs[symbol], \
 		symbol = (symbol << 1) + rc_mask, \
 		dest += (value_to_add_if_1) & rc_mask)
-*/
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x04
 
 
-// TODO: Test on platforms for which there is no assembly code.
-/*
+#if LZMA_RANGE_DECODER_CONFIG & 0x08
 #undef decode_with_match_bit
 #define decode_with_match_bit \
 		t_match_byte <<= 1; \
@@ -414,14 +445,14 @@ do { \
 		rc_c_bit(probs[t_subcoder_index], \
 			symbol = (symbol << 1) + rc_mask, \
 			t_offset &= ~t_match_bit ^ rc_mask)
-*/
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x08
 
 
 ////////////
 // x86-64 //
 ////////////
 
-#if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+#if LZMA_RANGE_DECODER_CONFIG & 0x1F0
 
 // rc_asm_y and rc_asm_n are used as arguments to macros to control which
 // strings to include or omit.
@@ -625,6 +656,8 @@ do { \
 		"cc", "memory"); \
 } while (0)
 
+
+#if LZMA_RANGE_DECODER_CONFIG & 0x010
 #undef rc_bittree3
 #define rc_bittree3(probs_base_var, final_add) \
 	rc_asm_bittree_n(probs_base_var, final_add, \
@@ -656,6 +689,7 @@ do { \
 		rc_asm_bittree(0, 1, rc_asm_n, rc_asm_y, rc_asm_n) \
 		rc_asm_bittree(1, 0, rc_asm_n, rc_asm_n, rc_asm_y) \
 	)
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x010
 
 
 // Fixed-sized reverse bittree
@@ -717,6 +751,7 @@ do { \
 			#dcur "(%[probs_base], %q[t1], 2)\n\t" \
 	)
 
+#if LZMA_RANGE_DECODER_CONFIG & 0x020
 #undef rc_bittree_rev4
 #define rc_bittree_rev4(probs_base_var) \
 rc_asm_bittree_n(probs_base_var, 4, \
@@ -725,8 +760,10 @@ rc_asm_bittree_n(probs_base_var, 4, \
 	rc_asm_bittree_rev(0, 1, 4,  8, 16, 24, rc_asm_n, rc_asm_y, rc_asm_n) \
 	rc_asm_bittree_rev(1, 0, 8, 16,  -,  -, rc_asm_n, rc_asm_n, rc_asm_y) \
 )
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x020
 
 
+#if LZMA_RANGE_DECODER_CONFIG & 0x040
 #undef rc_bit_add_if_1
 #define rc_bit_add_if_1(probs_base_var, dest_var, value_to_add_if_1) \
 do { \
@@ -778,6 +815,7 @@ do { \
 		: \
 		"cc", "memory"); \
 } while (0)
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x040
 
 
 // Literal decoding uses a normal 8-bit bittree but literal with match byte
@@ -826,6 +864,7 @@ do { \
 		"mov	%w[prob], (%[probs_base], %q[t1], 1)\n\t"
 
 
+#if LZMA_RANGE_DECODER_CONFIG & 0x080
 #undef rc_matched_literal
 #define rc_matched_literal(probs_base_var, match_byte_value) \
 do { \
@@ -867,9 +906,11 @@ do { \
 		: \
 		"cc", "memory"); \
 } while (0)
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x080
 
 
 // Doing the loop in asm instead of C seems to help a little.
+#if LZMA_RANGE_DECODER_CONFIG & 0x100
 #undef rc_direct
 #define rc_direct(dest_var, count_var) \
 do { \
@@ -904,6 +945,7 @@ do { \
 		: \
 		"cc", "memory"); \
 } while (0)
+#endif // LZMA_RANGE_DECODER_CONFIG & 0x100
 
 #endif // x86_64
 

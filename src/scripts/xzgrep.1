@@ -5,7 +5,7 @@
 .\"
 .\" (Note that this file is not based on gzip's zgrep.1.)
 .\"
-.TH XZGREP 1 "2024-02-12" "Tukaani" "XZ Utils"
+.TH XZGREP 1 "2024-02-13" "Tukaani" "XZ Utils"
 .SH NAME
 xzgrep \- search possibly-compressed files for patterns
 .
@@ -45,8 +45,9 @@ with a suffix supported by
 .BR gzip (1),
 .BR bzip2 (1),
 .BR lzop (1),
+.BR zstd (1),
 or
-.BR zstd (1)
+.BR lz4 (1)
 will be decompressed;
 all other files are assumed to be uncompressed.
 .PP
@@ -139,4 +140,5 @@ or
 .BR bzip2 (1),
 .BR lzop (1),
 .BR zstd (1),
+.BR lz4 (1),
 .BR zgrep (1)

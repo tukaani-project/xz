@@ -181,6 +181,7 @@ for i; do
     *[-.]bz2 | *[-.]tbz | *.tbz2) uncompress="bzip2 -cdf";;
     *[-.]lzo | *[-.]tzo) uncompress="lzop -cdf";;
     *[-.]zst | *[-.]tzst) uncompress="zstd -cdfq";; # zstd needs -q.
+    *[-.]lz4) uncompress="lz4 -cdf";;
     *) uncompress="$xz -cdfqQ";; # -qQ to ignore warnings like unsupp. check.
   esac
   # xz_status will hold the decompressor's exit status.

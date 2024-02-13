@@ -5,7 +5,7 @@
 .\"
 .\" (Note that this file is not based on gzip's zdiff.1.)
 .\"
-.TH XZDIFF 1 "2024-02-12" "Tukaani" "XZ Utils"
+.TH XZDIFF 1 "2024-02-13" "Tukaani" "XZ Utils"
 .SH NAME
 xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .
@@ -48,8 +48,9 @@ are specified, they can be uncompressed files or files in formats that
 .BR gzip (1),
 .BR bzip2 (1),
 .BR lzop (1),
+.BR zstd (1),
 or
-.BR zstd (1)
+.BR lz4 (1)
 can decompress.
 The required decompression commands are determined from
 the filename suffixes of
@@ -91,4 +92,5 @@ is used.
 .BR gzip (1),
 .BR bzip2 (1),
 .BR lzop (1),
-.BR zstd (1)
+.BR zstd (1),
+.BR lz4 (1)

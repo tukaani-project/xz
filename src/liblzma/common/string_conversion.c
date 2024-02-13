@@ -250,7 +250,9 @@ static const char *parse_options(const char **const str, const char *str_end,
 		|| defined(HAVE_ENCODER_IA64) \
 		|| defined(HAVE_DECODER_IA64) \
 		|| defined(HAVE_ENCODER_SPARC) \
-		|| defined(HAVE_DECODER_SPARC)
+		|| defined(HAVE_DECODER_SPARC) \
+		|| defined(HAVE_ENCODER_RISCV) \
+		|| defined(HAVE_DECODER_RISCV)
 static const option_map bcj_optmap[] = {
 	{
 		.name = "start",

@@ -6,7 +6,7 @@
 .\" This file has been put into the public domain.
 .\" You can do whatever you want with this file.
 .\"
-.TH XZ 1 "2024-01-19" "Tukaani" "XZ Utils"
+.TH XZ 1 "2024-02-13" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -801,8 +801,6 @@ in the single-threaded mode.
 It may vary slightly between
 .B xz
 versions.
-Memory requirements of some of the future multithreaded modes may
-be dramatically higher than that of the single-threaded mode.
 .IP \(bu 3
 DecMem contains the decompressor memory requirements.
 That is, the compression settings determine
@@ -811,6 +809,15 @@ The exact decompressor memory usage is slightly more than
 the LZMA2 dictionary size, but the values in the table
 have been rounded up to the next full MiB.
 .RE
+.IP ""
+Memory requirements of the multi-threaded mode are
+significantly higher than that of the single-threaded mode.
+With the default value of
+.BR \-\-block\-size ,
+each thread needs 3*3*DictSize plus CompMem or DecMem.
+For example, four threads with preset
+.B \-6
+needs 660\(en670\ MiB of memory.
 .TP
 .BR \-e ", " \-\-extreme
 Use a slower variant of the selected compression preset level
@@ -902,17 +909,16 @@ Using
 .I size
 less than the LZMA2 dictionary size is waste of RAM
 because then the LZMA2 dictionary buffer will never get fully used.
-The sizes of the blocks are stored in the block headers,
-which a future version of
-.B xz
-will use for multi-threaded decompression.
+In multi-threaded mode,
+the sizes of the blocks are stored in the block headers.
+This size information is required for multi-threaded decompression.
 .IP ""
 In single-threaded mode no block splitting is done by default.
 Setting this option doesn't affect memory usage.
 No size information is stored in block headers,
 thus files created in single-threaded mode
 won't be identical to files created in multi-threaded mode.
-The lack of size information also means that a future version of
+The lack of size information also means that
 .B xz
 won't be able decompress the files in multi-threaded mode.
 .TP

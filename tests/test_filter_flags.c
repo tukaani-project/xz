@@ -48,6 +48,9 @@ static lzma_filter bcj_filters_encoders[] = {
 #ifdef HAVE_ENCODER_SPARC
 	{ LZMA_FILTER_SPARC, NULL },
 #endif
+#ifdef HAVE_ENCODER_RISCV
+	{ LZMA_FILTER_RISCV, NULL },
+#endif
 };
 
 // HAVE_ENCODERS ifdef not terminated here because decoders are
@@ -76,6 +79,9 @@ static lzma_filter bcj_filters_decoders[] = {
 #endif
 #ifdef HAVE_DECODER_SPARC
 	{ LZMA_FILTER_SPARC, NULL },
+#endif
+#ifdef HAVE_DECODER_RISCV
+	{ LZMA_FILTER_RISCV, NULL },
 #endif
 };
 #endif

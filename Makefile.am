@@ -38,6 +38,7 @@ dist_examples_DATA = \
 	doc/examples/02_decompress.c \
 	doc/examples/03_compress_custom.c \
 	doc/examples/04_compress_easy_mt.c \
+	doc/examples/11_file_info.c \
 	doc/examples/Makefile
 
 examplesolddir = $(docdir)/examples_old

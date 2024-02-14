@@ -878,7 +878,7 @@ do { \
 	uint32_t t0; \
 	uint32_t t1; \
 	uint32_t t_prob; \
-	uint32_t t_match_byte = (match_byte_value) << 1; \
+	uint32_t t_match_byte = (uint32_t)(match_byte_value) << 1; \
 	uint32_t t_match_bit = t_match_byte; \
 	uint32_t t_offset = 0x100; \
 	symbol = 1; \

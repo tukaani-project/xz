@@ -75,6 +75,7 @@ XZ Utils
     PACKAGERS             Information to packagers of XZ Utils
 
     COPYING               XZ Utils copyright and license information
+    COPYING.0BSD          BSD Zero Clause License
     COPYING.GPLv2         GNU General Public License version 2
     COPYING.GPLv3         GNU General Public License version 3
     COPYING.LGPLv2.1      GNU Lesser General Public License version 2.1

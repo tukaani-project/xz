@@ -111,8 +111,8 @@
 ///     Meson: https://mesonbuild.com/Unit-tests.html
 ///
 ///     CMake handles passing and failing tests by default but treats hard
-///     errors as regular fails. To CMake support skipped tests correctly,
-///     one has to set the SKIP_RETURN_CODE property for each test:
+///     errors as regular fails. To make CMake support skipped tests
+///     correctly, one has to set the SKIP_RETURN_CODE property for each test:
 ///
 ///     set_tests_properties(foo_test_name PROPERTIES SKIP_RETURN_CODE 77)
 ///

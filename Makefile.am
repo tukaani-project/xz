@@ -88,7 +88,7 @@ manfiles = \
 dist-hook:
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
 		( cd "$(srcdir)" && git log --date=iso --stat \
-			6060f7dc76fd6c2a8a1f8e85d0e4d86bb78273e6^..HEAD ) \
+			b69da6d4bb6bb11fc0cf066920791990d2b22a06^..HEAD ) \
 			> "$(distdir)/ChangeLog"; \
 	fi
 	if type groff > /dev/null 2>&1 && type ps2pdf > /dev/null 2>&1; then \

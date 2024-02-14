@@ -2,6 +2,66 @@
 XZ Utils Release Notes
 ======================
 
+5.5.2beta (2024-02-14)
+
+    * Licensing change: The core components are now under the
+      BSD Zero Clause License (0BSD). In XZ Utils 5.4.6 and older
+      and 5.5.1alpha these components are in the public domain and
+      obviously remain so; the change affects the new releases only.
+
+      0BSD is an extremely permissive license which doesn't require
+      retaining or reproducing copyright or license notices when
+      distributing the code, thus in practice there is extremely
+      little difference to public domain.
+
+    * liblzma
+
+        - Significant speed optimizations to the LZMA decoder were
+          made. There are now three variants that can be chosen at
+          build time:
+
+            * Basic C version: This is a few percent faster than
+              5.4.x due to some new optimizations.
+
+            * Branchless C: This is currently the default on platforms
+              for which there is no assembly code. This should be a few
+              percent faster than the basic C version.
+
+            * x86-64 inline assembly. This works with GCC and Clang.
+
+          The default choice can currently be overriden by setting
+          LZMA_RANGE_DECODER_CONFIG in CPPFLAGS: 0 means the basic
+          version and 3 means that branchless C version.
+
+        - Optimized the CRC32 calculation on ARM64 platforms using the
+          CRC32 instructions. The instructions are optional in ARMv8.0
+          and are required in ARMv8.1 and later. Runtime detection for
+          the instruction is used on GNU/Linux, FreeBSD, Windows, and
+          macOS. If the compiler flags indicate unconditional CRC32
+          instruction support (+crc) then the generic version is not
+          built.
+
+    * Added lz4 support to xzdiff/xzcmp and xzgrep.
+
+    * Man pages of xzdiff/xzcmp, xzgrep, and xzmore were rewritten
+      to simplify licensing of the man page translations.
+
+    * Translations:
+
+        - Updated Chinese (simplified), German, Korean, Polish,
+          Romanian, Spanish, Swedish, and Ukrainian translations.
+
+        - Updated German, Korean, Romanian, and Ukrainian man page
+          translations.
+
+    * Small improvements to the tests.
+
+    * Removed the macos/build.sh script. It had not been updated
+      since 2013.
+
+    * Removed doc/examples_old. These were from 2012.
+
+
 5.5.1alpha (2024-01-26)
 
     * Added a new filter for RISC-V binaries. The filter can be used

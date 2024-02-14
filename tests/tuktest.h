@@ -4,7 +4,8 @@
 /// \brief      Helper macros for writing simple test programs
 /// \version    2023-01-08
 ///
-/// Some inspiration was taken from STest by Keith Nicholas.
+/// Some inspiration was taken from Seatest by Keith Nicholas and
+/// from STest which is a fork of Seatest by Jia Tan.
 ///
 /// This is standard C99/C11 only and thus should be fairly portable
 /// outside POSIX systems too.

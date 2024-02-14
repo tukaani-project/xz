@@ -4,7 +4,7 @@
 //
 /// \file       tuktest.h
 /// \brief      Helper macros for writing simple test programs
-/// \version    2023-01-08
+/// \version    2024-02-14
 ///
 /// Some inspiration was taken from Seatest by Keith Nicholas and
 /// from STest which is a fork of Seatest by Jia Tan.
@@ -155,14 +155,14 @@
 
 // This is silencing warnings about unused functions. Not all test programs
 // need all functions from this header.
-#if TUKTEST_GNUC_REQ(3, 0)
+#if TUKTEST_GNUC_REQ(3, 0) || defined(__clang__)
 #	define tuktest_maybe_unused __attribute__((__unused__))
 #else
 #	define tuktest_maybe_unused
 #endif
 
 // We need printf("") so silence the warning about empty format string.
-#if TUKTEST_GNUC_REQ(4, 2)
+#if TUKTEST_GNUC_REQ(4, 2) || defined(__clang__)
 #	pragma GCC diagnostic ignored "-Wformat-zero-length"
 #endif
 

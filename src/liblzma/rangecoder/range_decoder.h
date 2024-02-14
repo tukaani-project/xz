@@ -98,6 +98,7 @@ rc_read_init(lzma_range_decoder *rc, const uint8_t *restrict in,
 			= (rc_in_end - rc_in_ptr) <= (fast_mode_in_required) \
 			? rc_in_ptr \
 			: rc_in_end - (fast_mode_in_required); \
+	(void)rc_in_fast_end; /* Silence a warning with HAVE_SMALL. */ \
 	uint32_t rc_bound
 
 

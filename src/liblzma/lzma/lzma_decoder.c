@@ -853,7 +853,9 @@ slow:
 						//     that EOPM might be used
 						//     (it's not allowed in
 						//     LZMA2).
+#ifndef HAVE_SMALL
 eopm:
+#endif
 						if (!eopm_is_valid) {
 							ret = LZMA_DATA_ERROR;
 							goto out;

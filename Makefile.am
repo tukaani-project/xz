@@ -17,6 +17,7 @@ if COND_DOC
 dist_doc_DATA = \
 	AUTHORS \
 	COPYING \
+	COPYING.0BSD \
 	COPYING.GPLv2 \
 	NEWS \
 	README \

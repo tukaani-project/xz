@@ -474,6 +474,15 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 					// Variable number (1-5) of bits
 					// from a reverse bittree. This
 					// isn't worth manual unrolling.
+					//
+					// NOTE: Making one or many of the
+					// variables (probs, symbol, offset,
+					// or limit) local here (instead of
+					// using those declared outside the
+					// main loop) can affect code size
+					// and performance which isn't a
+					// surprise but it's not so clear
+					// what is the best.
 					do {
 						rc_bit_add_if_1(probs,
 								rep0, offset);

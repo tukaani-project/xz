@@ -305,8 +305,15 @@ do { \
 } while (0)
 
 
-// Decode one bit from variable-sized reverse bittree.
-// The loop is done in the code that uses this macro.
+// Decode one bit from variable-sized reverse bittree. The loop is done
+// in the code that uses this macro. This could be changed if the assembly
+// version benefited from having the loop done in assembly but it didn't
+// seem so in early 2024.
+//
+// Also, if the loop was done here, the loop counter would likely be local
+// to the macro so that it wouldn't modify yet another input variable.
+// If a _safe version of a macro with a loop was done then a modifiable
+// input variable couldn't be avoided though.
 #define rc_bit_add_if_1(probs, dest, value_to_add_if_1) \
 	rc_bit(probs[symbol], \
 		, \

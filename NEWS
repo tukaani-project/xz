@@ -56,10 +56,14 @@ XZ Utils Release Notes
 
     * Small improvements to the tests.
 
-    * Removed the macos/build.sh script. It had not been updated
-      since 2013.
+    * Added doc/examples/11_file_info.c. It was added to the Git
+      repository in 2017 but forgotten to be added into distribution
+      tarballs.
 
     * Removed doc/examples_old. These were from 2012.
+
+    * Removed the macos/build.sh script. It had not been updated
+      since 2013.
 
 
 5.5.1alpha (2024-01-26)

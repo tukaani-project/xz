@@ -44,6 +44,7 @@ do
 		/BSD Zero Clause License/d
 		/distributed under the same license/d
 		/in the public domain/d
+		/The XZ Utils authors and contributors$/d
 		/^#$/d
 		s/^#/.\\"/
 		' "$FILE" >> "$FILE.authors"

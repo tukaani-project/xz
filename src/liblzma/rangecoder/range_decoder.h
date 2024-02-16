@@ -34,7 +34,7 @@
 //   0x080   matched literal
 //   0x100   direct bits
 //
-// The default can be overriden at build time by defining
+// The default can be overridden at build time by defining
 // LZMA_RANGE_DECODER_CONFIG to the desired mask.
 #ifndef LZMA_RANGE_DECODER_CONFIG
 #	if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
@@ -184,7 +184,7 @@ do { \
 /// Update the range decoder state and the used probability variable to
 /// match a decoded bit of 0.
 ///
-/// The x86-64 assemly uses the commented method but it seems that,
+/// The x86-64 assembly uses the commented method but it seems that,
 /// at least on x86-64, the first version is slightly faster as C code.
 #define rc_update_0(prob) \
 do { \

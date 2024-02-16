@@ -29,7 +29,7 @@ XZ Utils Release Notes
 
             * x86-64 inline assembly. This works with GCC and Clang.
 
-          The default choice can currently be overriden by setting
+          The default choice can currently be overridden by setting
           LZMA_RANGE_DECODER_CONFIG in CPPFLAGS: 0 means the basic
           version and 3 means that branchless C version.
 

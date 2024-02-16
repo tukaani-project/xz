@@ -45,7 +45,7 @@ Authors of XZ Utils
 
     Third-party code whose authors aren't listed here:
 
-      - GNU getopt_long() in the 'lib' direcotry is included for
+      - GNU getopt_long() in the 'lib' directory is included for
         platforms that don't have a usable getopt_long().
 
       - The build system files from GNU Autoconf, GNU Automake,

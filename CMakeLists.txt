@@ -74,8 +74,27 @@ string(REGEX REPLACE
 .*$"
        "\\1.\\2.\\3" PACKAGE_VERSION "${PACKAGE_VERSION}")
 
+# With several compilers, CMAKE_BUILD_TYPE=Release uses -O3 optimization
+# which results in bigger code without a clear difference in speed. If
+# no user-defined CMAKE_C_FLAGS_RELEASE is present, override -O3 to -O2
+# to make it possible to recommend CMAKE_BUILD_TYPE=Release.
+if(NOT DEFINED CMAKE_C_FLAGS_RELEASE)
+    set(OVERRIDE_O3_IN_C_FLAGS_RELEASE ON)
+endif()
+
 # Among other things, this gives us variables xz_VERSION and xz_VERSION_MAJOR.
 project(xz VERSION "${PACKAGE_VERSION}" LANGUAGES C)
+
+if(OVERRIDE_O3_IN_C_FLAGS_RELEASE)
+    # Looking at CMake's source, there aren't any _FLAGS_RELEASE_INIT
+    # entries where "-O3" would appear as part of some other option,
+    # thus a simple search and replace should be fine.
+    string(REPLACE -O3 -O2 CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+
+    # Update the cache value while keeping its docstring unchanged.
+    set_property(CACHE CMAKE_C_FLAGS_RELEASE
+                 PROPERTY VALUE "${CMAKE_C_FLAGS_RELEASE}")
+endif()
 
 # We need a compiler that supports enough C99 or newer (variable-length arrays
 # aren't needed, those are optional in C17). Setting CMAKE_C_STANDARD here

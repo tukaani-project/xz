@@ -511,15 +511,29 @@ riscv_encode(void *simple lzma_attribute((__unused__)),
 				// be the same.
 
 				// Arithmetic right shift makes sign extension
-				// trivial but C doesn't guarantee it for
-				// signed integers so a fallback is provided
-				// for portability.
+				// trivial but (1) it's implementation-defined
+				// behavior (C99/C11/C23 6.5.7-p5) and so is
+				// (2) casting unsigned to signed (6.3.1.3-p3).
+				//
+				// One can check for (1) with
+				//
+				//     if ((-1 >> 1) == -1) ...
+				//
+				// but (2) has to be checked from the
+				// compiler docs. GCC promises that (1)
+				// and (2) behave in the common expected
+				// way and thus
+				//
+				//     addr += (uint32_t)(
+				//             (int32_t)inst2 >> 20);
+				//
+				// does the same as the code below. But since
+				// the 100 % portable way is only a few bytes
+				// bigger code and there is no real speed
+				// difference, let's just use that, especially
+				// since the decoder doesn't need this at all.
 				uint32_t addr = inst & 0xFFFFF000;
-				if ((-1 >> 1) == -1)
-					addr += (uint32_t)(
-						(int32_t)inst2 >> 20);
-				else
-					addr += (inst2 >> 20)
+				addr += (inst2 >> 20)
 						- ((inst2 >> 19) & 0x1000);
 
 				addr += now_pos + (uint32_t)i;

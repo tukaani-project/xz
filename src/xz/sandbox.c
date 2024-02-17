@@ -107,8 +107,18 @@ sandbox_enable_strict_if_allowed(int src_fd lzma_attribute((__unused__)),
 #include <sys/prctl.h>
 
 
-// Highest Landlock ABI version supported by this file
-#define LANDLOCK_ABI_MAX 3
+// Highest Landlock ABI version supported by this file:
+//   - For ABI versions 1-3 we don't need anything from <linux/landlock.h>
+//     that isn't part of version 1.
+//   - For ABI version 4 we need the larger struct landlock_ruleset_attr
+//     with the handled_access_net member. That is bundled with the macros
+//     LANDLOCK_ACCESS_NET_BIND_TCP and LANDLOCK_ACCESS_NET_CONNECT_TCP.
+#ifdef LANDLOCK_ACCESS_NET_BIND_TCP
+#	define LANDLOCK_ABI_MAX 4
+#else
+#	define LANDLOCK_ABI_MAX 3
+#endif
+
 
 /// Landlock ABI version supported by the kernel
 static int landlock_abi;
@@ -142,10 +152,15 @@ enable_landlock(uint64_t required_rights)
 	//
 	// This makes it simple to set the mask based on the ABI
 	// version and we don't need to care which flags are #defined
-	// in the installed <linux/landlock.h>.
+	// in the installed <linux/landlock.h> for ABI versions 1-3.
 	const struct landlock_ruleset_attr attr = {
-		.handled_access_fs = ((1ULL << (12 + landlock_abi)) - 1)
-				& ~required_rights,
+		.handled_access_fs = ~required_rights
+			& ((1ULL << (12 + my_min(3, landlock_abi))) - 1),
+#if LANDLOCK_ABI_MAX >= 4
+		.handled_access_net = landlock_abi < 4 ? 0 :
+				(LANDLOCK_ACCESS_NET_BIND_TCP
+				| LANDLOCK_ACCESS_NET_CONNECT_TCP),
+#endif
 	};
 
 	const int ruleset_fd = syscall(SYS_landlock_create_ruleset,

@@ -33,3 +33,29 @@ dist_man_MANS = lzmainfo.1
 .rc.o:
 	$(RC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 		$(lzmainfo_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) -i $< -o $@
+
+# The installation of translated man pages abuses Automake internals
+# by calling "install-man" with redefined dist_man_MANS and man_MANS.
+# If this breaks some day, don't blame Automake developers.
+install-data-hook:
+	languages= ; \
+	if test "$(USE_NLS)" = yes && test -d "$(top_srcdir)/po4a/man"; then \
+		languages=`ls "$(top_srcdir)/po4a/man"`; \
+	fi; \
+	for lang in . $$languages; do \
+		man="$(top_srcdir)/po4a/man/$$lang/lzmainfo.1" ; \
+		if test -f "$$man"; then \
+			$(MAKE) dist_man_MANS="$$man" man_MANS= \
+				mandir="$(mandir)/$$lang" install-man; \
+		fi; \
+	done
+
+uninstall-hook:
+	languages= ; \
+	if test "$(USE_NLS)" = yes && test -d "$(top_srcdir)/po4a/man"; then \
+		languages=`ls "$(top_srcdir)/po4a/man"`; \
+	fi; \
+	for lang in . $$languages; do \
+		name=`echo lzmainfo | sed '$(transform)'` && \
+		rm -f "$(DESTDIR)$(mandir)/$$lang/man1/$$name.1"; \
+	done

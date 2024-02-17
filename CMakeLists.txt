@@ -1336,7 +1336,12 @@ add_library(libgnu OBJECT)
 
 # CMake requires that even an object library must have at least once source
 # file. So we give it a header file that results in no output files.
-target_sources(libgnu PRIVATE lib/getopt.in.h)
+#
+# NOTE: Using a file outside the lib directory makes it possible to
+# delete lib/*.h and lib/*.c and still keep the build working if
+# getopt_long replacement isn't needed. It's convenient if one wishes
+# to be certain that no GNU LGPL code gets included in the binaries.
+target_sources(libgnu PRIVATE src/common/sysdefs.h)
 
 # The Ninja Generator requires setting the linker language since it cannot
 # guess the programming language of just a header file. Setting this

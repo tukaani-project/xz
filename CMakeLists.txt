@@ -25,6 +25,7 @@
 #   - liblzma_Development
 #   - xz (on some platforms only)
 #   - xzdec (on some platforms only)
+#   - lzmadec (on some platforms only)
 #
 # To find the target liblzma::liblzma from other packages, use the CONFIG
 # option with find_package() to avoid a conflict with the FindLibLZMA module
@@ -772,7 +773,7 @@ endif()
 set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge landlock)
 
 set(ENABLE_SANDBOX ON CACHE STRING
-    "Sandboxing method to use in 'xz' and 'xzdec'")
+    "Sandboxing method to use in 'xz', 'xzdec', and 'lzmadec'")
 
 set_property(CACHE ENABLE_SANDBOX
                 PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
@@ -1387,50 +1388,57 @@ endif()
 
 
 #############################################################################
-# xzdec
+# xzdec and lzmadec
 #############################################################################
 
 if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
-    add_executable(xzdec
-        src/common/sysdefs.h
-        src/common/tuklib_common.h
-        src/common/tuklib_config.h
-        src/common/tuklib_exit.c
-        src/common/tuklib_exit.h
-        src/common/tuklib_gettext.h
-        src/common/tuklib_progname.c
-        src/common/tuklib_progname.h
-        src/xzdec/xzdec.c
-    )
-
-    target_include_directories(xzdec PRIVATE
-        src/common
-        src/liblzma/api
-    )
-
-    target_link_libraries(xzdec PRIVATE liblzma libgnu)
-
-    if(WIN32)
-        # Add the Windows resource file for xzdec.exe.
-        target_sources(xzdec PRIVATE src/xzdec/xzdec_w32res.rc)
-        set_target_properties(xzdec PROPERTIES
-            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+    foreach(XZDEC xzdec lzmadec)
+        add_executable("${XZDEC}"
+            src/common/sysdefs.h
+            src/common/tuklib_common.h
+            src/common/tuklib_config.h
+            src/common/tuklib_exit.c
+            src/common/tuklib_exit.h
+            src/common/tuklib_gettext.h
+            src/common/tuklib_progname.c
+            src/common/tuklib_progname.h
+            src/xzdec/xzdec.c
         )
-    endif()
 
-    if(SANDBOX_COMPILE_DEFINITION)
-        target_compile_definitions(xzdec PRIVATE
-                                   "${SANDBOX_COMPILE_DEFINITION}")
-    endif()
+        target_include_directories("${XZDEC}" PRIVATE
+            src/common
+            src/liblzma/api
+        )
 
-    tuklib_progname(xzdec)
+        target_link_libraries("${XZDEC}" PRIVATE liblzma libgnu)
 
-    install(TARGETS xzdec
-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                    COMPONENT xzdec)
+        if(WIN32)
+            # Add the Windows resource file for xzdec.exe or lzmadec.exe.
+            target_sources("${XZDEC}" PRIVATE src/xzdec/xzdec_w32res.rc)
+            set_target_properties("${XZDEC}" PROPERTIES
+                LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+            )
+        endif()
+
+        if(SANDBOX_COMPILE_DEFINITION)
+            target_compile_definitions("${XZDEC}" PRIVATE
+                                    "${SANDBOX_COMPILE_DEFINITION}")
+        endif()
+
+        tuklib_progname("${XZDEC}")
+
+        install(TARGETS "${XZDEC}"
+                RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                        COMPONENT "${XZDEC}")
+    endforeach()
+
+    # This is the only build-time difference with lzmadec.
+    target_compile_definitions(lzmadec PRIVATE "LZMADEC")
 
     if(UNIX)
-        my_install_man(xzdec src/xzdec/xzdec.1 "")
+        # FIXME? This puts the lzmadec symlinks into xzdec target.
+        # But doing them separately isn't trivial.
+        my_install_man(xzdec src/xzdec/xzdec.1 lzmadec)
     endif()
 endif()
 

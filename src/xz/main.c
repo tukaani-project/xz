@@ -146,11 +146,13 @@ main(int argc, char **argv)
 	InitializeCriticalSection(&exit_status_cs);
 #endif
 
-	// Set up the progname variable.
+	// Set up the progname variable needed for messages.
 	tuklib_progname_init(argv);
 
 	// Initialize the file I/O. This makes sure that
 	// stdin, stdout, and stderr are something valid.
+	// This must be done before we might open any files
+	// even indirectly like locale and gettext initializations.
 	io_init();
 
 	// Set up the locale and message translations.

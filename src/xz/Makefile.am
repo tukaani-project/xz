@@ -21,6 +21,8 @@ xz_SOURCES = \
 	options.c \
 	options.h \
 	private.h \
+	sandbox.c \
+	sandbox.h \
 	signals.c \
 	signals.h \
 	suffix.c \

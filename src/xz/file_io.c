@@ -28,15 +28,6 @@ static bool warn_fchown;
 #	include <utime.h>
 #endif
 
-#ifdef HAVE_CAP_RIGHTS_LIMIT
-#	include <sys/capsicum.h>
-#endif
-
-#ifdef HAVE_LINUX_LANDLOCK_H
-#	include <linux/landlock.h>
-#	include <sys/syscall.h>
-#endif
-
 #include "tuklib_open_stdxxx.h"
 
 #ifdef _MSC_VER
@@ -91,11 +82,6 @@ typedef enum {
 
 /// If true, try to create sparse files when decompressing.
 static bool try_sparse = true;
-
-#ifdef ENABLE_SANDBOX
-/// True if the conditions for sandboxing (described in main()) have been met.
-static bool sandbox_allowed = false;
-#endif
 
 #ifndef TUKLIB_DOSLIKE
 /// File status flags of standard input. This is used by io_open_src()
@@ -179,159 +165,6 @@ io_no_sparse(void)
 	try_sparse = false;
 	return;
 }
-
-
-#ifdef ENABLE_SANDBOX
-extern void
-io_allow_sandbox(void)
-{
-	sandbox_allowed = true;
-	return;
-}
-
-
-/// Enables operating-system-specific sandbox if it is possible.
-/// src_fd is the file descriptor of the input file.
-static void
-io_sandbox_enter(int src_fd)
-{
-	if (!sandbox_allowed) {
-		// This message is more often annoying than useful so
-		// it's commented out. It can be useful when developing
-		// the sandboxing code.
-		//message(V_DEBUG, _("Sandbox is disabled due "
-		//		"to incompatible command line arguments"));
-		return;
-	}
-
-	const char dummy_str[] = "x";
-
-	// Try to ensure that both libc and xz locale files have been
-	// loaded when NLS is enabled.
-	snprintf(NULL, 0, "%s%s", _(dummy_str), strerror(EINVAL));
-
-	// Try to ensure that iconv data files needed for handling multibyte
-	// characters have been loaded. This is needed at least with glibc.
-	tuklib_mbstr_width(dummy_str, NULL);
-
-#ifdef HAVE_CAP_RIGHTS_LIMIT
-	// Capsicum needs FreeBSD 10.2 or later.
-	cap_rights_t rights;
-
-	if (cap_enter())
-		goto error;
-
-	if (cap_rights_limit(src_fd, cap_rights_init(&rights,
-			CAP_EVENT, CAP_FCNTL, CAP_LOOKUP, CAP_READ, CAP_SEEK)))
-		goto error;
-
-	// If not reading from stdin, remove all capabilities from it.
-	if (src_fd != STDIN_FILENO && cap_rights_limit(
-			STDIN_FILENO, cap_rights_clear(&rights)))
-		goto error;
-
-	if (cap_rights_limit(STDOUT_FILENO, cap_rights_init(&rights,
-			CAP_EVENT, CAP_FCNTL, CAP_FSTAT, CAP_LOOKUP,
-			CAP_WRITE, CAP_SEEK)))
-		goto error;
-
-	if (cap_rights_limit(STDERR_FILENO, cap_rights_init(&rights,
-			CAP_WRITE)))
-		goto error;
-
-	if (cap_rights_limit(user_abort_pipe[0], cap_rights_init(&rights,
-			CAP_EVENT)))
-		goto error;
-
-	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
-			CAP_WRITE)))
-		goto error;
-
-#elif defined(HAVE_PLEDGE)
-	// pledge() was introduced in OpenBSD 5.9.
-	//
-	// main() unconditionally calls pledge() with fairly relaxed
-	// promises which work in all situations. Here we make the
-	// sandbox more strict.
-	if (pledge("stdio", ""))
-		goto error;
-
-	(void)src_fd;
-
-#elif defined(HAVE_LINUX_LANDLOCK_H)
-	int landlock_abi = syscall(SYS_landlock_create_ruleset,
-			(void *)NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
-
-	if (landlock_abi > 0) {
-		// We support ABI versions 1-3.
-		if (landlock_abi > 3)
-			landlock_abi = 3;
-
-		// We want to set all supported flags in handled_access_fs.
-		// This way the ruleset will initially forbid access to all
-		// actions that the available Landlock ABI version supports.
-		// Exceptions can be added using landlock_add_rule(2) to
-		// allow certain actions on certain files or directories.
-		//
-		// The same flag values are used on all archs. ABI v2 and v3
-		// both add one new flag.
-		//
-		// First in ABI v1: LANDLOCK_ACCESS_FS_EXECUTE = 1ULL << 0
-		// Last in ABI v1: LANDLOCK_ACCESS_FS_MAKE_SYM = 1ULL << 12
-		// Last in ABI v2: LANDLOCK_ACCESS_FS_REFER = 1ULL << 13
-		// Last in ABI v3: LANDLOCK_ACCESS_FS_TRUNCATE = 1ULL << 14
-		//
-		// This makes it simple to set the mask based on the ABI
-		// version and we don't need to care which flags are #defined
-		// in the installed <linux/landlock.h>.
-		const struct landlock_ruleset_attr attr = {
-			.handled_access_fs = (1ULL << (12 + landlock_abi)) - 1
-		};
-
-		const int ruleset_fd = syscall(SYS_landlock_create_ruleset,
-				&attr, sizeof(attr), 0U);
-		if (ruleset_fd < 0)
-			goto error;
-
-		// All files we need should have already been opened. Thus,
-		// we don't need to add any rules using landlock_add_rule(2)
-		// before activating the sandbox.
-		//
-		// NOTE: It's possible that the hack at the beginning of this
-		// function isn't be good enough. It tries to get translations
-		// and libc-specific files loaded but if it's not good enough
-		// then perhaps a Landlock rule to allow reading from /usr
-		// and/or the xz installation prefix would be needed.
-		//
-		// prctl(PR_SET_NO_NEW_PRIVS, ...) was already called in
-		// main() so we don't do it here again.
-		if (syscall(SYS_landlock_restrict_self, ruleset_fd, 0U) != 0)
-			goto error;
-	}
-
-	(void)src_fd;
-
-#else
-#	error ENABLE_SANDBOX is defined but no sandboxing method was found.
-#endif
-
-	// This message is annoying in xz -lvv.
-	//message(V_DEBUG, _("Sandbox was successfully enabled"));
-	return;
-
-error:
-#ifdef HAVE_CAP_RIGHTS_LIMIT
-	// If a kernel is configured without capability mode support or
-	// used in an emulator that does not implement the capability
-	// system calls, then the Capsicum system calls will fail and set
-	// errno to ENOSYS. In that case xz will silently run without
-	// the sandbox.
-	if (errno == ENOSYS)
-		return;
-#endif
-	message_fatal(_("Failed to enable the sandbox"));
-}
-#endif // ENABLE_SANDBOX
 
 
 #ifndef TUKLIB_DOSLIKE
@@ -889,7 +722,8 @@ io_open_src(const char *src_name)
 
 #ifdef ENABLE_SANDBOX
 	if (!error)
-		io_sandbox_enter(pair.src_fd);
+		sandbox_enable_strict_if_allowed(pair.src_fd,
+				user_abort_pipe[0], user_abort_pipe[1]);
 #endif
 
 	return error ? NULL : &pair;

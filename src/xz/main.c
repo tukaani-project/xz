@@ -12,12 +12,6 @@
 #include "private.h"
 #include <ctype.h>
 
-// prctl(PR_SET_NO_NEW_PRIVS, ...) is required with Landlock but it can be
-// activated even when conditions for strict sandboxing aren't met.
-#ifdef HAVE_LINUX_LANDLOCK_H
-#	include <sys/prctl.h>
-#endif
-
 
 /// Exit status to use. This can be changed with set_exit_status().
 static enum exit_status_type exit_status = E_SUCCESS;
@@ -148,32 +142,6 @@ read_name(const args_info *args)
 int
 main(int argc, char **argv)
 {
-#ifdef HAVE_PLEDGE
-	// OpenBSD's pledge(2) sandbox
-	//
-	// Unconditionally enable sandboxing with fairly relaxed promises.
-	// This is still way better than having no sandbox at all. :-)
-	// More strict promises will be made later in file_io.c if possible.
-	if (pledge("stdio rpath wpath cpath fattr", "")) {
-		// Don't translate the string or use message_fatal() as
-		// those haven't been initialized yet.
-		fprintf(stderr, "%s: Failed to enable the sandbox\n", argv[0]);
-		return E_ERROR;
-	}
-#endif
-
-#ifdef HAVE_LINUX_LANDLOCK_H
-	// Prevent the process from gaining new privileges. This must be done
-	// before landlock_restrict_self(2) in file_io.c but since we will
-	// never need new privileges, this call can be done here already.
-	//
-	// This is supported since Linux 3.5. Ignore the return value to
-	// keep compatibility with old kernels. landlock_restrict_self(2)
-	// will fail if the no_new_privs attribute isn't set, thus if prctl()
-	// fails here the error will still be detected when it matters.
-	(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-#endif
-
 #if defined(_WIN32) && !defined(__CYGWIN__)
 	InitializeCriticalSection(&exit_status_cs);
 #endif
@@ -186,6 +154,20 @@ main(int argc, char **argv)
 	// This must be done before we might open any files
 	// even indirectly like locale and gettext initializations.
 	io_init();
+
+#ifdef ENABLE_SANDBOX
+	// Enable such sandboxing that can always be enabled.
+	// This requires that progname has been set up.
+	// It's also good that io_init() has been called because it
+	// might need to do things that the initial sandbox won't allow.
+	// Otherwise this should be called as early as possible.
+	//
+	// NOTE: Calling this before tuklib_gettext_init() means that
+	// translated error message won't be available if sandbox
+	// initialization fails. However, sandbox_init() shouldn't
+	// fail and this order simply feels better.
+	sandbox_init();
+#endif
 
 	// Set up the locale and message translations.
 	tuklib_gettext_init(PACKAGE, LOCALEDIR);
@@ -241,7 +223,7 @@ main(int argc, char **argv)
 		signals_init();
 
 #ifdef ENABLE_SANDBOX
-	// Set a flag that sandboxing is allowed if all these are true:
+	// Set a flag that strict sandboxing is allowed if all these are true:
 	//   - --files or --files0 wasn't used.
 	//   - There is exactly one input file or we are reading from stdin.
 	//   - We won't create any files: output goes to stdout or --test
@@ -255,7 +237,7 @@ main(int argc, char **argv)
 	if (args.files_name == NULL && args.arg_count == 1
 			&& (opt_stdout || strcmp("-", args.arg_names[0]) == 0
 				|| opt_mode == MODE_LIST))
-		io_allow_sandbox();
+		sandbox_allow_strict();
 #endif
 
 	// coder_run() handles compression, decompression, and testing.

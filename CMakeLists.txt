@@ -1393,6 +1393,8 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         src/xz/options.c
         src/xz/options.h
         src/xz/private.h
+        src/xz/sandbox.c
+        src/xz/sandbox.h
         src/xz/signals.c
         src/xz/signals.h
         src/xz/suffix.c

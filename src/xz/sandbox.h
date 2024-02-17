@@ -21,6 +21,10 @@
 extern void sandbox_init(void);
 
 
+/// \brief      Enable sandboxing that only allows opening files for reading
+extern void sandbox_enable_read_only(void);
+
+
 /// \brief      Tell sandboxing code that strict sandboxing can be used
 ///
 /// This function only sets a flag which will be read by

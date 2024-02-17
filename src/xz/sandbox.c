@@ -82,6 +82,18 @@ sandbox_init(void)
 
 
 extern void
+sandbox_enable_read_only(void)
+{
+	// We will be opening files for reading but
+	// won't create or remove any files.
+	if (pledge("stdio rpath", ""))
+		message_fatal(_("Failed to enable the sandbox"));
+
+	return;
+}
+
+
+extern void
 sandbox_enable_strict_if_allowed(int src_fd lzma_attribute((__unused__)),
 		int pipe_event_fd lzma_attribute((__unused__)),
 		int pipe_write_fd lzma_attribute((__unused__)))
@@ -89,6 +101,7 @@ sandbox_enable_strict_if_allowed(int src_fd lzma_attribute((__unused__)),
 	if (!prepare_for_strict_sandbox())
 		return;
 
+	// All files that need to be opened have already been opened.
 	if (pledge("stdio", ""))
 		message_fatal(_("Failed to enable the sandbox"));
 
@@ -223,6 +236,17 @@ sandbox_init(void)
 
 
 extern void
+sandbox_enable_read_only(void)
+{
+	// We will be opening files for reading but
+	// won't create or remove any files.
+	const uint64_t required_rights = LANDLOCK_ACCESS_FS_READ_FILE;
+	enable_landlock(required_rights);
+	return;
+}
+
+
+extern void
 sandbox_enable_strict_if_allowed(int src_fd lzma_attribute((__unused__)),
 		int pipe_event_fd lzma_attribute((__unused__)),
 		int pipe_write_fd lzma_attribute((__unused__)))
@@ -248,6 +272,14 @@ sandbox_enable_strict_if_allowed(int src_fd lzma_attribute((__unused__)),
 
 extern void
 sandbox_init(void)
+{
+	// Nothing to do.
+	return;
+}
+
+
+extern void
+sandbox_enable_read_only(void)
 {
 	// Nothing to do.
 	return;

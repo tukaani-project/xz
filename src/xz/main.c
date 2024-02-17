@@ -223,21 +223,41 @@ main(int argc, char **argv)
 		signals_init();
 
 #ifdef ENABLE_SANDBOX
-	// Set a flag that strict sandboxing is allowed if all these are true:
-	//   - --files or --files0 wasn't used.
-	//   - There is exactly one input file or we are reading from stdin.
-	//   - We won't create any files: output goes to stdout or --test
-	//     or --list was used. Note that --test implies opt_stdout = true
-	//     but --list doesn't.
+	// Read-only sandbox can be enabled if we won't create or delete
+	// any files:
 	//
-	// This is obviously not ideal but it was easy to implement and
-	// it covers the most common use cases.
+	//   - --stdout, --test, or --list was used. Note that --test
+	//     implies opt_stdout = true but --list doesn't.
 	//
-	// TODO: Make sandboxing work for other situations too.
-	if (args.files_name == NULL && args.arg_count == 1
-			&& (opt_stdout || strcmp("-", args.arg_names[0]) == 0
-				|| opt_mode == MODE_LIST))
-		sandbox_allow_strict();
+	//   - Output goes to stdout because --files or --files0 wasn't used
+	//     and no arguments were given on the command line or the
+	//     arguments are all "-" (indicating standard input).
+	bool to_stdout_only = opt_stdout || opt_mode == MODE_LIST;
+	if (!to_stdout_only && args.files_name == NULL) {
+		// If all of the filenames provided are "-" (more than one
+		// "-" could be specified), then we are only going to be
+		// writing to standard output. Note that if no filename args
+		// were provided, args.c puts a single "-" in arg_names[0].
+		to_stdout_only = true;
+
+		for (unsigned i = 0; i < args.arg_count; ++i) {
+			if (strcmp("-", args.arg_names[i]) != 0) {
+				to_stdout_only = false;
+				break;
+			}
+		}
+	}
+
+	if (to_stdout_only) {
+		sandbox_enable_read_only();
+
+		// Allow strict sandboxing if we are processing exactly one
+		// file to standard output. This requires that --files or
+		// --files0 wasn't specified (an unknown number of filenames
+		// could be provided that way).
+		if (args.files_name == NULL && args.arg_count == 1)
+			sandbox_allow_strict();
+	}
 #endif
 
 	// coder_run() handles compression, decompression, and testing.

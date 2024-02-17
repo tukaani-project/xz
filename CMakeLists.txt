@@ -42,7 +42,7 @@
 #############################################################################
 
 # NOTE: Translation support is disabled with CMake older than 3.20.
-cmake_minimum_required(VERSION 3.13...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14...3.27 FATAL_ERROR)
 
 include(CMakePushCheckState)
 include(CheckIncludeFile)
@@ -1257,6 +1257,73 @@ endif()
 
 
 #############################################################################
+# Helper functions for installing files
+#############################################################################
+
+# For each non-empty element in the list LINK_NAMES, creates symbolic links
+# ${LINK_NAME}${LINK_SUFFIX} -> ${TARGET_NAME} in the directory ${DIR}.
+# The target file should exist because on Cygwin and MSYS2 symlink creation
+# can fail under certain conditions if the target doesn't exist.
+function(my_install_symlinks COMPONENT DIR TARGET_NAME LINK_SUFFIX LINK_NAMES)
+    install(CODE "set(D \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${DIR}\")
+                 foreach(L ${LINK_NAMES})
+                     file(CREATE_LINK \"${TARGET_NAME}\"
+                                      \"\${D}/\${L}${LINK_SUFFIX}\"
+                                      SYMBOLIC)
+                 endforeach()"
+            COMPONENT "${COMPONENT}")
+endfunction()
+
+# Installs a man page file of a given language ("" for the untranslated file)
+# and optionally its alternative names as symlinks. This is a helper function
+# for my_install_man() below.
+function(my_install_man_lang COMPONENT SRC_FILE MAN_LANG LINK_NAMES)
+    # Get the man page section from the filename suffix.
+    string(REGEX REPLACE "^.*\.([^/.]+)$" "\\1" MAN_SECTION "${SRC_FILE}")
+
+    # A few man pages might be missing from translations.
+    # Don't attempt to install them or create the related symlinks.
+    if(NOT MAN_LANG STREQUAL "" AND NOT EXISTS "${SRC_FILE}")
+        return()
+    endif()
+
+    # Installing the file must be done before creating the symlinks
+    # due to Cygwin and MSYS2.
+    install(FILES "${SRC_FILE}"
+            DESTINATION "${CMAKE_INSTALL_MANDIR}/${MAN_LANG}/man${MAN_SECTION}"
+            COMPONENT "${COMPONENT}")
+
+    # Get the basename of the file to be used as the symlink target.
+    get_filename_component(BASENAME "${SRC_FILE}" NAME)
+
+    # LINK_NAMES don't contain the man page filename suffix (like ".1")
+    # so it needs to be told to my_install_symlinks.
+    my_install_symlinks("${COMPONENT}"
+                        "${CMAKE_INSTALL_MANDIR}/${MAN_LANG}/man${MAN_SECTION}"
+                        "${BASENAME}" ".${MAN_SECTION}" "${LINK_NAMES}")
+endfunction()
+
+# Installs a man page file and optionally its alternative names as symlinks.
+# Does the same for translations if ENABLE_NLS.
+function(my_install_man COMPONENT SRC_FILE LINK_NAMES)
+    my_install_man_lang("${COMPONENT}" "${SRC_FILE}" "" "${LINK_NAMES}")
+
+    if(ENABLE_NLS)
+        # Find the translated versions of this man page.
+        get_filename_component(BASENAME "${SRC_FILE}" NAME)
+        file(GLOB MAN_FILES "po4a/man/*/${BASENAME}")
+
+        foreach(F ${MAN_FILES})
+            get_filename_component(MAN_LANG "${F}" DIRECTORY)
+            get_filename_component(MAN_LANG "${MAN_LANG}" NAME)
+            my_install_man_lang("${COMPONENT}" "${F}" "${MAN_LANG}"
+                                "${LINK_NAMES}")
+        endforeach()
+    endif()
+endfunction()
+
+
+#############################################################################
 # libgnu (getopt_long)
 #############################################################################
 
@@ -1364,9 +1431,7 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
                     COMPONENT xzdec)
 
     if(UNIX)
-        install(FILES src/xzdec/xzdec.1
-                DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
-                COMPONENT xzdec)
+        my_install_man(xzdec src/xzdec/xzdec.1 "")
     endif()
 endif()
 
@@ -1553,15 +1618,28 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         endforeach()
     endif()
 
+    # This command must be before the symlink creation to keep things working
+    # on Cygwin and MSYS2 in all cases.
+    #
+    #   - Cygwin can encode symlinks in multiple ways. This can be
+    #     controlled via the environment variable "CYGWIN". If it contains
+    #     "winsymlinks:nativestrict" then symlink creation will fail if
+    #     the link target doesn't exist. This mode isn't the default though.
+    #     See: https://cygwin.com/faq.html#faq.api.symlinks
+    #
+    #   - MSYS2 supports the same winsymlinks option in the environment
+    #     variable "MSYS" (not "MSYS2). The default in MSYS2 is to make
+    #     a copy of the file instead of any kind of symlink. Thus the link
+    #     target must exist or the creation of the "symlink" (copy) will fail.
+    #
+    # Our installation order must be such that when a symbolic link is created
+    # its target must already exists. There is no race condition for parallel
+    # builds because the generated cmake_install.cmake executes serially.
     install(TARGETS xz
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
                     COMPONENT xz)
 
     if(UNIX)
-        install(FILES src/xz/xz.1
-                DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
-                COMPONENT xz)
-
         option(CREATE_XZ_SYMLINKS "Create unxz and xzcat symlinks" ON)
         option(CREATE_LZMA_SYMLINKS "Create lzma, unlzma, and lzcat symlinks"
                ON)
@@ -1575,96 +1653,19 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
             list(APPEND XZ_LINKS "lzma" "unlzma" "lzcat")
         endif()
 
-        # With Windows Cygwin and MSYS2 the symlinking is complicated. Both
-        # of these environments set the UNIX variable so they will try to
-        # make the symlinks. The ability for Cygwin and MSYS2 to make
-        # broken symlinks is determined by the CYGWIN and MSYS2 environment
-        # variables, respectively. Broken symlinks are needed for the man
-        # page symlinks and for determining if the xz and lzma symlinks need
-        # to depend on the xz target or not. If broken symlinks cannot be
-        # made then the xz binary must be created before the symlinks.
-        set(ALLOW_BROKEN_SYMLINKS ON)
-
-        if(CMAKE_SYSTEM_NAME STREQUAL "CYGWIN")
-            # The Cygwin env variable can be set to four possible values:
-            #
-            # 1. "lnk". Create symlinks as Windows shortcuts.
-            #
-            # 2. "native". Create symlinks as native Windows symlinks
-            #    if supported by the system. Fallback to "lnk" if native
-            #    symlinks are not supported.
-            #
-            # 3. "nativestrict". Create symlinks as native Windows symlinks
-            #    if supported by the system. If the target of the symlink
-            #    does not exist or the creation of the symlink fails for any
-            #    reason, do not create the symlink.
-            #
-            # 4. "sys". Create symlinks as plain files with a special
-            #    system attribute containing the path to the symlink target.
-            #
-            # So, the only case we care about for broken symlinks is
-            # "nativestrict" since all other values mean that broken
-            # symlinks are allowed. If the env variable is not set the
-            # default is "native". If the env variable is set but not
-            # assigned one of the four values, then the default is the same
-            # as option 1 "lnk".
-            string(FIND "$ENV{CYGWIN}" "winsymlinks:nativestrict" SYMLINK_POS)
-            if(SYMLINK_POS GREATER -1)
-                set(ALLOW_BROKEN_SYMLINKS OFF)
-            endif()
-        elseif(CMAKE_SYSTEM_NAME STREQUAL "MSYS")
-            # The MSYS env variable behaves similar to the CYGWIN but has a
-            # different default behavior. If winsymlinks is set but not
-            # assigned one of the four supported values, the default is to
-            # *copy* the target to the symlink destination. This will fail
-            # if the target does not exist so broken symlinks cannot be
-            # allowed.
-            string(FIND "$ENV{MSYS}" "winsymlinks" SYMLINK_POS)
-            if(SYMLINK_POS GREATER -1)
-                string(FIND "$ENV{MSYS}" "winsymlinks:nativestrict"
-                        SYMLINK_POS)
-                if(SYMLINK_POS GREATER -1)
-                    set(ALLOW_BROKEN_SYMLINKS OFF)
-                endif()
-            else()
-                set(ALLOW_BROKEN_SYMLINKS OFF)
-            endif()
-        endif()
-
-        # Create symlinks in the build directory and then install them.
+        # On Cygwin, don't add the .exe suffix to the symlinks.
         #
-        # The symlinks do not likely need any special extension since
-        # even on Windows the symlink can still be executed without
-        # the .exe extension.
-        foreach(LINK IN LISTS XZ_LINKS)
-            add_custom_target("create_${LINK}" ALL
-                "${CMAKE_COMMAND}" -E create_symlink
-                    "$<TARGET_FILE_NAME:xz>" "${LINK}"
-                BYPRODUCTS "${LINK}"
-                VERBATIM)
-            install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
-                    DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                    COMPONENT xz)
+        # FIXME? Does this make sense on MSYS & MSYS2 where "ln -s"
+        # by default makes copies? Inside MSYS & MSYS2 it is possible
+        # to execute files without the .exe suffix but not outside
+        # (like in Command Prompt). Omitting the suffix matches
+        # what configure.ac has done for many years though.
+        my_install_symlinks(xz "${CMAKE_INSTALL_BINDIR}"
+                            "xz${CMAKE_EXECUTABLE_SUFFIX}" "" "${XZ_LINKS}")
 
-            # Only create the man page symlinks if the symlinks can be
-            # created broken. The symlinks will not be valid until install
-            # so they cannot be created on these system environments.
-            if(ALLOW_BROKEN_SYMLINKS)
-                add_custom_target("create_${LINK}.1" ALL
-                    "${CMAKE_COMMAND}" -E create_symlink "xz.1" "${LINK}.1"
-                    BYPRODUCTS "${LINK}.1"
-                    VERBATIM)
-                install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${LINK}.1"
-                        DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
-                        COMPONENT xz)
-            else()
-                # Add the xz target as dependency when broken symlinks
-                # cannot be made. This ensures parallel builds do not fail
-                # since it will enforce the order of creating xz first, then
-                # the symlinks.
-                add_dependencies("create_${LINK}" xz)
-            endif()
-        endforeach()
+        # Install the man pages and (optionally) their symlinks
+        # and translations.
+        my_install_man(xz src/xz/xz.1 "${XZ_LINKS}")
     endif()
 endif()
 

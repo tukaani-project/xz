@@ -51,16 +51,13 @@ uninstall-local:
 endif
 
 EXTRA_DIST = \
-	po/xz.pot-header \
-	po4a \
-	extra \
-	doc/xz-logo.png \
+	cmake \
 	dos \
 	doxygen \
+	extra \
+	po4a \
 	windows \
-	cmake \
 	CMakeLists.txt \
-	autogen.sh \
 	COPYING.CC-BY-SA-4.0 \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
@@ -68,8 +65,11 @@ EXTRA_DIST = \
 	INSTALL.generic \
 	PACKAGERS \
 	TODO \
+	autogen.sh \
 	build-aux/manconv.sh \
-	build-aux/version.sh
+	build-aux/version.sh \
+	doc/xz-logo.png \
+	po/xz.pot-header
 
 ACLOCAL_AMFLAGS = -I m4
 

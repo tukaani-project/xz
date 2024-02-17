@@ -24,7 +24,7 @@
 # specified via XZ_OPT.
 xz='@xz@ --format=auto'
 
-version='xzless (@PACKAGE_NAME@) @VERSION@'
+version='xzless (@PACKAGE_NAME@) @PACKAGE_VERSION@'
 
 usage="Usage: ${0##*/} [OPTION]... [FILE]...
 Like 'less', but operate on the uncompressed contents of xz compressed FILEs.

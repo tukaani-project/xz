@@ -31,7 +31,7 @@ case ${0##*/} in
   *)     prog=xzdiff; cmp=${DIFF:-diff};;
 esac
 
-version="$prog (@PACKAGE_NAME@) @VERSION@"
+version="$prog (@PACKAGE_NAME@) @PACKAGE_VERSION@"
 
 usage="Usage: ${0##*/} [OPTION]... FILE1 [FILE2]
 Compare FILE1 to FILE2, using their uncompressed contents if they are

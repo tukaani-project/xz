@@ -35,7 +35,7 @@ case ${0##*/} in
   *)       prog=xzgrep; grep=${GREP:-grep};;
 esac
 
-version="$prog (@PACKAGE_NAME@) @VERSION@"
+version="$prog (@PACKAGE_NAME@) @PACKAGE_VERSION@"
 
 usage="Usage: ${0##*/} [OPTION]... [-e] PATTERN [FILE]...
 Look for instances of PATTERN in the input FILEs, using their

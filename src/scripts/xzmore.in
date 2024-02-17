@@ -24,7 +24,7 @@
 # specified via XZ_OPT.
 xz='@xz@ --format=auto'
 
-version='xzmore (@PACKAGE_NAME@) @VERSION@'
+version='xzmore (@PACKAGE_NAME@) @PACKAGE_VERSION@'
 
 usage="Usage: ${0##*/} [OPTION]... [FILE]...
 Like 'more', but operate on the uncompressed contents of xz compressed FILEs.

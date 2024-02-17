@@ -13,7 +13,6 @@
 # highly experimental and meant for testing only.
 #
 # Other missing things:
-#   - No xzgrep or other scripts or their symlinks
 #   - No xz tests (liblzma tests only)
 #
 # NOTE: Even if the code compiles without warnings, the end result may be
@@ -1667,6 +1666,88 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         # and translations.
         my_install_man(xz src/xz/xz.1 "${XZ_LINKS}")
     endif()
+endif()
+
+
+#############################################################################
+# Scripts
+#############################################################################
+
+if(UNIX)
+    # NOTE: This isn't as sophisticated as in the Autotools build which
+    # uses posix-shell.m4 but hopefully this doesn't need to be either.
+    # CMake likely won't be used on as many (old) obscure systems as the
+    # Autotools-based builds are.
+    if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND EXISTS "/usr/xpg4/bin/sh")
+        set(POSIX_SHELL_DEFAULT "/usr/xpg4/bin/sh")
+    else()
+        set(POSIX_SHELL_DEFAULT "/bin/sh")
+    endif()
+
+    set(POSIX_SHELL "${POSIX_SHELL_DEFAULT}" CACHE STRING
+        "Shell to use for scripts (xzgrep and others)")
+
+    # Guess the extra path to add from POSIX_SHELL. Autotools-based build
+    # has a separate option --enable-path-for-scripts=PREFIX but this is
+    # enough for Solaris.
+    set(enable_path_for_scripts)
+    get_filename_component(POSIX_SHELL_DIR "${POSIX_SHELL}" DIRECTORY)
+
+    if(NOT POSIX_SHELL_DIR STREQUAL "/bin" AND
+            NOT POSIX_SHELL_DIR STREQUAL "/usr/bin")
+        set(enable_path_for_scripts "PATH=${POSIX_SHELL_DIR}:\$PATH")
+    endif()
+
+    set(XZDIFF_LINKS xzcmp)
+    set(XZGREP_LINKS xzegrep xzfgrep)
+    set(XZMORE_LINKS)
+    set(XZLESS_LINKS)
+
+    if(CREATE_LZMA_SYMLINKS)
+        list(APPEND XZDIFF_LINKS lzdiff lzcmp)
+        list(APPEND XZGREP_LINKS lzgrep lzegrep lzfgrep)
+        list(APPEND XZMORE_LINKS lzmore)
+        list(APPEND XZLESS_LINKS lzless)
+    endif()
+
+    set(xz "xz")
+
+    foreach(S xzdiff xzgrep xzmore xzless)
+        configure_file("src/scripts/${S}.in" "${S}"
+               @ONLY
+               NEWLINE_STYLE LF)
+
+        install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
+                DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                COMPONENT scripts)
+    endforeach()
+
+    # file(CHMOD ...) would need CMake 3.19 so use execute_process instead.
+    # Using +x is fine even if umask was 077. If execute bit is set at all
+    # then "make install" will set it for group and other access bits too.
+    execute_process(COMMAND chmod +x xzdiff xzgrep xzmore xzless
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+
+    unset(xz)
+    unset(POSIX_SHELL)
+    unset(enable_path_for_scripts)
+
+    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzdiff ""
+                        "${XZDIFF_LINKS}")
+
+    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzgrep ""
+                        "${XZGREP_LINKS}")
+
+    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzmore ""
+                        "${XZMORE_LINKS}")
+
+    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzless ""
+                        "${XZLESS_LINKS}")
+
+    my_install_man(scripts src/scripts/xzdiff.1 "${XZDIFF_LINKS}")
+    my_install_man(scripts src/scripts/xzgrep.1 "${XZGREP_LINKS}")
+    my_install_man(scripts src/scripts/xzmore.1 "${XZMORE_LINKS}")
+    my_install_man(scripts src/scripts/xzless.1 "${XZLESS_LINKS}")
 endif()
 
 

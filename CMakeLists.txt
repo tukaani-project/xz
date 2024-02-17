@@ -10,8 +10,7 @@
 # is somewhat experimental and not as portable as using ./configure.
 #
 # On some platforms this builds also xz and xzdec, but these are
-# highly experimental and meant for testing only:
-#   - No translations
+# highly experimental and meant for testing only.
 #
 # Other missing things:
 #   - No xzgrep or other scripts or their symlinks
@@ -42,6 +41,7 @@
 #
 #############################################################################
 
+# NOTE: Translation support is disabled with CMake older than 3.20.
 cmake_minimum_required(VERSION 3.13...3.27 FATAL_ERROR)
 
 include(CMakePushCheckState)
@@ -187,6 +187,22 @@ if(HAVE_CLOCK_GETTIME OR HAVE_CLOCK_GETTIME_LIBRT)
     # Check if CLOCK_MONOTONIC is available for clock_gettime().
     check_symbol_exists(CLOCK_MONOTONIC time.h HAVE_CLOCK_MONOTONIC)
     tuklib_add_definition_if(ALL HAVE_CLOCK_MONOTONIC)
+endif()
+
+# Translation support requires CMake 3.20 because it added the Intl::Intl
+# target so we don't need to play with the individual variables.
+#
+# The defintion ENABLE_NLS is added only to those targets that use it, thus
+# it's not done here. (xz has translations, xzdec doesn't.)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
+    find_package(Intl)
+    find_package(Gettext)
+    if(Intl_FOUND)
+        option(ENABLE_NLS "Native Language Support (translated messages)" ON)
+
+        # The *installed* name of the translation files is "xz.mo".
+        set(TRANSLATION_DOMAIN "xz")
+    endif()
 endif()
 
 # Options for new enough GCC or Clang on any arch or operating system:
@@ -1487,6 +1503,54 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
                 endif()
             endif()
         endif()
+    endif()
+
+    if(ENABLE_NLS)
+        target_link_libraries(xz PRIVATE Intl::Intl)
+
+        target_compile_definitions(xz PRIVATE
+                ENABLE_NLS
+                PACKAGE="${TRANSLATION_DOMAIN}"
+                LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
+        )
+
+        file(STRINGS po/LINGUAS LINGUAS)
+
+        # Where to find .gmo files. If msgfmt is available, the .po files
+        # will be converted as part of the build. Otherwise we will use
+        # the pre-generated .gmo files which are included in XZ Utils
+        # tarballs by Autotools.
+        set(GMO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/po")
+
+        if(GETTEXT_FOUND)
+            # NOTE: gettext_process_po_files' INSTALL_DESTINATION is
+            # incompatible with how Autotools requires the .po files to
+            # be named. CMake would require each .po file to be named with
+            # the translation domain and thus each .po file would need its
+            # own language-specific directory (like "po/fi/xz.po"). On top
+            # of this, INSTALL_DESTINATION doesn't allow specifying COMPONENT
+            # and thus the .mo files go into "Unspecified" component. So we
+            # can use gettext_process_po_files to convert the .po files but
+            # installation needs to be done with our own code.
+            #
+            # Also, the .gmo files will go to root of the build directory
+            # instead of neatly into a subdirectory. This is hardcoded in
+            # CMake's FindGettext.cmake.
+            foreach(LANG IN LISTS LINGUAS)
+                gettext_process_po_files("${LANG}" ALL
+                        PO_FILES "${CMAKE_CURRENT_SOURCE_DIR}/po/${LANG}.po")
+            endforeach()
+
+            set(GMO_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+        endif()
+
+        foreach(LANG IN LISTS LINGUAS)
+            install(
+                FILES "${GMO_DIR}/${LANG}.gmo"
+                DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES"
+                RENAME "${TRANSLATION_DOMAIN}.mo"
+                COMPONENT xz)
+        endforeach()
     endif()
 
     install(TARGETS xz

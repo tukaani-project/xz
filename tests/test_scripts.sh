@@ -8,9 +8,11 @@
 ###############################################################################
 
 # If scripts weren't built, this test is skipped.
-XZ=../src/xz/xz
-XZDIFF=../src/scripts/xzdiff
-XZGREP=../src/scripts/xzgrep
+# When this is run from CMake, $1 is a relative path
+# to the directory with the executables and the scripts.
+XZ=${1:-../src/xz}/xz
+XZDIFF=${1:-../src/scripts}/xzdiff
+XZGREP=${1:-../src/scripts}/xzgrep
 
 for i in XZ XZDIFF XZGREP; do
 	eval test -x "\$$i" && continue
@@ -21,14 +23,15 @@ done
 # Installing the scripts in this case is a bit silly but they
 # could still be used with other decompression tools so configure
 # doesn't automatically disable scripts if decoders are disabled.
-if grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
+if test ! -f ../config.h \
+		|| grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
 	:
 else
 	echo "Decompression support is disabled, skipping this test."
 	exit 77
 fi
 
-PATH=`pwd`/../src/xz:$PATH
+PATH=`pwd`/${1:-../src/xz}:$PATH
 export PATH
 
 test -z "$srcdir" && srcdir=.

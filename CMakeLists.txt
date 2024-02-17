@@ -1803,4 +1803,18 @@ if(BUILD_TESTING)
             SKIP_RETURN_CODE 77
         )
     endforeach()
+
+    if(UNIX AND HAVE_DECODERS)
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_scripts")
+
+        add_test(NAME test_scripts.sh
+            COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_scripts.sh" ".."
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_scripts"
+        )
+
+        set_tests_properties(test_scripts.sh PROPERTIES
+            ENVIRONMENT "srcdir=${CMAKE_CURRENT_SOURCE_DIR}/tests"
+            SKIP_RETURN_CODE 77
+        )
+    endif()
 endif()

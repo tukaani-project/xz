@@ -156,7 +156,8 @@ main(int argc, char **argv)
 	// Set up the locale and message translations.
 	tuklib_gettext_init(PACKAGE, LOCALEDIR);
 
-	// Initialize handling of error/warning/other messages.
+	// Initialize progress message handling. It's not always needed
+	// but it's simpler to do this unconditionally.
 	message_init();
 
 	// Set hardware-dependent default values. These can be overridden

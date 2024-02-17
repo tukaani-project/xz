@@ -42,7 +42,7 @@ static bool current_filename_printed = false;
 
 /// True if we should print progress indicator and update it automatically
 /// if also verbose >= V_VERBOSE.
-static bool progress_automatic;
+static bool progress_automatic = false;
 
 /// True if message_progress_start() has been called but
 /// message_progress_end() hasn't been called yet.

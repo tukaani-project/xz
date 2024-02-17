@@ -1444,6 +1444,60 @@ endif()
 
 
 #############################################################################
+# lzmainfo
+#############################################################################
+
+if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
+    add_executable(lzmainfo
+        src/common/sysdefs.h
+        src/common/tuklib_common.h
+        src/common/tuklib_config.h
+        src/common/tuklib_exit.c
+        src/common/tuklib_exit.h
+        src/common/tuklib_gettext.h
+        src/common/tuklib_progname.c
+        src/common/tuklib_progname.h
+        src/lzmainfo/lzmainfo.c
+    )
+
+    target_include_directories(lzmainfo PRIVATE
+        src/common
+        src/liblzma/api
+    )
+
+    target_link_libraries(lzmainfo PRIVATE liblzma libgnu)
+
+    if(WIN32)
+        # Add the Windows resource file for lzmainfo.exe.
+        target_sources(lzmainfo PRIVATE src/lzmainfo/lzmainfo_w32res.rc)
+        set_target_properties(lzmainfo PROPERTIES
+            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+        )
+    endif()
+
+    tuklib_progname(lzmainfo)
+
+    # NOTE: The translations are in the "xz" domain and the .mo files are
+    # installed as part of the "xz" target.
+    if(ENABLE_NLS)
+        target_compile_definitions(lzmainfo PRIVATE
+                ENABLE_NLS
+                PACKAGE="${TRANSLATION_DOMAIN}"
+                LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
+        )
+    endif()
+
+    install(TARGETS lzmainfo
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                    COMPONENT lzmainfo)
+
+    if(UNIX)
+        my_install_man(lzmainfo src/lzmainfo/lzmainfo.1 "")
+    endif()
+endif()
+
+
+#############################################################################
 # xz
 #############################################################################
 

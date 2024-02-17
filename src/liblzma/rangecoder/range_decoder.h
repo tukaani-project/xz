@@ -37,7 +37,8 @@
 // The default can be overridden at build time by defining
 // LZMA_RANGE_DECODER_CONFIG to the desired mask.
 #ifndef LZMA_RANGE_DECODER_CONFIG
-#	if defined(__x86_64__) && !defined(__ILP32__) && (defined(__GNUC__) || defined(__clang__))
+#	if defined(__x86_64__) && !defined(__ILP32__) \
+			&& (defined(__GNUC__) || defined(__clang__))
 #		define LZMA_RANGE_DECODER_CONFIG 0x1F0
 #	else
 #		define LZMA_RANGE_DECODER_CONFIG 0x03

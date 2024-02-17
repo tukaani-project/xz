@@ -2,31 +2,78 @@
 
 #############################################################################
 #
-# Very limited CMake support for building some parts of XZ Utils
+# CMake support for building XZ Utils
 #
-# For now, this is intended to be useful to build static or shared liblzma
-# on Windows with MSVC (to avoid the need to maintain Visual Studio project
-# files). Building liblzma on a few other platforms should work too but it
-# is somewhat experimental and not as portable as using ./configure.
+# The complete CMake-based build hasn't been tested much yet and
+# thus it's still slightly experimental. Testing this especially
+# outside GNU/Linux and Windows would be great now.
 #
-# On some platforms this builds also xz and xzdec, but these are
-# highly experimental and meant for testing only.
+# A few things are still missing compared to the Autotools-based build:
 #
-# Other missing things:
-#   - No xz tests (liblzma tests only)
+#   - A few tests aren't CMake compatible yet and thus aren't run!
 #
-# NOTE: Even if the code compiles without warnings, the end result may be
-# different than via ./configure. Specifically, the list of #defines
-# may be different (if so, probably this CMakeLists.txt got them wrong).
+#   - 32-bit x86 assembly code for CRC32 and CRC64 isn't used.
+#
+#   - External SHA-256 code isn't supported but it's disabled by
+#     default in the Autotools build too (--enable-external-sha256).
+#
+#   - Extra compiler warning flags aren't added by default.
+#
+# About CMAKE_BUILD_TYPE:
+#
+#   - CMake's standard choices are fine to use for production builds,
+#     including "Release" and "RelWithDebInfo".
+#
+#     NOTE: While "Release" uses -O3 by default with some compilers,
+#     this file overrides -O3 to -O2 for "Release" builds if
+#     CMAKE_C_FLAGS_RELEASE is not defined by the user. At least
+#     with GCC and Clang/LLVM, -O3 doesn't seem useful for this
+#     package as it can result in bigger binaries without any
+#     improvement in speed compared to -O2.
+#
+#   - Empty value (the default) is handled slightly specially: It
+#     adds -DNDEBUG to disable debugging code (assert() and a few
+#     other things). No optimization flags are added so an empty
+#     CMAKE_BUILD_TYPE is an easy way to build with whatever
+#     optimization flags one wants, and so this method is also
+#     suitable for production builds.
+#
+#     If debugging is wanted when using empty CMAKE_BUILD_TYPE,
+#     include -UNDEBUG in the CFLAGS environment variable or
+#     in the CMAKE_C_FLAGS CMake variable to override -DNDEBUG.
+#     With empty CMAKE_BUILD_TYPE, the -UNDEBUG option will go
+#     after the -DNDEBUG option on the compiler command line and
+#     thus NDEBUG will be undefined.
+#
+#   - Non-standard build types like "None" aren't treated specially
+#     and thus won't have -DNEBUG. Such non-standard build types
+#     SHOULD BE AVOIDED FOR PRODUCTION BUILDS. Or at least one
+#     should remember to add -DNDEBUG.
+#
+# If building from xz.git instead of a release tarball, consider
+# the following *before* running cmake:
+#
+#   - To get translated messages, install GNU gettext tools (the
+#     command msgfmt is needed). Alternatively disable translations
+#     by setting ENABLE_NLS=OFF.
+#
+#   - To get translated man pages, run po4a/update-po which requires
+#     the po4a tool. The build works without this step too.
+#
+#   - To get Doxygen-generated liblzma API docs in HTML format,
+#     run doxygen/update-doxygen which requires the doxygen tool.
+#     The build works without this step too.
 #
 # This file provides the following installation components (if you only
 # need liblzma, install only its components!):
-#   - liblzma_Runtime
+#   - liblzma_Runtime (shared library only)
 #   - liblzma_Development
 #   - liblzma_Documentation (examples and Doxygen-generated API docs as HTML)
-#   - xz (on some platforms only)
-#   - xzdec (on some platforms only)
-#   - lzmadec (on some platforms only)
+#   - xz
+#   - xzdec
+#   - lzmadec
+#   - lzmainfo
+#   - scripts (xzdiff, xzgrep, xzless, xzmore)
 #   - xz_Documentation (generic docs like README and licenses)
 #
 # To find the target liblzma::liblzma from other packages, use the CONFIG

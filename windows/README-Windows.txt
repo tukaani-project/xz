@@ -5,18 +5,24 @@ XZ Utils for Windows
 Introduction
 ------------
 
-    This package includes command line tools (xz.exe and a few others)
-    and the liblzma compression library from XZ Utils. You can find the
-    latest version and full source code from
+    This package includes command line tools (xz.exe and a few
+    others) and the liblzma compression library from XZ Utils.
+    You can find the latest version and full source code from
     <https://xz.tukaani.org/xz-utils/>.
 
     The parts of the XZ Utils source code, that are relevant to this
     binary package, are under the BSD Zero Clause License (0BSD).
-    XZ Utils have been built for this package with MinGW-w64 and linked
-    statically against its runtime libraries. See COPYING-Windows.txt
-    for the copyright and license information that applies to the
-    MinGW-w64 runtime. You must include it when redistributing these
-    XZ Utils binaries.
+    XZ Utils have been built using GCC and MinGW-w64 and linked
+    statically against the MinGW-w64 runtime libraries. See
+    COPYING.MinGW-w64-runtime.txt for copyright and license
+    information that applies to the MinGW-w64 runtime.
+
+        IMPORTANT: You must include COPYING.MinGW-w64-runtime.txt
+        when distributing these XZ Utils binaries to meet
+        the license terms of the MinGW-w64 runtime!
+
+    (The file COPYING mentions GNU getopt_long. It's *not* used when
+    XZ Utils is built with MinGW-w64. Thus GNU LGPLv2.1 doesn't apply.)
 
 
 Package contents
@@ -37,51 +43,43 @@ Package contents
 
     Each of the above directories have the following files:
 
-        *.exe       Command line tools. (It's useless to double-click
-                    these; use the command prompt instead.) These have
-                    been linked statically against liblzma, so they
-                    don't require liblzma.dll. Thus, you can copy e.g.
-                    xz.exe to a directory that is in PATH without copying
-                    any other files from this package.
+        *.exe         Command line tools. (It's useless to double-click
+                      these; use the command prompt instead.) These have
+                      been linked statically against liblzma, so they
+                      don't require liblzma.dll. Thus, you can copy e.g.
+                      xz.exe to a directory that is in PATH without
+                      copying any other files from this package.
 
-        liblzma.dll Shared version of the liblzma compression library.
-                    This file is mostly useful to developers, although
-                    some non-developers might use it to upgrade their
-                    copy of liblzma.
+                      NOTE: xzdec.exe and lzmadec.exe are optimized for
+                      size, single-threaded, and slower than xz.exe.
+                      Use xz.exe unless program size is important.
 
-        liblzma.a   Static version of the liblzma compression library.
-                    This file is useful only for developers.
+        liblzma.dll   Shared version of the liblzma compression library.
+                      This file is mostly useful to developers, although
+                      some non-developers might use it to upgrade their
+                      copy of liblzma.
 
     The rest of the directories contain architecture-independent files:
 
-        doc         Documentation in the plain text (TXT) format. The
-                    manuals of the command line tools are provided also
-                    in the PDF format. liblzma.def is in this directory
-                    too.
+        doc           Basic documentation in the plain text (TXT)
+                      format. COPYING.txt, COPYING.0BSD.txt, and
+                      COPYING.MinGW-w64-runtime.txt contain
+                      copyright and license information.
+                      liblzma.def is in this directory too.
 
-        include     C header files for liblzma. These should be
-                    compatible with most C and C++ compilers. If you
-                    have problems, try to fix it and send your fixes
-                    upstream, or at least report a bug, thanks.
+        doc/manuals   The manuals of the command line tools in
+                      plain text (TXT) and PDF formats.
 
+        doc/api       liblzma API documentation in HTML format.
 
-Linking against liblzma
------------------------
+        doc/examples  Example programs for basic liblzma usage.
 
-MinGW
-
-    If you use MinGW, linking against liblzma.dll or liblzma.a should
-    be straightforward. You don't need an import library to link
-    against liblzma.dll, and for static linking, you don't need to
-    worry about the LZMA_API_STATIC macro.
-
-    Note that the MinGW distribution includes liblzma. If you are
-    building packages that will be part of the MinGW distribution, you
-    probably should use the version of liblzma shipped in MinGW instead
-    of this package.
+        include       C header files for liblzma. These should be
+                      compatible with most C and C++ compilers.
 
 
-Microsoft Visual C++
+Creating an import library for MSVC / Visual Studio
+---------------------------------------------------
 
     To link against liblzma.dll, you need to create an import library
     first. You need the "lib" command from MSVC and liblzma.def from
@@ -90,29 +88,9 @@ Microsoft Visual C++
 
         lib /def:liblzma.def /out:liblzma.lib /machine:ix86
 
-    On x86-64, the /machine argument has to naturally be changed:
+    On x86-64, the /machine argument has to be changed:
 
         lib /def:liblzma.def /out:liblzma.lib /machine:x64
-
-    If you need to link statically against liblzma, you should build
-    liblzma with MSVC 2013 update 2 or later. Alternatively, if having
-    a decompressor is enough, consider using XZ Embedded or LZMA SDK.
-
-    When you plan to link against static liblzma, you need to tell
-    lzma.h to not use __declspec(dllimport) by defining the macro
-    LZMA_API_STATIC. You can do it either in the C/C++ code
-
-        #define LZMA_API_STATIC
-        #include <lzma.h>
-
-    or by adding it to compiler options.
-
-
-Other compilers
-
-    If you are using some other compiler, see its documentation how to
-    create an import library (if it is needed). If it is simple, I
-    might consider including the instructions here.
 
 
 Reporting bugs

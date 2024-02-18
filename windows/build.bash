@@ -3,37 +3,33 @@
 
 ###############################################################################
 #
-# Build a binary package on Windows with MinGW and MSYS
+# This build a XZ Utils binary package using the GNU Autotools build system
 #
-# Set the paths where MinGW, Mingw-w32, or MinGW-w64 are installed. If both
-# MinGW and MinGW-w32 are specified, MinGW-w32 will be used. If there is no
-# 32-bit or 64-bit compiler at all, it is simply skipped.
+# NOTE: This requires files that are generated as part of "make mydist".
+#       So if building from xz.git, create a distribution tarball first,
+#       extract it, and run this script from there.
+#
+# These were tested and known to work:
+#   - Cross-compilation with MinGW-w64 v10.0.0 and GCC 12.2.0 from
+#     GNU/Linux ("make check" will be skipped)
+#   - MSYS2 with MinGW-w64 and GCC
+#   - MSYS 1.0.11 (from 2009) with MinGW-w64 v11.0.0 and GCC 13.1.0
 #
 # Optionally, 7-Zip is used to create the final .zip and .7z packages.
-# If you have installed it in the default directory, this script should
-# find it automatically. Otherwise adjust the path manually.
+# If the 7z tool is in PATH or if you have installed it in the default
+# directory on Windows, this script should find it automatically.
 #
-# If you want to use a cross-compiler e.g. on GNU/Linux, this script won't
-# work out of the box. You need to omit "make check" commands and replace
-# u2d with some other tool to convert newlines from LF to CR+LF. You will
-# also need to pass the --host option to configure.
+# Before running this script, copy COPYING.MinGW-w64-runtime.txt to
+# the 'windows' directory.
+#
+# NOTE: MinGW-w64 includes getopt_long(). The GNU getopt_long() (LGPLv2.1)
+#       included in XZ Utils isn't used when building with MinGW-w64.
 #
 ###############################################################################
 #
 # Author: Lasse Collin
 #
 ###############################################################################
-
-MINGW_DIR=/c/devel/tools/mingw
-MINGW_W32_DIR=/c/devel/tools/mingw-w32
-MINGW_W64_DIR=/c/devel/tools/mingw-w64
-
-for SEVENZ_EXE in "$PROGRAMW6432/7-Zip/7z.exe" "$PROGRAMFILES/7-Zip/7z.exe" \
-		"/c/Program Files/7-Zip/7z.exe"
-do
-	[ -x "$SEVENZ_EXE" ] && break
-done
-
 
 # Abort immediately if something goes wrong.
 set -e
@@ -49,9 +45,32 @@ esac
 if [ ! -f windows/build.bash ]; then
 	cd ..
 	if [ ! -f windows/build.bash ]; then
-		echo "You are in a wrong directory." >&2
+		echo "ERROR: You are in a wrong directory. This script" >&2
+		echo "can be run either at the top-level directory of" >&2
+		echo "the package or in the same directory containing" >&2
+		echo "this script." >&2
 		exit 1
 	fi
+fi
+
+# COPYING.MinGW-w64-runtime.txt needs to be manually copied from MinGW-w64.
+if [ ! -f windows/COPYING.MinGW-w64-runtime.txt ]; then
+	echo "ERROR: The file 'windows/COPYING.MinGW-w64-runtime.txt'" >&2
+	echo "doesn't exists. Copy it from MinGW-w64 so that the" >&2
+	echo "copyright and license notices of the MinGW-w64 runtime" >&2
+	echo "can be included in the package." >&2
+	echo "(Or create an empty file if only doing a test build.)" >&2
+	exit 1
+fi
+
+# Number of jobs for "make":
+MAKE_JOBS=$(nproc 2> /dev/null || echo 1)
+
+# "make check" has to be skipped when cross-compiling.
+if [ "x$(uname -o)" = xMsys ]; then
+	IS_NATIVE_BUILD=true
+else
+	IS_NATIVE_BUILD=false
 fi
 
 # Run configure and copy the binaries to the given directory.
@@ -61,8 +80,25 @@ fi
 buildit()
 {
 	DESTDIR=$1
-	BUILD=$2
+	TRIPLET=$2
 	CFLAGS=$3
+
+	# In the MinGW-w64 + GCC toolchains running natively on Windows,
+	# $TRIPLET-windres and $TRIPLET-strip commands might not exist.
+	# Only the short names "windres" and "strip" might be available.
+	# If both i686 and x86_64 toolchains are in PATH, wrong windres.exe
+	# will be used for one of the builds, making the build fail. The
+	# workaround is to put the directory of $TRIPLET-gcc to the front
+	# of PATH if $TRIPLET-windres or $TRIPLET-strip is missing.
+	OLD_PATH=$PATH
+	if type -P "$TRIPLET-windres" > /dev/null \
+			&& type -P "$TRIPLET-strip" > /dev/null; then
+		STRIP=$TRIPLET-strip
+	else
+		STRIP=strip
+		GCC_DIR=$(type -P "$TRIPLET-gcc")
+		PATH=${GCC_DIR%/*}:$PATH
+	fi
 
 	# Clean up if it was already configured.
 	[ -f Makefile ] && make distclean
@@ -80,9 +116,13 @@ buildit()
 		--disable-threads \
 		--disable-shared \
 		--enable-small \
-		--build="$BUILD" \
+		--host="$TRIPLET" \
 		CFLAGS="$CFLAGS -Os"
-	make check
+	make -j"$MAKE_JOBS"
+
+	if "$IS_NATIVE_BUILD"; then
+		make -j"$MAKE_JOBS" check
+	fi
 
 	mkdir -pv "$DESTDIR"
 	cp -v src/xzdec/{xz,lzma}dec.exe src/lzmainfo/lzmainfo.exe "$DESTDIR"
@@ -97,17 +137,20 @@ buildit()
 		--disable-dependency-tracking \
 		--disable-nls \
 		--disable-scripts \
-		--build="$BUILD" \
+		--host="$TRIPLET" \
 		CFLAGS="$CFLAGS -O2"
-	make -C src/liblzma
-	make -C src/xz LDFLAGS=-static
-	make -C tests check
+	make -j"$MAKE_JOBS" -C src/liblzma
+	make -j"$MAKE_JOBS" -C src/xz LDFLAGS=-static
 
-	cp -v src/xz/xz.exe src/liblzma/.libs/liblzma.a "$DESTDIR"
-	cp -v src/liblzma/.libs/liblzma-*.dll "$DESTDIR/liblzma.dll"
+	if "$IS_NATIVE_BUILD"; then
+		make -j"$MAKE_JOBS" -C tests check
+	fi
 
-	strip -v "$DESTDIR/"*.{exe,dll}
-	strip -vg "$DESTDIR/"*.a
+	cp -v src/xz/xz.exe "$DESTDIR"
+	cp -v src/liblzma/.libs/liblzma-5.dll "$DESTDIR/liblzma.dll"
+	"$STRIP" -v "$DESTDIR/"*.{exe,dll}
+
+	PATH=$OLD_PATH
 }
 
 # Copy files and convert newlines from LF to CR+LF. Optionally add a suffix
@@ -115,7 +158,7 @@ buildit()
 #
 # The first argument is the destination directory. The second argument is
 # the suffix to append to the filenames; use empty string if no extra suffix
-# is wanted. The rest of the arguments are actual the filenames.
+# is wanted. The rest of the arguments are the actual filenames.
 txtcp()
 {
 	DESTDIR=$1
@@ -124,39 +167,32 @@ txtcp()
 	for SRCFILE; do
 		DESTFILE="$DESTDIR/${SRCFILE##*/}$SUFFIX"
 		echo "Converting '$SRCFILE' -> '$DESTFILE'"
-		u2d < "$SRCFILE" > "$DESTFILE"
+		sed s/\$/$'\r'/ < "$SRCFILE" > "$DESTFILE"
 	done
 }
 
-if [ -d "$MINGW_W32_DIR" ]; then
-	# 32-bit x86, Win2k or later, using MinGW-w32
-	PATH=$MINGW_W32_DIR/bin:$MINGW_W32_DIR/i686-w64-mingw32/bin:$PATH \
-			buildit \
-			pkg/bin_i686 \
-			i686-w64-mingw32 \
+if type -P i686-w64-mingw32-gcc > /dev/null; then
+	# 32-bit x86, Win2k or later
+	buildit pkg/bin_i686 i686-w64-mingw32 \
 			'-march=i686 -mtune=generic'
-	# 32-bit x86 with SSE2, Win2k or later, using MinGW-w32
-	PATH=$MINGW_W32_DIR/bin:$MINGW_W32_DIR/i686-w64-mingw32/bin:$PATH \
-			buildit \
-			pkg/bin_i686-sse2 \
-			i686-w64-mingw32 \
-			'-march=i686 -msse2 -mfpmath=sse -mtune=generic'
-elif [ -d "$MINGW_DIR" ]; then
-	# 32-bit x86, Win2k or later, using MinGW
-	PATH=$MINGW_DIR/bin:$PATH \
-			buildit \
-			pkg/bin_i486 \
-			i486-pc-mingw32 \
-			'-march=i486 -mtune=generic'
+
+	# 32-bit x86 with SSE2, Win2k or later
+	buildit pkg/bin_i686-sse2 i686-w64-mingw32 \
+			'-march=i686 -msse2 -mtune=generic'
+else
+	echo
+	echo "i686-w64-mingw32-gcc is not in PATH, skipping 32-bit x86 builds"
+	echo
 fi
 
-if [ -d "$MINGW_W64_DIR" ]; then
-	# x86-64, Windows Vista or later, using MinGW-w64
-	PATH=$MINGW_W64_DIR/bin:$MINGW_W64_DIR/x86_64-w64-mingw32/bin:$PATH \
-			buildit \
-			pkg/bin_x86-64 \
-			x86_64-w64-mingw32 \
+if type -P x86_64-w64-mingw32-gcc > /dev/null; then
+	# x86-64, Windows Vista or later
+	buildit pkg/bin_x86-64 x86_64-w64-mingw32 \
 			'-march=x86-64 -mtune=generic'
+else
+	echo
+	echo "x86_64-w64-mingw32-gcc is not in PATH, skipping x86-64 build"
+	echo
 fi
 
 # Copy the headers, the .def file, and the docs.
@@ -165,36 +201,33 @@ mkdir -pv pkg/{include/lzma,doc/{api,manuals,examples}}
 txtcp pkg/include "" src/liblzma/api/lzma.h
 txtcp pkg/include/lzma "" src/liblzma/api/lzma/*.h
 txtcp pkg/doc "" src/liblzma/liblzma.def
-txtcp pkg/doc .txt AUTHORS COPYING NEWS README THANKS TODO
+txtcp pkg/doc .txt AUTHORS COPYING NEWS README THANKS
 txtcp pkg/doc "" doc/*.txt windows/README-Windows.txt
+txtcp pkg/doc "" windows/COPYING.MinGW-w64-runtime.txt
 txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
 cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
 cp -v doc/api/* pkg/doc/api
 txtcp pkg/doc/examples "" doc/examples/*
 
-if [ -f windows/COPYING-Windows.txt ]; then
-	txtcp pkg/doc "" windows/COPYING-Windows.txt
-fi
+# Create the package. This requires 7z from 7-Zip.
+# If it isn't found, this step is skipped.
+for SEVENZ in "$(type -P 7z || true)" \
+		"$PROGRAMW6432/7-Zip/7z.exe" "$PROGRAMFILES/7-Zip/7z.exe" \
+		"/c/Program Files/7-Zip/7z.exe"
+do
+	[ -x "$SEVENZ" ] && break
+done
 
-# Create the package. This requires 7z.exe from 7-Zip. If it wasn't found,
-# this step is skipped and you have to zip it yourself.
-VER=$(sh build-aux/version.sh)
-cd pkg
-if [ -x "$SEVENZ_EXE" ]; then
-	"$SEVENZ_EXE" a -tzip ../xz-$VER-windows.zip *
-	"$SEVENZ_EXE" a ../xz-$VER-windows.7z *
+if [ -x "$SEVENZ" ]; then
+	VER=$(sh build-aux/version.sh)
+	cd pkg
+	"$SEVENZ" a -tzip ../xz-$VER-windows.zip *
+	"$SEVENZ" a ../xz-$VER-windows.7z *
 else
 	echo
-	echo "NOTE: 7z.exe was not found. xz-$VER-windows.zip"
+	echo "NOTE: 7z was not found. xz-$VER-windows.zip"
 	echo "      and xz-$VER-windows.7z were not created."
 	echo "      You can create them yourself from the pkg directory."
-fi
-
-if [ ! -f ../windows/COPYING-Windows.txt ]; then
-	echo
-	echo "NOTE: windows/COPYING-Windows.txt doesn't exists."
-	echo "      MinGW(-w64) runtime copyright information"
-	echo "      is not included in the package."
 fi
 
 echo

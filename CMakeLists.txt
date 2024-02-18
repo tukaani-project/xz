@@ -471,8 +471,22 @@ if(WIN32)
         # Disable __declspec(dllimport) when linking against static liblzma.
         target_compile_definitions(liblzma INTERFACE LZMA_API_STATIC)
     endif()
-elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND
+       NOT CMAKE_SYSTEM_PROCESSOR MATCHES "[Mm]icro[Bb]laze")
     # GNU/Linux-specific symbol versioning for shared liblzma.
+    # This includes a few extra compatibility symbols for RHEL/CentOS 7
+    # which are pointless on non-glibc non-Linux systems.
+    #
+    # As a special case, GNU/Linux on MicroBlaze gets the generic
+    # symbol versioning because GCC 12 doesn't support the __symver__
+    # attribute on MicroBlaze. On Linux, CMAKE_SYSTEM_PROCESSOR comes
+    # from "uname -m" for native builds (should be "microblaze") or from
+    # the CMake toolchain file (not perfectly standardized but it very
+    # likely has "microblaze" in lower case or mixed case somewhere in
+    # the string).
+    #
+    # FIXME? Avoid symvers on Linux with non-glibc like musl?
+    #
     # Note that adding link options doesn't affect static builds
     # but HAVE_SYMBOL_VERSIONS_LINUX must not be used with static builds
     # because it would put symbol versions into the static library which
@@ -488,9 +502,10 @@ elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set_target_properties(liblzma PROPERTIES
         LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_linux.map"
     )
-elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-    # Symbol versioning for shared liblzma for non-GNU/Linux.
-    # FIXME? What about Solaris?
+elseif(BUILD_SHARED_LIBS AND (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR
+                              CMAKE_SYSTEM_NAME STREQUAL "Linux"))
+    # Generic symbol versioning for shared liblzma is used on FreeBSD and
+    # also on GNU/Linux on MicroBlaze.
     target_link_options(liblzma PRIVATE
         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_generic.map"
     )

@@ -5,11 +5,15 @@ Building XZ Utils with Microsoft Visual Studio
 Introduction
 ------------
 
-    liblzma got MSVC support in XZ Utils 5.2.0, and the xz and xzdec
-    command line tools in XZ Utils 5.6.0.
+    liblzma got MSVC support in XZ Utils 5.2.0, and the xz, xzdec,
+    lzmadec, and lzmainfo command line tools in XZ Utils 5.6.0.
 
-        Note: xz and xzdec depend on the the included GNU getopt
-        which is licensed under the GNU LGPLv2.1.
+        NOTE: The *.exe files are linked against GNU getopt_long from
+        the "lib" directory. That code is under the GNU LGPLv2.1
+        and thus the matching source code must be provided when
+        distributing the *.exe files. The simplest way to comply with
+        the license requirements is to distribute the matching XZ Utils
+        source package alongside the *.exe files.
 
     MSVC 2013 update 2 and later have enough C99 support to build
     liblzma from XZ Utils 5.2.0 and later without modifications.
@@ -21,12 +25,13 @@ Introduction
 Building
 --------
 
-    It is recommended to use CMake to generate build files for MSVC.
-    Visual Studio project files are no longer provided (XZ Utils 5.4.x
-    were the last versions to include the project files).
+    Use CMake to generate build files for MSVC. Visual Studio project
+    files are no longer provided (XZ Utils 5.4.x were the last versions
+    to include the project files).
 
-    CMake-based build includes tests for liblzma but not for the
-    command line tools.
+    NOTE: GCC and Clang compatible inline assembly isn't supported by
+    the MSVC compiler. Using clang-cl under MSVC should make inline
+    assembly work (untested).
 
 
 Notes

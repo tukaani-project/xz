@@ -92,6 +92,8 @@ Creating an import library for MSVC / Visual Studio
 
         lib /def:liblzma.def /out:liblzma.lib /machine:x64
 
+    IMPORTANT: See also the file liblzma-crt-mixing.txt.
+
 
 Reporting bugs
 --------------

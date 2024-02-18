@@ -202,8 +202,10 @@ txtcp pkg/include "" src/liblzma/api/lzma.h
 txtcp pkg/include/lzma "" src/liblzma/api/lzma/*.h
 txtcp pkg/doc "" src/liblzma/liblzma.def
 txtcp pkg/doc .txt AUTHORS COPYING NEWS README THANKS
-txtcp pkg/doc "" doc/*.txt windows/README-Windows.txt
-txtcp pkg/doc "" windows/COPYING.MinGW-w64-runtime.txt
+txtcp pkg/doc "" doc/*.txt \
+	windows/README-Windows.txt \
+	windows/liblzma-crt-mixing.txt \
+	windows/COPYING.MinGW-w64-runtime.txt
 txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
 cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
 cp -v doc/api/* pkg/doc/api

@@ -201,7 +201,7 @@ mkdir -pv pkg/{include/lzma,doc/{api,manuals,examples}}
 txtcp pkg/include "" src/liblzma/api/lzma.h
 txtcp pkg/include/lzma "" src/liblzma/api/lzma/*.h
 txtcp pkg/doc "" src/liblzma/liblzma.def
-txtcp pkg/doc .txt AUTHORS COPYING NEWS README THANKS
+txtcp pkg/doc .txt AUTHORS COPYING COPYING.0BSD NEWS README THANKS
 txtcp pkg/doc "" doc/*.txt \
 	windows/README-Windows.txt \
 	windows/liblzma-crt-mixing.txt \

@@ -610,9 +610,6 @@ do { \
 		"lea	(%q[symbol], %q[symbol]), %[symbol]\n\t" \
 		"cmovae	%[t0], %[prob" #b "]\n\t" \
 	) \
-	last_only( \
-		/*"lea	(%q[symbol], %q[symbol]), %[symbol]\n\t"*/ \
-	) \
 		\
 		"lea	%c[bit_model_offset](%q[prob" #a "]), %[t0]\n\t" \
 		"cmovb	%[t1], %[code]\n\t" \

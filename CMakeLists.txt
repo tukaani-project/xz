@@ -1591,6 +1591,8 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
     # NOTE: The translations are in the "xz" domain and the .mo files are
     # installed as part of the "xz" target.
     if(ENABLE_NLS)
+        target_link_libraries(lzmainfo PRIVATE Intl::Intl)
+
         target_compile_definitions(lzmainfo PRIVATE
                 ENABLE_NLS
                 PACKAGE="${TRANSLATION_DOMAIN}"

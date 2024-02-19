@@ -69,12 +69,16 @@
 #   - liblzma_Runtime (shared library only)
 #   - liblzma_Development
 #   - liblzma_Documentation (examples and Doxygen-generated API docs as HTML)
-#   - xz
-#   - xzdec
-#   - lzmadec
-#   - lzmainfo
-#   - scripts (xzdiff, xzgrep, xzless, xzmore)
-#   - xz_Documentation (generic docs like README and licenses)
+#   - xz_Runtime (xz, the symlinks, and possibly translation files)
+#   - xz_Documentation (xz man pages and the symlinks)
+#   - xzdec_Runtime
+#   - xzdec_Documentation (xzdec *and* lzmadec man pages)
+#   - lzmadec_Runtime
+#   - lzmainfo_Runtime
+#   - lzmainfo_Documentation (lzmainfo man pages)
+#   - scripts_Runtime (xzdiff, xzgrep, xzless, xzmore)
+#   - scripts_Documentation (their man pages)
+#   - Documentation (generic docs like README and licenses)
 #
 # To find the target liblzma::liblzma from other packages, use the CONFIG
 # option with find_package() to avoid a conflict with the FindLibLZMA module
@@ -1517,16 +1521,17 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
         install(TARGETS "${XZDEC}"
                 RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                        COMPONENT "${XZDEC}")
+                        COMPONENT "${XZDEC}_Runtime")
     endforeach()
 
     # This is the only build-time difference with lzmadec.
     target_compile_definitions(lzmadec PRIVATE "LZMADEC")
 
     if(UNIX)
-        # FIXME? This puts the lzmadec symlinks into xzdec target.
-        # But doing them separately isn't trivial.
-        my_install_man(xzdec src/xzdec/xzdec.1 lzmadec)
+        # NOTE: This puts the lzmadec.1 symlinks into xzdec_Documentation.
+        # This isn't great but doing them separately with translated
+        # man pages would require extra code. So this has to suffice for now.
+        my_install_man(xzdec_Documentation src/xzdec/xzdec.1 lzmadec)
     endif()
 endif()
 
@@ -1577,10 +1582,10 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
     install(TARGETS lzmainfo
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                    COMPONENT lzmainfo)
+                    COMPONENT lzmainfo_Runtime)
 
     if(UNIX)
-        my_install_man(lzmainfo src/lzmainfo/lzmainfo.1 "")
+        my_install_man(lzmainfo_Documentation src/lzmainfo/lzmainfo.1 "")
     endif()
 endif()
 
@@ -1763,7 +1768,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
                 FILES "${GMO_DIR}/${LANG}.gmo"
                 DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES"
                 RENAME "${TRANSLATION_DOMAIN}.mo"
-                COMPONENT xz)
+                COMPONENT xz_Runtime)
         endforeach()
     endif()
 
@@ -1786,7 +1791,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
     # builds because the generated cmake_install.cmake executes serially.
     install(TARGETS xz
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                    COMPONENT xz)
+                    COMPONENT xz_Runtime)
 
     if(UNIX)
         option(CREATE_XZ_SYMLINKS "Create unxz and xzcat symlinks" ON)
@@ -1809,12 +1814,12 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         # to execute files without the .exe suffix but not outside
         # (like in Command Prompt). Omitting the suffix matches
         # what configure.ac has done for many years though.
-        my_install_symlinks(xz "${CMAKE_INSTALL_BINDIR}"
+        my_install_symlinks(xz_Runtime "${CMAKE_INSTALL_BINDIR}"
                             "xz${CMAKE_EXECUTABLE_SUFFIX}" "" "${XZ_LINKS}")
 
         # Install the man pages and (optionally) their symlinks
         # and translations.
-        my_install_man(xz src/xz/xz.1 "${XZ_LINKS}")
+        my_install_man(xz_Documentation src/xz/xz.1 "${XZ_LINKS}")
     endif()
 endif()
 
@@ -1869,7 +1874,7 @@ if(UNIX)
 
         install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
                 DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                COMPONENT scripts)
+                COMPONENT scripts_Runtime)
     endforeach()
 
     # file(CHMOD ...) would need CMake 3.19 so use execute_process instead.
@@ -1882,22 +1887,22 @@ if(UNIX)
     unset(POSIX_SHELL)
     unset(enable_path_for_scripts)
 
-    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzdiff ""
+    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzdiff ""
                         "${XZDIFF_LINKS}")
 
-    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzgrep ""
+    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzgrep ""
                         "${XZGREP_LINKS}")
 
-    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzmore ""
+    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzmore ""
                         "${XZMORE_LINKS}")
 
-    my_install_symlinks(scripts "${CMAKE_INSTALL_BINDIR}" xzless ""
+    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzless ""
                         "${XZLESS_LINKS}")
 
-    my_install_man(scripts src/scripts/xzdiff.1 "${XZDIFF_LINKS}")
-    my_install_man(scripts src/scripts/xzgrep.1 "${XZGREP_LINKS}")
-    my_install_man(scripts src/scripts/xzmore.1 "${XZMORE_LINKS}")
-    my_install_man(scripts src/scripts/xzless.1 "${XZLESS_LINKS}")
+    my_install_man(scripts_Documentation src/scripts/xzdiff.1 "${XZDIFF_LINKS}")
+    my_install_man(scripts_Documentation src/scripts/xzgrep.1 "${XZGREP_LINKS}")
+    my_install_man(scripts_Documentation src/scripts/xzmore.1 "${XZMORE_LINKS}")
+    my_install_man(scripts_Documentation src/scripts/xzless.1 "${XZLESS_LINKS}")
 endif()
 
 
@@ -1928,7 +1933,7 @@ install(FILES AUTHORS
               doc/lzma-file-format.txt
               doc/xz-file-format.txt
         DESTINATION "${CMAKE_INSTALL_DOCDIR}"
-        COMPONENT xz_Documentation)
+        COMPONENT Documentation)
 
 
 #############################################################################

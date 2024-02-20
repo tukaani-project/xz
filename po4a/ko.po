@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-man 5.6.0-pre2\n"
 "POT-Creation-Date: 2024-02-15 01:58+0800\n"
-"PO-Revision-Date: 2024-02-17 22:19+0900\n"
+"PO-Revision-Date: 2024-02-21 00:14+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
 "Language: ko\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #. type: TH
 #: ../src/xz/xz.1:7
@@ -3589,7 +3589,7 @@ msgstr "I<E<lt>파일1E<gt>> 과 I<E<lt>파일2E<gt>>를 모두 지정했다면,
 #. type: Plain text
 #: ../src/scripts/xzdiff.1:72
 msgid "If only one filename is provided, I<file1> must have a suffix of a supported compression format and the name for I<file2> is assumed to be I<file1> with the compression format suffix removed."
-msgstr "파일 이름을 하나만 지정한다면, I<E<lt>파일1E<gt>>의 확장자는 지원 압축 형식의 확장자여야 하며, I<E<lt>파일2E<gt>>는 I<E<lt>파일1E<gt>에서 압축 파일 확장자를 제거한 파일로 간주합니다."
+msgstr "파일 이름을 하나만 지정한다면, I<E<lt>파일1E<gt>>의 확장자는 지원 압축 형식의 확장자여야 하며, I<E<lt>파일2E<gt>>는 I<E<lt>파일1E<gt>>에서 압축 파일 확장자를 제거한 파일로 간주합니다."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1:78

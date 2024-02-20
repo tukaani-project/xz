@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: 0BSD
 #
 # Spanish translation for xz-5.6.0-pre2.
-# Copyright (C) 2024 special
-# This file is distributed under the same license as the xz package.
+# Copyright (C) 2024 The XZ Utils authors and contributors
+# This file is published under the BSD Zero Clause License.
 # Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023, 2024.
 #
 msgid ""
@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2024-02-15 01:57+0800\n"
-"PO-Revision-Date: 2024-02-15 18:12-0600\n"
+"PO-Revision-Date: 2024-02-16 09:36-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"

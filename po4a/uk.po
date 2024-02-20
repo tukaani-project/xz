@@ -3871,7 +3871,7 @@ msgstr "B<PAGER>"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1:60
-msgid "If B<PAGER> is set, it's value is used as the pager instead of B<more>(1)."
+msgid "If B<PAGER> is set, its value is used as the pager instead of B<more>(1)."
 msgstr "Якщо встановлено значення B<PAGER>, значення буде використано для засобу поділу на сторінки, замість B<more>(1)."
 
 #. type: Plain text

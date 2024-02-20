@@ -3896,7 +3896,7 @@ msgstr "B<PAGER>"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1:60
-msgid "If B<PAGER> is set, it's value is used as the pager instead of B<more>(1)."
+msgid "If B<PAGER> is set, its value is used as the pager instead of B<more>(1)."
 msgstr "Dacă variabila de mediu B<PAGER>, este definită, valoarea sa este utilizată ca paginator în loc de B<more>(1)."
 
 #. type: Plain text

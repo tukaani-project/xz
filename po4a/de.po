@@ -3877,7 +3877,7 @@ msgstr "B<PAGER>"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1:60
-msgid "If B<PAGER> is set, it's value is used as the pager instead of B<more>(1)."
+msgid "If B<PAGER> is set, its value is used as the pager instead of B<more>(1)."
 msgstr "Falls die Umgebungsvariable B<PAGER> gesetzt ist, wird diese als Pager (Textanzeigeprogramm) anstelle von B<more>(1) verwendet."
 
 #. type: Plain text

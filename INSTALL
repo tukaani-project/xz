@@ -353,15 +353,15 @@ XZ Utils Installation
                 with --docdir=DIR.
 
     --disable-assembler
-                liblzma includes some assembler optimizations. Currently
-                there is only assembler code for CRC32 and CRC64 for
-                32-bit x86.
+                This disables CRC32 and CRC64 assembly code on
+                32-bit x86. This option currently does nothing
+                on other architectures (not even on x86-64).
 
-                All the assembler code in liblzma is position-independent
-                code, which is suitable for use in shared libraries and
-                position-independent executables. So far only i386
-                instructions are used, but the code is optimized for i686
-                class CPUs. If you are compiling liblzma exclusively for
+                The 32-bit x86 assembly is position-independent code
+                which is suitable for use in shared libraries and
+                position-independent executables. It uses only i386
+                instructions but the code is optimized for i686 class
+                CPUs. If you are compiling liblzma exclusively for
                 pre-i686 systems, you may want to disable the assembler
                 code.
 

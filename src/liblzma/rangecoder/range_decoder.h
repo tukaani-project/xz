@@ -24,8 +24,8 @@
 // Bitwise-or of the following enable branchless C versions:
 //   0x01   normal bittrees
 //   0x02   fixed-sized reverse bittrees
-//   0x04   variable-sized reverse bittrees (disabled by default, not faster?)
-//   0x08   matched literal (disabled by default, not faster?)
+//   0x04   variable-sized reverse bittrees (not faster)
+//   0x08   matched literal (not faster)
 //
 // GCC & Clang compatible x86-64 inline assembly:
 //   0x010   normal bittrees
@@ -36,12 +36,19 @@
 //
 // The default can be overridden at build time by defining
 // LZMA_RANGE_DECODER_CONFIG to the desired mask.
+//
+// 2024-02-22: Feedback from benchmarks:
+//   - Brancless C (0x003) can be better than basic on x86-64 but often it's
+//     slightly worse on other archs. Since asm is much better on x86-64,
+//     branchless C is not used at all.
+//   - With x86-64 asm, there are slight differences between GCC and Clang
+//     and different processors. Overall 0x1F0 seems to be the best choice.
 #ifndef LZMA_RANGE_DECODER_CONFIG
 #	if defined(__x86_64__) && !defined(__ILP32__) \
 			&& (defined(__GNUC__) || defined(__clang__))
 #		define LZMA_RANGE_DECODER_CONFIG 0x1F0
 #	else
-#		define LZMA_RANGE_DECODER_CONFIG 0x03
+#		define LZMA_RANGE_DECODER_CONFIG 0
 #	endif
 #endif
 

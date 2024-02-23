@@ -330,11 +330,11 @@ sandbox_enable_strict_if_allowed(
 			CAP_WRITE)))
 		goto error;
 
-	if (cap_rights_limit(user_abort_pipe[0], cap_rights_init(&rights,
+	if (cap_rights_limit(pipe_event_fd, cap_rights_init(&rights,
 			CAP_EVENT)))
 		goto error;
 
-	if (cap_rights_limit(user_abort_pipe[1], cap_rights_init(&rights,
+	if (cap_rights_limit(pipe_write_fd, cap_rights_init(&rights,
 			CAP_WRITE)))
 		goto error;
 

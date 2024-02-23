@@ -42,7 +42,8 @@ check_PROGRAMS = \
 	test_bcj_exact_size \
 	test_memlimit \
 	test_lzip_decoder \
-	test_vli
+	test_vli \
+	test_microlzma
 
 TESTS = \
 	test_check \
@@ -57,6 +58,7 @@ TESTS = \
 	test_memlimit \
 	test_lzip_decoder \
 	test_vli \
+	test_microlzma \
 	test_files.sh \
 	test_suffix.sh \
 	test_compress_prepared_bcj_sparc \

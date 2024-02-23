@@ -819,6 +819,10 @@ if(MICROLZMA_DECODER)
     target_sources(liblzma PRIVATE src/liblzma/common/microlzma_decoder.c)
 endif()
 
+if (MICROLZMA_ENCODER OR MICROLZMA_DECODER)
+    add_compile_definitions(HAVE_MICROLZMA)
+endif()
+
 
 #############################
 # lzip (.lz) format support #

@@ -304,8 +304,13 @@ AC_ARG_ENABLE([microlzma], AS_HELP_STRING([--disable-microlzma],
 		for example, erofs-utils.]),
 	[], [enable_microlzma=yes])
 case $enable_microlzma in
-	yes | no)
-		AC_MSG_RESULT([$enable_microlzma])
+	yes)
+		AC_DEFINE([HAVE_MICROLZMA], [1],
+			[Define to 1 if MicroLZMA support is enabled.])
+		AC_MSG_RESULT([yes])
+		;;
+	no)
+		AC_MSG_RESULT([no])
 		;;
 	*)
 		AC_MSG_RESULT([])

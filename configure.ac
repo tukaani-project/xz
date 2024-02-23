@@ -1104,6 +1104,14 @@ AC_MSG_CHECKING([if ARM64 CRC32 instruction is usable])
 AS_IF([test "x$enable_arm64_crc32" = xno], [
 	AC_MSG_RESULT([no, --disable-arm64-crc32 was used])
 ], [
+	# Set -Werror here because some versions of Clang (14 and older)
+	# do not report the unsupported __attribute__((__target__("+crc")))
+	# or __crc32d() as an error, only as a warning. This does not need
+	# to be done with CMake because tests will attempt to link and the
+	# error will be reported then.
+	OLD_CFLAGS="$CFLAGS"
+	CFLAGS="$CFLAGS -Werror"
+
 	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <arm_acle.h>
 #include <stdint.h>
@@ -1124,6 +1132,8 @@ uint32_t my_crc(uint32_t a, uint64_t b)
 		enable_arm64_crc32=no
 	])
 	AC_MSG_RESULT([$enable_arm64_crc32])
+
+	CFLAGS="$OLD_CFLAGS"
 ])
 
 # Check for ARM64 CRC32 instruction runtime detection.

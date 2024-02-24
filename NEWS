@@ -2,6 +2,149 @@
 XZ Utils Release Notes
 ======================
 
+5.6.0 (2024-02-24)
+
+    This bumps the minor version of liblzma because new features were
+    added. The API and ABI are still backward compatible with liblzma
+    5.4.x and 5.2.x and 5.0.x.
+
+    NOTE: As described in the NEWS for 5.5.2beta, the core components
+    are now under the BSD Zero Clause License (0BSD).
+
+    Since 5.5.2beta:
+
+    * liblzma:
+
+        - Disabled the branchless C variant in the LZMA decoder based
+          on the benchmark results from the community.
+
+        - Disabled x86-64 inline assembly on x32 to fix the build.
+
+    * Sandboxing support in xz:
+
+        - Landlock is now used even when xz needs to create files.
+          In this case the sandbox is has to be more permissive than
+          when no files need to be created. A similar thing was
+          already in use with pledge(2) since 5.3.4alpha.
+
+        - Landlock and pledge(2) are now stricter when reading from
+          more than one input file and only writing to standard output.
+
+        - Added support for Landlock ABI version 4.
+
+    * CMake:
+
+        - Default to -O2 instead of -O3 with CMAKE_BUILD_TYPE=Release.
+          -O3 is not useful for speed and makes the code larger.
+
+        - Now builds lzmainfo and lzmadec.
+
+        - xzdiff, xzgrep, xzless, xzmore, and their symlinks are now
+          installed. The scripts are also tested during "make test".
+
+        - Added translation support for xz, lzmainfo, and the
+          man pages.
+
+        - Applied the symbol versioning workaround for MicroBlaze that
+          is used in the Autotools build.
+
+        - The general XZ Utils and liblzma API documentation is now
+          installed.
+
+        - The CMake component names were changed a little and several
+          were added. liblzma_Runtime and liblzma_Development are
+          unchanged.
+
+        - Minimum required CMake version is now 3.14. However,
+          translation support is disabled with CMake versions
+          older than 3.20.
+
+        - The CMake-based build is now close to feature parity with the
+          Autotools-based build. Most importantly a few tests aren't
+          run yet. Testing the CMake-based build on different operating
+          systems would be welcome now. See the comment at the top of
+          CMakeLists.txt.
+
+    * Fixed a bug in the Autotools feature test for ARM64 CRC32
+      instruction support for old versions of Clang. This did not
+      affect the CMake build.
+
+    * Windows:
+
+        - The build instructions in INSTALL and windows/INSTALL*.txt
+          were revised completely.
+
+        - windows/build-with-cmake.bat along with the instructions
+          in windows/INSTALL-MinGW-w64_with_CMake.txt should make
+          it very easy to build liblzma.dll and xz.exe on Windows
+          using CMake and MinGW-w64 with either GCC or Clang/LLVM.
+
+        - windows/build.bash was updated. It now works on MSYS2 and
+          on GNU/Linux (cross-compiling) to create a .zip and .7z
+          package for 32-bit and 64-bit x86 using GCC + MinGW-w64.
+
+    * The TODO file is no longer installed as part of the
+      documentation. The file is out of date and does not reflect
+      the actual tasks that will be completed in the future.
+
+    * Translations:
+
+        - Translated lzmainfo man pages are now installed. These
+          had been forgotten in earlier versions.
+
+        - Updated Croatian, Esperanto, German, Hungarian, Korean,
+          Polish, Romanian, Spanish, Swedish, Vietnamese, and Ukrainian
+          translations.
+
+        - Updated German, Korean, Romanian, and Ukrainian man page
+          translations.
+
+    * Added a few tests.
+
+    Summary of new features added in the 5.5.x development releases:
+
+    * liblzma:
+
+        - LZMA decoder: Speed optimizations to the C code and
+          added GCC & Clang compatible inline assembly for x86-64.
+
+        - Added lzma_mt_block_size() to recommend a Block size for
+          multithreaded encoding.
+
+        - Added CLMUL-based CRC32 on x86-64 and E2K with runtime
+          processor detection. Similar to CRC64, on 32-bit x86 it
+          isn't available unless --disable-assembler is used.
+
+        - Optimized the CRC32 calculation on ARM64 platforms using the
+          CRC32 instructions. Runtime detection for the instruction is
+          used on GNU/Linux, FreeBSD, Windows, and macOS. If the
+          compiler flags indicate unconditional CRC32 instruction
+          support (+crc) then the generic version is not built.
+
+        - Added definitions of mask values like
+          LZMA_INDEX_CHECK_MASK_CRC32 to <lzma/index.h>.
+
+    * xz:
+
+        - Multithreaded mode is now the default. This improves
+          compression speed and creates .xz files that can be
+          decompressed in multithreaded mode. The downsides are
+          increased memory usage and slightly worse compression ratio.
+
+        - Added a new command line option --filters to set the filter
+          chain using the liblzma filter string syntax.
+
+        - Added new command line options --filters1 ... --filters9 to
+          set additional filter chains using the liblzma filter string
+          syntax. The --block-list option now allows specifying filter
+          chains that were set using these new options.
+
+        - Ported the command line tools to Windows MSVC.
+          Visual Studio 2015 or later is required.
+
+    * Added lz4 support to xzdiff/xzcmp and xzgrep.
+
+
 5.5.2beta (2024-02-14)
 
     * Licensing change: The core components are now under the

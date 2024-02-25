@@ -273,7 +273,7 @@ endif()
 # Translation support requires CMake 3.20 because it added the Intl::Intl
 # target so we don't need to play with the individual variables.
 #
-# The defintion ENABLE_NLS is added only to those targets that use it, thus
+# The definition ENABLE_NLS is added only to those targets that use it, thus
 # it's not done here. (xz has translations, xzdec doesn't.)
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
     find_package(Intl)

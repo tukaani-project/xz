@@ -23,7 +23,7 @@ XZ Utils Release Notes
     * Sandboxing support in xz:
 
         - Landlock is now used even when xz needs to create files.
-          In this case the sandbox is has to be more permissive than
+          In this case the sandbox has to be more permissive than
           when no files need to be created. A similar thing was
           already in use with pledge(2) since 5.3.4alpha.
 

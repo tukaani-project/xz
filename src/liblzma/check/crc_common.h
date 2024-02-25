@@ -67,6 +67,8 @@
 #undef CRC32_ARM64
 #undef CRC64_ARM64_CLMUL
 
+#undef CRC32_LOONGARCH
+
 #undef CRC_USE_IFUNC
 
 #undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
@@ -126,6 +128,15 @@
 #		endif
 */
 #	endif
+#endif
+
+// Only 64-bit LoongArch is supported now, thus no runtime detection is
+// needed because the LoongArch specification says CRC32 instructions are
+// a part of the Basic Integer Instructions and they shall be implemented
+// by 64-bit LoongArch implementations.
+#if defined(HAVE_LOONGARCH_CRC32)
+#	define CRC32_ARCH_OPTIMIZED 1
+#	define CRC32_LOONGARCH 1
 #endif
 
 // For CRC32 use the generic slice-by-eight implementation if no optimized

@@ -327,6 +327,7 @@ add_library(liblzma
     src/liblzma/check/crc_common.h
     src/liblzma/check/crc_x86_clmul.h
     src/liblzma/check/crc32_arm64.h
+    src/liblzma/check/crc32_loongarch.h
     src/liblzma/common/block_util.c
     src/liblzma/common/common.c
     src/liblzma/common/common.h
@@ -1153,6 +1154,33 @@ if(ALLOW_ARM64_CRC32)
         # sysctlbyname("hw.optional.armv8_crc32", ...).
         check_symbol_exists(sysctlbyname sys/sysctl.h HAVE_SYSCTLBYNAME)
         tuklib_add_definition_if(liblzma HAVE_SYSCTLBYNAME)
+    endif()
+endif()
+
+# LoongArch CRC32 Intrinsics are in larchintrin.h.
+# These are supported by at least GCC and Clang.
+option(ALLOW_LOONGARCH_CRC32 "Allow LoongArch CRC32 instruction if \
+supported by the system" ON)
+
+if(ALLOW_LOONGARCH_CRC32)
+    check_c_source_compiles("
+            // As at now only 64-bit LoongArch is supported.
+            #if !(defined(__loongarch__) && __loongarch_grlen >= 64)
+            #   error LoongArch CRC32 only supported on 64-bit LoongArch
+            #endif
+
+            #include <larchintrin.h>
+
+            int my_crc(int word, int crc)
+            {
+                return __crc_w_w_w(word, crc);
+            }
+            int main(void) { return 0; }
+        "
+        HAVE_LOONGARCH_CRC32)
+
+    if(HAVE_LOONGARCH_CRC32)
+        target_compile_definitions(liblzma PRIVATE HAVE_LOONGARCH_CRC32)
     endif()
 endif()
 

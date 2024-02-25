@@ -394,6 +394,16 @@ AC_ARG_ENABLE([arm64-crc32], AS_HELP_STRING([--disable-arm64-crc32],
 	[], [enable_arm64_crc32=yes])
 
 
+################################
+# LoongArch CRC32 Instructions #
+################################
+
+AC_ARG_ENABLE([loongarch-crc32], AS_HELP_STRING([--disable-loongarch-crc32],
+		[Do not use LoongArch CRC32 instructions even if support for it
+		is detected.]),
+	[], [enable_loongarch_crc32=yes])
+
+
 #####################
 # Size optimization #
 #####################
@@ -1150,6 +1160,43 @@ uint32_t my_crc(uint32_t a, uint64_t b)
 # sysctlbyname("hw.optional.armv8_crc32", ...).
 AS_IF([test "x$enable_arm64_crc32" = xyes], [
 	AC_CHECK_FUNCS([getauxval elf_aux_info sysctlbyname])
+])
+
+# LoongArch Intrinsics define CRC32 functions in larchintrin.h.
+# These are supported by at least GCC and Clang.
+AC_MSG_CHECKING([if LoongArch CRC32 instruction is usable])
+AS_IF([test "x$enable_loongarch_crc32" = xno], [
+	AC_MSG_RESULT([no, --disable-loongarch-crc32 was used])
+], [
+	# Set -Werror here because -Wimplicit-function-declaration was
+	# only a warning in GCC <= 13. This does not need to be done
+	# with CMake because tests will attempt to link and the error
+	# will be reported then.
+	OLD_CFLAGS="$CFLAGS"
+	CFLAGS="$CFLAGS -Werror"
+
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+// As at now only 64-bit LoongArch is supported.
+#if !(defined(__loongarch__) && __loongarch_grlen >= 64)
+#	error
+#endif
+
+#include <larchintrin.h>
+int my_crc(int word, int crc)
+{
+	return __crc_w_w_w(word, crc);
+}
+	]])], [
+		AC_DEFINE([HAVE_LOONGARCH_CRC32], [1],
+			[Define to 1 if LoongArch CRC32 instruction is supported.
+			See configure.ac for details.])
+		enable_loongarch_crc32=yes
+	], [
+		enable_loongarch_crc32=no
+	])
+	AC_MSG_RESULT([$enable_loongarch_crc32])
+
+	CFLAGS="$OLD_CFLAGS"
 ])
 
 

@@ -19,6 +19,8 @@
 #	include "crc_x86_clmul.h"
 #elif defined(CRC32_ARM64)
 #	include "crc32_arm64.h"
+#elif defined(CRC32_LOONGARCH)
+#   include "crc32_loongarch.h"
 #endif
 
 

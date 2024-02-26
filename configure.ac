@@ -1177,12 +1177,37 @@ AS_CASE([$enable_sandbox],
 )
 AS_CASE([$enable_sandbox],
 	[auto | landlock], [
-		AC_CHECK_HEADERS([linux/landlock.h], [
+		AC_MSG_CHECKING([if Linux Landlock is usable])
+
+		# A compile check is done here because some systems have
+		# linux/landlock.h, but do not have the syscalls defined
+		# in order to actually use Linux Landlock.
+		AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+			#include <linux/landlock.h>
+			#include <sys/syscall.h>
+			#include <sys/prctl.h>
+
+			void my_sandbox(void)
+			{
+				(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
+				(void)SYS_landlock_create_ruleset;
+				(void)SYS_landlock_restrict_self;
+				(void)LANDLOCK_CREATE_RULESET_VERSION;
+				return;
+			}
+		]])], [
 			enable_sandbox=found
 
 			AS_CASE([$CFLAGS], [*-fsanitize=*], [AC_MSG_ERROR([
     CFLAGS contains '-fsanitize=' which is incompatible with the Landlock
     sandboxing. Use --disable-sandbox when using '-fsanitize'.])])
+
+			AC_DEFINE([HAVE_LINUX_LANDLOCK], [1],
+				[Define to 1 if Linux Landlock is supported.
+				See configure.ac for details.])
+			AC_MSG_RESULT([yes])
+		], [
+			AC_MSG_RESULT([no])
 		])
 	]
 )

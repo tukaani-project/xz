@@ -67,6 +67,7 @@ coverage
 /tests/test_index
 /tests/test_index_hash
 /tests/test_lzip_decoder
+/tests/test_microlzma
 /tests/test_memlimit
 /tests/test_stream_flags
 /tests/test_vli

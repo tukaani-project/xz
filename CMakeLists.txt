@@ -901,10 +901,29 @@ endif()
 
 # Sandboxing: Landlock
 if(NOT SANDBOX_FOUND AND ENABLE_SANDBOX MATCHES "^ON$|^landlock$")
-    check_include_file(linux/landlock.h HAVE_LINUX_LANDLOCK_H)
+    # A compile check is done here because some systems have
+    # linux/landlock.h, but do not have the syscalls defined
+    # in order to actually use Linux Landlock.
+    check_c_source_compiles("
+        #include <linux/landlock.h>
+        #include <sys/syscall.h>
+        #include <sys/prctl.h>
+.
+        void my_sandbox(void)
+        {
+            (void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
+            (void)SYS_landlock_create_ruleset;
+            (void)SYS_landlock_restrict_self;
+            (void)LANDLOCK_CREATE_RULESET_VERSION;
+            return;
+        }
 
-    if(HAVE_LINUX_LANDLOCK_H)
-        set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK_H")
+        int main(void) { return 0; }
+        "
+    HAVE_LINUX_LANDLOCK)
+
+    if(HAVE_LINUX_LANDLOCK)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK")
         set(SANDBOX_FOUND ON)
 
         # Of our three sandbox methods, only Landlock is incompatible

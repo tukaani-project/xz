@@ -581,7 +581,7 @@ coder_set_compression_settings(void)
 
 			if (memory_usage <= memory_limit) {
 				// The memory usage is now low enough.
-				message(V_WARNING, _("Reduced the number of "
+				message(V_DEBUG, _("Reduced the number of "
 					"threads from %s to %s to not exceed "
 					"the memory usage limit of %s MiB"),
 					uint64_to_str(
@@ -601,7 +601,7 @@ coder_set_compression_settings(void)
 		// time the soft limit will never make xz fail and never make
 		// xz change settings that would affect the compressed output.
 		if (hardware_memlimit_mtenc_is_default()) {
-			message(V_WARNING, _("Reduced the number of threads "
+			message(V_DEBUG, _("Reduced the number of threads "
 				"from %s to one. The automatic memory usage "
 				"limit of %s MiB is still being exceeded. "
 				"%s MiB of memory is required. "

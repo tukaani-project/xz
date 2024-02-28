@@ -307,19 +307,69 @@ hardware_memlimit_show(void)
 }
 
 
+#ifdef __linux__
+static uint64_t
+get_available_ram(void)
+{
+	FILE *f = fopen("/proc/meminfo", "r");
+	if (f == NULL)
+		return 0;
+
+	// The information is near the very beginning of the file.
+	char buf[256];
+
+	// Read one byte less than sizeof(buf) to leave room for '\0'.
+	const size_t size = fread(buf, 1, sizeof(buf) - 1, f);
+	(void)fclose(f);
+
+	buf[size] = '\0';
+
+	const char needle[] = "\nMemAvailable:";
+	char *str = strstr(buf, needle);
+	if (str == NULL)
+		return 0;
+
+	// Skip the needle.
+	str += sizeof(needle) - 1;
+
+	// Skip spaces.
+	while (*str == ' ')
+		++str;
+
+	// Here it seems safe enough to assume that there won't be
+	// an integer overflow or at least it won't cause big trouble.
+	uint64_t ret = 0;
+	while (*str >= '0' && *str <= '9')
+		ret = ret * 10 + (uint64_t)(*str++ - '0');
+
+	// The value should end with " kB" so check for the space.
+	if (*str != ' ')
+		return 0;
+
+	return 1024 * ret;
+}
+#endif
+
+
 extern void
 hardware_init(void)
 {
+	uint64_t available_ram = 0;
+#ifdef __linux__
+	available_ram = get_available_ram();
+#endif
+
 	// Get the amount of RAM. If we cannot determine it,
 	// use the assumption defined by the configure script.
 	total_ram = lzma_physmem();
 	if (total_ram == 0)
 		total_ram = (uint64_t)(ASSUME_RAM) * 1024 * 1024;
 
-	// FIXME? There may be better methods to determine the default value.
-	// One Linux-specific suggestion is to use MemAvailable from
-	// /proc/meminfo as the starting point.
-	memlimit_mt_default = total_ram / 4;
+	// Use 75 % of currently-available RAM or 25 % of total RAM
+	// as the default value.
+	memlimit_mt_default = available_ram != 0
+			? available_ram - available_ram / 4
+			: total_ram / 4;
 
 #if SIZE_MAX == UINT32_MAX
 	// A too high value may cause 32-bit xz to run out of address space.

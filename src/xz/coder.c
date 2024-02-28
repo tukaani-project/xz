@@ -581,6 +581,13 @@ coder_set_compression_settings(void)
 
 			if (memory_usage <= memory_limit) {
 				// The memory usage is now low enough.
+				//
+				// Since 5.6.1: This is only shown at
+				// V_DEBUG instead of V_WARNING because
+				// changing the number of threads doesn't
+				// affect the output. On some systems this
+				// message would be too common now that
+				// multithreaded compression is the default.
 				message(V_DEBUG, _("Reduced the number of "
 					"threads from %s to %s to not exceed "
 					"the memory usage limit of %s MiB"),
@@ -600,6 +607,9 @@ coder_set_compression_settings(void)
 		// way -T0 won't use insane amount of memory but at the same
 		// time the soft limit will never make xz fail and never make
 		// xz change settings that would affect the compressed output.
+		//
+		// Since 5.6.1: Like above, this is now shown at V_DEBUG
+		// instead of V_WARNING.
 		if (hardware_memlimit_mtenc_is_default()) {
 			message(V_DEBUG, _("Reduced the number of threads "
 				"from %s to one. The automatic memory usage "

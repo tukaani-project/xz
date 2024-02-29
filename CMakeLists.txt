@@ -278,8 +278,33 @@ endif()
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
     find_package(Intl)
     find_package(Gettext)
+
     if(Intl_FOUND)
         option(ENABLE_NLS "Native Language Support (translated messages)" ON)
+
+        # If translation support is enabled but neither gettext tools or
+        # pre-generated .gmo files exist, translation support cannot be
+        # enabled.
+        #
+        # The detection of pre-generated .gmo files is done by only
+        # checking for the existence of a single .gmo file; Ukrainian
+        # is one of many translations that gets regular updates.
+        if(ENABLE_NLS AND NOT GETTEXT_FOUND AND
+                NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
+            # This only sets the variable, not the cache variable!
+            set(ENABLE_NLS OFF)
+
+            # This message is shown only when new enough CMake is used and
+            # library support for translations was found. The assumptions is
+            # that in this situation the user might have interest in the
+            # translations. This also keeps this code simpler.
+            message(WARNING "Native language support (NLS) has been disabled. "
+                            "NLS support requires either gettext tools or "
+                            "pre-generated .gmo files. The latter are only "
+                            "available in distribution tarballs. "
+                            "To avoid this warning, NLS can be explicitly "
+                            "disabled by passing -DENABLE_NLS=OFF to cmake.")
+        endif()
 
         # The *installed* name of the translation files is "xz.mo".
         set(TRANSLATION_DOMAIN "xz")

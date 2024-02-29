@@ -306,6 +306,15 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
                             "disabled by passing -DENABLE_NLS=OFF to cmake.")
         endif()
 
+        # Warn if NLS is enabled but translated man pages are missing.
+        if(UNIX AND ENABLE_NLS AND
+                NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
+            message(WARNING "Native language support (NLS) has been enabled "
+                            "but pre-generated translated man pages "
+                            "were not found and thus they won't be installed. "
+                            "Run 'po4a/update-po' to generate them.")
+        endif()
+
         # The *installed* name of the translation files is "xz.mo".
         set(TRANSLATION_DOMAIN "xz")
     endif()

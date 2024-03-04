@@ -1082,6 +1082,13 @@ if(USE_ATTR_IFUNC STREQUAL "auto")
             #endif
 
             static void func(void) { return; }
+
+            /*
+            * The attribute __no_profile_instrument_function__ is
+            * needed with GCC to prevent improper instrumentation in
+            * the ifunc resolver.
+            */
+            __attribute__((__no_profile_instrument_function__))
             static void (*resolve_func(void)) (void) { return func; }
             void func_ifunc(void)
                     __attribute__((__ifunc__(\"resolve_func\")));

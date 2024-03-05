@@ -116,7 +116,7 @@ AUIPC with rd != x0
         Zfh, F, D, and Q:
           * RV32I: LB, LH, LW, LBU, LHU, SB, SH, SW
           * RV64I has also: LD, LWU, SD
-          * Zhf: FLH, FSH
+          * Zfh: FLH, FSH
           * F: FLW, FSW
           * D: FLD, FSD
           * Q: FLQ, FSQ

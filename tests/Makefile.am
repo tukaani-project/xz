@@ -42,8 +42,7 @@ check_PROGRAMS = \
 	test_bcj_exact_size \
 	test_memlimit \
 	test_lzip_decoder \
-	test_vli \
-	test_microlzma
+	test_vli
 
 TESTS = \
 	test_check \
@@ -58,7 +57,6 @@ TESTS = \
 	test_memlimit \
 	test_lzip_decoder \
 	test_vli \
-	test_microlzma \
 	test_files.sh \
 	test_suffix.sh \
 	test_compress_prepared_bcj_sparc \
@@ -66,6 +64,11 @@ TESTS = \
 	test_compress_generated_abc \
 	test_compress_generated_random \
 	test_compress_generated_text
+
+if COND_MICROLZMA
+check_PROGRAMS += test_microlzma
+TESTS += test_microlzma
+endif
 
 if COND_SCRIPTS
 TESTS += test_scripts.sh

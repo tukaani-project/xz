@@ -853,10 +853,6 @@ if(MICROLZMA_DECODER)
     target_sources(liblzma PRIVATE src/liblzma/common/microlzma_decoder.c)
 endif()
 
-if (MICROLZMA_ENCODER OR MICROLZMA_DECODER)
-    add_compile_definitions(HAVE_MICROLZMA)
-endif()
-
 
 #############################
 # lzip (.lz) format support #
@@ -2044,10 +2040,19 @@ if(BUILD_TESTING)
         test_index_hash
         test_lzip_decoder
         test_memlimit
-        test_microlzma
         test_stream_flags
         test_vli
     )
+
+    # MicroLZMA encoder is needed for both encoder and decoder tests.
+    # If MicroLZMA decoder is not configured but LZMA1 decoder is, then
+    # test_microlzma will fail to compile because this configuration is
+    # not possible in the Autotools build, so the test was not made to
+    # support it since it would have required additional changes.
+    if (MICROLZMA_ENCODER AND (MICROLZMA_DECODER
+            OR NOT "lzma1" IN_LIST DECODERS))
+        list(APPEND LIBLZMA_TESTS test_microlzma)
+    endif()
 
     foreach(TEST IN LISTS LIBLZMA_TESTS)
         add_executable("${TEST}" "tests/${TEST}.c")

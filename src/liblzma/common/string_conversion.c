@@ -218,12 +218,14 @@ typedef struct {
 	uint16_t offset;
 
 	union {
+// NVHPC has problems with unions that contain pointers that are not the first
+// members
+		const name_value_map *map;
+
 		struct {
 			uint32_t min;
 			uint32_t max;
 		} range;
-
-		const name_value_map *map;
 	} u;
 } option_map;
 

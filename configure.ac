@@ -714,14 +714,17 @@ elif test "x$enable_shared" = xno ; then
 	enable_symbol_versions=no
 	AC_MSG_RESULT([no (not building a shared library)])
 else
+	# "yes" means that symbol version are to be used but we need to
+	# autodetect which variant to use.
 	if test "x$enable_symbol_versions" = xyes ; then
 		case "$host_cpu-$host_os" in
 			microblaze*)
-				# GCC 12 on MicroBlaze doesn't support __symver__
-				# attribute. It's simplest and safest to use the
-				# generic version on that platform since then only
-				# the linker script is needed. The RHEL/CentOS 7
-				# compatibility symbols don't matter on MicroBlaze.
+				# GCC 12 on MicroBlaze doesn't support
+				# __symver__ attribute. It's simplest and
+				# safest to use the generic version on that
+				# platform since then only the linker script
+				# is needed. The RHEL/CentOS 7 compatibility
+				# symbols don't matter on MicroBlaze.
 				enable_symbol_versions=generic
 				;;
 			*-linux*)
@@ -766,8 +769,7 @@ else
 			used together with liblzma_linux.map.])
 	elif test "x$enable_symbol_versions" != xgeneric ; then
 		AC_MSG_RESULT([])
-		AC_MSG_ERROR(
-			[unknown symbol versioning variant '$enable_symbol_versions'])
+		AC_MSG_ERROR([unknown symbol versioning variant '$enable_symbol_versions'])
 	fi
 	AC_MSG_RESULT([yes ($enable_symbol_versions)])
 fi

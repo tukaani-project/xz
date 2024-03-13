@@ -271,8 +271,26 @@ if(NOT WIN32)
         # This includes a few extra compatibility symbols for RHEL/CentOS 7
         # which are pointless on non-glibc non-Linux systems.
         #
-        # FIXME? Avoid symvers on Linux with non-glibc like musl?
-        set(SYMBOL_VERSIONING_DEFAULT "linux")
+        # Avoid symvers on Linux with non-glibc like musl and uClibc.
+        # In Autoconf it's enough to check that $host_os equals linux-gnu
+        # instead of, for example, linux-musl. CMake doesn't provide such
+        # a method.
+        #
+        # This check is here for now since it's not strictly required
+        # by anything else.
+        check_c_source_compiles(
+                "#include <features.h>
+                #if defined(__GLIBC__) && !defined(__UCLIBC__)
+                int main(void) { return 0; }
+                #else
+                compile error
+                #endif
+            "
+            IS_LINUX_WITH_GLIBC)
+
+        if(IS_LINUX_WITH_GLIBC)
+            set(SYMBOL_VERSIONING_DEFAULT "linux")
+        endif()
 
     elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
         set(SYMBOL_VERSIONING_DEFAULT "generic")

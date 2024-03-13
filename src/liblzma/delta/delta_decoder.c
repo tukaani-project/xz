@@ -26,6 +26,8 @@ decode_buffer(lzma_delta_coder *coder, uint8_t *buffer, size_t size)
 }
 
 
+// For an unknown reason NVIDIA HPC Compiler needs this pragma
+// to produce working code.
 #ifdef __NVCOMPILER
 #	pragma routine novector
 #endif

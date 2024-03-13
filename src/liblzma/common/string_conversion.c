@@ -218,8 +218,8 @@ typedef struct {
 	uint16_t offset;
 
 	union {
-// NVHPC has problems with unions that contain pointers that are not the first
-// members
+		// NVHPC has problems with unions that contain pointers that
+		// are not the first members, so keep "map" at the top.
 		const name_value_map *map;
 
 		struct {

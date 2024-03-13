@@ -333,6 +333,46 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build liblzma as a shared library instead of static")
 
+if(NOT WIN32)
+    # Symbol versioning only affects ELF shared libraries. The option is
+    # ignored for static libraries.
+    #
+    # Determine the default value so that it's always set with
+    # shared libraries in mind which helps if the build dir is reconfigured
+    # from static to shared libs without resetting the cache variables.
+    set(SYMBOL_VERSIONING_DEFAULT OFF)
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND
+            CMAKE_SYSTEM_PROCESSOR MATCHES "[Mm]icro[Bb]laze")
+        # As a special case, GNU/Linux on MicroBlaze gets the generic
+        # symbol versioning because GCC 12 doesn't support the __symver__
+        # attribute on MicroBlaze. On Linux, CMAKE_SYSTEM_PROCESSOR comes
+        # from "uname -m" for native builds (should be "microblaze") or from
+        # the CMake toolchain file (not perfectly standardized but it very
+        # likely has "microblaze" in lower case or mixed case somewhere in
+        # the string).
+        set(SYMBOL_VERSIONING_DEFAULT "generic")
+
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        # GNU/Linux-specific symbol versioning for shared liblzma.
+        # This includes a few extra compatibility symbols for RHEL/CentOS 7
+        # which are pointless on non-glibc non-Linux systems.
+        #
+        # FIXME? Avoid symvers on Linux with non-glibc like musl?
+        set(SYMBOL_VERSIONING_DEFAULT "linux")
+
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+        set(SYMBOL_VERSIONING_DEFAULT "generic")
+    endif()
+
+    set(SYMBOL_VERSIONING "${SYMBOL_VERSIONING_DEFAULT}" CACHE STRING
+        "Enable ELF shared library symbol versioning (OFF, generic, linux)")
+
+    # Show a dropdown menu in CMake GUI:
+    set_property(CACHE SYMBOL_VERSIONING PROPERTY STRINGS "OFF;generic;linux")
+endif()
+
+
 add_library(liblzma
     src/common/mythread.h
     src/common/sysdefs.h
@@ -1276,22 +1316,7 @@ if(WIN32)
         # Disable __declspec(dllimport) when linking against static liblzma.
         target_compile_definitions(liblzma INTERFACE LZMA_API_STATIC)
     endif()
-elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND
-       NOT CMAKE_SYSTEM_PROCESSOR MATCHES "[Mm]icro[Bb]laze")
-    # GNU/Linux-specific symbol versioning for shared liblzma.
-    # This includes a few extra compatibility symbols for RHEL/CentOS 7
-    # which are pointless on non-glibc non-Linux systems.
-    #
-    # As a special case, GNU/Linux on MicroBlaze gets the generic
-    # symbol versioning because GCC 12 doesn't support the __symver__
-    # attribute on MicroBlaze. On Linux, CMAKE_SYSTEM_PROCESSOR comes
-    # from "uname -m" for native builds (should be "microblaze") or from
-    # the CMake toolchain file (not perfectly standardized but it very
-    # likely has "microblaze" in lower case or mixed case somewhere in
-    # the string).
-    #
-    # FIXME? Avoid symvers on Linux with non-glibc like musl?
-    #
+elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "linux")
     # Note that adding link options doesn't affect static builds
     # but HAVE_SYMBOL_VERSIONS_LINUX must not be used with static builds
     # because it would put symbol versions into the static library which
@@ -1307,10 +1332,7 @@ elseif(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND
     set_target_properties(liblzma PROPERTIES
         LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_linux.map"
     )
-elseif(BUILD_SHARED_LIBS AND (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR
-                              CMAKE_SYSTEM_NAME STREQUAL "Linux"))
-    # Generic symbol versioning for shared liblzma is used on FreeBSD and
-    # also on GNU/Linux on MicroBlaze.
+elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "generic")
     target_link_options(liblzma PRIVATE
         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_generic.map"
     )

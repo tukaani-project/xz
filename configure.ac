@@ -707,13 +707,13 @@ fi
 # --with-pic and --without-pic though. As long as neither --with-pic nor
 # --without-pic is used then we can use #ifdef PIC to detect if the file is
 # being built for a shared library.
-if test "x$enable_symbol_versions" = xno ; then
+AS_IF([test "x$enable_symbol_versions" = xno], [
 	enable_symbol_versions=no
 	AC_MSG_RESULT([no])
-elif test "x$enable_shared" = xno ; then
+], [test "x$enable_shared" = xno], [
 	enable_symbol_versions=no
 	AC_MSG_RESULT([no (not building a shared library)])
-else
+], [
 	# "yes" means that symbol version are to be used but we need to
 	# autodetect which variant to use.
 	if test "x$enable_symbol_versions" = xyes ; then
@@ -728,7 +728,15 @@ else
 				enable_symbol_versions=generic
 				;;
 			*-linux*)
-				enable_symbol_versions=linux
+				# NVIDIA HPC Compiler doesn't support symbol
+				# versioning but the linker script can still
+				# be used.
+				AC_EGREP_CPP([use_generic_symbol_versioning],
+					[#ifdef __NVCOMPILER
+					use_generic_symbol_versioning
+					#endif],
+					[enable_symbol_versions=generic],
+					[enable_symbol_versions=linux])
 				;;
 			*)
 				enable_symbol_versions=generic
@@ -772,7 +780,7 @@ else
 		AC_MSG_ERROR([unknown symbol versioning variant '$enable_symbol_versions'])
 	fi
 	AC_MSG_RESULT([yes ($enable_symbol_versions)])
-fi
+])
 
 AM_CONDITIONAL([COND_SYMVERS_LINUX],
 	[test "x$enable_symbol_versions" = xlinux])

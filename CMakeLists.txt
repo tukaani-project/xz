@@ -256,7 +256,8 @@ if(NOT WIN32)
     set(SYMBOL_VERSIONING_DEFAULT OFF)
 
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND
-            CMAKE_SYSTEM_PROCESSOR MATCHES "[Mm]icro[Bb]laze")
+            (CMAKE_SYSTEM_PROCESSOR MATCHES "[Mm]icro[Bb]laze" OR
+             CMAKE_C_COMPILER_ID STREQUAL "NVHPC"))
         # As a special case, GNU/Linux on MicroBlaze gets the generic
         # symbol versioning because GCC 12 doesn't support the __symver__
         # attribute on MicroBlaze. On Linux, CMAKE_SYSTEM_PROCESSOR comes
@@ -264,6 +265,10 @@ if(NOT WIN32)
         # the CMake toolchain file (not perfectly standardized but it very
         # likely has "microblaze" in lower case or mixed case somewhere in
         # the string).
+        #
+        # NVIDIA HPC Compiler doesn't support symbol versioning but
+        # it uses the linked from the system so the linker script
+        # can still be used to get the generic symbol versioning.
         set(SYMBOL_VERSIONING_DEFAULT "generic")
 
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")

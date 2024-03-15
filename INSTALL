@@ -506,10 +506,45 @@ XZ Utils Installation
                                 sandboxing. If pledge(2) isn't found,
                                 configure will give an error.
 
-    --enable-symbol-versions
-                Use symbol versioning for liblzma. This is enabled by
-                default on GNU/Linux, other GNU-based systems, and
-                FreeBSD.
+    --enable-symbol-versions[=VARIANT]
+                Use symbol versioning for liblzma shared library.
+                This is enabled by default on GNU/Linux (glibc only),
+                other GNU-based systems, and FreeBSD.
+
+                Symbol versioning is never used for static liblzma. This
+                option is ignored when not building a shared library.
+
+                Supported VARIANTs:
+
+                        no      Disable symbol versioning. This is the
+                                same as using --disable-symbol-versions.
+
+                        auto    Autodetect between "no", "linux",
+                                and "generic".
+
+                        yes     Autodetect between "linux" and
+                                "generic". This forces symbol
+                                versioning to be used when
+                                building a shared library.
+
+                        generic Generic version is the default for
+                                FreeBSD and GNU/Linux on MicroBlaze.
+
+                                This is also used on GNU/Linux when
+                                building with NVIDIA HPC Compiler
+                                because the compiler doesn't support
+                                the features required for the "linux"
+                                variant below.
+
+                        linux   Special version for GNU/Linux (glibc
+                                only). This adds a few extra symbol
+                                versions for compatibility with binaries
+                                that have been linked against a liblzma
+                                version that has been patched with
+                                "xz-5.2.2-compat-libs.patch" from
+                                RHEL/CentOS 7. That patch was used
+                                by some build tools outside of
+                                RHEL/CentOS 7 too.
 
     --enable-debug
                 This enables the assert() macro and possibly some other

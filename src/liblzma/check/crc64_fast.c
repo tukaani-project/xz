@@ -98,12 +98,13 @@ typedef uint64_t (*crc64_func_type)(
 #	pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 
-// The funcion attributes are needed for safe IFUNC resolver usage with GCC.
-lzma_resolver_attributes
+#ifdef CRC_USE_IFUNC
+__attribute__((__no_profile_instrument_function__))
+#endif
 static crc64_func_type
 crc64_resolve(void)
 {
-	return  is_arch_extension_supported()
+	return is_arch_extension_supported()
 			? &crc64_arch_optimized : &crc64_generic;
 }
 

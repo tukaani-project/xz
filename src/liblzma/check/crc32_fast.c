@@ -135,12 +135,15 @@ typedef uint32_t (*crc32_func_type)(
 // This resolver is shared between all three dispatch methods. It serves as
 // the ifunc resolver if ifunc is supported, otherwise it is called as a
 // regular function by the constructor or first call resolution methods.
-// The funcion attributes are needed for safe IFUNC resolver usage with GCC.
-lzma_resolver_attributes
+// The __no_profile_instrument_function__ attribute support is checked when
+// determining if ifunc can be used, so it is safe to use here.
+#ifdef CRC_USE_IFUNC
+__attribute__((__no_profile_instrument_function__))
+#endif
 static crc32_func_type
 crc32_resolve(void)
 {
-	return  is_arch_extension_supported()
+	return is_arch_extension_supported()
 			? &crc32_arch_optimized : &crc32_generic;
 }
 

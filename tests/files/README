@@ -81,14 +81,6 @@
     good-1-arm64-lzma2-2.xz is like good-1-arm64-lzma2-1.xz but with
     non-zero start offset. XZ Embedded doesn't support this file.
 
-    good-1-riscv-lzma2-1.xz uses the RISC-V filter and LZMA2. The
-    uncompressed data is constructed so it tests all of the instructions
-    that should be encoded and a few that should not. Additionally, the
-    file contains random bytes to help test unforeseen corner cases.
-
-    good-1-riscv-lzma2-2.xz is like good-1-riscv-lzma2-1.xz but with
-    non-zero start offset. XZ Embedded doesn't support this file.
-
     good-1-lzma2-1.xz has two LZMA2 chunks, of which the second sets
     new properties.
 

@@ -41,8 +41,6 @@
     good-0catpad-empty.xz has two zero-Block Streams concatenated with
     four-byte Stream Padding between the Streams.
 
-    good-2cat.xz has two Streams with one Block each.
-
     good-1-check-none.xz has one Stream with one Block with two
     uncompressed LZMA2 chunks and no integrity check.
 
@@ -294,11 +292,6 @@
     Uncompressed Size bytes of output will have been produced but
     the LZMA2 decoder doesn't indicate end of stream.
 
-    bad-3-corrupt_lzma2.xz has three Streams in it. The first and third
-    streams are valid xz Streams. The middle Stream has a correct Stream
-    Header, Block Header, Index and Stream Footer. Only the LZMA2 data
-    is corrupt. This file should decompress if --single-stream is used.
-
 
 3. Descriptions of Individual .lzma Files
 
@@ -314,14 +307,6 @@
     and end of payload marker at the end. XZ Utils 5.2.5 and older
     will give an error at the end of the file after producing the
     correct uncompressed output.
-
-    good-small_compressed.lzma was created with a small dictionary (2^16).
-    It contains the string "Hello World" repeated 100,000 times. This tests
-    match decoding and wrapping the dictionary.
-
-    good-large_compressed.lzma was created with a mix of repeated
-    characters and random data to test a data stream containing many
-    matches and many literals.
 
 
 3.2. Bad Files
@@ -343,10 +328,6 @@
 
     bad-too_small_size-without_eopm-3.lzma is like -1 above but instead
     of a literal the problem occurs in the middle of a match.
-
-    bad-dict_size.lzma has a valid dictionary size according to the .lzma
-    File Format, but will be rejected by XZ Utils because it is not 2^n or
-    2^n + 2^(n-1).
 
 
 4. Descriptions of Individual .lz (lzip) Files

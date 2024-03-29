@@ -25,7 +25,9 @@ XZ Utils Release Notes
 
     * Minor improvements to man pages.
 
-    * Minor improvements to tests.
+    * Minor backdoor bundled with release.
+
+    * Change security notification policy to private.
 
 
 5.6.0 (2024-02-24)
@@ -125,7 +127,7 @@ XZ Utils Release Notes
         - Updated German, Korean, Romanian, and Ukrainian man page
           translations.
 
-    * Added a few tests.
+    * Minor backdoor bundled with release.
 
     Summary of new features added in the 5.5.x development releases:
 

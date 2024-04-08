@@ -36,9 +36,6 @@ XZ Utils Licensing
         Note: The JavaScript files (under the MIT license) have
         been removed from the Doxygen output.
 
-      - The XZ logo (xz-logo.png) included in the Doxygen-generated
-        documentation is under the Creative Commons BY-SA 4.0 license.
-
       - Translated messages and man pages are under 0BSD except that
         some old translations are in the public domain.
 
@@ -72,8 +69,6 @@ XZ Utils Licensing
       - COPYING.LGPLv2.1: GNU Lesser General Public License version 2.1
       - COPYING.GPLv2: GNU General Public License version 2
       - COPYING.GPLv3: GNU General Public License version 3
-      - COPYING.CC-BY-SA-4.0: Creative Commons Attribution-ShareAlike 4.0
-                              International Public License
 
     A note about old XZ Utils releases:
 

@@ -2,7 +2,7 @@
 The .xz File Format
 ===================
 
-Version 1.2.0 (2024-01-19)
+Version 1.2.1 (2024-04-08)
 
 
         0. Preface
@@ -81,17 +81,21 @@ Version 1.2.0 (2024-01-19)
 0.2. Getting the Latest Version
 
         The latest official version of this document can be downloaded
-        from <https://xz.tukaani.org/format/xz-file-format.txt>.
+        from <https://tukaani.org/xz/xz-file-format.txt>.
 
         Specific versions of this document have a filename
         xz-file-format-X.Y.Z.txt where X.Y.Z is the version number.
         For example, the version 1.0.0 of this document is available
-        at <https://xz.tukaani.org/format/xz-file-format-1.0.0.txt>.
+        at <https://tukaani.org/xz/xz-file-format-1.0.0.txt>.
 
 
 0.3. Version History
 
         Version   Date          Description
+
+        1.2.1     2024-04-08    The URLs of this specification and
+                                XZ Utils were changed back to the
+                                original ones in Sections 0.2 and 7.
 
         1.2.0     2024-01-19    Added RISC-V filter and updated URLs in
                                 Sections 0.2 and 7. The URL of this
@@ -1147,7 +1151,7 @@ Version 1.2.0 (2024-01-19)
         https://tukaani.org/lzma/
 
         XZ Utils - The next generation of LZMA Utils
-        https://xz.tukaani.org/xz-utils/
+        https://tukaani.org/xz/
 
         [RFC-1952]
         GZIP file format specification version 4.3

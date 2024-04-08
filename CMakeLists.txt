@@ -61,7 +61,7 @@ include(cmake/tuklib_mbstr.cmake)
 
 set(PACKAGE_NAME "XZ Utils")
 set(PACKAGE_BUGREPORT "xz@tukaani.org")
-set(PACKAGE_URL "https://xz.tukaani.org/xz-utils/")
+set(PACKAGE_URL "https://tukaani.org/xz/")
 
 # Get the package version from version.h into PACKAGE_VERSION variable.
 file(READ src/liblzma/api/lzma/version.h PACKAGE_VERSION)

@@ -143,7 +143,7 @@
 #define PACKAGE_NAME "XZ Utils"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "https://xz.tukaani.org/xz-utils/"
+#define PACKAGE_URL "https://tukaani.org/xz/"
 
 /* The size of `size_t', as computed by sizeof. */
 #define SIZEOF_SIZE_T 4

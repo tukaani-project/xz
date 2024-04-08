@@ -11,7 +11,8 @@ noinst_PROGRAMS = \
 	memusage \
 	crc32 \
 	known_sizes \
-	hex2bin
+	hex2bin \
+	testfilegen-arm64
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \

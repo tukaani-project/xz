@@ -12,7 +12,7 @@
  *
  * liblzma is part of XZ Utils <https://tukaani.org/xz/>. XZ Utils
  * includes a gzip-like command line tool named xz and some other tools.
- * XZ Utils is developed and maintained by Lasse Collin and Jia Tan.
+ * XZ Utils is developed and maintained by Lasse Collin.
  *
  * Major parts of liblzma are based on code written by Igor Pavlov,
  * specifically the LZMA SDK <https://7-zip.org/sdk.html>.

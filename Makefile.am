@@ -58,7 +58,6 @@ EXTRA_DIST = \
 	po4a \
 	windows \
 	CMakeLists.txt \
-	COPYING.CC-BY-SA-4.0 \
 	COPYING.GPLv2 \
 	COPYING.GPLv3 \
 	COPYING.LGPLv2.1 \
@@ -68,7 +67,6 @@ EXTRA_DIST = \
 	autogen.sh \
 	build-aux/manconv.sh \
 	build-aux/version.sh \
-	doc/xz-logo.png \
 	po/xz.pot-header
 
 ACLOCAL_AMFLAGS = -I m4

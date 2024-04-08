@@ -76,10 +76,23 @@
 
     good-1-arm64-lzma2-1.xz uses the ARM64 filter and LZMA2. The
     uncompressed data is constructed so that it tests integer
-    wrap around and sign extension.
+    wrap around and sign extension. To recreate the file, compress
+    using XZ Utils 5.4.x (newer may or may not work too):
+
+        ./debug/testfilegen-arm64 \
+            | xz -T1 -Ccrc32 --arm64 \
+                             --lzma2=dict=64KiB,lp=2,lc=2 \
+            > good-1-arm64-lzma2-1.xz
 
     good-1-arm64-lzma2-2.xz is like good-1-arm64-lzma2-1.xz but with
     non-zero start offset. XZ Embedded doesn't support this file.
+    To recreate the file, compress using XZ Utils 5.4.x (newer may or
+    may not work too):
+
+        ./debug/testfilegen-arm64 \
+            | xz -T1 -Ccrc32 --arm64=start=4294963200 \
+                             --lzma2=dict=64KiB,lp=2,lc=2 \
+            > good-1-arm64-lzma2-2.xz
 
     good-1-lzma2-1.xz has two LZMA2 chunks, of which the second sets
     new properties.

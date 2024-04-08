@@ -7,9 +7,9 @@
  * format and raw (no headers) streams are supported. Multiple compression
  * algorithms (filters) are supported. Currently LZMA2 is the primary filter.
  *
- * liblzma is part of XZ Utils <https://tukaani.org/xz/>. XZ Utils includes
- * a gzip-like command line tool named xz and some other tools. XZ Utils
- * is developed and maintained by Lasse Collin and Jia Tan.
+ * liblzma is part of XZ Utils <https://tukaani.org/xz/>. XZ Utils
+ * includes a gzip-like command line tool named xz and some other tools.
+ * XZ Utils is developed and maintained by Lasse Collin.
  *
  * Major parts of liblzma are based on Igor Pavlov's public domain LZMA SDK
  * <https://7-zip.org/sdk.html>.

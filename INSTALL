@@ -518,14 +518,6 @@ XZ Utils Installation
                                 calls any liblzma functions from more than
                                 one thread, something bad may happen.
 
-    --enable-ifunc
-                Use __attribute__((__ifunc__())) in liblzma. This is
-                enabled by default on GNU/Linux and FreeBSD.
-
-                The ifunc attribute is incompatible with
-                -fsanitize=address. --disable-ifunc must be used
-                if any -fsanitize= option is specified in CFLAGS.
-
     --enable-sandbox=METHOD
                 There is limited sandboxing support in the xz and xzdec
                 tools. If built with sandbox support, xz uses it

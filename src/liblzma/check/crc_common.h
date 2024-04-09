@@ -67,8 +67,6 @@
 #undef CRC32_ARM64
 #undef CRC64_ARM64_CLMUL
 
-#undef CRC_USE_IFUNC
-
 #undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 
 // ARM64 CRC32 instruction is only useful for CRC32. Currently, only
@@ -109,9 +107,6 @@
 #		define CRC64_ARCH_OPTIMIZED 1
 #		define CRC_X86_CLMUL 1
 
-#		ifdef HAVE_FUNC_ATTRIBUTE_IFUNC
-#			define CRC_USE_IFUNC 1
-#		endif
 /*
 		// The generic code is much faster with 1-8-byte inputs and
 		// has similar performance up to 16 bytes  at least in
@@ -121,9 +116,7 @@
 		// for bigger inputs. It saves a little in code size since
 		// the special cases for 0-16-byte inputs will be omitted
 		// from the CLMUL code.
-#		ifndef CRC_USE_IFUNC
-#			define CRC_USE_GENERIC_FOR_SMALL_INPUTS 1
-#		endif
+#		define CRC_USE_GENERIC_FOR_SMALL_INPUTS 1
 */
 #	endif
 #endif

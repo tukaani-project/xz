@@ -77,25 +77,18 @@ jobs:
             ./build-aux/ci_build.sh -b autotools -p test -f "-m32" -n 32_bit
             cd ../xz_build && make distclean
 
-      # ifunc must be disabled for this test because __attribute__ ifunc is
-      # incompatible with -fsanitize=address.
-      #
-      # The sandbox must also be disabled because it will prevent access to
+      # The sandbox must be disabled because it will prevent access to
       # the /proc/ filesystem on Linux, which is used by the sanitizer's
       # instrumentation.
       - name: Build with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
-        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d ifunc,sandbox
+        run: ./build-aux/ci_build.sh -b autotools -p build -f "-fsanitize=address,undefined" -d sandbox
       - name: Test with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
-            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d ifunc,sandbox
+            ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d sandbox
             cd ../xz_build && make distclean
 
-      # musl libc has some slight differences compared to glibc, including
-      # the lack of ifunc support. This tests if the ifunc detection
-      # functions properly since musl-gcc can compile with ifunc support,
-      # but will fail at runtime.
       - name: Build with musl libc
         if: ${{ matrix.os == 'ubuntu-latest'}}
         run: ./build-aux/ci_build.sh -b ${{ matrix.build_system }} -p build -m "/usr/bin/musl-gcc"

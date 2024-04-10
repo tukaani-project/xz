@@ -37,7 +37,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
             sudo apt-get update
-            sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen musl-tools
+            sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen musl-tools valgrind
 
       # Install Autotools on Mac
       - name: Install Dependencies
@@ -87,6 +87,15 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
             ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d sandbox
+            cd ../xz_build && make distclean
+
+      - name: Build with Valgrind
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        run: ./build-aux/ci_build.sh -b autotools -p build -d sandbox
+      - name: Test with Valgrind
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        run: |
+            ./build-aux/ci_build.sh -b autotools -p test -d sandbox -w "valgrind --quiet --trace-children=yes --exit-on-first-error=yes --error-exitcode=1"
             cd ../xz_build && make distclean
 
       - name: Build with musl libc

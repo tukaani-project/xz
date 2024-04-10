@@ -53,7 +53,7 @@ ARTIFACTS_DIR_NAME="output"
 # Parse arguments #
 ###################
 
-while getopts a:b:c:d:l:m:n:s:p:f:h opt; do
+while getopts a:b:c:d:l:m:n:s:p:f:w:h opt; do
 	# b option can have either value "autotools" OR "cmake"
 	case ${opt} in
 	h)
@@ -107,6 +107,8 @@ while getopts a:b:c:d:l:m:n:s:p:f:h opt; do
 	f)
 		CFLAGS="$OPTARG"
 		export CFLAGS
+	;;
+	w) WRAPPER="$OPTARG"
 	;;
 	esac
 done
@@ -260,7 +262,7 @@ then
 	autotools)
 		cd "$DEST_DIR"
 		# If the tests fail, copy the test logs into the artifacts folder
-		if make check
+		if make check LOG_COMPILER="$WRAPPER"
 		then
 			:
 		else
@@ -271,7 +273,7 @@ then
 	;;
 	cmake)
 		cd "$DEST_DIR"
-		if make test
+		if ${WRAPPER} make test
 		then
 			:
 		else

@@ -84,8 +84,10 @@ is_arch_extension_supported(void)
 #elif defined(HAVE_ELF_AUX_INFO)
 	unsigned long feature_flags;
 
-	elf_aux_info(AT_HWCAP, &feature_flags, sizeof(feature_flags));
-	return feature_flags & HWCAP_CRC32 != 0;
+	if (elf_aux_info(AT_HWCAP, &feature_flags, sizeof(feature_flags)) != 0)
+		return false;
+
+	return (feature_flags & HWCAP_CRC32) != 0;
 
 #elif defined(_WIN32)
 	return IsProcessorFeaturePresent(

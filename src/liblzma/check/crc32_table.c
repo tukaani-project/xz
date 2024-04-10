@@ -28,7 +28,7 @@
 
 
 #if !defined(HAVE_ENCODERS) && (defined(X86_CLMUL_NO_TABLE) \
-		|| defined(ARM64_CRC32_NO_TABLE_))
+		|| defined(ARM64_CRC32_NO_TABLE))
 // No table needed. Use a typedef to avoid an empty translation unit.
 typedef void lzma_crc32_dummy;
 

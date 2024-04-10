@@ -262,7 +262,7 @@ then
 	autotools)
 		cd "$DEST_DIR"
 		# If the tests fail, copy the test logs into the artifacts folder
-		if make check LOG_COMPILER="$WRAPPER"
+		if make check VERBOSE=1 LOG_COMPILER="$WRAPPER"
 		then
 			:
 		else

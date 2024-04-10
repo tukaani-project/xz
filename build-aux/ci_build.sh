@@ -48,6 +48,7 @@ DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
 ARTIFACTS_DIR_NAME="output"
 
+[[ -z ${CFLAGS} ]] && export CFLAGS="-O2"
 
 ###################
 # Parse arguments #
@@ -105,7 +106,7 @@ while getopts a:b:c:d:l:m:n:s:p:f:w:h opt; do
 	p) PHASE="$OPTARG"
 	;;
 	f)
-		CFLAGS="$OPTARG"
+		CFLAGS+=" $OPTARG"
 		export CFLAGS
 	;;
 	w) WRAPPER="$OPTARG"

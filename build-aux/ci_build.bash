@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: 0BSD
-
+set -x
 #############################################################################
 #
 # Script meant to be used for Continuous Integration automation for POSIX
@@ -51,6 +51,18 @@ ARTIFACTS_DIR_NAME="output"
 [[ -z ${CPU_COUNT} ]] && { CPU_COUNT=$(nproc 2>/dev/null || sysctl -n hw.activecpu); }
 [[ -z ${MAKEFLAGS} ]] && export MAKEFLAGS="-j${CPU_COUNT} -l${CPU_COUNT}"
 [[ -z ${CFLAGS} ]] && export CFLAGS="-O2"
+
+# Silly hacks to get brew-installed GCC and Clang on macOS
+if [[ -d /usr/local/bin ]] ; then
+	export PATH="/usr/local/bin:${PATH}"
+	# It's fine if this already exists.
+	ln -s $(ls -1v /usr/local/bin/gcc-* | head -n 1) /usr/local/bin/gcc || true
+fi
+if [[ -d /usr/local/opt/llvm ]] ; then
+	export CPPFLAGS="-I/usr/local/opt/llvm/include ${CPPFLAGS}"
+	export LDFLAGS="-L/usr/local/opt/llvm/lib ${LDFLAGS}"
+	export PATH="/usr/local/opt/llvm/bin:${PATH}"
+fi
 
 ###################
 # Parse arguments #

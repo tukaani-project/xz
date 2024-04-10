@@ -101,10 +101,11 @@ is_arch_extension_supported(void)
 	// CPU feature it tests. The Apple documentation lists the string
 	// "hw.optional.armv8_crc32", which can be found here:
 	// https://developer.apple.com/documentation/kernel/1387446-sysctlbyname/determining_instruction_set_characteristics#3915619
-	int err = sysctlbyname("hw.optional.armv8_crc32", &has_crc32,
-			&size, NULL, 0);
+	if (sysctlbyname("hw.optional.armv8_crc32", &has_crc32,
+			&size, NULL, 0) != 0)
+		return false;
 
-	return !err && has_crc32;
+	return has_crc32;
 
 #else
 	// If a runtime detection method cannot be found, then this must

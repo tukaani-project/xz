@@ -51,7 +51,7 @@ crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 
 	// Align the input buffer because this was shown to be
 	// significantly faster than unaligned accesses.
-	const size_t align_amount = my_min(size, (8 - (uintptr_t)buf) & 7);
+	const size_t align_amount = my_min(size, (0U - (uintptr_t)buf) & 7);
 
 	for (const uint8_t *limit = buf + align_amount; buf < limit; ++buf)
 		crc = __crc32b(crc, *buf);

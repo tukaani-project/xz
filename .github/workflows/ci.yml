@@ -86,6 +86,7 @@ jobs:
       - name: Test with -fsanitize=address,undefined
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
+            export UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1
             ./build-aux/ci_build.sh -b autotools -p test -f "-fsanitize=address,undefined" -d sandbox
             cd ../xz_build && make distclean
 

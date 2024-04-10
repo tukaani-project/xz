@@ -87,29 +87,29 @@ jobs:
       ##################
 
       - name: Build with full features
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -p build
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -p build
       - name: Test with full features
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -p test -n full_features
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -p test -n full_features
 
       - name: Build without threads
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p build
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p test -n no_threads
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p test -n no_threads
 
       - name: Build without encoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p build
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p build
       - name: Test without encoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p test -n no_encoders
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p test -n no_encoders
 
       - name: Build without decoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p build
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p build
       - name: Test without decoders
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p test -n no_decoders
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p test -n no_decoders
 
       - name: Build with only crc32 check
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p build
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p build
       - name: Test with only crc32 check
-        run: ./build-aux/ci_build.sh -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p test -n crc32_only
+        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p test -n crc32_only
 
 
       ###############

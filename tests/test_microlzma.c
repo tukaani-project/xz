@@ -13,6 +13,7 @@
 
 #define BUFFER_SIZE 1024
 
+
 #ifdef HAVE_ENCODER_LZMA1
 
 // MicroLZMA encoded "Hello\nWorld\n" output size in bytes.
@@ -29,6 +30,7 @@ static const uint8_t hello_world[] = { 0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x0A,
 // this time. This is to test for regressions that cause MicroLZMA output
 // to change.
 static const uint32_t hello_world_encoded_crc = 0x3CDE40A8;
+
 
 // Function implementation borrowed from lzma_decoder.c. It is needed to
 // ensure the first byte of a MicroLZMA stream is set correctly with the
@@ -123,6 +125,8 @@ test_encode_basic(void)
 	lzma_stream strm = LZMA_STREAM_INIT;
 	lzma_options_lzma opt_lzma;
 
+	// The lzma_lzma_preset return value is inverse of what it perhaps
+	// should be, that is, it returns false on success.
 	assert_false(lzma_lzma_preset(&opt_lzma, LZMA_PRESET_DEFAULT));
 
 	// Initialize the encoder using the default options.
@@ -131,23 +135,23 @@ test_encode_basic(void)
 	uint8_t output[BUFFER_SIZE];
 
 	strm.next_in = hello_world;
-	strm.avail_in = ARRAY_SIZE(hello_world);
+	strm.avail_in = sizeof(hello_world);
 	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
+	strm.avail_out = sizeof(output);
 
 	// Everything must be encoded in one lzma_code() call.
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 
-	// Check entire input was consumed.
-	assert_uint_eq(strm.total_in, ARRAY_SIZE(hello_world));
+	// Check that the entire input was consumed.
+	assert_uint_eq(strm.total_in, sizeof(hello_world));
 
-	// Check that the first byte in the output stream is not 0x0.
-	// In regular .lzma, the first byte is always 0x0. Instead, a
-	// feature of MicroLZMA is the first byte is the bitwise-negation
+	// Check that the first byte in the output stream is not 0x00.
+	// In a regular raw LZMA stream the first byte is always 0x00.
+	// In MicroLZMA the first byte replaced by the bitwise-negation
 	// of the LZMA properties.
-	assert_uint(output[0], !=, 0x0);
+	assert_uint(output[0], !=, 0x00);
 
-	uint8_t props = ~output[0];
+	const uint8_t props = ~output[0];
 
 	lzma_options_lzma test_options;
 	assert_false(lzma_lzma_lclppb_decode(&test_options, props));
@@ -158,7 +162,7 @@ test_encode_basic(void)
 
 	// Compute the check over the output data. This is compared to
 	// the expected check value.
-	uint32_t check_val = lzma_crc32(output, strm.total_out, 0);
+	const uint32_t check_val = lzma_crc32(output, strm.total_out, 0);
 
 	assert_uint_eq(check_val, hello_world_encoded_crc);
 
@@ -181,7 +185,7 @@ test_encode_small_out(void)
 	uint8_t output[BUFFER_SIZE];
 
 	strm.next_in = hello_world;
-	strm.avail_in = ARRAY_SIZE(hello_world);
+	strm.avail_in = sizeof(hello_world);
 	strm.next_out = output;
 	strm.avail_out = 5;
 
@@ -198,7 +202,7 @@ test_encode_small_out(void)
 
 	// Encoding should not return an error now.
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
-	assert_uint(strm.total_in, <, ARRAY_SIZE(hello_world));
+	assert_uint(strm.total_in, <, sizeof(hello_world));
 
 	lzma_end(&strm);
 }
@@ -214,19 +218,23 @@ test_encode_actions(void)
 
 	assert_false(lzma_lzma_preset(&opt_lzma, LZMA_PRESET_DEFAULT));
 
-	lzma_action actions[] = { LZMA_RUN, LZMA_SYNC_FLUSH,
-			LZMA_FULL_FLUSH, LZMA_FULL_BARRIER };
+	const lzma_action actions[] = {
+		LZMA_RUN,
+		LZMA_SYNC_FLUSH,
+		LZMA_FULL_FLUSH,
+		LZMA_FULL_BARRIER,
+	};
 
-	for (uint32_t i = 0; i < ARRAY_SIZE(actions); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(actions); ++i) {
 		assert_lzma_ret(lzma_microlzma_encoder(&strm, &opt_lzma),
 				LZMA_OK);
 
 		uint8_t output[BUFFER_SIZE];
 
 		strm.next_in = hello_world;
-		strm.avail_in = ARRAY_SIZE(hello_world);
+		strm.avail_in = sizeof(hello_world);
 		strm.next_out = output;
-		strm.avail_out = BUFFER_SIZE;
+		strm.avail_out = sizeof(output);
 
 		assert_lzma_ret(lzma_code(&strm, actions[i]),
 				LZMA_PROG_ERROR);
@@ -234,7 +242,7 @@ test_encode_actions(void)
 
 	lzma_end(&strm);
 }
-#endif
+#endif // HAVE_ENCODER_LZMA1
 
 
 ///////////////////
@@ -244,16 +252,16 @@ test_encode_actions(void)
 #if defined(HAVE_DECODER_LZMA1) && defined(HAVE_ENCODER_LZMA1)
 
 // Byte array of "Goodbye World!". This is used for various decoder tests.
-static const uint8_t goodbye_world[] = { 0x47, 0x6f, 0x6f, 0x64, 0x62,
-		0x79, 0x65, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21 };
+static const uint8_t goodbye_world[] = { 0x47, 0x6F, 0x6F, 0x64, 0x62,
+		0x79, 0x65, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21 };
 
 static uint8_t *goodbye_world_encoded = NULL;
-static uint32_t goodbye_world_encoded_size = 0;
+static size_t goodbye_world_encoded_size = 0;
 
 
 // Helper function to encode data and return the compressed size.
-static uint32_t
-basic_microlzma_encode(const uint8_t *input, uint32_t in_size,
+static size_t
+basic_microlzma_encode(const uint8_t *input, size_t in_size,
 		uint8_t **compressed)
 {
 	lzma_stream strm = LZMA_STREAM_INIT;
@@ -263,7 +271,7 @@ basic_microlzma_encode(const uint8_t *input, uint32_t in_size,
 	// inflate by much in these simple test cases. This is tested to
 	// be large enough after encoding to fit the entire input, so if
 	// this assumption does not hold then this will fail.
-	const uint32_t out_size = in_size << 1;
+	const size_t out_size = in_size << 1;
 
 	*compressed = tuktest_malloc(out_size);
 
@@ -282,15 +290,16 @@ basic_microlzma_encode(const uint8_t *input, uint32_t in_size,
 	if (lzma_code(&strm, LZMA_FINISH) != LZMA_STREAM_END)
 		goto decoder_setup_error;
 
-	// Check the entire input was consumed and fit into the output buffer.
+	// Check that the entire input was consumed and that it fit into
+	// the output buffer.
 	if (strm.total_in != in_size)
 		goto decoder_setup_error;
 
-	const uint64_t encoded_count = strm.total_out;
-
 	lzma_end(&strm);
 
-	return encoded_count;
+	// lzma_end() doesn't touch other members of lzma_stream than
+	// lzma_stream.internal so using strm.total_out here is fine.
+	return strm.total_out;
 
 decoder_setup_error:
 	tuktest_error("Failed to initialize decoder tests");
@@ -303,7 +312,7 @@ test_decode_options(void)
 {
 	// NULL stream
 	assert_lzma_ret(lzma_microlzma_decoder(NULL, BUFFER_SIZE,
-			ARRAY_SIZE(hello_world), true,
+			sizeof(hello_world), true,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_PROG_ERROR);
 
 	// Uncompressed size larger than max
@@ -314,7 +323,7 @@ test_decode_options(void)
 }
 
 
-// Test decoding succeeds when uncomp_size is correct regardless of
+// Test that decoding succeeds when uncomp_size is correct regardless of
 // the value of uncomp_size_is_exact.
 static void
 test_decode_uncomp_size_is_exact(void)
@@ -323,40 +332,40 @@ test_decode_uncomp_size_is_exact(void)
 
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size,
-			ARRAY_SIZE(goodbye_world), true,
+			sizeof(goodbye_world), true,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	uint8_t output[BUFFER_SIZE];
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_STREAM_END);
 	assert_uint_eq(strm.total_in, goodbye_world_encoded_size);
 
-	assert_uint_eq(strm.total_out, ARRAY_SIZE(goodbye_world));
-	assert_array_eq(goodbye_world, output, strm.total_out);
+	assert_uint_eq(strm.total_out, sizeof(goodbye_world));
+	assert_array_eq(goodbye_world, output, sizeof(goodbye_world));
 
 	// Reset decoder with uncomp_size_is_exact set to false and
 	// uncomp_size set to correct value. Also test using the
 	// uncompressed size as the dictionary size.
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size,
-			ARRAY_SIZE(goodbye_world), false,
-			ARRAY_SIZE(goodbye_world)), LZMA_OK);
+			sizeof(goodbye_world), false,
+			sizeof(goodbye_world)), LZMA_OK);
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_STREAM_END);
 	assert_uint_eq(strm.total_in, goodbye_world_encoded_size);
 
-	assert_uint_eq(strm.total_out, ARRAY_SIZE(goodbye_world));
-	assert_array_eq(goodbye_world, output, strm.total_out);
+	assert_uint_eq(strm.total_out, sizeof(goodbye_world));
+	assert_array_eq(goodbye_world, output, sizeof(goodbye_world));
 
 	lzma_end(&strm);
 }
@@ -370,42 +379,42 @@ test_decode_uncomp_size_wrong(void)
 	lzma_stream strm = LZMA_STREAM_INIT;
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size,
-			ARRAY_SIZE(goodbye_world) + 1, false,
+			sizeof(goodbye_world) + 1, false,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	uint8_t output[BUFFER_SIZE];
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	// LZMA_OK should be returned because the input size given was
 	// larger than the actual encoded size. The decoder is expecting
 	// more input to possibly fill the uncompressed size that was set.
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_OK);
 
-	assert_uint_eq(strm.total_out, ARRAY_SIZE(goodbye_world));
+	assert_uint_eq(strm.total_out, sizeof(goodbye_world));
 
-	assert_array_eq(goodbye_world, output, strm.total_out);
+	assert_array_eq(goodbye_world, output, sizeof(goodbye_world));
 
 	// Next, test with uncomp_size_is_exact set.
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size,
-			ARRAY_SIZE(goodbye_world) + 1, true,
+			sizeof(goodbye_world) + 1, true,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	// No error detected, even though all input was consumed and there
 	// is more room in the output buffer.
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_OK);
 
-	assert_uint_eq(strm.total_out, ARRAY_SIZE(goodbye_world));
-	assert_array_eq(goodbye_world, output, strm.total_out);
+	assert_uint_eq(strm.total_out, sizeof(goodbye_world));
+	assert_array_eq(goodbye_world, output, sizeof(goodbye_world));
 
 	// Reset stream with uncomp_size smaller than the real
 	// uncompressed size.
@@ -415,9 +424,9 @@ test_decode_uncomp_size_wrong(void)
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	// This case actually results in an error since it decodes the full
 	// uncompressed size but the range coder is not in the proper state
@@ -432,17 +441,22 @@ static void
 test_decode_comp_size_wrong(void)
 {
 	lzma_stream strm = LZMA_STREAM_INIT;
+
+	// goodbye_world_encoded_size + 1 is safe because extra space was
+	// allocated for goodbye_world_encoded. The extra space isn't
+	// initialized but it shouldn't be read either, thus Valgrind
+	// has to remain happy with this code.
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size + 1,
-			ARRAY_SIZE(goodbye_world), true,
+			sizeof(goodbye_world), true,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	uint8_t output[BUFFER_SIZE];
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	// When uncomp_size_is_exact is set, the compressed size must be
 	// correct or else LZMA_DATA_ERROR is returned.
@@ -450,17 +464,20 @@ test_decode_comp_size_wrong(void)
 
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size + 1,
-			ARRAY_SIZE(goodbye_world), false,
+			sizeof(goodbye_world), false,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	strm.next_in = goodbye_world_encoded;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	// When uncomp_size_is_exact is not set, the decoder does not
 	// detect when the compressed size is wrong as long as all of the
-	// expected output has been decoded.
+	// expected output has been decoded. This is because the decoder
+	// assumes that the real uncompressed size might be bigger than
+	// the specified value and in that case more input might be needed
+	// as well.
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 
 	lzma_end(&strm);
@@ -480,15 +497,15 @@ test_decode_bad_lzma_properties(void)
 	lzma_stream strm = LZMA_STREAM_INIT;
 	assert_lzma_ret(lzma_microlzma_decoder(&strm,
 			goodbye_world_encoded_size,
-			ARRAY_SIZE(goodbye_world), false,
+			sizeof(goodbye_world), false,
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	uint8_t output[BUFFER_SIZE];
 
 	strm.next_in = compressed;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_OPTIONS_ERROR);
 
@@ -502,9 +519,9 @@ test_decode_bad_lzma_properties(void)
 			LZMA_DICT_SIZE_DEFAULT), LZMA_OK);
 
 	strm.next_in = compressed;
-	strm.next_out = output;
-	strm.avail_out = BUFFER_SIZE;
 	strm.avail_in = goodbye_world_encoded_size;
+	strm.next_out = output;
+	strm.avail_out = sizeof(output);
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_DATA_ERROR);
 
@@ -529,7 +546,7 @@ main(int argc, char **argv)
 	// MicroLZMA decoder tests require the basic encoder functionality.
 #	ifdef HAVE_DECODER_LZMA1
 	goodbye_world_encoded_size = basic_microlzma_encode(goodbye_world,
-			ARRAY_SIZE(goodbye_world), &goodbye_world_encoded);
+			sizeof(goodbye_world), &goodbye_world_encoded);
 
 	tuktest_run(test_decode_options);
 	tuktest_run(test_decode_uncomp_size_is_exact);

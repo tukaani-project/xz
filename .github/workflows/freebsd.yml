@@ -1,0 +1,29 @@
+name: FreeBSD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  FreeBSD-test:
+    runs-on: ubuntu-latest
+    name: Test xz on FreeBSD
+    steps:
+    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - name: Test in FreeBSD
+      id: test
+      uses: vmactions/FreeBSD-vm@f8be330398166d1eb0601f01353839d4052367b2 #v1.0.7
+      with:
+        usesh: true
+        prepare: |
+         pkg install -y autoconf automake gmake gettext-tools gtar libtool m4 po4a
+        run: |
+          export LC_ALL=C LANG=C
+          uname -a
+          ./autogen.sh
+          ./configure --enable-werror
+          make
+          make check VERBOSE=1

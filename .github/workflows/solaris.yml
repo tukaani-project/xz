@@ -1,0 +1,29 @@
+name: Solaris
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  solaris-test:
+    runs-on: ubuntu-latest
+    name: Test xz on Solaris
+    steps:
+    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - name: Test in Solaris
+      id: test
+      uses: vmactions/solaris-vm@548f790d1bc2b9342a76cbb47ddbb85875605559 #v1.0.2
+      with:
+        usesh: true
+        prepare: |
+          pkg install bash libtool automake gnu-m4 tree wget gcc autoconf //solaris/text/gawk pkg://solaris/text/gnu-diffutils pkg://solaris/text/gnu-grep pkg://solaris/text/gnu-sed
+        run: |
+          export LC_ALL=C LANG=C
+          uname -a
+          ./autogen.sh
+          ./configure --enable-werror
+          make
+          make check VERBOSE=1

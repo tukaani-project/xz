@@ -1,0 +1,31 @@
+name: OpenBSD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  OpenBSD-test:
+    runs-on: ubuntu-latest
+    name: Test xz on OpenBSD
+    steps:
+    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/OpenBSD-vm@eaa3d3f695a5a52971c23958f6dd4cd3397f959d #v1.0.8
+      with:
+        usesh: true
+        prepare: |
+          /usr/sbin/pkg_add -I -v autoconf-2.71 automake-1.16.5 gmake gettext-tools gtar libtool m4
+        run: |
+          export LC_ALL=C LANG=C
+          export AUTOCONF_VERSION=2.71
+          export AUTOMAKE_VERSION=1.16
+          uname -a
+          ./autogen.sh
+          ./configure --enable-werror
+          make
+          make check VERBOSE=1

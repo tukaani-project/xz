@@ -411,7 +411,15 @@ test_decode_uncomp_size_wrong(void)
 
 	// No error detected, even though all input was consumed and there
 	// is more room in the output buffer.
+	//
+	// FIXME? LZMA_FINISH tells that no more input is coming and
+	// the MicroLZMA decoder knows the exact compressed size from
+	// the initialization as well. So should it return LZMA_DATA_ERROR
+	// on the first call instead of relying on the generic lzma_code()
+	// logic to eventually get LZMA_BUF_ERROR?
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_OK);
+	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_OK);
+	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_BUF_ERROR);
 
 	assert_uint_eq(strm.total_out, sizeof(goodbye_world));
 	assert_array_eq(goodbye_world, output, sizeof(goodbye_world));

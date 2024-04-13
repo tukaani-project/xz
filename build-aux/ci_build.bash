@@ -48,7 +48,7 @@ DEST_DIR="$SRC_DIR/../xz_build"
 PHASE="all"
 ARTIFACTS_DIR_NAME="output"
 
-[[ -z ${CPU_COUNT} ]] && { CPU_COUNT=$(nproc 2>/dev/null || sysctl -n hw.ncpu); }
+[[ -z ${CPU_COUNT} ]] && { CPU_COUNT=$(nproc 2>/dev/null || sysctl -n hw.activecpu); }
 [[ -z ${MAKEFLAGS} ]] && export MAKEFLAGS="-j${CPU_COUNT} -l${CPU_COUNT}"
 [[ -z ${CFLAGS} ]] && export CFLAGS="-O2"
 

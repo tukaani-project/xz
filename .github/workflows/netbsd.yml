@@ -1,0 +1,29 @@
+name: NetBSD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  NetBSD-test:
+    runs-on: ubuntu-latest
+    name: Test xz on NetBSD
+    steps:
+    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - name: Test in NetBSD
+      id: test
+      uses: vmactions/NetBSD-vm@da9ed4d7cd0fb64f330e2342ac5c77ba529b6a11 #v1.0.7
+      with:
+        usesh: true
+        prepare: |
+          /usr/sbin/pkg_add -v autoconf automake gmake gettext-tools gtar-base libtool-base m4
+        run: |
+          export LC_ALL=C LANG=C
+          uname -a
+          ./autogen.sh
+          ./configure --enable-werror
+          make
+          make check VERBOSE=1

@@ -66,6 +66,9 @@
 
 #if defined(HAVE___BUILTIN_BSWAPXX)
 	// GCC >= 4.8 and Clang
+#	undef bswap16
+#	undef bswap32
+#	undef bswap64
 #	define bswap16(n) __builtin_bswap16(n)
 #	define bswap32(n) __builtin_bswap32(n)
 #	define bswap64(n) __builtin_bswap64(n)

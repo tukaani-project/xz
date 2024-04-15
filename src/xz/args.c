@@ -238,7 +238,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "check",        required_argument, NULL,  'C' },
 		{ "ignore-check", no_argument,       NULL,  OPT_IGNORE_CHECK },
 		{ "block-size",   required_argument, NULL,  OPT_BLOCK_SIZE },
-		{ "block-list",  required_argument, NULL,  OPT_BLOCK_LIST },
+		{ "block-list",   required_argument, NULL,  OPT_BLOCK_LIST },
 		{ "memlimit-compress",   required_argument, NULL, OPT_MEM_COMPRESS },
 		{ "memlimit-decompress", required_argument, NULL, OPT_MEM_DECOMPRESS },
 		{ "memlimit-mt-decompress", required_argument, NULL, OPT_MEM_MT_DECOMPRESS },

@@ -42,7 +42,7 @@ basic_lzip_decode(const char *src, const uint32_t expected_crc)
 	lzma_stream strm = LZMA_STREAM_INIT;
 	assert_lzma_ret(lzma_lzip_decoder(&strm, MEMLIMIT, 0), LZMA_OK);
 
-	uint8_t *output_buffer = tuktest_malloc(DECODE_CHUNK_SIZE);
+	uint8_t output_buffer[DECODE_CHUNK_SIZE];
 
 	strm.next_in = data;
 	strm.next_out = output_buffer;
@@ -58,10 +58,6 @@ basic_lzip_decode(const char *src, const uint32_t expected_crc)
 			checksum = lzma_crc32(output_buffer,
 				(size_t)(strm.next_out - output_buffer),
 				checksum);
-			// No need to free output_buffer because it will
-			// automatically be freed at the end of the test by
-			// tuktest.
-			output_buffer = tuktest_malloc(DECODE_CHUNK_SIZE);
 			strm.next_out = output_buffer;
 			strm.avail_out = DECODE_CHUNK_SIZE;
 		}
@@ -125,7 +121,7 @@ trailing_helper(const char *src, const uint32_t expected_data_checksum,
 	assert_lzma_ret(lzma_lzip_decoder(&strm, MEMLIMIT,
 			LZMA_CONCATENATED), LZMA_OK);
 
-	uint8_t *output_buffer = tuktest_malloc(DECODE_CHUNK_SIZE);
+	uint8_t output_buffer[DECODE_CHUNK_SIZE];
 
 	strm.next_in = data;
 	strm.next_out = output_buffer;
@@ -139,10 +135,6 @@ trailing_helper(const char *src, const uint32_t expected_data_checksum,
 			checksum = lzma_crc32(output_buffer,
 				(size_t)(strm.next_out - output_buffer),
 				checksum);
-			// No need to free output_buffer because it will
-			// automatically be freed at the end of the test by
-			// tuktest.
-			output_buffer = tuktest_malloc(DECODE_CHUNK_SIZE);
 			strm.next_out = output_buffer;
 			strm.avail_out = DECODE_CHUNK_SIZE;
 		}

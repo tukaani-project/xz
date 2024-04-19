@@ -173,12 +173,10 @@ decode_expect_error(const char *src, lzma_ret expected_error)
 
 	strm.avail_in = file_size;
 	strm.next_in = data;
-	strm.avail_out = DECODE_CHUNK_SIZE;
-	strm.next_out = output_buffer;
 
 	lzma_ret ret = LZMA_OK;
 
-	while (ret == LZMA_OK) {
+	do {
 		// Discard output since we are only looking for errors
 		strm.next_out = output_buffer;
 		strm.avail_out = DECODE_CHUNK_SIZE;
@@ -186,7 +184,7 @@ decode_expect_error(const char *src, lzma_ret expected_error)
 			ret = lzma_code(&strm, LZMA_FINISH);
 		else
 			ret = lzma_code(&strm, LZMA_RUN);
-	}
+	} while (ret == LZMA_OK);
 
 	assert_lzma_ret(ret, expected_error);
 	lzma_end(&strm);

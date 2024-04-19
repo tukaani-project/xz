@@ -197,7 +197,7 @@ fi
 
 # Copy the headers, the .def file, and the docs.
 # They are the same for all architectures and builds.
-mkdir -pv pkg/{include/lzma,doc/{api,manuals,examples}}
+mkdir -pv pkg/{include/lzma,doc/{manuals,examples}}
 txtcp pkg/include "" src/liblzma/api/lzma.h
 txtcp pkg/include/lzma "" src/liblzma/api/lzma/*.h
 txtcp pkg/doc "" src/liblzma/liblzma.def
@@ -208,7 +208,7 @@ txtcp pkg/doc "" doc/*.txt \
 	windows/COPYING.MinGW-w64-runtime.txt
 txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
 # cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
-cp -v doc/api/* pkg/doc/api
+# cp -rv doc/api pkg/doc/api
 txtcp pkg/doc/examples "" doc/examples/*
 
 # Create the package. This requires 7z from 7-Zip.

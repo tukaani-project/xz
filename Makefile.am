@@ -36,18 +36,6 @@ dist_examples_DATA = \
 	doc/examples/04_compress_easy_mt.c \
 	doc/examples/11_file_info.c \
 	doc/examples/Makefile
-
-# Install the Doxygen generated documentation if they were built.
-install-data-local:
-	if test -d "$(srcdir)/doc/api" ; then \
-		$(MKDIR_P) "$(DESTDIR)$(docdir)/api" && \
-		$(INSTALL_DATA) "$(srcdir)"/doc/api/* \
-			"$(DESTDIR)$(docdir)/api"; \
-	fi
-
-# Remove the Doxygen generated documentation when uninstalling.
-uninstall-local:
-	rm -rf "$(DESTDIR)$(docdir)/api"
 endif
 
 EXTRA_DIST = \

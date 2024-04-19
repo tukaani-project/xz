@@ -25,17 +25,6 @@ XZ Utils Licensing
         lzma-file-format.xt are in the public domain but may
         be distributed under the terms of 0BSD too.
 
-      - Doxygen-generated HTML version of the liblzma API documentation:
-        While Doxygen is under the GNU GPLv2, the license information
-        in Doxygen includes the following exception:
-
-            Documents produced by doxygen are derivative works
-            derived from the input used in their production;
-            they are not affected by this license.
-
-        Note: The JavaScript files (under the MIT license) have
-        been removed from the Doxygen output.
-
       - Translated messages and man pages are under 0BSD except that
         some old translations are in the public domain.
 

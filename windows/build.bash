@@ -207,7 +207,7 @@ txtcp pkg/doc "" doc/*.txt \
 	windows/liblzma-crt-mixing.txt \
 	windows/COPYING.MinGW-w64-runtime.txt
 txtcp pkg/doc/manuals "" doc/man/txt/{xz,xzdec,lzmainfo}.txt
-cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
+# cp -v doc/man/pdf-*/{xz,xzdec,lzmainfo}-*.pdf pkg/doc/manuals
 cp -v doc/api/* pkg/doc/api
 txtcp pkg/doc/examples "" doc/examples/*
 

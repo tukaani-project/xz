@@ -112,7 +112,6 @@ dist-hook:
 mydist:
 	sh "$(srcdir)/src/liblzma/validate_map.sh"
 	cd "$(srcdir)/po4a" && sh update-po
-	cd "$(srcdir)/doxygen" && sh update-doxygen
 	VERSION=$(VERSION); \
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
 		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=4 | cut -b2-`; \

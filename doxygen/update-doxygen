@@ -57,30 +57,9 @@ case $1 in
 			cat Doxyfile
 			echo "PROJECT_NUMBER         = $PACKAGE_VERSION"
 		) | doxygen -
-
-		# As of Doxygen 1.8.0 - 1.9.6 and the Doxyfile options we use,
-		# the output is good without any JavaScript. Unfortunately
-		# Doxygen doesn't have an option to disable JavaScript usage
-		# completely so we strip it away with the hack below.
-		#
-		# Omitting the JavaScript code avoids some license hassle
-		# as jquery.js is fairly big, it contains more than jQuery
-		# itself, and doesn't include the actual license text (it
-		# only refers to the MIT license by name).
-		echo "Stripping JavaScript from Doxygen output..."
-		for F in ../doc/api/*.html
-		do
-			sed 's/<script [^>]*><\/script>//g
-				s/onclick="[^"]*"//g' \
-				"$F" > ../doc/api/tmp
-			mv -f ../doc/api/tmp "$F"
-		done
-		rm -f ../doc/api/*.js
 		;;
 
 	internal)
-		# The docs from internal aren't for distribution so
-		# the JavaScript files aren't an issue here.
 		rm -rf ../doc/internal
 		(
 			cat Doxyfile

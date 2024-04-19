@@ -17,14 +17,12 @@ ${AUTOCONF:-autoconf}
 ${AUTOHEADER:-autoheader}
 ${AUTOMAKE:-automake} -acf --foreign
 
-# Generate the translated man pages and the doxygen documentation if the
-# "po4a" and "doxygen" tools are available.
+# Generate the translated man pages if the "po4a" tool is available.
 # This is *NOT* done by "autoreconf -fi" or when "make" is run.
-# Pass --no-po4a or --no-doxygen to this script to skip these steps.
-# It can be useful when you know that po4a or doxygen aren't available and
+# Pass --no-po4a o this script to skip this step.
+# It can be useful when you know that po4a isn't available and
 # don't want autogen.sh to exit with non-zero exit status.
 generate_po4a="y"
-generate_doxygen="y"
 
 for arg in "$@"
 do
@@ -32,22 +30,12 @@ do
 		"--no-po4a")
 			generate_po4a="n"
 			;;
-
-		"--no-doxygen")
-			generate_doxygen="n"
-			;;
 	esac
 done
 
 if test "$generate_po4a" != "n"; then
 	cd po4a
 	sh update-po
-	cd ..
-fi
-
-if test "$generate_doxygen" != "n"; then
-	cd doxygen
-	sh update-doxygen
 	cd ..
 fi
 

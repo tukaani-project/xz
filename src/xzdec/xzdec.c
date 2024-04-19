@@ -28,6 +28,11 @@
 #	include <linux/landlock.h>
 #	include <sys/prctl.h>
 #	include <sys/syscall.h>
+#	ifdef LANDLOCK_ACCESS_NET_BIND_TCP
+#		define LANDLOCK_ABI_MAX 4
+#	else
+#		define LANDLOCK_ABI_MAX 3
+#	endif
 #endif
 
 #if defined(HAVE_CAP_RIGHTS_LIMIT) || defined(HAVE_PLEDGE) \
@@ -333,12 +338,17 @@ sandbox_enter(int src_fd)
 			(void *)NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
 
 	if (landlock_abi > 0) {
-		// We support ABI versions 1-3.
-		if (landlock_abi > 3)
-			landlock_abi = 3;
+		if (landlock_abi > LANDLOCK_ABI_MAX)
+			landlock_abi = LANDLOCK_ABI_MAX;
 
 		const struct landlock_ruleset_attr attr = {
-			.handled_access_fs = (1ULL << (12 + landlock_abi)) - 1
+			.handled_access_fs = (1ULL
+				<< (12 + my_min(3, landlock_abi))) - 1,
+#	if LANDLOCK_ABI_MAX >= 4
+			.handled_access_net = landlock_abi < 4 ? 0 :
+				(LANDLOCK_ACCESS_NET_BIND_TCP
+				| LANDLOCK_ACCESS_NET_CONNECT_TCP),
+#	endif
 		};
 
 		const int ruleset_fd = syscall(SYS_landlock_create_ruleset,

@@ -15,7 +15,6 @@ Makefile.in
 
 /ABOUT-NLS
 /autom4te.cache
-/Doxyfile
 /aclocal.m4
 /config.h
 /config.h.in
@@ -94,21 +93,17 @@ coverage
 /DartConfiguration.tcl
 /liblzma-config-version.cmake
 /liblzma-config.cmake
-/lzcat
-/lzcat.1
-/lzma
-/lzma.1
 /Testing
 /tests_bin/
-/unlzma
-/unlzma.1
-/unxz
-/unxz.1
 /xz
-/xzcat
-/xzcat.1
 /xzdec
+/lzmadec
+/lzmainfo
+/xzdiff
+/xzgrep
+/xzless
+/xzmore
+/liblzma.pc
+/*.gmo
 
-/windows/*/.vs
-/windows/*/liblzma.vcxproj.user
 /.vscode/

@@ -66,14 +66,6 @@
     good-1-delta-lzma2.tiff.xz is an image file that compresses
     better with Delta+LZMA2 than with plain LZMA2.
 
-    good-1-x86-lzma2.xz uses the x86 filter (BCJ) and LZMA2. The
-    uncompressed file is compress_prepared_bcj_x86 found from the tests
-    directory.
-
-    good-1-sparc-lzma2.xz uses the SPARC filter and LZMA2. The
-    uncompressed file is compress_prepared_bcj_sparc found from the tests
-    directory.
-
     good-1-arm64-lzma2-1.xz uses the ARM64 filter and LZMA2. The
     uncompressed data is constructed so that it tests integer
     wrap around and sign extension. To recreate the file, compress

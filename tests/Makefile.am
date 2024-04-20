@@ -8,16 +8,11 @@ EXTRA_DIST = \
 	tests.h \
 	test_files.sh \
 	test_compress.sh \
-	test_compress_prepared_bcj_sparc \
-	test_compress_prepared_bcj_x86 \
 	test_compress_generated_abc \
 	test_compress_generated_random \
 	test_compress_generated_text \
 	test_scripts.sh \
 	test_suffix.sh \
-	bcj_test.c \
-	compress_prepared_bcj_sparc \
-	compress_prepared_bcj_x86 \
 	xzgrep_expected_output
 
 AM_CPPFLAGS = \
@@ -59,8 +54,6 @@ TESTS = \
 	test_vli \
 	test_files.sh \
 	test_suffix.sh \
-	test_compress_prepared_bcj_sparc \
-	test_compress_prepared_bcj_x86 \
 	test_compress_generated_abc \
 	test_compress_generated_random \
 	test_compress_generated_text

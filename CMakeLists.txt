@@ -395,15 +395,7 @@ if(NOT WIN32)
     set_property(CACHE SYMBOL_VERSIONING PROPERTY STRINGS "OFF;generic;linux")
 endif()
 
-
-add_library(liblzma
-    src/common/mythread.h
-    src/common/sysdefs.h
-    src/common/tuklib_common.h
-    src/common/tuklib_config.h
-    src/common/tuklib_integer.h
-    src/common/tuklib_physmem.c
-    src/common/tuklib_physmem.h
+set(LIBLZMA_API_HEADERS
     src/liblzma/api/lzma.h
     src/liblzma/api/lzma/base.h
     src/liblzma/api/lzma/bcj.h
@@ -419,6 +411,17 @@ add_library(liblzma
     src/liblzma/api/lzma/stream_flags.h
     src/liblzma/api/lzma/version.h
     src/liblzma/api/lzma/vli.h
+)
+
+add_library(liblzma
+    src/common/mythread.h
+    src/common/sysdefs.h
+    src/common/tuklib_common.h
+    src/common/tuklib_config.h
+    src/common/tuklib_integer.h
+    src/common/tuklib_physmem.c
+    src/common/tuklib_physmem.h
+    ${LIBLZMA_API_HEADERS}
     src/liblzma/check/check.c
     src/liblzma/check/check.h
     src/liblzma/check/crc_common.h

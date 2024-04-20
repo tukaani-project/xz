@@ -4,6 +4,7 @@
 EXTRA_DIST = \
 	files \
 	ossfuzz \
+	tests.cmake \
 	tuktest.h \
 	tests.h \
 	test_files.sh \

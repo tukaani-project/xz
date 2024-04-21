@@ -811,12 +811,6 @@ AM_GNU_GETTEXT([external])
 echo
 echo "System headers and functions:"
 
-# There is currently no workarounds in this package if some of
-# these headers are missing.
-AC_CHECK_HEADERS([fcntl.h limits.h sys/time.h],
-	[],
-	[AC_MSG_ERROR([Required header file(s) are missing.])])
-
 # immintrin.h allows the use of the intrinsic functions if they are available.
 # cpuid.h may be used for detecting x86 processor features at runtime.
 AC_CHECK_HEADERS([immintrin.h cpuid.h])

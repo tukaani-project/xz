@@ -101,6 +101,7 @@ test_lzma_filter_flags_size(void)
 	// block header.
 	uint32_t size = 0;
 	if (lzma_filter_encoder_is_supported(LZMA_FILTER_LZMA1)) {
+		// LZMA1 isn't supported in .xz so we get LZMA_PROG_ERROR.
 		assert_lzma_ret(lzma_filter_flags_size(&size,
 				&lzma1_filter), LZMA_PROG_ERROR);
 	}
@@ -156,7 +157,7 @@ verify_filter_flags_encode(lzma_filter *filter, bool should_encode)
 	// First calculate the size of Filter Flags to know how much
 	// memory to allocate to hold the encoded Filter Flags
 	assert_lzma_ret(lzma_filter_flags_size(&size, filter), LZMA_OK);
-	uint8_t *encoded_out = tuktest_malloc(size * sizeof(uint8_t));
+	uint8_t *encoded_out = tuktest_malloc(size);
 	size_t out_pos = 0;
 	if (!should_encode) {
 		assert_false(lzma_filter_flags_encode(filter, encoded_out,
@@ -266,7 +267,6 @@ test_lzma_filter_flags_encode(void)
 	size_t out_size = LZMA_BLOCK_HEADER_SIZE_MAX;
 	uint8_t out[LZMA_BLOCK_HEADER_SIZE_MAX];
 
-
 	// Filter ID outside of valid range
 	assert_lzma_ret(lzma_filter_flags_encode(&bad_filter, out, &out_pos,
 			out_size), LZMA_PROG_ERROR);
@@ -331,7 +331,8 @@ test_lzma_filter_flags_encode(void)
 // because it is agnostic to the type of options used in the call
 #if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 static void
-verify_filter_flags_decode(lzma_filter *filter_in, lzma_filter *filter_out)
+verify_filter_flags_decode(const lzma_filter *filter_in,
+		lzma_filter *filter_out)
 {
 	uint32_t total_size = 0;
 
@@ -401,7 +402,11 @@ test_lzma_filter_flags_decode(void)
 					&bcj_decoded);
 			assert_true(bcj_decoded.options == NULL);
 
-			// Next test with offset
+			// Next test with start_offset.
+			//
+			// NOTE: The encoder and decoder don't verify if
+			// the start_offset is valid for the filter. Only
+			// the encoder or decoder initialization does.
 			lzma_options_bcj options = {
 				.start_offset = 257
 			};

@@ -460,6 +460,7 @@ test_lzma_str_from_filters(void)
 
 	lzma_options_lzma opts;
 	assert_false(lzma_lzma_preset(&opts, LZMA_PRESET_DEFAULT));
+
 	// Test with too many Filters (array terminated after 4+ filters).
 	lzma_filter oversized_filters[LZMA_FILTERS_MAX + 2];
 
@@ -607,6 +608,8 @@ test_lzma_str_list_filters(void)
 	assert_lzma_ret(lzma_str_list_filters(&str, LZMA_VLI_UNKNOWN,
 			LZMA_STR_ENCODER, NULL), LZMA_OK);
 
+	// NOTE: Just checking for "contains" is a bit weak check as
+	// "arm" matches "armthumb" and "arm64" too.
 	for (uint32_t i = 0; i < ARRAY_SIZE(supported_encoders); i++)
 		assert_str_contains(str, supported_encoders[i]);
 

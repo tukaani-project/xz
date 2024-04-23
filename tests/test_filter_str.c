@@ -598,13 +598,16 @@ test_lzma_str_list_filters(void)
 	// Test with bad flags.
 	assert_lzma_ret(lzma_str_list_filters(&str, LZMA_VLI_UNKNOWN,
 			LZMA_STR_NO_VALIDATION , NULL), LZMA_OPTIONS_ERROR);
+	assert_true(str == NULL);
 
 	assert_lzma_ret(lzma_str_list_filters(&str, LZMA_VLI_UNKNOWN,
 			LZMA_STR_NO_SPACES, NULL), LZMA_OPTIONS_ERROR);
+	assert_true(str == NULL);
 
 	// Test with bad Filter ID.
 	assert_lzma_ret(lzma_str_list_filters(&str, LZMA_VLI_UNKNOWN - 1,
 			0, NULL), LZMA_OPTIONS_ERROR);
+	assert_true(str == NULL);
 
 	// Test LZMA_STR_ENCODER flag.
 	assert_lzma_ret(lzma_str_list_filters(&str, LZMA_VLI_UNKNOWN,
@@ -629,6 +632,7 @@ test_lzma_str_list_filters(void)
 	// Test LZMA_STR_GETOPT_LONG flag.
 	assert_lzma_ret(lzma_str_list_filters(&str, LZMA_VLI_UNKNOWN,
 			LZMA_STR_GETOPT_LONG, NULL), LZMA_OK);
+	assert_str_contains(str, "--");
 
 	free(str);
 

@@ -436,6 +436,10 @@ test_lzma_str_from_filters(void)
 	assert_true(lzma_str_to_filters("x86 lzma2", NULL, filters, 0, NULL)
 			== NULL);
 
+	// It always allocates the options structure even when it's not
+	// needed due to start_offset = 0 being the default.
+	assert_true(filters[0].options != NULL);
+
 	assert_lzma_ret(lzma_str_from_filters(&output_str, filters, 0, NULL),
 			LZMA_OK);
 
@@ -444,9 +448,7 @@ test_lzma_str_from_filters(void)
 	free(output_str);
 
 	// Test setting BCJ option to NULL.
-	assert_false(filters[0].options == NULL);
 	free(filters[0].options);
-
 	filters[0].options = NULL;
 
 	assert_lzma_ret(lzma_str_from_filters(&output_str, filters, 0, NULL),

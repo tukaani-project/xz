@@ -512,6 +512,9 @@ static const char supported_encoders[][9] = {
 #ifdef HAVE_ENCODER_ARM64
 	"arm64",
 #endif
+#ifdef HAVE_ENCODER_RISCV
+	"riscv",
+#endif
 #ifdef HAVE_ENCODER_DELTA
 	"delta",
 #endif

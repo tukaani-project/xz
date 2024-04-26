@@ -95,7 +95,7 @@ SYMS=$(sed -n 's/^extern LZMA_API([^)]*) \([a-z0-9_]*\)(.*$/\1;/p' \
 	| grep -Fve "$(sed '/[{}:*]/d;/^$/d;s/^	//' liblzma_generic.map)")
 
 # Check that there are no old alpha or beta versions listed.
-VER=$(cd ../.. && sh build-aux/version.sh)
+VER=$(cat ../../build-aux/version.txt)
 NAMES=
 case $VER in
 	*alpha | *beta)

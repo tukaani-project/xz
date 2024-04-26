@@ -38,7 +38,7 @@ if test ! -f Doxyfile; then
 fi
 
 # Get the package version so that it can be included in the generated docs.
-PACKAGE_VERSION=`cd .. && sh build-aux/version.sh` || exit 1
+PACKAGE_VERSION=`cat ../build-aux/version.txt` || exit 1
 
 # If no arguments are specified, default to generating liblzma API header
 # documentation only.

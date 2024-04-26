@@ -16,7 +16,7 @@
 
 AC_PREREQ([2.69])
 
-AC_INIT([XZ Utils], m4_esyscmd([/bin/sh build-aux/version.sh]),
+AC_INIT([XZ Utils], m4_esyscmd([tr -d '\r\n' < build-aux/version.txt]),
 	[xz@tukaani.org], [xz], [https://tukaani.org/xz/])
 AC_CONFIG_SRCDIR([src/liblzma/common/common.h])
 AC_CONFIG_AUX_DIR([build-aux])

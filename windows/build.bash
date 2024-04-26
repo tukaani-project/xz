@@ -221,7 +221,7 @@ do
 done
 
 if [ -x "$SEVENZ" ]; then
-	VER=$(sh build-aux/version.sh)
+	VER=$(cat build-aux/version.txt)
 	cd pkg
 	"$SEVENZ" a -tzip ../xz-$VER-windows.zip *
 	"$SEVENZ" a ../xz-$VER-windows.7z *

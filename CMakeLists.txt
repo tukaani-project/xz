@@ -95,7 +95,7 @@
 #############################################################################
 
 # NOTE: Translation support is disabled with CMake older than 3.20.
-cmake_minimum_required(VERSION 3.14...3.28 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14...3.29 FATAL_ERROR)
 
 include(CMakePushCheckState)
 include(CheckIncludeFile)

@@ -113,17 +113,11 @@ set(PACKAGE_NAME "XZ Utils")
 set(PACKAGE_BUGREPORT "xz@tukaani.org")
 set(PACKAGE_URL "https://tukaani.org/xz/")
 
-# Get the package version from version.h into PACKAGE_VERSION variable.
-file(READ src/liblzma/api/lzma/version.h PACKAGE_VERSION)
-string(REGEX REPLACE
-"^.*\n\
-#define LZMA_VERSION_MAJOR ([0-9]+)\n\
-.*\
-#define LZMA_VERSION_MINOR ([0-9]+)\n\
-.*\
-#define LZMA_VERSION_PATCH ([0-9]+)\n\
-.*$"
-       "\\1.\\2.\\3" PACKAGE_VERSION "${PACKAGE_VERSION}")
+# Get the package version without the possible alpha/beta suffix. The
+# project() command and shared library versioning cannot accept such a suffix.
+file(STRINGS build-aux/version.txt PACKAGE_VERSION ENCODING UTF-8)
+string(REGEX REPLACE "^([0-9.]+)[^0-9.]*$" "\\1"
+       PACKAGE_VERSION "${PACKAGE_VERSION}")
 
 # With several compilers, CMAKE_BUILD_TYPE=Release uses -O3 optimization
 # which results in bigger code without a clear difference in speed. If

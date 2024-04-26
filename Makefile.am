@@ -67,6 +67,7 @@ EXTRA_DIST = \
 	autogen.sh \
 	build-aux/manconv.sh \
 	build-aux/version.sh \
+	build-aux/version.txt \
 	po/xz.pot-header
 
 ACLOCAL_AMFLAGS = -I m4

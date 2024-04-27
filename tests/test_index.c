@@ -1208,9 +1208,9 @@ test_lzma_index_cat(void)
 	assert_true(src != NULL);
 
 	assert_lzma_ret(lzma_index_append(dest, NULL,
-			UNPADDED_SIZE_MIN, LZMA_VLI_MAX - 1), LZMA_OK);
+			UNPADDED_SIZE_MIN, (LZMA_VLI_MAX / 2) + 1), LZMA_OK);
 	assert_lzma_ret(lzma_index_append(src, NULL,
-			UNPADDED_SIZE_MIN, LZMA_VLI_MAX - 1), LZMA_OK);
+			UNPADDED_SIZE_MIN, (LZMA_VLI_MAX / 2) + 1), LZMA_OK);
 	assert_lzma_ret(lzma_index_cat(dest, src, NULL), LZMA_DATA_ERROR);
 
 	lzma_index_end(dest, NULL);

@@ -1532,11 +1532,21 @@ test_lzma_index_decoder(void)
 			LZMA_PROG_ERROR);
 	assert_lzma_ret(lzma_index_decoder(&strm, NULL, MEMLIMIT),
 			LZMA_PROG_ERROR);
-	assert_lzma_ret(lzma_index_decoder(NULL, &decode_test_index,
-			MEMLIMIT), LZMA_PROG_ERROR);
+
+	// If the first argument (lzma_stream *strm) is NULL then
+	// *idx must still become NULL since the API docs say that
+	// it's done if an error occurs. This was fixed in
+	// 71eed2520e2eecae89bade9dceea16e56cfa2ea0.
+	lzma_index *idx_allocated = lzma_index_init(NULL);
+	lzma_index *idx = idx_allocated;
+	assert_lzma_ret(lzma_index_decoder(NULL, &idx, MEMLIMIT),
+			LZMA_PROG_ERROR);
+	assert_true(idx == NULL);
+
+	lzma_index_end(idx_allocated, NULL);
+	idx_allocated = NULL;
 
 	// Do actual decode
-	lzma_index *idx;
 	assert_lzma_ret(lzma_index_decoder(&strm, &idx, MEMLIMIT),
 			LZMA_OK);
 
@@ -1662,24 +1672,37 @@ test_lzma_index_buffer_decode(void)
 	assert_lzma_ret(lzma_index_buffer_decode(NULL, NULL, NULL, NULL,
 			NULL, 0), LZMA_PROG_ERROR);
 
-	lzma_index *idx;
 	uint64_t memlimit = MEMLIMIT;
 	size_t in_pos = 0;
+	lzma_index *idx_allocated = lzma_index_init(NULL);
+	lzma_index *idx = idx_allocated;
 
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, NULL, NULL, NULL,
 			NULL, 0), LZMA_PROG_ERROR);
+	assert_true(idx == NULL);
 
+	idx = idx_allocated;
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
 			NULL, NULL, 0), LZMA_PROG_ERROR);
+	assert_true(idx == NULL);
 
+	idx = idx_allocated;
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
 			decode_buffer, NULL, 0), LZMA_PROG_ERROR);
+	assert_true(idx == NULL);
 
+	idx = idx_allocated;
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
 			decode_buffer, NULL, 0), LZMA_PROG_ERROR);
+	assert_true(idx == NULL);
 
+	idx = idx_allocated;
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
 			decode_buffer, &in_pos, 0), LZMA_DATA_ERROR);
+	assert_true(idx == NULL);
+
+	lzma_index_end(idx_allocated, NULL);
+	idx_allocated = NULL;
 
 	in_pos = 1;
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,

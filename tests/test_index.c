@@ -10,7 +10,6 @@
 //  Authors:    Jia Tan
 //              Lasse Collin
 //
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tests.h"
@@ -918,8 +917,9 @@ test_lzma_index_iter_next(void)
 	// Verify both Blocks
 
 	// Next call to iterate Block should return true because the
-	// first Block can already be read from the LZMA_INDEX_ITER_STREAM
-	// call.
+	// first Block can already be read from the earlier *successful*
+	// LZMA_INDEX_ITER_STREAM call; the previous failed call doesn't
+	// modify the iterator.
 	assert_true(lzma_index_iter_next(&iter, LZMA_INDEX_ITER_BLOCK));
 
 	// Rewind to test LZMA_INDEX_ITER_ANY
@@ -1141,6 +1141,7 @@ test_lzma_index_iter_locate(void)
 	for (n = 0; n < group_multiple; ++n)
 		assert_lzma_ret(lzma_index_append(idx, NULL, 8, 0),
 				LZMA_OK);
+
 	assert_lzma_ret(lzma_index_append(idx, NULL, 16, 1), LZMA_OK);
 	assert_false(lzma_index_iter_locate(&iter, 0));
 	assert_uint_eq(iter.block.total_size, 16);
@@ -1170,17 +1171,17 @@ test_lzma_index_cat(void)
 	assert_lzma_ret(lzma_index_cat(dest, NULL, NULL), LZMA_PROG_ERROR);
 	assert_lzma_ret(lzma_index_cat(NULL, src, NULL), LZMA_PROG_ERROR);
 
-	// Check for uncompressed size overflow
+	// Check for compressed size overflow
 	assert_lzma_ret(lzma_index_append(dest, NULL,
 			(UNPADDED_SIZE_MAX / 2) + 1, 1), LZMA_OK);
 	assert_lzma_ret(lzma_index_append(src, NULL,
 			(UNPADDED_SIZE_MAX / 2) + 1, 1), LZMA_OK);
 	assert_lzma_ret(lzma_index_cat(dest, src, NULL), LZMA_DATA_ERROR);
 
-	// Check for compressed size overflow
 	lzma_index_end(src, NULL);
 	lzma_index_end(dest, NULL);
 
+	// Check for uncompressed size overflow
 	dest = lzma_index_init(NULL);
 	assert_true(dest != NULL);
 
@@ -1269,6 +1270,7 @@ my_alloc(void *opaque, size_t a, size_t b)
 	return malloc(a * b);
 }
 
+
 static const lzma_allocator test_index_dup_alloc = { &my_alloc, NULL, NULL };
 
 
@@ -1324,6 +1326,7 @@ test_lzma_index_dup(void)
 	lzma_index_end(copy, NULL);
 	lzma_index_end(idx, NULL);
 }
+
 
 #if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 static void
@@ -1458,6 +1461,7 @@ test_lzma_index_encoder(void)
 #endif
 }
 
+
 static void
 generate_index_decode_buffer(void)
 {
@@ -1578,8 +1582,8 @@ test_lzma_index_buffer_encode(void)
 #if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
 	assert_skip("Encoder or decoder support disabled");
 #else
-	// More simple test than test_lzma_index_encoder() because
-	// currently lzma_index_buffer_encode() is mostly a wrapper
+	// These are simpler test than in test_lzma_index_encoder()
+	// because lzma_index_buffer_encode() is mostly a wrapper
 	// around lzma_index_encoder() anyway.
 	lzma_index *idx = lzma_index_init(NULL);
 	assert_true(idx != NULL);

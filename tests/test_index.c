@@ -23,8 +23,11 @@
 
 #define MEMLIMIT (UINT64_C(1) << 20)
 
+#ifdef HAVE_ENCODERS
 static uint8_t *decode_buffer;
 static size_t decode_buffer_size = 0;
+#endif
+
 static lzma_index *decode_test_index;
 
 
@@ -1509,7 +1512,7 @@ generate_index_decode_buffer(void)
 }
 
 
-#ifdef HAVE_DECODERS
+#if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 static void
 decode_index(const uint8_t *buffer, const size_t size, lzma_stream *strm,
 		lzma_ret expected_error)
@@ -1524,8 +1527,8 @@ decode_index(const uint8_t *buffer, const size_t size, lzma_stream *strm,
 static void
 test_lzma_index_decoder(void)
 {
-#ifndef HAVE_DECODERS
-	assert_skip("Decoder support disabled");
+#if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
+	assert_skip("Encoder or decoder support disabled");
 #else
 	assert_true(decode_buffer_size != 0);
 
@@ -1663,8 +1666,8 @@ test_lzma_index_buffer_encode(void)
 static void
 test_lzma_index_buffer_decode(void)
 {
-#ifndef HAVE_DECODERS
-	assert_skip("Decoder support disabled");
+#if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
+	assert_skip("Encoder or decoder support disabled");
 #else
 	assert_true(decode_buffer_size != 0);
 

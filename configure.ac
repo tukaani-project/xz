@@ -516,9 +516,17 @@ AM_CONDITIONAL([COND_SCRIPTS], [test x$enable_scripts != xno])
 
 AC_ARG_ENABLE([doc], [AS_HELP_STRING([--disable-doc],
 		[do not install documentation files to docdir
-		(man pages will still be installed)])],
+		(man pages are still installed and,
+		if --enable-doxygen is used,
+		liblzma API documentation is installed too)])],
 	[], [enable_doc=yes])
 AM_CONDITIONAL([COND_DOC], [test x$enable_doc != xno])
+
+AC_ARG_ENABLE([doxygen], [AS_HELP_STRING([--enable-doxygen],
+		[generate HTML version of the liblzma API documentation
+		using Doxygen and install the result to docdir])],
+	[], [enable_doxygen=no])
+AM_CONDITIONAL([COND_DOXYGEN], [test x$enable_doxygen != xno])
 
 
 ##############

@@ -1698,18 +1698,41 @@ test_lzma_index_buffer_decode(void)
 			decode_buffer, &in_pos, 0), LZMA_DATA_ERROR);
 	assert_true(idx == NULL);
 
+	in_pos = 1;
+	idx = idx_allocated;
+	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
+			decode_buffer, &in_pos, 0), LZMA_PROG_ERROR);
+	assert_true(idx == NULL);
+
+	// Test too short input
+	in_pos = 0;
+	idx = idx_allocated;
+	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
+			decode_buffer, &in_pos, decode_buffer_size - 1),
+			LZMA_DATA_ERROR);
+	assert_true(idx == NULL);
+
 	lzma_index_end(idx_allocated, NULL);
 	idx_allocated = NULL;
 
-	in_pos = 1;
-	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
-			decode_buffer, &in_pos, 0), LZMA_PROG_ERROR);
-	in_pos = 0;
-
 	// Test expected successful decode
+	in_pos = 0;
 	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
 			decode_buffer, &in_pos, decode_buffer_size), LZMA_OK);
 
+	assert_uint_eq(in_pos, decode_buffer_size);
+	assert_true(index_is_equal(decode_test_index, idx));
+
+	lzma_index_end(idx, NULL);
+
+	// Test too much input. This won't read past
+	// the end of the allocated array (decode_buffer_size bytes).
+	in_pos = 0;
+	assert_lzma_ret(lzma_index_buffer_decode(&idx, &memlimit, NULL,
+			decode_buffer, &in_pos, decode_buffer_size + 16),
+			LZMA_OK);
+
+	assert_uint_eq(in_pos, decode_buffer_size);
 	assert_true(index_is_equal(decode_test_index, idx));
 
 	lzma_index_end(idx, NULL);

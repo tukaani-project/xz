@@ -42,8 +42,11 @@ test_lzma_index_memusage(void)
 	assert_uint_eq(lzma_index_memusage((lzma_vli)UINT32_MAX + 1, 1),
 			UINT64_MAX);
 
-	// The maximum number of Blocks should be LZMA_VLI_MAX
-	assert_uint_eq(lzma_index_memusage(1, LZMA_VLI_MAX), UINT64_MAX);
+	// While the number of blocks is lzma_vli, the real maximum value is
+	// much smaller than LZMA_VLI_MAX. Just check that it fails with a
+	// huge but valid VLI and that it succeeds with a smaller one.
+	assert_uint_eq(lzma_index_memusage(1, LZMA_VLI_MAX / 5), UINT64_MAX);
+	assert_uint(lzma_index_memusage(1, LZMA_VLI_MAX / 11), <, UINT64_MAX);
 
 	// Number of Streams must be non-zero
 	assert_uint_eq(lzma_index_memusage(0, 1), UINT64_MAX);

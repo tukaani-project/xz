@@ -1489,21 +1489,19 @@ generate_index_decode_buffer(void)
 {
 #ifdef HAVE_ENCODERS
 	decode_test_index = lzma_index_init(NULL);
-	if (decode_test_index == NULL)
-		return;
+	assert_true(decode_test_index != NULL);
 
 	// Add 4 Blocks
 	for (uint32_t i = 1; i < 5; i++)
-		if (lzma_index_append(decode_test_index, NULL,
-				0x1000 * i, 0x100 * i) != LZMA_OK)
-			return;
+		assert_lzma_ret(lzma_index_append(decode_test_index, NULL,
+				0x1000 * i, 0x100 * i), LZMA_OK);
 
-	size_t size = lzma_index_size(decode_test_index);
+	const size_t size = (size_t)lzma_index_size(decode_test_index);
 	decode_buffer = tuktest_malloc(size);
 
-	if (lzma_index_buffer_encode(decode_test_index,
-			decode_buffer, &decode_buffer_size, size) != LZMA_OK)
-		decode_buffer_size = 0;
+	assert_lzma_ret(lzma_index_buffer_encode(decode_test_index,
+			decode_buffer, &decode_buffer_size, size), LZMA_OK);
+	assert_true(decode_buffer_size != 0);
 #endif
 }
 
@@ -1526,8 +1524,7 @@ test_lzma_index_decoder(void)
 #ifndef HAVE_DECODERS
 	assert_skip("Decoder support disabled");
 #else
-	if (decode_buffer_size == 0)
-		assert_skip("Could not initialize decode test buffer");
+	assert_true(decode_buffer_size != 0);
 
 	lzma_stream strm = LZMA_STREAM_INIT;
 
@@ -1653,8 +1650,7 @@ test_lzma_index_buffer_decode(void)
 #ifndef HAVE_DECODERS
 	assert_skip("Decoder support disabled");
 #else
-	if (decode_buffer_size == 0)
-		assert_skip("Could not initialize decode test buffer");
+	assert_true(decode_buffer_size != 0);
 
 	// Simple test since test_lzma_index_decoder() covers most of the
 	// lzma_index_buffer_decode() code anyway.

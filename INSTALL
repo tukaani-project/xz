@@ -352,6 +352,12 @@ XZ Utils Installation
                 will still be installed. The $docdir can be changed
                 with --docdir=DIR.
 
+    --enable-doxygen
+                Enable generation of the HTML version of the liblzma API
+                documentation using Doxygen. The resulting files are
+                installed to $docdir/api. This option assumes that
+                the 'doxygen' tool is available.
+
     --disable-assembler
                 This disables CRC32 and CRC64 assembly code on
                 32-bit x86. This option currently does nothing

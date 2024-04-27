@@ -467,15 +467,18 @@ test_lzma_index_stream_size(void)
 
 	// Next, append a few Blocks and retest
 	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
-	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
-	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(idx, NULL, 999, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(idx, NULL, 997, 1), LZMA_OK);
 
 	// Stream size should be:
 	// Size of Stream Header - 12 bytes
-	// Size of all Blocks - 3000 bytes
+	// Size of all Blocks - 3000 bytes [*]
 	// Size of Index - 16 bytes
 	// Size of Stream Footer - 12 bytes
 	// Total: 3040 bytes
+	//
+	// [*] Block size is a multiple of 4 bytes so 999 and 997 get
+	//     rounded up to 1000 bytes.
 	assert_uint_eq(lzma_index_stream_size(idx), 3040);
 
 	lzma_index *second = lzma_index_init(NULL);
@@ -520,10 +523,10 @@ test_lzma_index_total_size(void)
 	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
 	assert_uint_eq(lzma_index_total_size(idx), 1000);
 
-	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(idx, NULL, 999, 1), LZMA_OK);
 	assert_uint_eq(lzma_index_total_size(idx), 2000);
 
-	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(idx, NULL, 997, 1), LZMA_OK);
 	assert_uint_eq(lzma_index_total_size(idx), 3000);
 
 	// Create second lzma_index and append Blocks to it.
@@ -545,6 +548,16 @@ test_lzma_index_total_size(void)
 	// from both Streams
 	assert_uint_eq(lzma_index_total_size(idx), 3200);
 
+	// Test sizes that aren't multiples of four bytes
+	assert_lzma_ret(lzma_index_append(idx, NULL, 11, 1), LZMA_OK);
+	assert_uint_eq(lzma_index_total_size(idx), 3212);
+
+	assert_lzma_ret(lzma_index_append(idx, NULL, 11, 1), LZMA_OK);
+	assert_uint_eq(lzma_index_total_size(idx), 3224);
+
+	assert_lzma_ret(lzma_index_append(idx, NULL, 9, 1), LZMA_OK);
+	assert_uint_eq(lzma_index_total_size(idx), 3236);
+
 	lzma_index_end(idx, NULL);
 }
 
@@ -560,8 +573,8 @@ test_lzma_index_file_size(void)
 	assert_uint_eq(lzma_index_file_size(idx), 32);
 
 	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
-	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
-	assert_lzma_ret(lzma_index_append(idx, NULL, 1000, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(idx, NULL, 999, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(idx, NULL, 997, 1), LZMA_OK);
 
 	assert_uint_eq(lzma_index_file_size(idx), 3040);
 
@@ -1046,13 +1059,14 @@ test_lzma_index_iter_locate(void)
 	lzma_index_iter_init(&iter, idx);
 
 	for (uint32_t n = 4; n <= 4 * 5555; n += 4)
-		assert_lzma_ret(lzma_index_append(idx, NULL, n + 8, n),
+		assert_lzma_ret(lzma_index_append(idx, NULL, n + 7, n),
 				LZMA_OK);
 
 	assert_uint_eq(lzma_index_block_count(idx), 5555);
 
 	// First Record
 	assert_false(lzma_index_iter_locate(&iter, 0));
+	assert_uint_eq(iter.block.unpadded_size, 4 + 7);
 	assert_uint_eq(iter.block.total_size, 4 + 8);
 	assert_uint_eq(iter.block.uncompressed_size, 4);
 	assert_uint_eq(iter.block.compressed_file_offset,
@@ -1060,6 +1074,7 @@ test_lzma_index_iter_locate(void)
 	assert_uint_eq(iter.block.uncompressed_file_offset, 0);
 
 	assert_false(lzma_index_iter_locate(&iter, 3));
+	assert_uint_eq(iter.block.unpadded_size, 4 + 7);
 	assert_uint_eq(iter.block.total_size, 4 + 8);
 	assert_uint_eq(iter.block.uncompressed_size, 4);
 	assert_uint_eq(iter.block.compressed_file_offset,
@@ -1068,6 +1083,7 @@ test_lzma_index_iter_locate(void)
 
 	// Second Record
 	assert_false(lzma_index_iter_locate(&iter, 4));
+	assert_uint_eq(iter.block.unpadded_size, 2 * 4 + 7);
 	assert_uint_eq(iter.block.total_size, 2 * 4 + 8);
 	assert_uint_eq(iter.block.uncompressed_size, 2 * 4);
 	assert_uint_eq(iter.block.compressed_file_offset,
@@ -1077,6 +1093,7 @@ test_lzma_index_iter_locate(void)
 	// Last Record
 	assert_false(lzma_index_iter_locate(
 			&iter, lzma_index_uncompressed_size(idx) - 1));
+	assert_uint_eq(iter.block.unpadded_size, 4 * 5555 + 7);
 	assert_uint_eq(iter.block.total_size, 4 * 5555 + 8);
 	assert_uint_eq(iter.block.uncompressed_size, 4 * 5555);
 	assert_uint_eq(iter.block.compressed_file_offset,

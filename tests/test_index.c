@@ -701,6 +701,7 @@ test_lzma_index_iter_rewind(void)
 		assert_false(lzma_index_iter_next(&iter,
 				LZMA_INDEX_ITER_BLOCK));
 		assert_uint_eq(iter.block.number_in_file, i + 1);
+		assert_uint_eq(iter.block.number_in_stream, i + 1);
 	}
 
 	// Rewind back to the beginning and iterate over the Blocks again
@@ -711,6 +712,7 @@ test_lzma_index_iter_rewind(void)
 		assert_false(lzma_index_iter_next(&iter,
 				LZMA_INDEX_ITER_BLOCK));
 		assert_uint_eq(iter.block.number_in_file, i + 1);
+		assert_uint_eq(iter.block.number_in_stream, i + 1);
 	}
 
 	// Next concatenate two more lzma_indexes, iterate over them,

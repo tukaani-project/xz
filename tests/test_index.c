@@ -1626,6 +1626,9 @@ test_lzma_index_buffer_encode(void)
 			0), LZMA_PROG_ERROR);
 	out_pos = 0;
 	assert_lzma_ret(lzma_index_buffer_encode(idx, buffer, &out_pos,
+			0), LZMA_BUF_ERROR);
+	assert_uint_eq(out_pos, 0);
+	assert_lzma_ret(lzma_index_buffer_encode(idx, buffer, &out_pos,
 			1), LZMA_BUF_ERROR);
 
 	// Do encoding

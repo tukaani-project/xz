@@ -1282,10 +1282,13 @@ my_alloc(void *opaque, size_t a, size_t b)
 {
 	(void)opaque;
 
+	assert_true(SIZE_MAX / a >= b);
+
 	static unsigned count = 0;
-	if (++count > 2)
+	if (count >= 2)
 		return NULL;
 
+	++count;
 	return malloc(a * b);
 }
 

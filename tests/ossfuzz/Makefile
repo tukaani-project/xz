@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: 0BSD
+
 FUZZ_TARGET_SRCS = $(wildcard *.c)
 FUZZ_TARGET_BINS = $(FUZZ_TARGET_SRCS:.c=)
 

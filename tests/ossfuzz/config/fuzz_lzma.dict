@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: 0BSD
+
 # first 5 header bytes of .lzma archives based on the info from
 # /doc/lzma-file-format.txt
 

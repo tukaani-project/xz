@@ -120,7 +120,13 @@ parse_block_list(const char *str_const)
 			}
 		}
 
-		str = p + 1;
+		// Be standards compliant: p + 1 is undefined behavior
+		// if p == NULL. That occurs on the last iteration of
+		// the loop when we won't care about the value of str
+		// anymore anyway. That is, this is done conditionally
+		// solely for standard conformance reasons.
+		if (p != NULL)
+			str = p + 1;
 	}
 
 	// Terminate the array.

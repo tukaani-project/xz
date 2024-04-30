@@ -23,6 +23,7 @@ jobs:
         prepare: |
           /usr/sbin/pkg_add -I -v autoconf-2.71 automake-1.16.5 gmake gettext-tools gtar libtool m4
         run: |
+          set -e
           export LC_ALL=C LANG=C
           export AUTOCONF_VERSION=2.71
           export AUTOMAKE_VERSION=1.16

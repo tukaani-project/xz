@@ -334,9 +334,7 @@ pkg_mod.generate(
     url : 'https://tukaani.org/xz/',
 )
 
-install_headers('api/lzma.h',
-    install_dir: get_option('prefix') / get_option('includedir')
-)
+install_headers('api/lzma.h')
 
 lzma_headers = files([
     'api/lzma/base.h',
@@ -356,5 +354,5 @@ lzma_headers = files([
 ])
 
 install_headers(lzma_headers,
-    install_dir: get_option('prefix') / get_option('includedir') / 'lzma'
+    subdir: 'lzma'
 )

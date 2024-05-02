@@ -130,7 +130,7 @@ int main()
 }
 '''
 res = cc.links(bswap_src, name: '__builtin_bswap16/32/64')
-if res == true
+if res
     config_h.set10('HAVE___BUILTIN_BSWAPXX', true,
         description: 'Define to 1 if the GNU C extensions __builtin_bswap16/32/64 are supported.'
         )

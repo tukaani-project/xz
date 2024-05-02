@@ -15,9 +15,7 @@ project(
     ],
     default_options: [
         'b_ndebug=if-release',
-        'buildtype=debug',
-        'c_std=c99',
-        'libdir=lib',
+        'c_std=c11',
         'warning_level=3',
     ],
     meson_version: '>= 1.1.0',
@@ -59,13 +57,13 @@ cc = meson.get_compiler('c')
 
 # try mimic AC_USE_SYSTEM_EXTENSIONS
 if host_machine.system() == 'linux'
-    add_global_arguments('-D_GNU_SOURCE', language: 'c')
+    add_project_arguments('-D_GNU_SOURCE', language: 'c')
 elif host_machine.system() == 'sunos'
-    add_global_arguments('-D__EXTENSIONS__', language: 'c')
-    add_global_arguments('-D_POSIX_PTHREAD_SEMANTICS', language: 'c')
+    add_project_arguments('-D__EXTENSIONS__', language: 'c')
+    add_project_arguments('-D_POSIX_PTHREAD_SEMANTICS', language: 'c')
 else
-    add_global_arguments('-D_TANDEM_SOURCE', language: 'c')
-    add_global_arguments('-D_ALL_SOURCE', language: 'c')
+    add_project_arguments('-D_TANDEM_SOURCE', language: 'c')
+    add_project_arguments('-D_ALL_SOURCE', language: 'c')
 endif
 
 lzma_c_args = []
@@ -116,11 +114,7 @@ if cc.get_argument_syntax() == 'gcc'
         '-Wstring-conversion',
     ]
 
-    foreach cf : cflags_try
-        if cc.has_argument(cf)
-            lzma_c_args += cf
-        endif
-    endforeach
+    lzma_c_args += cc.get_supported_arguments(cflags_try)
 endif
 
 config_h.set10('HAVE_VISIBILITY', cc.has_function_attribute('visibility'),
@@ -197,13 +191,13 @@ simple_filters = [
 # FIXME foreach i in array; set_variable(f'have_@i@', true) endforeach
 
 foreach f : supported_filters
-    if get_option('encoders').contains(f) == true
+    if get_option('encoders').contains(f)
         config_h.set10('HAVE_ENCODER_' + f.underscorify().to_upper(), true,
             description: 'Define to 1 if ' + f + ' encoder is enabled.'
         )
         encoder_msg += f + ' '
     endif
-    if get_option('decoders').contains(f) == true
+    if get_option('decoders').contains(f)
         config_h.set10('HAVE_DECODER_' + f.underscorify().to_upper(), true,
             description: 'Define to 1 if ' + f + ' decoder is enabled.'
         )
@@ -214,15 +208,15 @@ endforeach
 have_encoder_simple_filters = false
 have_decoder_simple_filters = false
 foreach f : simple_filters
-    if get_option('encoders').contains(f) == true
+    if get_option('encoders').contains(f)
         have_encoder_simple_filters = true
     endif
-    if get_option('decoders').contains(f) == true
+    if get_option('decoders').contains(f)
         have_decoder_simple_filters = true
     endif
 endforeach
 
-if (get_option('encoders').contains('lzma2') == true and get_option('encoders').contains('lzma1') == false) or (get_option('decoders').contains('lzma2') == true and get_option('decoders').contains('lzma1') == false)
+if (get_option('encoders').contains('lzma2') and not get_option('encoders').contains('lzma1')) or (get_option('decoders').contains('lzma2') and not get_option('decoders').contains('lzma1'))
     error('LZMA2 requires that LZMA1 is also enabled')
 endif
 
@@ -342,7 +336,7 @@ if get_option('threads') == true
         endif
         have_threads = true
     else
-        pthread_dep = dependency('threads')
+        pthread_dep = dependency('threads', required : false)
         if pthread_dep.found()
             config_h.set10('MYTHREAD_POSIX', true,
                 description: 'Define to 1 when using POSIX threads (pthreads).'

@@ -88,11 +88,6 @@ dist-hook:
 				> "$$dest/txt/$$BASE.txt"; \
 		done; \
 	fi
-	if test -d "$(srcdir)/doc/api" ; then \
-		$(MKDIR_P) "$(distdir)/doc/api" && \
-		$(INSTALL_DATA) "$(srcdir)"/doc/api/* \
-			"$(distdir)/doc/api"; \
-	fi
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.
 # This also ensures that the man page translations are up to date (dist-hook

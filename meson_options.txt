@@ -1,0 +1,188 @@
+## SPDX-License-Identifier: 0BSD
+## Author: Vincent Torri
+
+# [ ] debug        - not used : done by meson
+# [ ] arm64-crc32
+# [X] assembler
+# [ ] assume-ram
+# [X] checks
+# [ ] clmul-crc
+# [X] decoders
+# [ ] doc
+# [ ] doxygen
+# [X] encoders
+# [X] external-sha256
+# [X] lzip-decoder
+# [ ] lzmadec
+# [ ] lzmainfo
+# [ ] lzma-links
+# [X] match-finders
+# [X] microlzma
+# [ ] path-for-scripts
+# [ ] sandbox
+# [X] small
+# [ ] symbol-versions
+# [ ] scripts
+# [X] threads
+# [X] unaligned-access
+# [X] unsafe-type-punning
+# [ ] werror      - not used : done by meson
+# [ ] xz
+# [ ] xzdec
+
+option('arm64-crc32',
+    type : 'boolean',
+    value : true,
+    description : 'use ARM64 CRC32 instructions'
+)
+
+option('assembler',
+    type : 'boolean',
+    value : true,
+    description : 'use assembler optimizations'
+)
+
+option('assume-ram',
+    type : 'integer',
+    value : 128,
+    description : 'how much RAM to assume if the real amount is unknown'
+)
+
+option('checks',
+    type : 'array',
+    choices : [ 'crc32', 'crc64', 'sha256' ],
+    value : [ 'crc32', 'crc64', 'sha256' ],
+    description : 'list of integrity checks to build'
+)
+
+option('clmul-crc',
+    type : 'boolean',
+    value : true,
+    description : 'use carryless multiplication for CRC calculation'
+)
+
+option('decoders',
+    type : 'array',
+    choices : [ 'lzma1', 'lzma2', 'delta', 'x86', 'powerpc', 'ia64', 'arm', 'armthumb', 'arm64', 'sparc', 'riscv' ],
+    value : [ 'lzma1', 'lzma2', 'delta', 'x86', 'powerpc', 'ia64', 'arm', 'armthumb', 'arm64', 'sparc', 'riscv' ],
+    description : 'list of decoders to build'
+)
+
+option('doc',
+    type : 'boolean',
+    value : true,
+    description : 'install documentation files'
+)
+
+option('encoders',
+    type : 'array',
+    choices : [ 'lzma1', 'lzma2', 'delta', 'x86', 'powerpc', 'ia64', 'arm', 'armthumb', 'arm64', 'sparc', 'riscv' ],
+    value : [ 'lzma1', 'lzma2', 'delta', 'x86', 'powerpc', 'ia64', 'arm', 'armthumb', 'arm64', 'sparc', 'riscv' ],
+    description : 'list of encoders to build'
+)
+
+option('external-sha256',
+    type : 'boolean',
+    value : false,
+    description : 'use SHA-256 code from the operating system'
+)
+
+option('lzip-decoder',
+    type : 'boolean',
+    value : true,
+    description : 'decompression support for .lz (lzip) files'
+)
+
+option('lzmadec',
+    type : 'boolean',
+    value : true,
+    description : 'build lzmadec'
+)
+
+option('lzmainfo',
+    type : 'boolean',
+    value : true,
+    description : 'build lzmainfo'
+)
+
+option('lzma-links',
+    type : 'boolean',
+    value : true,
+    description : 'create symlinks for LZMA Utils compatibility'
+)
+
+option('match-finders',
+    type : 'array',
+    choices : [ 'hc3', 'hc4', 'bt2', 'bt3', 'bt4' ],
+    value : [ 'hc3', 'hc4', 'bt2', 'bt3', 'bt4' ],
+    description : 'list of match finders to build'
+)
+
+option('microlzma',
+    type : 'boolean',
+    value : true,
+    description : 'build MicroLZMA encoder and decoder, needed by specific applications'
+)
+
+option('path-for-scripts',
+    type : 'string',
+    value : '',
+    description : 'if not empty, the path will be added to PATH. If empty and on solaris, the path is /usr/xpg4/bin'
+)
+
+option('sandbox',
+    type : 'combo',
+    choices : [ 'auto', 'no', 'capsicum', 'pledge', 'landlock' ],
+    value : 'auto',
+    description : 'sandboxing method'
+)
+
+option('scripts',
+    type : 'boolean',
+    value : true,
+    description : 'install the scripts xzdiff, xzgrep, xzless, xzmore, and their symlinks'
+)
+
+option('small',
+    type : 'boolean',
+    value : false,
+    description : 'make liblzma smaller and a little slower'
+)
+
+option(
+    'symbol-versions',
+    type: 'feature',
+    value: 'auto',
+    description: 'use symbol versioning for liblzma. Enabled by default on GNU/Linux, other GNU-based systems, and FreeBSD',
+)
+
+option('threads',
+    type : 'boolean',
+    value : true,
+    description : 'threading support'
+)
+
+option(
+    'unaligned-access',
+    type: 'feature',
+    value: 'auto',
+    description: '*fast* unaligned memory access with 16-bit, 32-bit, and 64-bit integers. Enabled by default on  x86, x86-64, 32/64-bit big endian PowerPC, 64-bit little endian PowerPC and some ARM, ARM64, and RISC-V systems.'
+)
+
+option('unsafe-type-punning',
+    type : 'boolean',
+    value : false,
+    description : 'use ARM64 CRC32 instructions'
+)
+
+option('xz',
+    type : 'boolean',
+    value : true,
+    description : 'build the xz tool'
+)
+
+option('xzdec',
+    type : 'boolean',
+    value : true,
+    description : 'build xzdec'
+)

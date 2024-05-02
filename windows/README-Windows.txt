@@ -70,8 +70,6 @@ Package contents
         doc/manuals   The manuals of the command line tools in
                       plain text (TXT) format.
 
-        doc/api       liblzma API documentation in HTML format.
-
         doc/examples  Example programs for basic liblzma usage.
 
         include       C header files for liblzma. These should be

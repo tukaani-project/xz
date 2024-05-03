@@ -216,8 +216,7 @@ foreach f : simple_filters
     endif
 endforeach
 
-if ('lzma2' in get_option('encoders') and not ('lzma1' in get_option('encoders'))) or
-   ('lzma2' in get_option('decoders') and not ('lzma1' in get_option('decoders')))
+if ('lzma2' in get_option('encoders') and not ('lzma1' in get_option('encoders'))) or('lzma2' in get_option('decoders') and not ('lzma1' in get_option('decoders')))
     error('LZMA2 requires that LZMA1 is also enabled')
 endif
 
@@ -237,26 +236,16 @@ endif
 
 match_finder_msg = ''
 
-match_finders = [
-    'hc3',
-    'hc4',
-    'bt2',
-    'bt3',
-    'bt4'
-]
-
 if 'lzma1' in get_option('encoders') or 'lzma2' in get_option('encoders')
     if get_option('match-finders').length() == 0
         error('at least one match finder is required for an LZ-based encoder')
     endif
 
-    foreach m : match_finders
-        if m in get_option('match-finders')
-            config_h.set10('HAVE_MF_' + m.underscorify().to_upper(), true,
-                description: 'Define to 1 to enable ' + m + ' match finder.'
-            )
-            match_finder_msg += m + ' '
-        endif
+    foreach m : get_option('match-finders')
+        config_h.set10('HAVE_MF_' + m.underscorify().to_upper(), true,
+            description: 'Define to 1 to enable ' + m + ' match finder.'
+        )
+        match_finder_msg += m + ' '
     endforeach
 endif
 

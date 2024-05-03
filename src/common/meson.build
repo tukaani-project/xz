@@ -240,8 +240,7 @@ if cc.has_header('wchar.h')
         description: 'Define to 1 if the header file <wchar.h> is available.'
     )
 
-    if cc.has_type('mbstate_t', prefix : '#include <wchar.h>') and
-       cc.has_function('mbrtowc', prefix : '#include <wchar.h>')
+    if cc.has_type('mbstate_t', prefix : '#include <wchar.h>') and cc.has_function('mbrtowc', prefix : '#include <wchar.h>')
         config_h.set10('HAVE_MBRTOWC', true,
             description: 'Define to 1 if the mbrtowc() function is available.'
         )

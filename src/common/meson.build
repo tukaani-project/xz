@@ -150,7 +150,7 @@ else
         endif
     endforeach
 
-    if have_byteswap_h == true
+    if have_byteswap_h
         bswap_fcts = [
             'bswap_16',
             'bswap_32',
@@ -165,8 +165,7 @@ int main()
 	return 0;
 }
 '''
-            res = cc.links(bswap_src.format(f), name: f)
-            if res == true
+            if cc.links(bswap_src.format(f), name: f)
                 config_h.set10('HAVE_' + f.to_upper(), true,
                     description: 'Define to 1 if ' + f + '() is available.'
                 )
@@ -176,7 +175,7 @@ int main()
 endif
 
 fast_unaligned_access = false
-if get_option('unaligned-access').auto() == true
+if get_option('unaligned-access').auto()
     unaligned_access_cpus = [
         'ppc',
         'ppc64',
@@ -193,7 +192,7 @@ if get_option('unaligned-access').auto() == true
         endif
     endforeach
 
-    if fast_unaligned_access == false
+    if not fast_unaligned_access
         unaligned_access_cpus = [
             'aarch64',
             'arm',
@@ -210,8 +209,7 @@ compile error
 #endif
 int main(void) { return 0; }
 '''
-                res = cc.compiles(ua_src, name: 'fast unaligned access for ' + cpu)
-                if res == true
+                if cc.compiles(ua_src, name: 'fast unaligned access for ' + cpu)
                     config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
                     description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
                     )
@@ -221,14 +219,14 @@ int main(void) { return 0; }
             endif
         endforeach
     endif
-elif get_option('unaligned-access').enabled() == true
+elif get_option('unaligned-access').enabled()
     config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
         description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
     )
     fast_unaligned_access = true
 endif
 
-if get_option('unsafe-type-punning') == true
+if get_option('unsafe-type-punning')
     config_h.set10('HAVE___BUILTIN_ASSUME_ALIGNED', true,
         description: 'Define to 1 if the GNU C extension __builtin_assume_aligned is supported.'
                     )
@@ -246,10 +244,8 @@ if cc.has_header('wchar.h')
         prefix : '#include <wchar.h>'
     )
 
-    if res == true
-        if cc.has_function('mbrtowc',
-            prefix : '#include <wchar.h>'
-            )
+    if cc.has_type('mbstate_t', prefix : '#include <wchar.h>')
+        if cc.has_function('mbrtowc', prefix : '#include <wchar.h>')
             config_h.set10('HAVE_MBRTOWC', true,
                 description: 'Define to 1 if the mbrtowc() function is available.'
             )

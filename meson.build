@@ -191,13 +191,13 @@ simple_filters = [
 # FIXME foreach i in array; set_variable(f'have_@i@', true) endforeach
 
 foreach f : supported_filters
-    if get_option('encoders').contains(f)
+    if f in get_option('encoders')
         config_h.set10('HAVE_ENCODER_' + f.underscorify().to_upper(), true,
             description: 'Define to 1 if ' + f + ' encoder is enabled.'
         )
         encoder_msg += f + ' '
     endif
-    if get_option('decoders').contains(f)
+    if f in get_option('decoders')
         config_h.set10('HAVE_DECODER_' + f.underscorify().to_upper(), true,
             description: 'Define to 1 if ' + f + ' decoder is enabled.'
         )
@@ -208,15 +208,16 @@ endforeach
 have_encoder_simple_filters = false
 have_decoder_simple_filters = false
 foreach f : simple_filters
-    if get_option('encoders').contains(f)
+    if f in get_option('encoders')
         have_encoder_simple_filters = true
     endif
-    if get_option('decoders').contains(f)
+    if f in get_option('decoders')
         have_decoder_simple_filters = true
     endif
 endforeach
 
-if (get_option('encoders').contains('lzma2') and not get_option('encoders').contains('lzma1')) or (get_option('decoders').contains('lzma2') and not get_option('decoders').contains('lzma1'))
+if ('lzma2' in get_option('encoders') and not ('lzma1' in get_option('encoders'))) or
+   ('lzma2' in get_option('decoders') and not ('lzma1' in get_option('decoders')))
     error('LZMA2 requires that LZMA1 is also enabled')
 endif
 
@@ -244,13 +245,13 @@ match_finders = [
     'bt4'
 ]
 
-if get_option('encoders').contains('lzma2') == true or get_option('encoders').contains('lzma1') == true
+if 'lzma1' in get_option('encoders') or 'lzma2' in get_option('encoders')
     if get_option('match-finders').length() == 0
         error('at least one match finder is required for an LZ-based encoder')
     endif
 
     foreach m : match_finders
-        if get_option('match-finders').contains(m) == true
+        if m in get_option('match-finders')
             config_h.set10('HAVE_MF_' + m.underscorify().to_upper(), true,
                 description: 'Define to 1 to enable ' + m + ' match finder.'
             )
@@ -269,18 +270,18 @@ checks = [
     'sha256'
 ]
 
+if not ('crc32' in get_option('checks'))
+    error('For now, the CRC32 check must always be enabled')
+endif
+
 foreach c : checks
-    if get_option('checks').contains(c) == true
+    if c in get_option('checks')
         config_h.set10('HAVE_CHECK_' + c.underscorify().to_upper(), true,
             description: 'Define to 1 if ' + c + ' integrity check is enabled.'
         )
         check_msg += c + ' '
     endif
 endforeach
-
-if get_option('checks').contains('crc32') == false
-    error('For now, the CRC32 check must always be enabled')
-endif
 
 ### microLZMA
 
@@ -290,9 +291,9 @@ endif
 ### .lz (lzip) format support
 
 have_lzip = false
-if get_option('encoders').contains('lzma1') == false
+if not ('lzma1' in get_option('encoders'))
     lzip_msg = 'no (LZMA1 disabled)'
-elif get_option('lzip-decoder') == true
+elif get_option('lzip-decoder')
     lzip_msg = 'yes'
     have_lzip = true
     config_h.set10('HAVE_LZIP_DECODER', true,
@@ -305,15 +306,15 @@ endif
 ### assembler optimizations
 
 have_assembler_x86 = false
-if get_option('assembler') == true
-   if asm_os.contains(host_os) and host_machine.cpu_family() == 'x86'
+if get_option('assembler')
+   if host_os in asm_os and host_machine.cpu_family() == 'x86'
        have_assembler_x86 = true
    endif
 endif
 
 ### size optimization
 
-if get_option('small') == true
+if get_option('small')
     config_h.set10('HAVE_SMALL', true,
         description: 'Define to 1 if optimizing for size.'
     )

@@ -5,7 +5,7 @@ lzma_src = [
     '../common/tuklib_physmem.c',
 ]
 
-if have_threads == true
+if have_threads
     lzma_src += [
         '../common/tuklib_cpucores.c',
     ]
@@ -25,7 +25,7 @@ lzma_src += [
     'common/vli_size.c',
 ]
 
-if have_threads == true
+if have_threads
     lzma_src += [
         'common/hardware_cputhreads.c',
         'common/outqueue.c',
@@ -51,13 +51,13 @@ if get_option('encoders').length() > 0
         'common/vli_encoder.c',
     ]
 
-    if have_threads == true
+    if have_threads
         lzma_src += [
             'common/stream_encoder_mt.c',
         ]
     endif
 
-    if get_option('microlzma') == true
+    if get_option('microlzma')
         lzma_src += [
             'common/microlzma_encoder.c',
         ]
@@ -84,19 +84,19 @@ if get_option('decoders').length() > 0
         'common/vli_decoder.c'
     ]
 
-    if have_threads == true
+    if have_threads
         lzma_src += [
             'common/stream_decoder_mt.c',
         ]
     endif
 
-    if get_option('microlzma') == true
+    if get_option('microlzma')
         lzma_src += [
             'common/microlzma_decoder.c'
         ]
     endif
 
-    if have_lzip == true
+    if have_lzip
         lzma_src += 'common/lzip_decoder.c'
     endif
 endif
@@ -107,7 +107,7 @@ lzma_src += [
     'check/check.c'
 ]
 
-if get_option('small') == true
+if get_option('small')
     lzma_src += [
         'check/crc32_small.c'
     ]
@@ -116,7 +116,7 @@ else
         'check/crc32_table.c'
     ]
 
-    if have_assembler_x86 == true
+    if have_assembler_x86
         lzma_src += [
             'check/crc32_x86.S'
         ]
@@ -127,8 +127,8 @@ else
     endif
 endif
 
-if get_option('checks').contains('crc64') == true
-    if get_option('small') == true
+if 'crc64' in get_option('checks')
+    if get_option('small')
         lzma_src += [
             'check/crc64_small.c'
         ]
@@ -137,7 +137,7 @@ if get_option('checks').contains('crc64') == true
             'check/crc64_table.c'
         ]
 
-        if have_assembler_x86 == true
+        if have_assembler_x86
             lzma_src += [
                 'check/crc64_x86.S'
             ]
@@ -149,125 +149,123 @@ if get_option('checks').contains('crc64') == true
     endif
 endif
 
-if get_option('checks').contains('sha256') == true and get_option('external-sha256') == false
+if ('sha256' in get_option('checks')) and (not get_option('external-sha256'))
     lzma_src += [
         'check/sha256.c'
     ]
 endif
 
-if get_option('encoders').contains('lzma1') == true or
-   get_option('decoders').contains('lzma1') == true or
-   get_option('encoders').contains('lzma2') == true or
-   get_option('decoders').contains('lzma2') == true
+if ('lzma1' in get_option('encoders')) or
+   ('lzma1' in get_option('decoders')) or
+   ('lzma2' in get_option('encoders')) or
+   ('lzma2' in get_option('decoders'))
 
     # lz/Makefile.inc
-    if get_option('encoders').contains('lzma1') == true or
-       get_option('encoders').contains('lzma2') == true
+    if ('lzma1' in get_option('encoders')) or
+       ('lzma2' in get_option('encoders'))
         lzma_src += [
             'lz/lz_encoder.c',
             'lz/lz_encoder_mf.c'
         ]
     endif
 
-    if get_option('decoders').contains('lzma1') == true or
-       get_option('decoders').contains('lzma2') == true
+    if ('lzma1' in get_option('encoders')) or
+       ('lzma2' in get_option('encoders'))
         lzma_src += [
             'lz/lz_decoder.c'
         ]
     endif
 endif
 
-if get_option('encoders').contains('lzma1') == true or
-   get_option('decoders').contains('lzma1') == true
+if ('lzma1' in get_option('encoders')) or ('lzma1' in get_option('decoders'))
 
     # lzma/Makefile.inc
     lzma_src += [
         'lzma/lzma_encoder_presets.c'
     ]
 
-    if get_option('encoders').contains('lzma1') == true
+    if 'lzma1' in get_option('encoders')
         lzma_src += [
             'lzma/lzma_encoder.c',
             'lzma/lzma_encoder_optimum_fast.c',
             'lzma/lzma_encoder_optimum_normal.c'
         ]
 
-        if get_option('small') == false
+        if not get_option('small')
             lzma_src += [
                 'lzma/fastpos_table.c'
             ]
         endif
     endif
 
-    if get_option('decoders').contains('lzma1') == true
+    if 'lzma1' in get_option('decoders')
         lzma_src += [
             'lzma/lzma_decoder.c'
         ]
     endif
 
-    if get_option('encoders').contains('lzma2') == true
+    if 'lzma2' in get_option('encoders')
         lzma_src += [
             'lzma/lzma2_encoder.c'
         ]
     endif
 
-    if get_option('decoders').contains('lzma2') == true
+    if 'lzma2' in get_option('decoders')
         lzma_src += [
             'lzma/lzma2_decoder.c'
         ]
     endif
 
     # rangecoder/Makefile.inc
-    if get_option('encoders').contains('lzma1') == true
+    if 'lzma1' in get_option('encoders')
         lzma_src += [
             'rangecoder/price_table.c'
         ]
     endif
 endif
 
-if get_option('encoders').contains('delta') == true or
-   get_option('decoders').contains('delta') == true
+if ('delta' in get_option('encoders')) or ('delta' in get_option('decoders'))
 
     # delta/Makefile.inc
     lzma_src += [
         'delta/delta_common.c'
     ]
 
-    if get_option('encoders').contains('delta') == true
+    if 'delta' in get_option('encoders')
         lzma_src += [
             'delta/delta_encoder.c'
         ]
     endif
 
-    if get_option('decoders').contains('delta') == true
+    if 'delta' in get_option('decoders')
         lzma_src += [
             'delta/delta_decoder.c'
         ]
     endif
 endif
 
-if have_encoder_simple_filters == true or have_decoder_simple_filters == true
+if have_encoder_simple_filters or have_decoder_simple_filters
 
     # simple/Makefile.inc
     lzma_src += [
         'simple/simple_coder.c'
     ]
 
-    if have_encoder_simple_filters == true
+    if have_encoder_simple_filters
         lzma_src += [
             'simple/simple_encoder.c'
         ]
     endif
 
-    if have_decoder_simple_filters == true
+    if have_decoder_simple_filters
         lzma_src += [
             'simple/simple_decoder.c'
         ]
     endif
 
     foreach f : simple_filters
-        if get_option('encoders').contains(f) == true or
-        get_option('decoders').contains(f) == true
+        if (f in get_option('encoders')) or
+           (f in get_option('decoders'))
             lzma_src += [
                 'simple/' + f + '.c'
             ]
@@ -279,7 +277,7 @@ endif
 
 win_mod = import('windows')
 
-if sys_windows == true
+if sys_windows
     liblzma_rc = win_mod.compile_resources(files('liblzma_w32res.rc'),
         args : [ '-DHAVE_CONFIG_H', '-DTUKLIB_SYMBOL_PREFIX=lzma_' ],
         depend_files : files('../common/common_w32res.rc'),
@@ -309,7 +307,7 @@ lzma_incdir = [
 
 lzma_deps = []
 
-if sys_windows == false and have_threads == true
+if (not sys_windows) and have_threads
     lzma_deps += pthread_dep
 endif
 
@@ -353,6 +351,5 @@ lzma_headers = files([
     'api/lzma/vli.h',
 ])
 
-install_headers(lzma_headers,
-    subdir: 'lzma'
+install_headers(lzma_headers, subdir: 'lzma'
 )

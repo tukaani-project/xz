@@ -155,26 +155,18 @@ if ('sha256' in get_option('checks')) and (not get_option('external-sha256'))
     ]
 endif
 
-if ('lzma1' in get_option('encoders')) or
-   ('lzma1' in get_option('decoders')) or
-   ('lzma2' in get_option('encoders')) or
-   ('lzma2' in get_option('decoders'))
+# lz/Makefile.inc
+if ('lzma1' in get_option('encoders')) or ('lzma2' in get_option('encoders'))
+    lzma_src += [
+        'lz/lz_encoder.c',
+        'lz/lz_encoder_mf.c'
+    ]
+ endif
 
-    # lz/Makefile.inc
-    if ('lzma1' in get_option('encoders')) or
-       ('lzma2' in get_option('encoders'))
-        lzma_src += [
-            'lz/lz_encoder.c',
-            'lz/lz_encoder_mf.c'
-        ]
-    endif
-
-    if ('lzma1' in get_option('encoders')) or
-       ('lzma2' in get_option('encoders'))
-        lzma_src += [
-            'lz/lz_decoder.c'
-        ]
-    endif
+if ('lzma1' in get_option('decoders')) or ('lzma2' in get_option('decoders'))
+    lzma_src += [
+        'lz/lz_decoder.c'
+    ]
 endif
 
 if ('lzma1' in get_option('encoders')) or ('lzma1' in get_option('decoders'))

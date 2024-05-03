@@ -253,23 +253,15 @@ endif
 
 check_msg = ''
 
-checks = [
-    'crc32',
-    'crc64',
-    'sha256'
-]
-
 if not ('crc32' in get_option('checks'))
     error('For now, the CRC32 check must always be enabled')
 endif
 
-foreach c : checks
-    if c in get_option('checks')
-        config_h.set10('HAVE_CHECK_' + c.underscorify().to_upper(), true,
-            description: 'Define to 1 if ' + c + ' integrity check is enabled.'
-        )
-        check_msg += c + ' '
-    endif
+foreach c : get_option('checks')
+    config_h.set10('HAVE_CHECK_' + c.underscorify().to_upper(), true,
+        description: 'Define to 1 if ' + c + ' integrity check is enabled.'
+    )
+    check_msg += c + ' '
 endforeach
 
 ### microLZMA

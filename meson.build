@@ -183,7 +183,7 @@ foreach f : get_option('encoders')
     encoder_msg += f + ' '
 endforeach
 
-foreach f : get_option('encoders')
+foreach f : get_option('decoders')
     config_h.set10('HAVE_DECODER_' + f.underscorify().to_upper(), true,
         description: 'Define to 1 if ' + f + ' decoder is enabled.'
     )

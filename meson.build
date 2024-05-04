@@ -2,7 +2,7 @@
 ## Author: Vincent Torri
 
 project(
-    'XZ Utils',
+    'xz-utils',
     'c',
     version: '5.6.99',
     license: '0BSD',

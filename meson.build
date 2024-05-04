@@ -163,20 +163,6 @@ endif
 encoder_msg = ''
 decoder_msg = ''
 
-supported_filters = [
-    'lzma1',
-    'lzma2',
-    'delta',
-    'x86',
-    'powerpc',
-    'ia64',
-    'arm',
-    'armthumb',
-    'arm64',
-    'sparc',
-    'riscv',
-]
-
 simple_filters = [
     'x86',
     'powerpc',
@@ -190,19 +176,18 @@ simple_filters = [
 
 # FIXME foreach i in array; set_variable(f'have_@i@', true) endforeach
 
-foreach f : supported_filters
-    if f in get_option('encoders')
-        config_h.set10('HAVE_ENCODER_' + f.underscorify().to_upper(), true,
-            description: 'Define to 1 if ' + f + ' encoder is enabled.'
-        )
-        encoder_msg += f + ' '
-    endif
-    if f in get_option('decoders')
-        config_h.set10('HAVE_DECODER_' + f.underscorify().to_upper(), true,
-            description: 'Define to 1 if ' + f + ' decoder is enabled.'
-        )
-        decoder_msg += f + ' '
-    endif
+foreach f : get_option('encoders')
+    config_h.set10('HAVE_ENCODER_' + f.underscorify().to_upper(), true,
+        description: 'Define to 1 if ' + f + ' encoder is enabled.'
+    )
+    encoder_msg += f + ' '
+endforeach
+
+foreach f : get_option('encoders')
+    config_h.set10('HAVE_DECODER_' + f.underscorify().to_upper(), true,
+        description: 'Define to 1 if ' + f + ' decoder is enabled.'
+    )
+    decoder_msg += f + ' '
 endforeach
 
 have_encoder_simple_filters = false

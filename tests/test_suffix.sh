@@ -7,10 +7,10 @@
 #
 ###############################################################################
 
-# If xz was not built, skip this test.
-XZ=../src/xz/xz
-test -x "$XZ" || XZ=
-if test -z "$XZ"; then
+# If xz was not built, skip this test. Autotools and CMake put
+# the xz executable in a different location.
+XZ=${1:-../src/xz}/xz
+if test ! -x "$XZ"; then
 	echo "xz was not built, skipping this test."
 	exit 77
 fi
@@ -19,7 +19,9 @@ fi
 # This isn't perfect because it does not specifically check for LZMA1/2
 # filters. Many of the other tests also assume LZMA1/2 support if encoders
 # or decoders are enabled.
-if grep 'define HAVE_ENCODERS' ../config.h > /dev/null \
+if test ! -f ../config.h ; then
+	:
+elif grep 'define HAVE_ENCODERS' ../config.h > /dev/null \
 		&& grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
 	:
 else

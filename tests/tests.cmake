@@ -85,4 +85,17 @@ if(BUILD_TESTING)
             SKIP_RETURN_CODE 77
         )
     endif()
+
+    if(UNIX AND HAVE_ENCODERS AND HAVE_DECODERS)
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_suffix")
+
+        add_test(NAME test_suffix.sh
+            COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_suffix.sh" ".."
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_suffix"
+        )
+
+        set_tests_properties(test_suffix.sh PROPERTIES
+            SKIP_RETURN_CODE 77
+        )
+    endif()
 endif()

@@ -695,7 +695,7 @@ coder_set_compression_settings(void)
 			continue;
 
 		for (uint32_t j = 0; filters[i][j].id != LZMA_VLI_UNKNOWN;
-				j++)
+				j++) {
 			if ((filters[i][j].id == LZMA_FILTER_LZMA2
 					|| filters[i][j].id
 						== LZMA_FILTER_LZMA1)
@@ -711,6 +711,7 @@ coder_set_compression_settings(void)
 				r->orig_dict_size = opt->dict_size;
 				opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
 			}
+		}
 	}
 
 	// Loop until all filters use <= memory_limit, or exit.
@@ -1288,9 +1289,10 @@ coder_normal(file_pair *pair)
 		ret = lzma_code(&strm, action);
 
 		// Write out if the output buffer became full.
-		if (strm.avail_out == 0)
+		if (strm.avail_out == 0) {
 			if (coder_write_output(pair))
 				break;
+		}
 
 #ifdef HAVE_ENCODERS
 		if (ret == LZMA_STREAM_END && (action == LZMA_SYNC_FLUSH

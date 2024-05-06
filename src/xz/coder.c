@@ -495,11 +495,7 @@ coder_set_compression_settings(void)
 				// recommended Block size, then it is a waste
 				// of RAM to use a larger Block size. It may
 				// even allow more threads to be used in some
-				// situations. If the special 0 Block size is
-				// used (encode all remaining data in 1 Block)
-				// then max_block_list_size will be set to
-				// UINT64_MAX, so the recommended Block size
-				// will always be used in this case.
+				// situations.
 				if (max_block_list_size > 0
 						&& max_block_list_size
 						< block_size)

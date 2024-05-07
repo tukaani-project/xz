@@ -45,7 +45,7 @@
 #
 #############################################################################
 
-cmake_minimum_required(VERSION 3.13...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13...3.29 FATAL_ERROR)
 
 include(CMakePushCheckState)
 include(CheckIncludeFile)

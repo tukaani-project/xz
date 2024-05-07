@@ -15,6 +15,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <stdio.h>
+#include <locale.h>
 
 #ifndef _MSC_VER
 #	include <unistd.h>
@@ -415,6 +416,10 @@ main(int argc, char **argv)
 	// fails here the error will still be detected when it matters.
 	(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 #endif
+
+	// Set the locale because tuklib_mask_nonprint() has locale-specific
+	// behavior.
+	setlocale(LC_ALL, "");
 
 	// Initialize progname which we will be used in error messages.
 	tuklib_progname_init(argv);

@@ -144,6 +144,7 @@ coder_add_filter(lzma_vli id, void *options)
 
 	filters[0][filters_count].id = id;
 	filters[0][filters_count].options = options;
+
 	// Terminate the filter chain with LZMA_VLI_UNKNOWN to simplify
 	// implementation of forget_filter_chain().
 	filters[0][++filters_count].id = LZMA_VLI_UNKNOWN;
@@ -246,16 +247,16 @@ validate_block_list_filter(const uint32_t filter_num)
 }
 
 
-// Sets the memory usage for each filter chain. It will return the maximum
-// memory usage of all of the filter chains.
+// Calculate the memory usage of each filter chain.
+// Return the maximum memory usage of all of the filter chains.
 static uint64_t
 filters_memusage_max(const lzma_mt *mt, bool encode)
 {
 	uint64_t max_memusage = 0;
 
 #ifdef MYTHREAD_ENABLED
-	// Copy multithreaded options to a temporary struct since the
-	// filters member needs to be changed
+	// Copy multithreading options to a temporary struct since the
+	// "filters" member needs to be changed.
 	lzma_mt mt_local;
 	if (mt != NULL)
 		mt_local = *mt;
@@ -273,15 +274,12 @@ filters_memusage_max(const lzma_mt *mt, bool encode)
 			mt_local.filters = filters[i];
 			memusage = lzma_stream_encoder_mt_memusage(&mt_local);
 			filter_memusages[i] = memusage;
-		}
-		else
+		} else
 #endif
-
 		if (encode) {
 			memusage = lzma_raw_encoder_memusage(filters[i]);
 			filter_memusages[i] = memusage;
 		}
-
 #ifdef HAVE_DECODERS
 		else {
 			memusage = lzma_raw_decoder_memusage(filters[i]);
@@ -294,8 +292,8 @@ filters_memusage_max(const lzma_mt *mt, bool encode)
 
 	return max_memusage;
 }
-
 #endif
+
 
 extern void
 coder_set_compression_settings(void)
@@ -335,7 +333,8 @@ coder_set_compression_settings(void)
 		}
 
 		assert(filters_ref_mask != 0);
-		// Note: The filters that were initialized but not used do
+
+		// NOTE: The filters that were initialized but not used do
 		//       not free their options and do not have the filter
 		//       IDs set to LZMA_VLI_UNKNOWN. Filter chains are not
 		//       freed outside of debug mode and the default filter
@@ -465,6 +464,7 @@ coder_set_compression_settings(void)
 			mt_options.threads = hardware_threads_get();
 
 			uint64_t block_size = opt_block_size;
+
 			// If opt_block_size is not set, find the maximum
 			// recommended Block size based on the filter chains
 			if (block_size == 0) {
@@ -539,7 +539,7 @@ coder_set_compression_settings(void)
 				filters_memusage_max(NULL, false);
 #else
 		// If encoders are not enabled, then --block-list is never
-		// usable, so the other filter chains 1-9 can never be used.
+		// usable and the filter chains 1-9 are never used.
 		// So there is no need to find the maximum decoder memory
 		// required in this case.
 		const uint64_t decmem = lzma_raw_decoder_memusage(filters[0]);
@@ -736,8 +736,7 @@ coder_set_compression_settings(void)
 			if (filt_mem_usage < memory_limit) {
 				r->reduce_dict_size = false;
 				count--;
-			}
-			else {
+			} else {
 				opt->dict_size -= UINT32_C(1) << 20;
 			}
 		}

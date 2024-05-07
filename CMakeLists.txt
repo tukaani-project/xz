@@ -1595,6 +1595,8 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
         src/common/sysdefs.h
         src/common/tuklib_common.h
         src/common/tuklib_config.h
+        src/common/tuklib_mbstr_nonprint.c
+        src/common/tuklib_mbstr_nonprint.h
         src/common/tuklib_exit.c
         src/common/tuklib_exit.h
         src/common/tuklib_gettext.h
@@ -1619,6 +1621,7 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
     endif()
 
     tuklib_progname(lzmainfo)
+    tuklib_mbstr(lzmainfo)
 
     # NOTE: The translations are in the "xz" domain and the .mo files are
     # installed as part of the "xz" target.

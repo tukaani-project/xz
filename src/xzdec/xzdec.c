@@ -43,6 +43,7 @@
 
 #include "getopt.h"
 #include "tuklib_progname.h"
+#include "tuklib_mbstr_nonprint.h"
 #include "tuklib_exit.h"
 
 #ifdef TUKLIB_DOSLIKE
@@ -210,7 +211,8 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				// an error occurred. ferror() doesn't
 				// touch errno.
 				my_errorf("%s: Error reading input file: %s",
-						filename, strerror(errno));
+					tuklib_mask_nonprint(filename),
+					strerror(errno));
 				exit(EXIT_FAILURE);
 			}
 
@@ -293,7 +295,8 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				break;
 			}
 
-			my_errorf("%s: %s", filename, msg);
+			my_errorf("%s: %s", tuklib_mask_nonprint(filename),
+					msg);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -458,8 +461,10 @@ main(int argc, char **argv)
 				src_name = argv[optind];
 				src_file = fopen(src_name, "rb");
 				if (src_file == NULL) {
-					my_errorf("%s: %s", src_name,
-							strerror(errno));
+					my_errorf("%s: %s",
+						tuklib_mask_nonprint(
+							src_name),
+						strerror(errno));
 					exit(EXIT_FAILURE);
 				}
 			}

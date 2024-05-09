@@ -266,7 +266,7 @@ crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 
 	__m128i v0, v1, v2;
 
-	crc_simd_body(buf,  size, &v0, &v1, vfold16,
+	crc_simd_body(buf, size, &v0, &v1, vfold16,
 			_mm_cvtsi32_si128((int32_t)~crc));
 
 	v1 = _mm_xor_si128(
@@ -355,12 +355,12 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 	__m128i v0, v1, v2;
 
 #if defined(__i386__) || defined(_M_IX86)
-	crc_simd_body(buf,  size, &v0, &v1, vfold16,
+	crc_simd_body(buf, size, &v0, &v1, vfold16,
 			_mm_set_epi64x(0, (int64_t)~crc));
 #else
 	// GCC and Clang would produce good code with _mm_set_epi64x
 	// but MSVC needs _mm_cvtsi64_si128 on x86-64.
-	crc_simd_body(buf,  size, &v0, &v1, vfold16,
+	crc_simd_body(buf, size, &v0, &v1, vfold16,
 			_mm_cvtsi64_si128((int64_t)~crc));
 #endif
 

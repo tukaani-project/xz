@@ -130,7 +130,6 @@ crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 
 	__m128i v2, v3;
 
-#ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	if (size <= 16) {
 		// Right-shift initial_crc by 1-16 bytes based on "size"
 		// and store the result in v1 (high bytes) and v0 (low bytes).
@@ -173,9 +172,7 @@ crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 
 		*v0 = _mm_xor_si128(*v0, v3);
 		*v1 = _mm_alignr_epi8(*v1, *v0, 8);
-	} else
-#endif
-	{
+	} else {
 		// There is more than 16 bytes of input.
 		const __m128i data1 = _mm_load_si128(aligned_buf);
 		const __m128i *end = (const __m128i*)(
@@ -245,11 +242,9 @@ crc_attr_target
 static uint32_t
 crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 {
-#ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	// The code assumes that there is at least one byte of input.
 	if (size == 0)
 		return crc;
-#endif
 
 	// uint32_t poly = 0xedb88320;
 	const int64_t p = 0x1db710640; // p << 1
@@ -334,11 +329,9 @@ crc_attr_target
 static uint64_t
 crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 {
-#ifndef CRC_USE_GENERIC_FOR_SMALL_INPUTS
 	// The code assumes that there is at least one byte of input.
 	if (size == 0)
 		return crc;
-#endif
 
 	// const uint64_t poly = 0xc96c5795d7870f42; // CRC polynomial
 	const uint64_t p  = 0x92d8af2baf0e1e85; // (poly << 1) | 1

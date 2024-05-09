@@ -164,27 +164,6 @@ extern LZMA_API(uint32_t)
 lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 {
 #if defined(CRC32_GENERIC) && defined(CRC32_ARCH_OPTIMIZED)
-	// On x86-64, if CLMUL is available, it is the best for non-tiny
-	// inputs, being over twice as fast as the generic slice-by-four
-	// version. However, for size <= 16 it's different. In the extreme
-	// case of size == 1 the generic version can be five times faster.
-	// At size >= 8 the CLMUL starts to become reasonable. It
-	// varies depending on the alignment of buf too.
-	//
-	// The above doesn't include the overhead of mythread_once().
-	// At least on x86-64 GNU/Linux, pthread_once() is very fast but
-	// it still makes lzma_crc32(buf, 1, crc) 50-100 % slower. When
-	// size reaches 12-16 bytes the overhead becomes negligible.
-	//
-	// So using the generic version for size <= 16 may give better
-	// performance with tiny inputs but if such inputs happen rarely
-	// it's not so obvious because then the lookup table of the
-	// generic version may not be in the processor cache.
-#ifdef CRC_USE_GENERIC_FOR_SMALL_INPUTS
-	if (size <= 16)
-		return crc32_generic(buf, size, crc);
-#endif
-
 /*
 #ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
 	// See crc32_dispatch(). This would be the alternative which uses

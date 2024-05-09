@@ -59,8 +59,6 @@
 #undef CRC32_ARM64
 #undef CRC64_ARM64_CLMUL
 
-#undef CRC_USE_GENERIC_FOR_SMALL_INPUTS
-
 // ARM64 CRC32 instruction is only useful for CRC32. Currently, only
 // little endian is supported since we were unable to test on a big
 // endian machine.
@@ -99,18 +97,6 @@
 #		define CRC32_ARCH_OPTIMIZED 1
 #		define CRC64_ARCH_OPTIMIZED 1
 #		define CRC_X86_CLMUL 1
-
-/*
-		// The generic code is much faster with 1-8-byte inputs and
-		// has similar performance up to 16 bytes  at least in
-		// microbenchmarks (it depends on input buffer alignment
-		// too). If both versions are built, this #define will use
-		// the generic version for inputs up to 16 bytes and CLMUL
-		// for bigger inputs. It saves a little in code size since
-		// the special cases for 0-16-byte inputs will be omitted
-		// from the CLMUL code.
-#		define CRC_USE_GENERIC_FOR_SMALL_INPUTS 1
-*/
 #	endif
 #endif
 

@@ -151,9 +151,9 @@ foreach f : time_fcts
     endif
 endforeach
 
-if cc.has_function('posix_advice', prefix : '#include <fcntl.h>')
-    config_h.set10('HAVE_POSIX_ADVICE', true,
-        description: 'Define to 1 if the posix_advice() function is available.'
+if cc.has_function('posix_fadvise', prefix : '#include <fcntl.h>')
+    config_h.set10('HAVE_POSIX_FADVISE', true,
+        description: 'Define to 1 if the posix_fadvise() function is available.'
     )
 endif
 

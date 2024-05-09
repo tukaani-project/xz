@@ -70,7 +70,6 @@
 
 
 crc_attr_target
-crc_attr_no_sanitize_address
 static lzma_always_inline void
 crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 		const __m128i vfold16, const __m128i initial_crc)
@@ -243,7 +242,6 @@ calc_hi(uint64_t p, uint64_t a, int n)
 #ifdef BUILDING_CRC32_CLMUL
 
 crc_attr_target
-crc_attr_no_sanitize_address
 static uint32_t
 crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 {
@@ -333,7 +331,6 @@ calc_hi(uint64_t poly, uint64_t a)
 #endif
 
 crc_attr_target
-crc_attr_no_sanitize_address
 static uint64_t
 crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 {

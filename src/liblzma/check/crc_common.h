@@ -38,15 +38,6 @@
 #endif
 
 
-// CRC CLMUL code needs this because accessing input buffers that aren't
-// aligned to the vector size will inherently trip the address sanitizer.
-#if lzma_has_attribute(__no_sanitize_address__)
-#	define crc_attr_no_sanitize_address \
-			__attribute__((__no_sanitize_address__))
-#else
-#	define crc_attr_no_sanitize_address
-#endif
-
 // Keep this in sync with changes to crc32_arm64.h
 #if defined(_WIN32) || defined(HAVE_GETAUXVAL) \
 		|| defined(HAVE_ELF_AUX_INFO) \

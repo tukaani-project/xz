@@ -256,6 +256,7 @@ filters_memusage_max(uint64_t *filter_memusages,
 		uint64_t memusage = UINT64_MAX;
 #ifdef MYTHREAD_ENABLED
 		if (mt != NULL) {
+			assert(encode);
 			mt_local.filters = filters[i];
 			memusage = lzma_stream_encoder_mt_memusage(&mt_local);
 		} else

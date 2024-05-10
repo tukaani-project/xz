@@ -532,18 +532,10 @@ coder_set_compression_settings(void)
 	// NOTE: If only encoder support was built, we cannot show the
 	// what the decoder memory usage will be.
 	message_mem_needed(V_DEBUG, memory_usage);
-#ifdef HAVE_DECODERS
-	if (opt_mode == MODE_COMPRESS) {
-#ifdef HAVE_ENCODERS
-		const uint64_t decmem =
-				filters_memusage_max(NULL, false);
-#else
-		// If encoders are not enabled, then --block-list is never
-		// usable and the filter chains 1-9 are never used.
-		// So there is no need to find the maximum decoder memory
-		// required in this case.
-		const uint64_t decmem = lzma_raw_decoder_memusage(filters[0]);
-#endif
+
+#if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
+	if (opt_mode == MODE_COMPRESS && message_verbosity_get() >= V_DEBUG) {
+		const uint64_t decmem = filters_memusage_max(NULL, false);
 		if (decmem != UINT64_MAX)
 			message(V_DEBUG, _("Decompression will need "
 					"%s MiB of memory."), uint64_to_str(

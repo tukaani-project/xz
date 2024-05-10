@@ -358,8 +358,13 @@ if test "x$enable_assembler" = xyes; then
 	esac
 fi
 case $enable_assembler in
-	x86 | no)
-		AC_MSG_RESULT([$enable_assembler])
+	x86)
+		AC_DEFINE([HAVE_CRC_X86_ASM], [1], [Define to 1 if
+			the 32-bit x86 CRC assembly files are used.])
+		AC_MSG_RESULT([x86])
+		;;
+	no)
+		AC_MSG_RESULT([no])
 		;;
 	*)
 		AC_MSG_RESULT([])

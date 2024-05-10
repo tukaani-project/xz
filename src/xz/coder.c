@@ -659,7 +659,7 @@ coder_set_compression_settings(void)
 
 		// Original dictionary sizes are used to show how each
 		// filter's dictionary was reduced.
-		uint64_t orig_dict_size;
+		uint32_t orig_dict_size;
 
 		// Index of the LZMA filter in the filters member. We only
 		// adjust this filter's memusage because we don't know how

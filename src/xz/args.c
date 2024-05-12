@@ -105,7 +105,7 @@ parse_block_list(const char *str_const)
 			*p = '\0';
 
 		// Use the default filter chain unless overridden.
-		opt_block_list[i].filters_index = 0;
+		opt_block_list[i].chain_num = 0;
 
 		// To specify a filter chain, the block list entry may be
 		// prepended with "[filter-chain-number]:". The size is
@@ -132,9 +132,9 @@ parse_block_list(const char *str_const)
 						"filter chain number '%c:'"),
 						str[0]);
 
-			const unsigned filter_num = (unsigned)(str[0] - '0');
-			opt_block_list[i].filters_index = filter_num;
-			block_list_chain_mask |= 1U << filter_num;
+			const unsigned chain_num = (unsigned)(str[0] - '0');
+			opt_block_list[i].chain_num = chain_num;
+			block_list_chain_mask |= 1U << chain_num;
 			str += 2;
 		} else {
 			// This Block uses the default filter chain.

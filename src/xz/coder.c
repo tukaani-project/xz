@@ -50,7 +50,7 @@ static lzma_filter chains[NUM_FILTER_CHAIN_MAX][LZMA_FILTERS_MAX + 1];
 /// if they are never used in --block-list. When --block-list isn't
 /// specified, only the default filter chain is used, thus the initial
 /// value of this variable is 1U << 0 (the number of the default chain is 0).
-static uint32_t filters_used_mask = 1U << 0;
+static uint32_t chains_used_mask = 1U << 0;
 
 /// Input and output buffers
 static io_buf in_buf;
@@ -210,12 +210,12 @@ extern void
 coder_add_block_filters(const char *str, size_t slot)
 {
 	// Free old filters first, if they were previously allocated.
-	if (filters_used_mask & (1U << slot))
+	if (chains_used_mask & (1U << slot))
 		lzma_filters_free(chains[slot], NULL);
 
 	str_to_filters(str, slot, 0);
 
-	filters_used_mask |= 1U << slot;
+	chains_used_mask |= 1U << slot;
 }
 
 
@@ -250,7 +250,7 @@ filters_memusage_max(uint64_t *filter_memusages,
 #endif
 
 	for (uint32_t i = 0; i < ARRAY_SIZE(chains); i++) {
-		if (!(filters_used_mask & (1U << i)))
+		if (!(chains_used_mask & (1U << i)))
 			continue;
 
 		uint64_t memusage = UINT64_MAX;
@@ -306,9 +306,9 @@ coder_set_compression_settings(void)
 		assert(opt_format == FORMAT_XZ);
 
 		// Find out if block_list_chain_mask has a bit set that
-		// isn't set in filters_used_mask.
+		// isn't set in chains_used_mask.
 		const uint32_t missing_chains_mask
-				= (block_list_chain_mask ^ filters_used_mask)
+				= (block_list_chain_mask ^ chains_used_mask)
 				& block_list_chain_mask;
 
 		// If a filter chain was specified in --block-list but no
@@ -333,11 +333,11 @@ coder_set_compression_settings(void)
 		// uses this mask to determine which chains to free. Thus it
 		// won't free the ones that are cleared here from the mask.
 		// In practice this doesn't matter.)
-		filters_used_mask &= block_list_chain_mask;
+		chains_used_mask &= block_list_chain_mask;
 	} else {
 		// Reset filters used mask in case --block-list is not
 		// used, but --filtersX is used.
-		filters_used_mask = 1U << 0;
+		chains_used_mask = 1U << 0;
 	}
 #endif
 
@@ -348,7 +348,7 @@ coder_set_compression_settings(void)
 	// filter chain.
 	lzma_filter *default_filters = chains[0];
 
-	if (filters_count == 0 && filters_used_mask & 1) {
+	if (filters_count == 0 && chains_used_mask & 1) {
 		// We are using a preset. This is not a good idea in raw mode
 		// except when playing around with things. Different versions
 		// of this software may use different options in presets, and
@@ -391,13 +391,13 @@ coder_set_compression_settings(void)
 	// filter to prevent LZMA_PROG_ERROR. With the chains from --filtersX
 	// we have already ensured this by calling lzma_str_to_filters()
 	// without setting the flags that would allow non-.xz filters.
-	if (opt_format == FORMAT_XZ && filters_used_mask & 1)
+	if (opt_format == FORMAT_XZ && chains_used_mask & 1)
 		for (size_t i = 0; i < filters_count; ++i)
 			if (default_filters[i].id == LZMA_FILTER_LZMA1)
 				message_fatal(_("LZMA1 cannot be used "
 						"with the .xz format"));
 
-	if (filters_used_mask & 1) {
+	if (chains_used_mask & 1) {
 		// Print the selected default filter chain.
 		message_filters_show(V_DEBUG, default_filters);
 	}
@@ -407,7 +407,7 @@ coder_set_compression_settings(void)
 	// support LZMA_SYNC_FLUSH so single-threaded mode must be used.
 	if (opt_mode == MODE_COMPRESS && opt_flush_timeout != 0) {
 		for (uint32_t i = 0; i < ARRAY_SIZE(chains); ++i) {
-			if (!(filters_used_mask & (1U << i)))
+			if (!(chains_used_mask & (1U << i)))
 				continue;
 
 			const lzma_filter *fc = chains[i];
@@ -463,7 +463,7 @@ coder_set_compression_settings(void)
 			if (block_size == 0) {
 				for (uint32_t i = 0; i < ARRAY_SIZE(chains);
 						i++) {
-					if (!(filters_used_mask & (1U << i)))
+					if (!(chains_used_mask & (1U << i)))
 						continue;
 
 					uint64_t size = lzma_mt_block_size(
@@ -675,7 +675,7 @@ coder_set_compression_settings(void)
 		r->filters = NULL;
 		r->reduce_dict_size = false;
 
-		if (!(filters_used_mask & (1U << i)))
+		if (!(chains_used_mask & (1U << i)))
 			continue;
 
 		for (uint32_t j = 0; chains[i][j].id != LZMA_VLI_UNKNOWN;
@@ -1510,7 +1510,7 @@ coder_free(void)
 	// debug mode and will be freed when the process ends anyway, we
 	// don't worry about freeing it.
 	for (uint32_t i = 1; i < ARRAY_SIZE(chains); i++) {
-		if (filters_used_mask & (1U << i))
+		if (chains_used_mask & (1U << i))
 			lzma_filters_free(chains[i], NULL);
 	}
 

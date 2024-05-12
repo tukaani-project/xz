@@ -689,8 +689,8 @@ coder_set_compression_settings(void)
 				r->lzma_idx = j;
 				r->reduce_dict_size = true;
 
-				lzma_options_lzma *opt = r->filters
-						[r->lzma_idx].options;
+				lzma_options_lzma *opt
+					= r->filters[r->lzma_idx].options;
 				r->orig_dict_size = opt->dict_size;
 				opt->dict_size &= ~((UINT32_C(1) << 20) - 1);
 			}
@@ -1114,8 +1114,8 @@ split_block(uint64_t *block_remaining,
 			// Update the filters if needed.
 			if (opt_block_list[*list_pos - 1].chain_num
 				!= opt_block_list[*list_pos].chain_num) {
-				const unsigned chain_idx = opt_block_list
-						[*list_pos].chain_num;
+				const unsigned chain_idx
+					= opt_block_list[*list_pos].chain_num;
 				const lzma_filter *next = chains[chain_idx];
 				const lzma_ret ret = lzma_filters_update(
 						&strm, next);

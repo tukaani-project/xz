@@ -446,7 +446,7 @@ coder_set_compression_settings(void)
 	// Memory usage for each encoder filter chain (default
 	// or --filtersX). The encoder options may need to be
 	// scaled down depending on the memory usage limit.
-	uint64_t filter_memusages[ARRAY_SIZE(chains)];
+	uint64_t encoder_memusages[ARRAY_SIZE(chains)];
 #endif
 
 	if (opt_mode == MODE_COMPRESS) {
@@ -497,7 +497,7 @@ coder_set_compression_settings(void)
 			mt_options.block_size = block_size;
 			mt_options.check = check;
 
-			memory_usage = filters_memusage_max(filter_memusages,
+			memory_usage = filters_memusage_max(encoder_memusages,
 						&mt_options, true);
 			if (memory_usage != UINT64_MAX)
 				message(V_DEBUG, _("Using up to %" PRIu32
@@ -506,7 +506,7 @@ coder_set_compression_settings(void)
 		} else
 #	endif
 		{
-			memory_usage = filters_memusage_max(filter_memusages,
+			memory_usage = filters_memusage_max(encoder_memusages,
 					NULL, true);
 		}
 #endif
@@ -556,7 +556,7 @@ coder_set_compression_settings(void)
 			// Reduce the number of threads by one and check
 			// the memory usage.
 			--mt_options.threads;
-			memory_usage = filters_memusage_max(filter_memusages,
+			memory_usage = filters_memusage_max(encoder_memusages,
 					&mt_options, true);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
@@ -619,7 +619,7 @@ coder_set_compression_settings(void)
 		// the multithreaded mode but the output
 		// is also different.
 		hardware_threads_set(1);
-		memory_usage = filters_memusage_max(filter_memusages,
+		memory_usage = filters_memusage_max(encoder_memusages,
 				NULL, true);
 		message(V_WARNING, _("Switching to single-threaded mode "
 			"to not exceed the memory usage limit of %s MiB"),
@@ -682,7 +682,7 @@ coder_set_compression_settings(void)
 			if ((chains[i][j].id == LZMA_FILTER_LZMA2
 					|| chains[i][j].id
 						== LZMA_FILTER_LZMA1)
-					&& filter_memusages[i]
+					&& encoder_memusages[i]
 						> memory_limit) {
 				count++;
 				r->filters = chains[i];

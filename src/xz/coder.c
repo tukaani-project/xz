@@ -383,7 +383,9 @@ coder_set_compression_settings(void)
 				"the LZMA1 filter"));
 
 	// If we are using the .xz format, make sure that there is no LZMA1
-	// filter to prevent LZMA_PROG_ERROR.
+	// filter to prevent LZMA_PROG_ERROR. With the chains from --filtersX
+	// we have already ensured this by calling lzma_str_to_filters()
+	// without setting the flags that would allow non-.xz filters.
 	if (opt_format == FORMAT_XZ && filters_used_mask & 1)
 		for (size_t i = 0; i < filters_count; ++i)
 			if (default_filters[i].id == LZMA_FILTER_LZMA1)

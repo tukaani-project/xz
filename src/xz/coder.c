@@ -27,6 +27,8 @@ bool opt_auto_adjust = true;
 bool opt_single_stream = false;
 uint64_t opt_block_size = 0;
 block_list_entry *opt_block_list = NULL;
+uint64_t block_list_largest;
+uint32_t block_list_chain_mask;
 
 /// Stream used to communicate with liblzma
 static lzma_stream strm = LZMA_STREAM_INIT;

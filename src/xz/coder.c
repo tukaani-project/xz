@@ -522,7 +522,7 @@ coder_set_compression_settings(void)
 	// Print memory usage info before possible dictionary
 	// size auto-adjusting.
 	//
-	// NOTE: If only encoder support was built, we cannot show the
+	// NOTE: If only encoder support was built, we cannot show
 	// what the decoder memory usage will be.
 	message_mem_needed(V_DEBUG, memory_usage);
 

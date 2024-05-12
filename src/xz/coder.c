@@ -292,6 +292,10 @@ coder_set_compression_settings(void)
 
 #ifdef HAVE_ENCODERS
 	if (opt_block_list != NULL) {
+		// args.c ensures these.
+		assert(opt_mode == MODE_COMPRESS);
+		assert(opt_format == FORMAT_XZ);
+
 		// Find out if block_list_chain_mask has a bit set that
 		// isn't set in filters_used_mask.
 		const uint32_t missing_chains_mask

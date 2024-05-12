@@ -290,6 +290,15 @@ coder_set_compression_settings(void)
 	assert(opt_format != FORMAT_LZIP);
 #endif
 
+	// The default check type is CRC64, but fallback to CRC32
+	// if CRC64 isn't supported by the copy of liblzma we are
+	// using. CRC32 is always supported.
+	if (check_default) {
+		check = LZMA_CHECK_CRC64;
+		if (!lzma_check_is_supported(check))
+			check = LZMA_CHECK_CRC32;
+	}
+
 #ifdef HAVE_ENCODERS
 	if (opt_block_list != NULL) {
 		// args.c ensures these.
@@ -331,15 +340,6 @@ coder_set_compression_settings(void)
 		filters_used_mask = 1U << 0;
 	}
 #endif
-
-	// The default check type is CRC64, but fallback to CRC32
-	// if CRC64 isn't supported by the copy of liblzma we are
-	// using. CRC32 is always supported.
-	if (check_default) {
-		check = LZMA_CHECK_CRC64;
-		if (!lzma_check_is_supported(check))
-			check = LZMA_CHECK_CRC32;
-	}
 
 	// Options for LZMA1 or LZMA2 in case we are using a preset.
 	static lzma_options_lzma opt_lzma;

@@ -38,7 +38,7 @@ typedef struct {
 
 	/// Index into the filters[] representing the filter chain to use
 	/// for this Block.
-	uint32_t filters_index;
+	unsigned filters_index;
 } block_list_entry;
 
 

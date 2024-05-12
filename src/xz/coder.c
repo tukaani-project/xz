@@ -406,7 +406,7 @@ coder_set_compression_settings(void)
 	// from the filter chain. Currently the threaded encoder doesn't
 	// support LZMA_SYNC_FLUSH so single-threaded mode must be used.
 	if (opt_mode == MODE_COMPRESS && opt_flush_timeout != 0) {
-		for (uint32_t i = 0; i < ARRAY_SIZE(chains); ++i) {
+		for (unsigned i = 0; i < ARRAY_SIZE(chains); ++i) {
 			if (!(chains_used_mask & (1U << i)))
 				continue;
 
@@ -421,7 +421,7 @@ coder_set_compression_settings(void)
 					message_fatal(_("Filter chain %u is "
 							"incompatible with "
 							"--flush-timeout"),
-							(unsigned)i);
+							i);
 				}
 			}
 		}
@@ -461,7 +461,7 @@ coder_set_compression_settings(void)
 			// If opt_block_size is not set, find the maximum
 			// recommended Block size based on the filter chains
 			if (block_size == 0) {
-				for (uint32_t i = 0; i < ARRAY_SIZE(chains);
+				for (unsigned i = 0; i < ARRAY_SIZE(chains);
 						i++) {
 					if (!(chains_used_mask & (1U << i)))
 						continue;
@@ -476,8 +476,7 @@ coder_set_compression_settings(void)
 					if (size == UINT64_MAX)
 						message_fatal(_("Unsupported "
 							"options in filter "
-							"chain %u"),
-							(unsigned)i);
+							"chain %u"), i);
 
 					if (size > block_size)
 						block_size = size;
@@ -732,7 +731,7 @@ coder_set_compression_settings(void)
 
 	// Tell the user that we decreased the dictionary size for
 	// each filter that was adjusted.
-	for (uint32_t i = 0; i < ARRAY_SIZE(memusage_reduction); i++) {
+	for (unsigned i = 0; i < ARRAY_SIZE(memusage_reduction); i++) {
 		memusage_reduction_data *r = &memusage_reduction[i];
 
 		// If the filters were never set, then the memory usage
@@ -762,7 +761,7 @@ coder_set_compression_settings(void)
 				"exceed the memory usage limit of %s MiB"),
 				filter_lzma->id == LZMA_FILTER_LZMA2
 					? '2' : '1',
-				(unsigned)i,
+				i,
 				uint64_to_str(r->orig_dict_size >> 20, 0),
 				uint64_to_str(opt->dict_size >> 20, 1),
 				uint64_to_str(round_up_to_mib(
@@ -1115,7 +1114,7 @@ split_block(uint64_t *block_remaining,
 			// Update the filters if needed.
 			if (opt_block_list[*list_pos - 1].filters_index
 				!= opt_block_list[*list_pos].filters_index) {
-				const uint32_t chain_idx = opt_block_list
+				const unsigned chain_idx = opt_block_list
 						[*list_pos].filters_index;
 				const lzma_filter *next = chains[chain_idx];
 				const lzma_ret ret = lzma_filters_update(
@@ -1133,7 +1132,7 @@ split_block(uint64_t *block_remaining,
 					message_fatal(
 						_("Error changing to "
 						"filter chain %u: %s"),
-						(unsigned)chain_idx,
+						chain_idx,
 						message_strm(ret));
 				}
 			}

@@ -648,7 +648,7 @@ coder_set_compression_settings(void)
 		// filter's dictionary was reduced.
 		uint32_t orig_dict_size;
 
-		// Index of the LZMA filter in the filters member. We only
+		// Index of LZMA1 or LZMA2 in the filters member. We only
 		// adjust this filter's memusage because we don't know how
 		// to reduce the memory usage of the other filters.
 		uint32_t lzma_idx;
@@ -662,14 +662,10 @@ coder_set_compression_settings(void)
 
 	memusage_reduction_data memusage_reduction[ARRAY_SIZE(chains)];
 
-	// Counter represents how many filter chains are above the memory
-	// limit.
+	// Count how many filter chains are above the memory usage limit.
 	size_t count = 0;
 
 	for (uint32_t i = 0; i < ARRAY_SIZE(chains); i++) {
-		// The short var name "r" will reduce the number of lines
-		// of code needed since less lines will stretch past 80
-		// characters.
 		memusage_reduction_data *r = &memusage_reduction[i];
 		r->filters = NULL;
 		r->reduce_dict_size = false;

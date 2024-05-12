@@ -867,7 +867,7 @@ coder_init(file_pair *pair)
 	// Otherwise, use first filter chain from the block list.
 	lzma_filter *active_filters = opt_block_list == NULL
 			? chains[0]
-			: chains[opt_block_list[0].filters_index];
+			: chains[opt_block_list[0].chain_num];
 
 	if (opt_mode == MODE_COMPRESS) {
 #ifdef HAVE_ENCODERS
@@ -1112,10 +1112,10 @@ split_block(uint64_t *block_remaining,
 			++*list_pos;
 
 			// Update the filters if needed.
-			if (opt_block_list[*list_pos - 1].filters_index
-				!= opt_block_list[*list_pos].filters_index) {
+			if (opt_block_list[*list_pos - 1].chain_num
+				!= opt_block_list[*list_pos].chain_num) {
 				const unsigned chain_idx = opt_block_list
-						[*list_pos].filters_index;
+						[*list_pos].chain_num;
 				const lzma_filter *next = chains[chain_idx];
 				const lzma_ret ret = lzma_filters_update(
 						&strm, next);

@@ -41,13 +41,13 @@ static lzma_stream strm = LZMA_STREAM_INIT;
 /// the --block-list option.
 static lzma_filter filters[NUM_FILTER_CHAIN_MAX][LZMA_FILTERS_MAX + 1];
 
-/// Bit mask representing the filters that are actually used when encoding
-/// in the xz format. This is needed since a filter chain could be
-/// specified in --filtersX (or the default filter chain), but never used
-/// in --block-list. The default filter chain is always assumed to be used,
-/// unless --block-list is specified and does not have a block using the
-/// default filter chain.
-static uint32_t filters_used_mask = 1;
+/// Bitmask indicating which filter chains are actually used when encoding
+/// in the .xz format. This is needed since the filter chains specified using
+/// --filtersX (or the default filter chain) might in reality be unneeded
+/// if they are never used in --block-list. When --block-list isn't
+/// specified, only the default filter chain is used, thus the initial
+/// value of this variable is 1U << 0 (the number of the default chain is 0).
+static uint32_t filters_used_mask = 1U << 0;
 
 /// Input and output buffers
 static io_buf in_buf;
@@ -339,7 +339,7 @@ coder_set_compression_settings(void)
 	} else {
 		// Reset filters used mask in case --block-list is not
 		// used, but --filtersX is used.
-		filters_used_mask = 1;
+		filters_used_mask = 1U << 0;
 	}
 #endif
 	// The default check type is CRC64, but fallback to CRC32

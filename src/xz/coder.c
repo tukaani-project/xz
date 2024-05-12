@@ -49,12 +49,6 @@ static lzma_filter filters[NUM_FILTER_CHAIN_MAX][LZMA_FILTERS_MAX + 1];
 /// default filter chain.
 static uint32_t filters_used_mask = 1;
 
-#ifdef HAVE_ENCODERS
-/// Track the memory usage for all filter chains (default or --filtersX).
-/// The memory usage may need to be scaled down depending on the memory limit.
-static uint64_t filter_memusages[ARRAY_SIZE(filters)];
-#endif
-
 /// Input and output buffers
 static io_buf in_buf;
 static io_buf out_buf;
@@ -250,7 +244,8 @@ validate_block_list_filter(const uint32_t filter_num)
 // Calculate the memory usage of each filter chain.
 // Return the maximum memory usage of all of the filter chains.
 static uint64_t
-filters_memusage_max(const lzma_mt *mt, bool encode)
+filters_memusage_max(uint64_t *filter_memusages,
+		const lzma_mt *mt, bool encode)
 {
 	uint64_t max_memusage = 0;
 
@@ -273,18 +268,19 @@ filters_memusage_max(const lzma_mt *mt, bool encode)
 		if (mt != NULL) {
 			mt_local.filters = filters[i];
 			memusage = lzma_stream_encoder_mt_memusage(&mt_local);
-			filter_memusages[i] = memusage;
 		} else
 #endif
 		if (encode) {
 			memusage = lzma_raw_encoder_memusage(filters[i]);
-			filter_memusages[i] = memusage;
 		}
 #ifdef HAVE_DECODERS
 		else {
 			memusage = lzma_raw_decoder_memusage(filters[i]);
 		}
 #endif
+
+		if (filter_memusages != NULL)
+			filter_memusages[i] = memusage;
 
 		if (memusage > max_memusage)
 			max_memusage = memusage;
@@ -456,6 +452,14 @@ coder_set_compression_settings(void)
 	// will be replaced.
 	uint64_t memory_limit = hardware_memlimit_get(opt_mode);
 	uint64_t memory_usage = UINT64_MAX;
+
+#ifdef HAVE_ENCODERS
+	// Memory usage for each encoder filter chain (default
+	// or --filtersX). The encoder options may need to be
+	// scaled down depending on the memory usage limit.
+	uint64_t filter_memusages[ARRAY_SIZE(filters)];
+#endif
+
 	if (opt_mode == MODE_COMPRESS) {
 #ifdef HAVE_ENCODERS
 #	ifdef MYTHREAD_ENABLED
@@ -505,7 +509,7 @@ coder_set_compression_settings(void)
 			mt_options.block_size = block_size;
 			mt_options.check = check;
 
-			memory_usage = filters_memusage_max(
+			memory_usage = filters_memusage_max(filter_memusages,
 						&mt_options, true);
 			if (memory_usage != UINT64_MAX)
 				message(V_DEBUG, _("Using up to %" PRIu32
@@ -514,7 +518,8 @@ coder_set_compression_settings(void)
 		} else
 #	endif
 		{
-			memory_usage = filters_memusage_max(NULL, true);
+			memory_usage = filters_memusage_max(filter_memusages,
+					NULL, true);
 		}
 #endif
 	} else {
@@ -535,7 +540,8 @@ coder_set_compression_settings(void)
 
 #if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 	if (opt_mode == MODE_COMPRESS && message_verbosity_get() >= V_DEBUG) {
-		const uint64_t decmem = filters_memusage_max(NULL, false);
+		const uint64_t decmem = filters_memusage_max(
+				NULL, NULL, false);
 		if (decmem != UINT64_MAX)
 			message(V_DEBUG, _("Decompression will need "
 					"%s MiB of memory."), uint64_to_str(
@@ -562,7 +568,7 @@ coder_set_compression_settings(void)
 			// Reduce the number of threads by one and check
 			// the memory usage.
 			--mt_options.threads;
-			memory_usage = filters_memusage_max(
+			memory_usage = filters_memusage_max(filter_memusages,
 					&mt_options, true);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
@@ -625,7 +631,8 @@ coder_set_compression_settings(void)
 		// the multithreaded mode but the output
 		// is also different.
 		hardware_threads_set(1);
-		memory_usage = filters_memusage_max(NULL, true);
+		memory_usage = filters_memusage_max(filter_memusages,
+				NULL, true);
 		message(V_WARNING, _("Switching to single-threaded mode "
 			"to not exceed the memory usage limit of %s MiB"),
 			uint64_to_str(round_up_to_mib(memory_limit), 0));

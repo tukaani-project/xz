@@ -126,9 +126,8 @@ parse_block_list(const char *str_const)
 						"filter chain number '%c:'"),
 						str[0]);
 
-			int filter_num = str[0] - '0';
-			opt_block_list[i].filters_index =
-					(uint32_t)filter_num;
+			const uint32_t filter_num = (uint32_t)(str[0] - '0');
+			opt_block_list[i].filters_index = filter_num;
 			str += 2;
 		}
 

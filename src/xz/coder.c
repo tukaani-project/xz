@@ -433,12 +433,9 @@ coder_set_compression_settings(void)
 		}
 	}
 
-	// Get the memory usage and memory limit. The memory usage is the
-	// maximum of the default filters[] and any filters specified by
-	// --filtersX.
-	// Note that if --format=raw was used, we can be decompressing and
-	// do not need to account for any filter chains created
-	// with --filtersX.
+	// Get memory limit and the memory usage of the used filter chains.
+	// Note that if --format=raw was used, we can be decompressing
+	// using the default filter chain.
 	//
 	// If multithreaded .xz compression is done, the memory limit
 	// will be replaced.

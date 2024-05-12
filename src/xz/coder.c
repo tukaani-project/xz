@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "private.h"
+#include "tuklib_integer.h"
 
 
 /// Return value type for coder_init().
@@ -230,19 +231,6 @@ memlimit_too_small(uint64_t memory_usage)
 
 
 #ifdef HAVE_ENCODERS
-// For a given opt_block_list index, validate that the filter has been
-// set. If it has not been set, we must exit with error to avoid using
-// an uninitialized filter chain.
-static void
-validate_block_list_filter(const uint32_t filter_num)
-{
-         if (!(filters_used_mask & (1U << filter_num)))
-		message_fatal(_("filter chain %u used by --block-list but "
-				"not specified with --filters%u="),
-				(unsigned)filter_num, (unsigned)filter_num);
-}
-
-
 // Calculate the memory usage of each filter chain.
 // Return the maximum memory usage of all of the filter chains.
 static uint64_t
@@ -302,48 +290,43 @@ coder_set_compression_settings(void)
 #endif
 
 #ifdef HAVE_ENCODERS
-#	ifdef MYTHREAD_ENABLED
-	// Represents the largest Block size specified with --block-list. This
-	// is needed to help reduce the Block size in the multithreaded encoder
-	// so memory is not wasted.
-	uint64_t max_block_list_size = 0;
-#	endif
-
 	if (opt_block_list != NULL) {
-		// This mask tracks the filters actually referenced in
-		// --block-list. It is used to help remove bits from
-		// filters_used_mask when a filter chain was specified
-		// but never actually used.
-		uint32_t filters_ref_mask = 0;
+		// Find out if block_list_chain_mask has a bit set that
+		// isn't set in filters_used_mask.
+		const uint32_t missing_chains_mask
+				= (block_list_chain_mask ^ filters_used_mask)
+				& block_list_chain_mask;
 
-		for (uint32_t i = 0; opt_block_list[i].size != 0; i++) {
-			validate_block_list_filter(
-					opt_block_list[i].filters_index);
+		// If a filter chain was specified in --block-list but no
+		// matching --filtersX option was used, exit with an error.
+		if (missing_chains_mask != 0) {
+			// Get the number of the first missing filter chain
+			// and show it in the error message.
+			const unsigned first_missing
+				= (unsigned)ctz32(missing_chains_mask);
 
-			// Mark the current filter as referenced.
-			filters_ref_mask |= 1U <<
-					opt_block_list[i].filters_index;
-
-#	ifdef MYTHREAD_ENABLED
-			if (opt_block_list[i].size > max_block_list_size)
-				max_block_list_size = opt_block_list[i].size;
-#	endif
+			message_fatal(_("filter chain %u used by "
+				"--block-list but not specified "
+				"with --filters%u="),
+				first_missing, first_missing);
 		}
 
-		assert(filters_ref_mask != 0);
-
-		// NOTE: The filters that were initialized but not used do
-		//       not free their options and do not have the filter
-		//       IDs set to LZMA_VLI_UNKNOWN. Filter chains are not
-		//       freed outside of debug mode and the default filter
-		//       chain is never freed.
-		filters_used_mask = filters_ref_mask;
+		// Omit the unused filter chains from mask of used chains.
+		//
+		// (FIXME? When built with debugging, coder_free() will free()
+		// the filter chains (except the default chain) which makes
+		// Valgrind show fewer reachable allocations. But coder_free()
+		// uses this mask to determine which chains to free. Thus it
+		// won't free the ones that are cleared here from the mask.
+		// In practice this doesn't matter.)
+		filters_used_mask &= block_list_chain_mask;
 	} else {
 		// Reset filters used mask in case --block-list is not
 		// used, but --filtersX is used.
 		filters_used_mask = 1U << 0;
 	}
 #endif
+
 	// The default check type is CRC64, but fallback to CRC32
 	// if CRC64 isn't supported by the copy of liblzma we are
 	// using. CRC32 is always supported.
@@ -496,16 +479,16 @@ coder_set_compression_settings(void)
 						block_size = size;
 				}
 
-				// If the largest block size specified
-				// with --block-list is less than the
-				// recommended Block size, then it is a waste
-				// of RAM to use a larger Block size. It may
-				// even allow more threads to be used in some
-				// situations.
-				if (max_block_list_size > 0
-						&& max_block_list_size
-						< block_size)
-					block_size = max_block_list_size;
+				// If --block-list was used and our current
+				// Block size exceeds the largest size
+				// in --block-list, reduce the Block size of
+				// the multithreaded encoder. The extra size
+				// would only be a waste of RAM. With a
+				// smaller Block size we might even be able
+				// to use more threads in some cases.
+				if (block_list_largest > 0 && block_size
+						> block_list_largest)
+					block_size = block_list_largest;
 			}
 
 			mt_options.block_size = block_size;

@@ -735,7 +735,7 @@ coder_set_compression_settings(void)
 		if (r->filters == NULL)
 			continue;
 
-		lzma_filter *filter_lzma = &(r->filters[r->lzma_idx]);
+		lzma_filter *filter_lzma = &r->filters[r->lzma_idx];
 		lzma_options_lzma *opt = filter_lzma->options;
 
 		// The first index is the default filter chain. The message

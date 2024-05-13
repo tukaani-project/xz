@@ -1110,9 +1110,9 @@ split_block(uint64_t *block_remaining,
 			// Update the filters if needed.
 			if (opt_block_list[*list_pos - 1].chain_num
 				!= opt_block_list[*list_pos].chain_num) {
-				const unsigned chain_idx
+				const unsigned chain_num
 					= opt_block_list[*list_pos].chain_num;
-				const lzma_filter *next = chains[chain_idx];
+				const lzma_filter *next = chains[chain_num];
 				const lzma_ret ret = lzma_filters_update(
 						&strm, next);
 
@@ -1128,7 +1128,7 @@ split_block(uint64_t *block_remaining,
 					message_fatal(
 						_("Error changing to "
 						"filter chain %u: %s"),
-						chain_idx,
+						chain_num,
 						message_strm(ret));
 				}
 			}

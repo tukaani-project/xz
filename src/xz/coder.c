@@ -234,7 +234,7 @@ memlimit_too_small(uint64_t memory_usage)
 // Calculate the memory usage of each filter chain.
 // Return the maximum memory usage of all of the filter chains.
 static uint64_t
-filters_memusage_max(uint64_t *filter_memusages,
+filters_memusage_max(uint64_t *chains_memusages,
 		const lzma_mt *mt, bool encode)
 {
 	uint64_t max_memusage = 0;
@@ -270,8 +270,8 @@ filters_memusage_max(uint64_t *filter_memusages,
 		}
 #endif
 
-		if (filter_memusages != NULL)
-			filter_memusages[i] = memusage;
+		if (chains_memusages != NULL)
+			chains_memusages[i] = memusage;
 
 		if (memusage > max_memusage)
 			max_memusage = memusage;

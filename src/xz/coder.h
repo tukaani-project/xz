@@ -30,14 +30,12 @@ enum format_type {
 };
 
 
-/// Simple struct to track Block metadata specified through the
-/// --block-list option.
+/// Array of these hold the entries specified with --block-list.
 typedef struct {
 	/// Uncompressed size of the Block
 	uint64_t size;
 
-	/// Index into the filters[] representing the filter chain to use
-	/// for this Block.
+	/// Filter chain to use for this Block (chains[chain_num])
 	unsigned chain_num;
 } block_list_entry;
 

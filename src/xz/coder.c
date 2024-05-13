@@ -231,8 +231,18 @@ memlimit_too_small(uint64_t memory_usage)
 
 
 #ifdef HAVE_ENCODERS
-// Calculate the memory usage of each filter chain.
-// Return the maximum memory usage of all of the filter chains.
+/// \brief      Calculate the memory usage of each filter chain.
+///
+/// \param      chains_memusages    If non-NULL, the memusage of the encoder
+///                                 or decoder for each chain is stored in
+///                                 this array.
+/// \param      mt                  If non-NULL, calculate memory usage of
+///                                 multithreaded encoder.
+/// \param      encode              Whether to calculate encoder or decoder
+///                                 memory usage. This must be true if
+///                                 mt != NULL.
+///
+/// \return     Return the highest memory usage of all of the filter chains.
 static uint64_t
 get_chains_memusage(uint64_t *chains_memusages, const lzma_mt *mt, bool encode)
 {

@@ -234,8 +234,7 @@ memlimit_too_small(uint64_t memory_usage)
 // Calculate the memory usage of each filter chain.
 // Return the maximum memory usage of all of the filter chains.
 static uint64_t
-filters_memusage_max(uint64_t *chains_memusages,
-		const lzma_mt *mt, bool encode)
+get_chains_memusage(uint64_t *chains_memusages, const lzma_mt *mt, bool encode)
 {
 	uint64_t max_memusage = 0;
 
@@ -497,7 +496,7 @@ coder_set_compression_settings(void)
 			mt_options.block_size = block_size;
 			mt_options.check = check;
 
-			memory_usage = filters_memusage_max(encoder_memusages,
+			memory_usage = get_chains_memusage(encoder_memusages,
 						&mt_options, true);
 			if (memory_usage != UINT64_MAX)
 				message(V_DEBUG, _("Using up to %" PRIu32
@@ -506,7 +505,7 @@ coder_set_compression_settings(void)
 		} else
 #	endif
 		{
-			memory_usage = filters_memusage_max(encoder_memusages,
+			memory_usage = get_chains_memusage(encoder_memusages,
 					NULL, true);
 		}
 #endif
@@ -528,8 +527,7 @@ coder_set_compression_settings(void)
 
 #if defined(HAVE_ENCODERS) && defined(HAVE_DECODERS)
 	if (opt_mode == MODE_COMPRESS && message_verbosity_get() >= V_DEBUG) {
-		const uint64_t decmem = filters_memusage_max(
-				NULL, NULL, false);
+		const uint64_t decmem = get_chains_memusage(NULL, NULL, false);
 		if (decmem != UINT64_MAX)
 			message(V_DEBUG, _("Decompression will need "
 					"%s MiB of memory."), uint64_to_str(
@@ -556,7 +554,7 @@ coder_set_compression_settings(void)
 			// Reduce the number of threads by one and check
 			// the memory usage.
 			--mt_options.threads;
-			memory_usage = filters_memusage_max(encoder_memusages,
+			memory_usage = get_chains_memusage(encoder_memusages,
 					&mt_options, true);
 			if (memory_usage == UINT64_MAX)
 				message_bug();
@@ -619,7 +617,7 @@ coder_set_compression_settings(void)
 		// the multithreaded mode but the output
 		// is also different.
 		hardware_threads_set(1);
-		memory_usage = filters_memusage_max(encoder_memusages,
+		memory_usage = get_chains_memusage(encoder_memusages,
 				NULL, true);
 		message(V_WARNING, _("Switching to single-threaded mode "
 			"to not exceed the memory usage limit of %s MiB"),

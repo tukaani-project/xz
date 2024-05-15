@@ -3,4 +3,4 @@
 
 subdir('common')
 subdir('liblzma')
-# subdir('xzdec')
+subdir('xzdec')

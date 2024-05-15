@@ -13,7 +13,7 @@
 # [X] encoders
 # [X] external-sha256
 # [X] lzip-decoder
-# [ ] lzmadec
+# [X] lzmadec
 # [ ] lzmainfo
 # [ ] lzma-links
 # [X] match-finders
@@ -28,7 +28,7 @@
 # [X] unsafe-type-punning
 # [ ] werror      - not used : done by meson
 # [ ] xz
-# [ ] xzdec
+# [X] xzdec
 
 option('arm64-crc32',
     type : 'boolean',

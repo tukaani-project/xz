@@ -341,3 +341,10 @@ summary(
     },
     section: 'Configuration Options Summary:',
 )
+summary(
+    {
+        'xzdec': get_option('xzdec'),
+        'lzmadec': get_option('lzmadec'),
+    },
+    section: 'Tools',
+)

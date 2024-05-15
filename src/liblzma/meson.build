@@ -273,7 +273,8 @@ if sys_windows
     liblzma_rc = win_mod.compile_resources(files('liblzma_w32res.rc'),
         args : [ '-DHAVE_CONFIG_H', '-DTUKLIB_SYMBOL_PREFIX=lzma_' ],
         depend_files : files('../common/common_w32res.rc'),
-        include_directories : [ '../src/common/', config_dir ])
+        include_directories : [ '../src/common/', config_dir ]
+    )
     lzma_src += [ liblzma_rc ]
 endif
 
@@ -312,6 +313,8 @@ lzma_lib = library('lzma', lzma_src,
     link_args : sys_windows ? '-Wl,--output-def,liblzma.def.in' : '',
     version : meson.project_version(),
 )
+
+lzma_dep = declare_dependency(link_with: lzma_lib)
 
 # pc file
 

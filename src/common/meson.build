@@ -182,15 +182,12 @@ if get_option('unaligned-access').auto()
         'x86',
         'x86_64',
     ]
-    foreach cpu : unaligned_access_cpus
-        if host_machine.cpu_family() == cpu
-            config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
-                description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
-            )
-            fast_unaligned_access = true
-            break
-        endif
-    endforeach
+    if host_machine.cpu_family() in unaligned_access_cpus
+        config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
+            description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
+        )
+        fast_unaligned_access = true
+    endif
 
     if not fast_unaligned_access
         unaligned_access_cpus = [
@@ -199,9 +196,8 @@ if get_option('unaligned-access').auto()
             'riscv32',
             'riscv64',
         ]
-        foreach cpu : unaligned_access_cpus
-            if host_machine.cpu_family() == cpu
-                ua_src = '''
+        if host_machine.cpu_family() in unaligned_access_cpus
+            ua_src = '''
 #if !defined(__ARM_FEATURE_UNALIGNED) \
 		&& !defined(__riscv_misaligned_fast) \
 		&& !defined(_MSC_VER)
@@ -209,15 +205,13 @@ compile error
 #endif
 int main(void) { return 0; }
 '''
-                if cc.compiles(ua_src, name: 'fast unaligned access for ' + cpu)
-                    config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
-                    description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
-                    )
-                    fast_unaligned_access = true
-                    break
-                endif
+            if cc.compiles(ua_src, name: 'fast unaligned access for ' + host_machine.cpu_family())
+                config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
+                description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
+                )
+                fast_unaligned_access = true
             endif
-        endforeach
+        endif
     endif
 elif get_option('unaligned-access').enabled()
     config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,

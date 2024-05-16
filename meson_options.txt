@@ -172,7 +172,7 @@ option(
 option('unsafe-type-punning',
     type : 'boolean',
     value : false,
-    description : 'use ARM64 CRC32 instructions'
+    description : 'use unsafe type punning'
 )
 
 option('xz',

@@ -66,11 +66,11 @@ else
     add_project_arguments('-D_ALL_SOURCE', language: 'c')
 endif
 
-# unconditionnally define macro for C99 headers
+# unconditionally define macro for C99 headers
 add_project_arguments('-DHAVE_INTTYPES_H', language: 'c')
 add_project_arguments('-DHAVE_STDBOOL_H', language: 'c')
 add_project_arguments('-DHAVE_STDINT_H', language: 'c')
-# unconditionnally define macro for C99 functions
+# unconditionally define macro for C99 functions
 add_project_arguments('-DHAVE_MBRTOWC', language: 'c')
 
 lzma_c_args = []
@@ -102,7 +102,7 @@ if cc.get_argument_syntax() == 'gcc'
         '-Wmissing-prototypes',
         '-Wmissing-declarations',
         '-Wredundant-decls',
-#
+        #
         '-Wc99-compat',
         '-Wc11-extensions',
         '-Wc2x-compat',

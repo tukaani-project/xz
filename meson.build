@@ -132,8 +132,6 @@ if cc.compiles(ctor_fct_src, name : 'constructor attribute for functions')
     )
 endif
 
-cc.has_type('uint32_t', prefix: '#include <stdint.h>')
-
 time_fcts = [
     [ 'futimens',  [ '#include <sys/stat.h>' ] ],
     [ 'futimes',   [ '#include <sys/time.h>' ] ],

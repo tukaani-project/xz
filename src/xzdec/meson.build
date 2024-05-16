@@ -3,9 +3,6 @@
 
 xzdec_cargs = [
     '-DHAVE_CONFIG_H',
-    '-DHAVE_STDBOOL_H',
-    '-DHAVE_INTTYPES_H',
-    '-DHAVE_STDINT_H',
     '-DTUKLIB_GETTEXT=0'
 ]
 
@@ -49,9 +46,6 @@ if 'lzma1' in get_option('decoders') and get_option('lzmadec')
 
     lzmadec_cargs = [
         '-DHAVE_CONFIG_H',
-        '-DHAVE_STDBOOL_H',
-        '-DHAVE_INTTYPES_H',
-        '-DHAVE_STDINT_H',
         '-DTUKLIB_GETTEXT=0'
     ]
 

@@ -66,6 +66,13 @@ else
     add_project_arguments('-D_ALL_SOURCE', language: 'c')
 endif
 
+# unconditionnally define macro for C99 headers
+add_project_arguments('-DHAVE_INTTYPES_H', language: 'c')
+add_project_arguments('-DHAVE_STDBOOL_H', language: 'c')
+add_project_arguments('-DHAVE_STDINT_H', language: 'c')
+# unconditionnally define macro for C99 functions
+add_project_arguments('-DHAVE_MBRTOWC', language: 'c')
+
 lzma_c_args = []
 cflags_try = []
 

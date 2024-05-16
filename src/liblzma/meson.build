@@ -280,9 +280,6 @@ endif
 
 lzma_c_args += [
     '-DHAVE_CONFIG_H',
-    '-DHAVE_STDBOOL_H',
-    '-DHAVE_INTTYPES_H',
-    '-DHAVE_STDINT_H',
 ]
 
 lzma_incdir = [

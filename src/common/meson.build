@@ -230,15 +230,6 @@ endif
 
 ### FIXME : mbrtowc is supported in C99 spec and on Windows
 if cc.has_header('wchar.h')
-    config_h.set10('HAVE_WCHAR_H', true,
-        description: 'Define to 1 if the header file <wchar.h> is available.'
-    )
-
-    if cc.has_type('mbstate_t', prefix : '#include <wchar.h>') and cc.has_function('mbrtowc', prefix : '#include <wchar.h>')
-        config_h.set10('HAVE_MBRTOWC', true,
-            description: 'Define to 1 if the mbrtowc() function is available.'
-        )
-    endif
 
     if cc.has_function('wcwidth',
         args : '-D_XOPEN_SOURCE',

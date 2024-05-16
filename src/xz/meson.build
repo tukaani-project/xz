@@ -10,9 +10,6 @@ config_h.set('ASSUME_RAM', get_option('assume-ram'))
 # FIXME -DLOCALEDIR=\"$(localedir)\"
 xz_cargs = [
     '-DHAVE_CONFIG_H',
-    '-DHAVE_STDBOOL_H',
-    '-DHAVE_INTTYPES_H',
-    '-DHAVE_STDINT_H',
 ]
 
 xz_incdir = [

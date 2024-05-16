@@ -341,10 +341,12 @@ summary(
     },
     section: 'Configuration Options Summary:',
 )
+
 summary(
     {
-        'xzdec': get_option('xzdec'),
-        'lzmadec': get_option('lzmadec'),
+        'xzdec': get_option('xzdec').to_string('yes', 'no'),
+        'lzmadec': get_option('lzmadec').to_string('yes', 'no'),
+        'xz': get_option('xz').to_string('yes', 'no') + ((get_option('assume-ram') > 0) ? ' (' + get_option('assume-ram').to_string() + ' MiB)' : ''),
     },
     section: 'Tools',
 )

@@ -4,7 +4,7 @@
 # [ ] debug        - not used : done by meson
 # [ ] arm64-crc32
 # [X] assembler
-# [ ] assume-ram
+# [X] assume-ram
 # [X] checks
 # [ ] clmul-crc
 # [X] decoders
@@ -45,7 +45,7 @@ option('assembler',
 option('assume-ram',
     type : 'integer',
     value : 128,
-    description : 'how much RAM to assume if the real amount is unknown'
+    description : 'how much RAM in MiB to assume if the real amount is unknown'
 )
 
 option('checks',

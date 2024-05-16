@@ -1,19 +1,19 @@
 ## SPDX-License-Identifier: 0BSD
 ## Author: Vincent Torri
 
-if get_option('xzdec')
+xzdec_cargs = [
+    '-DHAVE_CONFIG_H',
+    '-DHAVE_STDBOOL_H',
+    '-DHAVE_INTTYPES_H',
+    '-DHAVE_STDINT_H',
+    '-DTUKLIB_GETTEXT=0'
+]
+
+if get_option('decoders').length() > 0 and get_option('xzdec')
     xzdec_src = [
         '../common/tuklib_exit.c',
         '../common/tuklib_progname.c',
         'xzdec.c'
-    ]
-
-    xzdec_cargs = [
-        '-DHAVE_CONFIG_H',
-        '-DHAVE_STDBOOL_H',
-        '-DHAVE_INTTYPES_H',
-        '-DHAVE_STDINT_H',
-        '-DTUKLIB_GETTEXT=0'
     ]
 
     xzdec_incdir = [
@@ -40,7 +40,7 @@ if get_option('xzdec')
     install_man(files('xzdec.1'))
 endif
 
-if get_option('lzmadec')
+if 'lzma1' in get_option('decoders') and get_option('lzmadec')
     lzmadec_src = [
         '../common/tuklib_exit.c',
         '../common/tuklib_progname.c',
@@ -84,6 +84,6 @@ if get_option('lzmadec')
     else
         fs = import('fs')
         fs.copyfile('xzdec.1', 'lzmadec.1')
-        install_man(files('lzmadec.1'))
+        install_man('lzmadec.1')
     endif
 endif

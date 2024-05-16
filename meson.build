@@ -128,13 +128,8 @@ config_h.set10('HAVE_VISIBILITY', cc.has_function_attribute('visibility'),
     description: 'Define to 1 if the compiler supports simple visibility declarations.'
 )
 
-ctor_fct_src = '''
-__attribute__((__constructor__))
-static void my_constructor_func(void) { return; }
-int main() { return 0; }
-'''
-if cc.compiles(ctor_fct_src, name : 'constructor attribute for functions')
-    config_h.set10('HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR', true,
+if cc.has_function_attribute('constructor')
+    config_h.set('HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR', 1,
         description: 'Define to 1 if __attribute__((__constructor__)) is supported for functions.'
     )
 endif

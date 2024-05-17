@@ -625,7 +625,7 @@ write64le(uint8_t *buf, uint64_t num)
 // aligned but some compilers have language extensions to do that. With
 // such language extensions the memcpy() method gives excellent results.
 //
-// What to do on a strict-align system when no known language extentensions
+// What to do on a strict-align system when no known language extensions
 // are available? Falling back to byte-by-byte access would be safe but ruin
 // optimizations that have been made specifically with aligned access in mind.
 // As a compromise, aligned reads will fall back to non-compliant type punning

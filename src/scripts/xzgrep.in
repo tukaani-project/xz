@@ -277,7 +277,7 @@ for i; do
     test "$(kill -l "$xz_status" 2> /dev/null)" != "PIPE" && exit "$xz_status"
   elif test "$xz_status" -gt 0; then
     # Decompression failed but we will continue with the remaining
-    # files anwyway. Set exit status to at least 2 to indicate an error.
+    # files anyway. Set exit status to at least 2 to indicate an error.
     test "$r" -lt 2 && r=2
   fi
 

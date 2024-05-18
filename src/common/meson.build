@@ -107,15 +107,15 @@ main(void)
 if cc.compiles(cpu_special_src, name : 'number of cpu cores on Windows or Cygwin')
 # nothing to do, here
 elif cc.compiles(cpu_sched_getaffinity_src, name : 'number of cpu cores with sched_getaffinity()')
-    config_h.set10('TUKLIB_CPUCORES_SCHED_GETAFFINITY', true)
+    config_h.set('TUKLIB_CPUCORES_SCHED_GETAFFINITY', true)
 elif cc.compiles(cpu_cpuset_src, name : 'number of cpu cores with cpuset()')
-    config_h.set10('TUKLIB_CPUCORES_CPUSET', true)
+    config_h.set('TUKLIB_CPUCORES_CPUSET', true)
 elif cc.compiles(cpu_sysctl_src, args : have_sys_param_h ? '-DHAVE_SYS_PARAM_H' : '', name : 'number of cpu cores with sysctl()')
-    config_h.set10('TUKLIB_CPUCORES_SYSCTL', true)
+    config_h.set('TUKLIB_CPUCORES_SYSCTL', true)
 elif cc.compiles(cpu_sysconf_src, name : 'number of cpu cores with sysconf()')
-    config_h.set10('TUKLIB_CPUCORES_SYSCONF', true)
+    config_h.set('TUKLIB_CPUCORES_SYSCONF', true)
 elif cc.compiles(cpu_pstat_getdynamic_src, name : 'number of cpu cores with pstat_getdynamic()')
-    config_h.set10('TUKLIB_CPUCORES_PSTAT_GETDYNAMIC', true)
+    config_h.set('TUKLIB_CPUCORES_PSTAT_GETDYNAMIC', true)
 endif
 
 # tuklib_integer.m4
@@ -131,7 +131,7 @@ int main()
 '''
 res = cc.links(bswap_src, name: '__builtin_bswap16/32/64')
 if res
-    config_h.set10('HAVE___BUILTIN_BSWAPXX', true,
+    config_h.set('HAVE___BUILTIN_BSWAPXX', true,
         description: 'Define to 1 if the GNU C extensions __builtin_bswap16/32/64 are supported.'
         )
 else
@@ -145,7 +145,7 @@ else
     ]
     foreach h : bswap_headers
         if cc.has_header(h)
-            config_h.set10('HAVE_' + h.underscorify().to_upper(), true)
+            config_h.set('HAVE_' + h.underscorify().to_upper(), true)
             set_variable(f'have_' + h.underscorify(), true)
         endif
     endforeach
@@ -165,11 +165,10 @@ int main()
 	return 0;
 }
 '''
-            if cc.links(bswap_src.format(f), name: f)
-                config_h.set10('HAVE_' + f.to_upper(), true,
-                    description: 'Define to 1 if ' + f + '() is available.'
-                )
-            endif
+            config_h.set('HAVE_' + f.to_upper(),
+                cc.links(bswap_src.format(f), name: f),
+                description: 'Define to 1 if ' + f + '() is available.'
+            )
         endforeach
     endif
 endif
@@ -183,7 +182,7 @@ if get_option('unaligned-access').auto()
         'x86_64',
     ]
     if host_machine.cpu_family() in unaligned_access_cpus
-        config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
+        config_h.set('TUKLIB_FAST_UNALIGNED_ACCESS', true,
             description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
         )
         fast_unaligned_access = true
@@ -206,7 +205,7 @@ compile error
 int main(void) { return 0; }
 '''
             if cc.compiles(ua_src, name: 'fast unaligned access for ' + host_machine.cpu_family())
-                config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
+                config_h.set('TUKLIB_FAST_UNALIGNED_ACCESS', true,
                 description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
                 )
                 fast_unaligned_access = true
@@ -214,14 +213,14 @@ int main(void) { return 0; }
         endif
     endif
 elif get_option('unaligned-access').enabled()
-    config_h.set10('TUKLIB_FAST_UNALIGNED_ACCESS', true,
+    config_h.set0('TUKLIB_FAST_UNALIGNED_ACCESS', true,
         description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
     )
     fast_unaligned_access = true
 endif
 
 if get_option('unsafe-type-punning')
-    config_h.set10('HAVE___BUILTIN_ASSUME_ALIGNED', true,
+    config_h.set('HAVE___BUILTIN_ASSUME_ALIGNED', true,
         description: 'Define to 1 if the GNU C extension __builtin_assume_aligned is supported.'
                     )
 endif
@@ -235,7 +234,7 @@ if cc.has_header('wchar.h')
         args : '-D_XOPEN_SOURCE',
         prefix : '#include <wchar.h>'
         )
-        config_h.set10('HAVE_WCWIDTH', true,
+        config_h.set('HAVE_WCWIDTH', true,
             description: 'Define to 1 if the wcwidth() function is available.'
         )
     endif
@@ -349,19 +348,19 @@ main(void)
 if cc.compiles(physmem_special_src, name : 'physical memory on some special OSes')
 # nothing to do, here
 elif cc.compiles(physmem_aix_src, name : 'physical memory on AIX')
-    config_h.set10('TUKLIB_PHYSMEM_AIX', true)
+    config_h.set('TUKLIB_PHYSMEM_AIX', true)
 elif cc.compiles(physmem_sysconf_src, name : 'physical memory with sysconf()')
-    config_h.set10('TUKLIB_PHYSMEM_SYSCONF', true)
+    config_h.set('TUKLIB_PHYSMEM_SYSCONF', true)
 elif cc.compiles(physmem_sysctl_src, args : have_sys_param_h ? '-DHAVE_SYS_PARAM_H' : '', name : 'physical memory with sysctl()')
-    config_h.set10('TUKLIB_PHYSMEM_SYSCTL', true)
+    config_h.set('TUKLIB_PHYSMEM_SYSCTL', true)
 elif cc.compiles(physmem_getsysinfo_src, name : 'physical memory with getsysinfo()')
-    config_h.set10('TUKLIB_PHYSMEM_GETSYSINFO', true)
+    config_h.set('TUKLIB_PHYSMEM_GETSYSINFO', true)
 elif cc.compiles(physmem_pstat_getstatic_src, name : 'physical memory with pstat_getstatic()')
-    config_h.set10('TUKLIB_PHYSMEM_PSTAT_GETSTATIC', true)
+    config_h.set('TUKLIB_PHYSMEM_PSTAT_GETSTATIC', true)
 elif cc.compiles(physmem_getinvent_r_src, name : 'physical memory with getinvent_r()')
-    config_h.set10('TUKLIB_PHYSMEM_GETINVENT_R', true)
+    config_h.set('TUKLIB_PHYSMEM_GETINVENT_R', true)
 elif cc.compiles(physmem_sysinfo_src, name : 'physical memory with sysinfo()')
-    config_h.set10('TUKLIB_PHYSMEM_SYSINFO', true)
+    config_h.set('TUKLIB_PHYSMEM_SYSINFO', true)
 endif
 
 # tuklib_progname.m4
@@ -369,7 +368,7 @@ endif
 if cc.has_function('program_invocation_name',
     prefix : '#include <errno.h>'
     )
-    config_h.set10('HAVE_PROGRAM_INVOCATION_NAME', true,
+    config_h.set('HAVE_PROGRAM_INVOCATION_NAME', true,
         description: 'Define to 1 if the program_invocation_name() function is available.'
     )
 endif

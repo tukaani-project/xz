@@ -36,7 +36,8 @@ config_h.set_quoted('PACKAGE_URL', 'https://tukaani.org/xz/')
 
 # host
 
-config_h.set10('WORDS_BIGENDIAN', host_machine.endian() == 'big',
+config_h.set('WORDS_BIGENDIAN',
+    host_machine.endian() == 'big',
     description: 'Define to 1 if the processor stores words with the most significant byte first.'
 )
 
@@ -124,15 +125,16 @@ if cc.get_argument_syntax() == 'gcc'
     lzma_c_args += cc.get_supported_arguments(cflags_try)
 endif
 
-config_h.set10('HAVE_VISIBILITY', cc.has_function_attribute('visibility'),
+config_h.set10('HAVE_VISIBILITY',
+    cc.has_function_attribute('visibility'),
     description: 'Define to 1 if the compiler supports simple visibility declarations.'
 )
 
-if cc.has_function_attribute('constructor')
-    config_h.set('HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR', 1,
-        description: 'Define to 1 if __attribute__((__constructor__)) is supported for functions.'
-    )
-endif
+
+config_h.set('HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR',
+    cc.has_function_attribute('constructor'),
+    description: 'Define to 1 if __attribute__((__constructor__)) is supported for functions.',
+)
 
 time_fcts = [
     [ 'futimens',  [ '#include <sys/stat.h>' ] ],
@@ -143,19 +145,20 @@ time_fcts = [
     [ 'utime',     [ '#include <sys/types.h>', '#include <utime.h>' ] ],
 ]
 foreach f : time_fcts
-    if cc.has_function(f[0], prefix : f[1])
-        config_h.set10('HAVE_' + f[0].to_upper(), true,
-            description: 'Define to 1 if the ' + f[0] + '() function is available.'
-        )
+    res = cc.has_function(f[0], prefix : f[1])
+    config_h.set('HAVE_' + f[0].to_upper(),
+        res,
+        description: 'Define to 1 if the ' + f[0] + '() function is available.'
+    )
+    if res
         break
     endif
 endforeach
 
-if cc.has_function('posix_fadvise', prefix : '#include <fcntl.h>')
-    config_h.set10('HAVE_POSIX_FADVISE', true,
-        description: 'Define to 1 if the posix_fadvise() function is available.'
-    )
-endif
+config_h.set('HAVE_POSIX_FADVISE',
+    cc.has_function('posix_fadvise', prefix : '#include <fcntl.h>'),
+    description: 'Define to 1 if the posix_fadvise() function is available.'
+)
 
 ### Filters
 
@@ -177,14 +180,16 @@ simple_filters = [
 # FIXME foreach i in array; set_variable(f'have_@i@', true) endforeach
 
 foreach f : get_option('encoders')
-    config_h.set10('HAVE_ENCODER_' + f.underscorify().to_upper(), true,
+    config_h.set('HAVE_ENCODER_' + f.underscorify().to_upper(),
+        true,
         description: 'Define to 1 if ' + f + ' encoder is enabled.'
     )
     encoder_msg += f + ' '
 endforeach
 
 foreach f : get_option('decoders')
-    config_h.set10('HAVE_DECODER_' + f.underscorify().to_upper(), true,
+    config_h.set('HAVE_DECODER_' + f.underscorify().to_upper(),
+        true,
         description: 'Define to 1 if ' + f + ' decoder is enabled.'
     )
     decoder_msg += f + ' '
@@ -206,13 +211,15 @@ if ('lzma2' in get_option('encoders') and not ('lzma1' in get_option('encoders')
 endif
 
 if get_option('encoders').length() > 0
-    config_h.set10('HAVE_ENCODERS', true,
+    config_h.set('HAVE_ENCODERS',
+        true,
         description: 'Define to 1 if at least one encoder has been enabled.'
     )
 endif
 
 if get_option('decoders').length() > 0
-    config_h.set10('HAVE_DECODERS', true,
+    config_h.set('HAVE_DECODERS',
+        true,
         description: 'Define to 1 if at least one decoder has been enabled.'
     )
 endif
@@ -227,7 +234,8 @@ if 'lzma1' in get_option('encoders') or 'lzma2' in get_option('encoders')
     endif
 
     foreach m : get_option('match-finders')
-        config_h.set10('HAVE_MF_' + m.underscorify().to_upper(), true,
+        config_h.set('HAVE_MF_' + m.underscorify().to_upper(),
+            true,
             description: 'Define to 1 to enable ' + m + ' match finder.'
         )
         match_finder_msg += m + ' '
@@ -243,7 +251,8 @@ if not ('crc32' in get_option('checks'))
 endif
 
 foreach c : get_option('checks')
-    config_h.set10('HAVE_CHECK_' + c.underscorify().to_upper(), true,
+    config_h.set('HAVE_CHECK_' + c.underscorify().to_upper(),
+        true,
         description: 'Define to 1 if ' + c + ' integrity check is enabled.'
     )
     check_msg += c + ' '
@@ -262,7 +271,8 @@ if not ('lzma1' in get_option('encoders'))
 elif get_option('lzip-decoder')
     lzip_msg = 'yes'
     have_lzip = true
-    config_h.set10('HAVE_LZIP_DECODER', true,
+    config_h.set('HAVE_LZIP_DECODER',
+        true,
         description: 'Define to 1 if .lz (lzip) decompression support is enabled.'
     )
 else
@@ -280,11 +290,10 @@ endif
 
 ### size optimization
 
-if get_option('small')
-    config_h.set10('HAVE_SMALL', true,
-        description: 'Define to 1 if optimizing for size.'
-    )
-endif
+config_h.set('HAVE_SMALL',
+    get_option('small'),
+    description: 'Define to 1 if optimizing for size.'
+)
 
 ### threading
 
@@ -292,24 +301,23 @@ have_threads = false
 
 if get_option('threads') == true
     if sys_windows == true
-        if host_machine.cpu_family() == 'x86'
-            config_h.set10('MYTHREAD_WIN95', true,
-                description: 'Define to 1 when using Windows 95 (and thus XP) compatible threads. This avoids use of features that were added in Windows Vista.'
-            )
-        else
-            config_h.set10('MYTHREAD_VISTA', true,
-                description: 'Define to 1 when using Windows Vista compatible threads. This uses features that are not available on Windows XP.'
-            )
-        endif
+        config_h.set('MYTHREAD_WIN95',
+            host_machine.cpu_family() == 'x86',
+            description: 'Define to 1 when using Windows 95 (and thus XP) compatible threads. This avoids use of features that were added in Windows Vista.'
+        )
+        config_h.set('MYTHREAD_VISTA',
+            host_machine.cpu_family() != 'x86',
+            description: 'Define to 1 when using Windows Vista compatible threads. This uses features that are not available on Windows XP.'
+        )
         have_threads = true
     else
+        # FIXME: pthread detection should be fixed
         pthread_dep = dependency('threads', required : false)
-        if pthread_dep.found()
-            config_h.set10('MYTHREAD_POSIX', true,
-                description: 'Define to 1 when using POSIX threads (pthreads).'
-            )
-            have_threads = true
-        endif
+        config_h.set('MYTHREAD_POSIX',
+            pthread_dep.found(),
+            description: 'Define to 1 when using POSIX threads (pthreads).'
+        )
+        have_threads = pthread_dep.found()
     endif
 endif
 

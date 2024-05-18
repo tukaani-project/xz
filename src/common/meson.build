@@ -227,12 +227,10 @@ endif
 
 # tuklib_mbstr.m4
 
-if cc.has_header('wchar.h')
-    config_h.set('HAVE_WCWIDTH',
-        cc.has_function('wcwidth', prefix : '#include <wchar.h>'),
-        description: 'Defined if the wcwidth() function is available.'
-    )
-endif
+config_h.set('HAVE_WCWIDTH',
+    cc.has_function('wcwidth', prefix : '#include <wchar.h>'),
+    description: 'Defined if the wcwidth() function is available.'
+)
 
 # tuklib_physmem.m4
 

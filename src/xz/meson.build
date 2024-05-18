@@ -1,5 +1,5 @@
-## SPDX-License-Identifier: 0BSD
-## Author: Vincent Torri
+# SPDX-License-Identifier: 0BSD
+# Author: Vincent Torri
 
 if get_option('assume-ram') <= 0
     error('option "assume-ram" accepts only positive integers')

@@ -1,5 +1,5 @@
-## SPDX-License-Identifier: 0BSD
-## Author: Vincent Torri
+# SPDX-License-Identifier: 0BSD
+# Author: Vincent Torri
 
 project(
     'xz',

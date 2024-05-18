@@ -1,5 +1,5 @@
-## SPDX-License-Identifier: 0BSD
-## Author: Vincent Torri
+# SPDX-License-Identifier: 0BSD
+# Author: Vincent Torri
 
 xzdec_cargs = [
     '-DHAVE_CONFIG_H',

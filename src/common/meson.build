@@ -132,7 +132,7 @@ int main()
 res = cc.links(bswap_src, name: '__builtin_bswap16/32/64')
 if res
     config_h.set('HAVE___BUILTIN_BSWAPXX', true,
-        description: 'Define to 1 if the GNU C extensions __builtin_bswap16/32/64 are supported.'
+        description: 'Defined if the GNU C extensions __builtin_bswap16/32/64 are supported.'
         )
 else
     have_byteswap_h = false
@@ -167,7 +167,7 @@ int main()
 '''
             config_h.set('HAVE_' + f.to_upper(),
                 cc.links(bswap_src.format(f), name: f),
-                description: 'Define to 1 if ' + f + '() is available.'
+                description: 'Defined if ' + f + '() is available.'
             )
         endforeach
     endif
@@ -183,7 +183,7 @@ if get_option('unaligned-access').auto()
     ]
     if host_machine.cpu_family() in unaligned_access_cpus
         config_h.set('TUKLIB_FAST_UNALIGNED_ACCESS', true,
-            description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
+            description: 'Defined if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
         )
         fast_unaligned_access = true
     endif
@@ -206,38 +206,32 @@ int main(void) { return 0; }
 '''
             if cc.compiles(ua_src, name: 'fast unaligned access for ' + host_machine.cpu_family())
                 config_h.set('TUKLIB_FAST_UNALIGNED_ACCESS', true,
-                description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
+                description: 'Defined if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
                 )
                 fast_unaligned_access = true
             endif
         endif
     endif
 elif get_option('unaligned-access').enabled()
-    config_h.set0('TUKLIB_FAST_UNALIGNED_ACCESS', true,
-        description: 'Define to 1 if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
+    config_h.set('TUKLIB_FAST_UNALIGNED_ACCESS', true,
+        description: 'Defined if the system supports fast unaligned access to 16-bit, 32-bit, and 64-bit integers.'
     )
     fast_unaligned_access = true
 endif
 
 if get_option('unsafe-type-punning')
     config_h.set('HAVE___BUILTIN_ASSUME_ALIGNED', true,
-        description: 'Define to 1 if the GNU C extension __builtin_assume_aligned is supported.'
+        description: 'Defined if the GNU C extension __builtin_assume_aligned is supported.'
                     )
 endif
 
 # tuklib_mbstr.m4
 
-### FIXME : mbrtowc is supported in C99 spec and on Windows
 if cc.has_header('wchar.h')
-
-    if cc.has_function('wcwidth',
-        args : '-D_XOPEN_SOURCE',
-        prefix : '#include <wchar.h>'
-        )
-        config_h.set('HAVE_WCWIDTH', true,
-            description: 'Define to 1 if the wcwidth() function is available.'
-        )
-    endif
+    config_h.set('HAVE_WCWIDTH',
+        cc.has_function('wcwidth', prefix : '#include <wchar.h>'),
+        description: 'Defined if the wcwidth() function is available.'
+    )
 endif
 
 # tuklib_physmem.m4
@@ -369,6 +363,6 @@ if cc.has_function('program_invocation_name',
     prefix : '#include <errno.h>'
     )
     config_h.set('HAVE_PROGRAM_INVOCATION_NAME', true,
-        description: 'Define to 1 if the program_invocation_name() function is available.'
+        description: 'Defined if the program_invocation_name() function is available.'
     )
 endif

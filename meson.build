@@ -38,7 +38,7 @@ config_h.set_quoted('PACKAGE_URL', 'https://tukaani.org/xz/')
 
 config_h.set('WORDS_BIGENDIAN',
     host_machine.endian() == 'big',
-    description: 'Define to 1 if the processor stores words with the most significant byte first.'
+    description: 'Defined if the processor stores words with the most significant byte first.'
 )
 
 host_os = host_machine.system()
@@ -57,10 +57,9 @@ COND_W32 = sys_cygwin or sys_windows
 cc = meson.get_compiler('c')
 
 # try mimic AC_USE_SYSTEM_EXTENSIONS
-if host_machine.system() == 'linux'
-    add_project_arguments('-D_GNU_SOURCE', language: 'c')
-elif host_machine.system() == 'sunos'
-    add_project_arguments('-D__EXTENSIONS__', language: 'c')
+add_project_arguments('-D_GNU_SOURCE', language: 'c')
+add_project_arguments('-D__EXTENSIONS__', language: 'c')
+if host_machine.system() == 'sunos'
     add_project_arguments('-D_POSIX_PTHREAD_SEMANTICS', language: 'c')
 else
     add_project_arguments('-D_TANDEM_SOURCE', language: 'c')
@@ -127,13 +126,13 @@ endif
 
 config_h.set10('HAVE_VISIBILITY',
     cc.has_function_attribute('visibility'),
-    description: 'Define to 1 if the compiler supports simple visibility declarations.'
+    description: 'Defined to 1 if the compiler supports simple visibility declarations.'
 )
 
 
 config_h.set('HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR',
     cc.has_function_attribute('constructor'),
-    description: 'Define to 1 if __attribute__((__constructor__)) is supported for functions.',
+    description: 'Defined if __attribute__((__constructor__)) is supported for functions.',
 )
 
 time_fcts = [
@@ -148,7 +147,7 @@ foreach f : time_fcts
     res = cc.has_function(f[0], prefix : f[1])
     config_h.set('HAVE_' + f[0].to_upper(),
         res,
-        description: 'Define to 1 if the ' + f[0] + '() function is available.'
+        description: 'Defined if the ' + f[0] + '() function is available.'
     )
     if res
         break
@@ -157,7 +156,7 @@ endforeach
 
 config_h.set('HAVE_POSIX_FADVISE',
     cc.has_function('posix_fadvise', prefix : '#include <fcntl.h>'),
-    description: 'Define to 1 if the posix_fadvise() function is available.'
+    description: 'Defined if the posix_fadvise() function is available.'
 )
 
 ### Filters
@@ -182,7 +181,7 @@ simple_filters = [
 foreach f : get_option('encoders')
     config_h.set('HAVE_ENCODER_' + f.underscorify().to_upper(),
         true,
-        description: 'Define to 1 if ' + f + ' encoder is enabled.'
+        description: 'Defined if ' + f + ' encoder is enabled.'
     )
     encoder_msg += f + ' '
 endforeach
@@ -190,7 +189,7 @@ endforeach
 foreach f : get_option('decoders')
     config_h.set('HAVE_DECODER_' + f.underscorify().to_upper(),
         true,
-        description: 'Define to 1 if ' + f + ' decoder is enabled.'
+        description: 'Defined if ' + f + ' decoder is enabled.'
     )
     decoder_msg += f + ' '
 endforeach
@@ -213,14 +212,14 @@ endif
 if get_option('encoders').length() > 0
     config_h.set('HAVE_ENCODERS',
         true,
-        description: 'Define to 1 if at least one encoder has been enabled.'
+        description: 'Defined if at least one encoder has been enabled.'
     )
 endif
 
 if get_option('decoders').length() > 0
     config_h.set('HAVE_DECODERS',
         true,
-        description: 'Define to 1 if at least one decoder has been enabled.'
+        description: 'Defined if at least one decoder has been enabled.'
     )
 endif
 
@@ -236,7 +235,7 @@ if 'lzma1' in get_option('encoders') or 'lzma2' in get_option('encoders')
     foreach m : get_option('match-finders')
         config_h.set('HAVE_MF_' + m.underscorify().to_upper(),
             true,
-            description: 'Define to 1 to enable ' + m + ' match finder.'
+            description: 'Defined to enable ' + m + ' match finder.'
         )
         match_finder_msg += m + ' '
     endforeach
@@ -273,7 +272,7 @@ elif get_option('lzip-decoder')
     have_lzip = true
     config_h.set('HAVE_LZIP_DECODER',
         true,
-        description: 'Define to 1 if .lz (lzip) decompression support is enabled.'
+        description: 'Defined if .lz (lzip) decompression support is enabled.'
     )
 else
     lzip_msg = 'no'
@@ -292,7 +291,7 @@ endif
 
 config_h.set('HAVE_SMALL',
     get_option('small'),
-    description: 'Define to 1 if optimizing for size.'
+    description: 'Defined if optimizing for size.'
 )
 
 ### threading
@@ -303,11 +302,11 @@ if get_option('threads') == true
     if sys_windows == true
         config_h.set('MYTHREAD_WIN95',
             host_machine.cpu_family() == 'x86',
-            description: 'Define to 1 when using Windows 95 (and thus XP) compatible threads. This avoids use of features that were added in Windows Vista.'
+            description: 'Defined when using Windows 95 (and thus XP) compatible threads. This avoids use of features that were added in Windows Vista.'
         )
         config_h.set('MYTHREAD_VISTA',
             host_machine.cpu_family() != 'x86',
-            description: 'Define to 1 when using Windows Vista compatible threads. This uses features that are not available on Windows XP.'
+            description: 'Defined when using Windows Vista compatible threads. This uses features that are not available on Windows XP.'
         )
         have_threads = true
     else
@@ -315,7 +314,7 @@ if get_option('threads') == true
         pthread_dep = dependency('threads', required : false)
         config_h.set('MYTHREAD_POSIX',
             pthread_dep.found(),
-            description: 'Define to 1 when using POSIX threads (pthreads).'
+            description: 'Defined when using POSIX threads (pthreads).'
         )
         have_threads = pthread_dep.found()
     endif

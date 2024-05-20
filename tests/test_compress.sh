@@ -142,9 +142,9 @@ test_xz -4
 test_filter()
 {
 	if test -f ../config.h ; then
-		grep "define HAVE_ENCODER_$1 1" ../config.h > /dev/null \
+		grep "define HAVE_ENCODER_$1[ 1]*\$" ../config.h > /dev/null \
 			|| return
-		grep "define HAVE_DECODER_$1 1" ../config.h > /dev/null \
+		grep "define HAVE_DECODER_$1[ 1]*\$" ../config.h > /dev/null \
 			|| return
 	fi
 	shift

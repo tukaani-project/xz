@@ -10,8 +10,6 @@
 #
 # A few things are still missing compared to the Autotools-based build:
 #
-#   - A few tests aren't CMake compatible yet and thus aren't run!
-#
 #   - 32-bit x86 assembly code for CRC32 and CRC64 isn't used.
 #
 #   - External SHA-256 code isn't supported but it's disabled by

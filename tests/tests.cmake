@@ -121,6 +121,7 @@ if(BUILD_TESTING)
         set(HAVE_ALL_CHECK_TYPES OFF)
     endif()
 
+    # test_scripts.sh only needs LZMA2 decoder and CRC32.
     if(UNIX AND HAVE_DECODERS)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_scripts")
 
@@ -135,6 +136,7 @@ if(BUILD_TESTING)
         )
     endif()
 
+    # test_suffix.sh only needs LZMA2 encoder and decoder.
     if(UNIX AND HAVE_ENCODERS AND HAVE_DECODERS)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_suffix")
 

@@ -7,18 +7,31 @@
 #
 ###############################################################################
 
+# Mandatory argument:
+# $1 = test filename: compress_generated_<foo> or compress_prepared_<foo>
+#
+# Optional argument:
+# $2 = directory of the xz and xzdec executables
+
+XZ=${2:-../src/xz}/xz
+XZDEC=${2:-../src/xzdec}/xzdec
+
 # If xz wasn't built, this test is skipped.
-if test -x ../src/xz/xz ; then
-	:
-else
+if test ! -x "$XZ"; then
+	echo "xz was not built, skipping this test."
 	exit 77
 fi
+
+# xzdec isn't mandatory for this script.
+test -x "$XZDEC" || XZDEC=
 
 # If compression or decompression support is missing, this test is skipped.
 # This isn't perfect as if only some compressors or decompressors are disabled
 # then this script can still fail because for now this doesn't check the
 # availability of each filter.
-if grep 'define HAVE_ENCODERS' ../config.h > /dev/null \
+if test ! -f ../config.h ; then
+	:
+elif grep 'define HAVE_ENCODERS' ../config.h > /dev/null \
 		&& grep 'define HAVE_DECODERS' ../config.h > /dev/null ; then
 	:
 else
@@ -74,12 +87,12 @@ test_xz() {
 	fi
 }
 
-XZ="../src/xz/xz --memlimit-compress=48MiB --memlimit-decompress=5MiB \
-		--no-adjust --threads=1 --check=crc32"
-grep "define HAVE_CHECK_CRC64" ../config.h > /dev/null \
-		&& XZ="$XZ --check=crc64"
-XZDEC="../src/xzdec/xzdec" # No memory usage limiter available
-test -x ../src/xzdec/xzdec || XZDEC=
+# Set memory usage limit for xz. xzdec has no memory usage limiter.
+# Force single-threaded mode as the test files are small
+# (so more than one thread wouldn't be used anyway) and
+# the tests are usually run in parallel.
+XZ="$XZ --memlimit-compress=48MiB --memlimit-decompress=5MiB \
+		--no-adjust --threads=1"
 
 # Create the required input file if needed.
 #
@@ -128,8 +141,12 @@ test_xz -4
 
 test_filter()
 {
-	grep "define HAVE_ENCODER_$1 1" ../config.h > /dev/null || return
-	grep "define HAVE_DECODER_$1 1" ../config.h > /dev/null || return
+	if test -f ../config.h ; then
+		grep "define HAVE_ENCODER_$1 1" ../config.h > /dev/null \
+			|| return
+		grep "define HAVE_DECODER_$1 1" ../config.h > /dev/null \
+			|| return
+	fi
 	shift
 	test_xz --filters="$* lzma2:dict=64KiB,nice=32,mode=fast"
 }

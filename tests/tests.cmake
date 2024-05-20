@@ -147,4 +147,30 @@ if(BUILD_TESTING)
             SKIP_RETURN_CODE 77
         )
     endif()
+
+    # The test_compress.sh based tests compress and decompress using different
+    # filters so run it only if all encoders and decoders have been enabled.
+    if(UNIX AND HAVE_ALL_ENCODERS AND HAVE_ALL_DECODERS)
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_compress")
+
+        add_executable(create_compress_files tests/create_compress_files.c)
+        target_include_directories(create_compress_files PRIVATE src/common)
+        set_target_properties(create_compress_files PROPERTIES
+                              RUNTIME_OUTPUT_DIRECTORY test_compress)
+
+        foreach(T compress_generated_abc
+                  compress_generated_text
+                  compress_generated_random)
+            add_test(NAME "test_${T}"
+                COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_compress.sh"
+                        "${T}" ".."
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_compress"
+            )
+
+            set_tests_properties("test_${T}" PROPERTIES
+                ENVIRONMENT "srcdir=${CMAKE_CURRENT_SOURCE_DIR}/tests"
+                SKIP_RETURN_CODE 77
+            )
+        endforeach()
+    endif()
 endif()

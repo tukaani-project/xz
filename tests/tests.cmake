@@ -16,6 +16,10 @@
 include(CTest)
 
 if(BUILD_TESTING)
+    #################
+    # liblzma tests #
+    #################
+
     set(LIBLZMA_TESTS
         test_bcj_exact_size
         test_block_header
@@ -71,6 +75,51 @@ if(BUILD_TESTING)
             SKIP_RETURN_CODE 77
         )
     endforeach()
+
+
+    ###########################
+    # Command line tool tests #
+    ###########################
+
+    # Since the CMake-based build doesn't use config.h, the test scripts
+    # cannot grep the contents of config.h to know which features have
+    # been disabled. When config.h is missing, they assume that all
+    # features are enabled. Thus, check if certain groups of features have
+    # been disabled and then possibly skip some of the tests entirely instead
+    # of letting them fail.
+    set(SUPPORTED_FILTERS_SORTED "${SUPPORTED_FILTERS}")
+    list(SORT SUPPORTED_FILTERS_SORTED)
+
+    set(ENCODERS_SORTED "${ENCODERS}")
+    list(SORT ENCODERS_SORTED)
+
+    if("${ENCODERS_SORTED}" STREQUAL "${SUPPORTED_FILTERS_SORTED}")
+        set(HAVE_ALL_ENCODERS ON)
+    else()
+        set(HAVE_ALL_ENCODERS OFF)
+    endif()
+
+    set(DECODERS_SORTED "${DECODERS}")
+    list(SORT DECODERS_SORTED)
+
+    if("${DECODERS_SORTED}" STREQUAL "${SUPPORTED_FILTERS_SORTED}")
+        set(HAVE_ALL_DECODERS ON)
+    else()
+        set(HAVE_ALL_DECODERS OFF)
+    endif()
+
+    set(ADDITIONAL_SUPPORTED_CHECKS_SORTED "${ADDITIONAL_SUPPORTED_CHECKS}")
+    list(SORT ADDITIONAL_SUPPORTED_CHECKS_SORTED)
+
+    set(ADDITIONAL_CHECK_TYPES_SORTED "${ADDITIONAL_CHECK_TYPES}")
+    list(SORT ADDITIONAL_CHECK_TYPES_SORTED)
+
+    if("${ADDITIONAL_SUPPORTED_CHECKS_SORTED}" STREQUAL
+        "${ADDITIONAL_CHECK_TYPES_SORTED}")
+        set(HAVE_ALL_CHECK_TYPES ON)
+    else()
+        set(HAVE_ALL_CHECK_TYPES OFF)
+    endif()
 
     if(UNIX AND HAVE_DECODERS)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_scripts")

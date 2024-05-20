@@ -173,4 +173,24 @@ if(BUILD_TESTING)
             )
         endforeach()
     endif()
+
+    # test_files.sh decompresses files that use different filters and
+    # check types so run it only if support for all of them has been enabled.
+    if(UNIX AND HAVE_ALL_DECODERS AND HAVE_ALL_CHECK_TYPES AND LZIP_DECODER)
+        # test_files.sh doesn't make any temporary files but it
+        # must not be run at the top-level build directory because
+        # it checks if ../config.h exists. We don't want to read
+        # files outside the build directory!
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_files")
+
+        add_test(NAME test_files.sh
+            COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_files.sh" ".."
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_files"
+        )
+
+        set_tests_properties(test_files.sh PROPERTIES
+            ENVIRONMENT "srcdir=${CMAKE_CURRENT_SOURCE_DIR}/tests"
+            SKIP_RETURN_CODE 77
+        )
+    endif()
 endif()

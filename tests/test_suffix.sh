@@ -7,6 +7,9 @@
 #
 ###############################################################################
 
+# Optional argument:
+# $1 = directory of the xz executable
+
 # If xz was not built, skip this test. Autotools and CMake put
 # the xz executable in a different location.
 XZ=${1:-../src/xz}/xz

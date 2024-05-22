@@ -29,6 +29,8 @@ EXTRA_DIST = \
 	common/tuklib_integer.h \
 	common/tuklib_mbstr_fw.c \
 	common/tuklib_mbstr.h \
+	common/tuklib_mbstr_nonprint.c \
+	common/tuklib_mbstr_nonprint.h \
 	common/tuklib_mbstr_width.c \
 	common/tuklib_open_stdxxx.c \
 	common/tuklib_open_stdxxx.h \

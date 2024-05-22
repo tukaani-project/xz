@@ -89,6 +89,7 @@ dist-hook:
 				> "$$dest/txt/$$BASE.txt"; \
 		done; \
 	fi
+	cd "$(distdir)" && sh "build-aux/license-check.sh"
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.
 # This also ensures that the man page translations are up to date (dist-hook
@@ -98,6 +99,7 @@ mydist:
 	cd "$(srcdir)/po4a" && sh update-po
 	VERSION=$(VERSION); \
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
+		sh "$(srcdir)/build-aux/license-check.sh" || exit 1; \
 		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=4 | cut -b2-`; \
 		test -n "$$SNAPSHOT" && VERSION=$$SNAPSHOT; \
 	fi; \

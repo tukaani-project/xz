@@ -53,6 +53,7 @@ EXTRA_DIST = \
 	PACKAGERS \
 	TODO \
 	autogen.sh \
+	build-aux/license-check.sh \
 	build-aux/manconv.sh \
 	build-aux/version.sh \
 	po/xz.pot-header

@@ -3,8 +3,7 @@ XZ Utils Licensing
 ==================
 
     Different licenses apply to different files in this package. Here
-    is a rough summary of which licenses apply to which parts of this
-    package (but check the individual files to be sure!):
+    is a summary of which licenses apply to which parts of this package:
 
       - liblzma is under the BSD Zero Clause License (0BSD).
 
@@ -37,8 +36,9 @@ XZ Utils Licensing
         These files don't affect the licensing of the binaries being
         built.
 
-      - The extra directory contain files that are under various
-        free software licenses.
+      - The 'extra' directory contains files that are under various
+        free software licenses. These aren't built or installed as
+        part of XZ Utils.
 
     For the files under the BSD Zero Clause License (0BSD), if
     a copyright notice is needed, the following is sufficient:

@@ -40,6 +40,12 @@ XZ Utils Licensing
         free software licenses. These aren't built or installed as
         part of XZ Utils.
 
+    The following command may be helpful in finding per-file license
+    information. It works on xz.git and on a clean file tree extracted
+    from a release tarball.
+
+        sh build-aux/license-check.sh -v
+
     For the files under the BSD Zero Clause License (0BSD), if
     a copyright notice is needed, the following is sufficient:
 

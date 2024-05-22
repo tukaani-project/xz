@@ -14,11 +14,11 @@
 # [X] external-sha256
 # [X] lzip-decoder
 # [X] lzmadec
-# [ ] lzmainfo
+# [X] lzmainfo
 # [ ] lzma-links
 # [X] match-finders
 # [X] microlzma
-# [ ] path-for-scripts
+# [X] path-for-scripts
 # [ ] sandbox
 # [X] small
 # [ ] symbol-versions
@@ -27,7 +27,7 @@
 # [X] unaligned-access
 # [X] unsafe-type-punning
 # [ ] werror      - not used : done by meson
-# [ ] xz
+# [X] xz
 # [X] xzdec
 
 option('arm64-crc32',

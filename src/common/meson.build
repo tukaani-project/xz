@@ -358,6 +358,7 @@ endif
 # tuklib_progname.m4
 
 if cc.has_function('program_invocation_name',
+    args : '-D_GNU_SOURCE',
     prefix : '#include <errno.h>'
     )
     config_h.set('HAVE_PROGRAM_INVOCATION_NAME', true,

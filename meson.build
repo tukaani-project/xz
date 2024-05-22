@@ -50,6 +50,7 @@ sunos = 'sunos'
 asm_os = [ 'linux', 'dragonfly', 'freebsd', 'netbsd', 'openbsd', 'windows', 'cygwin' ]
 sys_cygwin = cygwin.contains(host_os)
 sys_windows = windows.contains(host_os)
+sys_sunos = sunos.contains(host_os)
 
 COND_W32 = sys_cygwin or sys_windows
 
@@ -143,6 +144,7 @@ time_fcts = [
     [ '_futime',   [ '#include <sys/utime.h>' ] ],
     [ 'utime',     [ '#include <sys/types.h>', '#include <utime.h>' ] ],
 ]
+
 foreach f : time_fcts
     res = cc.has_function(f[0], prefix : f[1])
     config_h.set('HAVE_' + f[0].to_upper(),

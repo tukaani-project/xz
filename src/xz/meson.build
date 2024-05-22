@@ -60,3 +60,24 @@ executable('xz', xz_src,
 )
 
 install_man(files('xz.1'))
+
+xz_links = [
+    'unxz',
+    'xzcat',
+]
+
+if get_option('lzma-links')
+    xz_links += [
+        'lzma',
+        'unlzma',
+        'lzcat',
+    ]
+endif
+
+
+foreach l : xz_links
+    install_symlink(l + (sys_windows ? '.exe' : ''),
+        install_dir: get_option('bindir'),
+        pointing_to: 'xz' + (sys_windows ? '.exe' : ''),
+    )
+endforeach

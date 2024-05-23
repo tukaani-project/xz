@@ -4884,12 +4884,12 @@ msgstr ""
 
 #. type: Plain text
 #: ../src/xz/xz.1:3178
-msgid "XZ Utils: E<lt>https://xz.tukaani.org/xz-utils/E<gt>"
+msgid "XZ Utils: E<lt>https://tukaani.org/xz/E<gt>"
 msgstr ""
 
 #. type: Plain text
 #: ../src/xz/xz.1:3180 ../src/xzdec/xzdec.1:144
-msgid "XZ Embedded: E<lt>https://xz.tukaani.org/xz-embedded/E<gt>"
+msgid "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
 msgstr ""
 
 #. type: Plain text

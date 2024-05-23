@@ -3401,13 +3401,13 @@ msgstr "B<xzdec>(1), B<xzdiff>(1), B<xzgrep>(1), B<xzless>(1), B<xzmore>(1), B<g
 
 #. type: Plain text
 #: ../src/xz/xz.1:3180
-msgid "XZ Utils: E<lt>https://xz.tukaani.org/xz-utils/E<gt>"
-msgstr "XZ Utils: E<lt>https://xz.tukaani.org/xz-utils/E<gt>"
+msgid "XZ Utils: E<lt>https://tukaani.org/xz/E<gt>"
+msgstr "XZ Utils: E<lt>https://tukaani.org/xz/E<gt>"
 
 #. type: Plain text
 #: ../src/xz/xz.1:3182 ../src/xzdec/xzdec.1:144
-msgid "XZ Embedded: E<lt>https://xz.tukaani.org/xz-embedded/E<gt>"
-msgstr "XZ Embedded: E<lt>https://xz.tukaani.org/xz-embedded/E<gt>"
+msgid "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
+msgstr "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
 
 #. type: Plain text
 #: ../src/xz/xz.1:3183

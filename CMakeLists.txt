@@ -10,7 +10,17 @@
 #
 # A few things are still missing compared to the Autotools-based build:
 #
-#   - 32-bit x86 assembly code for CRC32 and CRC64 isn't used.
+#   - 32-bit x86 assembly code for CRC32 and CRC64 isn't used by default.
+#     Use the option -DENABLE_X86_ASM=ON on the CMake command line to
+#     enable the assembly files. They are compatible with Linux, *BSDs,
+#     Cygwin, MinGW-w64, and Darwin. They are NOT compatible with MSVC.
+#
+#     NOTE: The C code includes a generic version compatible with all
+#     processors and CLMUL version that requires a new enough processor
+#     with the PCLMULQDQ instruction. If the 32-bit x86 assembly files
+#     are used, the CLMUL version in the C code is NOT built. On modern
+#     processors with CLMUL support, the C code should be faster than
+#     the assembly code while on old processors the assembly code wins.
 #
 #   - External SHA-256 code isn't supported but it's disabled by
 #     default in the Autotools build too (--enable-external-sha256).
@@ -148,6 +158,14 @@ endif()
 # (the API headers are C89 and C++ compatible).
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# Support 32-bit x86 assembly files.
+if(NOT MSVC)
+    option(ENABLE_X86_ASM "Enable 32-bit x86 assembly code" OFF)
+    if(ENABLE_X86_ASM)
+        enable_language(ASM)
+    endif()
+endif()
 
 # On Apple OSes, don't build executables as bundles:
 set(CMAKE_MACOSX_BUNDLE OFF)
@@ -482,11 +500,16 @@ if(ENABLE_SMALL)
     target_sources(liblzma PRIVATE src/liblzma/check/crc32_small.c)
 else()
     target_sources(liblzma PRIVATE
-        src/liblzma/check/crc32_fast.c
         src/liblzma/check/crc32_table.c
         src/liblzma/check/crc32_table_be.h
         src/liblzma/check/crc32_table_le.h
     )
+
+    if(ENABLE_X86_ASM)
+        target_sources(liblzma PRIVATE src/liblzma/check/crc32_x86.S)
+    else()
+        target_sources(liblzma PRIVATE src/liblzma/check/crc32_fast.c)
+    endif()
 endif()
 
 if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
@@ -496,11 +519,16 @@ if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
         target_sources(liblzma PRIVATE src/liblzma/check/crc64_small.c)
     else()
         target_sources(liblzma PRIVATE
-            src/liblzma/check/crc64_fast.c
             src/liblzma/check/crc64_table.c
             src/liblzma/check/crc64_table_be.h
             src/liblzma/check/crc64_table_le.h
         )
+
+        if(ENABLE_X86_ASM)
+            target_sources(liblzma PRIVATE src/liblzma/check/crc64_x86.S)
+        else()
+            target_sources(liblzma PRIVATE src/liblzma/check/crc64_fast.c)
+        endif()
     endif()
 endif()
 

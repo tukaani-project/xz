@@ -83,7 +83,7 @@ dist-hook:
 		$(MKDIR_P) "$$dest/txt" && \
 		for FILE in $(manfiles); do \
 			BASE=`basename $$FILE .1` && \
-			sh "$(srcdir)/build-aux/manconv.sh" ascii \
+			$(SHELL) "$(srcdir)/build-aux/manconv.sh" ascii \
 				< "$(srcdir)/$$FILE" \
 				> "$$dest/txt/$$BASE.txt"; \
 		done; \
@@ -93,8 +93,8 @@ dist-hook:
 # This also ensures that the man page translations are up to date (dist-hook
 # would be too late for that).
 mydist:
-	sh "$(srcdir)/src/liblzma/validate_map.sh"
-	cd "$(srcdir)/po4a" && sh update-po
+	$(SHELL) "$(srcdir)/src/liblzma/validate_map.sh"
+	cd "$(srcdir)/po4a" && $(SHELL) update-po
 	VERSION=$(VERSION); \
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
 		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=4 | cut -b2-`; \
@@ -109,10 +109,10 @@ pdf-local:
 	$(MKDIR_P) "$$dest/pdf-a4" "$$dest/pdf-letter" && \
 	for FILE in $(manfiles); do \
 		BASE=`basename $$FILE .1` && \
-		sh "$(srcdir)/build-aux/manconv.sh" pdf a4 \
+		$(SHELL) "$(srcdir)/build-aux/manconv.sh" pdf a4 \
 			< "$(srcdir)/$$FILE" \
 			> "$$dest/pdf-a4/$$BASE-a4.pdf" && \
-		sh "$(srcdir)/build-aux/manconv.sh" pdf letter \
+		$(SHELL) "$(srcdir)/build-aux/manconv.sh" pdf letter \
 			< "$(srcdir)/$$FILE" \
 			> "$$dest/pdf-letter/$$BASE-letter.pdf"; \
 	done

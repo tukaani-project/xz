@@ -100,11 +100,11 @@ FILES=$(printf '%s\n' "$FILES" | sort)
 
 # Find the tagged files.
 TAGGED=$(printf '%s\n' "$FILES" \
-	| tr '\n' '\000' | xargs -0r grep -l "$SPDX_LI")
+	| tr '\n' '\000' | xargs -0r grep -l "$SPDX_LI" --)
 
 # Find the tagged 0BSD files.
 TAGGED_0BSD=$(printf '%s\n' "$TAGGED" \
-	| tr '\n' '\000' | xargs -0r grep -l "$SPDX_LI 0BSD")
+	| tr '\n' '\000' | xargs -0r grep -l "$SPDX_LI 0BSD" --)
 
 # Find the tagged non-0BSD files, that is, remove the 0BSD-tagged files
 # from the list of tagged files.
@@ -127,7 +127,7 @@ FILES=$(printf '%s\n' "$FILES" | grep -Ev \
 # These are old translations that haven't been updated after 2024-02-14.
 # Eventually these should go away.
 PD_PO=$(printf '%s\n' "$FILES" | grep '\.po$' | tr '\n' '\000' \
-	| xargs -0r grep -Fl '# This file is put in the public domain.')
+	| xargs -0r grep -Fl '# This file is put in the public domain.' --)
 
 if test -n "$PD_PO"; then
 	# Remove the public domain .po files from the list.

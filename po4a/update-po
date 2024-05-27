@@ -37,8 +37,13 @@ PACKAGE_VERSION=`cd .. && sh build-aux/version.sh` || exit 1
 # when nothing else has changed. This makes it slower but it's fine
 # as long as this isn't run every time when "make" is run at the
 # top level directory. (po4a isn't super-fast even without --force).
+#
+# Using --porefs file and --msgmerge-opt '--add-location=file' make diffing
+# the .pot and .po files easier. If a translator prefers to have the line
+# numbers available, one may delete those options and rerun this script.
 set -x
 po4a --force --verbose \
+	--porefs file --msgmerge-opt '--add-location=file' \
 	--package-name="XZ Utils" \
 	--package-version="$PACKAGE_VERSION" \
 	--copyright-holder="[See the headers in the input files.]" \

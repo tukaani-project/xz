@@ -55,9 +55,16 @@ done
 # as long as this isn't run every time when "make" is run at the
 # top level directory. (po4a isn't super-fast even without --force).
 #
-# Using --porefs file and --msgmerge-opt '--add-location=file' make diffing
-# the .pot and .po files easier. If a translator prefers to have the line
-# numbers available, one may delete those options and rerun this script.
+# Make diffing the .pot and .po files easier:
+#
+#   --porefs file       Put only the input filenames, not line numbers,
+#                       into the .pot file. This way they won't get
+#                       copied to the .po files either.
+#
+#   --wrap-po newlines  Wrap msgids only at \n in the .pot file.
+#
+#   --msgmerge-opt "--no-wrap"
+#                       Wrap msgids and msgstrs only at \n in the .po files.
 #
 # The values from --package-name and --package-version are used to create
 # the Project-Id-Version field. It likely makes sense that its value isn't
@@ -67,7 +74,7 @@ done
 # best to use "xz-man" here to get the most consistent results.
 set -x
 po4a --force --verbose \
-	--porefs file --msgmerge-opt '--add-location=file' \
+	--porefs file --wrap-po newlines --msgmerge-opt "--no-wrap" \
 	--package-name="xz-man" \
 	--package-version="$PACKAGE_VERSION" \
 	--copyright-holder="The XZ Utils authors and contributors" \

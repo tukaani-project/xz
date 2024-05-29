@@ -92,10 +92,11 @@ dist-hook:
 	cd "$(distdir)" && $(SHELL) "build-aux/license-check.sh"
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.
-# This also ensures that the man page translations are up to date (dist-hook
+# This also ensures that the translations are up to date (dist-hook
 # would be too late for that).
 mydist:
 	$(SHELL) "$(srcdir)/src/liblzma/validate_map.sh"
+	cd po && $(MAKE) xz.pot-update
 	cd "$(srcdir)/po4a" && $(SHELL) update-po
 	VERSION=$(VERSION); \
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \

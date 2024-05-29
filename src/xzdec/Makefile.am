@@ -11,6 +11,7 @@
 xzdec_SOURCES = \
 	xzdec.c \
 	../common/tuklib_progname.c \
+	../common/tuklib_mbstr_nonprint.c \
 	../common/tuklib_exit.c
 
 if COND_W32
@@ -34,6 +35,7 @@ xzdec_LDADD += $(LTLIBINTL)
 lzmadec_SOURCES = \
 	xzdec.c \
 	../common/tuklib_progname.c \
+	../common/tuklib_mbstr_nonprint.c \
 	../common/tuklib_exit.c
 
 if COND_W32

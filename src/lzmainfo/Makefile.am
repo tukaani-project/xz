@@ -6,6 +6,7 @@ bin_PROGRAMS = lzmainfo
 lzmainfo_SOURCES = \
 	lzmainfo.c \
 	../common/tuklib_progname.c \
+	../common/tuklib_mbstr_nonprint.c \
 	../common/tuklib_exit.c
 
 if COND_W32

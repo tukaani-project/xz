@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-02-15 01:57+0800\n"
+"POT-Creation-Date: 2024-05-29 17:41+0300\n"
 "PO-Revision-Date: 2024-02-17 18:35+0100\n"
 "Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
 "Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
@@ -21,178 +21,170 @@ msgstr ""
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "X-Generator: Poedit 3.4\n"
 
-#: src/xz/args.c:77
+#: src/xz/args.c
 #, c-format
 msgid "%s: Invalid argument to --block-list"
 msgstr "%s: Érvénytelen argumentum a --block-list kapcsolóhoz"
 
-#: src/xz/args.c:87
+#: src/xz/args.c
 #, c-format
 msgid "%s: Too many arguments to --block-list"
 msgstr "%s: Túl sok argumentum a --block-list kapcsolóhoz"
 
-#: src/xz/args.c:124
+#: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
 msgstr "A --block-list kapcsolónál hiányzik a blokkméret a(z) „%c:” szűrőláncszám után"
 
-#: src/xz/args.c:150
+#: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
 msgstr "A 0 csak utolsó elemként használható a --block-list kapcsolónál"
 
-#: src/xz/args.c:539
+#: src/xz/args.c
 #, c-format
 msgid "%s: Unknown file format type"
 msgstr "%s: Ismeretlen fájlformátumtípus"
 
-#: src/xz/args.c:562 src/xz/args.c:570
+#: src/xz/args.c
 #, c-format
 msgid "%s: Unsupported integrity check type"
 msgstr "%s: Nem támogatott integritás-ellenőrzési típus"
 
-#: src/xz/args.c:606
+#: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Csak egy fájl adható meg a „--files” vagy „--files0” kapcsolóknál."
 
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
 #. before the colon ("%s : %s").
-#: src/xz/args.c:621 src/xz/coder.c:1058 src/xz/coder.c:1074
-#: src/xz/coder.c:1374 src/xz/coder.c:1377 src/xz/file_io.c:685
-#: src/xz/file_io.c:759 src/xz/file_io.c:849 src/xz/file_io.c:1020
-#: src/xz/list.c:368 src/xz/list.c:414 src/xz/list.c:476 src/xz/list.c:590
-#: src/xz/list.c:599
+#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: src/xz/args.c:677
+#: src/xz/args.c
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "A(z) %s környezeti változó túl sok argumentumot tartalmaz"
 
-#: src/xz/args.c:779
+#: src/xz/args.c
 msgid "Compression support was disabled at build time"
 msgstr "A tömörítési támogatás ki lett kapcsolva fordítási időben"
 
-#: src/xz/args.c:786
+#: src/xz/args.c
 msgid "Decompression support was disabled at build time"
 msgstr "A kibontási támogatás ki lett kapcsolva fordítási időben"
 
-#: src/xz/args.c:792
+#: src/xz/args.c
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "Az lzip-fájlok (.lz) tömörítése nem támogatott"
 
-#: src/xz/args.c:814
+#: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
 msgstr "A --block-list kapcsoló csak .xz formátum esetén van figyelembe véve"
 
-#: src/xz/args.c:827 src/xz/args.c:836
+#: src/xz/args.c
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgstr "A --format=raw esetén a --suffix=.SUF szükséges, hacsak nem a szabványosra kimenetre ír"
 
-#: src/xz/coder.c:140
+#: src/xz/coder.c
 msgid "Maximum number of filters is four"
 msgstr "A szűrők legnagyobb száma négy"
 
-#: src/xz/coder.c:178
+#: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
 msgstr "Hiba a --filters%s=SZŰRŐK kapcsolóban:"
 
-#: src/xz/coder.c:228
+#: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
 msgstr "A memóriahasználat túl alacsony a megadott szűrőbeállításokhoz."
 
-#: src/xz/coder.c:243
+#: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
 msgstr "A --block-list használja a(z) %u. szűrőláncot, de az nincs megadva a --filters%u= kapcsolóval"
 
-#: src/xz/coder.c:374
+#: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
 msgstr "Az előbeállítások használata nyers módban nem javasolt."
 
-#: src/xz/coder.c:376
+#: src/xz/coder.c
 msgid "The exact options of the presets may vary between software versions."
 msgstr "Az előbeállítások pontos beállításai különbözhetnek a szoftververziók között."
 
-#: src/xz/coder.c:402
+#: src/xz/coder.c
 msgid "The .lzma format supports only the LZMA1 filter"
 msgstr "Az .lzma formátum csak az LZMA1 szűrőt támogatja"
 
-#: src/xz/coder.c:410
+#: src/xz/coder.c
 msgid "LZMA1 cannot be used with the .xz format"
 msgstr "Az LZMA1 nem használható az .xz formátummal"
 
-#: src/xz/coder.c:434
+#: src/xz/coder.c
 #, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
 msgstr "A(z) %u. szűrőlánc nem kompatibilis a --flush-timeout kapcsolóval"
 
-#: src/xz/coder.c:443
+#: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "Egyszálú módra váltás a --flush-timeout kapcsoló miatt"
 
-#: src/xz/coder.c:484
+#: src/xz/coder.c
 #, c-format
 msgid "Unsupported options in filter chain %u"
 msgstr "Nem támogatott kapcsolók a(z) %u szűrőláncban"
 
-#: src/xz/coder.c:515
+#: src/xz/coder.c
 #, c-format
 msgid "Using up to %<PRIu32> threads."
 msgstr "Legfeljebb %<PRIu32> szál használata."
 
-#: src/xz/coder.c:531
+#: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
 msgstr "Nem támogatott szűrőlánc vagy szűrőkapcsolók"
 
-#: src/xz/coder.c:552
+#: src/xz/coder.c
 #, c-format
 msgid "Decompression will need %s MiB of memory."
 msgstr "A kibontáshoz %s MiB memória szükséges."
 
-#: src/xz/coder.c:584
+#: src/xz/coder.c
 #, c-format
 msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
 msgstr "A szálak számának csökkentése erről: %s, erre: %s, hogy ne lépje túl a(z) %s MiB-os korlátot"
 
-#: src/xz/coder.c:604
+#: src/xz/coder.c
 #, c-format
 msgid "Reduced the number of threads from %s to one. The automatic memory usage limit of %s MiB is still being exceeded. %s MiB of memory is required. Continuing anyway."
 msgstr "A szálak számának csökkentése erről: %s, egyre. A(z) %s MiB-os automatikus memóriahasználati korlát így is túl lett lépve. %s MiB memória szükséges. Ennek ellenére folytatás mindenképpen."
 
-#: src/xz/coder.c:631
+#: src/xz/coder.c
 #, c-format
 msgid "Switching to single-threaded mode to not exceed the memory usage limit of %s MiB"
 msgstr "Egyszálú módra váltás, hogy ne lépje túl a(z) %s MiB-os memóriahasználati korlátot"
 
-#: src/xz/coder.c:756
+#: src/xz/coder.c
 #, c-format
 msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
 msgstr "Az LZMA%c szótár méretének módosítása erről: %s MiB, erre: %s MiB, hogy ne lépje túl a(z) %s MiB-os korlátot"
 
-#: src/xz/coder.c:766
+#: src/xz/coder.c
 #, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
 msgstr "A --filters%2$u szűrőhöz tartozó LZMA%1$c szótár méretének módosítása %3$s MiB-ról %4$s MiB-ra, hogy ne lépje túl a(z) %5$s MiB-os korlátot"
 
-#: src/xz/coder.c:1140
+#: src/xz/coder.c
 #, c-format
 msgid "Error changing to filter chain %u: %s"
 msgstr "Hiba a(z) %u. szűrőlánc létrehozásakor: %s"
 
-#: src/xz/file_io.c:136 src/xz/file_io.c:144
+#: src/xz/file_io.c
 #, c-format
 msgid "Error creating a pipe: %s"
 msgstr "Hiba a csővezeték létrehozásakor: %s"
 
-#: src/xz/file_io.c:332
-msgid "Failed to enable the sandbox"
-msgstr "A homokozó engedélyezése sikertelen"
-
-#: src/xz/file_io.c:374
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: poll() failed: %s"
 msgstr "%s: poll() sikertelen: %s"
@@ -207,252 +199,252 @@ msgstr "%s: poll() sikertelen: %s"
 #. it is possible that the user has put a new file in place
 #. of the original file, and in that case it obviously
 #. shouldn't be removed.
-#: src/xz/file_io.c:441
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: File seems to have been moved, not removing"
 msgstr "%s: Úgy tűnik, hogy a fájl át lett helyezve, nincs eltávolítás"
 
-#: src/xz/file_io.c:448 src/xz/file_io.c:1004
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot remove: %s"
 msgstr "%s: Nem távolítható el: %s"
 
-#: src/xz/file_io.c:474
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot set the file owner: %s"
 msgstr "%s: A fájl tulajdonosa nem adható meg: %s"
 
-#: src/xz/file_io.c:487
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot set the file group: %s"
 msgstr "%s: A fájl csoportja nem adható meg: %s"
 
-#: src/xz/file_io.c:506
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot set the file permissions: %s"
 msgstr "%s: A fájl jogosultságai nem adhatók meg: %s"
 
-#: src/xz/file_io.c:632
+#: src/xz/file_io.c
 #, c-format
 msgid "Error getting the file status flags from standard input: %s"
 msgstr "Hiba a fájl állapotjelzőinek lekérdezésekor a szabványos bemenetről: %s"
 
-#: src/xz/file_io.c:690 src/xz/file_io.c:752
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Is a symbolic link, skipping"
 msgstr "%s: Szimbolikus link, kihagyás"
 
-#: src/xz/file_io.c:781
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Is a directory, skipping"
 msgstr "%s: Könyvtár, kihagyás"
 
-#: src/xz/file_io.c:787
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Not a regular file, skipping"
 msgstr "%s: Nem szabályos fájl, kihagyás"
 
-#: src/xz/file_io.c:804
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: File has setuid or setgid bit set, skipping"
 msgstr "%s: A fájlon setuid vagy setgid bit van beállítva, kihagyás"
 
-#: src/xz/file_io.c:811
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: File has sticky bit set, skipping"
 msgstr "%s: A fájlon sticky bit van beállítva, kihagyás"
 
-#: src/xz/file_io.c:818
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
 msgstr "%s: A bemeneti fájlhoz több mint egy hard link tartozik, kihagyás"
 
-#: src/xz/file_io.c:860
+#: src/xz/file_io.c
 msgid "Empty filename, skipping"
 msgstr "Üres fájlnév, kihagyás"
 
-#: src/xz/file_io.c:914
+#: src/xz/file_io.c
 #, c-format
 msgid "Error restoring the status flags to standard input: %s"
 msgstr "Hiba a fájl állapotjelzőinek visszaállításakor a szabványos bemenetre: %s"
 
-#: src/xz/file_io.c:962
+#: src/xz/file_io.c
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
 msgstr "Hiba a fájl állapotjelzőinek lekérdezésekor a szabványos kimenetről: %s"
 
-#: src/xz/file_io.c:1161
+#: src/xz/file_io.c
 #, c-format
 msgid "Error restoring the O_APPEND flag to standard output: %s"
 msgstr "Hiba az O_APPEND visszaállításakor a szabványos kimenetre: %s"
 
-#: src/xz/file_io.c:1173
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Closing the file failed: %s"
 msgstr "%s: A fájl lezárása sikertelen: %s"
 
-#: src/xz/file_io.c:1209 src/xz/file_io.c:1471
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Seeking failed when trying to create a sparse file: %s"
 msgstr "%s: A pozícionálás sikertelen a ritka fájl létrehozásának kísérletekor: %s"
 
-#: src/xz/file_io.c:1309
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Read error: %s"
 msgstr "%s: Olvasási hiba: %s"
 
-#: src/xz/file_io.c:1339
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Error seeking the file: %s"
 msgstr "%s: Hiba a fájlban pozícionáláskor: %s"
 
-#: src/xz/file_io.c:1363
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Unexpected end of file"
 msgstr "%s: Váratlan fájlvég"
 
-#: src/xz/file_io.c:1422
+#: src/xz/file_io.c
 #, c-format
 msgid "%s: Write error: %s"
 msgstr "%s: Írási hiba: %s"
 
-#: src/xz/hardware.c:237
+#: src/xz/hardware.c
 msgid "Disabled"
 msgstr "Letiltva"
 
-#: src/xz/hardware.c:268
+#: src/xz/hardware.c
 msgid "Amount of physical memory (RAM):"
 msgstr "Fizikai memória (RAM) mennyisége:"
 
-#: src/xz/hardware.c:269
+#: src/xz/hardware.c
 msgid "Number of processor threads:"
 msgstr "Processzorszálak száma:"
 
-#: src/xz/hardware.c:270
+#: src/xz/hardware.c
 msgid "Compression:"
 msgstr "Tömörítés:"
 
-#: src/xz/hardware.c:271
+#: src/xz/hardware.c
 msgid "Decompression:"
 msgstr "Kibontás:"
 
-#: src/xz/hardware.c:272
+#: src/xz/hardware.c
 msgid "Multi-threaded decompression:"
 msgstr "Többszálás kibontás:"
 
-#: src/xz/hardware.c:273
+#: src/xz/hardware.c
 msgid "Default for -T0:"
 msgstr "A -T0 alapértelmezése:"
 
-#: src/xz/hardware.c:291
+#: src/xz/hardware.c
 msgid "Hardware information:"
 msgstr "Hardverjellemzők:"
 
-#: src/xz/hardware.c:298
+#: src/xz/hardware.c
 msgid "Memory usage limits:"
 msgstr "Memóriahasználat korlátja:"
 
-#: src/xz/list.c:67
+#: src/xz/list.c
 msgid "Streams:"
 msgstr "Adatfolyamok:"
 
-#: src/xz/list.c:68
+#: src/xz/list.c
 msgid "Blocks:"
 msgstr "Blokkok:"
 
-#: src/xz/list.c:69
+#: src/xz/list.c
 msgid "Compressed size:"
 msgstr "Tömörített méret:"
 
-#: src/xz/list.c:70
+#: src/xz/list.c
 msgid "Uncompressed size:"
 msgstr "Kibontott méret:"
 
-#: src/xz/list.c:71
+#: src/xz/list.c
 msgid "Ratio:"
 msgstr "Arány:"
 
-#: src/xz/list.c:72
+#: src/xz/list.c
 msgid "Check:"
 msgstr "Ellenőrzés:"
 
-#: src/xz/list.c:73
+#: src/xz/list.c
 msgid "Stream Padding:"
 msgstr "Adatfolyam kerete:"
 
-#: src/xz/list.c:74
+#: src/xz/list.c
 msgid "Memory needed:"
 msgstr "Szükséges memória:"
 
-#: src/xz/list.c:75
+#: src/xz/list.c
 msgid "Sizes in headers:"
 msgstr "Méretek a fejlécekben:"
 
-#: src/xz/list.c:78
+#: src/xz/list.c
 msgid "Number of files:"
 msgstr "Fájlok száma:"
 
-#: src/xz/list.c:121
+#: src/xz/list.c
 msgid "Stream"
 msgstr "Adatfolyam"
 
-#: src/xz/list.c:122
+#: src/xz/list.c
 msgid "Block"
 msgstr "Blokk"
 
-#: src/xz/list.c:123
+#: src/xz/list.c
 msgid "Blocks"
 msgstr "Blokkok"
 
-#: src/xz/list.c:124
+#: src/xz/list.c
 msgid "CompOffset"
 msgstr "Tömörített eltolás"
 
-#: src/xz/list.c:125
+#: src/xz/list.c
 msgid "UncompOffset"
 msgstr "Kibontott eltolás"
 
-#: src/xz/list.c:126
+#: src/xz/list.c
 msgid "CompSize"
 msgstr "Tömörített méret"
 
-#: src/xz/list.c:127
+#: src/xz/list.c
 msgid "UncompSize"
 msgstr "Kibontott méret"
 
-#: src/xz/list.c:128
+#: src/xz/list.c
 msgid "TotalSize"
 msgstr "Teljes méret"
 
-#: src/xz/list.c:129
+#: src/xz/list.c
 msgid "Ratio"
 msgstr "Arány"
 
-#: src/xz/list.c:130
+#: src/xz/list.c
 msgid "Check"
 msgstr "Ellenőrzés"
 
-#: src/xz/list.c:131
+#: src/xz/list.c
 msgid "CheckVal"
 msgstr "Ellenőrzőérték"
 
-#: src/xz/list.c:132
+#: src/xz/list.c
 msgid "Padding"
 msgstr "Keret"
 
-#: src/xz/list.c:133
+#: src/xz/list.c
 msgid "Header"
 msgstr "Fejléc"
 
-#: src/xz/list.c:134
+#: src/xz/list.c
 msgid "Flags"
 msgstr "Jelzők"
 
-#: src/xz/list.c:135
+#: src/xz/list.c
 msgid "MemUsage"
 msgstr "Memóriahasználat"
 
-#: src/xz/list.c:136
+#: src/xz/list.c
 msgid "Filters"
 msgstr "Szűrők"
 
@@ -460,7 +452,7 @@ msgstr "Szűrők"
 #. This string is used in tables. In older xz version this
 #. string was limited to ten columns in a fixed-width font, but
 #. nowadays there is no strict length restriction anymore.
-#: src/xz/list.c:168
+#: src/xz/list.c
 msgid "None"
 msgstr "Nincs"
 
@@ -468,60 +460,60 @@ msgstr "Nincs"
 #. but the Check ID is known (here 2). In older xz version these
 #. strings were limited to ten columns in a fixed-width font, but
 #. nowadays there is no strict length restriction anymore.
-#: src/xz/list.c:174
+#: src/xz/list.c
 msgid "Unknown-2"
 msgstr "Névtelen-2"
 
-#: src/xz/list.c:175
+#: src/xz/list.c
 msgid "Unknown-3"
 msgstr "Névtelen-3"
 
-#: src/xz/list.c:177
+#: src/xz/list.c
 msgid "Unknown-5"
 msgstr "Névtelen-5"
 
-#: src/xz/list.c:178
+#: src/xz/list.c
 msgid "Unknown-6"
 msgstr "Névtelen-6"
 
-#: src/xz/list.c:179
+#: src/xz/list.c
 msgid "Unknown-7"
 msgstr "Névtelen-7"
 
-#: src/xz/list.c:180
+#: src/xz/list.c
 msgid "Unknown-8"
 msgstr "Névtelen-8"
 
-#: src/xz/list.c:181
+#: src/xz/list.c
 msgid "Unknown-9"
 msgstr "Névtelen-9"
 
-#: src/xz/list.c:183
+#: src/xz/list.c
 msgid "Unknown-11"
 msgstr "Névtelen-11"
 
-#: src/xz/list.c:184
+#: src/xz/list.c
 msgid "Unknown-12"
 msgstr "Névtelen-12"
 
-#: src/xz/list.c:185
+#: src/xz/list.c
 msgid "Unknown-13"
 msgstr "Névtelen-13"
 
-#: src/xz/list.c:186
+#: src/xz/list.c
 msgid "Unknown-14"
 msgstr "Névtelen-14"
 
-#: src/xz/list.c:187
+#: src/xz/list.c
 msgid "Unknown-15"
 msgstr "Névtelen-15"
 
-#: src/xz/list.c:350
+#: src/xz/list.c
 #, c-format
 msgid "%s: File is empty"
 msgstr "%s: A fájl üres"
 
-#: src/xz/list.c:355
+#: src/xz/list.c
 #, c-format
 msgid "%s: Too small to be a valid .xz file"
 msgstr "%s: Túl kicsi, hogy érvényes .xz fájl legyen"
@@ -530,68 +522,68 @@ msgstr "%s: Túl kicsi, hogy érvényes .xz fájl legyen"
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c:740
+#: src/xz/list.c
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
 msgstr "Folyam  Blokkok  Tömörített Kibontott  Arány  Ellenőrzés  Fájlnév"
 
-#: src/xz/list.c:1035 src/xz/list.c:1213
+#: src/xz/list.c
 msgid "Yes"
 msgstr "Igen"
 
-#: src/xz/list.c:1035 src/xz/list.c:1213
+#: src/xz/list.c
 msgid "No"
 msgstr "Nem"
 
-#: src/xz/list.c:1037 src/xz/list.c:1215
+#: src/xz/list.c
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "  Legkisebb XZ Utils verzió: %s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c:1188
+#: src/xz/list.c
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
 msgstr[0] "%s fájl\n"
 msgstr[1] "%s fájl\n"
 
-#: src/xz/list.c:1201
+#: src/xz/list.c
 msgid "Totals:"
 msgstr "Összesen:"
 
-#: src/xz/list.c:1284
+#: src/xz/list.c
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
 msgstr "A --list csak .xz fájlokkal működik (--format=xz vagy --format=auto)"
 
-#: src/xz/list.c:1289
+#: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
 msgstr "Az „lzmainfo” kipróbálása az .lzma fájlok esetén."
 
-#: src/xz/list.c:1297
+#: src/xz/list.c
 msgid "--list does not support reading from standard input"
 msgstr "A --list nem támogatja a szabványos bemenetről beolvasást"
 
-#: src/xz/main.c:95
+#: src/xz/main.c
 #, c-format
 msgid "%s: Error reading filenames: %s"
 msgstr "%s: Hiba a fájlnevek olvasásakor: %s"
 
-#: src/xz/main.c:102
+#: src/xz/main.c
 #, c-format
 msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s: A bemenet váratlanul véget ért a fájlnevek olvasásakor"
 
-#: src/xz/main.c:126
+#: src/xz/main.c
 #, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "%s: Null karakter található a fájlnevek olvasásakor; talán a „--files0” kapcsolóra gondolt a „--files” helyett?"
 
-#: src/xz/main.c:206
+#: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
 msgstr "A tömörítés és kibontás még nem támogatott a --robot kapcsolóval."
 
-#: src/xz/main.c:284
+#: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Az adatok nem olvashatók be a szabványos bemenetről a fájlnevek olvasásakor"
 
@@ -599,68 +591,68 @@ msgstr "Az adatok nem olvashatók be a szabványos bemenetről a fájlnevek olva
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c:670 src/xz/message.c:725
+#: src/xz/message.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
 
-#: src/xz/message.c:797 src/xz/message.c:856 src/lzmainfo/lzmainfo.c:131
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 msgid "Internal error (bug)"
 msgstr "Belső hiba (bug)"
 
-#: src/xz/message.c:804
+#: src/xz/message.c
 msgid "Cannot establish signal handlers"
 msgstr "A szignálkezelők nem hozhatók létre"
 
-#: src/xz/message.c:813
+#: src/xz/message.c
 msgid "No integrity check; not verifying file integrity"
 msgstr "Nincs integritás-ellenőrzés; a fájl épsége nem lesz ellenőrizve"
 
-#: src/xz/message.c:816
+#: src/xz/message.c
 msgid "Unsupported type of integrity check; not verifying file integrity"
 msgstr "Nem támogatott integritás-ellenőrzési típus; a fájl épsége nem lesz ellenőrizve"
 
-#: src/xz/message.c:823
+#: src/xz/message.c
 msgid "Memory usage limit reached"
 msgstr "Memóriahasználat korlátja elérve"
 
-#: src/xz/message.c:826
+#: src/xz/message.c
 msgid "File format not recognized"
 msgstr "A fájlformátum nem felismert"
 
-#: src/xz/message.c:829
+#: src/xz/message.c
 msgid "Unsupported options"
 msgstr "Nem támogatott kapcsolók"
 
-#: src/xz/message.c:832
+#: src/xz/message.c
 msgid "Compressed data is corrupt"
 msgstr "A tömörített adatok megsérültek"
 
-#: src/xz/message.c:835
+#: src/xz/message.c
 msgid "Unexpected end of input"
 msgstr "A bemenet váratlanul véget ért"
 
-#: src/xz/message.c:877
+#: src/xz/message.c
 #, c-format
 msgid "%s MiB of memory is required. The limiter is disabled."
 msgstr "%s MiB memória szükséges. A korlátozás letiltva."
 
-#: src/xz/message.c:905
+#: src/xz/message.c
 #, c-format
 msgid "%s MiB of memory is required. The limit is %s."
 msgstr "%s MiB memória szükséges. A korlát %s."
 
-#: src/xz/message.c:924
+#: src/xz/message.c
 #, c-format
 msgid "%s: Filter chain: %s\n"
 msgstr "%s: Szűrőlánc: %s\n"
 
-#: src/xz/message.c:935
+#: src/xz/message.c
 #, c-format
 msgid "Try '%s --help' for more information."
 msgstr "További információkért adja ki a következő parancsot: „%s --help”."
 
-#: src/xz/message.c:961
+#: src/xz/message.c
 #, c-format
 msgid ""
 "Usage: %s [OPTION]... [FILE]...\n"
@@ -671,15 +663,15 @@ msgstr ""
 ".xz formátumú FÁJLok tömörítése vagy kibontása.\n"
 "\n"
 
-#: src/xz/message.c:968
+#: src/xz/message.c
 msgid "Mandatory arguments to long options are mandatory for short options too.\n"
 msgstr "A hosszú kapcsolók kötelező argumentumai a rövid kapcsolók esetén is kötelezők.\n"
 
-#: src/xz/message.c:972
+#: src/xz/message.c
 msgid " Operation mode:\n"
 msgstr " Működési mód:\n"
 
-#: src/xz/message.c:975
+#: src/xz/message.c
 msgid ""
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
@@ -691,7 +683,7 @@ msgstr ""
 "  -t, --test          tömörített fájl épségének tesztelése\n"
 "  -l, --list          információk kiírása az .xz fájlokról"
 
-#: src/xz/message.c:981
+#: src/xz/message.c
 msgid ""
 "\n"
 " Operation modifiers:\n"
@@ -699,7 +691,7 @@ msgstr ""
 "\n"
 " Műveleti módosítók:\n"
 
-#: src/xz/message.c:984
+#: src/xz/message.c
 msgid ""
 "  -k, --keep          keep (don't delete) input files\n"
 "  -f, --force         force overwrite of output file and (de)compress links\n"
@@ -711,7 +703,7 @@ msgstr ""
 "  -c, --stdout        írás a szabványos kimenetre írás, és nem törli a\n"
 "                      bemeneti fájlokat"
 
-#: src/xz/message.c:993
+#: src/xz/message.c
 msgid ""
 "      --single-stream decompress only the first stream, and silently\n"
 "                      ignore possible remaining input data"
@@ -719,7 +711,7 @@ msgstr ""
 "      --single-stream csak az első adatfolyam kibontása, és a\n"
 "                      lehetséges hátralévő bemeneti adatok mellőzése"
 
-#: src/xz/message.c:996
+#: src/xz/message.c
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
@@ -737,7 +729,7 @@ msgstr ""
 "      --files0[=FÁJL] mint a --files, de a null karaktert használja\n"
 "                      használja elválasztóként"
 
-#: src/xz/message.c:1005
+#: src/xz/message.c
 msgid ""
 "\n"
 " Basic file format and compression options:\n"
@@ -745,7 +737,7 @@ msgstr ""
 "\n"
 " Alapvető fájlformátum és tömörítési beállítások:\n"
 
-#: src/xz/message.c:1007
+#: src/xz/message.c
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
@@ -758,11 +750,11 @@ msgstr ""
 "  -C, --check=ELL     integritás-ellenőrzés típusa: „none” (óvatosan használja),\n"
 "                      „crc32”, „crc64” (alapértelmezett) vagy „sha256”"
 
-#: src/xz/message.c:1012
+#: src/xz/message.c
 msgid "      --ignore-check  don't verify the integrity check when decompressing"
 msgstr "      --ignore-check  kibontáskor ne ellenőrizze az épséget"
 
-#: src/xz/message.c:1016
+#: src/xz/message.c
 msgid ""
 "  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
 "                      decompressor memory usage into account before using 7-9!"
@@ -771,7 +763,7 @@ msgstr ""
 "                      a 7-9 használata előtt vegye figyelembe a tömörítő\n"
 "                      *és* kibontó memóriahasználatát!"
 
-#: src/xz/message.c:1020
+#: src/xz/message.c
 msgid ""
 "  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
 "                      does not affect decompressor memory requirements"
@@ -779,7 +771,7 @@ msgstr ""
 "  -e, --extreme       a tömörítési arány javítási kísérlete több CPU-idő\n"
 "                      használatával; nincs hatással a kibontó memóriaigényére"
 
-#: src/xz/message.c:1024
+#: src/xz/message.c
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
@@ -788,7 +780,7 @@ msgstr ""
 "                      amely annyi szálat használ, amennyi processzormag áll\n"
 "                      rendelkezésre"
 
-#: src/xz/message.c:1029
+#: src/xz/message.c
 msgid ""
 "      --block-size=SIZE\n"
 "                      start a new .xz block after every SIZE bytes of input;\n"
@@ -798,7 +790,7 @@ msgstr ""
 "                      új .xz blokk indítása minden MÉRETnyi bájt bemenet után;\n"
 "                      a többszálas tömörítés blokkméretének megadásához"
 
-#: src/xz/message.c:1033
+#: src/xz/message.c
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -812,7 +804,7 @@ msgstr ""
 "                      adatok mérete előtt egy szűrőláncszám (0-9) is megadható\n"
 "                      egy „:” karakter közbeiktatásával"
 
-#: src/xz/message.c:1039
+#: src/xz/message.c
 msgid ""
 "      --flush-timeout=TIMEOUT\n"
 "                      when compressing, if more than TIMEOUT milliseconds has\n"
@@ -824,7 +816,7 @@ msgstr ""
 "                      telt el az előző kiírástól, és a bemenetolvasás\n"
 "                      blokkolna, akkor minden adat ki lesz írva"
 
-#: src/xz/message.c:1045
+#: src/xz/message.c
 #, no-c-format
 msgid ""
 "      --memlimit-compress=LIMIT\n"
@@ -844,7 +836,7 @@ msgstr ""
 "                      KORLÁT bájtokban van megadva, a RAM %-ában, vagy 0 az\n"
 "                      alapértelmezéshez"
 
-#: src/xz/message.c:1054
+#: src/xz/message.c
 msgid ""
 "      --no-adjust     if compression settings exceed the memory usage limit,\n"
 "                      give an error instead of adjusting the settings downwards"
@@ -853,7 +845,7 @@ msgstr ""
 "                      korlátot, akkor hibát fog adni a beállítások lefelé\n"
 "                      állítása helyett"
 
-#: src/xz/message.c:1060
+#: src/xz/message.c
 msgid ""
 "\n"
 " Custom filter chain for compression (alternative for using presets):"
@@ -861,7 +853,7 @@ msgstr ""
 "\n"
 " Egyéni szűrőlánc a tömörítéshez (alternatíva az előbeállításokra):"
 
-#: src/xz/message.c:1063
+#: src/xz/message.c
 msgid ""
 "\n"
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
@@ -871,7 +863,7 @@ msgstr ""
 "  --filters=SZŰRŐK    a szűrőlánc beállítása liblzma szűrőformátummal;\n"
 "                      további információkért lásd a --filters-help kapcsolót"
 
-#: src/xz/message.c:1069
+#: src/xz/message.c
 msgid ""
 "  --filters1=FILTERS ... --filters9=FILTERS\n"
 "                      set additional filter chains using the liblzma filter\n"
@@ -881,7 +873,7 @@ msgstr ""
 "                      további szűrőláncok beállítása liblzma formátummal a\n"
 "                      --block-list kapcsolóhoz"
 
-#: src/xz/message.c:1075
+#: src/xz/message.c
 msgid ""
 "  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
@@ -889,7 +881,7 @@ msgstr ""
 "  --filters-help      további információk megjelenítése a libzma\n"
 "                      szűrőformátumról, majd kilépés."
 
-#: src/xz/message.c:1086
+#: src/xz/message.c
 msgid ""
 "\n"
 "  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
@@ -919,7 +911,7 @@ msgstr ""
 "                        depth=SZÁM legnagyobb keresési mélység; 0=automatikus\n"
 "                                   (alapértelmezett)"
 
-#: src/xz/message.c:1101
+#: src/xz/message.c
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -946,7 +938,7 @@ msgstr ""
 "                        start=SZÁM  kezdési eltolás az átalakításokhoz\n"
 "                                    (alapértelmezett=0)"
 
-#: src/xz/message.c:1115
+#: src/xz/message.c
 msgid ""
 "\n"
 "  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
@@ -959,7 +951,7 @@ msgstr ""
 "                        dist=SZÁM  az egymásból kivont bájtok közti\n"
 "                                   távolság (1-256; 1)"
 
-#: src/xz/message.c:1123
+#: src/xz/message.c
 msgid ""
 "\n"
 " Other options:\n"
@@ -967,7 +959,7 @@ msgstr ""
 "\n"
 " Egyéb kapcsolók:\n"
 
-#: src/xz/message.c:1126
+#: src/xz/message.c
 msgid ""
 "  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
 "  -v, --verbose       be verbose; specify twice for even more verbose"
@@ -977,19 +969,19 @@ msgstr ""
 "  -v, --verbose       legyen bőbeszédű; adja meg kétszer, hogy még bőbeszédűbb\n"
 "                      legyen"
 
-#: src/xz/message.c:1131
+#: src/xz/message.c
 msgid "  -Q, --no-warn       make warnings not affect the exit status"
 msgstr ""
 "  -Q, --no-warn       a figyelmeztetések nem befolyásolják a kilépési\n"
 "                      állapotkódot"
 
-#: src/xz/message.c:1133
+#: src/xz/message.c
 msgid "      --robot         use machine-parsable messages (useful for scripts)"
 msgstr ""
 "      --robot         géppel értelmezhető üzenetek használata\n"
 "                      (parancsfájlok esetén hasznos)"
 
-#: src/xz/message.c:1136
+#: src/xz/message.c
 msgid ""
 "      --info-memory   display the total amount of RAM and the currently active\n"
 "                      memory usage limits, and exit"
@@ -997,7 +989,7 @@ msgstr ""
 "      --info-memory   az összes RAM mennyiségének és a jelenlegi\n"
 "                      memóriahasználati korlátok megjelenítése, és kilépés"
 
-#: src/xz/message.c:1139
+#: src/xz/message.c
 msgid ""
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"
@@ -1005,7 +997,7 @@ msgstr ""
 "  -h, --help          a rövid súgó megjelenítése (csak az alapvető kapcsolók)\n"
 "  -H, --long-help     ezen hosszú súgó megjelenítése, és kilépés"
 
-#: src/xz/message.c:1143
+#: src/xz/message.c
 msgid ""
 "  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"
@@ -1013,11 +1005,11 @@ msgstr ""
 "  -h, --help          ezen rövid súgó megjelenítése, és kilépés\n"
 "  -H, --long-help     a hosszú súgó megjelenítése (speciális kapcsolókhoz)"
 
-#: src/xz/message.c:1148
+#: src/xz/message.c
 msgid "  -V, --version       display the version number and exit"
 msgstr "  -V, --version       a verziószám kiírása és kilépés"
 
-#: src/xz/message.c:1150 src/lzmainfo/lzmainfo.c:37
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid ""
 "\n"
@@ -1030,21 +1022,21 @@ msgstr ""
 #. for this package. Please add _another line_ saying
 #. "Report translation bugs to <...>\n" with the email or WWW
 #. address for translation bugs. Thanks.
-#: src/xz/message.c:1156 src/lzmainfo/lzmainfo.c:40
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr "Ide jelentse a hibákat: <%s> (angolul vagy finnül).\n"
 
-#: src/xz/message.c:1158 src/lzmainfo/lzmainfo.c:42
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s home page: <%s>\n"
 msgstr "%s honlap: <%s>\n"
 
-#: src/xz/message.c:1162
+#: src/xz/message.c
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
 msgstr "EZ EGY FEJLESZTŐI VÁLTOZAT, NEM ÉLES HASZNÁLATRA SZÁNT."
 
-#: src/xz/message.c:1179
+#: src/xz/message.c
 msgid ""
 "Filter chains are set using the --filters=FILTERS or\n"
 "--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
@@ -1056,77 +1048,77 @@ msgstr ""
 "szereplő egyes szűrőket szóközökkel vagy „--” karakterekkel kell elválasztani.\n"
 "Illetve egy <0-9>[e] előbeállítás is megadható szűrőlánc helyett.\n"
 
-#: src/xz/message.c:1185
+#: src/xz/message.c
 msgid "The supported filters and their options are:"
 msgstr "A támogatott szűrők és azok kapcsolói a következők:"
 
-#: src/xz/options.c:85
+#: src/xz/options.c
 #, c-format
 msgid "%s: Options must be 'name=value' pairs separated with commas"
 msgstr "%s: A kapcsolóknak vesszőkkel elválasztott „név=érték” pároknak kell lenniük"
 
-#: src/xz/options.c:92
+#: src/xz/options.c
 #, c-format
 msgid "%s: Invalid option name"
 msgstr "%s: Érvénytelen kapcsolónév"
 
-#: src/xz/options.c:112
+#: src/xz/options.c
 #, c-format
 msgid "%s: Invalid option value"
 msgstr "%s: Érvénytelen kapcsolóérték"
 
-#: src/xz/options.c:247
+#: src/xz/options.c
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
 msgstr "Nem támogatott LZMA1/LZMA2 előbeállítás: %s"
 
-#: src/xz/options.c:355
+#: src/xz/options.c
 msgid "The sum of lc and lp must not exceed 4"
 msgstr "Az lc és lp összege nem haladhatja meg a 4-et"
 
-#: src/xz/suffix.c:165
+#: src/xz/suffix.c
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s: A fájlnév utótagja ismeretlen, kihagyás"
 
-#: src/xz/suffix.c:186
+#: src/xz/suffix.c
 #, c-format
 msgid "%s: File already has '%s' suffix, skipping"
 msgstr "%s: A fájlnak már van „%s” utótagja, kihagyás"
 
-#: src/xz/suffix.c:393
+#: src/xz/suffix.c
 #, c-format
 msgid "%s: Invalid filename suffix"
 msgstr "%s: Érvénytelen fájlnév utótag"
 
-#: src/xz/util.c:106
+#: src/xz/util.c
 #, c-format
 msgid "%s: Value is not a non-negative decimal integer"
 msgstr "%s: Az érték nem nemnegatív decimális egész szám"
 
-#: src/xz/util.c:148
+#: src/xz/util.c
 #, c-format
 msgid "%s: Invalid multiplier suffix"
 msgstr "%s: Érvénytelen szorzó utótag"
 
-#: src/xz/util.c:150
+#: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "Az érvényes utótagok: „KiB” (2^10), „MiB” (2^20) és „GiB” (2^30)."
 
-#: src/xz/util.c:167
+#: src/xz/util.c
 #, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "A(z) „%s” kapcsoló értékének a(z) [%<PRIu64>, %<PRIu64>] tartományban kell lennie"
 
-#: src/xz/util.c:290
+#: src/xz/util.c
 msgid "Compressed data cannot be read from a terminal"
 msgstr "A tömörített adatokat nem lehet beolvasni a terminálból"
 
-#: src/xz/util.c:303
+#: src/xz/util.c
 msgid "Compressed data cannot be written to a terminal"
 msgstr "A tömörített adatokat nem lehet kiírni a terminálba"
 
-#: src/lzmainfo/lzmainfo.c:33
+#: src/lzmainfo/lzmainfo.c
 #, c-format
 msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
@@ -1135,21 +1127,24 @@ msgstr ""
 "Használat: %s [--help] [--version] [FÁJL]…\n"
 "Az .lzma fájl fejlécében tárolt információk megjelenítése"
 
-#: src/lzmainfo/lzmainfo.c:109
+#: src/lzmainfo/lzmainfo.c
 msgid "File is too small to be a .lzma file"
 msgstr "A fájl túl kicsi, hogy érvényes .lzma fájl legyen"
 
-#: src/lzmainfo/lzmainfo.c:122
+#: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"
 msgstr "Nem .lzma fájl"
 
-#: src/common/tuklib_exit.c:39
+#: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"
 msgstr "A szabványos kimenetre írás sikertelen"
 
-#: src/common/tuklib_exit.c:42
+#: src/common/tuklib_exit.c
 msgid "Unknown error"
 msgstr "Ismeretlen hiba"
+
+#~ msgid "Failed to enable the sandbox"
+#~ msgstr "A homokozó engedélyezése sikertelen"
 
 #, c-format
 #~ msgid "The selected match finder requires at least nice=%<PRIu32>"

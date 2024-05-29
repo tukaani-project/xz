@@ -2,6 +2,136 @@
 XZ Utils Release Notes
 ======================
 
+5.6.2 (2024-05-29)
+
+    * Remove the backdoor (CVE-2024-3094).
+
+    * Not changed: Memory sanitizer (MSAN) has a false positive
+      in the CRC CLMUL code which also makes OSS Fuzz unhappy.
+      Valgrind is smarter and doesn't complain.
+
+      A revision to the CLMUL code is coming anyway and this issue
+      will be cleaned up as part of it. It won't be backported to
+      5.6.x or 5.4.x because the old code isn't wrong. There is
+      no reason to risk introducing regressions in old branches
+      just to silence a false positive.
+
+    * liblzma:
+
+        - lzma_index_decoder() and lzma_index_buffer_decode(): Fix
+          a missing output pointer initialization (*i = NULL) if the
+          functions are called with invalid arguments. The API docs
+          say that such an initialization is always done. In practice
+          this matters very little because the problem can only occur
+          if the calling application has a bug and these functions
+          return LZMA_PROG_ERROR.
+
+        - lzma_str_to_filters(): Fix a missing output pointer
+          initialization (*error_pos = 0). This is very similar
+          to the fix above.
+
+        - Fix C standard conformance with function pointer types.
+
+        - Remove GNU indirect function (IFUNC) support. This is *NOT*
+          done for security reasons even though the backdoor relied on
+          this code. The performance benefits of IFUNC are too tiny in
+          this project to make the extra complexity worth it.
+
+        - FreeBSD on ARM64: Add error checking to CRC32 instruction
+          support detection.
+
+        - Fix building with NVIDIA HPC SDK.
+
+    * xz:
+
+        - Fix a C standard conformance issue in --block-list parsing
+          (arithmetic on a null pointer).
+
+        - Fix a warning from GNU groff when processing the man page:
+          "warning: cannot select font 'CW'"
+
+    * xzdec: Add support for Linux Landlock ABI version 4. xz already
+      had the v3-to-v4 change but it had been forgotten from xzdec.
+
+    * Autotools-based build system (configure):
+
+        - Symbol versioning variant can now be overridden with
+          --enable-symbol-versions. Documentation in INSTALL was
+          updated to match.
+
+        - Add new configure option --enable-doxygen to enable
+          generation and installation of the liblzma API documentation
+          using Doxygen. Documentation in INSTALL and PACKAGERS was
+          updated to match.
+
+    CMake:
+
+        - Fix detection of Linux Landlock support. The detection code
+          in CMakeLists.txt had been sabotaged.
+
+        - Disable symbol versioning on non-glibc Linux to match what
+          the Autotools build does. For example, symbol versioning
+          isn't enabled with musl.
+
+        - Symbol versioning variant can now be overridden by setting
+          SYMBOL_VERSIONING to "OFF", "generic", or "linux".
+
+        - Add support for all tests in typical build configurations.
+          Now the only difference to the tests coverage to Autotools
+          is that CMake-based build will skip more tests if features
+          are disabled. Such builds are only for special cases like
+          embedded systems.
+
+        - Separate the CMake code for the tests into tests/tests.cmake.
+          It is used conditionally, thus it is possible to
+
+              rm -rf tests
+
+          and the CMake-based build will still work normally except
+          that no tests are then available.
+
+        - Add a option ENABLE_DOXYGEN to enable generation and
+          installation of the liblzma API documentation using Doxygen.
+
+    * Documentation:
+
+        - Omit the Doxygen-generated liblzma API documentation from the
+          package. Instead, the generation and installation of the API
+          docs can be enabled with a configure or CMake option if
+          Doxygen is available.
+
+        - Remove the XZ logo which was used in the API documentation.
+          The logo has been retired and isn't used by the project
+          anymore. However, it's OK to use it in contexts that refer
+          to the backdoor incident.
+
+        - Remove the PDF versions of the man pages from the source
+          package. These existed primarily for users of operating
+          systems which don't come with tools to render man page
+          source files. The plain text versions are still included
+          in doc/man/txt. PDF files can still be generated to doc/man,
+          if the required tools are available, using "make pdf" after
+          running "configure".
+
+        - Update home page URLs back to their old locations on
+          tukaani.org.
+
+        - Update maintainer info.
+
+    * Tests:
+
+        - In tests/files/README, explain how to recreate the ARM64
+          test files.
+
+        - Remove two tests that used tiny x86 and SPARC object files
+          as the input files. The matching .c file was included but
+          the object files aren't easy to reproduce. The test cases
+          weren't great anyway; they were from the early days (2009)
+          of the project when the test suite had very few tests.
+
+        - Improve a few tests.
+
+
 5.6.1 (2024-03-09)
 
     IMPORTANT: This fixed bugs in the backdoor (CVE-2024-3094) (someone

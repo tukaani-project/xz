@@ -1145,6 +1145,121 @@ XZ Utils Release Notes
       (FreeBSD >= 10).
 
 
+5.2.13 (2024-05-29)
+
+    * liblzma:
+
+        - lzma_index_append(): Fix an assertion failure that could be
+          triggered by a large unpadded_size argument. It was verified
+          that there was no other bug than the assertion failure.
+
+        - lzma_index_decoder() and lzma_index_buffer_decode(): Fix
+          a missing output pointer initialization (*i = NULL) if the
+          functions are called with invalid arguments. The API docs
+          say that such an initialization is always done. In practice
+          this matters very little because the problem can only occur
+          if the calling application has a bug and these functions
+          return LZMA_PROG_ERROR.
+
+        - Fix C standard conformance with function pointer types.
+          This newly showed up with Clang 17 with -fsanitize=undefined.
+          There are no bug reports about this.
+
+        - Fix building with NVIDIA HPC SDK.
+
+        - Fix building with Windows Vista threads and --enable-small.
+          (CMake build doesn't support ENABLE_SMALL in XZ Utils 5.2.x.)
+
+    * xz:
+
+        - Fix a C standard conformance issue in --block-list parsing
+          (arithmetic on a null pointer).
+
+        - Fix a warning from GNU groff when processing the man page:
+          "warning: cannot select font 'CW'"
+
+        - Windows: Handle special files such as "con" or "nul". Earlier
+          the following wrote "foo" to the console and deleted the input
+          file "con_xz":
+
+              echo foo | xz > con_xz
+              xz --suffix=_xz --decompress con_xz
+
+        - Windows: Fix an issue that prevented reading from or writing
+          to non-terminal character devices like NUL.
+
+    * xzless:
+
+        - With "less" version 451 and later, use "||-" instead of "|-"
+          in the environment variable LESSOPEN. This way compressed
+          files that contain no uncompressed data are shown correctly
+          as empty.
+
+        - With "less" version 632 and later, use --show-preproc-errors
+          to make "less" show a warning on decompression errors.
+
+    * Build systems:
+
+        - Add a new line to liblzma.pc for MSYS2 (Windows):
+
+              Cflags.private: -DLZMA_API_STATIC
+
+          When compiling code that will link against static liblzma,
+          the LZMA_API_STATIC macro needs to be defined on Windows.
+
+        - Autotools (configure):
+
+            * Symbol versioning variant can now be overridden with
+              --enable-symbol-versions. Documentation in INSTALL was
+              updated to match.
+
+        - CMake:
+
+            * Fix a bug that prevented other projects from including
+              liblzma multiple times using find_package().
+
+            * Fix a bug where configuring CMake multiple times resulted
+              in HAVE_CLOCK_GETTIME and HAVE_CLOCK_MONOTONIC not being
+              defined.
+
+            * Fix the build with MinGW-w64-based Clang/LLVM 17.
+              llvm-windres now has more accurate GNU windres emulation
+              so the GNU windres workaround from 5.4.1 is needed with
+              llvm-windres version 17 too.
+
+            * The import library on Windows is now properly named
+              "liblzma.dll.a" instead of "libliblzma.dll.a"
+
+            * Add large file support by default for platforms that
+              need it to handle files larger than 2 GiB. This includes
+              MinGW-w64, even 64-bit builds.
+
+            * Linux on MicroBlaze is handled specially now. This
+              matches the changes made to the Autotools-based build
+              in XZ Utils 5.4.2 and 5.2.11.
+
+            * Disable symbol versioning on non-glibc Linux to match
+              what the Autotools build does. For example, symbol
+              versioning isn't enabled with musl.
+
+            * Symbol versioning variant can now be overridden by
+              setting SYMBOL_VERSIONING to "OFF", "generic", or
+              "linux".
+
+    * Documentation:
+
+        - Clarify the description of --disable-assembler in INSTALL.
+          The option only affects 32-bit x86 assembly usage.
+
+        - Don't install the TODO file as part of the documentation.
+          The file is out of date.
+
+        - Update home page URLs back to their old locations on
+          tukaani.org.
+
+        - Update maintainer info.
+
+
 5.2.12 (2023-05-04)
 
     * Fixed a build system bug that prevented building liblzma as a

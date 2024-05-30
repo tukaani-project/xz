@@ -326,6 +326,7 @@ endif
 ### subdirectories
 
 subdir('src')
+subdir('tests')
 
 configure_file(output: 'config.h', configuration: config_h)
 

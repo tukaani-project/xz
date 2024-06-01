@@ -156,6 +156,17 @@ typedef unsigned char _Bool;
 #	define __bool_true_false_are_defined 1
 #endif
 
+// We may need alignas from C11/C17/C23.
+#if __STDC_VERSION__ >= 202311
+	// alignas is a keyword in C23. Do nothing.
+#elif __STDC_VERSION__ >= 201112
+#	include <stdalign.h>
+#elif defined(__GNUC__) || defined(__clang__)
+#	define alignas(n) __attribute__((__aligned__(n)))
+#else
+#	define alignas(n)
+#endif
+
 #include <string.h>
 
 // Visual Studio 2013 update 2 supports only __inline, not inline.

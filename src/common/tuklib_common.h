@@ -68,9 +68,7 @@
 //     __attribute__((nonnull(1)))
 //     extern void foo(const char *s);
 //
-// FIXME: Update __STDC_VERSION__ for the final C23 version. 202000 is used
-// by GCC 13 and Clang 15 with -std=c2x.
-#if   defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202000
+#if   defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311
 #	define tuklib_attr_noreturn [[noreturn]]
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112
 #	define tuklib_attr_noreturn _Noreturn

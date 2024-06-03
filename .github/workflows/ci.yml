@@ -26,7 +26,7 @@ jobs:
         build_system: [autotools, cmake]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f #v4.1.3
+      - uses: actions/checkout@v4.1.6
 
       ########################
       # Install Dependencies #
@@ -156,7 +156,7 @@ jobs:
         run: ./build-aux/ci_build.bash -b ${{ matrix.build_system }} -d small -p test -n small
 
       # Attempt to upload the test logs as artifacts if any step has failed
-      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 #v4.3.3
+      - uses: actions/upload-artifact@v4.3.3
         if: ${{ failure() }}
         with:
           name: ${{ matrix.os }} ${{ matrix.build_system }} Test Logs

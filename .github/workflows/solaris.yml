@@ -23,6 +23,7 @@ jobs:
         prepare: |
           pkg install bash libtool automake gnu-m4 tree wget gcc autoconf //solaris/text/gawk pkg://solaris/text/gnu-diffutils pkg://solaris/text/gnu-grep pkg://solaris/text/gnu-sed
         run: |
+          set -e
           export LC_ALL=C LANG=C
           uname -a
           ./autogen.sh

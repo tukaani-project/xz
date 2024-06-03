@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test xz on OpenBSD
     steps:
-    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - uses: actions/checkout@v4.1.6
     - name: Test in OpenBSD
       id: test
       uses: vmactions/OpenBSD-vm@eaa3d3f695a5a52971c23958f6dd4cd3397f959d #v1.0.8

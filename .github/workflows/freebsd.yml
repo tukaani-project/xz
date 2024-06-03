@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test xz on FreeBSD
     steps:
-    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - uses: actions/checkout@v4.1.6
     - name: Test in FreeBSD
       id: test
       uses: vmactions/FreeBSD-vm@f8be330398166d1eb0601f01353839d4052367b2 #v1.0.7

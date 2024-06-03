@@ -27,7 +27,8 @@ jobs:
           export AUTOCONF_VERSION=2.71
           export AUTOMAKE_VERSION=1.16
           uname -a
-          ./autogen.sh
+          # OpenBSD ports lack po4a
+          ./autogen.sh --no-po4a
           ./configure --enable-werror
           make
           make check VERBOSE=1

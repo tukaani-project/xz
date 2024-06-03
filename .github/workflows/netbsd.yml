@@ -21,7 +21,7 @@ jobs:
       with:
         usesh: true
         prepare: |
-          /usr/sbin/pkg_add -v autoconf automake gmake gettext-tools gtar-base libtool-base m4
+          /usr/sbin/pkg_add -v autoconf automake gmake gettext-tools gtar-base libtool-base m4 po4a
         run: |
           export LC_ALL=C LANG=C
           uname -a

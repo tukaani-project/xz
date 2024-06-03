@@ -1411,11 +1411,9 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
         DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 
-if(NOT MSVC)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma.pc"
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
-            COMPONENT liblzma_Development)
-endif()
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma.pc"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+        COMPONENT liblzma_Development)
 
 
 #############################################################################

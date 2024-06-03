@@ -17,6 +17,5 @@ sed -n 's/LZMA_VERSION_STABILITY_ALPHA/alpha/
 	s/LZMA_VERSION_STABILITY_STABLE//
 	s/^#define LZMA_VERSION_[MPS][AIT][AJNT][A-Z]* //p' \
 	src/liblzma/api/lzma/version.h \
-	| tr '\n' '|' \
-	| sed 's/|/./; s/|/./; s/|//g' \
-	| tr -d '\r\n'
+	| sed 'N; N; N; s/\n/./g; s/\.$//' \
+	| tr -d '\012\015\025'

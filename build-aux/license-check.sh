@@ -167,8 +167,8 @@ fi
 
 # Look for files with an unknown license and set the exit status accordingly.
 STATUS=0
-if test -n "$UNTAGGED"; then
-	printf '# ERROR: Licensing is unclear:\n%s\n' "$UNTAGGED"
+if test -n "$FILES"; then
+	printf '# ERROR: Licensing is unclear:\n%s\n' "$FILES"
 	STATUS=1
 fi
 

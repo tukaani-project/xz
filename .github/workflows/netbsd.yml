@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test xz on NetBSD
     steps:
-    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - uses: actions/checkout@v4.1.6
     - name: Test in NetBSD
       id: test
       uses: vmactions/NetBSD-vm@da9ed4d7cd0fb64f330e2342ac5c77ba529b6a11 #v1.0.7

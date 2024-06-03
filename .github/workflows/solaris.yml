@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test xz on Solaris
     steps:
-    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 #v4
+    - uses: actions/checkout@v4.1.6
     - name: Test in Solaris
       id: test
       uses: vmactions/solaris-vm@548f790d1bc2b9342a76cbb47ddbb85875605559 #v1.0.2

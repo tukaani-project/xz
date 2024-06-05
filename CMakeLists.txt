@@ -1356,7 +1356,7 @@ endif()
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config-version.cmake"
-    VERSION "${liblzma_VERSION}"
+    VERSION "${xz_VERSION}"
     COMPATIBILITY SameMajorVersion)
 
 # Create liblzma-config.cmake. We use this spelling instead of

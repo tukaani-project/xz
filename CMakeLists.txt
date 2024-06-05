@@ -117,7 +117,9 @@ set(PACKAGE_NAME "XZ Utils")
 set(PACKAGE_BUGREPORT "xz@tukaani.org")
 set(PACKAGE_URL "https://tukaani.org/xz/")
 
-# Get the package version from version.h into PACKAGE_VERSION variable.
+# Get the package version from version.h into PACKAGE_VERSION_SHORT and
+# PACKAGE_VERSION. The former variable won't include the possible "alpha"
+# or "beta" suffix.
 file(READ src/liblzma/api/lzma/version.h PACKAGE_VERSION)
 string(REGEX REPLACE
 "^.*\n\
@@ -127,7 +129,15 @@ string(REGEX REPLACE
 .*\
 #define LZMA_VERSION_PATCH ([0-9]+)\n\
 .*$"
-       "\\1.\\2.\\3" PACKAGE_VERSION "${PACKAGE_VERSION}")
+       "\\1.\\2.\\3" PACKAGE_VERSION_SHORT "${PACKAGE_VERSION}")
+
+if(PACKAGE_VERSION MATCHES "\n#define [A-Z_ ]*_ALPHA\n")
+    set(PACKAGE_VERSION "${PACKAGE_VERSION_SHORT}alpha")
+elseif(PACKAGE_VERSION MATCHES "\n#define [A-Z_ ]*_BETA\n")
+    set(PACKAGE_VERSION "${PACKAGE_VERSION_SHORT}beta")
+else()
+    set(PACKAGE_VERSION "${PACKAGE_VERSION_SHORT}")
+endif()
 
 # With several compilers, CMAKE_BUILD_TYPE=Release uses -O3 optimization
 # which results in bigger code without a clear difference in speed. If
@@ -138,7 +148,7 @@ if(NOT DEFINED CMAKE_C_FLAGS_RELEASE)
 endif()
 
 # Among other things, this gives us variables xz_VERSION and xz_VERSION_MAJOR.
-project(xz VERSION "${PACKAGE_VERSION}" LANGUAGES C)
+project(xz VERSION "${PACKAGE_VERSION_SHORT}" LANGUAGES C)
 
 if(OVERRIDE_O3_IN_C_FLAGS_RELEASE)
     # Looking at CMake's source, there aren't any _FLAGS_RELEASE_INIT

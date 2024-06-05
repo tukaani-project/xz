@@ -402,7 +402,7 @@ test_lzma_str_from_filters(void)
 	free(output_str);
 
 	// Test LZMA_STR_ENCODER flag.
-	// Only the the return value is checked since the actual string
+	// Only the return value is checked since the actual string
 	// may change in the future (even though it is unlikely).
 	// The order of options or the inclusion of new options could
 	// cause a change in output, so we will avoid hardcoding an

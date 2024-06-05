@@ -788,7 +788,7 @@ Version 1.2.1 (2024-04-08)
         four-byte-aligned input data.
 
         The output of the last filter in the chain is stored to the
-        Compressed Data field, which is is guaranteed to be aligned
+        Compressed Data field, which is guaranteed to be aligned
         to a multiple of four bytes relative to the beginning of the
         Stream. This can increase
           - speed, if the filtered data is handled multiple bytes at

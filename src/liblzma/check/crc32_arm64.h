@@ -29,6 +29,11 @@
 #		include <processthreadsapi.h>
 #	elif defined(__APPLE__) && defined(HAVE_SYSCTLBYNAME)
 #		include <sys/sysctl.h>
+#	elif defined(__OpenBSD__)
+#		include <machine/armreg.h>
+#		include <machine/cpu.h>
+#		include <sys/types.h>
+#		include <sys/sysctl.h>
 #	endif
 #endif
 
@@ -104,6 +109,19 @@ is_arch_extension_supported(void)
 	if (sysctlbyname("hw.optional.armv8_crc32", &has_crc32,
 			&size, NULL, 0) != 0)
 		return false;
+
+	return has_crc32;
+
+#elif defined(__OpenBSD__)
+	int has_crc32 = 0;
+	const int isar0_mib[] = { CTL_MACHDEP, CPU_ID_AA64ISAR0 };
+	uint64_t isar0;
+	size_t len = sizeof(isar0);
+
+	if (sysctl(isar0_mib, 2, &isar0, &len, NULL, 0) != -1) {
+		if (ID_AA64ISAR0_CRC32(isar0) >= ID_AA64ISAR0_CRC32_BASE)
+			has_crc32 = 1;
+	}
 
 	return has_crc32;
 

@@ -50,7 +50,8 @@
 // Keep this in sync with changes to crc32_arm64.h
 #if defined(_WIN32) || defined(HAVE_GETAUXVAL) \
 		|| defined(HAVE_ELF_AUX_INFO) \
-		|| (defined(__APPLE__) && defined(HAVE_SYSCTLBYNAME))
+		|| (defined(__APPLE__) && defined(HAVE_SYSCTLBYNAME)) \
+		|| defined(__OpenBSD__)
 #	define ARM64_RUNTIME_DETECTION 1
 #endif
 

@@ -237,7 +237,7 @@
 // from the memcpy() method than from simple byte-by-byte shift-or code
 // when reading a 32-bit integer:
 //
-//     (1) It may be constructed on stack using using four 8-bit loads,
+//     (1) It may be constructed on stack using four 8-bit loads,
 //         four 8-bit stores to stack, and finally one 32-bit load from stack.
 //
 //     (2) Especially with -Os, an actual memcpy() call may be emitted.

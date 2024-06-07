@@ -86,9 +86,15 @@
 #elif defined(HAVE_SYS_ENDIAN_H)
 	// *BSDs and Darwin
 #	include <sys/endian.h>
-#	define byteswap16(num) bswap16(num)
-#	define byteswap32(num) bswap32(num)
-#	define byteswap64(num) bswap64(num)
+#	ifdef __OpenBSD__
+#		define byteswap16(num) swap16(num)
+#		define byteswap32(num) swap32(num)
+#		define byteswap64(num) swap64(num)
+#	else
+#		define byteswap16(num) bswap16(num)
+#		define byteswap32(num) bswap32(num)
+#		define byteswap64(num) bswap64(num)
+#	endif
 
 #elif defined(HAVE_SYS_BYTEORDER_H)
 	// Solaris

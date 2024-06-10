@@ -373,12 +373,10 @@ AM_CONDITIONAL(COND_ASM_X86, test "x$enable_assembler" = xx86)
 # CLMUL CRC #
 #############
 
-# FIXME: Turn it back on by default once the code has been revised
-# to not cause false alarms in sanitizers and thus in OSS Fuzz.
 AC_ARG_ENABLE([clmul-crc], AS_HELP_STRING([--disable-clmul-crc],
 		[Do not use carryless multiplication for CRC calculation
 		even if support for it is detected.]),
-	[], [enable_clmul_crc=no])
+	[], [enable_clmul_crc=yes])
 
 
 ############################

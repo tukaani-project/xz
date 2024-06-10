@@ -5,6 +5,7 @@
 ## currently crc32 is always enabled.
 
 EXTRA_DIST += \
+	check/crc_clmul_consts_gen.c \
 	check/crc32_tablegen.c \
 	check/crc64_tablegen.c
 

@@ -211,31 +211,6 @@ crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 // x86 CLMUL CRC32 //
 /////////////////////
 
-/*
-// These functions were used to generate the constants
-// at the top of crc32_arch_optimized().
-static uint64_t
-calc_lo(uint64_t p, uint64_t a, int n)
-{
-	uint64_t b = 0; int i;
-	for (i = 0; i < n; i++) {
-		b = b >> 1 | (a & 1) << (n - 1);
-		a = (a >> 1) ^ ((0 - (a & 1)) & p);
-	}
-	return b;
-}
-
-// same as ~crc(&a, sizeof(a), ~0)
-static uint64_t
-calc_hi(uint64_t p, uint64_t a, int n)
-{
-	int i;
-	for (i = 0; i < n; i++)
-		a = (a >> 1) ^ ((0 - (a & 1)) & p);
-	return a;
-}
-*/
-
 #ifdef BUILDING_CRC32_CLMUL
 
 crc_attr_target
@@ -246,31 +221,22 @@ crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 	if (size == 0)
 		return crc;
 
-	// uint32_t poly = 0xedb88320;
-	const int64_t p = 0x1db710640; // p << 1
-	const int64_t mu = 0x1f7011641; // calc_lo(p, p, 32) << 1 | 1
-	const int64_t k5 = 0x163cd6124; // calc_hi(p, p, 32) << 1
-	const int64_t k4 = 0x0ccaa009e; // calc_hi(p, p, 64) << 1
-	const int64_t k3 = 0x1751997d0; // calc_hi(p, p, 128) << 1
+	// See crc_clmul_consts_gen.c.
+	const __m128i vfold16 = _mm_set_epi64x(0xccaa009e, 0xae689191);
+	const __m128i mu_p = _mm_set_epi64x(
+			(int64_t)0xb4e5b025f7011641, 0x1db710640);
 
-	const __m128i vfold4 = _mm_set_epi64x(mu, p);
-	const __m128i vfold8 = _mm_set_epi64x(0, k5);
-	const __m128i vfold16 = _mm_set_epi64x(k4, k3);
-
-	__m128i v0, v1, v2;
+	__m128i v0, v1;
 
 	crc_simd_body(buf, size, &v0, &v1, vfold16,
 			_mm_cvtsi32_si128((int32_t)~crc));
 
 	v1 = _mm_xor_si128(
 			_mm_clmulepi64_si128(v0, vfold16, 0x10), v1); // xxx0
-	v2 = _mm_shuffle_epi32(v1, 0xe7); // 0xx0
-	v0 = _mm_slli_epi64(v1, 32);  // [0]
-	v0 = _mm_clmulepi64_si128(v0, vfold8, 0x00);
-	v0 = _mm_xor_si128(v0, v2);   // [1] [2]
-	v2 = _mm_clmulepi64_si128(v0, vfold4, 0x10);
-	v2 = _mm_clmulepi64_si128(v2, vfold4, 0x00);
-	v0 = _mm_xor_si128(v0, v2);   // [2]
+
+	v0 = _mm_clmulepi64_si128(v1, mu_p, 0x10); // v1 * mu
+	v0 = _mm_clmulepi64_si128(v0, mu_p, 0x00); // v0 * p
+	v0 = _mm_xor_si128(v0, v1);
 	return ~(uint32_t)_mm_extract_epi32(v0, 2);
 }
 #endif // BUILDING_CRC32_CLMUL

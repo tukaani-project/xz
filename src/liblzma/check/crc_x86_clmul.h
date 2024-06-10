@@ -280,33 +280,6 @@ crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 // x86 CLMUL CRC64 //
 /////////////////////
 
-/*
-// These functions were used to generate the constants
-// at the top of crc64_arch_optimized().
-static uint64_t
-calc_lo(uint64_t poly)
-{
-	uint64_t a = poly;
-	uint64_t b = 0;
-
-	for (unsigned i = 0; i < 64; ++i) {
-		b = (b >> 1) | (a << 63);
-		a = (a >> 1) ^ (a & 1 ? poly : 0);
-	}
-
-	return b;
-}
-
-static uint64_t
-calc_hi(uint64_t poly, uint64_t a)
-{
-	for (unsigned i = 0; i < 64; ++i)
-		a = (a >> 1) ^ (a & 1 ? poly : 0);
-
-	return a;
-}
-*/
-
 #ifdef BUILDING_CRC64_CLMUL
 
 // MSVC (VS2015 - VS2022) produces bad 32-bit x86 code from the CLMUL CRC
@@ -333,14 +306,12 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 	if (size == 0)
 		return crc;
 
-	// const uint64_t poly = 0xc96c5795d7870f42; // CRC polynomial
-	const uint64_t p  = 0x92d8af2baf0e1e85; // (poly << 1) | 1
-	const uint64_t mu = 0x9c3e466c172963d5; // (calc_lo(poly) << 1) | 1
-	const uint64_t k2 = 0xdabe95afc7875f40; // calc_hi(poly, 1)
-	const uint64_t k1 = 0xe05dd497ca393ae4; // calc_hi(poly, k2)
+	// See crc_clmul_consts_gen.c.
+	const __m128i vfold16 = _mm_set_epi64x(
+		(int64_t)0xdabe95afc7875f40, (int64_t)0xe05dd497ca393ae4);
 
-	const __m128i vfold8 = _mm_set_epi64x((int64_t)p, (int64_t)mu);
-	const __m128i vfold16 = _mm_set_epi64x((int64_t)k2, (int64_t)k1);
+	const __m128i mu_p = _mm_set_epi64x(
+		(int64_t)0x9c3e466c172963d5, (int64_t)0x92d8af2baf0e1e84);
 
 	__m128i v0, v1, v2;
 
@@ -355,8 +326,8 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 #endif
 
 	v1 = _mm_xor_si128(_mm_clmulepi64_si128(v0, vfold16, 0x10), v1);
-	v0 = _mm_clmulepi64_si128(v1, vfold8, 0x00);
-	v2 = _mm_clmulepi64_si128(v0, vfold8, 0x10);
+	v0 = _mm_clmulepi64_si128(v1, mu_p, 0x10);
+	v2 = _mm_clmulepi64_si128(v0, mu_p, 0x00);
 	v0 = _mm_xor_si128(_mm_xor_si128(v1, _mm_slli_si128(v0, 8)), v2);
 
 #if defined(__i386__) || defined(_M_IX86)

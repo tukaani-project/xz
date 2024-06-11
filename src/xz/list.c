@@ -1179,8 +1179,8 @@ print_totals_basic(void)
 			checks);
 
 #if defined(__sun) && (defined(__GNUC__) || defined(__clang__))
-#       pragma GCC diagnostic push
-#       pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
 	// Since we print totals only when there are at least two files,
 	// the English message will always use "%s files". But some other
@@ -1194,7 +1194,7 @@ print_totals_basic(void)
 				: (totals.files % 1000000) + 1000000),
 			uint64_to_str(totals.files, 0));
 #if defined(__sun) && (defined(__GNUC__) || defined(__clang__))
-#       pragma GCC diagnostic pop
+#	pragma GCC diagnostic pop
 #endif
 
 	return;

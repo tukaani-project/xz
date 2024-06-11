@@ -420,7 +420,7 @@ is_arch_extension_supported(void)
 	//   - ICC's _may_i_use_cpu_feature: the other methods should work too.
 	//   - GCC >= 6 / Clang / ICX __builtin_cpu_supports("pclmul")
 	//
-	// CPUID decding is needed with MSVC anyway and older GCC. This keeps
+	// CPUID decoding is needed with MSVC anyway and older GCC. This keeps
 	// the feature checks in the build system simpler too. The nice thing
 	// about __builtin_cpu_supports would be that it generates very short
 	// code as is it only reads a variable set at startup but a few bytes

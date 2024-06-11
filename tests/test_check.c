@@ -49,7 +49,7 @@ static uint8_t *sha256_xz_data;
 #endif
 
 
-#ifdef HAVE_CHECK_CRC64
+#if defined(HAVE_CHECK_CRC32) || defined(HAVE_CHECK_CRC64)
 static const uint8_t *
 get_random256(uint32_t *seed)
 {
@@ -86,6 +86,16 @@ test_lzma_crc32(void)
 	for (size_t i = 0; i < sizeof(test_string); ++i)
 		crc = lzma_crc32(test_string + i, 1, crc);
 	assert_uint_eq(crc, test_vector);
+
+	// Test 4: Test combination of different start and end alignments
+	// and different buffer lengths.
+	uint32_t seed = 23;
+	crc = 0x760CD032; // Random initial value
+	for (size_t start = 0; start < 32; ++start)
+		for (size_t size = 1; size < 256 - 32; ++size)
+			crc = lzma_crc32(get_random256(&seed), size, crc);
+
+	assert_uint_eq(crc, 0x924E35FD);
 }
 
 
@@ -115,9 +125,8 @@ test_lzma_crc64(void)
 		crc = lzma_crc64(test_string + i, 1, crc);
 	assert_uint_eq(crc, test_vector);
 
-	// Test 4: The CLMUL implementation works on 16-byte chunks.
-	// Test combination of different start and end alignments
-	// and also short buffer lengths where special handling is needed.
+	// Test 4: Test combination of different start and end alignments
+	// and different buffer lengths.
 	uint32_t seed = 29;
 	crc = 0x96E30D5184B7FA2C; // Random initial value
 	for (size_t start = 0; start < 32; ++start)

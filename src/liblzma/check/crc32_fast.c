@@ -15,7 +15,7 @@
 #include "crc_common.h"
 
 #if defined(CRC_X86_CLMUL)
-#	define BUILDING_CRC32_CLMUL
+#	define BUILDING_CRC_CLMUL 32
 #	include "crc_x86_clmul.h"
 #elif defined(CRC32_ARM64)
 #	include "crc32_arm64.h"

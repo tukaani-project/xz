@@ -14,10 +14,8 @@
 /// (URLs were checked on 2023-10-14).
 ///
 /// While this file has both CRC32 and CRC64 implementations, only one
-/// should be built at a time to ensure that crc_simd_body() is inlined
-/// even with compilers with which lzma_always_inline expands to plain inline.
-/// The version to build is selected by defining BUILDING_CRC32_CLMUL or
-/// BUILDING_CRC64_CLMUL before including this file.
+/// can be built at a time. The version to build is selected by defining
+/// BUILDING_CRC_CLMUL to 32 or 64 before including this file.
 ///
 /// FIXME: Builds for 32-bit x86 use the assembly .S files by default
 /// unless configured with --disable-assembler. Even then the lookup table
@@ -36,6 +34,10 @@
 #	error crc_x86_clmul.h was included twice.
 #endif
 #define LZMA_CRC_X86_CLMUL_H
+
+#if BUILDING_CRC_CLMUL != 32 && BUILDING_CRC_CLMUL != 64
+#	error BUILDING_CRC_CLMUL is undefined or has an invalid value
+#endif
 
 #include <immintrin.h>
 
@@ -211,7 +213,7 @@ crc_simd_body(const uint8_t *buf, const size_t size, __m128i *v0, __m128i *v1,
 // x86 CLMUL CRC32 //
 /////////////////////
 
-#ifdef BUILDING_CRC32_CLMUL
+#if BUILDING_CRC_CLMUL == 32
 
 crc_attr_target
 static uint32_t
@@ -239,14 +241,14 @@ crc32_arch_optimized(const uint8_t *buf, size_t size, uint32_t crc)
 	v0 = _mm_xor_si128(v0, v1);
 	return ~(uint32_t)_mm_extract_epi32(v0, 2);
 }
-#endif // BUILDING_CRC32_CLMUL
+#endif // BUILDING_CRC_CLMUL == 32
 
 
 /////////////////////
 // x86 CLMUL CRC64 //
 /////////////////////
 
-#ifdef BUILDING_CRC64_CLMUL
+#if BUILDING_CRC_CLMUL == 64
 
 // MSVC (VS2015 - VS2022) produces bad 32-bit x86 code from the CLMUL CRC
 // code when optimizations are enabled (release build). According to the bug
@@ -309,7 +311,7 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 #	pragma optimize("", on)
 #endif
 
-#endif // BUILDING_CRC64_CLMUL
+#endif // BUILDING_CRC_CLMUL == 64
 
 
 // Inlining this function duplicates the function body in crc32_resolve() and

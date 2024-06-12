@@ -162,12 +162,17 @@ if(OVERRIDE_O3_IN_C_FLAGS_RELEASE)
 endif()
 
 # We need a compiler that supports enough C99 or newer (variable-length arrays
-# aren't needed, those are optional in C17). Setting CMAKE_C_STANDARD here
-# makes it the default for all targets. It doesn't affect the INTERFACE so
-# liblzma::liblzma won't end up with INTERFACE_COMPILE_FEATURES "c_std_99"
-# (the API headers are C89 and C++ compatible).
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
+# aren't needed, those are optional in C11/C17). C11 is preferred since C11
+# features may be optionally used if they are available.
+#
+# Setting CMAKE_C_STANDARD here makes it the default for all targets.
+# It doesn't affect the INTERFACE so liblzma::liblzma won't end up with
+# INTERFACE_COMPILE_FEATURES "c_std_99" or such (the API headers are C89
+# and C++ compatible).
+#
+# Avoid set(CMAKE_C_STANDARD_REQUIRED ON) because it's fine to decay
+# to C99 if C11 isn't supported.
+set(CMAKE_C_STANDARD 11)
 
 # Support 32-bit x86 assembly files.
 if(NOT MSVC)

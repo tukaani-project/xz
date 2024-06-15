@@ -1934,13 +1934,13 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
                     COMPONENT xz_Runtime)
 
     if(UNIX)
-        option(CREATE_XZ_SYMLINKS "Create unxz and xzcat symlinks" ON)
+        option(XZ_TOOL_SYMLINKS "Create unxz and xzcat symlinks" ON)
         option(XZ_TOOL_SYMLINKS_LZMA
                "Create 'lzma' and other symlinks for LZMA Utils compatibility"
                ON)
         set(XZ_LINKS)
 
-        if(CREATE_XZ_SYMLINKS)
+        if(XZ_TOOL_SYMLINKS)
             list(APPEND XZ_LINKS "unxz" "xzcat")
         endif()
 

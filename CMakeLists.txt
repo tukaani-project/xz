@@ -2162,27 +2162,30 @@ if(UNIX)
     endif()
 endif()
 
-install(DIRECTORY doc/examples
-        DESTINATION "${CMAKE_INSTALL_DOCDIR}"
-        COMPONENT liblzma_Documentation)
+option(XZ_DOC "Install basic documention, examples, and license files" ON)
+if(XZ_DOC)
+    install(DIRECTORY doc/examples
+            DESTINATION "${CMAKE_INSTALL_DOCDIR}"
+            COMPONENT liblzma_Documentation)
 
-# GPLv2 applies to the scripts. If GNU getopt_long is used then
-# LGPLv2.1 applies to the command line tools but, using the
-# section 3 of LGPLv2.1, GNU getopt_long can be handled as GPLv2 too.
-# Thus GPLv2 should be enough here.
-install(FILES AUTHORS
-              COPYING
-              COPYING.0BSD
-              COPYING.GPLv2
-              NEWS
-              README
-              THANKS
-              doc/faq.txt
-              doc/history.txt
-              doc/lzma-file-format.txt
-              doc/xz-file-format.txt
-        DESTINATION "${CMAKE_INSTALL_DOCDIR}"
-        COMPONENT Documentation)
+    # GPLv2 applies to the scripts. If GNU getopt_long is used then
+    # LGPLv2.1 applies to the command line tools but, using the
+    # section 3 of LGPLv2.1, GNU getopt_long can be handled as GPLv2 too.
+    # Thus GPLv2 should be enough here.
+    install(FILES AUTHORS
+                  COPYING
+                  COPYING.0BSD
+                  COPYING.GPLv2
+                  NEWS
+                  README
+                  THANKS
+                  doc/faq.txt
+                  doc/history.txt
+                  doc/lzma-file-format.txt
+                  doc/xz-file-format.txt
+            DESTINATION "${CMAKE_INSTALL_DOCDIR}"
+            COMPONENT Documentation)
+endif()
 
 
 #############################################################################

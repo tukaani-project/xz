@@ -2072,9 +2072,16 @@ endif()
 # Scripts
 #############################################################################
 
+set(ENABLE_SCRIPTS OFF)
+
 if(UNIX)
+    # NOTE: These depend on the xz tool and decoder support.
     option(XZ_TOOL_SCRIPTS "Install the scripts \
 xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
+
+    if(XZ_TOOL_SCRIPTS AND XZ_TOOL_XZ AND HAVE_DECODERS)
+        set(ENABLE_SCRIPTS ON)
+    endif()
 
     # NOTE: This isn't as sophisticated as in the Autotools build which
     # uses posix-shell.m4 but hopefully this doesn't need to be either.
@@ -2120,7 +2127,7 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
                @ONLY
                NEWLINE_STYLE LF)
 
-        if(XZ_TOOL_SCRIPTS)
+        if(ENABLE_SCRIPTS)
             install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
                     DESTINATION "${CMAKE_INSTALL_BINDIR}"
                     COMPONENT scripts_Runtime)
@@ -2137,7 +2144,7 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
     unset(POSIX_SHELL)
     unset(enable_path_for_scripts)
 
-    if(XZ_TOOL_SCRIPTS)
+    if(ENABLE_SCRIPTS)
         my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}"
                             xzdiff "" "${XZDIFF_LINKS}")
 

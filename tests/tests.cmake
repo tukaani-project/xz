@@ -121,7 +121,7 @@ if(BUILD_TESTING)
     endif()
 
     # test_scripts.sh only needs LZMA2 decoder and CRC32.
-    if(UNIX AND HAVE_DECODERS)
+    if(ENABLE_SCRIPTS)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_scripts")
 
         add_test(NAME test_scripts.sh

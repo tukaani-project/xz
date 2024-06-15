@@ -1705,8 +1705,21 @@ endif()
 # xzdec and lzmadec
 #############################################################################
 
+option(XZ_TOOL_XZDEC "Build and install the xzdec command line tool" ON)
+option(XZ_TOOL_LZMADEC "Build and install the lzmadec command line tool" ON)
+
 if(HAVE_DECODERS)
-    foreach(XZDEC xzdec lzmadec)
+    set(XZDEC_TOOLS)
+
+    if(XZ_TOOL_XZDEC)
+        list(APPEND XZDEC_TOOLS xzdec)
+    endif()
+
+    if(XZ_TOOL_LZMADEC)
+        list(APPEND XZDEC_TOOLS lzmadec)
+    endif()
+
+    foreach(XZDEC ${XZDEC_TOOLS})
         add_executable("${XZDEC}"
             src/common/sysdefs.h
             src/common/tuklib_common.h

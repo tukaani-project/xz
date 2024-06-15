@@ -1193,10 +1193,10 @@ endif()
 # These are supported by at least GCC and Clang which both need
 # __attribute__((__target__("+crc"))), unless the needed compiler flags
 # are used to support the CRC instruction.
-option(ALLOW_ARM64_CRC32 "Allow ARM64 CRC32 instruction if supported by \
-the system" ON)
+option(XZ_ARM64_CRC32 "Use ARM64 CRC32 instructions (with runtime detection) \
+if supported by the compiler" ON)
 
-if(ALLOW_ARM64_CRC32)
+if(XZ_ARM64_CRC32)
     check_c_source_compiles("
             #include <stdint.h>
 

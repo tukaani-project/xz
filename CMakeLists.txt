@@ -696,15 +696,15 @@ set(SUPPORTED_FILTERS
     "${SIMPLE_FILTERS}"
 )
 
-set(ENCODERS "${SUPPORTED_FILTERS}" CACHE STRING "Encoders to support")
+set(XZ_ENCODERS "${SUPPORTED_FILTERS}" CACHE STRING "Encoders to support")
 
 # If LZMA2 is enabled, then LZMA1 must also be enabled.
-if(NOT "lzma1" IN_LIST ENCODERS AND "lzma2" IN_LIST ENCODERS)
+if(NOT "lzma1" IN_LIST XZ_ENCODERS AND "lzma2" IN_LIST XZ_ENCODERS)
     message(FATAL_ERROR "LZMA2 encoder requires that LZMA1 is also enabled")
 endif()
 
 # If LZMA1 is enabled, then at least one match finder must be enabled.
-if(XZ_MATCH_FINDERS STREQUAL "" AND "lzma1" IN_LIST ENCODERS)
+if(XZ_MATCH_FINDERS STREQUAL "" AND "lzma1" IN_LIST XZ_ENCODERS)
     message(FATAL_ERROR "At least 1 match finder is required for an "
                         "LZ-based encoder")
 endif()
@@ -713,7 +713,7 @@ set(HAVE_DELTA_CODER OFF)
 set(SIMPLE_ENCODERS OFF)
 set(HAVE_ENCODERS OFF)
 
-foreach(ENCODER IN LISTS ENCODERS)
+foreach(ENCODER IN LISTS XZ_ENCODERS)
     if(ENCODER IN_LIST SUPPORTED_FILTERS)
         set(HAVE_ENCODERS ON)
 
@@ -766,7 +766,7 @@ if(HAVE_ENCODERS)
         )
     endif()
 
-    if("lzma1" IN_LIST ENCODERS)
+    if("lzma1" IN_LIST XZ_ENCODERS)
         target_sources(liblzma PRIVATE
             src/liblzma/lzma/lzma_encoder.c
             src/liblzma/lzma/lzma_encoder.h
@@ -789,14 +789,14 @@ if(HAVE_ENCODERS)
         endif()
     endif()
 
-    if("lzma2" IN_LIST ENCODERS)
+    if("lzma2" IN_LIST XZ_ENCODERS)
         target_sources(liblzma PRIVATE
             src/liblzma/lzma/lzma2_encoder.c
             src/liblzma/lzma/lzma2_encoder.h
         )
     endif()
 
-    if("delta" IN_LIST ENCODERS)
+    if("delta" IN_LIST XZ_ENCODERS)
         set(HAVE_DELTA_CODER ON)
         target_sources(liblzma PRIVATE
             src/liblzma/delta/delta_encoder.c
@@ -810,12 +810,12 @@ endif()
 # Decoders #
 ############
 
-set(DECODERS "${SUPPORTED_FILTERS}" CACHE STRING "Decoders to support")
+set(XZ_DECODERS "${SUPPORTED_FILTERS}" CACHE STRING "Decoders to support")
 
 set(SIMPLE_DECODERS OFF)
 set(HAVE_DECODERS OFF)
 
-foreach(DECODER IN LISTS DECODERS)
+foreach(DECODER IN LISTS XZ_DECODERS)
     if(DECODER IN_LIST SUPPORTED_FILTERS)
         set(HAVE_DECODERS ON)
 
@@ -870,7 +870,7 @@ if(HAVE_DECODERS)
         )
     endif()
 
-    if("lzma1" IN_LIST DECODERS)
+    if("lzma1" IN_LIST XZ_DECODERS)
         target_sources(liblzma PRIVATE
             src/liblzma/lzma/lzma_decoder.c
             src/liblzma/lzma/lzma_decoder.h
@@ -880,14 +880,14 @@ if(HAVE_DECODERS)
         )
     endif()
 
-    if("lzma2" IN_LIST DECODERS)
+    if("lzma2" IN_LIST XZ_DECODERS)
         target_sources(liblzma PRIVATE
             src/liblzma/lzma/lzma2_decoder.c
             src/liblzma/lzma/lzma2_decoder.h
         )
     endif()
 
-    if("delta" IN_LIST DECODERS)
+    if("delta" IN_LIST XZ_DECODERS)
         set(HAVE_DELTA_CODER ON)
         target_sources(liblzma PRIVATE
             src/liblzma/delta/delta_decoder.c
@@ -898,7 +898,7 @@ endif()
 
 # Some sources must appear if the filter is configured as either
 # an encoder or decoder.
-if("lzma1" IN_LIST ENCODERS OR "lzma1" IN_LIST DECODERS)
+if("lzma1" IN_LIST XZ_ENCODERS OR "lzma1" IN_LIST XZ_DECODERS)
     target_sources(liblzma PRIVATE
         src/liblzma/rangecoder/range_common.h
         src/liblzma/lzma/lzma_encoder_presets.c
@@ -923,7 +923,7 @@ if(SIMPLE_ENCODERS OR SIMPLE_DECODERS)
 endif()
 
 foreach(SIMPLE_CODER IN LISTS SIMPLE_FILTERS)
-    if(SIMPLE_CODER IN_LIST ENCODERS OR SIMPLE_CODER IN_LIST DECODERS)
+    if(SIMPLE_CODER IN_LIST XZ_ENCODERS OR SIMPLE_CODER IN_LIST XZ_DECODERS)
         target_sources(liblzma PRIVATE "src/liblzma/simple/${SIMPLE_CODER}.c")
     endif()
 endforeach()
@@ -940,7 +940,7 @@ option(XZ_MICROLZMA_DECODER
        "MicroLZMA decoder (needed by specific applications only)" ON)
 
 if(XZ_MICROLZMA_ENCODER)
-    if(NOT "lzma1" IN_LIST ENCODERS)
+    if(NOT "lzma1" IN_LIST XZ_ENCODERS)
         message(FATAL_ERROR "The LZMA1 encoder is required to support the "
                             "MicroLZMA encoder")
     endif()
@@ -949,7 +949,7 @@ if(XZ_MICROLZMA_ENCODER)
 endif()
 
 if(XZ_MICROLZMA_DECODER)
-    if(NOT "lzma1" IN_LIST DECODERS)
+    if(NOT "lzma1" IN_LIST XZ_DECODERS)
         message(FATAL_ERROR "The LZMA1 decoder is required to support the "
                             "MicroLZMA decoder")
     endif()
@@ -966,7 +966,7 @@ option(XZ_LZIP_DECODER "Support lzip decoder" ON)
 
 if(XZ_LZIP_DECODER)
     # If lzip decoder support is requested, make sure LZMA1 decoder is enabled.
-    if(NOT "lzma1" IN_LIST DECODERS)
+    if(NOT "lzma1" IN_LIST XZ_DECODERS)
         message(FATAL_ERROR "The LZMA1 decoder is required to support the "
                             "lzip decoder")
     endif()

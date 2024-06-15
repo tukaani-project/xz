@@ -108,17 +108,16 @@ if(BUILD_TESTING)
         set(HAVE_ALL_DECODERS OFF)
     endif()
 
-    set(ADDITIONAL_SUPPORTED_CHECKS_SORTED "${ADDITIONAL_SUPPORTED_CHECKS}")
-    list(SORT ADDITIONAL_SUPPORTED_CHECKS_SORTED)
+    set(SUPPORTED_CHECKS_SORTED "${SUPPORTED_CHECKS}")
+    list(SORT SUPPORTED_CHECKS_SORTED)
 
-    set(ADDITIONAL_CHECK_TYPES_SORTED "${ADDITIONAL_CHECK_TYPES}")
-    list(SORT ADDITIONAL_CHECK_TYPES_SORTED)
+    set(XZ_CHECKS_SORTED "${XZ_CHECKS}")
+    list(SORT XZ_CHECKS_SORTED)
 
-    if("${ADDITIONAL_SUPPORTED_CHECKS_SORTED}" STREQUAL
-        "${ADDITIONAL_CHECK_TYPES_SORTED}")
-        set(HAVE_ALL_CHECK_TYPES ON)
+    if("${SUPPORTED_CHECKS_SORTED}" STREQUAL "${XZ_CHECKS_SORTED}")
+        set(HAVE_ALL_CHECKS ON)
     else()
-        set(HAVE_ALL_CHECK_TYPES OFF)
+        set(HAVE_ALL_CHECKS OFF)
     endif()
 
     # test_scripts.sh only needs LZMA2 decoder and CRC32.
@@ -178,7 +177,7 @@ if(BUILD_TESTING)
 
     # test_files.sh decompresses files that use different filters and
     # check types so run it only if support for all of them has been enabled.
-    if(UNIX AND HAVE_ALL_DECODERS AND HAVE_ALL_CHECK_TYPES AND XZ_LZIP_DECODER)
+    if(UNIX AND HAVE_ALL_DECODERS AND HAVE_ALL_CHECKS AND XZ_LZIP_DECODER)
         # test_files.sh doesn't make any temporary files but it
         # must not be run at the top-level build directory because
         # it checks if ../config.h exists. We don't want to read

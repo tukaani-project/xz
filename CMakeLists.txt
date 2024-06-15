@@ -503,13 +503,13 @@ endif()
 # Checks #
 ##########
 
-set(ADDITIONAL_SUPPORTED_CHECKS crc64 sha256)
+set(SUPPORTED_CHECKS crc32 crc64 sha256)
 
-set(ADDITIONAL_CHECK_TYPES "${ADDITIONAL_SUPPORTED_CHECKS}" CACHE STRING
-    "Additional check types to support (crc32 is always built)")
+set(XZ_CHECKS "${SUPPORTED_CHECKS}" CACHE STRING
+    "Check types to support (crc32 is always built)")
 
-foreach(CHECK IN LISTS ADDITIONAL_CHECK_TYPES)
-    if(NOT CHECK IN_LIST ADDITIONAL_SUPPORTED_CHECKS)
+foreach(CHECK IN LISTS XZ_CHECKS)
+    if(NOT CHECK IN_LIST SUPPORTED_CHECKS)
         message(FATAL_ERROR "'${CHECK}' is not a supported check type")
     endif()
 endforeach()
@@ -530,7 +530,7 @@ else()
     endif()
 endif()
 
-if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
+if("crc64" IN_LIST XZ_CHECKS)
     add_compile_definitions("HAVE_CHECK_CRC64")
 
     if(XZ_SMALL)
@@ -550,7 +550,7 @@ if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
     endif()
 endif()
 
-if("sha256" IN_LIST ADDITIONAL_CHECK_TYPES)
+if("sha256" IN_LIST XZ_CHECKS)
     add_compile_definitions("HAVE_CHECK_SHA256")
     target_sources(liblzma PRIVATE src/liblzma/check/sha256.c)
 endif()

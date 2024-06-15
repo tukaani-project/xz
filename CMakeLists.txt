@@ -25,8 +25,6 @@
 #   - External SHA-256 code isn't supported but it's disabled by
 #     default in the Autotools build too (--enable-external-sha256).
 #
-#   - Extra compiler warning flags aren't added by default.
-#
 # About CMAKE_BUILD_TYPE:
 #
 #   - CMake's standard choices are fine to use for production builds,
@@ -106,6 +104,7 @@ include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
+include(CheckCCompilerFlag)
 include(cmake/tuklib_large_file_support.cmake)
 include(cmake/tuklib_integer.cmake)
 include(cmake/tuklib_cpucores.cmake)
@@ -349,10 +348,65 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
     endif()
 endif()
 
-# Options for new enough GCC or Clang on any arch or operating system:
+# Add warning options for GCC or Clang. Keep this in sync with configure.ac.
+#
+# NOTE: add_compile_options() doesn't affect the feature checks;
+# only the new targets being created use these flags. Thus
+# the -Werror usage in checks won't be break because of these.
 if(CMAKE_C_COMPILER_ID MATCHES GNU|Clang)
-    # configure.ac has a long list but it won't be copied here:
-    add_compile_options(-Wall -Wextra)
+    foreach(OPT -Wall
+                -Wextra
+                -Wvla
+                -Wformat=2
+                -Winit-self
+                -Wmissing-include-dirs
+                -Wshift-overflow=2
+                -Wstrict-overflow=3
+                -Walloc-zero
+                -Wduplicated-cond
+                -Wfloat-equal
+                -Wundef
+                -Wshadow
+                -Wpointer-arith
+                -Wbad-function-cast
+                -Wwrite-strings
+                -Wdate-time
+                -Wsign-conversion
+                -Wfloat-conversion
+                -Wlogical-op
+                -Waggregate-return
+                -Wstrict-prototypes
+                -Wold-style-definition
+                -Wmissing-prototypes
+                -Wmissing-declarations
+                -Wredundant-decls
+
+                -Wc99-compat
+                -Wc11-extensions
+                -Wc2x-compat
+                -Wc2x-extensions
+                -Wpre-c2x-compat
+                -Warray-bounds-pointer-arithmetic
+                -Wassign-enum
+                -Wconditional-uninitialized
+                -Wdocumentation
+                -Wduplicate-enum
+                -Wempty-translation-unit
+                -Wflexible-array-extensions
+                -Wmissing-variable-declarations
+                -Wnewline-eof
+                -Wshift-sign-overflow
+                -Wstring-conversion
+                )
+        # A variable name cannot have = in it so replace = with _.
+        string(REPLACE = _ CACHE_VAR "HAVE_COMPILER_OPTION_${OPT}")
+
+        check_c_compiler_flag("${OPT}" "${CACHE_VAR}")
+
+        if("${${CACHE_VAR}}")
+            add_compile_options("${OPT}")
+        endif()
+    endforeach()
 endif()
 
 

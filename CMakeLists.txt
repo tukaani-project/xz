@@ -1164,10 +1164,10 @@ if(HAVE_IMMINTRIN_H)
     tuklib_add_definition_if(liblzma HAVE__MM_MOVEMASK_EPI8)
 
     # CLMUL intrinsic:
-    option(ALLOW_CLMUL_CRC "Allow carryless multiplication for CRC \
-calculation if supported by the system" ON)
+    option(XZ_CLMUL_CRC "Use carryless multiplication for CRC \
+calculation (with runtime detection) if supported by the compiler" ON)
 
-    if(ALLOW_CLMUL_CRC)
+    if(XZ_CLMUL_CRC)
         check_c_source_compiles("
                 #include <immintrin.h>
                 #if defined(__e2k__) && __iset__ < 6

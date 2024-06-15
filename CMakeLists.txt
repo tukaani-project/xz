@@ -417,11 +417,12 @@ if(NOT WIN32)
         set(SYMBOL_VERSIONING_DEFAULT "generic")
     endif()
 
-    set(SYMBOL_VERSIONING "${SYMBOL_VERSIONING_DEFAULT}" CACHE STRING
+    set(XZ_SYMBOL_VERSIONING "${SYMBOL_VERSIONING_DEFAULT}" CACHE STRING
         "Enable ELF shared library symbol versioning (OFF, generic, linux)")
 
     # Show a dropdown menu in CMake GUI:
-    set_property(CACHE SYMBOL_VERSIONING PROPERTY STRINGS "OFF;generic;linux")
+    set_property(CACHE XZ_SYMBOL_VERSIONING
+                 PROPERTY STRINGS "OFF;generic;linux")
 endif()
 
 set(LIBLZMA_API_HEADERS
@@ -1305,7 +1306,7 @@ if(WIN32)
         # Disable __declspec(dllimport) when linking against static liblzma.
         target_compile_definitions(liblzma INTERFACE LZMA_API_STATIC)
     endif()
-elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "linux")
+elseif(BUILD_SHARED_LIBS AND XZ_SYMBOL_VERSIONING STREQUAL "linux")
     # Note that adding link options doesn't affect static builds
     # but HAVE_SYMBOL_VERSIONS_LINUX must not be used with static builds
     # because it would put symbol versions into the static library which
@@ -1321,7 +1322,7 @@ elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "linux")
     set_target_properties(liblzma PROPERTIES
         LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_linux.map"
     )
-elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "generic")
+elseif(BUILD_SHARED_LIBS AND XZ_SYMBOL_VERSIONING STREQUAL "generic")
     target_link_options(liblzma PRIVATE
         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_generic.map"
     )

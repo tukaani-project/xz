@@ -1818,7 +1818,9 @@ endif()
 # xz
 #############################################################################
 
-if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
+option(XZ_TOOL_XZ "Build and install the xz command line tool" ON)
+
+if(XZ_TOOL_XZ)
     add_executable(xz
         src/common/mythread.h
         src/common/sysdefs.h

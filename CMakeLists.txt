@@ -215,7 +215,7 @@ if((MINGW OR CYGWIN OR MSYS) AND (
     # to worry how to pass different flags to windres and the C compiler.
     # Keep the original PACKAGE_NAME intact for generation of liblzma.pc.
     string(APPEND CMAKE_RC_FLAGS " --use-temp-file")
-    string(REPLACE " " "\\x20" PACKAGE_NAME_DEFINITION "${PACKAGE_NAME}")
+    string(REPLACE " " "\\040" PACKAGE_NAME_DEFINITION "${PACKAGE_NAME}")
 
     # Use octal because "Program Files" would become \x20F.
     string(REPLACE " " "\\040" LOCALEDIR_DEFINITION

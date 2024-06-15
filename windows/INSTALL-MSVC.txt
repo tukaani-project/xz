@@ -8,18 +8,14 @@ Introduction
     liblzma got MSVC support in XZ Utils 5.2.0, and the xz, xzdec,
     lzmadec, and lzmainfo command line tools in XZ Utils 5.6.0.
 
+    Visual Studio 2015 and later are supported.
+
         NOTE: The *.exe files are linked against GNU getopt_long from
         the "lib" directory. That code is under the GNU LGPLv2.1
         and thus the matching source code must be provided when
         distributing the *.exe files. The simplest way to comply with
         the license requirements is to distribute the matching XZ Utils
         source package alongside the *.exe files.
-
-    MSVC 2013 update 2 and later have enough C99 support to build
-    liblzma from XZ Utils 5.2.0 and later without modifications.
-
-    Visual Studio 2015 or later is required to build the command line
-    tools.
 
 
 Building

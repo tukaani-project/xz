@@ -160,6 +160,11 @@ if(OVERRIDE_O3_IN_C_FLAGS_RELEASE)
                  PROPERTY VALUE "${CMAKE_C_FLAGS_RELEASE}")
 endif()
 
+# Reject unsupported MSVC versions.
+if(MSVC AND MSVC_VERSION LESS 1900)
+    message(FATAL_ERROR "Visual Studio older than 2015 is not supported")
+endif()
+
 # We need a compiler that supports enough C99 or newer (variable-length arrays
 # aren't needed, those are optional in C11/C17). C11 is preferred since C11
 # features may be optionally used if they are available.
@@ -1700,7 +1705,7 @@ endif()
 # xzdec and lzmadec
 #############################################################################
 
-if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
+if(HAVE_DECODERS)
     foreach(XZDEC xzdec lzmadec)
         add_executable("${XZDEC}"
             src/common/sysdefs.h
@@ -1757,7 +1762,7 @@ endif()
 # lzmainfo
 #############################################################################
 
-if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
+if(HAVE_DECODERS)
     add_executable(lzmainfo
         src/common/sysdefs.h
         src/common/tuklib_common.h

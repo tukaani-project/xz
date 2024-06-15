@@ -1790,7 +1790,9 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
 
     target_link_libraries(xz PRIVATE liblzma libgnu)
 
-    target_compile_definitions(xz PRIVATE ASSUME_RAM=128)
+    set(XZ_ASSUME_RAM "128" CACHE STRING "Assume that the system has \
+this many MiB of RAM if xz cannot determine the amount at runtime")
+    target_compile_definitions(xz PRIVATE "ASSUME_RAM=${XZ_ASSUME_RAM}")
 
     if(WIN32)
         # Add the Windows resource file for xz.exe.

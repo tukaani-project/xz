@@ -1459,19 +1459,19 @@ install(DIRECTORY src/liblzma/api/
         FILES_MATCHING PATTERN "*.h")
 
 # Install the CMake files that other packages can use to find liblzma.
-set(liblzma_INSTALL_CMAKEDIR
+set(XZ_INSTALL_CMAKEDIR
     "${CMAKE_INSTALL_LIBDIR}/cmake/liblzma"
     CACHE STRING "Path to liblzma's .cmake files")
 
 install(EXPORT liblzmaTargets
         NAMESPACE liblzma::
         FILE liblzma-targets.cmake
-        DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
+        DESTINATION "${XZ_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config-version.cmake"
-        DESTINATION "${liblzma_INSTALL_CMAKEDIR}"
+        DESTINATION "${XZ_INSTALL_CMAKEDIR}"
         COMPONENT liblzma_Development)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblzma.pc"

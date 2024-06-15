@@ -629,7 +629,7 @@ if(ENABLE_THREADS)
             # liblzma-config.cmake later.
             set(USE_POSIX_THREADS ON)
 
-            target_link_libraries(liblzma Threads::Threads)
+            target_link_libraries(liblzma PRIVATE Threads::Threads)
             add_compile_definitions(MYTHREAD_POSIX)
 
             # Check if pthread_condattr_setclock() exists to

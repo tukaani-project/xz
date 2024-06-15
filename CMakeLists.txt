@@ -963,9 +963,9 @@ endif()
 # lzip (.lz) format support #
 #############################
 
-option(LZIP_DECODER "Support lzip decoder" ON)
+option(XZ_LZIP_DECODER "Support lzip decoder" ON)
 
-if(LZIP_DECODER)
+if(XZ_LZIP_DECODER)
     # If lzip decoder support is requested, make sure LZMA1 decoder is enabled.
     if(NOT "lzma1" IN_LIST DECODERS)
         message(FATAL_ERROR "The LZMA1 decoder is required to support the "

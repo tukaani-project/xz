@@ -178,7 +178,7 @@ if(BUILD_TESTING)
 
     # test_files.sh decompresses files that use different filters and
     # check types so run it only if support for all of them has been enabled.
-    if(UNIX AND HAVE_ALL_DECODERS AND HAVE_ALL_CHECK_TYPES AND LZIP_DECODER)
+    if(UNIX AND HAVE_ALL_DECODERS AND HAVE_ALL_CHECK_TYPES AND XZ_LZIP_DECODER)
         # test_files.sh doesn't make any temporary files but it
         # must not be run at the top-level build directory because
         # it checks if ../config.h exists. We don't want to read

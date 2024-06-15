@@ -490,10 +490,10 @@ target_include_directories(liblzma PRIVATE
 # Size optimizations #
 ######################
 
-option(ENABLE_SMALL "Reduce code size at expense of speed. \
+option(XZ_SMALL "Reduce code size at expense of speed. \
 This may be useful together with CMAKE_BUILD_TYPE=MinSizeRel.")
 
-if(ENABLE_SMALL)
+if(XZ_SMALL)
     add_compile_definitions(HAVE_SMALL)
 endif()
 
@@ -513,7 +513,7 @@ foreach(CHECK IN LISTS ADDITIONAL_CHECK_TYPES)
     endif()
 endforeach()
 
-if(ENABLE_SMALL)
+if(XZ_SMALL)
     target_sources(liblzma PRIVATE src/liblzma/check/crc32_small.c)
 else()
     target_sources(liblzma PRIVATE
@@ -532,7 +532,7 @@ endif()
 if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
     add_compile_definitions("HAVE_CHECK_CRC64")
 
-    if(ENABLE_SMALL)
+    if(XZ_SMALL)
         target_sources(liblzma PRIVATE src/liblzma/check/crc64_small.c)
     else()
         target_sources(liblzma PRIVATE
@@ -785,7 +785,7 @@ if(HAVE_ENCODERS)
             src/liblzma/rangecoder/range_encoder.h
         )
 
-        if(NOT ENABLE_SMALL)
+        if(NOT XZ_SMALL)
             target_sources(liblzma PRIVATE src/liblzma/lzma/fastpos_table.c)
         endif()
     endif()
@@ -1133,8 +1133,8 @@ tuklib_add_definition_if(liblzma HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
 # win95, and the compiler does not support attribute constructor, then we
 # would end up with a multithreaded build that is thread-unsafe. As a
 # result this configuration is not allowed.
-if(USE_WIN95_THREADS AND ENABLE_SMALL AND NOT HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
-    message(SEND_ERROR "Threading method win95 and ENABLE_SMALL "
+if(USE_WIN95_THREADS AND XZ_SMALL AND NOT HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR)
+    message(SEND_ERROR "Threading method win95 and XZ_SMALL "
                         "cannot be used at the same time with a compiler "
                         "that doesn't support "
                         "__attribute__((__constructor__))")

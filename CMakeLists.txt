@@ -1978,14 +1978,14 @@ if(UNIX)
         set(POSIX_SHELL_DEFAULT "/bin/sh")
     endif()
 
-    set(POSIX_SHELL "${POSIX_SHELL_DEFAULT}" CACHE STRING
+    set(XZ_POSIX_SHELL "${POSIX_SHELL_DEFAULT}" CACHE STRING
         "Shell to use for scripts (xzgrep and others)")
 
-    # Guess the extra path to add from POSIX_SHELL. Autotools-based build
+    # Guess the extra path to add from XZ_POSIX_SHELL. Autotools-based build
     # has a separate option --enable-path-for-scripts=PREFIX but this is
     # enough for Solaris.
     set(enable_path_for_scripts)
-    get_filename_component(POSIX_SHELL_DIR "${POSIX_SHELL}" DIRECTORY)
+    get_filename_component(POSIX_SHELL_DIR "${XZ_POSIX_SHELL}" DIRECTORY)
 
     if(NOT POSIX_SHELL_DIR STREQUAL "/bin" AND
             NOT POSIX_SHELL_DIR STREQUAL "/usr/bin")
@@ -2005,6 +2005,7 @@ if(UNIX)
     endif()
 
     set(xz "xz")
+    set(POSIX_SHELL "${XZ_POSIX_SHELL}")
 
     foreach(S xzdiff xzgrep xzmore xzless)
         configure_file("src/scripts/${S}.in" "${S}"

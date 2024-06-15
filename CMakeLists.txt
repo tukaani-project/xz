@@ -634,18 +634,20 @@ endforeach()
 #############
 
 # Supported threading methods:
-# ON    - autodetect the best threading method. The autodetection will
+# yes   - Autodetect the best threading method. The autodetection will
 #         prefer Windows threading (win95 or vista) over posix if both are
 #         available. vista threads will be used over win95 unless it is a
-#         32-bit build.
-# OFF   - Disable threading.
+#         32-bit build. Configuration fails if no threading support is found;
+#         threading won't be silently disabled.
+# no    - Disable threading.
 # posix - Use posix threading (pthreads), or throw an error if not available.
 # win95 - Use Windows win95 threading, or throw an error if not available.
 # vista - Use Windows vista threading, or throw an error if not available.
-set(SUPPORTED_THREADING_METHODS ON OFF posix win95 vista)
+set(SUPPORTED_THREADING_METHODS yes no posix win95 vista)
 
-set(XZ_THREADS ON CACHE STRING
-    "Threading method: Set to 'ON' to autodetect, 'OFF' to disable threading.")
+set(XZ_THREADS yes CACHE STRING "Threading method: \
+'yes' to autodetect, 'no' to disable, 'posix' (pthreads), \
+'win95' (WinXP compatible), 'vista' (needs Windows Vista or later)")
 
 # Create dropdown in CMake GUI since only 1 threading method is possible
 # to select in a build.
@@ -676,7 +678,7 @@ if(XZ_THREADS)
     # Note that on Cygwin CMAKE_USE_WIN32_THREADS_INIT is false.
     if(CMAKE_USE_WIN32_THREADS_INIT AND NOT XZ_THREADS STREQUAL "posix")
         if(XZ_THREADS STREQUAL "win95"
-                OR (XZ_THREADS STREQUAL "ON" AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+                OR (XZ_THREADS STREQUAL "yes" AND CMAKE_SIZEOF_VOID_P EQUAL 4))
             # Use Windows 95 (and thus XP) compatible threads.
             # This avoids use of features that were added in
             # Windows Vista. This is used for 32-bit x86 builds for
@@ -688,7 +690,7 @@ if(XZ_THREADS)
             add_compile_definitions(MYTHREAD_VISTA)
         endif()
     elseif(CMAKE_USE_PTHREADS_INIT)
-        if(XZ_THREADS STREQUAL "posix" OR XZ_THREADS STREQUAL "ON")
+        if(XZ_THREADS STREQUAL "posix" OR XZ_THREADS STREQUAL "yes")
             # The threading library only needs to be explicitly linked
             # for posix threads, so this is needed for creating
             # liblzma-config.cmake later.

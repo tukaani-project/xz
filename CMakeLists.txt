@@ -1634,7 +1634,7 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
         if(SANDBOX_COMPILE_DEFINITION)
             target_compile_definitions("${XZDEC}" PRIVATE
-                                    "${SANDBOX_COMPILE_DEFINITION}")
+                                       "${SANDBOX_COMPILE_DEFINITION}")
         endif()
 
         tuklib_progname("${XZDEC}")

@@ -63,7 +63,7 @@
 #
 #   - To get translated messages, install GNU gettext tools (the
 #     command msgfmt is needed). Alternatively disable translations
-#     by setting ENABLE_NLS=OFF.
+#     by setting XZ_NLS=OFF.
 #
 #   - To get translated man pages, run po4a/update-po which requires
 #     the po4a tool. The build works without this step too.
@@ -300,14 +300,16 @@ endif()
 # Translation support requires CMake 3.20 because it added the Intl::Intl
 # target so we don't need to play with the individual variables.
 #
-# The definition ENABLE_NLS is added only to those targets that use it, thus
+# The definition XZ_NLS is added only to those targets that use it, thus
 # it's not done here. (xz has translations, xzdec doesn't.)
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
     find_package(Intl)
     find_package(Gettext)
 
     if(Intl_FOUND)
-        option(ENABLE_NLS "Native Language Support (translated messages)" ON)
+        option(XZ_NLS
+               "Native Language Support (translated messages and man pages)"
+               ON)
 
         # If translation support is enabled but neither gettext tools or
         # pre-generated .gmo files exist, translation support cannot be
@@ -316,10 +318,10 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
         # The detection of pre-generated .gmo files is done by only
         # checking for the existence of a single .gmo file; Ukrainian
         # is one of many translations that gets regular updates.
-        if(ENABLE_NLS AND NOT GETTEXT_FOUND AND
+        if(XZ_NLS AND NOT GETTEXT_FOUND AND
                 NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
             # This only sets the variable, not the cache variable!
-            set(ENABLE_NLS OFF)
+            set(XZ_NLS OFF)
 
             # This message is shown only when new enough CMake is used and
             # library support for translations was found. The assumptions is
@@ -330,11 +332,11 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
                             "pre-generated .gmo files. The latter are only "
                             "available in distribution tarballs. "
                             "To avoid this warning, NLS can be explicitly "
-                            "disabled by passing -DENABLE_NLS=OFF to cmake.")
+                            "disabled by passing -DXZ_NLS=OFF to cmake.")
         endif()
 
         # Warn if NLS is enabled but translated man pages are missing.
-        if(UNIX AND ENABLE_NLS AND
+        if(UNIX AND XZ_NLS AND
                 NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
             message(WARNING "Native language support (NLS) has been enabled "
                             "but pre-generated translated man pages "
@@ -1527,11 +1529,11 @@ function(my_install_man_lang COMPONENT SRC_FILE MAN_LANG LINK_NAMES)
 endfunction()
 
 # Installs a man page file and optionally its alternative names as symlinks.
-# Does the same for translations if ENABLE_NLS.
+# Does the same for translations if XZ_NLS.
 function(my_install_man COMPONENT SRC_FILE LINK_NAMES)
     my_install_man_lang("${COMPONENT}" "${SRC_FILE}" "" "${LINK_NAMES}")
 
-    if(ENABLE_NLS)
+    if(XZ_NLS)
         # Find the translated versions of this man page.
         get_filename_component(BASENAME "${SRC_FILE}" NAME)
         file(GLOB MAN_FILES "po4a/man/*/${BASENAME}")
@@ -1708,11 +1710,11 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
     # NOTE: The translations are in the "xz" domain and the .mo files are
     # installed as part of the "xz" target.
-    if(ENABLE_NLS)
+    if(XZ_NLS)
         target_link_libraries(lzmainfo PRIVATE Intl::Intl)
 
         target_compile_definitions(lzmainfo PRIVATE
-                ENABLE_NLS
+                XZ_NLS
                 PACKAGE="${TRANSLATION_DOMAIN}"
                 LOCALEDIR="${LOCALEDIR_DEFINITION}"
         )
@@ -1862,11 +1864,11 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
         endif()
     endif()
 
-    if(ENABLE_NLS)
+    if(XZ_NLS)
         target_link_libraries(xz PRIVATE Intl::Intl)
 
         target_compile_definitions(xz PRIVATE
-                ENABLE_NLS
+                XZ_NLS
                 PACKAGE="${TRANSLATION_DOMAIN}"
                 LOCALEDIR="${LOCALEDIR_DEFINITION}"
         )

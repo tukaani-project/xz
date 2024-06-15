@@ -1935,7 +1935,8 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
 
     if(UNIX)
         option(CREATE_XZ_SYMLINKS "Create unxz and xzcat symlinks" ON)
-        option(CREATE_LZMA_SYMLINKS "Create lzma, unlzma, and lzcat symlinks"
+        option(XZ_TOOL_SYMLINKS_LZMA
+               "Create 'lzma' and other symlinks for LZMA Utils compatibility"
                ON)
         set(XZ_LINKS)
 
@@ -1943,7 +1944,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
             list(APPEND XZ_LINKS "unxz" "xzcat")
         endif()
 
-        if(CREATE_LZMA_SYMLINKS)
+        if(XZ_TOOL_SYMLINKS_LZMA)
             list(APPEND XZ_LINKS "lzma" "unlzma" "lzcat")
         endif()
 
@@ -1998,7 +1999,7 @@ if(UNIX)
     set(XZMORE_LINKS)
     set(XZLESS_LINKS)
 
-    if(CREATE_LZMA_SYMLINKS)
+    if(XZ_TOOL_SYMLINKS_LZMA)
         list(APPEND XZDIFF_LINKS lzdiff lzcmp)
         list(APPEND XZGREP_LINKS lzgrep lzegrep lzfgrep)
         list(APPEND XZMORE_LINKS lzmore)

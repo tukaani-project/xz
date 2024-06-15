@@ -1762,7 +1762,9 @@ endif()
 # lzmainfo
 #############################################################################
 
-if(HAVE_DECODERS)
+option(XZ_TOOL_LZMAINFO "Build and install the lzmainfo command line tool" ON)
+
+if(XZ_TOOL_LZMAINFO AND HAVE_DECODERS)
     add_executable(lzmainfo
         src/common/sysdefs.h
         src/common/tuklib_common.h

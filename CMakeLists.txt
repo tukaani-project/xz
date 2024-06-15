@@ -562,10 +562,10 @@ endif()
 
 set(SUPPORTED_MATCH_FINDERS hc3 hc4 bt2 bt3 bt4)
 
-set(MATCH_FINDERS "${SUPPORTED_MATCH_FINDERS}" CACHE STRING
+set(XZ_MATCH_FINDERS "${SUPPORTED_MATCH_FINDERS}" CACHE STRING
     "Match finders to support (at least one is required for LZMA1 or LZMA2)")
 
-foreach(MF IN LISTS MATCH_FINDERS)
+foreach(MF IN LISTS XZ_MATCH_FINDERS)
     if(MF IN_LIST SUPPORTED_MATCH_FINDERS)
         string(TOUPPER "${MF}" MF_UPPER)
         add_compile_definitions("HAVE_MF_${MF_UPPER}")
@@ -704,7 +704,7 @@ if(NOT "lzma1" IN_LIST ENCODERS AND "lzma2" IN_LIST ENCODERS)
 endif()
 
 # If LZMA1 is enabled, then at least one match finder must be enabled.
-if(MATCH_FINDERS STREQUAL "" AND "lzma1" IN_LIST ENCODERS)
+if(XZ_MATCH_FINDERS STREQUAL "" AND "lzma1" IN_LIST ENCODERS)
     message(FATAL_ERROR "At least 1 match finder is required for an "
                         "LZ-based encoder")
 endif()

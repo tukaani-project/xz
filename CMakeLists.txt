@@ -2051,6 +2051,9 @@ endif()
 #############################################################################
 
 if(UNIX)
+    option(XZ_TOOL_SCRIPTS "Install the scripts \
+xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
+
     # NOTE: This isn't as sophisticated as in the Autotools build which
     # uses posix-shell.m4 but hopefully this doesn't need to be either.
     # CMake likely won't be used on as many (old) obscure systems as the
@@ -2095,9 +2098,11 @@ if(UNIX)
                @ONLY
                NEWLINE_STYLE LF)
 
-        install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
-                DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                COMPONENT scripts_Runtime)
+        if(XZ_TOOL_SCRIPTS)
+            install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
+                    DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                    COMPONENT scripts_Runtime)
+        endif()
     endforeach()
 
     # file(CHMOD ...) would need CMake 3.19 so use execute_process instead.
@@ -2110,22 +2115,31 @@ if(UNIX)
     unset(POSIX_SHELL)
     unset(enable_path_for_scripts)
 
-    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzdiff ""
-                        "${XZDIFF_LINKS}")
+    if(XZ_TOOL_SCRIPTS)
+        my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}"
+                            xzdiff "" "${XZDIFF_LINKS}")
 
-    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzgrep ""
-                        "${XZGREP_LINKS}")
+        my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}"
+                            xzgrep "" "${XZGREP_LINKS}")
 
-    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzmore ""
-                        "${XZMORE_LINKS}")
+        my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}"
+                            xzmore "" "${XZMORE_LINKS}")
 
-    my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}" xzless ""
-                        "${XZLESS_LINKS}")
+        my_install_symlinks(scripts_Runtime "${CMAKE_INSTALL_BINDIR}"
+                            xzless "" "${XZLESS_LINKS}")
 
-    my_install_man(scripts_Documentation src/scripts/xzdiff.1 "${XZDIFF_LINKS}")
-    my_install_man(scripts_Documentation src/scripts/xzgrep.1 "${XZGREP_LINKS}")
-    my_install_man(scripts_Documentation src/scripts/xzmore.1 "${XZMORE_LINKS}")
-    my_install_man(scripts_Documentation src/scripts/xzless.1 "${XZLESS_LINKS}")
+        my_install_man(scripts_Documentation
+                       src/scripts/xzdiff.1 "${XZDIFF_LINKS}")
+
+        my_install_man(scripts_Documentation
+                       src/scripts/xzgrep.1 "${XZGREP_LINKS}")
+
+        my_install_man(scripts_Documentation
+                       src/scripts/xzmore.1 "${XZMORE_LINKS}")
+
+        my_install_man(scripts_Documentation
+                       src/scripts/xzless.1 "${XZLESS_LINKS}")
+    endif()
 endif()
 
 

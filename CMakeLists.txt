@@ -2051,9 +2051,9 @@ endif()
 #############################################################################
 
 if(UNIX)
-    option(ENABLE_DOXYGEN "Use Doxygen to generate liblzma API docs" OFF)
+    option(XZ_DOXYGEN "Use Doxygen to generate liblzma API docs" OFF)
 
-    if (ENABLE_DOXYGEN)
+    if (XZ_DOXYGEN)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc")
 
         add_custom_command(

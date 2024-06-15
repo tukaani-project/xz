@@ -1038,14 +1038,14 @@ endif()
 # Sandboxing #
 ##############
 
-# ON        Use sandboxing if a supported method is available in the OS.
-# OFF       Disable sandboxing.
+# auto      Use sandboxing if a supported method is available in the OS.
+# no        Disable sandboxing.
 # capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
 # pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
 # landlock  Require Landlock (Linux >= 5.13) and fail if not found.
-set(SUPPORTED_SANDBOX_METHODS ON OFF capsicum pledge landlock)
+set(SUPPORTED_SANDBOX_METHODS auto no capsicum pledge landlock)
 
-set(XZ_SANDBOX ON CACHE STRING
+set(XZ_SANDBOX auto CACHE STRING
     "Sandboxing method to use in 'xz', 'xzdec', and 'lzmadec'")
 
 set_property(CACHE XZ_SANDBOX PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
@@ -1057,7 +1057,7 @@ endif()
 
 # When autodetecting, the search order is fixed and we must not find
 # more than one method.
-if(XZ_SANDBOX STREQUAL "OFF")
+if(XZ_SANDBOX STREQUAL "no")
     set(SANDBOX_FOUND ON)
 else()
     set(SANDBOX_FOUND OFF)
@@ -1068,7 +1068,7 @@ endif()
 set(SANDBOX_COMPILE_DEFINITION OFF)
 
 # Sandboxing: Capsicum
-if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^ON$|^capsicum$")
+if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^capsicum$")
     check_symbol_exists(cap_rights_limit sys/capsicum.h
                         HAVE_CAP_RIGHTS_LIMIT)
     if(HAVE_CAP_RIGHTS_LIMIT)
@@ -1078,7 +1078,7 @@ if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^ON$|^capsicum$")
 endif()
 
 # Sandboxing: pledge(2)
-if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^ON$|^pledge$")
+if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^pledge$")
     check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
     if(HAVE_PLEDGE)
         set(SANDBOX_COMPILE_DEFINITION "HAVE_PLEDGE")
@@ -1087,7 +1087,7 @@ if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^ON$|^pledge$")
 endif()
 
 # Sandboxing: Landlock
-if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^ON$|^landlock$")
+if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^landlock$")
     # A compile check is done here because some systems have
     # linux/landlock.h, but do not have the syscalls defined
     # in order to actually use Linux Landlock.
@@ -1129,13 +1129,13 @@ if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^ON$|^landlock$")
             message(SEND_ERROR
                     "CMAKE_C_FLAGS or the environment variable CFLAGS "
                     "contains '-fsanitize=' which is incompatible "
-                    "with Landlock sandboxing. Use -DXZ_SANDBOX=OFF "
+                    "with Landlock sandboxing. Use -DXZ_SANDBOX=no "
                     "as an argument to 'cmake' when using '-fsanitize'.")
         endif()
     endif()
 endif()
 
-if(NOT SANDBOX_FOUND AND NOT XZ_SANDBOX MATCHES "^ON$|^OFF$")
+if(NOT SANDBOX_FOUND AND NOT XZ_SANDBOX MATCHES "^auto$|^no$")
     message(SEND_ERROR "XZ_SANDBOX=${XZ_SANDBOX} was used but "
                         "support for the sandboxing method wasn't found.")
 endif()

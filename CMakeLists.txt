@@ -11,7 +11,7 @@
 # A few things are still missing compared to the Autotools-based build:
 #
 #   - 32-bit x86 assembly code for CRC32 and CRC64 isn't used by default.
-#     Use the option -DENABLE_X86_ASM=ON on the CMake command line to
+#     Use the option -DXZ_ASM_I386=ON on the CMake command line to
 #     enable the assembly files. They are compatible with Linux, *BSDs,
 #     Cygwin, MinGW-w64, and Darwin. They are NOT compatible with MSVC.
 #
@@ -176,8 +176,8 @@ set(CMAKE_C_STANDARD 11)
 
 # Support 32-bit x86 assembly files.
 if(NOT MSVC)
-    option(ENABLE_X86_ASM "Enable 32-bit x86 assembly code" OFF)
-    if(ENABLE_X86_ASM)
+    option(XZ_ASM_I386 "Enable 32-bit x86 assembly code" OFF)
+    if(XZ_ASM_I386)
         enable_language(ASM)
     endif()
 endif()
@@ -522,7 +522,7 @@ else()
         src/liblzma/check/crc32_table_le.h
     )
 
-    if(ENABLE_X86_ASM)
+    if(XZ_ASM_I386)
         target_sources(liblzma PRIVATE src/liblzma/check/crc32_x86.S)
     else()
         target_sources(liblzma PRIVATE src/liblzma/check/crc32_fast.c)
@@ -541,7 +541,7 @@ if("crc64" IN_LIST ADDITIONAL_CHECK_TYPES)
             src/liblzma/check/crc64_table_le.h
         )
 
-        if(ENABLE_X86_ASM)
+        if(XZ_ASM_I386)
             target_sources(liblzma PRIVATE src/liblzma/check/crc64_x86.S)
         else()
             target_sources(liblzma PRIVATE src/liblzma/check/crc64_fast.c)

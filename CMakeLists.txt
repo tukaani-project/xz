@@ -589,12 +589,12 @@ endforeach()
 # vista - Use Windows vista threading, or throw an error if not available.
 set(SUPPORTED_THREADING_METHODS ON OFF posix win95 vista)
 
-set(ENABLE_THREADS ON CACHE STRING
+set(XZ_THREADS ON CACHE STRING
     "Threading method: Set to 'ON' to autodetect, 'OFF' to disable threading.")
 
 # Create dropdown in CMake GUI since only 1 threading method is possible
 # to select in a build.
-set_property(CACHE ENABLE_THREADS
+set_property(CACHE XZ_THREADS
              PROPERTY STRINGS "${SUPPORTED_THREADING_METHODS}")
 
 # This is a flag variable set when win95 threads are used. We must ensure
@@ -607,12 +607,11 @@ set(USE_WIN95_THREADS OFF)
 # Threads::Threads is only needed with pthreads.
 set(USE_POSIX_THREADS OFF)
 
-if(NOT ENABLE_THREADS IN_LIST SUPPORTED_THREADING_METHODS)
-    message(FATAL_ERROR "'${ENABLE_THREADS}' is not a supported "
-                        "threading method")
+if(NOT XZ_THREADS IN_LIST SUPPORTED_THREADING_METHODS)
+    message(FATAL_ERROR "'${XZ_THREADS}' is not a supported threading method")
 endif()
 
-if(ENABLE_THREADS)
+if(XZ_THREADS)
     # Also set THREADS_PREFER_PTHREAD_FLAG since the flag has no effect
     # for Windows threading.
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -620,10 +619,9 @@ if(ENABLE_THREADS)
 
     # If both Windows and posix threading are available, prefer Windows.
     # Note that on Cygwin CMAKE_USE_WIN32_THREADS_INIT is false.
-    if(CMAKE_USE_WIN32_THREADS_INIT AND NOT ENABLE_THREADS STREQUAL "posix")
-        if(ENABLE_THREADS STREQUAL "win95"
-                OR (ENABLE_THREADS STREQUAL "ON"
-                    AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+    if(CMAKE_USE_WIN32_THREADS_INIT AND NOT XZ_THREADS STREQUAL "posix")
+        if(XZ_THREADS STREQUAL "win95"
+                OR (XZ_THREADS STREQUAL "ON" AND CMAKE_SIZEOF_VOID_P EQUAL 4))
             # Use Windows 95 (and thus XP) compatible threads.
             # This avoids use of features that were added in
             # Windows Vista. This is used for 32-bit x86 builds for
@@ -635,7 +633,7 @@ if(ENABLE_THREADS)
             add_compile_definitions(MYTHREAD_VISTA)
         endif()
     elseif(CMAKE_USE_PTHREADS_INIT)
-        if(ENABLE_THREADS STREQUAL "posix" OR ENABLE_THREADS STREQUAL "ON")
+        if(XZ_THREADS STREQUAL "posix" OR XZ_THREADS STREQUAL "ON")
             # The threading library only needs to be explicitly linked
             # for posix threads, so this is needed for creating
             # liblzma-config.cmake later.
@@ -754,7 +752,7 @@ if(HAVE_ENCODERS)
         src/liblzma/common/vli_encoder.c
     )
 
-    if(ENABLE_THREADS)
+    if(XZ_THREADS)
         target_sources(liblzma PRIVATE
             src/liblzma/common/stream_encoder_mt.c
         )
@@ -858,7 +856,7 @@ if(HAVE_DECODERS)
         src/liblzma/common/vli_decoder.c
     )
 
-    if(ENABLE_THREADS)
+    if(XZ_THREADS)
         target_sources(liblzma PRIVATE
             src/liblzma/common/stream_decoder_mt.c
         )

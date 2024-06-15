@@ -40,7 +40,7 @@ if(BUILD_TESTING)
     # test_microlzma will fail to compile because this configuration is
     # not possible in the Autotools build, so the test was not made to
     # support it since it would have required additional changes.
-    if (MICROLZMA_ENCODER AND (MICROLZMA_DECODER
+    if (XZ_MICROLZMA_ENCODER AND (XZ_MICROLZMA_DECODER
             OR NOT "lzma1" IN_LIST DECODERS))
         list(APPEND LIBLZMA_TESTS test_microlzma)
     endif()

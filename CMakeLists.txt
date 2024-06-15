@@ -934,13 +934,13 @@ endforeach()
 # MicroLZMA #
 #############
 
-option(MICROLZMA_ENCODER
+option(XZ_MICROLZMA_ENCODER
        "MicroLZMA encoder (needed by specific applications only)" ON)
 
-option(MICROLZMA_DECODER
+option(XZ_MICROLZMA_DECODER
        "MicroLZMA decoder (needed by specific applications only)" ON)
 
-if(MICROLZMA_ENCODER)
+if(XZ_MICROLZMA_ENCODER)
     if(NOT "lzma1" IN_LIST ENCODERS)
         message(FATAL_ERROR "The LZMA1 encoder is required to support the "
                             "MicroLZMA encoder")
@@ -949,7 +949,7 @@ if(MICROLZMA_ENCODER)
     target_sources(liblzma PRIVATE src/liblzma/common/microlzma_encoder.c)
 endif()
 
-if(MICROLZMA_DECODER)
+if(XZ_MICROLZMA_DECODER)
     if(NOT "lzma1" IN_LIST DECODERS)
         message(FATAL_ERROR "The LZMA1 decoder is required to support the "
                             "MicroLZMA decoder")

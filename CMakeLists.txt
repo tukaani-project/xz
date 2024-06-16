@@ -1412,7 +1412,13 @@ else()
     set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 endif()
 
-set(PTHREAD_CFLAGS "${CMAKE_THREAD_LIBS_INIT}")
+# Threads::Threads is linked in only when using POSIX threads.
+# Use an empty value if using Windows threads or if threading is disabled.
+set(PTHREAD_CFLAGS)
+if(USE_POSIX_THREADS)
+    set(PTHREAD_CFLAGS "${CMAKE_THREAD_LIBS_INIT}")
+endif()
+
 configure_file(src/liblzma/liblzma.pc.in liblzma.pc @ONLY)
 
 # Install the library binary. The INCLUDES specifies the include path that

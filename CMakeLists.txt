@@ -1413,6 +1413,7 @@ endif()
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
         "${LZMA_CONFIG_CONTENTS}")
 
+
 # Create liblzma.pc. If using CMake >= 3.20 and CMAKE_INSTALL_<dir> paths
 # are relative to CMAKE_INSTALL_PREFIX, the .pc file will be relocatable
 # (that is, all paths will be relative to ${prefix}). Otherwise absolute
@@ -1436,6 +1437,7 @@ if(USE_POSIX_THREADS)
 endif()
 
 configure_file(src/liblzma/liblzma.pc.in liblzma.pc @ONLY)
+
 
 # Install the library binary. The INCLUDES specifies the include path that
 # is exported for other projects to use but it doesn't install any files.

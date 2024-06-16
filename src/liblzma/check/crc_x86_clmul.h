@@ -335,6 +335,9 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 }
 
 
+// Even though this is an inline function, compile it only when needed.
+// This way it won't appear in E2K builds at all.
+#if defined(CRC32_GENERIC) || defined(CRC64_GENERIC)
 // Inlining this function duplicates the function body in crc32_resolve() and
 // crc64_resolve(), but this is acceptable because this is a tiny function.
 static inline bool
@@ -376,3 +379,4 @@ is_arch_extension_supported(void)
 	// code as is it only reads a variable set at startup but a few bytes
 	// doesn't matter here.
 }
+#endif

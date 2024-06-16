@@ -1429,9 +1429,7 @@ else()
 endif()
 
 set(PTHREAD_CFLAGS "${CMAKE_THREAD_LIBS_INIT}")
-configure_file(src/liblzma/liblzma.pc.in liblzma.pc
-               @ONLY
-               NEWLINE_STYLE LF)
+configure_file(src/liblzma/liblzma.pc.in liblzma.pc @ONLY)
 
 # Install the library binary. The INCLUDES specifies the include path that
 # is exported for other projects to use but it doesn't install any files.

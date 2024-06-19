@@ -29,7 +29,7 @@
 ///////////////////
 
 static uint32_t
-crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
+lzma_crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 {
 	crc = ~crc;
 
@@ -119,7 +119,7 @@ static crc32_func_type
 crc32_resolve(void)
 {
 	return is_arch_extension_supported()
-			? &crc32_arch_optimized : &crc32_generic;
+			? &crc32_arch_optimized : &lzma_crc32_generic;
 }
 
 
@@ -178,6 +178,6 @@ lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 	return crc32_arch_optimized(buf, size, crc);
 
 #else
-	return crc32_generic(buf, size, crc);
+	return lzma_crc32_generic(buf, size, crc);
 #endif
 }

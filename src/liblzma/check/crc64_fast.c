@@ -34,7 +34,7 @@
 
 // See the comments in crc32_fast.c. They aren't duplicated here.
 static uint64_t
-crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
+lzma_crc64_generic(const uint8_t *buf, size_t size, uint64_t crc)
 {
 	crc = ~crc;
 
@@ -97,7 +97,7 @@ static crc64_func_type
 crc64_resolve(void)
 {
 	return is_arch_extension_supported()
-			? &crc64_arch_optimized : &crc64_generic;
+			? &crc64_arch_optimized : &lzma_crc64_generic;
 }
 
 #ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
@@ -154,6 +154,6 @@ lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
 	return crc64_arch_optimized(buf, size, crc);
 
 #else
-	return crc64_generic(buf, size, crc);
+	return lzma_crc64_generic(buf, size, crc);
 #endif
 }

@@ -62,9 +62,6 @@
 // ARM64 CRC32 instruction is only useful for CRC32. Currently, only
 // little endian is supported since we were unable to test on a big
 // endian machine.
-//
-// NOTE: Keep this and the next check in sync with the macro
-//       NO_CRC32_TABLE in crc32_table.c
 #if defined(HAVE_ARM64_CRC32) && !defined(WORDS_BIGENDIAN)
 	// Allow ARM64 CRC32 instruction without a runtime check if
 	// __ARM_FEATURE_CRC32 is defined. GCC and Clang only define
@@ -81,12 +78,17 @@
 
 #if defined(HAVE_USABLE_CLMUL)
 // If CLMUL is allowed unconditionally in the compiler options then the
-// generic version can be omitted. Note that this doesn't work with MSVC
-// as I don't know how to detect the features here.
+// generic version and the tables can be omitted. Exceptions:
 //
-// NOTE: Keep this in sync with the NO_CRC32_TABLE macro in crc32_table.c
-// and NO_CRC64_TABLE in crc64_table.c.
-#	if (defined(__SSSE3__) && defined(__SSE4_1__) && defined(__PCLMUL__)) \
+//   - If 32-bit x86 assembly files are enabled then those are always
+//     built and runtime detection is used even if compiler flags
+//     were set to allow CLMUL unconditionally.
+//
+//   - This doesn't work with MSVC as I don't know how to detect
+//     the features here.
+//
+#	if (defined(__SSSE3__) && defined(__SSE4_1__) && defined(__PCLMUL__) \
+			&& !defined(HAVE_CRC_X86_ASM)) \
 		|| (defined(__e2k__) && __iset__ >= 6)
 #		define CRC32_ARCH_OPTIMIZED 1
 #		define CRC64_ARCH_OPTIMIZED 1

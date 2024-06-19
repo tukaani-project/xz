@@ -28,6 +28,17 @@
 // Generic CRC32 //
 ///////////////////
 
+#ifdef WORDS_BIGENDIAN
+#	include "crc32_table_be.h"
+#else
+#	include "crc32_table_le.h"
+#endif
+
+
+#ifdef HAVE_CRC_X86_ASM
+extern uint32_t lzma_crc32_generic(
+		const uint8_t *buf, size_t size, uint32_t crc);
+#else
 static uint32_t
 lzma_crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 {
@@ -85,7 +96,8 @@ lzma_crc32_generic(const uint8_t *buf, size_t size, uint32_t crc)
 
 	return ~crc;
 }
-#endif
+#endif // HAVE_CRC_X86_ASM
+#endif // CRC32_GENERIC
 
 
 #if defined(CRC32_GENERIC) && defined(CRC32_ARCH_OPTIMIZED)

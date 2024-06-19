@@ -18,11 +18,6 @@
 /// can be built at a time. The version to build is selected by defining
 /// BUILDING_CRC_CLMUL to 32 or 64 before including this file.
 ///
-/// FIXME: Builds for 32-bit x86 use the assembly .S files by default
-/// unless configured with --disable-assembler. Even then the lookup table
-/// isn't omitted in crc64_table.c since it doesn't know that assembly
-/// code has been disabled.
-///
 /// NOTE: The x86 CLMUL CRC implementation was rewritten for XZ Utils 5.8.0.
 //
 //  Authors:    Lasse Collin

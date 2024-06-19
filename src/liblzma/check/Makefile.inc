@@ -20,13 +20,11 @@ if COND_SMALL
 liblzma_la_SOURCES += check/crc32_small.c
 else
 liblzma_la_SOURCES += \
-	check/crc32_table.c \
+	check/crc32_fast.c \
 	check/crc32_table_le.h \
 	check/crc32_table_be.h
 if COND_ASM_X86
 liblzma_la_SOURCES += check/crc32_x86.S
-else
-liblzma_la_SOURCES += check/crc32_fast.c
 endif
 endif
 
@@ -35,13 +33,11 @@ if COND_SMALL
 liblzma_la_SOURCES += check/crc64_small.c
 else
 liblzma_la_SOURCES += \
-	check/crc64_table.c \
+	check/crc64_fast.c \
 	check/crc64_table_le.h \
 	check/crc64_table_be.h
 if COND_ASM_X86
 liblzma_la_SOURCES += check/crc64_x86.S
-else
-liblzma_la_SOURCES += check/crc64_fast.c
 endif
 endif
 endif

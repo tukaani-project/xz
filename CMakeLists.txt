@@ -175,14 +175,6 @@ endif()
 # to C99 if C11 isn't supported.
 set(CMAKE_C_STANDARD 11)
 
-# Support 32-bit x86 assembly files.
-if(NOT MSVC)
-    option(XZ_ASM_I386 "Enable 32-bit x86 assembly code" OFF)
-    if(XZ_ASM_I386)
-        enable_language(ASM)
-    endif()
-endif()
-
 # On Apple OSes, don't build executables as bundles:
 set(CMAKE_MACOSX_BUNDLE OFF)
 
@@ -248,6 +240,14 @@ add_compile_definitions(
     # build types like "Release" and "Debug" handle this by default.
     $<$<CONFIG:>:NDEBUG>
 )
+
+# Support 32-bit x86 assembly files.
+if(NOT MSVC)
+    option(XZ_ASM_I386 "Enable 32-bit x86 assembly code" OFF)
+    if(XZ_ASM_I386)
+        enable_language(ASM)
+    endif()
+endif()
 
 
 ######################

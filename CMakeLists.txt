@@ -273,7 +273,7 @@ if(NOT HAVE_CLOCK_GETTIME)
     # CMAKE_REQUIRED_LIBRARIES for further tests too.
     if(HAVE_CLOCK_GETTIME_LIBRT)
         link_libraries(rt)
-        set(LIBS "-lrt") # For liblzma.pc
+        set(LIBS "-lrt ${LIBS}") # For liblzma.pc
     else()
         list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
     endif()

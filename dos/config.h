@@ -12,6 +12,9 @@
 /* Define to 1 if sha256 integrity check is enabled. */
 #define HAVE_CHECK_SHA256 1
 
+/* Define to 1 if the 32-bit x86 CRC assembly files are used. */
+#define HAVE_CRC_X86_ASM 1
+
 /* Define to 1 if any of HAVE_DECODER_foo have been defined. */
 #define HAVE_DECODERS 1
 

@@ -1065,113 +1065,6 @@ if(XZ_LZIP_DECODER)
     )
 endif()
 
-
-##############
-# Sandboxing #
-##############
-
-# auto      Use sandboxing if a supported method is available in the OS.
-# no        Disable sandboxing.
-# capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
-# pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
-# landlock  Require Landlock (Linux >= 5.13) and fail if not found.
-set(SUPPORTED_SANDBOX_METHODS auto no capsicum pledge landlock)
-
-set(XZ_SANDBOX auto CACHE STRING
-    "Sandboxing method to use in 'xz', 'xzdec', and 'lzmadec'")
-
-set_property(CACHE XZ_SANDBOX PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
-
-if(NOT XZ_SANDBOX IN_LIST SUPPORTED_SANDBOX_METHODS)
-    message(FATAL_ERROR "'${XZ_SANDBOX}' is not a supported "
-                        "sandboxing method")
-endif()
-
-# When autodetecting, the search order is fixed and we must not find
-# more than one method.
-if(XZ_SANDBOX STREQUAL "no")
-    set(SANDBOX_FOUND ON)
-else()
-    set(SANDBOX_FOUND OFF)
-endif()
-
-# Since xz and xzdec can both use sandboxing, the compile definition needed
-# to use the sandbox must be added to both targets.
-set(SANDBOX_COMPILE_DEFINITION OFF)
-
-# Sandboxing: Capsicum
-if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^capsicum$")
-    check_symbol_exists(cap_rights_limit sys/capsicum.h
-                        HAVE_CAP_RIGHTS_LIMIT)
-    if(HAVE_CAP_RIGHTS_LIMIT)
-        set(SANDBOX_COMPILE_DEFINITION "HAVE_CAP_RIGHTS_LIMIT")
-        set(SANDBOX_FOUND ON)
-    endif()
-endif()
-
-# Sandboxing: pledge(2)
-if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^pledge$")
-    check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
-    if(HAVE_PLEDGE)
-        set(SANDBOX_COMPILE_DEFINITION "HAVE_PLEDGE")
-        set(SANDBOX_FOUND ON)
-    endif()
-endif()
-
-# Sandboxing: Landlock
-if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^landlock$")
-    # A compile check is done here because some systems have
-    # linux/landlock.h, but do not have the syscalls defined
-    # in order to actually use Linux Landlock.
-    check_c_source_compiles("
-        #include <linux/landlock.h>
-        #include <sys/syscall.h>
-        #include <sys/prctl.h>
-
-        void my_sandbox(void)
-        {
-            (void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-            (void)SYS_landlock_create_ruleset;
-            (void)SYS_landlock_restrict_self;
-            (void)LANDLOCK_CREATE_RULESET_VERSION;
-            return;
-        }
-
-        int main(void) { return 0; }
-        "
-    HAVE_LINUX_LANDLOCK)
-
-    if(HAVE_LINUX_LANDLOCK)
-        set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK")
-        set(SANDBOX_FOUND ON)
-
-        # Of our three sandbox methods, only Landlock is incompatible
-        # with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
-        # -fsanitize=address,undefined and had no issues. OpenBSD (as
-        # of version 7.4) has minimal support for process instrumentation.
-        # OpenBSD does not distribute the additional libraries needed
-        # (libasan, libubsan, etc.) with GCC or Clang needed for runtime
-        # sanitization support and instead only support
-        # -fsanitize-minimal-runtime for minimal undefined behavior
-        # sanitization. This minimal support is compatible with our use
-        # of the Pledge sandbox. So only Landlock will result in a
-        # build that cannot compress or decompress a single file to
-        # standard out.
-        if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
-            message(SEND_ERROR
-                    "CMAKE_C_FLAGS or the environment variable CFLAGS "
-                    "contains '-fsanitize=' which is incompatible "
-                    "with Landlock sandboxing. Use -DXZ_SANDBOX=no "
-                    "as an argument to 'cmake' when using '-fsanitize'.")
-        endif()
-    endif()
-endif()
-
-if(NOT SANDBOX_FOUND AND NOT XZ_SANDBOX MATCHES "^auto$|^no$")
-    message(SEND_ERROR "XZ_SANDBOX=${XZ_SANDBOX} was used but "
-                        "support for the sandboxing method wasn't found.")
-endif()
-
 ###
 
 # Put the tuklib functions under the lzma_ namespace.
@@ -1698,6 +1591,113 @@ if(NOT HAVE_GETOPT_LONG)
         lib/getopt-pfx-ext.h
         "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
     )
+endif()
+
+
+#############################################################################
+# Sandboxing for the command line tools
+#############################################################################
+
+# auto      Use sandboxing if a supported method is available in the OS.
+# no        Disable sandboxing.
+# capsicum  Require Capsicum (FreeBSD >= 10.2) and fail if not found.
+# pledge    Require pledge(2) (OpenBSD >= 5.9) and fail if not found.
+# landlock  Require Landlock (Linux >= 5.13) and fail if not found.
+set(SUPPORTED_SANDBOX_METHODS auto no capsicum pledge landlock)
+
+set(XZ_SANDBOX auto CACHE STRING
+    "Sandboxing method to use in 'xz', 'xzdec', and 'lzmadec'")
+
+set_property(CACHE XZ_SANDBOX PROPERTY STRINGS "${SUPPORTED_SANDBOX_METHODS}")
+
+if(NOT XZ_SANDBOX IN_LIST SUPPORTED_SANDBOX_METHODS)
+    message(FATAL_ERROR "'${XZ_SANDBOX}' is not a supported "
+                        "sandboxing method")
+endif()
+
+# When autodetecting, the search order is fixed and we must not find
+# more than one method.
+if(XZ_SANDBOX STREQUAL "no")
+    set(SANDBOX_FOUND ON)
+else()
+    set(SANDBOX_FOUND OFF)
+endif()
+
+# Since xz and xzdec can both use sandboxing, the compile definition needed
+# to use the sandbox must be added to both targets.
+set(SANDBOX_COMPILE_DEFINITION OFF)
+
+# Sandboxing: Capsicum
+if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^capsicum$")
+    check_symbol_exists(cap_rights_limit sys/capsicum.h
+                        HAVE_CAP_RIGHTS_LIMIT)
+    if(HAVE_CAP_RIGHTS_LIMIT)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_CAP_RIGHTS_LIMIT")
+        set(SANDBOX_FOUND ON)
+    endif()
+endif()
+
+# Sandboxing: pledge(2)
+if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^pledge$")
+    check_symbol_exists(pledge unistd.h HAVE_PLEDGE)
+    if(HAVE_PLEDGE)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_PLEDGE")
+        set(SANDBOX_FOUND ON)
+    endif()
+endif()
+
+# Sandboxing: Landlock
+if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^landlock$")
+    # A compile check is done here because some systems have
+    # linux/landlock.h, but do not have the syscalls defined
+    # in order to actually use Linux Landlock.
+    check_c_source_compiles("
+        #include <linux/landlock.h>
+        #include <sys/syscall.h>
+        #include <sys/prctl.h>
+
+        void my_sandbox(void)
+        {
+            (void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
+            (void)SYS_landlock_create_ruleset;
+            (void)SYS_landlock_restrict_self;
+            (void)LANDLOCK_CREATE_RULESET_VERSION;
+            return;
+        }
+
+        int main(void) { return 0; }
+        "
+    HAVE_LINUX_LANDLOCK)
+
+    if(HAVE_LINUX_LANDLOCK)
+        set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK")
+        set(SANDBOX_FOUND ON)
+
+        # Of our three sandbox methods, only Landlock is incompatible
+        # with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
+        # -fsanitize=address,undefined and had no issues. OpenBSD (as
+        # of version 7.4) has minimal support for process instrumentation.
+        # OpenBSD does not distribute the additional libraries needed
+        # (libasan, libubsan, etc.) with GCC or Clang needed for runtime
+        # sanitization support and instead only support
+        # -fsanitize-minimal-runtime for minimal undefined behavior
+        # sanitization. This minimal support is compatible with our use
+        # of the Pledge sandbox. So only Landlock will result in a
+        # build that cannot compress or decompress a single file to
+        # standard out.
+        if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
+            message(SEND_ERROR
+                    "CMAKE_C_FLAGS or the environment variable CFLAGS "
+                    "contains '-fsanitize=' which is incompatible "
+                    "with Landlock sandboxing. Use -DXZ_SANDBOX=no "
+                    "as an argument to 'cmake' when using '-fsanitize'.")
+        endif()
+    endif()
+endif()
+
+if(NOT SANDBOX_FOUND AND NOT XZ_SANDBOX MATCHES "^auto$|^no$")
+    message(SEND_ERROR "XZ_SANDBOX=${XZ_SANDBOX} was used but "
+                        "support for the sandboxing method wasn't found.")
 endif()
 
 

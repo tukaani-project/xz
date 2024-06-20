@@ -571,94 +571,6 @@ target_include_directories(liblzma PRIVATE
 )
 
 
-######################
-# Size optimizations #
-######################
-
-option(XZ_SMALL "Reduce code size at expense of speed. \
-This may be useful together with CMAKE_BUILD_TYPE=MinSizeRel.")
-
-if(XZ_SMALL)
-    add_compile_definitions(HAVE_SMALL)
-endif()
-
-
-##########
-# Checks #
-##########
-
-set(SUPPORTED_CHECKS crc32 crc64 sha256)
-
-set(XZ_CHECKS "${SUPPORTED_CHECKS}" CACHE STRING
-    "Check types to support (crc32 is always built)")
-
-foreach(CHECK IN LISTS XZ_CHECKS)
-    if(NOT CHECK IN_LIST SUPPORTED_CHECKS)
-        message(FATAL_ERROR "'${CHECK}' is not a supported check type")
-    endif()
-endforeach()
-
-if(XZ_SMALL)
-    target_sources(liblzma PRIVATE src/liblzma/check/crc32_small.c)
-else()
-    target_sources(liblzma PRIVATE
-        src/liblzma/check/crc32_table.c
-        src/liblzma/check/crc32_table_be.h
-        src/liblzma/check/crc32_table_le.h
-    )
-
-    if(XZ_ASM_I386)
-        target_sources(liblzma PRIVATE src/liblzma/check/crc32_x86.S)
-    else()
-        target_sources(liblzma PRIVATE src/liblzma/check/crc32_fast.c)
-    endif()
-endif()
-
-if("crc64" IN_LIST XZ_CHECKS)
-    add_compile_definitions("HAVE_CHECK_CRC64")
-
-    if(XZ_SMALL)
-        target_sources(liblzma PRIVATE src/liblzma/check/crc64_small.c)
-    else()
-        target_sources(liblzma PRIVATE
-            src/liblzma/check/crc64_table.c
-            src/liblzma/check/crc64_table_be.h
-            src/liblzma/check/crc64_table_le.h
-        )
-
-        if(XZ_ASM_I386)
-            target_sources(liblzma PRIVATE src/liblzma/check/crc64_x86.S)
-        else()
-            target_sources(liblzma PRIVATE src/liblzma/check/crc64_fast.c)
-        endif()
-    endif()
-endif()
-
-if("sha256" IN_LIST XZ_CHECKS)
-    add_compile_definitions("HAVE_CHECK_SHA256")
-    target_sources(liblzma PRIVATE src/liblzma/check/sha256.c)
-endif()
-
-
-#################
-# Match finders #
-#################
-
-set(SUPPORTED_MATCH_FINDERS hc3 hc4 bt2 bt3 bt4)
-
-set(XZ_MATCH_FINDERS "${SUPPORTED_MATCH_FINDERS}" CACHE STRING
-    "Match finders to support (at least one is required for LZMA1 or LZMA2)")
-
-foreach(MF IN LISTS XZ_MATCH_FINDERS)
-    if(MF IN_LIST SUPPORTED_MATCH_FINDERS)
-        string(TOUPPER "${MF}" MF_UPPER)
-        add_compile_definitions("HAVE_MF_${MF_UPPER}")
-    else()
-        message(FATAL_ERROR "'${MF}' is not a supported match finder")
-    endif()
-endforeach()
-
-
 #############
 # Threading #
 #############
@@ -755,6 +667,94 @@ if(XZ_THREADS)
         src/liblzma/common/outqueue.h
     )
 endif()
+
+
+######################
+# Size optimizations #
+######################
+
+option(XZ_SMALL "Reduce code size at expense of speed. \
+This may be useful together with CMAKE_BUILD_TYPE=MinSizeRel.")
+
+if(XZ_SMALL)
+    add_compile_definitions(HAVE_SMALL)
+endif()
+
+
+##########
+# Checks #
+##########
+
+set(SUPPORTED_CHECKS crc32 crc64 sha256)
+
+set(XZ_CHECKS "${SUPPORTED_CHECKS}" CACHE STRING
+    "Check types to support (crc32 is always built)")
+
+foreach(CHECK IN LISTS XZ_CHECKS)
+    if(NOT CHECK IN_LIST SUPPORTED_CHECKS)
+        message(FATAL_ERROR "'${CHECK}' is not a supported check type")
+    endif()
+endforeach()
+
+if(XZ_SMALL)
+    target_sources(liblzma PRIVATE src/liblzma/check/crc32_small.c)
+else()
+    target_sources(liblzma PRIVATE
+        src/liblzma/check/crc32_table.c
+        src/liblzma/check/crc32_table_be.h
+        src/liblzma/check/crc32_table_le.h
+    )
+
+    if(XZ_ASM_I386)
+        target_sources(liblzma PRIVATE src/liblzma/check/crc32_x86.S)
+    else()
+        target_sources(liblzma PRIVATE src/liblzma/check/crc32_fast.c)
+    endif()
+endif()
+
+if("crc64" IN_LIST XZ_CHECKS)
+    add_compile_definitions("HAVE_CHECK_CRC64")
+
+    if(XZ_SMALL)
+        target_sources(liblzma PRIVATE src/liblzma/check/crc64_small.c)
+    else()
+        target_sources(liblzma PRIVATE
+            src/liblzma/check/crc64_table.c
+            src/liblzma/check/crc64_table_be.h
+            src/liblzma/check/crc64_table_le.h
+        )
+
+        if(XZ_ASM_I386)
+            target_sources(liblzma PRIVATE src/liblzma/check/crc64_x86.S)
+        else()
+            target_sources(liblzma PRIVATE src/liblzma/check/crc64_fast.c)
+        endif()
+    endif()
+endif()
+
+if("sha256" IN_LIST XZ_CHECKS)
+    add_compile_definitions("HAVE_CHECK_SHA256")
+    target_sources(liblzma PRIVATE src/liblzma/check/sha256.c)
+endif()
+
+
+#################
+# Match finders #
+#################
+
+set(SUPPORTED_MATCH_FINDERS hc3 hc4 bt2 bt3 bt4)
+
+set(XZ_MATCH_FINDERS "${SUPPORTED_MATCH_FINDERS}" CACHE STRING
+    "Match finders to support (at least one is required for LZMA1 or LZMA2)")
+
+foreach(MF IN LISTS XZ_MATCH_FINDERS)
+    if(MF IN_LIST SUPPORTED_MATCH_FINDERS)
+        string(TOUPPER "${MF}" MF_UPPER)
+        add_compile_definitions("HAVE_MF_${MF_UPPER}")
+    else()
+        message(FATAL_ERROR "'${MF}' is not a supported match finder")
+    endif()
+endforeach()
 
 
 ############

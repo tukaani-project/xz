@@ -22,9 +22,6 @@
 #     processors with CLMUL support, the C code should be faster than
 #     the assembly code while on old processors the assembly code wins.
 #
-#   - External SHA-256 code isn't supported but it's disabled by
-#     default in the Autotools build too (--enable-external-sha256).
-#
 # About CMAKE_BUILD_TYPE:
 #
 #   - CMake's standard choices are fine to use for production builds,
@@ -269,7 +266,7 @@ tuklib_large_file_support(ALL)
 # This is needed by liblzma and xz.
 tuklib_integer(ALL)
 
-# This is used for liblzma.pc generation to add -lrt if needed.
+# This is used for liblzma.pc generation to add -lrt and -lmd if needed.
 set(LIBS)
 
 # Check for clock_gettime(). Do this before checking for threading so
@@ -732,9 +729,123 @@ if("crc64" IN_LIST XZ_CHECKS)
     endif()
 endif()
 
+# External SHA-256
+#
+# At least the following implementations are supported:
+#
+# OS       Headers                     Library  Type           Function
+# FreeBSD  sys/types.h + sha256.h      libmd    SHA256_CTX     SHA256_Init
+# NetBSD   sys/types.h + sha2.h                 SHA256_CTX     SHA256_Init
+# OpenBSD  sys/types.h + sha2.h                 SHA2_CTX       SHA256Init
+# Solaris  sys/types.h + sha2.h        libmd    SHA256_CTX     SHA256Init
+# MINIX 3  sys/types.h + sha2.h                 SHA256_CTX     SHA256_Init
+# Darwin   CommonCrypto/CommonDigest.h          CC_SHA256_CTX  CC_SHA256_Init
+#
+# Note that Darwin's CC_SHA256_Update takes buffer size as uint32_t instead
+# of size_t.
+#
+# This is disabled by default because it used to conflict with OpenSSL
+# on some platforms and in some cases the builtin code in liblzma was faster.
+# See INSTALL and the commit message ac398c3bafa6e4c80e20571373a96947db863b3d.
+option(XZ_EXTERNAL_SHA256 "Use SHA-256 code from the operating system \
+if possible. See INSTALL for possible subtle problems." OFF)
+
 if("sha256" IN_LIST XZ_CHECKS)
     add_compile_definitions("HAVE_CHECK_SHA256")
-    target_sources(liblzma PRIVATE src/liblzma/check/sha256.c)
+
+    # Assume that external code won't be used. We need this to know
+    # if the internal sha256.c should be built.
+    set(USE_INTERNAL_SHA256 ON)
+
+    if(XZ_EXTERNAL_SHA256)
+        # Find the header.
+        set(SHA256_HEADER OFF)
+
+        foreach(X CommonCrypto/CommonDigest.h sha256.h sha2.h)
+            string(TOUPPER "HAVE_${X}" HAVE_X)
+            string(REGEX REPLACE "[/.]" "_" HAVE_X "${HAVE_X}")
+            check_include_file("${X}" "${HAVE_X}")
+            if(${HAVE_X})
+                target_compile_definitions(liblzma PRIVATE "${HAVE_X}")
+                set(SHA256_HEADER "${X}")
+                break()
+            endif()
+        endforeach()
+
+        if(SHA256_HEADER)
+            # Find the type to hold the SHA-256 state.
+            set(SHA256_TYPE OFF)
+
+            foreach(X CC_SHA256_CTX SHA256_CTX SHA2_CTX)
+                string(TOUPPER "HAVE_${X}" HAVE_X)
+
+                # configure.ac uses <sys/types.h> conditionally but it's
+                # required on all cases except Darwin where it exists too.
+                # So just use it unconditionally here.
+                set(SOURCE
+                        "#include <sys/types.h>
+                        #include <${SHA256_HEADER}>
+                        int main(void)
+                        {
+                            ${X} ctx;
+                            return 0;
+                        }")
+                check_c_source_compiles("${SOURCE}" "${HAVE_X}")
+                if(${HAVE_X})
+                    target_compile_definitions(liblzma PRIVATE "${HAVE_X}")
+                    set(SHA256_TYPE "${X}")
+                    break()
+                endif()
+            endforeach()
+
+            if(SHA256_TYPE)
+                # Find the initialization function. It might required libmd.
+                foreach(X CC_SHA256_Init SHA256Init SHA256_Init)
+                    string(TOUPPER "HAVE_${X}" HAVE_X)
+
+                    # On FreeBSD, <sha256.h> defines the SHA-256 functions as
+                    # macros to rename them for namespace reasons. Avoid
+                    # check_symbol_exists as that would accept macros without
+                    # checking if the program links.
+                    set(SOURCE
+                            "#include <sys/types.h>
+                            #include <${SHA256_HEADER}>
+                            int main(void)
+                            {
+                                ${SHA256_TYPE} ctx;
+                                ${X}(&ctx);
+                                return 0;
+                            }")
+
+                    check_c_source_compiles("${SOURCE}" "${HAVE_X}")
+                    if(${HAVE_X})
+                        target_compile_definitions(liblzma PRIVATE "${HAVE_X}")
+                        set(USE_INTERNAL_SHA256 OFF)
+                        break()
+                    else()
+                        # Try with libmd. Other checks don't need it so we
+                        # don't need to leave it into CMAKE_REQUIRED_LIBRARIES.
+                        list(INSERT CMAKE_REQUIRED_LIBRARIES 0 md)
+                        check_c_source_compiles("${SOURCE}" "${HAVE_X}_LIBMD")
+                        list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
+                        if(${HAVE_X}_LIBMD)
+                            # NOTE: Just "${HAVE_X}", not "${HAVE_X}_LIBMD":
+                            target_compile_definitions(liblzma PRIVATE
+                                                       "${HAVE_X}")
+                            target_link_libraries(liblzma PRIVATE md)
+                            set(LIBS "-lmd ${LIBS}") # For liblzma.pc
+                            set(USE_INTERNAL_SHA256 OFF)
+                            break()
+                        endif()
+                    endif()
+                endforeach()
+            endif()
+        endif()
+    endif()
+
+    if(USE_INTERNAL_SHA256)
+        target_sources(liblzma PRIVATE src/liblzma/check/sha256.c)
+    endif()
 endif()
 
 

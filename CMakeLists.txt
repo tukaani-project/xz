@@ -8,20 +8,6 @@
 # thus it's still slightly experimental. Testing this especially
 # outside GNU/Linux and Windows would be great now.
 #
-# A few things are still missing compared to the Autotools-based build:
-#
-#   - 32-bit x86 assembly code for CRC32 and CRC64 isn't used by default.
-#     Use the option -DXZ_ASM_I386=ON on the CMake command line to
-#     enable the assembly files. They are compatible with Linux, *BSDs,
-#     Cygwin, MinGW-w64, and Darwin. They are NOT compatible with MSVC.
-#
-#     NOTE: The C code includes a generic version compatible with all
-#     processors and CLMUL version that requires a new enough processor
-#     with the PCLMULQDQ instruction. If the 32-bit x86 assembly files
-#     are used, the CLMUL version in the C code is NOT built. On modern
-#     processors with CLMUL support, the C code should be faster than
-#     the assembly code while on old processors the assembly code wins.
-#
 # About CMAKE_BUILD_TYPE:
 #
 #   - CMake's standard choices are fine to use for production builds,
@@ -243,7 +229,24 @@ add_compile_definitions(
 
 # Support 32-bit x86 assembly files.
 if(NOT MSVC)
-    option(XZ_ASM_I386 "Enable 32-bit x86 assembly code" OFF)
+    # It's simplest to ask the compiler for the architecture because we
+    # know that on supported platforms __i386__ is defined.
+    #
+    # Checking CMAKE_SYSTEM_PROCESSOR wouldn't be so simple or as reliable
+    # because it could indicate x86-64 even if building for 32-bit x86
+    # because one doesn't necessarily use a CMake toolchain file when
+    # building 32-bit executables on a 64-bit system. Also, the strings
+    # that identify 32-bit or 64-bit x86 aren't standardized in CMake.
+    if(MINGW OR CYGWIN OR CMAKE_SYSTEM_NAME MATCHES
+            "^FreeBSD$|^GNU$|^Linux$|^MirBSD$|^NetBSD$|^OpenBSD$")
+        check_symbol_exists("__i386__" "" ASM_I386_DEFAULT)
+    else()
+        set(ASM_I386_DEFAULT OFF)
+    endif()
+
+    option(XZ_ASM_I386 "Enable 32-bit x86 assembly code"
+           "${ASM_I386_DEFAULT}")
+
     if(XZ_ASM_I386)
         enable_language(ASM)
     endif()

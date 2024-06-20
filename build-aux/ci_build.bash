@@ -229,18 +229,18 @@ then
 		add_to_filter_list "$BCJ" ";x86;powerpc;ia64;arm;armthumb;arm64;sparc;riscv"
 		add_to_filter_list "$DELTA" ";delta"
 
-		add_extra_option "$THREADS" "-DENABLE_THREADS=ON" "-DENABLE_THREADS=OFF"
+		add_extra_option "$THREADS" "-DXZ_THREADS=yes" "-DXZ_THREADS=no"
 
 		# Disable MicroLZMA if encoders are not configured.
-		add_extra_option "$ENCODERS" "-DENCODERS=$FILTER_LIST" "-DENCODERS= -DMICROLZMA_ENCODER=OFF"
+		add_extra_option "$ENCODERS" "-DXZ_ENCODERS=$FILTER_LIST" "-DXZ_ENCODERS= -DXZ_MICROLZMA_ENCODER=OFF"
 
 		# Disable MicroLZMA and lzip decoders if decoders are not configured.
-		add_extra_option "$DECODERS" "-DDECODERS=$FILTER_LIST" "-DDECODERS= -DMICROLZMA_DECODER=OFF -DLZIP_DECODER=OFF"
+		add_extra_option "$DECODERS" "-DXZ_DECODERS=$FILTER_LIST" "-DXZ_DECODERS= -DXZ_MICROLZMA_DECODER=OFF -DXZ_LZIP_DECODER=OFF"
 
 		# CMake disables the shared library by default.
 		add_extra_option "$SHARED" "-DBUILD_SHARED_LIBS=ON" ""
 
-		add_extra_option "$SMALL" "-DHAVE_SMALL=ON" ""
+		add_extra_option "$SMALL" "-DXZ_SMALL=ON" ""
 
 		if test -n "$CC" ; then
 			EXTRA_OPTIONS="$EXTRA_OPTIONS -DCMAKE_C_COMPILER=$CC"
@@ -248,7 +248,7 @@ then
 
 		# Remove old cache file to clear previous settings.
 		rm -f "CMakeCache.txt"
-		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR" $EXTRA_OPTIONS -DADDITIONAL_CHECK_TYPES="$CHECK_TYPE" -G "Unix Makefiles"
+		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR" $EXTRA_OPTIONS -DXZ_CHECKS="$CHECK_TYPE" -G "Unix Makefiles"
 		cmake --build "$DEST_DIR"
 	;;
 	esac

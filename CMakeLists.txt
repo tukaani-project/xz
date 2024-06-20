@@ -704,6 +704,7 @@ else()
 
     if(XZ_ASM_I386)
         target_sources(liblzma PRIVATE src/liblzma/check/crc32_x86.S)
+        target_compile_definitions(liblzma PRIVATE HAVE_CRC_X86_ASM)
     else()
         target_sources(liblzma PRIVATE src/liblzma/check/crc32_fast.c)
     endif()
@@ -723,6 +724,8 @@ if("crc64" IN_LIST XZ_CHECKS)
 
         if(XZ_ASM_I386)
             target_sources(liblzma PRIVATE src/liblzma/check/crc64_x86.S)
+            # Adding #define HAVE_CRC_X86_ASM was already handled in
+            # the CRC32 case a few lines above. CRC32 is always built.
         else()
             target_sources(liblzma PRIVATE src/liblzma/check/crc64_fast.c)
         endif()

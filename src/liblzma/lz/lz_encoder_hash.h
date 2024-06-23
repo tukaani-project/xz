@@ -13,7 +13,8 @@
 #ifndef LZMA_LZ_ENCODER_HASH_H
 #define LZMA_LZ_ENCODER_HASH_H
 
-// We need to know if CRC32_GENERIC is defined.
+// We need to know if CRC32_GENERIC is defined and we may need the declaration
+// of lzma_crc32_table[][].
 #include "crc_common.h"
 
 // If HAVE_SMALL is defined, then lzma_crc32_table[][] exists and
@@ -28,7 +29,6 @@
 // then lzma_crc32_table[][] doesn't exist.
 #if defined(HAVE_SMALL) \
 		|| (defined(CRC32_GENERIC) && !defined(WORDS_BIGENDIAN))
-#	include "check.h"
 #	define hash_table lzma_crc32_table[0]
 #else
 	// lz_encoder.c takes care of including the actual table.

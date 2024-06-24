@@ -70,11 +70,11 @@ jobs:
       # done first.
       - name: Build 32-bit
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
-        run: ./build-aux/ci_build.bash -b autotools -p build -f "-m32"
+        run: ./build-aux/ci_build.bash -b autotools -p build -m "gcc -m32"
       - name: Test 32-bit
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
-            ./build-aux/ci_build.bash -b autotools -p test -f "-m32" -n 32_bit
+            ./build-aux/ci_build.bash -b autotools -p test -m "gcc -m32" -n 32_bit
             cd ../xz_build && make distclean
 
       # The sandbox must be disabled because it will prevent access to

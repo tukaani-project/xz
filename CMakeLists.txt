@@ -1768,20 +1768,20 @@ if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^landlock$")
     # linux/landlock.h, but do not have the syscalls defined
     # in order to actually use Linux Landlock.
     check_c_source_compiles("
-        #include <linux/landlock.h>
-        #include <sys/syscall.h>
-        #include <sys/prctl.h>
+            #include <linux/landlock.h>
+            #include <sys/syscall.h>
+            #include <sys/prctl.h>
 
-        int main(void)
-        {
-            (void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-            (void)SYS_landlock_create_ruleset;
-            (void)SYS_landlock_restrict_self;
-            (void)LANDLOCK_CREATE_RULESET_VERSION;
-            return 0;
-        }
+            int main(void)
+            {
+                (void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
+                (void)SYS_landlock_create_ruleset;
+                (void)SYS_landlock_restrict_self;
+                (void)LANDLOCK_CREATE_RULESET_VERSION;
+                return 0;
+            }
         "
-    HAVE_LINUX_LANDLOCK)
+        HAVE_LINUX_LANDLOCK)
 
     if(HAVE_LINUX_LANDLOCK)
         set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK")

@@ -457,8 +457,7 @@ symbol versioning (${SUPPORTED_SYMBOL_VERSIONING_VARIANTS})")
                             "symbol versioning variant")
     endif()
 
-    if(NOT XZ_SYMBOL_VERSIONING STREQUAL "auto" AND
-       NOT XZ_SYMBOL_VERSIONING STREQUAL "yes")
+    if(NOT XZ_SYMBOL_VERSIONING MATCHES "^auto$|^yes$")
         # Autodetection was disabled. Use the user-specified value as is.
         set(SYMBOL_VERSIONING "${XZ_SYMBOL_VERSIONING}")
     else()
@@ -507,8 +506,7 @@ symbol versioning (${SUPPORTED_SYMBOL_VERSIONING_VARIANTS})")
             # which are pointless on non-glibc non-Linux systems.
             set(SYMBOL_VERSIONING "linux")
 
-        elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR
-               CMAKE_SYSTEM_NAME STREQUAL "GNU" OR
+        elseif(CMAKE_SYSTEM_NAME MATCHES "^FreeBSD$|^GNU$" OR
                XZ_SYMBOL_VERSIONING STREQUAL "yes")
             set(SYMBOL_VERSIONING "generic")
         endif()
@@ -638,7 +636,7 @@ if(XZ_THREADS)
             add_compile_definitions(MYTHREAD_VISTA)
         endif()
     elseif(CMAKE_USE_PTHREADS_INIT)
-        if(XZ_THREADS STREQUAL "posix" OR XZ_THREADS STREQUAL "yes")
+        if(XZ_THREADS MATCHES "^posix$|^yes$")
             # The threading library only needs to be explicitly linked
             # for posix threads, so this is needed for creating
             # liblzma-config.cmake later.
@@ -2221,8 +2219,7 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
     set(enable_path_for_scripts)
     get_filename_component(POSIX_SHELL_DIR "${XZ_POSIX_SHELL}" DIRECTORY)
 
-    if(NOT POSIX_SHELL_DIR STREQUAL "/bin" AND
-            NOT POSIX_SHELL_DIR STREQUAL "/usr/bin")
+    if(NOT POSIX_SHELL_DIR MATCHES "^/bin$|^/usr/bin$")
         set(enable_path_for_scripts "PATH=${POSIX_SHELL_DIR}:\$PATH")
     endif()
 

@@ -256,6 +256,12 @@ tuklib_large_file_support(ALL)
 tuklib_integer(ALL)
 
 # This is used for liblzma.pc generation to add -lrt if needed.
+#
+# The variable name LIBS comes from Autoconf where AC_SEARCH_LIBS adds the
+# libraries it finds into the shell variable LIBS. These libraries need to
+# be put into liblzma.pc too, thus liblzma.pc.in has @LIBS@ because that
+# matches the Autoconf's variable. When CMake support was added, using
+# the same variable with configure_file() was the simplest method.
 set(LIBS)
 
 # Check for clock_gettime(). Do this before checking for threading so

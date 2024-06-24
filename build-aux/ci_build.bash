@@ -242,10 +242,6 @@ then
 
 		add_extra_option "$SMALL" "-DHAVE_SMALL=ON" ""
 
-		if test -n "$CC" ; then
-			EXTRA_OPTIONS="$EXTRA_OPTIONS -DCMAKE_C_COMPILER=$CC"
-		fi
-
 		# Remove old cache file to clear previous settings.
 		rm -f "CMakeCache.txt"
 		cmake "$SRC_DIR/CMakeLists.txt" -B "$DEST_DIR" $EXTRA_OPTIONS -DADDITIONAL_CHECK_TYPES="$CHECK_TYPE" -G "Unix Makefiles"

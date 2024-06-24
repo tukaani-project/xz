@@ -1033,10 +1033,11 @@ AS_IF([test "x$enable_clmul_crc" = xno], [
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("ssse3,sse4.1,pclmul")))
 #endif
-__m128i my_clmul(__m128i a)
+int main(void)
 {
-	const __m128i b = _mm_set_epi64x(1, 2);
-	return _mm_clmulepi64_si128(a, b, 0);
+	__m128i a = _mm_set_epi64x(1, 2);
+	a = _mm_clmulepi64_si128(a, a, 0);
+	return 0;
 }
 	]])], [
 		AC_DEFINE([HAVE_USABLE_CLMUL], [1],
@@ -1073,9 +1074,9 @@ AS_IF([test "x$enable_arm64_crc32" = xno], [
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(__EDG__)
 __attribute__((__target__("+crc")))
 #endif
-uint32_t my_crc(uint32_t a, uint64_t b)
+int main(void)
 {
-	return __crc32d(a, b);
+	return __crc32d(1, 2) != 0;
 }
 	]])], [
 		AC_DEFINE([HAVE_ARM64_CRC32], [1],
@@ -1145,13 +1146,13 @@ AS_CASE([$enable_sandbox],
 			#include <sys/syscall.h>
 			#include <sys/prctl.h>
 
-			void my_sandbox(void)
+			int main(void)
 			{
 				(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 				(void)SYS_landlock_create_ruleset;
 				(void)SYS_landlock_restrict_self;
 				(void)LANDLOCK_CREATE_RULESET_VERSION;
-				return;
+				return 0;
 			}
 		]])], [
 			enable_sandbox=found

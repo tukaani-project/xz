@@ -166,15 +166,7 @@ then
 	CHECK_TYPE_TEMP=""
 	for crc in $(echo "$CHECK_TYPE" | sed "s/,/ /g"); do
 			case "$crc" in
-			# Remove "crc32" from cmake build, if specified.
-			crc32)
-				if [ "$BUILD_SYSTEM" = "cmake" ]
-				then
-					continue
-				fi
-			;;
-			crc64) ;;
-			sha256) ;;
+			crc32 | crc64 | sha256) ;;
 			*) echo "Invalid check type: $crc"; exit 1 ;;
 			esac
 

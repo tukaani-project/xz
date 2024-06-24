@@ -217,6 +217,15 @@ then
 		add_extra_option "$CLMUL" "" "--disable-clmul-crc"
 		add_extra_option "$SANDBOX" "" "--enable-sandbox=no"
 
+		# Workaround a bug in too old config.guess. Version with
+		# timestamp='2022-05-08' would be needed but the autotools-dev
+		# package has 2022-01-09 in Ubuntu 22.04LTS and 24.04LTS. The
+		# bug breaks i386 assembler usage autodetection.
+		if "$SRC_DIR/build-aux/config.guess" | grep -q x86_64-pc-linux-gnux32
+		then
+			EXTRA_OPTIONS="$EXTRA_OPTIONS --build=i686-pc-linux-gnu"
+		fi
+
 		# Run configure script
 		"$SRC_DIR"/configure --enable-werror --enable-checks="$CHECK_TYPE" $EXTRA_OPTIONS --config-cache
 

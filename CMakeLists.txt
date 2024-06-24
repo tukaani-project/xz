@@ -2318,7 +2318,7 @@ if(UNIX)
     endif()
 endif()
 
-option(XZ_DOC "Install basic documention, examples, and license files" ON)
+option(XZ_DOC "Install basic documentation, examples, and license files" ON)
 if(XZ_DOC)
     install(DIRECTORY doc/examples
             DESTINATION "${CMAKE_INSTALL_DOCDIR}"

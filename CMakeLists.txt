@@ -4,9 +4,12 @@
 #
 # CMake support for building XZ Utils
 #
-# The complete CMake-based build hasn't been tested much yet and
-# thus it's still slightly experimental. Testing this especially
-# outside GNU/Linux and Windows would be great now.
+# CMake 3.20 or later is recommended. Older versions down to 3.14 work
+# too with the following limitations:
+#
+#   - Translations aren't supported.
+#
+#   - Generated liblzma.pc won't be relocatable.
 #
 # About CMAKE_BUILD_TYPE:
 #

@@ -645,11 +645,13 @@ if(XZ_THREADS)
             target_link_libraries(liblzma PRIVATE Threads::Threads)
             add_compile_definitions(MYTHREAD_POSIX)
 
+            # Make the thread libs available in later checks. In practice
+            # only pthread_condattr_setclock check should need this.
+            list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
+
             # Check if pthread_condattr_setclock() exists to
             # use CLOCK_MONOTONIC.
             if(HAVE_CLOCK_MONOTONIC)
-                list(INSERT CMAKE_REQUIRED_LIBRARIES 0
-                     "${CMAKE_THREAD_LIBS_INIT}")
                 check_symbol_exists(pthread_condattr_setclock pthread.h
                                     HAVE_PTHREAD_CONDATTR_SETCLOCK)
                 tuklib_add_definition_if(ALL HAVE_PTHREAD_CONDATTR_SETCLOCK)

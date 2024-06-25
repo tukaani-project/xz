@@ -4,13 +4,6 @@
 #
 # CMake support for building XZ Utils
 #
-# CMake 3.20 or later is recommended. Older versions down to 3.14 work
-# too with the following limitations:
-#
-#   - Translations aren't supported.
-#
-#   - Generated liblzma.pc won't be relocatable.
-#
 # About CMAKE_BUILD_TYPE:
 #
 #   - CMake's standard choices are fine to use for production builds,
@@ -82,8 +75,7 @@
 #
 #############################################################################
 
-# NOTE: Translation support is disabled with CMake older than 3.20.
-cmake_minimum_required(VERSION 3.14...3.29 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20...3.29 FATAL_ERROR)
 
 include(CMakePushCheckState)
 include(CheckIncludeFile)
@@ -289,7 +281,7 @@ if(NOT HAVE_CLOCK_GETTIME)
     # With glibc <= 2.17 or Solaris 10 this needs librt.
     # Add librt for the next check for HAVE_CLOCK_GETTIME. If it is
     # found after including the library, we know that librt is required.
-    list(INSERT CMAKE_REQUIRED_LIBRARIES 0 rt)
+    list(PREPEND CMAKE_REQUIRED_LIBRARIES rt)
     check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME_LIBRT)
 
     # If it was found now, add librt to all targets and keep it in
@@ -298,7 +290,7 @@ if(NOT HAVE_CLOCK_GETTIME)
         link_libraries(rt)
         set(LIBS "-lrt ${LIBS}") # For liblzma.pc
     else()
-        list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
+        list(POP_FRONT CMAKE_REQUIRED_LIBRARIES)
     endif()
 endif()
 
@@ -310,56 +302,51 @@ if(HAVE_CLOCK_GETTIME OR HAVE_CLOCK_GETTIME_LIBRT)
     tuklib_add_definition_if(ALL HAVE_CLOCK_MONOTONIC)
 endif()
 
-# Translation support requires CMake 3.20 because it added the Intl::Intl
-# target so we don't need to play with the individual variables.
-#
 # The definition XZ_NLS is added only to those targets that use it, thus
 # it's not done here. (xz has translations, xzdec doesn't.)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
-    find_package(Intl)
-    find_package(Gettext)
+find_package(Intl)
+find_package(Gettext)
 
-    if(Intl_FOUND)
-        option(XZ_NLS
-               "Native Language Support (translated messages and man pages)"
-               ON)
+if(Intl_FOUND)
+    option(XZ_NLS
+           "Native Language Support (translated messages and man pages)"
+           ON)
 
-        # If translation support is enabled but neither gettext tools or
-        # pre-generated .gmo files exist, translation support cannot be
-        # enabled.
-        #
-        # The detection of pre-generated .gmo files is done by only
-        # checking for the existence of a single .gmo file; Ukrainian
-        # is one of many translations that gets regular updates.
-        if(XZ_NLS AND NOT GETTEXT_FOUND AND
-                NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
-            # This only sets the variable, not the cache variable!
-            set(XZ_NLS OFF)
+    # If translation support is enabled but neither gettext tools or
+    # pre-generated .gmo files exist, translation support cannot be
+    # enabled.
+    #
+    # The detection of pre-generated .gmo files is done by only
+    # checking for the existence of a single .gmo file; Ukrainian
+    # is one of many translations that gets regular updates.
+    if(XZ_NLS AND NOT GETTEXT_FOUND AND
+            NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
+        # This only sets the variable, not the cache variable!
+        set(XZ_NLS OFF)
 
-            # This message is shown only when new enough CMake is used and
-            # library support for translations was found. The assumptions is
-            # that in this situation the user might have interest in the
-            # translations. This also keeps this code simpler.
-            message(WARNING "Native language support (NLS) has been disabled. "
-                            "NLS support requires either gettext tools or "
-                            "pre-generated .gmo files. The latter are only "
-                            "available in distribution tarballs. "
-                            "To avoid this warning, NLS can be explicitly "
-                            "disabled by passing -DXZ_NLS=OFF to cmake.")
-        endif()
-
-        # Warn if NLS is enabled but translated man pages are missing.
-        if(UNIX AND XZ_NLS AND
-                NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
-            message(WARNING "Native language support (NLS) has been enabled "
-                            "but pre-generated translated man pages "
-                            "were not found and thus they won't be installed. "
-                            "Run 'po4a/update-po' to generate them.")
-        endif()
-
-        # The *installed* name of the translation files is "xz.mo".
-        set(TRANSLATION_DOMAIN "xz")
+        # This message is shown only when new enough CMake is used and
+        # library support for translations was found. The assumptions is
+        # that in this situation the user might have interest in the
+        # translations. This also keeps this code simpler.
+        message(WARNING "Native language support (NLS) has been disabled. "
+                        "NLS support requires either gettext tools or "
+                        "pre-generated .gmo files. The latter are only "
+                        "available in distribution tarballs. "
+                        "To avoid this warning, NLS can be explicitly "
+                        "disabled by passing -DXZ_NLS=OFF to cmake.")
     endif()
+
+    # Warn if NLS is enabled but translated man pages are missing.
+    if(UNIX AND XZ_NLS AND
+            NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
+        message(WARNING "Native language support (NLS) has been enabled "
+                        "but pre-generated translated man pages "
+                        "were not found and thus they won't be installed. "
+                        "Run 'po4a/update-po' to generate them.")
+    endif()
+
+    # The *installed* name of the translation files is "xz.mo".
+    set(TRANSLATION_DOMAIN "xz")
 endif()
 
 # Add warning options for GCC or Clang. Keep this in sync with configure.ac.
@@ -650,7 +637,7 @@ if(XZ_THREADS)
 
             # Make the thread libs available in later checks. In practice
             # only pthread_condattr_setclock check should need this.
-            list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
+            list(PREPEND CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 
             # Check if pthread_condattr_setclock() exists to
             # use CLOCK_MONOTONIC.
@@ -836,9 +823,9 @@ if("sha256" IN_LIST XZ_CHECKS)
                     else()
                         # Try with libmd. Other checks don't need it so we
                         # don't need to leave it into CMAKE_REQUIRED_LIBRARIES.
-                        list(INSERT CMAKE_REQUIRED_LIBRARIES 0 md)
+                        list(PREPEND CMAKE_REQUIRED_LIBRARIES md)
                         check_c_source_compiles("${SOURCE}" "${HAVE_X}_LIBMD")
-                        list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
+                        list(POP_FRONT CMAKE_REQUIRED_LIBRARIES)
                         if(${HAVE_X}_LIBMD)
                             # NOTE: Just "${HAVE_X}", not "${HAVE_X}_LIBMD":
                             target_compile_definitions(liblzma PRIVATE
@@ -1513,20 +1500,14 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
         "${LZMA_CONFIG_CONTENTS}")
 
 
-# Create liblzma.pc. If using CMake >= 3.20 and CMAKE_INSTALL_<dir> paths
-# are relative to CMAKE_INSTALL_PREFIX, the .pc file will be relocatable
-# (that is, all paths will be relative to ${prefix}). Otherwise absolute
+# Create liblzma.pc. If CMAKE_INSTALL_<dir> paths are relative to
+# CMAKE_INSTALL_PREFIX, the .pc file will be relocatable (that is,
+# all paths will be relative to ${prefix}). Otherwise absolute
 # paths will be used.
 set(prefix "${CMAKE_INSTALL_PREFIX}")
 set(exec_prefix "\${prefix}")
-
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
-    cmake_path(APPEND libdir "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
-    cmake_path(APPEND includedir "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
-else()
-    set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
-    set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-endif()
+cmake_path(APPEND libdir "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
+cmake_path(APPEND includedir "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Threads::Threads is linked in only when using POSIX threads.
 # Use an empty value if using Windows threads or if threading is disabled.
@@ -2239,7 +2220,10 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
     foreach(S xzdiff xzgrep xzmore xzless)
         configure_file("src/scripts/${S}.in" "${S}"
                @ONLY
-               NEWLINE_STYLE LF)
+               NEWLINE_STYLE LF
+               FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                                GROUP_READ GROUP_EXECUTE
+                                WORLD_READ WORLD_EXECUTE)
 
         if(ENABLE_SCRIPTS)
             install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
@@ -2247,12 +2231,6 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
                     COMPONENT scripts_Runtime)
         endif()
     endforeach()
-
-    # file(CHMOD ...) would need CMake 3.19 so use execute_process instead.
-    # Using +x is fine even if umask was 077. If execute bit is set at all
-    # then "make install" will set it for group and other access bits too.
-    execute_process(COMMAND chmod +x xzdiff xzgrep xzmore xzless
-                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
     unset(xz)
     unset(POSIX_SHELL)

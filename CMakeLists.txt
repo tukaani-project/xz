@@ -1578,17 +1578,14 @@ if(NOT HAVE_GETOPT_LONG)
     # the Autotools build (m4/getopt.m4).
     target_compile_definitions(libgnu PUBLIC "__GETOPT_PREFIX=rpl_")
 
-    # Create a custom copy command to copy the getopt header to the build
-    # directory and re-copy it if it is updated. (Gnulib does it this way
-    # because it allows choosing which .in.h files to actually use in the
-    # build. We need just getopt.h so this is a bit overcomplicated for
+    # Copy the getopt header to the build directory and re-copy it
+    # if it is updated. (Gnulib does it this way because it allows
+    # choosing which .in.h files to actually use in the build. We
+    # need just getopt.h so this is a bit overcomplicated for
     # a single header file only.)
-    add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
-        COMMAND "${CMAKE_COMMAND}" -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/lib/getopt.in.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
-        MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/lib/getopt.in.h"
-        VERBATIM)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lib/getopt.in.h"
+                   "${CMAKE_CURRENT_BINARY_DIR}/lib/getopt.h"
+                   COPYONLY)
 
     target_sources(libgnu PRIVATE
         lib/getopt1.c

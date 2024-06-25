@@ -637,7 +637,7 @@ AS_CASE([$enable_threads],
 		echo
 		echo "POSIX threading support:"
 		AX_PTHREAD([:]) dnl We don't need the HAVE_PTHREAD macro.
-		LIBS="$LIBS $PTHREAD_LIBS"
+		LIBS="$PTHREAD_LIBS $LIBS"
 		AM_CFLAGS="$AM_CFLAGS $PTHREAD_CFLAGS"
 
 		dnl NOTE: PTHREAD_CC is ignored. It would be useful on AIX,

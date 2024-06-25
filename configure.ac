@@ -1010,11 +1010,15 @@ AC_CHECK_DECL([_mm_movemask_epi8],
 #
 # If everything above is supported, runtime detection will be used to keep the
 # binaries working on systems that don't support the required extensions.
+#
+# NOTE: Use a check that links and not merely compiles to ensure that
+# missing intrinsics don't get accepted with compilers that allow
+# implicit function declarations.
 AC_MSG_CHECKING([if _mm_clmulepi64_si128 is usable])
 AS_IF([test "x$enable_clmul_crc" = xno], [
 	AC_MSG_RESULT([no, --disable-clmul-crc was used])
 ], [
-	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+	AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <immintrin.h>
 
 // CLMUL works on older E2K instruction set but it is slow due to emulation.
@@ -1117,7 +1121,7 @@ AS_CASE([$enable_sandbox],
 		# A compile check is done here because some systems have
 		# linux/landlock.h, but do not have the syscalls defined
 		# in order to actually use Linux Landlock.
-		AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+		AC_LINK_IFELSE([AC_LANG_SOURCE([[
 			#include <linux/landlock.h>
 			#include <sys/syscall.h>
 			#include <sys/prctl.h>

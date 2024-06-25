@@ -71,7 +71,7 @@ main(void)
 # -lfreebsd-glue when linking and thus in the current form this would
 # fail on GNU/kFreeBSD. The above test for sched_getaffinity() matches
 # on GNU/kFreeBSD so the test below should never run on that OS.
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <sys/param.h>
 #include <sys/cpuset.h>
 
@@ -92,7 +92,7 @@ main(void)
 #
 # We test sysctl() first and intentionally break the sysctl() test on QNX
 # so that sysctl() is never used on QNX.
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #ifdef __QNX__
 compile error
 #endif
@@ -116,7 +116,7 @@ main(void)
 }
 ]])], [tuklib_cv_cpucores_method=sysctl], [
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 int
 main(void)
@@ -133,7 +133,7 @@ main(void)
 }
 ]])], [tuklib_cv_cpucores_method=sysconf], [
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <sys/param.h>
 #include <sys/pstat.h>
 

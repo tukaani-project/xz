@@ -65,6 +65,11 @@ compile error
 # Look for AIX-specific solution before sysconf(), because the test
 # for sysconf() will pass on AIX but won't actually work
 # (sysconf(_SC_PHYS_PAGES) compiles but always returns -1 on AIX).
+#
+# NOTE: There is no need to link the check program because it's not calling
+# any functions and thus implicit function declarations aren't a problem.
+# The unused reference to _system_configuration.physmem might get optimized
+# away, and thus the linker might not see that symbol anyway.
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <sys/systemcfg.h>
 
@@ -76,7 +81,7 @@ main(void)
 }
 ]])], [tuklib_cv_physmem_method=aix], [
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 int
 main(void)
@@ -88,7 +93,7 @@ main(void)
 }
 ]])], [tuklib_cv_physmem_method=sysconf], [
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_SYS_PARAM_H
 #	include <sys/param.h>
 #endif
@@ -104,7 +109,7 @@ main(void)
 }
 ]])], [tuklib_cv_physmem_method=sysctl], [
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <sys/sysinfo.h>
 #include <machine/hal_sysinfo.h>
 
@@ -118,7 +123,7 @@ main(void)
 }
 ]])], [tuklib_cv_physmem_method=getsysinfo],[
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <sys/param.h>
 #include <sys/pstat.h>
 
@@ -133,7 +138,7 @@ main(void)
 }
 ]])], [tuklib_cv_physmem_method=pstat_getstatic],[
 
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <invent.h>
 int
 main(void)
@@ -150,7 +155,7 @@ main(void)
 # different sysinfo() so we must check $host_os.
 case $host_os in
 	linux*)
-		AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+		AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <sys/sysinfo.h>
 int
 main(void)

@@ -96,7 +96,7 @@ jobs:
       - name: Test with Valgrind
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
         run: |
-            ./build-aux/ci_build.bash -b autotools -p test -d sandbox -w "valgrind --quiet --trace-children=yes --exit-on-first-error=yes --error-exitcode=1"
+            ./build-aux/ci_build.bash -b autotools -p test -d sandbox -w "valgrind --quiet --trace-children=yes --trace-children-skip-by-arg=ls,cp,sed,grep,bash,sh --exit-on-first-error=yes --error-exitcode=1"
             cd ../xz_build && make distclean
 
       - name: Build with musl libc

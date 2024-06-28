@@ -83,6 +83,9 @@ extern const uint64_t lzma_crc64_table[4][256];
 // CRC64 could be done with CLMUL but it's not implemented yet.
 #undef CRC32_ARM64
 
+// 64-bit LoongArch has CRC32 instructions.
+#undef CRC32_LOONGARCH
+
 
 // ARM64
 //
@@ -109,6 +112,18 @@ extern const uint64_t lzma_crc64_table[4][256];
 #		define CRC32_ARM64 1
 #		define CRC32_GENERIC 1
 #	endif
+#endif
+
+
+// LoongArch
+//
+// Only 64-bit LoongArch is supported for now. No runtime detection
+// is needed because the LoongArch specification says that the CRC32
+// instructions are a part of the Basic Integer Instructions and
+// they shall be implemented by 64-bit LoongArch implementations.
+#ifdef HAVE_LOONGARCH_CRC32
+#	define CRC32_ARCH_OPTIMIZED 1
+#	define CRC32_LOONGARCH 1
 #endif
 
 

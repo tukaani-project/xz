@@ -394,6 +394,16 @@ AC_ARG_ENABLE([arm64-crc32], AS_HELP_STRING([--disable-arm64-crc32],
 	[], [enable_arm64_crc32=yes])
 
 
+################################
+# LoongArch CRC32 instructions #
+################################
+
+AC_ARG_ENABLE([loongarch-crc32], AS_HELP_STRING([--disable-loongarch-crc32],
+		[Do not use LoongArch CRC32 instructions even if support for
+		them is detected.]),
+	[], [enable_loongarch_crc32=yes])
+
+
 #####################
 # Size optimization #
 #####################
@@ -1103,6 +1113,36 @@ AS_IF([test "x$enable_arm64_crc32" = xyes], [
 			in <machine/cpu.h>.])],
 		[],
 		[#include <machine/cpu.h>])
+])
+
+
+# LoongArch CRC32 intrinsics are in larchintrin.h.
+# These are supported by at least GCC and Clang.
+#
+# Only 64-bit LoongArch is currently supported.
+# It doesn't need runtime detection.
+AC_MSG_CHECKING([if LoongArch CRC32 instructions are usable])
+AS_IF([test "x$enable_loongarch_crc32" = xno], [
+	AC_MSG_RESULT([no, --disable-loongarch-crc32 was used])
+], [
+	AC_LINK_IFELSE([AC_LANG_SOURCE([[
+#if !(defined(__loongarch__) && __loongarch_grlen >= 64)
+#	error
+#endif
+
+#include <larchintrin.h>
+int main(void)
+{
+	return __crc_w_w_w(1, 2);
+}
+	]])], [
+		AC_DEFINE([HAVE_LOONGARCH_CRC32], [1], [Define to 1 if
+			64-bit LoongArch CRC32 instructions are supported.])
+		enable_loongarch_crc32=yes
+	], [
+		enable_loongarch_crc32=no
+	])
+	AC_MSG_RESULT([$enable_loongarch_crc32])
 ])
 
 

@@ -310,57 +310,67 @@ if(HAVE_CLOCK_GETTIME OR HAVE_CLOCK_GETTIME_LIBRT)
     tuklib_add_definition_if(ALL HAVE_CLOCK_MONOTONIC)
 endif()
 
+
 # Translation support requires CMake 3.20 because it added the Intl::Intl
 # target so we don't need to play with the individual variables.
 #
 # The definition ENABLE_NLS is added only to those targets that use it, thus
 # it's not done here. (xz has translations, xzdec doesn't.)
+set(XZ_NLS_DEFAULT OFF)
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
     find_package(Intl)
     find_package(Gettext)
 
     if(Intl_FOUND)
-        option(XZ_NLS
-               "Native Language Support (translated messages and man pages)"
-               ON)
-
-        # If translation support is enabled but neither gettext tools or
-        # pre-generated .gmo files exist, translation support cannot be
-        # enabled.
-        #
-        # The detection of pre-generated .gmo files is done by only
-        # checking for the existence of a single .gmo file; Ukrainian
-        # is one of many translations that gets regular updates.
-        if(XZ_NLS AND NOT GETTEXT_FOUND AND
-                NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
-            # This only sets the variable, not the cache variable!
-            set(XZ_NLS OFF)
-
-            # This message is shown only when new enough CMake is used and
-            # library support for translations was found. The assumptions is
-            # that in this situation the user might have interest in the
-            # translations. This also keeps this code simpler.
-            message(WARNING "Native language support (NLS) has been disabled. "
-                            "NLS support requires either gettext tools or "
-                            "pre-generated .gmo files. The latter are only "
-                            "available in distribution tarballs. "
-                            "To avoid this warning, NLS can be explicitly "
-                            "disabled by passing -DXZ_NLS=OFF to cmake.")
-        endif()
-
-        # Warn if NLS is enabled but translated man pages are missing.
-        if(UNIX AND XZ_NLS AND
-                NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
-            message(WARNING "Native language support (NLS) has been enabled "
-                            "but pre-generated translated man pages "
-                            "were not found and thus they won't be installed. "
-                            "Run 'po4a/update-po' to generate them.")
-        endif()
-
-        # The *installed* name of the translation files is "xz.mo".
-        set(TRANSLATION_DOMAIN "xz")
+        set(XZ_NLS_DEFAULT ON)
     endif()
 endif()
+
+option(XZ_NLS "Native Language Support (translated messages and man pages)"
+       "${XZ_NLS_DEFAULT}")
+
+if(XZ_NLS)
+    if(CMAKE_VERSION VERSION_LESS "3.20")
+        message(FATAL_ERROR "XZ_NLS=ON requires CMake >= 3.20. "
+                            "Upgrade to a newer CMake or set XZ_NLS=OFF.")
+    endif()
+
+    if(NOT Intl_FOUND)
+        message(FATAL_ERROR "XZ_NLS=ON but find_package(Intl) failed. "
+                            "Install libintl or set XZ_NLS=OFF.")
+    endif()
+
+    # If translation support is enabled but neither gettext tools or
+    # pre-generated .gmo files exist, translation support cannot be enabled.
+    #
+    # The detection of pre-generated .gmo files is done by only
+    # checking for the existence of a single .gmo file; Ukrainian
+    # is one of many translations that gets regular updates.
+    if(NOT GETTEXT_FOUND AND
+            NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
+        # By default this message is shown only when new enough CMake is used
+        # and library support for translations was found. The assumptions is
+        # that in this situation the user might have interest in the
+        # translations. This also keeps this code simpler.
+        message(FATAL_ERROR "Native language support (NLS) requires either "
+                            "gettext tools or pre-generated .gmo files. "
+                            "The latter are only available in distribution "
+                            "tarballs. "
+                            "Install gettext tools or set XZ_NLS=OFF.")
+    endif()
+
+    # Warn if translated man pages are missing.
+    if(UNIX AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
+        message(WARNING "Native language support (NLS) has been enabled "
+                        "but pre-generated translated man pages "
+                        "were not found and thus they won't be installed. "
+                        "Run 'po4a/update-po' to generate them.")
+    endif()
+
+    # The *installed* name of the translation files is "xz.mo".
+    set(TRANSLATION_DOMAIN "xz")
+endif()
+
 
 # Add warning options for GCC or Clang. Keep this in sync with configure.ac.
 #

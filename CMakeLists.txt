@@ -360,6 +360,9 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
         # The *installed* name of the translation files is "xz.mo".
         set(TRANSLATION_DOMAIN "xz")
     endif()
+else()
+    # This only sets the variable, not the cache variable!
+    set(XZ_NLS OFF)
 endif()
 
 # Add warning options for GCC or Clang. Keep this in sync with configure.ac.

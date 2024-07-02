@@ -1953,7 +1953,7 @@ if(XZ_TOOL_LZMAINFO AND HAVE_DECODERS)
         target_link_libraries(lzmainfo PRIVATE Intl::Intl)
 
         target_compile_definitions(lzmainfo PRIVATE
-                XZ_NLS
+                ENABLE_NLS
                 PACKAGE="${TRANSLATION_DOMAIN}"
                 LOCALEDIR="${LOCALEDIR_DEFINITION}"
         )
@@ -2111,7 +2111,7 @@ this many MiB of RAM if xz cannot determine the amount at runtime")
         target_link_libraries(xz PRIVATE Intl::Intl)
 
         target_compile_definitions(xz PRIVATE
-                XZ_NLS
+                ENABLE_NLS
                 PACKAGE="${TRANSLATION_DOMAIN}"
                 LOCALEDIR="${LOCALEDIR_DEFINITION}"
         )

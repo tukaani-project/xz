@@ -328,23 +328,26 @@ option(XZ_NLS "Native Language Support (translated messages and man pages)"
 
 if(XZ_NLS)
     if(CMAKE_VERSION VERSION_LESS "3.20")
-        message(FATAL_ERROR "XZ_NLS=ON requires CMake >= 3.20. "
+        message(FATAL_ERROR "Native language support (NLS) requires "
+                            "CMake >= 3.20. "
                             "Upgrade to a newer CMake or set XZ_NLS=OFF.")
     endif()
 
     if(NOT Intl_FOUND)
-        message(FATAL_ERROR "XZ_NLS=ON but find_package(Intl) failed. "
+        message(FATAL_ERROR "Native language support (NLS) was enabled but "
+                            "find_package(Intl) failed. "
                             "Install libintl or set XZ_NLS=OFF.")
     endif()
 
     if(NOT GETTEXT_FOUND)
-        message(FATAL_ERROR "XZ_NLS=ON but find_package(Gettext) failed. "
+        message(FATAL_ERROR "Native language support (NLS) was enabled but "
+                            "find_package(Gettext) failed. "
                             "Install gettext tools or set XZ_NLS=OFF.")
     endif()
 
     # Warn if translated man pages are missing.
     if(UNIX AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")
-        message(WARNING "Native language support (NLS) has been enabled "
+        message(WARNING "Native language support (NLS) was enabled "
                         "but pre-generated translated man pages "
                         "were not found and thus they won't be installed. "
                         "Run 'po4a/update-po' to generate them.")

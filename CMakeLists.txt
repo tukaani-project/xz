@@ -11,6 +11,13 @@
 #
 #   - Generated liblzma.pc won't be relocatable.
 #
+# To get translated messages, install GNU gettext tools (the command msgfmt
+# is needed). Alternatively disable translations by setting XZ_NLS=OFF.
+#
+# If building from xz.git instead of a release tarball: To generate
+# translated man pages, run po4a/update-po which requires the po4a tool.
+# The build works without this step too.
+#
 # About CMAKE_BUILD_TYPE:
 #
 #   - CMake's standard choices are fine to use for production builds,
@@ -41,16 +48,6 @@
 #     and thus won't have -DNEBUG. Such non-standard build types
 #     SHOULD BE AVOIDED FOR PRODUCTION BUILDS. Or at least one
 #     should remember to add -DNDEBUG.
-#
-# If building from xz.git instead of a release tarball, consider
-# the following *before* running cmake:
-#
-#   - To get translated messages, install GNU gettext tools (the
-#     command msgfmt is needed). Alternatively disable translations
-#     by setting XZ_NLS=OFF.
-#
-#   - To get translated man pages, run po4a/update-po which requires
-#     the po4a tool. The build works without this step too.
 #
 # This file provides the following installation components (if you only
 # need liblzma, install only its components!):

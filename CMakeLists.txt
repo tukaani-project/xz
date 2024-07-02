@@ -321,7 +321,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
     find_package(Intl)
     find_package(Gettext)
 
-    if(Intl_FOUND)
+    if(Intl_FOUND AND GETTEXT_FOUND)
         set(XZ_NLS_DEFAULT ON)
     endif()
 endif()
@@ -340,22 +340,8 @@ if(XZ_NLS)
                             "Install libintl or set XZ_NLS=OFF.")
     endif()
 
-    # If translation support is enabled but neither gettext tools or
-    # pre-generated .gmo files exist, translation support cannot be enabled.
-    #
-    # The detection of pre-generated .gmo files is done by only
-    # checking for the existence of a single .gmo file; Ukrainian
-    # is one of many translations that gets regular updates.
-    if(NOT GETTEXT_FOUND AND
-            NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po/uk.gmo")
-        # By default this message is shown only when new enough CMake is used
-        # and library support for translations was found. The assumptions is
-        # that in this situation the user might have interest in the
-        # translations. This also keeps this code simpler.
-        message(FATAL_ERROR "Native language support (NLS) requires either "
-                            "gettext tools or pre-generated .gmo files. "
-                            "The latter are only available in distribution "
-                            "tarballs. "
+    if(NOT GETTEXT_FOUND)
+        message(FATAL_ERROR "XZ_NLS=ON but find_package(Gettext) failed. "
                             "Install gettext tools or set XZ_NLS=OFF.")
     endif()
 
@@ -2128,37 +2114,27 @@ this many MiB of RAM if xz cannot determine the amount at runtime")
 
         file(STRINGS po/LINGUAS LINGUAS)
 
-        # Where to find .gmo files. If msgfmt is available, the .po files
-        # will be converted as part of the build. Otherwise we will use
-        # the pre-generated .gmo files which are included in XZ Utils
-        # tarballs by Autotools.
-        set(GMO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/po")
-
-        if(GETTEXT_FOUND)
-            # NOTE: gettext_process_po_files' INSTALL_DESTINATION is
-            # incompatible with how Autotools requires the .po files to
-            # be named. CMake would require each .po file to be named with
-            # the translation domain and thus each .po file would need its
-            # own language-specific directory (like "po/fi/xz.po"). On top
-            # of this, INSTALL_DESTINATION doesn't allow specifying COMPONENT
-            # and thus the .mo files go into "Unspecified" component. So we
-            # can use gettext_process_po_files to convert the .po files but
-            # installation needs to be done with our own code.
-            #
-            # Also, the .gmo files will go to root of the build directory
-            # instead of neatly into a subdirectory. This is hardcoded in
-            # CMake's FindGettext.cmake.
-            foreach(LANG IN LISTS LINGUAS)
-                gettext_process_po_files("${LANG}" ALL
-                        PO_FILES "${CMAKE_CURRENT_SOURCE_DIR}/po/${LANG}.po")
-            endforeach()
-
-            set(GMO_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-        endif()
+        # NOTE: gettext_process_po_files' INSTALL_DESTINATION is
+        # incompatible with how Autotools requires the .po files to
+        # be named. CMake would require each .po file to be named with
+        # the translation domain and thus each .po file would need its
+        # own language-specific directory (like "po/fi/xz.po"). On top
+        # of this, INSTALL_DESTINATION doesn't allow specifying COMPONENT
+        # and thus the .mo files go into "Unspecified" component. So we
+        # can use gettext_process_po_files to convert the .po files but
+        # installation needs to be done with our own code.
+        #
+        # Also, the .gmo files will go to root of the build directory
+        # instead of neatly into a subdirectory. This is hardcoded in
+        # CMake's FindGettext.cmake.
+        foreach(LANG IN LISTS LINGUAS)
+            gettext_process_po_files("${LANG}" ALL
+                    PO_FILES "${CMAKE_CURRENT_SOURCE_DIR}/po/${LANG}.po")
+        endforeach()
 
         foreach(LANG IN LISTS LINGUAS)
             install(
-                FILES "${GMO_DIR}/${LANG}.gmo"
+                FILES "${CMAKE_CURRENT_BINARY_DIR}/${LANG}.gmo"
                 DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES"
                 RENAME "${TRANSLATION_DOMAIN}.mo"
                 COMPONENT xz_Runtime)

@@ -1776,6 +1776,19 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
 
     target_link_libraries(xz PRIVATE liblzma libgnu)
 
+    if(USE_POSIX_THREADS)
+        # src/xz/signals.c uses mythread_sigmask() which with POSIX
+        # threads calls pthread_sigmask(). Thus, we need the threading
+        # library as a dependency for xz. The liblzma target links against
+        # Threads::Threads PRIVATEly, thus that won't provide the pthreads
+        # symbols for xz.
+        #
+        # NOTE: The build may work without this if the symbol is in libc
+        # but it is mandatory to have this here to keep it working with
+        # all pthread implementations.
+        target_link_libraries(xz PRIVATE Threads::Threads)
+    endif()
+
     target_compile_definitions(xz PRIVATE ASSUME_RAM=128)
 
     if(WIN32)

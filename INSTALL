@@ -454,6 +454,14 @@ XZ Utils Installation
                 and later) then runtime detection isn't used and the
                 generic code is omitted.
 
+    --disable-loongarch-crc32
+    XZ_LOONGARCH_CRC32=OFF
+                Disable the use of the 64-bit LoongArch CRC32
+                instruction extension even if compiler support for
+                it is detected. There is no runtime detection because
+                all 64-bit LoongArch processors should support
+                the CRC32 instructions.
+
     --enable-unaligned-access
     TUKLIB_FAST_UNALIGNED_ACCESS=ON
                 Allow liblzma to use unaligned memory access for 16-bit,

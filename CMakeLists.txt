@@ -4,19 +4,17 @@
 #
 # CMake support for building XZ Utils
 #
-# CMake 3.20 or later is recommended. Older versions down to 3.14 work
-# too with the following limitations:
+# Requirements:
 #
-#   - Translations aren't supported.
+#   - CMake 3.20 or later
 #
-#   - Generated liblzma.pc won't be relocatable.
+#   - To get translated messages, install GNU gettext tools (the command
+#     msgfmt is needed). Alternatively disable translations by setting
+#     XZ_NLS=OFF.
 #
-# To get translated messages, install GNU gettext tools (the command msgfmt
-# is needed). Alternatively disable translations by setting XZ_NLS=OFF.
-#
-# If building from xz.git instead of a release tarball: To generate
-# translated man pages, run po4a/update-po which requires the po4a tool.
-# The build works without this step too.
+#   - If building from xz.git instead of a release tarball: To generate
+#     translated man pages, run po4a/update-po which requires the po4a
+#     tool. The build works without this step too.
 #
 # About CMAKE_BUILD_TYPE:
 #
@@ -79,8 +77,7 @@
 #
 #############################################################################
 
-# NOTE: Translation support is disabled with CMake older than 3.20.
-cmake_minimum_required(VERSION 3.14...3.29 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20...3.29 FATAL_ERROR)
 
 include(CMakePushCheckState)
 include(CheckIncludeFile)
@@ -286,7 +283,7 @@ if(NOT HAVE_CLOCK_GETTIME)
     # With glibc <= 2.17 or Solaris 10 this needs librt.
     # Add librt for the next check for HAVE_CLOCK_GETTIME. If it is
     # found after including the library, we know that librt is required.
-    list(INSERT CMAKE_REQUIRED_LIBRARIES 0 rt)
+    list(PREPEND CMAKE_REQUIRED_LIBRARIES rt)
     check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME_LIBRT)
 
     # If it was found now, add librt to all targets and keep it in
@@ -295,7 +292,7 @@ if(NOT HAVE_CLOCK_GETTIME)
         link_libraries(rt)
         set(LIBS "-lrt ${LIBS}") # For liblzma.pc
     else()
-        list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
+        list(POP_FRONT CMAKE_REQUIRED_LIBRARIES)
     endif()
 endif()
 
@@ -308,31 +305,19 @@ if(HAVE_CLOCK_GETTIME OR HAVE_CLOCK_GETTIME_LIBRT)
 endif()
 
 
-# Translation support requires CMake 3.20 because it added the Intl::Intl
-# target so we don't need to play with the individual variables.
-#
 # The definition ENABLE_NLS is added only to those targets that use it, thus
 # it's not done here. (xz has translations, xzdec doesn't.)
 set(XZ_NLS_DEFAULT OFF)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
-    find_package(Intl)
-    find_package(Gettext)
-
-    if(Intl_FOUND AND GETTEXT_FOUND)
-        set(XZ_NLS_DEFAULT ON)
-    endif()
+find_package(Intl)
+find_package(Gettext)
+if(Intl_FOUND AND GETTEXT_FOUND)
+    set(XZ_NLS_DEFAULT ON)
 endif()
 
 option(XZ_NLS "Native Language Support (translated messages and man pages)"
        "${XZ_NLS_DEFAULT}")
 
 if(XZ_NLS)
-    if(CMAKE_VERSION VERSION_LESS "3.20")
-        message(FATAL_ERROR "Native language support (NLS) requires "
-                            "CMake >= 3.20. "
-                            "Upgrade to a newer CMake or set XZ_NLS=OFF.")
-    endif()
-
     if(NOT Intl_FOUND)
         message(FATAL_ERROR "Native language support (NLS) was enabled but "
                             "find_package(Intl) failed. "
@@ -647,7 +632,7 @@ if(XZ_THREADS)
 
             # Make the thread libs available in later checks. In practice
             # only pthread_condattr_setclock check should need this.
-            list(INSERT CMAKE_REQUIRED_LIBRARIES 0 "${CMAKE_THREAD_LIBS_INIT}")
+            list(PREPEND CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 
             # Check if pthread_condattr_setclock() exists to
             # use CLOCK_MONOTONIC.
@@ -833,9 +818,9 @@ if("sha256" IN_LIST XZ_CHECKS)
                     else()
                         # Try with libmd. Other checks don't need it so we
                         # don't need to leave it into CMAKE_REQUIRED_LIBRARIES.
-                        list(INSERT CMAKE_REQUIRED_LIBRARIES 0 md)
+                        list(PREPEND CMAKE_REQUIRED_LIBRARIES md)
                         check_c_source_compiles("${SOURCE}" "${HAVE_X}_LIBMD")
-                        list(REMOVE_AT CMAKE_REQUIRED_LIBRARIES 0)
+                        list(POP_FRONT CMAKE_REQUIRED_LIBRARIES)
                         if(${HAVE_X}_LIBMD)
                             # NOTE: Just "${HAVE_X}", not "${HAVE_X}_LIBMD":
                             target_compile_definitions(liblzma PRIVATE
@@ -1534,20 +1519,14 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/liblzma-config.cmake"
         "${LZMA_CONFIG_CONTENTS}")
 
 
-# Create liblzma.pc. If using CMake >= 3.20 and CMAKE_INSTALL_<dir> paths
-# are relative to CMAKE_INSTALL_PREFIX, the .pc file will be relocatable
-# (that is, all paths will be relative to ${prefix}). Otherwise absolute
+# Create liblzma.pc. If CMAKE_INSTALL_<dir> paths are relative to
+# CMAKE_INSTALL_PREFIX, the .pc file will be relocatable (that is,
+# all paths will be relative to ${prefix}). Otherwise absolute
 # paths will be used.
 set(prefix "${CMAKE_INSTALL_PREFIX}")
 set(exec_prefix "\${prefix}")
-
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
-    cmake_path(APPEND libdir "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
-    cmake_path(APPEND includedir "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
-else()
-    set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
-    set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-endif()
+cmake_path(APPEND libdir "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
+cmake_path(APPEND includedir "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Threads::Threads is linked in only when using POSIX threads.
 # Use an empty value if using Windows threads or if threading is disabled.
@@ -2263,7 +2242,10 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
     foreach(S xzdiff xzgrep xzmore xzless)
         configure_file("src/scripts/${S}.in" "${S}"
                @ONLY
-               NEWLINE_STYLE LF)
+               NEWLINE_STYLE LF
+               FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                                GROUP_READ GROUP_EXECUTE
+                                WORLD_READ WORLD_EXECUTE)
 
         if(ENABLE_SCRIPTS)
             install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${S}"
@@ -2271,12 +2253,6 @@ xzdiff, xzgrep, xzmore, xzless, and their symlinks" ON)
                     COMPONENT scripts_Runtime)
         endif()
     endforeach()
-
-    # file(CHMOD ...) would need CMake 3.19 so use execute_process instead.
-    # Using +x is fine even if umask was 077. If execute bit is set at all
-    # then "make install" will set it for group and other access bits too.
-    execute_process(COMMAND chmod +x xzdiff xzgrep xzmore xzless
-                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
     unset(xz)
     unset(POSIX_SHELL)

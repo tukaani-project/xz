@@ -1081,12 +1081,17 @@ int main(void)
 ])
 
 # Check for ARM64 CRC32 instruction runtime detection.
-# getauxval() is supported on Linux, elf_aux_info() on FreeBSD, and
-# sysctlbyname("hw.optional.armv8_crc32", ...) is supported on Darwin
-# (macOS, iOS, etc.). Note that sysctlbyname() is supported on FreeBSD,
-# NetBSD, and possibly others too but the string is specific to Apple OSes.
-# The C code is responsible for checking defined(__APPLE__) before using
-# sysctlbyname("hw.optional.armv8_crc32", ...).
+#
+#   - getauxval() is supported on Linux.
+#
+#   - elf_aux_info() is supported on FreeBSD and OpenBSD >= 7.6.
+#
+#   - sysctlbyname("hw.optional.armv8_crc32", ...) is supported on Darwin
+#     (macOS, iOS, etc.). Note that sysctlbyname() is supported on FreeBSD,
+#     NetBSD, and possibly others too but the string is specific to Apple
+#     OSes. The C code is responsible for checking defined(__APPLE__)
+#     before using sysctlbyname("hw.optional.armv8_crc32", ...).
+#
 AS_IF([test "x$enable_arm64_crc32" = xyes], [
 	AC_CHECK_FUNCS([getauxval elf_aux_info sysctlbyname], [break])
 ])

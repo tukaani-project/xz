@@ -1306,12 +1306,6 @@ if(XZ_ARM64_CRC32)
         check_symbol_exists(elf_aux_info sys/auxv.h HAVE_ELF_AUX_INFO)
         tuklib_add_definition_if(liblzma HAVE_ELF_AUX_INFO)
 
-        # OpenBSD has a sysctl() based method. The macro CPU_ID_AA64ISAR0
-        # is used to detect when it's available.
-        check_symbol_exists(CPU_ID_AA64ISAR0 machine/cpu.h
-                            HAVE_CPU_ID_AA64ISAR0)
-        tuklib_add_definition_if(liblzma HAVE_CPU_ID_AA64ISAR0)
-
         # sysctlbyname("hw.optional.armv8_crc32", ...) is supported on Darwin
         # (macOS, iOS, etc.). Note that sysctlbyname() is supported on FreeBSD,
         # NetBSD, and possibly others too but the string is specific to

@@ -92,7 +92,6 @@ extern const uint64_t lzma_crc64_table[4][256];
 // Keep this in sync with changes to crc32_arm64.h
 #if defined(_WIN32) || defined(HAVE_GETAUXVAL) \
 		|| defined(HAVE_ELF_AUX_INFO) \
-		|| defined(HAVE_CPU_ID_AA64ISAR0) \
 		|| (defined(__APPLE__) && defined(HAVE_SYSCTLBYNAME))
 #	define CRC_ARM64_RUNTIME_DETECTION 1
 #endif

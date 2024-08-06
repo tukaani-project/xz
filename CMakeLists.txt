@@ -1868,14 +1868,16 @@ if(HAVE_DECODERS)
                         COMPONENT "${XZDEC}_Runtime")
     endforeach()
 
-    # This is the only build-time difference with lzmadec.
-    target_compile_definitions(lzmadec PRIVATE "LZMADEC")
+    if(XZ_TOOL_LZMADEC)
+        # This is the only build-time difference with lzmadec.
+        target_compile_definitions(lzmadec PRIVATE "LZMADEC")
 
-    if(UNIX)
-        # NOTE: This puts the lzmadec.1 symlinks into xzdec_Documentation.
-        # This isn't great but doing them separately with translated
-        # man pages would require extra code. So this has to suffice for now.
-        my_install_man(xzdec_Documentation src/xzdec/xzdec.1 lzmadec)
+        if(UNIX)
+            # NOTE: This puts the lzmadec.1 symlinks into xzdec_Documentation.
+            # This isn't great but doing them separately with translated
+            # man pages would require extra code. So this has to suffice for now.
+            my_install_man(xzdec_Documentation src/xzdec/xzdec.1 lzmadec)
+        endif()
     endif()
 endif()
 

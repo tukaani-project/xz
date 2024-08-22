@@ -1868,8 +1868,10 @@ if(HAVE_DECODERS)
                         COMPONENT "${XZDEC}_Runtime")
     endforeach()
 
-    # This is the only build-time difference with lzmadec.
-    target_compile_definitions(lzmadec PRIVATE "LZMADEC")
+    if(XZ_TOOL_LZMADEC)
+        # This is the only build-time difference with lzmadec.
+        target_compile_definitions(lzmadec PRIVATE "LZMADEC")
+    endif()
 
     if(UNIX)
         # NOTE: This puts the lzmadec.1 symlinks into xzdec_Documentation.

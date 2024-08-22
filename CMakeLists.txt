@@ -1873,11 +1873,19 @@ if(HAVE_DECODERS)
         target_compile_definitions(lzmadec PRIVATE "LZMADEC")
     endif()
 
-    if(UNIX)
+    if(UNIX AND XZ_TOOL_XZDEC)
         # NOTE: This puts the lzmadec.1 symlinks into xzdec_Documentation.
         # This isn't great but doing them separately with translated
         # man pages would require extra code. So this has to suffice for now.
-        my_install_man(xzdec_Documentation src/xzdec/xzdec.1 lzmadec)
+        #
+        # Also, if xzdec is disabled but lzmadec isn't, then the man page
+        # isn't installed at all. It could be done but it's not a typical
+        # situation so let's keep this simpler.
+        if(XZ_TOOL_LZMADEC)
+            my_install_man(xzdec_Documentation src/xzdec/xzdec.1 lzmadec)
+        else()
+            my_install_man(xzdec_Documentation src/xzdec/xzdec.1 "")
+        endif()
     endif()
 endif()
 

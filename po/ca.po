@@ -1,13 +1,17 @@
+# SPDX-License-Identifier: 0BSD
+#
 # XZ Utils Catalan Translation
-# This file is put in the public domain.
-# Jordi Mas i Hernàndez <jmas@softcatala.org>, 2022.
+# Copyright (C) The XZ Utils authors and contributors
+# This file is published under the BSD Zero Clause License.
+#
+# Jordi Mas i Hernàndez <jmas@softcatala.org>, 2022, 2024
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.0-pre2\n"
+"Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-05-29 17:41+0300\n"
-"PO-Revision-Date: 2022-12-12 18:19+0300\n"
+"POT-Creation-Date: 2024-02-15 01:57+0800\n"
+"PO-Revision-Date: 2024-08-18 18:19+0300\n"
 "Last-Translator: Jordi Mas i Hernàndez <jmas@softcatala.org>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"
 "Language: ca\n"
@@ -30,7 +34,7 @@ msgstr "%s: massa arguments per a --block-list"
 #: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr ""
+msgstr "A --block-list, falta la mida del bloc després del número de cadena de filtres «%c:»"
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
@@ -44,22 +48,19 @@ msgstr "%s: tipus de format de fitxer desconegut"
 #: src/xz/args.c
 #, c-format
 msgid "%s: Unsupported integrity check type"
-msgstr "%s: tipus de comprovació d'integritat no suportat"
+msgstr "%s: tipus de comprovació d'integritat no admès"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "Only one file can be specified with `--files' or `--files0'."
 msgid "Only one file can be specified with '--files' or '--files0'."
-msgstr "Només es pot especificar un fitxer amb `--files' o `--files0'."
+msgstr "Només es pot especificar un fitxer amb '--files' o '--files0'."
 
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
 #. before the colon ("%s : %s").
 #: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
-#, fuzzy, c-format
-#| msgid "%s: "
+#, c-format
 msgid "%s: %s"
-msgstr "%s: "
+msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -80,13 +81,11 @@ msgstr "No s'admet la compressió de fitxers lzip (.lz)"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr ""
+msgstr "--block-list s'ignora a menys que es comprimeixi al format .xz"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "%s: With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "%s: amb --format=raw, --suffix=.SUF és necessari si no s'escriu a la sortida estàndard"
+msgstr "Amb --format=raw, --suffix=.SUF és necessari si no s'escriu a la sortida estàndard"
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
@@ -95,7 +94,7 @@ msgstr "El nombre màxim de filtres és de quatre"
 #: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
-msgstr ""
+msgstr "Error a l'opció --filters%s=FILTERS:"
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
@@ -104,7 +103,7 @@ msgstr "El límit d'ús de la memòria és massa baix per a la configuració del
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr ""
+msgstr "cadena de filtres %u utilitzada per --block-list però no especificada amb --filters%u="
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -123,20 +122,18 @@ msgid "LZMA1 cannot be used with the .xz format"
 msgstr "No es pot usar LZMA1 amb el format .xz"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "The filter chain is incompatible with --flush-timeout"
+#, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "La cadena de filtratge és incompatible amb --flush-timeout"
+msgstr "La cadena de filtres %u és incompatible amb --flush-timeout"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "Es canvia al mode d'un sol fil a causa de --flush-timeout"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Unsupported options"
+#, c-format
 msgid "Unsupported options in filter chain %u"
-msgstr "Opcions no suportades"
+msgstr "Opcions no admeses a la cadena de filtres %u"
 
 #: src/xz/coder.c
 #, c-format
@@ -145,7 +142,7 @@ msgstr "S'utilitzen fins a %<PRIu32> fils."
 
 #: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
-msgstr "Cadena de filtre no suportada o opcions de filtre"
+msgstr "Cadena de filtres o opcions de filtre no admeses"
 
 #: src/xz/coder.c
 #, c-format
@@ -173,16 +170,14 @@ msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the m
 msgstr "S'ha ajustat la mida del diccionari LZMA%c de %s MiB a %s MiB per a no excedir el límit d'ús de memòria de %s MiB"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "S'ha ajustat la mida del diccionari LZMA%c de %s MiB a %s MiB per a no excedir el límit d'ús de memòria de %s MiB"
+msgstr "S'ha ajustat la mida del diccionari LZMA%c per a --filters%u de %s MiB a %s MiBper a no excedir el límit d'ús de memòria de %s MiB"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Error creating a pipe: %s"
+#, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "S'ha produït un error en crear una canonada: %s"
+msgstr "S'ha produït un error en canviar a la cadena de filtres %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -347,7 +342,7 @@ msgstr "Informació del maquinari:"
 
 #: src/xz/hardware.c
 msgid "Memory usage limits:"
-msgstr "Límits d'ús de la memòria"
+msgstr "Límits d'ús de la memòria:"
 
 #: src/xz/list.c
 msgid "Streams:"
@@ -563,7 +558,7 @@ msgstr "--list només funciona en fitxers .xz (--format=xz o --format=auto)"
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
-msgstr ""
+msgstr "Proveu «lzmainfo» amb fitxers .lzma."
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
@@ -580,10 +575,9 @@ msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s: Final inesperat de l'entrada en llegir els noms de fitxer"
 
 #: src/xz/main.c
-#, fuzzy, c-format
-#| msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
+#, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: s'ha trobat un caràcter nul en llegir els noms de fitxer; potser volíeu utilitzar «--files0» en lloc de «--files»?"
+msgstr "%s: S'ha trobat un caràcter nul en llegir els noms de fitxer. Potser volíeu utilitzar «--files0» en comptes de «--files»?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -628,7 +622,7 @@ msgstr "No s'ha reconegut el format del fitxer"
 
 #: src/xz/message.c
 msgid "Unsupported options"
-msgstr "Opcions no suportades"
+msgstr "Opcions no admeses"
 
 #: src/xz/message.c
 msgid "Compressed data is corrupt"
@@ -651,11 +645,10 @@ msgstr "Es requereixen %s MiB de memòria. El límit és %s."
 #: src/xz/message.c
 #, c-format
 msgid "%s: Filter chain: %s\n"
-msgstr "%s: Cadena de filtratge: %s\n"
+msgstr "%s: Cadena de filtres: %s\n"
 
 #: src/xz/message.c
-#, fuzzy, c-format
-#| msgid "Try `%s --help' for more information."
+#, c-format
 msgid "Try '%s --help' for more information."
 msgstr "Proveu «%s --help» per a més informació."
 
@@ -721,14 +714,6 @@ msgstr ""
 "                      ignora les possibles dades d'entrada restants"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --no-sparse     do not create sparse files when decompressing\n"
-#| "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
-#| "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-#| "                      omitted, filenames are read from the standard input;\n"
-#| "                      filenames must be terminated with the newline character\n"
-#| "      --files0[=FILE] like --files but use the null character as terminator"
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
@@ -754,12 +739,6 @@ msgstr ""
 " Opcions bàsiques de format i compressió de fitxers:\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-#| "                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
-#| "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-#| "                      `crc32', `crc64' (default), or `sha256'"
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
@@ -790,22 +769,17 @@ msgid ""
 "  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
 "                      does not affect decompressor memory requirements"
 msgstr ""
-"  -e, --extreme       intenta millorar la ràtio de compressió usant més temps;\n"
-"                      de CPU no afecta els requisits de memòria del\n"
+"  -e, --extreme       intenta millorar la ràtio de compressió usant més temps\n"
+"                      de CPU; no afecta els requisits de memòria del\n"
 "                      descompressor"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-#| "                      to use as many threads as there are processor cores"
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=NUM   usa com a màxim NUM fils; el valor predeterminat és 1;\n"
-"                      estableix a 0 per a utilitzar tants fils com nuclis té\n"
-"                      el processador"
+"  -T, --threads=NUM   usa com a màxim NUM fils; el valor predeterminat és 0;\n"
+"                      que utilitza tants fils com nuclis té el processador"
 
 #: src/xz/message.c
 msgid ""
@@ -819,11 +793,6 @@ msgstr ""
 "                      per a la compressió amb fils"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --block-list=SIZES\n"
-#| "                      start a new .xz block after the given comma-separated\n"
-#| "                      intervals of uncompressed data"
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -831,9 +800,11 @@ msgid ""
 "                      filter chain number (0-9) followed by a ':' before the\n"
 "                      uncompressed data size"
 msgstr ""
-"       --block-list=MIDES\n"
-"                      inicia un bloc nou .xz després dels intervals de dades\n"
-"                      sense comprimir donats amb separació per comes"
+"       --block-list=BLOCS\n"
+"                      inicia un bloc .xz nou després de la separació d'intervals\n"
+"                      amb comes donada de dades sense comprimir; opcionalment,\n"
+"                      especifiqueu un número de cadena de filtres (0-9) seguit\n"
+"                      d'un «:» abans de la mida de dades sense comprimir"
 
 #: src/xz/message.c
 msgid ""
@@ -880,7 +851,7 @@ msgid ""
 " Custom filter chain for compression (alternative for using presets):"
 msgstr ""
 "\n"
-" Cadena de filtre personalitzada per a la compressió (alternativa per a l'ús\n"
+" Cadena de filtres personalitzada per a la compressió (alternativa per a l'ús\n"
 " de predefinits):"
 
 #: src/xz/message.c
@@ -889,6 +860,10 @@ msgid ""
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
 "                      syntax; use --filters-help for more information"
 msgstr ""
+"\n"
+"   --filters=FILTERS  estableix la cadena de filtres utilitzant la sintaxi\n"
+"                      de cadena de filtres del liblzma\n"
+"                      Useu --filters-help per a més informació"
 
 #: src/xz/message.c
 msgid ""
@@ -896,12 +871,18 @@ msgid ""
 "                      set additional filter chains using the liblzma filter\n"
 "                      string syntax to use with --block-list"
 msgstr ""
+"  --filters1=FILTRES ... --filters9=FILTRES\n"
+"                      estableix cadenes de filtres addicionals utilitzant\n"
+"                      la sintaxi de cadena del filtre liblzmava a usar amb\n"
+"                     --block-list"
 
 #: src/xz/message.c
 msgid ""
 "  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
 msgstr ""
+"  --filters-help      mostra més informació sobre la sintaxi de cadena del\n"
+"                      filtre i surt."
 
 #: src/xz/message.c
 msgid ""
@@ -936,18 +917,6 @@ msgstr ""
 "                                   (predeterminat)"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-#| "  --arm[=OPTS]        ARM BCJ filter\n"
-#| "  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-#| "  --arm64[=OPTS]      ARM64 BCJ filter\n"
-#| "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-#| "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-#| "  --sparc[=OPTS]      SPARC BCJ filter\n"
-#| "                      Valid OPTS for all BCJ filters:\n"
-#| "                        start=NUM  start offset for conversions (default=0)"
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -969,6 +938,7 @@ msgstr ""
 "  --powerpc[=OPTS]    filtre BCJ PowerPC (només endian gran)\n"
 "  --ia64[=OPTS]       filtre IA-64 (Itanium) BCJ\n"
 "  --sparc[=OPTS]      filtre BCJ SPARC\n"
+"  --riscv[=OPTS]      filtre RISC-V BCJ\n"
 "                      OPTS vàlids per a tots els filtres BCJ:\n"
 "                        start=Núm.  decalatge d'inici per a les conversions\n"
 "                                    (per defecte=0)"
@@ -1075,18 +1045,19 @@ msgid ""
 "can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
 "specified instead of a filter chain.\n"
 msgstr ""
+"Les cadenes de filtres s'estableixen utilitzant --filters=FILTERS o les\n"
+"opcions --filters1=FILTRES ... --filters9=FILTERS. Cada filtre de la cadena\n"
+"es pot separar per espais o '--'. Alternativament pot ser un predefinit\n"
+" <0-9>[e] especificat en comptes d'una cadena de filtres.\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid "Unsupported filter chain or filter options"
 msgid "The supported filters and their options are:"
-msgstr "Cadena de filtre no suportada o opcions de filtre"
+msgstr "Els filtres admesos i les seves opcions són:"
 
 #: src/xz/options.c
-#, fuzzy, c-format
-#| msgid "%s: Options must be `name=value' pairs separated with commas"
+#, c-format
 msgid "%s: Options must be 'name=value' pairs separated with commas"
-msgstr "%s: les opcions han de ser parelles «name=value» separades amb comes"
+msgstr "%s: les opcions han de ser parelles «name=value» separades per comes"
 
 #: src/xz/options.c
 #, c-format
@@ -1113,8 +1084,7 @@ msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s: El nom de fitxer té un sufix desconegut, s'omet"
 
 #: src/xz/suffix.c
-#, fuzzy, c-format
-#| msgid "%s: File already has `%s' suffix, skipping"
+#, c-format
 msgid "%s: File already has '%s' suffix, skipping"
 msgstr "%s: El fitxer ja té el sufix «%s», s'ometrà"
 
@@ -1134,14 +1104,11 @@ msgid "%s: Invalid multiplier suffix"
 msgstr "%s: el sufix multiplicador no és vàlid"
 
 #: src/xz/util.c
-#, fuzzy
-#| msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
-msgstr "Els sufixos vàlids són `KiB' (2.10), `MiB' (2.20), i `GiB' (2.30)."
+msgstr "Els sufixos vàlids són «KiB» (2^10), «MiB» (2^20) i «GiB» (2^30)."
 
 #: src/xz/util.c
-#, fuzzy, c-format
-#| msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+#, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "El valor de l'opció «%s» ha d'estar a l'interval [%<PRIu64>, %<PRIu64>]"
 
@@ -1159,16 +1126,16 @@ msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
 "Show information stored in the .lzma file header"
 msgstr ""
+"Ús: %s [--help] [--version] [FITXER]...\n"
+"Mostra la informació emmagatzemada a la capçalera del fitxer .lzma"
 
 #: src/lzmainfo/lzmainfo.c
-#, fuzzy
-#| msgid "%s: Too small to be a valid .xz file"
 msgid "File is too small to be a .lzma file"
-msgstr "%s: Massa petit per a ser un fitxer .xz vàlid"
+msgstr "El fitxer és massa petit per a ser un fitxer .xz"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"
-msgstr ""
+msgstr "No és un fitxer .lzma"
 
 #: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"

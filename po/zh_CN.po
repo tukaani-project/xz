@@ -1,15 +1,18 @@
-# Chinese translations for xz package
+# SPDX-License-Identifier: 0BSD
+#
 # xz 软件包的简体中文翻译。
-# This file is put in the public domain.
+# Chinese translations for xz package
+# This file is published under the BSD Zero Clause License.
 # Boyuan Yang <073plan@gmail.com>, 2019, 2022, 2023, 2024.
+# Mingye Wang <arthur200126@gmail.com>, 2024.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.6.0-pre1\n"
+"Project-Id-Version: xz-5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-05-29 17:41+0300\n"
-"PO-Revision-Date: 2024-02-05 15:15-0500\n"
-"Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
+"POT-Creation-Date: 2024-02-15 01:57+0800\n"
+"PO-Revision-Date: 2024-08-27 13:08+0800\n"
+"Last-Translator: Mingye Wang (Artoria2e5) <arthur200126@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #: src/xz/args.c
 #, c-format
@@ -168,10 +171,9 @@ msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the m
 msgstr "已调整 LZMA%c 字典大小（从 %s MiB 调整为 %s MiB），以不超出 %s MiB 的内存用量限制"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "已调整 LZMA%c 字典大小（从 %s MiB 调整为 %s MiB），以不超出 %s MiB 的内存用量限制"
+msgstr "已调整 --filters%2$u LZMA%1$c 字典大小（从 %3$s MiB 调整为 %4$s MiB），以不超出 %5$s MiB 的内存用量限制"
 
 #: src/xz/coder.c
 #, c-format
@@ -515,7 +517,7 @@ msgstr "%s：文件为空"
 #: src/xz/list.c
 #, c-format
 msgid "%s: Too small to be a valid .xz file"
-msgstr "%s：过小而不是有效的 .xz 文件"
+msgstr "%s：过小，不可能是有效的 .xz 文件"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -556,7 +558,7 @@ msgstr "--list 仅适用于 .xz 文件（--format=xz 或 --format=auto）"
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
-msgstr ""
+msgstr "试试用“lzmainfo”处理 .lzma 文件。"
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
@@ -706,14 +708,6 @@ msgid ""
 msgstr "      --single-stream 仅解压缩第一个流，忽略其后可能继续出现的输入数据"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --no-sparse     do not create sparse files when decompressing\n"
-#| "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
-#| "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-#| "                      omitted, filenames are read from the standard input;\n"
-#| "                      filenames must be terminated with the newline character\n"
-#| "      --files0[=FILE] like --files but use the null character as terminator"
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
@@ -725,8 +719,8 @@ msgstr ""
 "      --no-sparse     解压缩时不要创建稀疏文件\n"
 "  -S, --suffix=.SUF   压缩文件使用指定的“.SUF”后缀名\n"
 "      --files[=文件]  从指定文件读取要处理的文件名列表；如果省略了指定文件名，\n"
-"                      将从标准输入读取文件名列表；文件名必须使用换行符分隔\n"
-"      --files0[=文件] 类似 --files，但使用空字符进行分隔"
+"                      将从标准输入读取文件名列表；文件名必须使用换行符分隔、终止\n"
+"      --files0[=文件] 类似 --files，但使用空（\\0）字符进行分隔"
 
 #: src/xz/message.c
 msgid ""
@@ -737,12 +731,6 @@ msgstr ""
 " 基本文件格式和压缩选项：\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-#| "                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
-#| "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-#| "                      `crc32', `crc64' (default), or `sha256'"
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
@@ -776,15 +764,11 @@ msgstr ""
 "                      不会影响解压缩的内存需求量"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-#| "                      to use as many threads as there are processor cores"
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=数量  使用最多指定数量的线程；默认值为 1；设置为 0\n"
+"  -T, --threads=数量  使用最多指定数量的线程；默认值为 0，即\n"
 "                      可以使用与处理器内核数量相同的线程数"
 
 #: src/xz/message.c
@@ -798,11 +782,6 @@ msgstr ""
 "                      使用该选项可以设置多线程压缩中的块大小"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --block-list=SIZES\n"
-#| "                      start a new .xz block after the given comma-separated\n"
-#| "                      intervals of uncompressed data"
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -812,7 +791,9 @@ msgid ""
 msgstr ""
 "      --block-list=块大小列表\n"
 "                      在所给出的未压缩数据间隔大小的数据之后开始一个新的\n"
-"                      .xz 块（使用逗号分隔）"
+"                      .xz 块（使用逗号分隔）\n"
+"                      可选：在未压缩大小之前提供一个过滤器链号（0-9），用\n"
+"                      “:”和大小分开"
 
 #: src/xz/message.c
 msgid ""
@@ -864,6 +845,9 @@ msgid ""
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
 "                      syntax; use --filters-help for more information"
 msgstr ""
+"\n"
+"--filters=FILTERS     使用 liblzma 过滤器字符串语法设置过滤器链\n"
+"                      使用 --filters-help 了解更多信息"
 
 #: src/xz/message.c
 msgid ""
@@ -871,12 +855,17 @@ msgid ""
 "                      set additional filter chains using the liblzma filter\n"
 "                      string syntax to use with --block-list"
 msgstr ""
+"--filters1=过滤器 ... --filters9=过滤器\n"
+"                      使用 liblzma 过滤器语法设置其他过滤器链，\n"
+"                      与 --block-list 一起使用的"
 
 #: src/xz/message.c
 msgid ""
 "  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
 msgstr ""
+"--filters-help        显示有关 liblzma 过滤器字符串语法的更多信息\n"
+"                      然后退出。"
 
 #: src/xz/message.c
 msgid ""
@@ -908,18 +897,6 @@ msgstr ""
 "                        depth=数字 最大搜索深度； 0=自动（默认）"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-#| "  --arm[=OPTS]        ARM BCJ filter\n"
-#| "  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-#| "  --arm64[=OPTS]      ARM64 BCJ filter\n"
-#| "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-#| "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-#| "  --sparc[=OPTS]      SPARC BCJ filter\n"
-#| "                      Valid OPTS for all BCJ filters:\n"
-#| "                        start=NUM  start offset for conversions (default=0)"
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -941,6 +918,7 @@ msgstr ""
 "  --powerpc[=选项]    PowerPC BCJ 过滤器（仅大端序）\n"
 "  --ia64[=选项]       IA-64 (Itanium，安腾) BCJ 过滤器\n"
 "  --sparc[=选项]      SPARC BCJ 过滤器\n"
+"  --riscv[=选项]      RISC-V BCJ 过滤器\n"
 "                      所有过滤器可用选项：\n"
 "                        start=数字  转换的起始偏移量（默认=0）"
 
@@ -1042,12 +1020,15 @@ msgid ""
 "can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
 "specified instead of a filter chain.\n"
 msgstr ""
+"设置过滤器链使用 --filters=FILTERS 或\n"
+"--filters1=FILTER … --filters9=FILTER选项。链中的每个过滤器\n"
+"可以用空格或“--”分隔。或者可以指定预设 <0-9>[e]\n"
+"而不是过滤器链。\n"
+"</0-9>\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid "Unsupported filter chain or filter options"
 msgid "The supported filters and their options are:"
-msgstr "不支持的过滤器链或过滤器选项"
+msgstr "支持的筛选器及其选项包括："
 
 #: src/xz/options.c
 #, c-format
@@ -1099,14 +1080,11 @@ msgid "%s: Invalid multiplier suffix"
 msgstr "%s：无效的乘数后缀"
 
 #: src/xz/util.c
-#, fuzzy
-#| msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "有效的后缀包括“KiB”（2^10）、“MiB”（2^20）和“GiB”（2^30）。"
 
 #: src/xz/util.c
-#, fuzzy, c-format
-#| msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+#, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "选项“%s”的值必须位于 [%<PRIu64>, %<PRIu64>] 范围内"
 
@@ -1124,16 +1102,16 @@ msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
 "Show information stored in the .lzma file header"
 msgstr ""
+"用法：%s [--help] [--version] [文件]...\n"
+"显示存储在 .lzma 文件头中的信息"
 
 #: src/lzmainfo/lzmainfo.c
-#, fuzzy
-#| msgid "%s: Too small to be a valid .xz file"
 msgid "File is too small to be a .lzma file"
-msgstr "%s：过小而不是有效的 .xz 文件"
+msgstr "%s：过小，不可能是有效的 .lzma 文件"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"
-msgstr ""
+msgstr "不是 .lzma 文件"
 
 #: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"

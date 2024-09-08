@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-02-15 01:57+0800\n"
+"POT-Creation-Date: 2024-09-08 08:21+0800\n"
 "PO-Revision-Date: 2024-08-27 13:08+0800\n"
-"Last-Translator: Mingye Wang (Artoria2e5) <arthur200126@gmail.com>\n"
+"Last-Translator: Tianxiang Chen (ChenPi12) <yuesefusidalin@outlook.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -82,11 +82,11 @@ msgstr "不支持对 lzip 文件 (.lz) 的压缩"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr "除非压缩为 .xz 格式，--block-list 将被忽略"
+msgstr "--block-list 将被忽略，除非压缩为 .xz 格式，"
 
 #: src/xz/args.c
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "启用 --format-raw 选项时，必须指定 --suffix=.SUF 获知写入至标准输出"
+msgstr "启用 --format=raw 选项时，除非写入标准輸出，否则需要指定 --suffix=.SUF"
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
@@ -104,7 +104,7 @@ msgstr "内存用量限制对指定过滤器设置过低。"
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr "--block-list 使用了过滤器链 %u，但未经由 --filters%u= 指定"
+msgstr "--block-list 使用了过滤器链 %u，但未用 --filters%u= 指定"
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -243,12 +243,12 @@ msgstr "%s：是目录，跳过"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Not a regular file, skipping"
-msgstr "%s：不是标准文件，跳过"
+msgstr "%s：不是普通文件，跳过"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s：文件有设置用户ID或设置组ID标识，跳过"
+msgstr "%s：文件有 setuid 或 setgid 标识，跳过"
 
 #: src/xz/file_io.c
 #, c-format
@@ -258,7 +258,7 @@ msgstr "%s：文件有粘滞位标识，跳过"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s：输入文件有多于一个硬链接，跳过"
+msgstr "%s：输入文件有多于一个的硬链接，跳过"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -302,7 +302,7 @@ msgstr "%s：seek 文件时出错：%s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Unexpected end of file"
-msgstr "%s：未预期的文件结束"
+msgstr "%s：未预期的文件末尾"
 
 #: src/xz/file_io.c
 #, c-format
@@ -572,7 +572,7 @@ msgstr "%s：读取文件名列表时出错：%s"
 #: src/xz/main.c
 #, c-format
 msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s：读取文件名列表时遇到未预期的输入结束"
+msgstr "%s：读取文件名列表时遇到未预期的输入末尾"
 
 #: src/xz/main.c
 #, c-format
@@ -635,7 +635,7 @@ msgstr "输入意外结束"
 #: src/xz/message.c
 #, c-format
 msgid "%s MiB of memory is required. The limiter is disabled."
-msgstr "需要 %s MiB 的内存空间。限制已禁用。"
+msgstr "需要 %s MiB 的内存空间。限制器已禁用。"
 
 #: src/xz/message.c
 #, c-format
@@ -1107,7 +1107,7 @@ msgstr ""
 
 #: src/lzmainfo/lzmainfo.c
 msgid "File is too small to be a .lzma file"
-msgstr "%s：过小，不可能是有效的 .lzma 文件"
+msgstr "文件过小，不可能是有效的 .lzma 文件"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"

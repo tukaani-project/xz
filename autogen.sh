@@ -19,7 +19,7 @@ ${AUTOMAKE:-automake} -acf --foreign
 
 # Generate the translated man pages if the "po4a" tool is available.
 # This is *NOT* done by "autoreconf -fi" or when "make" is run.
-# Pass --no-po4a o this script to skip this step.
+# Pass --no-po4a to this script to skip this step.
 # It can be useful when you know that po4a isn't available and
 # don't want autogen.sh to exit with non-zero exit status.
 generate_po4a="y"

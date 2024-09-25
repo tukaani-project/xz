@@ -1628,7 +1628,7 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
         if(WIN32)
             # Add the Windows resource file for xzdec.exe or lzmadec.exe.
-            target_sources("${XZDEC}" PRIVATE src/xzdec/xzdec_w32res.rc)
+            target_sources("${XZDEC}" PRIVATE "src/xzdec/${XZDEC}_w32res.rc")
             set_target_properties("${XZDEC}" PROPERTIES
                 LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
             )

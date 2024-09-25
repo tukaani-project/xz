@@ -1,14 +1,14 @@
 # Brazilian Portuguese translations for xz package
 # Traduções em português brasileiro para o pacote xz.
-# This file is put in the public domain.
-# Rafael Fontenelle <rafaelff@gnome.org>, 2019-2023.
+# This file is published under the BSD Zero Clause License.
+# Rafael Fontenelle <rafaelff@gnome.org>, 2019-2024.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.0-pre2\n"
+"Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-05-29 17:41+0300\n"
-"PO-Revision-Date: 2023-01-12 14:40-0300\n"
+"POT-Creation-Date: 2024-02-15 01:57+0800\n"
+"PO-Revision-Date: 2024-09-22 23:10-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge.net>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 42.0\n"
+"X-Generator: Gtranslator 46.1\n"
 
 #: src/xz/args.c
 #, c-format
@@ -32,7 +32,7 @@ msgstr "%s: Argumentos demais para --block-list"
 #: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr ""
+msgstr "Em --block-list, está faltando o tamanho do bloco após o número da cadeia de filtros \"%c:\""
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
@@ -49,8 +49,6 @@ msgid "%s: Unsupported integrity check type"
 msgstr "%s: Tipo de verificação de integridade sem suporte"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "Only one file can be specified with `--files' or `--files0'."
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Somente um arquivo pode ser especificado com \"--files\" ou \"--files0\"."
 
@@ -58,10 +56,9 @@ msgstr "Somente um arquivo pode ser especificado com \"--files\" ou \"--files0\"
 #. string because French needs a space
 #. before the colon ("%s : %s").
 #: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
-#, fuzzy, c-format
-#| msgid "%s: "
+#, c-format
 msgid "%s: %s"
-msgstr "%s: "
+msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -82,13 +79,11 @@ msgstr "A compactação de arquivos lzip (.lz) não é suportada"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr ""
+msgstr "--block-list é ignorado a menos que seja compactado para o formato .xz"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "%s: With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "%s: Com --format=raw, --suffix=.SUF é exigido, a menos que esteja escrevendo para stdout"
+msgstr "Com --format=raw, --suffix=.SUF é exigido, a menos que esteja escrevendo para stdout"
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
@@ -97,7 +92,7 @@ msgstr "O número máximo de filtros é quatro"
 #: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
-msgstr ""
+msgstr "Erro na opção --filters%s=FILTROS:"
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
@@ -106,7 +101,7 @@ msgstr "O limite de uso de memória é baixo demais para a configuração de fil
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr ""
+msgstr "cadeia de filtros %u usada por --block-list, mas não especificada com --filters%u="
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -125,20 +120,18 @@ msgid "LZMA1 cannot be used with the .xz format"
 msgstr "LZMA1 não pode ser usado com o formato .xz"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "The filter chain is incompatible with --flush-timeout"
+#, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "A cadeia de filtros é incompatível com --flush-timeout"
+msgstr "A cadeia de filtros %u é incompatível com --flush-timeout"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "Alternando para o modo de thread única por causa de --flush-timeout"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Unsupported options"
+#, c-format
 msgid "Unsupported options in filter chain %u"
-msgstr "Opções sem suporte"
+msgstr "Opções sem suporte na cadeia de filtros %u"
 
 #: src/xz/coder.c
 #, c-format
@@ -175,16 +168,14 @@ msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the m
 msgstr "Ajustado o tamanho de dicionário de LZMA%c de %s MiB para %s MiB para não exceder o limite de uso de memória de %s MiB"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "Ajustado o tamanho de dicionário de LZMA%c de %s MiB para %s MiB para não exceder o limite de uso de memória de %s MiB"
+msgstr "Tamanho do dicionário LZMA%c ajustado para --filters%u de %s MiB para %s MiB para não exceder o limite de uso de memória de %s MiB"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Error creating a pipe: %s"
+#, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "Erro ao criar um pipe: %s"
+msgstr "Erro ao alterar para a cadeia de filtros %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -576,7 +567,7 @@ msgstr "--list funciona apenas em arquivos .xz (--format=xz ou --format=auto)"
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
-msgstr ""
+msgstr "Tente 'lzmainfo' com arquivos .lzma."
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
@@ -593,8 +584,7 @@ msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s: Fim da entrada inesperado ao ler nomes de arquivos"
 
 #: src/xz/main.c
-#, fuzzy, c-format
-#| msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
+#, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "%s: Caractere nulo encontrado ao ler nomes de arquivos; talvez você queria usar \"--files0\" em vez de \"--files\"?"
 
@@ -667,8 +657,7 @@ msgid "%s: Filter chain: %s\n"
 msgstr "%s: Cadeia de filtros: %s\n"
 
 #: src/xz/message.c
-#, fuzzy, c-format
-#| msgid "Try `%s --help' for more information."
+#, c-format
 msgid "Try '%s --help' for more information."
 msgstr "Tente \"%s --help\" para mais informações."
 
@@ -732,14 +721,6 @@ msgstr ""
 "                      silenciosa possíveis dados de entrada restantes"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --no-sparse     do not create sparse files when decompressing\n"
-#| "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
-#| "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-#| "                      omitted, filenames are read from the standard input;\n"
-#| "                      filenames must be terminated with the newline character\n"
-#| "      --files0[=FILE] like --files but use the null character as terminator"
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
@@ -754,7 +735,7 @@ msgstr ""
 "                      lê nomes de arquivos para processar de ARQUIVO;\n"
 "                      se ARQUIVO for omitido, nomes de arquivos são\n"
 "                      lidos da entrada padrão; nomes de arquivos devem\n"
-"                      ser terminados com o caractere de nova linha\n"
+"                      terminar com o caractere de nova linha\n"
 "      --files0[=ARQUIVO]\n"
 "                      similar a --files, mas usa o caractere nulo como\n"
 "                      terminador"
@@ -768,12 +749,6 @@ msgstr ""
 " Opções básicas de formato de arquivo e compressão:\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-#| "                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
-#| "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-#| "                      `crc32', `crc64' (default), or `sha256'"
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
@@ -809,17 +784,12 @@ msgstr ""
 "                      descompressor"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-#| "                      to use as many threads as there are processor cores"
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=NÚM   usa no máximo NÚM threads; o padrão é 1; defina para\n"
-"                      0 para usar o máximo de threads que há de núcleos de\n"
-"                      processador"
+"  -T, --threads=NÚM   usa no máximo NÚM threads; o padrão é 0 que usa\n"
+"                      o máximo de threads que há de núcleos de processador"
 
 #: src/xz/message.c
 msgid ""
@@ -833,11 +803,6 @@ msgstr ""
 "                      compressão com threads"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --block-list=SIZES\n"
-#| "                      start a new .xz block after the given comma-separated\n"
-#| "                      intervals of uncompressed data"
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -845,9 +810,12 @@ msgid ""
 "                      filter chain number (0-9) followed by a ':' before the\n"
 "                      uncompressed data size"
 msgstr ""
-"      --block-list=TAM\n"
+"      --block-list=BLOCOS\n"
 "                      inicia um novo bloco .xz após os intervalos dados,\n"
-"                      separados por vírgula, de dados descomprimidos"
+"                      separados por vírgula, de dados descomprimidos;\n"
+"                      opcionalmente, especifique um número de cadeia de\n"
+"                      filtros (0-9) seguido por um ':' antes do tamanho\n"
+"                      dos dados descompactados"
 
 #: src/xz/message.c
 msgid ""
@@ -904,6 +872,9 @@ msgid ""
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
 "                      syntax; use --filters-help for more information"
 msgstr ""
+"\n"
+"  --filters=FILTROS   define a cadeia de filtros usando a sintaxe de filtro\n"
+"                      do liblzma; use --filters-help para mais informações"
 
 #: src/xz/message.c
 msgid ""
@@ -911,12 +882,17 @@ msgid ""
 "                      set additional filter chains using the liblzma filter\n"
 "                      string syntax to use with --block-list"
 msgstr ""
+"--filters1=FILTROS ... --filters9=FILTROS\n"
+"                      define cadeias de filtros adicionais usando a sintaxe\n"
+"                      de filtro liblzma para usar com --block-list"
 
 #: src/xz/message.c
 msgid ""
 "  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
 msgstr ""
+"  --filters-help      exibe mais informações sobre a sintaxe de filtro liblzma\n"
+"                      e sai."
 
 #: src/xz/message.c
 msgid ""
@@ -949,18 +925,6 @@ msgstr ""
 "                                   0=automatic (padrão)"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-#| "  --arm[=OPTS]        ARM BCJ filter\n"
-#| "  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-#| "  --arm64[=OPTS]      ARM64 BCJ filter\n"
-#| "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-#| "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-#| "  --sparc[=OPTS]      SPARC BCJ filter\n"
-#| "                      Valid OPTS for all BCJ filters:\n"
-#| "                        start=NUM  start offset for conversions (default=0)"
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -982,6 +946,7 @@ msgstr ""
 "  --powerpc[=OPÇÕES]  filtro BCJ PowerPC (big endian apenas)\n"
 "  --ia64[=OPÇÕES]     filtro BCJ IA-64 (Itanium)\n"
 "  --sparc[=OPÇÕES]    filtro BCJ SPARC\n"
+"  --riscv[=OPÇÕES]    filtro BCJ RISC-V\n"
 "                      OPÇÕES válidas para todos os filtros BCJ:\n"
 "                        start=NUM  deslocamento inicial para conversões\n"
 "                                   (padrão=0)"
@@ -1086,16 +1051,17 @@ msgid ""
 "can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
 "specified instead of a filter chain.\n"
 msgstr ""
+"As cadeias de filtros são definidas usando as opções --filters=FILTROS ou\n"
+"--filters1=FILTROS ... --filters9=FILTROS. Cada filtro na cadeia pode ser\n"
+"separado por espaços ou \"--\". Alternativamente, uma predefinição <0-9>[e]\n"
+"pode ser especificada em vez de uma cadeia de filtros.\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid "Unsupported filter chain or filter options"
 msgid "The supported filters and their options are:"
-msgstr "Opções de filtro ou cadeia de filtros sem suporte"
+msgstr "Os filtros suportados e suas opções são:"
 
 #: src/xz/options.c
-#, fuzzy, c-format
-#| msgid "%s: Options must be `name=value' pairs separated with commas"
+#, c-format
 msgid "%s: Options must be 'name=value' pairs separated with commas"
 msgstr "%s: As opções devem ser pares \"nome=valor\" separados por vírgulas"
 
@@ -1124,8 +1090,7 @@ msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s: O nome de arquivo tem um sufixo desconhecido, ignorando"
 
 #: src/xz/suffix.c
-#, fuzzy, c-format
-#| msgid "%s: File already has `%s' suffix, skipping"
+#, c-format
 msgid "%s: File already has '%s' suffix, skipping"
 msgstr "%s: O arquivo já tem o sufixo \"%s\", ignorando"
 
@@ -1145,14 +1110,11 @@ msgid "%s: Invalid multiplier suffix"
 msgstr "%s: Sufixo multiplicador inválido"
 
 #: src/xz/util.c
-#, fuzzy
-#| msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "Sufixos válidos são \"KiB\" (2^10), \"MiB\" (2^20) e \"GiB\" (2^30)."
 
 #: src/xz/util.c
-#, fuzzy, c-format
-#| msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+#, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "O valor da opção \"%s\" deve estar no intervalo [%<PRIu64>, %<PRIu64>]"
 
@@ -1170,16 +1132,16 @@ msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
 "Show information stored in the .lzma file header"
 msgstr ""
+"Uso: %s [--help] [--version] [ARQUIVO]...\n"
+"Mostra informações armazenadas no cabeçalho do arquivo .lzma"
 
 #: src/lzmainfo/lzmainfo.c
-#, fuzzy
-#| msgid "%s: Too small to be a valid .xz file"
 msgid "File is too small to be a .lzma file"
-msgstr "%s: Pequeno demais para ser um arquivo .xz válido"
+msgstr "Arquivo é pequeno demais para ser um arquivo .lzma"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"
-msgstr ""
+msgstr "Não é um arquivo .lzma"
 
 #: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"

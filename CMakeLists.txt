@@ -1260,7 +1260,7 @@ else()
     target_compile_definitions(liblzma PRIVATE HAVE_VISIBILITY=0)
 endif()
 
-if(WIN32)
+if(WIN32 OR CYGWIN)
     if(BUILD_SHARED_LIBS)
         # Add the Windows resource file for liblzma.dll.
         target_sources(liblzma PRIVATE src/liblzma/liblzma_w32res.rc)
@@ -1272,8 +1272,12 @@ if(WIN32)
         # Export the public API symbols with __declspec(dllexport).
         target_compile_definitions(liblzma PRIVATE DLL_EXPORT)
 
-        if(NOT MSVC)
-            # Create a DEF file. The linker puts the ordinal numbers there
+        if(NOT MSVC AND NOT CYGWIN)
+            # Create a DEF file. The Autotools-based build creates a DEF file
+            # under Cygwin & MSYS2 too but it almost certainly is a useless
+            # file in that context, so the CMake build omits it.
+            #
+            # The linker puts the ordinal numbers in the DEF file
             # too so the output from the linker isn't our final file.
             target_link_options(liblzma PRIVATE
                                 "-Wl,--output-def,liblzma.def.in")
@@ -1626,7 +1630,7 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
         target_link_libraries("${XZDEC}" PRIVATE liblzma libgnu)
 
-        if(WIN32)
+        if(WIN32 OR CYGWIN)
             # Add the Windows resource file for xzdec.exe or lzmadec.exe.
             target_sources("${XZDEC}" PRIVATE "src/xzdec/${XZDEC}_w32res.rc")
             set_source_files_properties(
@@ -1683,7 +1687,7 @@ if(HAVE_DECODERS AND (NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900))
 
     target_link_libraries(lzmainfo PRIVATE liblzma libgnu)
 
-    if(WIN32)
+    if(WIN32 OR CYGWIN)
         # Add the Windows resource file for lzmainfo.exe.
         target_sources(lzmainfo PRIVATE src/lzmainfo/lzmainfo_w32res.rc)
         set_source_files_properties(src/lzmainfo/lzmainfo_w32res.rc PROPERTIES
@@ -1792,7 +1796,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
 
     target_compile_definitions(xz PRIVATE ASSUME_RAM=128)
 
-    if(WIN32)
+    if(WIN32 OR CYGWIN)
         # Add the Windows resource file for xz.exe.
         target_sources(xz PRIVATE src/xz/xz_w32res.rc)
         set_source_files_properties(src/xz/xz_w32res.rc PROPERTIES

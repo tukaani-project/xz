@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: 0BSD
+#
 # Brazilian Portuguese translations for xz package
 # Traduções em português brasileiro para o pacote xz.
 # This file is published under the BSD Zero Clause License.

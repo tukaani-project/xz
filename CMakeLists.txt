@@ -197,7 +197,7 @@ include(GNUInstallDirs)
 #
 # CMake 3.27 doesn't have CMAKE_RC_COMPILER_ID so we rely on
 # CMAKE_C_COMPILER_ID.
-if((MINGW OR CYGWIN OR MSYS) AND (
+if((MINGW OR CYGWIN) AND (
         NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "17"))
     # Use workarounds with GNU windres and llvm-windres >= 17.0.0. The \x20

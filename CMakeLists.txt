@@ -1375,8 +1375,8 @@ if(WIN32)
         # Add the Windows resource file for liblzma.dll.
         target_sources(liblzma PRIVATE src/liblzma/liblzma_w32res.rc)
 
-        set_target_properties(liblzma PROPERTIES
-            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+        set_source_files_properties(src/liblzma/liblzma_w32res.rc PROPERTIES
+            OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
         )
 
         # Export the public API symbols with __declspec(dllexport).
@@ -1851,8 +1851,9 @@ if(HAVE_DECODERS)
         if(WIN32)
             # Add the Windows resource file for xzdec.exe or lzmadec.exe.
             target_sources("${XZDEC}" PRIVATE "src/xzdec/${XZDEC}_w32res.rc")
-            set_target_properties("${XZDEC}" PROPERTIES
-                LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+            set_source_files_properties(
+                "src/xzdec/${XZDEC}_w32res.rc" PROPERTIES
+                OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
             )
         endif()
 
@@ -1919,8 +1920,8 @@ if(XZ_TOOL_LZMAINFO AND HAVE_DECODERS)
     if(WIN32)
         # Add the Windows resource file for lzmainfo.exe.
         target_sources(lzmainfo PRIVATE src/lzmainfo/lzmainfo_w32res.rc)
-        set_target_properties(lzmainfo PROPERTIES
-            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+        set_source_files_properties(src/lzmainfo/lzmainfo_w32res.rc PROPERTIES
+            OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
         )
     endif()
 
@@ -2032,8 +2033,8 @@ this many MiB of RAM if xz cannot determine the amount at runtime")
     if(WIN32)
         # Add the Windows resource file for xz.exe.
         target_sources(xz PRIVATE src/xz/xz_w32res.rc)
-        set_target_properties(xz PROPERTIES
-            LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+        set_source_files_properties(src/xz/xz_w32res.rc PROPERTIES
+            OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
         )
     endif()
 

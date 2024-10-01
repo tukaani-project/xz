@@ -221,6 +221,12 @@ if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 endif()
 
+# Dependencies for all Windows resource files:
+set(W32RES_DEPENDENCIES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/common/w32_application.manifest"
+)
+
 # Definitions common to all targets:
 add_compile_definitions(
     # Package info:
@@ -1394,7 +1400,7 @@ if(WIN32 OR CYGWIN)
         target_sources(liblzma PRIVATE src/liblzma/liblzma_w32res.rc)
 
         set_source_files_properties(src/liblzma/liblzma_w32res.rc PROPERTIES
-            OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+            OBJECT_DEPENDS "${W32RES_DEPENDENCIES}"
         )
 
         # Export the public API symbols with __declspec(dllexport).
@@ -1875,7 +1881,7 @@ if(HAVE_DECODERS)
             target_sources("${XZDEC}" PRIVATE "src/xzdec/${XZDEC}_w32res.rc")
             set_source_files_properties(
                 "src/xzdec/${XZDEC}_w32res.rc" PROPERTIES
-                OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+                OBJECT_DEPENDS "${W32RES_DEPENDENCIES}"
             )
         endif()
 
@@ -1943,7 +1949,7 @@ if(XZ_TOOL_LZMAINFO AND HAVE_DECODERS)
         # Add the Windows resource file for lzmainfo.exe.
         target_sources(lzmainfo PRIVATE src/lzmainfo/lzmainfo_w32res.rc)
         set_source_files_properties(src/lzmainfo/lzmainfo_w32res.rc PROPERTIES
-            OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+            OBJECT_DEPENDS "${W32RES_DEPENDENCIES}"
         )
     endif()
 
@@ -2056,7 +2062,7 @@ this many MiB of RAM if xz cannot determine the amount at runtime")
         # Add the Windows resource file for xz.exe.
         target_sources(xz PRIVATE src/xz/xz_w32res.rc)
         set_source_files_properties(src/xz/xz_w32res.rc PROPERTIES
-            OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/common/common_w32res.rc"
+            OBJECT_DEPENDS "${W32RES_DEPENDENCIES}"
         )
     endif()
 

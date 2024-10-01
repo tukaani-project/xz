@@ -7,6 +7,7 @@ EXTRA_DIST = \
 	tests.cmake \
 	tuktest.h \
 	tests.h \
+	tests_w32res.rc \
 	test_files.sh \
 	test_compress.sh \
 	test_compress_generated_abc \
@@ -24,6 +25,15 @@ AM_CPPFLAGS = \
 LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 LDADD += $(LTLIBINTL)
+
+# Windows resource compiler support
+.rc.o:
+	$(RC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+		$(AM_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) -i $< -o $@
+
+if COND_W32
+LDADD += tests_w32res.o
+endif
 
 check_PROGRAMS = \
 	create_compress_files \

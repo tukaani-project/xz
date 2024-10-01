@@ -16,6 +16,36 @@
 include(CTest)
 
 if(BUILD_TESTING)
+    ################################
+    # Windows Application Manifest #
+    ################################
+
+    # On Windows (but not on Cygwin or MSYS2) we want to add the
+    # application manifest to the test programs so that they are
+    # run in the same configuration as the programs that are installed.
+    # The same object file can be used for all test programs.
+    add_library(tests_w32res OBJECT)
+
+    # CMake requires that even an object library must have at least once
+    # source file. Give it a header file that results in no output files.
+    target_sources(tests_w32res PRIVATE tests/tests.h)
+
+    # The Ninja Generator requires setting the linker language since it
+    # cannot guess the programming language of a header file.
+    set_target_properties(tests_w32res PROPERTIES LINKER_LANGUAGE C)
+
+    target_include_directories(tests_w32res PRIVATE src/common
+        src/common
+        src/liblzma/api
+    )
+
+    if(WIN32)
+        target_sources(tests_w32res PRIVATE tests/tests_w32res.rc)
+        set_source_files_properties(tests/tests_w32res.rc PROPERTIES
+            OBJECT_DEPENDS "${W32RES_DEPENDENCIES}"
+        )
+    endif()
+
     #################
     # liblzma tests #
     #################
@@ -54,7 +84,7 @@ if(BUILD_TESTING)
             src/liblzma
         )
 
-        target_link_libraries("${TEST}" PRIVATE liblzma)
+        target_link_libraries("${TEST}" PRIVATE liblzma tests_w32res)
 
         # Put the test programs into their own subdirectory so they don't
         # pollute the top-level dir which might contain xz and xzdec.
@@ -156,6 +186,7 @@ if(BUILD_TESTING)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_compress")
 
         add_executable(create_compress_files tests/create_compress_files.c)
+        target_link_libraries(create_compress_files PRIVATE tests_w32res)
         target_include_directories(create_compress_files PRIVATE src/common)
         set_target_properties(create_compress_files PROPERTIES
                               RUNTIME_OUTPUT_DIRECTORY test_compress)

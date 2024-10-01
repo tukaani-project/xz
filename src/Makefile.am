@@ -39,4 +39,5 @@ EXTRA_DIST = \
 	common/tuklib_physmem.c \
 	common/tuklib_physmem.h \
 	common/tuklib_progname.c \
-	common/tuklib_progname.h
+	common/tuklib_progname.h \
+	common/w32_application.manifest

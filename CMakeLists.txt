@@ -112,6 +112,24 @@ else()
     set(PACKAGE_NAME "XZ Utils")
 endif()
 
+# When used with MSVC, CMake can merge .manifest files with
+# linker-generated manifests and embed the result in an executable.
+# However, when paired with MinGW-w64, CMake (3.30) ignores .manifest
+# files. Embedding a manifest with a resource file works with both
+# toochains. It's also the way to do it with Autotools.
+#
+# With MSVC, we need to disable the default manifest; attempting to add
+# two manifest entries would break the build. The flag /MANIFEST:NO
+# goes to the linker and it also affects behavior of CMake itself: it
+# looks what flags are being passed to the linker and when CMake sees
+# the /MANIFEST:NO option, other manifest-related linker flags are
+# no longer added (see the file Source/cmcmd.cxx in CMake).
+#
+# See: https://gitlab.kitware.com/cmake/cmake/-/issues/23066
+if(MSVC)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+endif()
+
 # Definitions common to all targets:
 add_compile_definitions(
     # Package info:

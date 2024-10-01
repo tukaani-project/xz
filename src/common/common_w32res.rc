@@ -50,3 +50,8 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
+
+/* Omit the manifest on Cygwin and MSYS2 (both define __CYGWIN__). */
+#if MY_TYPE == VFT_APP && !defined(__CYGWIN__)
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "w32_application.manifest"
+#endif

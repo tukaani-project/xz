@@ -14,6 +14,7 @@
 #############################################################################
 
 include("${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake")
+include(CMakePushCheckState)
 include(CheckCSourceCompiles)
 
 function(tuklib_large_file_support TARGET_OR_ALL)

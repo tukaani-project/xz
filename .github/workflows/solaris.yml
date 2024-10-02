@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v4.1.6
     - name: Test in Solaris
       id: test
-      uses: vmactions/solaris-vm@548f790d1bc2b9342a76cbb47ddbb85875605559 #v1.0.2
+      uses: vmactions/solaris-vm@960d7483ffd6ac03397964cf6423a2f41332c9c8 #v1.0.9
       with:
         usesh: true
         prepare: |

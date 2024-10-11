@@ -1,221 +1,195 @@
-# SPDX-License-Identifier: 0BSD
+# xz translation to Georgian.
+# This file is put in the public domain.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022.
 #
-# Georgian translation for xz.
-# This file is published under the BSD Zero Clause License.
-# Copyright (C) The XZ Utils authors and contributors
-#
-# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.0.alpha\n"
+"Project-Id-Version: xz 5.2.4\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-10-07 06:22+0200\n"
-"PO-Revision-Date: 2024-10-08 03:02+0200\n"
+"POT-Creation-Date: 2024-02-15 01:57+0800\n"
+"PO-Revision-Date: 2024-10-11 06:59+0200\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
-"Language-Team: \n"
+"Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 "X-Generator: Poedit 3.5\n"
 
-#: src/xz/args.c
+#: src/xz/args.c:77
 #, c-format
 msgid "%s: Invalid argument to --block-list"
 msgstr "%s: --block-list -ის არასწორი არგუმენტი"
 
-#: src/xz/args.c
+#: src/xz/args.c:87
 #, c-format
 msgid "%s: Too many arguments to --block-list"
 msgstr "%s: --block-list -ის მეტისმეტად ბევრი არგუმენტი"
 
-#: src/xz/args.c
+#: src/xz/args.c:124
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr ""
-"პარამეტრი --block-list ფილტრის ჯაჭვის ნომრის '%c' შემდეგ ბლოკის ზომა აკლია"
+msgstr "პარამეტრი --block-list ფილტრის ჯაჭვის ნომრის '%c' შემდეგ ბლოკის ზომა აკლია"
 
-#: src/xz/args.c
+#: src/xz/args.c:150
 msgid "0 can only be used as the last element in --block-list"
 msgstr "ნული --block-list -ის მხოლოდ ბოლო ელემენტი შეიძლება იყოს"
 
-#: src/xz/args.c
+#: src/xz/args.c:539
 #, c-format
 msgid "%s: Unknown file format type"
 msgstr "%s: ფაილის ფორმატის უცნობი ტიპი"
 
-#: src/xz/args.c
+#: src/xz/args.c:562 src/xz/args.c:570
 #, c-format
 msgid "%s: Unsupported integrity check type"
 msgstr "%s: სიმრთელის შემოწმების მხარდაუჭერელი ტიპი"
 
-#: src/xz/args.c
+#: src/xz/args.c:606
 msgid "Only one file can be specified with '--files' or '--files0'."
-msgstr ""
-"'--files' ან '--files0' -თან ერთად, მხოლოდ, ერთი ფაილის მითითება შეიძლება."
+msgstr "'--files' ან '--files0' -თან ერთად, მხოლოდ, ერთი ფაილის მითითება შეიძლება."
 
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
 #. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
+#: src/xz/args.c:621 src/xz/coder.c:1058 src/xz/coder.c:1074
+#: src/xz/coder.c:1374 src/xz/coder.c:1377 src/xz/file_io.c:685
+#: src/xz/file_io.c:759 src/xz/file_io.c:849 src/xz/file_io.c:1020
+#: src/xz/list.c:368 src/xz/list.c:414 src/xz/list.c:476 src/xz/list.c:590
+#: src/xz/list.c:599
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: src/xz/args.c
+#: src/xz/args.c:677
 #, c-format
 msgid "The environment variable %s contains too many arguments"
 msgstr "გარემოს ცვლადი %s მეტისმეტად ბევრ არგუმენტს შეიცავს"
 
-#: src/xz/args.c
+#: src/xz/args.c:779
 msgid "Compression support was disabled at build time"
 msgstr "შეკუმშვის მხარდაჭერა გამორთულია აგების დროს"
 
-#: src/xz/args.c
+#: src/xz/args.c:786
 msgid "Decompression support was disabled at build time"
 msgstr "გაშლის მხარდაჭერა გამორთულია აგების დროს"
 
-#: src/xz/args.c
+#: src/xz/args.c:792
 msgid "Compression of lzip files (.lz) is not supported"
 msgstr "შეკუმშვა lzip (.lz) ფაილებისთვის მხარდაჭერილი არაა"
 
-#: src/xz/args.c
+#: src/xz/args.c:814
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr ""
-"პარამეტრი --block-list გამოტოვებულია იმ შემთხვევის გარდა, თუ .xz ფორმატს "
-"იყენებთ"
+msgstr "პარამეტრი --block-list გამოტოვებულია იმ შემთხვევის გარდა, თუ .xz ფორმატს იყენებთ"
 
-#: src/xz/args.c
+#: src/xz/args.c:827 src/xz/args.c:836
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr ""
-"--format=raw -თან ერთად --suffix=.SUF -ის მითითება აუცილებელია, თუ stdout-ზე "
-"არ წერთ"
+msgstr "--format=raw -თან ერთად --suffix=.SUF -ის მითითება აუცილებელია, თუ stdout-ზე არ წერთ"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:140
 msgid "Maximum number of filters is four"
 msgstr "ფილტრების მაქსიმალური რაოდენობა ოთხის ტოლია"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:178
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
 msgstr "Error პარამეტრში --filters%s=FILTERS:"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:228
 msgid "Memory usage limit is too low for the given filter setup."
-msgstr ""
-"მითითებული ფილტრის გამოსაყენებლად მეხსიერების გამოყენების ლიმიტი მეტისმეტად "
-"დაბალია."
+msgstr "მითითებული ფილტრის გამოსაყენებლად მეხსიერების გამოყენების ლიმიტი მეტისმეტად დაბალია."
 
-#: src/xz/coder.c
+#: src/xz/coder.c:243
 #, c-format
-msgid ""
-"filter chain %u used by --block-list but not specified with --filters%u="
-msgstr ""
-"ფილტრების ჯაჭვი %u გამოიყენება პარამეტრით --block-list, მაგრამ არაა "
-"მითითებული პარამეტრით --filters%u="
+msgid "filter chain %u used by --block-list but not specified with --filters%u="
+msgstr "ფილტრების ჯაჭვი %u გამოიყენება პარამეტრით --block-list, მაგრამ არაა მითითებული პარამეტრით --filters%u="
 
-#: src/xz/coder.c
+#: src/xz/coder.c:374
 msgid "Using a preset in raw mode is discouraged."
 msgstr "პრესეტის დაუმუშავებელ რეჟიმში გამოყენება რეკომენდებული არაა."
 
-#: src/xz/coder.c
+#: src/xz/coder.c:376
 msgid "The exact options of the presets may vary between software versions."
 msgstr "პრესეტების ზუსტი პარამეტრები ვერსიებს შორის იცვლება."
 
-#: src/xz/coder.c
+#: src/xz/coder.c:402
 msgid "The .lzma format supports only the LZMA1 filter"
 msgstr ".lzma ფორმატს მხოლოდ LZMA1 ფილტრს მხარდაჭერა გააჩნია"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:410
 msgid "LZMA1 cannot be used with the .xz format"
 msgstr "LZMA1-ის გამოყენება .შეუძლებელია xz ფორმატით"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:434
 #, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
 msgstr "ფილტრების ჯაჭვი %u შეუთავსებელია პარამეტრთან --flush-timeout"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:443
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "ერთნაკადიან რეჟიმზე გადართვა --flush-timeout -ის გამო"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:484
 #, c-format
 msgid "Unsupported options in filter chain %u"
 msgstr "მხარდაუჭერელი პარამეტრები ფილტრის ჯაჭვში %u"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:515
 #, c-format
 msgid "Using up to %<PRIu32> threads."
 msgstr "გამოიყენება მაქსიმუმ %<PRIu32> ნაკადი."
 
-#: src/xz/coder.c
+#: src/xz/coder.c:531
 msgid "Unsupported filter chain or filter options"
 msgstr "მხარდაუჭერელი ფილტრების ჯაჭვი ან ფილტრის პარამეტრები"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:552
 #, c-format
 msgid "Decompression will need %s MiB of memory."
 msgstr "გაშლისთვის საჭიროა %s მიბ მეხსიერება."
 
-#: src/xz/coder.c
+#: src/xz/coder.c:584
 #, c-format
-msgid ""
-"Reduced the number of threads from %s to %s to not exceed the memory usage "
-"limit of %s MiB"
-msgstr ""
-"ნაკადების რაოდენობა შემცირდა %s-დან %s-ზე, რომ არ გადავაცილო მეხსიერების "
-"შეზღუდვას %s მიბ"
+msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
+msgstr "ნაკადების რაოდენობა შემცირდა %s-დან %s-ზე, რომ არ გადავაცილო მეხსიერების შეზღუდვას %s მიბ"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:604
 #, c-format
-msgid ""
-"Reduced the number of threads from %s to one. The automatic memory usage "
-"limit of %s MiB is still being exceeded. %s MiB of memory is required. "
-"Continuing anyway."
-msgstr ""
-"ნაკადების რაოდენობა შემცირდა %s-დან ერთამდე. ავტომატური მეხსიერების "
-"გამოყენების შეზღუდვა %s მბ-ზე გადაცილებულია. საჭიროა %s მიბ მეხსიერება. "
-"მაინც გავაგრძელებ."
+msgid "Reduced the number of threads from %s to one. The automatic memory usage limit of %s MiB is still being exceeded. %s MiB of memory is required. Continuing anyway."
+msgstr "ნაკადების რაოდენობა შემცირდა %s-დან ერთამდე. ავტომატური მეხსიერების გამოყენების შეზღუდვა %s მბ-ზე გადაცილებულია. საჭიროა %s მიბ მეხსიერება. მაინც გავაგრძელებ."
 
-#: src/xz/coder.c
+#: src/xz/coder.c:631
 #, c-format
-msgid ""
-"Switching to single-threaded mode to not exceed the memory usage limit of %s "
-"MiB"
-msgstr ""
-"გადავერთე ერთნაკადიან რეჟიმში, რომ არ გადავაცილო მეხსიერების ზღვარს %s მიბ"
+msgid "Switching to single-threaded mode to not exceed the memory usage limit of %s MiB"
+msgstr "გადავერთე ერთნაკადიან რეჟიმში, რომ არ გადავაცილო მეხსიერების ზღვარს %s მიბ"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:756
 #, c-format
-msgid ""
-"Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the "
-"memory usage limit of %s MiB"
-msgstr ""
-"LZMA%c-ის ლექსიკონის ზომა შესწორდა %s მიბ-დან %s მიბ-ზე, რომ არ გადავაჭარბო "
-"მეხსიერების ლიმიტს, რომელიც %s მიბ-ის ტოლია"
+msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+msgstr "LZMA%c-ის ლექსიკონის ზომა შესწორდა %s მიბ-დან %s მიბ-ზე, რომ არ გადავაჭარბო მეხსიერების ლიმიტს, რომელიც %s მიბ-ის ტოლია"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:766
 #, c-format
-msgid ""
-"Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not "
-"exceed the memory usage limit of %s MiB"
-msgstr ""
-"LZMA%c-ის ლექსიკონის ზომა შესწორდა --filters%u-სთვის %s მიბ-დან %s მიბ-ზე, "
-"რომ არ გადავაჭარბო მეხსიერების ლიმიტს, რომელიც %s მიბ-ის ტოლია"
+msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+msgstr "LZMA%c-ის ლექსიკონის ზომა შესწორდა --filters%u-სთვის %s მიბ-დან %s მიბ-ზე, რომ არ გადავაჭარბო მეხსიერების ლიმიტს, რომელიც %s მიბ-ის ტოლია"
 
-#: src/xz/coder.c
+#: src/xz/coder.c:1140
 #, c-format
 msgid "Error changing to filter chain %u: %s"
 msgstr "ფილტრების ჯაჭვზე %u შეცვლის შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:136 src/xz/file_io.c:144
 #, c-format
 msgid "Error creating a pipe: %s"
 msgstr "ფაიფის შექმნის შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:332
+msgid "Failed to enable the sandbox"
+msgstr "Sandbox-ის ჩართვის შეცდომა"
+
+#: src/xz/file_io.c:374
 #, c-format
 msgid "%s: poll() failed: %s"
 msgstr "%s: poll() -ის შეცდომა: %s"
@@ -230,252 +204,252 @@ msgstr "%s: poll() -ის შეცდომა: %s"
 #. it is possible that the user has put a new file in place
 #. of the original file, and in that case it obviously
 #. shouldn't be removed.
-#: src/xz/file_io.c
+#: src/xz/file_io.c:441
 #, c-format
 msgid "%s: File seems to have been moved, not removing"
 msgstr "%s: როგორც ჩანს, ფაილი გადატანილია. არ წავშლი"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:448 src/xz/file_io.c:1004
 #, c-format
 msgid "%s: Cannot remove: %s"
 msgstr "%s: წაშლა შეუძლებელია: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:474
 #, c-format
 msgid "%s: Cannot set the file owner: %s"
 msgstr "%s: ფაილის მფლობელის დაყენების შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:487
 #, c-format
 msgid "%s: Cannot set the file group: %s"
 msgstr "%s: ფაილის ჯგუფის დაყენების შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:506
 #, c-format
 msgid "%s: Cannot set the file permissions: %s"
 msgstr "%s: ფაილის წვდომების დაყენების შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:632
 #, c-format
 msgid "Error getting the file status flags from standard input: %s"
 msgstr "ფაილის სტატუსის ალმები მიღების შეცდომა სტანდარტული შეყვანიდან: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:690 src/xz/file_io.c:752
 #, c-format
 msgid "%s: Is a symbolic link, skipping"
 msgstr "%s: სიმბმულია. გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:781
 #, c-format
 msgid "%s: Is a directory, skipping"
 msgstr "%s: საქაღალდეა, გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:787
 #, c-format
 msgid "%s: Not a regular file, skipping"
 msgstr "%s: ჩვეულებრივი ფაილი არაა. გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:804
 #, c-format
 msgid "%s: File has setuid or setgid bit set, skipping"
 msgstr "%s: ფაილს setuid ან setgit ბიტი აქვს დაყენებული. გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:811
 #, c-format
 msgid "%s: File has sticky bit set, skipping"
 msgstr "%s: ფაილს წებოვანი ბიტი აქვს. გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:818
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
 msgstr "%s: შეყვანილ ფაილს ერთზე მეტი მყარი ბმული გააჩნია. გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:860
 msgid "Empty filename, skipping"
 msgstr "ცარიელი ფაილის სახელი. გამოტოვება"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:914
 #, c-format
 msgid "Error restoring the status flags to standard input: %s"
 msgstr "სტატუსის ალმების აღდგენის შეცდომა სტანდარტულ შეყვანაზე: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:962
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
 msgstr "ფაილის სტატუსის ალმების მიღების შეცდომა სტანრარტული გამოტანიდან: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1161
 #, c-format
 msgid "Error restoring the O_APPEND flag to standard output: %s"
 msgstr "O_APPEND ალმის აღდგენის შეცდომა სტანდარტულ გამოტანაზე: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1173
 #, c-format
 msgid "%s: Closing the file failed: %s"
 msgstr "%s: ფაილის დახურვის შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1209 src/xz/file_io.c:1471
 #, c-format
 msgid "%s: Seeking failed when trying to create a sparse file: %s"
 msgstr "%s: გადახვევის შეცდომა დამატებითი ფაილის შექმნის მცდელობისას: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1309
 #, c-format
 msgid "%s: Read error: %s"
 msgstr "%s: წაკითხვის შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1339
 #, c-format
 msgid "%s: Error seeking the file: %s"
 msgstr "%s: ფაილის გადახვევის შეცდომა: %s"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1363
 #, c-format
 msgid "%s: Unexpected end of file"
 msgstr "%s: ფაილის მოულოდნელი დასასრული"
 
-#: src/xz/file_io.c
+#: src/xz/file_io.c:1422
 #, c-format
 msgid "%s: Write error: %s"
 msgstr "%s: ჩაწერის შეცდომა: %s"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:237
 msgid "Disabled"
-msgstr "გამორთული"
+msgstr "გამორთულია"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:268
 msgid "Amount of physical memory (RAM):"
 msgstr "ფიზიკური მეხსიერების (RAM) რაოდენობა:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:269
 msgid "Number of processor threads:"
 msgstr "პროცესორის ნაკადების რაოდენობა:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:270
 msgid "Compression:"
 msgstr "შეკუმშვა:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:271
 msgid "Decompression:"
 msgstr "გაშლა:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:272
 msgid "Multi-threaded decompression:"
 msgstr "მრავალნაკადიანი გაშლა:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:273
 msgid "Default for -T0:"
 msgstr "ნაგულისხმევი პარამეტრისთვის -T0:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:291
 msgid "Hardware information:"
 msgstr "ინფორმაცია აპარატურის შესახებ:"
 
-#: src/xz/hardware.c
+#: src/xz/hardware.c:298
 msgid "Memory usage limits:"
-msgstr "მეხსიერების გამოყენების ლიმიტები:"
+msgstr "მეხსიერების გამოყენების შეზღუდვები:"
 
-#: src/xz/list.c
+#: src/xz/list.c:67
 msgid "Streams:"
 msgstr "ნაკადები:"
 
-#: src/xz/list.c
+#: src/xz/list.c:68
 msgid "Blocks:"
 msgstr "ბლოკები:"
 
-#: src/xz/list.c
+#: src/xz/list.c:69
 msgid "Compressed size:"
 msgstr "შეკუმშული ზომა:"
 
-#: src/xz/list.c
+#: src/xz/list.c:70
 msgid "Uncompressed size:"
 msgstr "შეუკუმშავი ზომა:"
 
-#: src/xz/list.c
+#: src/xz/list.c:71
 msgid "Ratio:"
 msgstr "პროპორციები:"
 
-#: src/xz/list.c
+#: src/xz/list.c:72
 msgid "Check:"
 msgstr "შემოწმება:"
 
-#: src/xz/list.c
+#: src/xz/list.c:73
 msgid "Stream Padding:"
 msgstr "ნაკადის შევსება:"
 
-#: src/xz/list.c
+#: src/xz/list.c:74
 msgid "Memory needed:"
 msgstr "საჭიროა მეხსიერება:"
 
-#: src/xz/list.c
+#: src/xz/list.c:75
 msgid "Sizes in headers:"
 msgstr "ზომა თავსართებში:"
 
-#: src/xz/list.c
+#: src/xz/list.c:78
 msgid "Number of files:"
 msgstr "ფაილების რაოდენობა:"
 
-#: src/xz/list.c
+#: src/xz/list.c:121
 msgid "Stream"
 msgstr "ნაკადი"
 
-#: src/xz/list.c
+#: src/xz/list.c:122
 msgid "Block"
 msgstr "ბლოკი"
 
-#: src/xz/list.c
+#: src/xz/list.c:123
 msgid "Blocks"
 msgstr "ბლოკები"
 
-#: src/xz/list.c
+#: src/xz/list.c:124
 msgid "CompOffset"
 msgstr "შეკუმშწანაცვლ"
 
-#: src/xz/list.c
+#: src/xz/list.c:125
 msgid "UncompOffset"
 msgstr "შეუკუმშწანაცვლ"
 
-#: src/xz/list.c
+#: src/xz/list.c:126
 msgid "CompSize"
 msgstr "შეკუმშზომა"
 
-#: src/xz/list.c
+#: src/xz/list.c:127
 msgid "UncompSize"
 msgstr "შეუკუმშზომა"
 
-#: src/xz/list.c
+#: src/xz/list.c:128
 msgid "TotalSize"
 msgstr "ზომასულ"
 
-#: src/xz/list.c
+#: src/xz/list.c:129
 msgid "Ratio"
 msgstr "პროპორციები"
 
-#: src/xz/list.c
+#: src/xz/list.c:130
 msgid "Check"
 msgstr "შემოწმება"
 
-#: src/xz/list.c
+#: src/xz/list.c:131
 msgid "CheckVal"
 msgstr "მნიშვნშემოწმ"
 
-#: src/xz/list.c
+#: src/xz/list.c:132
 msgid "Padding"
 msgstr "შევსება"
 
-#: src/xz/list.c
+#: src/xz/list.c:133
 msgid "Header"
 msgstr "ზედა კოლონტიტული"
 
-#: src/xz/list.c
+#: src/xz/list.c:134
 msgid "Flags"
 msgstr "დროშები"
 
-#: src/xz/list.c
+#: src/xz/list.c:135
 msgid "MemUsage"
 msgstr "მეხსგამოყ"
 
-#: src/xz/list.c
+#: src/xz/list.c:136
 msgid "Filters"
 msgstr "ფილტრები"
 
@@ -483,7 +457,7 @@ msgstr "ფილტრები"
 #. This string is used in tables. In older xz version this
 #. string was limited to ten columns in a fixed-width font, but
 #. nowadays there is no strict length restriction anymore.
-#: src/xz/list.c
+#: src/xz/list.c:168
 msgid "None"
 msgstr "არაფერი"
 
@@ -491,60 +465,60 @@ msgstr "არაფერი"
 #. but the Check ID is known (here 2). In older xz version these
 #. strings were limited to ten columns in a fixed-width font, but
 #. nowadays there is no strict length restriction anymore.
-#: src/xz/list.c
+#: src/xz/list.c:174
 msgid "Unknown-2"
 msgstr "უცნობი-2"
 
-#: src/xz/list.c
+#: src/xz/list.c:175
 msgid "Unknown-3"
 msgstr "უცნობი-3"
 
-#: src/xz/list.c
+#: src/xz/list.c:177
 msgid "Unknown-5"
 msgstr "უცნობი-5"
 
-#: src/xz/list.c
+#: src/xz/list.c:178
 msgid "Unknown-6"
 msgstr "უცნობი-6"
 
-#: src/xz/list.c
+#: src/xz/list.c:179
 msgid "Unknown-7"
 msgstr "უცნობი-7"
 
-#: src/xz/list.c
+#: src/xz/list.c:180
 msgid "Unknown-8"
 msgstr "უცნობი-8"
 
-#: src/xz/list.c
+#: src/xz/list.c:181
 msgid "Unknown-9"
 msgstr "უცნობი-9"
 
-#: src/xz/list.c
+#: src/xz/list.c:183
 msgid "Unknown-11"
 msgstr "უცნობი-11"
 
-#: src/xz/list.c
+#: src/xz/list.c:184
 msgid "Unknown-12"
 msgstr "უცნობი-12"
 
-#: src/xz/list.c
+#: src/xz/list.c:185
 msgid "Unknown-13"
 msgstr "უცნობი-13"
 
-#: src/xz/list.c
+#: src/xz/list.c:186
 msgid "Unknown-14"
 msgstr "უცნობი-14"
 
-#: src/xz/list.c
+#: src/xz/list.c:187
 msgid "Unknown-15"
 msgstr "უცნობი-15"
 
-#: src/xz/list.c
+#: src/xz/list.c:350
 #, c-format
 msgid "%s: File is empty"
 msgstr "%s: ფაილი ცარიელია"
 
-#: src/xz/list.c
+#: src/xz/list.c:355
 #, c-format
 msgid "%s: Too small to be a valid .xz file"
 msgstr "%s: მეტისმეტად პატარაა, რომ სწორ .xz ფაილს წარმოადგენდეს"
@@ -553,149 +527,137 @@ msgstr "%s: მეტისმეტად პატარაა, რომ ს�
 #. to Ratio, the columns are right aligned. Check and Filename
 #. are left aligned. If you need longer words, it's OK to
 #. use two lines here. Test with "xz -l foo.xz".
-#: src/xz/list.c
+#: src/xz/list.c:740
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
-msgstr ""
-"ნაკადები  ბლოკები  შეკუმშული შეუკუმშავი  ფარდობა  შემოწმება    ფაილს სახელი"
+msgstr "ნაკადები  ბლოკები  შეკუმშული შეუკუმშავი  ფარდობა  შემოწმება    ფაილს სახელი"
 
-#: src/xz/list.c
+#: src/xz/list.c:1035 src/xz/list.c:1213
 msgid "Yes"
-msgstr "კი"
+msgstr "დიახ"
 
-#: src/xz/list.c
+#: src/xz/list.c:1035 src/xz/list.c:1213
 msgid "No"
 msgstr "არა"
 
-#: src/xz/list.c
+#: src/xz/list.c:1037 src/xz/list.c:1215
 #, c-format
 msgid "  Minimum XZ Utils version: %s\n"
 msgstr "    XZ-ის პროგრამების მინიმალური ვერსია: %s\n"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
-#: src/xz/list.c
+#: src/xz/list.c:1188
 #, c-format
 msgid "%s file\n"
 msgid_plural "%s files\n"
 msgstr[0] "%s ფაილი\n"
 msgstr[1] "%s ფაილი\n"
 
-#: src/xz/list.c
+#: src/xz/list.c:1201
 msgid "Totals:"
 msgstr "ჯამები:"
 
-#: src/xz/list.c
+#: src/xz/list.c:1284
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
-msgstr ""
-"--list მხოლოდ .xz ფაილებზე მუშაობს (--format=xz ან --format=auto "
-"(ავტომატური))"
+msgstr "--list მხოლოდ .xz ფაილებზე მუშაობს (--format=xz ან --format=auto (ავტომატური))"
 
-#: src/xz/list.c
+#: src/xz/list.c:1289
 msgid "Try 'lzmainfo' with .lzma files."
 msgstr "სცადეთ 'lzmainfo' .lzma ფაილებისთვის."
 
-#: src/xz/list.c
+#: src/xz/list.c:1297
 msgid "--list does not support reading from standard input"
 msgstr "--list -ს სტანდარტული შეყვანიდან წაკითხვის მხარდაჭერა არ გააჩნია"
 
-#: src/xz/main.c
+#: src/xz/main.c:95
 #, c-format
 msgid "%s: Error reading filenames: %s"
 msgstr "%s: ფაილის სახელების წაკითხვის შეცდომა: %s"
 
-#: src/xz/main.c
+#: src/xz/main.c:102
 #, c-format
 msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s: შეყვანის მოულოდნელი დასასრული ფაილის სახელების კითხვისას"
 
-#: src/xz/main.c
+#: src/xz/main.c:126
 #, c-format
-msgid ""
-"%s: Null character found when reading filenames; maybe you meant to use '--"
-"files0' instead of '--files'?"
-msgstr ""
-"%s: ფაილის სახელების კითხვისა აღმოჩენილია ნულოვანი სიმბოლო. შეიძლება, '--"
-"files'-ის მაგიერ '--files0'-ის გამოყენება გნებავდათ?"
+msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "%s: ფაილის სახელების კითხვისა აღმოჩენილია ნულოვანი სიმბოლო. შეიძლება, '--files'-ის მაგიერ '--files0'-ის გამოყენება გნებავდათ?"
 
-#: src/xz/main.c
+#: src/xz/main.c:206
 msgid "Compression and decompression with --robot are not supported yet."
 msgstr "--robot -ან ერთად შეკუმშვა და გაშლა ჯერჯერობით მხარდაუჭერელია."
 
-#: src/xz/main.c
-msgid ""
-"Cannot read data from standard input when reading filenames from standard "
-"input"
-msgstr ""
-"მონაცემების სტანდარტული შეყვანიდან წაკითხვა მაშინ, როცა ფაილების სახელებიც "
-"სტანდარტული შეყვანიდან იკითხება, შეუძლებელია"
+#: src/xz/main.c:284
+msgid "Cannot read data from standard input when reading filenames from standard input"
+msgstr "მონაცემების სტანდარტული შეყვანიდან წაკითხვა მაშინ, როცა ფაილების სახელებიც სტანდარტული შეყვანიდან იკითხება, შეუძლებელია"
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c:670 src/xz/message.c:725
 #, c-format
 msgid "%s: "
 msgstr "%s: "
 
-#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#: src/xz/message.c:797 src/xz/message.c:856 src/lzmainfo/lzmainfo.c:131
 msgid "Internal error (bug)"
 msgstr "შიდა შეცდომა (პროგრამა გასამართია)"
 
-#: src/xz/message.c
+#: src/xz/message.c:804
 msgid "Cannot establish signal handlers"
 msgstr "სიგნალების დამმუშავებლების დამყარების შეცდომა"
 
-#: src/xz/message.c
+#: src/xz/message.c:813
 msgid "No integrity check; not verifying file integrity"
 msgstr "სიმრთელის შემოწმების გარეშე. ფაილის სიმრთელე არ შემოწმდება"
 
-#: src/xz/message.c
+#: src/xz/message.c:816
 msgid "Unsupported type of integrity check; not verifying file integrity"
-msgstr ""
-"ფაილის სიმრთელის შემოწმების ხარდაუჭერელი ტიპი. ფაილის სიმრთელე არ შემოწმდება"
+msgstr "ფაილის სიმრთელის შემოწმების ხარდაუჭერელი ტიპი. ფაილის სიმრთელე არ შემოწმდება"
 
-#: src/xz/message.c
+#: src/xz/message.c:823
 msgid "Memory usage limit reached"
 msgstr "მეხსიერების გამოყენების ლიმიტი მიღწეულია"
 
-#: src/xz/message.c
+#: src/xz/message.c:826
 msgid "File format not recognized"
 msgstr "ფაილის ფორმატი უცნობია"
 
-#: src/xz/message.c
+#: src/xz/message.c:829
 msgid "Unsupported options"
 msgstr "მხარდაუწერელი პარამეტრები"
 
-#: src/xz/message.c
+#: src/xz/message.c:832
 msgid "Compressed data is corrupt"
 msgstr "შეკუმშული მონაცემები დაზიანებულია"
 
-#: src/xz/message.c
+#: src/xz/message.c:835
 msgid "Unexpected end of input"
 msgstr "შეყვანის მოულოდნელი დასასრული"
 
-#: src/xz/message.c
+#: src/xz/message.c:877
 #, c-format
 msgid "%s MiB of memory is required. The limiter is disabled."
 msgstr "საჭიროა %s მბ მეხსიერება. მსაზღვრელი გამორთულია."
 
-#: src/xz/message.c
+#: src/xz/message.c:905
 #, c-format
 msgid "%s MiB of memory is required. The limit is %s."
 msgstr "საჭიროა %s მბ მეხსიერება. ზღვარია: %s."
 
-#: src/xz/message.c
+#: src/xz/message.c:924
 #, c-format
 msgid "%s: Filter chain: %s\n"
 msgstr "%s: ფილტრის ჯაჭვი: %s\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:935
 #, c-format
 msgid "Try '%s --help' for more information."
 msgstr "მეტი ინფორმაციისთვის სცადეთ '%s --help'."
 
-#: src/xz/message.c
+#: src/xz/message.c:961
 #, c-format
 msgid ""
 "Usage: %s [OPTION]... [FILE]...\n"
@@ -706,18 +668,15 @@ msgstr ""
 "მითითებული ფაილების .xz ფორმატში შეკუმშვა ან გაშლა.\n"
 "\n"
 
-#: src/xz/message.c
-msgid ""
-"Mandatory arguments to long options are mandatory for short options too.\n"
-msgstr ""
-"გრძელი პარამეტრების აუცილებელი არგუმენტები მათი მოკლე ვარიანტებისთვისაც "
-"სავალდებულოა.\n"
+#: src/xz/message.c:968
+msgid "Mandatory arguments to long options are mandatory for short options too.\n"
+msgstr "გრძელი პარამეტრების აუცილებელი არგუმენტები მათი მოკლე ვარიანტებისთვისაც სავალდებულოა.\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:972
 msgid " Operation mode:\n"
 msgstr " ოპერაციის რეჟიმი:\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:975
 msgid ""
 "  -z, --compress      force compression\n"
 "  -d, --decompress    force decompression\n"
@@ -729,7 +688,7 @@ msgstr ""
 "  -t, --test          შეკუმშული ფაილის სიმრთელის შემოწმება\n"
 "  -l, --list          .xz ფაილის შესახებ ინფორმაციის სიის გამოტანა"
 
-#: src/xz/message.c
+#: src/xz/message.c:981
 msgid ""
 "\n"
 " Operation modifiers:\n"
@@ -737,7 +696,7 @@ msgstr ""
 "\n"
 "ოპერაციის მოდიფიკატორების:\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:984
 msgid ""
 "  -k, --keep          keep (don't delete) input files\n"
 "  -f, --force         force overwrite of output file and (de)compress links\n"
@@ -747,7 +706,7 @@ msgstr ""
 "  -f, --force         გამოტანილი ფაილებისა და ბმულების თავზე გადაწერა\n"
 "  -c, --stdout        stdout-ში ჩაწერა და შეყვანილი ფაილების შენარჩუნება"
 
-#: src/xz/message.c
+#: src/xz/message.c:993
 msgid ""
 "      --single-stream decompress only the first stream, and silently\n"
 "                      ignore possible remaining input data"
@@ -755,28 +714,24 @@ msgstr ""
 "      --single-stream გაშლის, მხოლოდ, პირველ ნაკადს\n"
 "                      და ჩუმად დააიგნორებს დარჩენილ შეყვანილ მონაცემებს"
 
-#: src/xz/message.c
+#: src/xz/message.c:996
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
 "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
 "                      omitted, filenames are read from the standard input;\n"
-"                      filenames must be terminated with the newline "
-"character\n"
+"                      filenames must be terminated with the newline character\n"
 "      --files0[=FILE] like --files but use the null character as terminator"
 msgstr ""
 "      --no-sparse     გაშლისას დამატებითი ფაილები არ შეიქმნება\n"
 "  -S, --suffix=.SUF   შეკუმშულ ფაილებზე '.SUF' სუფიქსის გამოყენება\n"
-"      --files[=FILE]  დასამუშავებელი ფაილის სახელების FILE-დან წაკითხვა; თუ "
-"FILE\n"
-"                      მითთებული არაა, ფაილის სახელები სტანდარტული შეყვანიდან "
-"იქნება წაკითხული;\n"
-"                      ფაილის სახელები ხაზის გადატანის სიმბოლოთი უნდა "
-"სრულდებოდეს\n"
-"      --files0[=FILE] --files-ის მსგავსად, მაგრამ ფაილის სახელის "
-"დასასრულებლად ნულოვანი სიმბოლოს გამოყენება"
+"      --files[=FILE]  დასამუშავებელი ფაილის სახელების FILE-დან წაკითხვა; თუ FILE\n"
+"                      მითთებული არაა, ფაილის სახელები სტანდარტული შეყვანიდან იქნება წაკითხული;\n"
+"                      ფაილის სახელები ხაზის გადატანის სიმბოლოთი უნდა სრულდებოდეს\n"
+"      --files0[=FILE] --files-ის მსგავსად, მაგრამ ფაილის სახელის დასასრულებლად\n"
+"                                     ნულოვანი სიმბოლოს გამოყენება"
 
-#: src/xz/message.c
+#: src/xz/message.c:1005
 msgid ""
 "\n"
 " Basic file format and compression options:\n"
@@ -784,111 +739,90 @@ msgstr ""
 "\n"
 "ფაილის ფორმატისა და შეკუმშვის ძირითადი პარამეტრები:\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:1007
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
 "  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
 "                      'crc32', 'crc64' (default), or 'sha256'"
 msgstr ""
-"  -F, --format=FMT    ფაილის ფორმატი გასაშიფრად ან დასაშიფრად. შესაძლო "
-"მნიშვნელობებია\n"
+"  -F, --format=FMT    ფაილის ფორმატი გასაშიფრად ან დასაშიფრად. შესაძლო მნიშვნელობებია\n"
 "                      'auto' (ნაგულიხმევი), 'xz', 'lzma', 'lzip' და 'raw'\n"
-"  -C, --check=CHECK   მთლიანობის შემოწმების ტიპი: 'არცერთი' (გამოიყენეთ "
-"ყურადღებით),\n"
+"  -C, --check=CHECK   მთლიანობის შემოწმების ტიპი: 'არცერთი' (გამოიყენეთ ყურადღებით),\n"
 "                      'crc32', 'crc64' (ნაგულისხმევი), ან 'sha256'"
 
-#: src/xz/message.c
-msgid ""
-"      --ignore-check  don't verify the integrity check when decompressing"
+#: src/xz/message.c:1012
+msgid "      --ignore-check  don't verify the integrity check when decompressing"
 msgstr "      --ignore-check  გაშლისას სიმრთელე არ შემოწმდება"
 
-#: src/xz/message.c
+#: src/xz/message.c:1016
 msgid ""
-"  -0 ... -9           compression preset; default is 6; take compressor "
-"*and*\n"
-"                      decompressor memory usage into account before using "
-"7-9!"
+"  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
+"                      decompressor memory usage into account before using 7-9!"
 msgstr ""
-"  -0 ... -9           შეკუმშვის პრესეტი. ნაგულისხმებია 6; 7-9 მნიშვნელობის "
-"მითითებამდე გაითვალისწინეთ\n"
+"  -0 ... -9           შეკუმშვის პრესეტი. ნაგულისხმებია 6; 7-9 მნიშვნელობის მითითებამდე გაითვალისწინეთ\n"
 "                       შემკუმშავისა *და* გამშლელის მეხსიერების მოთხოვნები!"
 
-#: src/xz/message.c
+#: src/xz/message.c:1020
 msgid ""
-"  -e, --extreme       try to improve compression ratio by using more CPU "
-"time;\n"
+"  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
 "                      does not affect decompressor memory requirements"
 msgstr ""
-"  -e, --extreme       CPU-ის მეტი დატვირთვის ხარჯზე შეკუმშვის დონის აწევის "
-"ცდა;\n"
+"  -e, --extreme       CPU-ის მეტი დატვირთვის ხარჯზე შეკუმშვის დონის აწევის ცდა;\n"
 "                      არქივის გაშლისას მეხსიერების მოთხოვნები არ შეიცვლება"
 
-#: src/xz/message.c
+#: src/xz/message.c:1024
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=NUM   გამოყენებული იქნება მაქს. NUM ნაკადი; ნაგულისხმევი "
-"მნიშვნელობაა\n"
-"                      0, რაც იყენებს იმდენ ნაკადს, რამდენი ბირთვიც აქვს "
-"პროცესორს"
+"  -T, --threads=NUM   გამოყენებული იქნება მაქს. NUM ნაკადი; ნაგულისხმევი მნიშვნელობაა\n"
+"                      0, რაც იყენებს იმდენ ნაკადს, რამდენი ბირთვიც აქვს პროცესორს"
 
-#: src/xz/message.c
+#: src/xz/message.c:1029
 msgid ""
 "      --block-size=SIZE\n"
-"                      start a new .xz block after every SIZE bytes of "
-"input;\n"
+"                      start a new .xz block after every SIZE bytes of input;\n"
 "                      use this to set the block size for threaded compression"
 msgstr ""
 "      --block-size=ზომა\n"
-"                      ახალი .xz ბლოკის დაწყება ყოველი მითითებული ზომის "
-"მიღწევისას;\n"
-"                      გაოიყენეთ ეს, რომ დააყენოთ ბლოკის ზომა მრავალნაკადიანი "
-"შეკუმშვისას"
+"                      ახალი .xz ბლოკის დაწყება ყოველი მითითებული ზომის მიღწევისას;\n"
+"                      გაოიყენეთ ეს, რომ დააყენოთ ბლოკის ზომა მრავალნაკადიანი შეკუმშვისას"
 
-#: src/xz/message.c
+#: src/xz/message.c:1033
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
 "                      intervals of uncompressed data; optionally, specify a\n"
-"                      filter chain number (0-9) followed by a ':' before "
-"the\n"
+"                      filter chain number (0-9) followed by a ':' before the\n"
 "                      uncompressed data size"
 msgstr ""
 "      --block-list=ბლოკები\n"
-"                      დაიწყება ახალი .xz ბლოკი მითითებული მძიმით გამოყოფილი "
-"ინტერვალის განბავლობაში\n"
-"                      შეუკუმშავი მონაცემების მიღების შემდეგ. არასავალდებულოდ "
-"შეგიძლიათ მიუთითოთ\n"
+"                      დაიწყება ახალი .xz ბლოკი მითითებული მძიმით გამოყოფილი ინტერვალის განბავლობაში\n"
+"                      შეუკუმშავი მონაცემების მიღების შემდეგ. არასავალდებულოდ შეგიძლიათ მიუთითოთ\n"
 "                      ფილტრების ჯაჭვის ნომერი (0-9), რომელსაც '.' მოჰყვება\n"
 "                      შეუკუმშავი მონაცემების ზომის შემდეგ"
 
-#: src/xz/message.c
+#: src/xz/message.c:1039
 msgid ""
 "      --flush-timeout=TIMEOUT\n"
-"                      when compressing, if more than TIMEOUT milliseconds "
-"has\n"
-"                      passed since the previous flush and reading more "
-"input\n"
+"                      when compressing, if more than TIMEOUT milliseconds has\n"
+"                      passed since the previous flush and reading more input\n"
 "                      would block, all pending data is flushed out"
 msgstr ""
 "      --flush-timeout=მოლოდინისვადა\n"
 "                      შეკუმშვისას, თუ გავა მოლოდინის დროზე მეტი მილიწამი\n"
-"                      მონაცემების ბუფერის გასუფთავებასა და მეტი ინფორმაციის "
-"წაკითხვის\n"
-"                      დაბლოკვის შემდეგ, ყველა დარჩენილი მონაცემი "
-"გასუფთავდება ბუფერიდან"
+"                      მონაცემების ბუფერის გასუფთავებასა და მეტი ინფორმაციის წაკითხვის\n"
+"                      დაბლოკვის შემდეგ, ყველა დარჩენილი მონაცემი გასუფთავდება ბუფერიდან"
 
-#: src/xz/message.c
+#: src/xz/message.c:1045
 #, no-c-format
 msgid ""
 "      --memlimit-compress=LIMIT\n"
 "      --memlimit-decompress=LIMIT\n"
 "      --memlimit-mt-decompress=LIMIT\n"
 "  -M, --memlimit=LIMIT\n"
-"                      set memory usage limit for compression, "
-"decompression,\n"
+"                      set memory usage limit for compression, decompression,\n"
 "                      threaded decompression, or all of these; LIMIT is in\n"
 "                      bytes, % of RAM, or 0 for defaults"
 msgstr ""
@@ -896,70 +830,61 @@ msgstr ""
 "      --memlimit-decompress=ლიმიტი\n"
 "      --memlimit-mt-decompress=ლიმიტი\n"
 "  -M, --memlimit=ლიმიტი\n"
-"                      მეხსიერების ლიმიტის დაყენება შეკუმშვისთვის, "
-"გაშლისთვის,\n"
+"                      მეხსიერების ლიმიტის დაყენება შეკუმშვისთვის, გაშლისთვის,\n"
 "                      მრავალნაკადიანი გაშლისთვის, ან ყველასთვის\n"
-"                      ლიმიტი მიეთითება ბაიტებში, RAM-ის %-ში, ან 0, "
-"ნაგულისხმევი მნიშვნელობის გამოსაყენებლად"
+"                      ლიმიტი მიეთითება ბაიტებში, RAM-ის %-ში, \n"
+"                      ან 0, ნაგულისხმევი მნიშვნელობის გამოსაყენებლად"
 
-#: src/xz/message.c
+#: src/xz/message.c:1054
 msgid ""
-"      --no-adjust     if compression settings exceed the memory usage "
-"limit,\n"
-"                      give an error instead of adjusting the settings "
-"downwards"
+"      --no-adjust     if compression settings exceed the memory usage limit,\n"
+"                      give an error instead of adjusting the settings downwards"
 msgstr ""
-"      --no-adjust     თუ შეკუმშვის პარამეტრი გადასცდება მეხსიერების "
-"გამოყენების ლიმიტს,\n"
+"      --no-adjust     თუ შეკუმშვის პარამეტრი გადასცდება მეხსიერების გამოყენების ლიმიტს,\n"
 "                      პარამეტრის შემცირების მაგიერ შეცდომის გამოტანა"
 
-#: src/xz/message.c
+#: src/xz/message.c:1060
 msgid ""
 "\n"
 " Custom filter chain for compression (alternative for using presets):"
 msgstr ""
 "\n"
-"მომხმარებლის ფილტრის ჯაჭვი შეკუმშვისთვის (პრესეტების გამოყენების "
-"ალტერნატივა):"
+"მომხმარებლის ფილტრის ჯაჭვი შეკუმშვისთვის (პრესეტების გამოყენების ალტერნატივა):"
 
-#: src/xz/message.c
+#: src/xz/message.c:1063
 msgid ""
 "\n"
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
 "                      syntax; use --filters-help for more information"
 msgstr ""
 "\n"
-"  --filters=FILTERS   ფილტრების ჯაჭვის აწყობა liblzma-ის ფილტრის პარამეტრის "
-"სინტაქსით\n"
+"  --filters=FILTERS   ფილტრების ჯაჭვის აწყობა liblzma-ის ფილტრის პარამეტრის \n"
+"                      სინტაქსით\n"
 "                      მეტი ინფორმაციისთვის გამოიყენებ --filters-help"
 
-#: src/xz/message.c
+#: src/xz/message.c:1069
 msgid ""
 "  --filters1=FILTERS ... --filters9=FILTERS\n"
 "                      set additional filter chains using the liblzma filter\n"
 "                      string syntax to use with --block-list"
 msgstr ""
 "  --filters1=ფილტრები ... --filters9=ფილტრები\n"
-"                      დამატებითი ფილტრის ჯაჭვების დაყენება liblzma-ის "
-"ფილტრის სინტაქსით\n"
+"                      დამატებითი ფილტრის ჯაჭვების დაყენება liblzma-ის ფილტრის სინტაქსით\n"
 "                      --block-list პარამეტრით გამოსაყენებლად"
 
-#: src/xz/message.c
+#: src/xz/message.c:1075
 msgid ""
-"  --filters-help      display more information about the liblzma filter "
-"string\n"
+"  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
 msgstr ""
 "  --filters-help      მეტი ინფორმაციის გამოტანა liblzma ფილტრის სტრიქონის\n"
 "                      სინტაქის შესახებ და გასვლა."
 
-#: src/xz/message.c
+#: src/xz/message.c:1086
 msgid ""
 "\n"
-"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero "
-"or\n"
-"  --lzma2[=OPTS]      more of the following options (valid values; "
-"default):\n"
+"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
+"  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
 "                        preset=PRE reset options to a preset (0-9[e])\n"
 "                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
 "                        lc=NUM     number of literal context bits (0-4; 3)\n"
@@ -967,16 +892,12 @@ msgid ""
 "                        pb=NUM     number of position bits (0-4; 2)\n"
 "                        mode=MODE  compression mode (fast, normal; normal)\n"
 "                        nice=NUM   nice length of a match (2-273; 64)\n"
-"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; "
-"bt4)\n"
-"                        depth=NUM  maximum search depth; 0=automatic "
-"(default)"
+"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
+"                        depth=NUM  maximum search depth; 0=automatic (default)"
 msgstr ""
 "\n"
-"  --lzma1[=OPTS]      LZMA1 ან LZMA2; OPTS წარმოადგენს მძიმით გამოყოფილ სიას "
-"ნული ან\n"
-"  --lzma2[=OPTS]      მეტი შემდეგი პარამეტრებიდან (სწორი მნიშვნელობები, "
-"ნაგულისხმევი):\n"
+"  --lzma1[=OPTS]      LZMA1 ან LZMA2; OPTS წარმოადგენს მძიმით გამოყოფილ სიას ნული ან\n"
+"  --lzma2[=OPTS]      მეტი შემდეგი პარამეტრებიდან (სწორი მნიშვნელობები, ნაგულისხმევი):\n"
 "                        preset=PRE პარამეტრების ჩამოყრა პრესეტამდე (0-9[e])\n"
 "                        dict=NUM   ლექსიკონის ზომა (4კიბ - 1536მიბ; 8მიბ)\n"
 "                        lc=NUM     number of literal context bits (0-4; 3)\n"
@@ -984,12 +905,10 @@ msgstr ""
 "                        pb=NUM     მდებარეობის ბიტების რაოდენობა (0-4; 2)\n"
 "                        mode=MODE  შეკუმშვის რეჟიმი (fast, normal; normal)\n"
 "                        nice=NUM   nice length of a match (2-273; 64)\n"
-"                        mf=NAME    დამთხვევის მძებნელ (hc3, hc4, bt2, bt3, "
-"bt4; bt4)\n"
-"                        depth=NUM  მაქსიმალური ძებნის სიღრმე; 0=ავტომატური "
-"(ნაგულიხმევი)"
+"                        mf=NAME    დამთხვევის მძებნელ (hc3, hc4, bt2, bt3, bt4; bt4)\n"
+"                        depth=NUM  მაქსიმალური ძებნის სიღრმე; 0=ავტომატური (ნაგულიხმევი)"
 
-#: src/xz/message.c
+#: src/xz/message.c:1101
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -1013,10 +932,10 @@ msgstr ""
 "  --sparc[=OPTS]      SPARC BCJ ფილტრი\n"
 "  --riscv[=OPTS]      RISC-V BCJ ფილტრი\n"
 "                      მისაღები OPTS ყველა BCJ ფილტრისთვის:\n"
-"                        start=NUM  წანაცვლების დაწყება გადაყვანისთვის "
-"(ნაგულისხმევი=0)"
+"                        start=NUM  წანაცვლების დაწყება \n"
+"                                      გადაყვანისთვის (ნაგულისხმევი=0)"
 
-#: src/xz/message.c
+#: src/xz/message.c:1115
 msgid ""
 "\n"
 "  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
@@ -1024,12 +943,12 @@ msgid ""
 "                                   from each other (1-256; 1)"
 msgstr ""
 "\n"
-"  --delta[=OPTS]      დელტა ფილტრი. დაშვებული პარამეტრები (სწორი "
-"მნიშვნელობები, ნაგულისხმევი):\n"
+"  --delta[=OPTS]      დელტა ფილტრი. დაშვებული პარამეტრები\n"
+"                       (სწორი მნიშვნელობები,ნაგულისხმევი):\n"
 "                        dist=რიცხვი   დაშორება ორ ბაიტს შორის გამოაკლდება \n"
 "                                   ერთმანეთს (1-256; 1)"
 
-#: src/xz/message.c
+#: src/xz/message.c:1123
 msgid ""
 "\n"
 " Other options:\n"
@@ -1037,61 +956,51 @@ msgstr ""
 "\n"
 "სხვა პარამეტრები:\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:1126
 msgid ""
-"  -q, --quiet         suppress warnings; specify twice to suppress errors "
-"too\n"
+"  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
 "  -v, --verbose       be verbose; specify twice for even more verbose"
 msgstr ""
-"  -q, --quiet         გაფრთხილებების დადუმება. შეცდომების დასამალად მიუთითეთ "
-"ორჯერ\n"
-"  -v, --verbose       მეტი შეტყობინების გამოტანა. უფრო მეტი შეტყობინებისთვის "
-"მიუთითეთ ორჯერ"
+"  -q, --quiet         გაფრთხილებების დადუმება. შეცდომების დასამალად მიუთითეთ ორჯერ\n"
+"  -v, --verbose       მეტი შეტყობინების გამოტანა. უფრო მეტი შეტყობინებისთვის მიუთითეთ ორჯერ"
 
-#: src/xz/message.c
+#: src/xz/message.c:1131
 msgid "  -Q, --no-warn       make warnings not affect the exit status"
-msgstr ""
-"  -Q, --no-warn       გაფრთხილებებს გასვლის სტატუსზე გავლენა არ ექნებათ"
+msgstr "  -Q, --no-warn       გაფრთხილებებს გასვლის სტატუსზე გავლენა არ ექნებათ"
 
-#: src/xz/message.c
-msgid ""
-"      --robot         use machine-parsable messages (useful for scripts)"
-msgstr ""
-"      --robot         მანქანისთვის დამუშავებადი შეტყობინებები "
-"(სკრიპტებისთვის)"
+#: src/xz/message.c:1133
+msgid "      --robot         use machine-parsable messages (useful for scripts)"
+msgstr "      --robot         მანქანისთვის დამუშავებადი შეტყობინებები (სკრიპტებისთვის)"
 
-#: src/xz/message.c
+#: src/xz/message.c:1136
 msgid ""
-"      --info-memory   display the total amount of RAM and the currently "
-"active\n"
+"      --info-memory   display the total amount of RAM and the currently active\n"
 "                      memory usage limits, and exit"
 msgstr ""
 "      --info-memory   მეხსიერების ჯამური რაოდენობის და ამჟამად აქტიური\n"
 "                      მეხსიერების ლიმიტების გამოტანა და გასვლა"
 
-#: src/xz/message.c
+#: src/xz/message.c:1139
 msgid ""
 "  -h, --help          display the short help (lists only the basic options)\n"
 "  -H, --long-help     display this long help and exit"
 msgstr ""
-"  -h, --help          მოკლე დახმარების ჩვენება (მხოლოდ, ძირითადი "
-"პარამეტრები\n"
+"  -h, --help          მოკლე დახმარების ჩვენება (მხოლოდ, ძირითადი პარამეტრები\n"
 "  -H, --long-help     გრძელი დახმარების ჩვენება და გასვლა"
 
-#: src/xz/message.c
+#: src/xz/message.c:1143
 msgid ""
 "  -h, --help          display this short help and exit\n"
 "  -H, --long-help     display the long help (lists also the advanced options)"
 msgstr ""
 "  -h, --help          ამ მოკლე დახმარების ჩვენება და გასვლა\n"
-"  -H, --long-help     უფრო გრძელი დახმარების ჩვენება (ასევე ნაჩვენები ქნება "
-"დამატებითი პარამეტრებიც)"
+"  -H, --long-help     უფრო გრძელი დახმარების ჩვენება (ასევე ნაჩვენები ქნება დამატებითი პარამეტრებიც)"
 
-#: src/xz/message.c
+#: src/xz/message.c:1148
 msgid "  -V, --version       display the version number and exit"
 msgstr "  -V, --version                 ვერსიის ინფორმაციის ჩვენება და გასვლა"
 
-#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#: src/xz/message.c:1150 src/lzmainfo/lzmainfo.c:37
 #, c-format
 msgid ""
 "\n"
@@ -1104,21 +1013,21 @@ msgstr ""
 #. for this package. Please add _another line_ saying
 #. "Report translation bugs to <...>\n" with the email or WWW
 #. address for translation bugs. Thanks.
-#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#: src/xz/message.c:1156 src/lzmainfo/lzmainfo.c:40
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish).\n"
 msgstr "შეცდომების შესახებ მიწერეთ <%s> (ინგლისურად, ან ფინურად).\n"
 
-#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#: src/xz/message.c:1158 src/lzmainfo/lzmainfo.c:42
 #, c-format
 msgid "%s home page: <%s>\n"
 msgstr "%s-ის საწყისი გვერდია: <%s>\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:1162
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
 msgstr "ეს სატესტო ვერსიაა. ნუ გამოიყენებთ ყოველდღიური მოხმარებისთვის."
 
-#: src/xz/message.c
+#: src/xz/message.c:1179
 msgid ""
 "Filter chains are set using the --filters=FILTERS or\n"
 "--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
@@ -1126,86 +1035,81 @@ msgid ""
 "specified instead of a filter chain.\n"
 msgstr ""
 "ფილტრის ჯაჭვების დაყენება --filters=ფილტრები ან\n"
-"--filters1=ფილტრები... --filters9=ფილტრები პარამეტრებით ხება. თითოეული "
-"ფილტრი ამ ჯაჭვში\n"
-"ერთმანეთისგან ჰარეებით, ან '--'-ითაა გამოყოფილი. ასევე შეგიძლიათ მიუთითოთ "
-"პრესეტი <0-9>[e]\n"
+"--filters1=ფილტრები... --filters9=ფილტრები პარამეტრებით ხება. თითოეული ფილტრი ამ ჯაჭვში\n"
+"ერთმანეთისგან ჰარეებით, ან '--'-ითაა გამოყოფილი. ასევე შეგიძლიათ მიუთითოთ პრესეტი <0-9>[e]\n"
 "ფილტრის ჯაჭვის მაგიერ.\n"
 
-#: src/xz/message.c
+#: src/xz/message.c:1185
 msgid "The supported filters and their options are:"
-msgstr "მხარდაჭერილი ფილტრები და მათი პარამეტრებია:"
+msgstr "მხარდაჭერელი ფილტრები და მათ პარამეტრებია:"
 
-#: src/xz/options.c
+#: src/xz/options.c:85
 #, c-format
 msgid "%s: Options must be 'name=value' pairs separated with commas"
-msgstr ""
-"%s: პარამეტრები უნდა წარმოადგენდეს \"სახელი=მნიშვნელობა\" ტიპის წყვილებს, "
-"მძიმეებით გამოყოფილს"
+msgstr "%s: პარამეტრები უნდა წარმოადგენდეს \"სახელი=მნიშვნელობა\" ტიპის წყვილებს, მძიმეებით გამოყოფილს"
 
-#: src/xz/options.c
+#: src/xz/options.c:92
 #, c-format
 msgid "%s: Invalid option name"
 msgstr "%s: არასწორი პარამეტრის სახელი"
 
-#: src/xz/options.c
+#: src/xz/options.c:112
 #, c-format
 msgid "%s: Invalid option value"
 msgstr "%s: არასწორი პარამეტრის მნიშვნელობა"
 
-#: src/xz/options.c
+#: src/xz/options.c:247
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
 msgstr "მხარდაუჭერელი LZMA1/LZMA2 პრესეტი: %s"
 
-#: src/xz/options.c
+#: src/xz/options.c:355
 msgid "The sum of lc and lp must not exceed 4"
 msgstr "\"lc\" და \"lp\"-ის ჯამი 4-ზე მეტი არ უნდა იყო"
 
-#: src/xz/suffix.c
+#: src/xz/suffix.c:165
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s: ფაილის სახელის უცნობი სუფიქსი. გამოტოვება"
 
-#: src/xz/suffix.c
+#: src/xz/suffix.c:186
 #, c-format
 msgid "%s: File already has '%s' suffix, skipping"
 msgstr "%s: ფაილს სუფიქსი `%s' უკვე გააჩნა. გამოტოვება"
 
-#: src/xz/suffix.c
+#: src/xz/suffix.c:393
 #, c-format
 msgid "%s: Invalid filename suffix"
 msgstr "%s: ფაილის სახელის არასწორი სუფიქსი"
 
-#: src/xz/util.c
+#: src/xz/util.c:106
 #, c-format
 msgid "%s: Value is not a non-negative decimal integer"
 msgstr "%s: მნიშვნელობა არა-უარყოფით მთელ რიცხვს არ წარმოადგენს"
 
-#: src/xz/util.c
+#: src/xz/util.c:148
 #, c-format
 msgid "%s: Invalid multiplier suffix"
 msgstr "%s: არასწორი მამრავლის სუფიქსი"
 
-#: src/xz/util.c
+#: src/xz/util.c:150
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "სწორი სუფიქსებია `KiB' (2^10), `MiB' (2^20) და `GiB' (2^30)."
 
-#: src/xz/util.c
+#: src/xz/util.c:167
 #, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
-msgstr ""
-"პარამეტრის (%s) მნიშვნელობის დასაშვები დიაპაზონია [%<PRIu64>, %<PRIu64>]"
+msgstr "პარამეტრის (%s) მნიშვნელობის დასაშვები დიაპაზონია [%<PRIu64>, %<PRIu64>]"
 
-#: src/xz/util.c
+#: src/xz/util.c:290
 msgid "Compressed data cannot be read from a terminal"
 msgstr "შეკუმშული მონაცემების ტერმინალიდან წაკითხვა შეუძლებელია"
 
-#: src/xz/util.c
+#: src/xz/util.c:303
 msgid "Compressed data cannot be written to a terminal"
 msgstr "შეკუმშული მონაცემების ტერმინალში ჩაწერა შეუძლებელია"
 
-#: src/lzmainfo/lzmainfo.c
+#: src/lzmainfo/lzmainfo.c:33
 #, c-format
 msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
@@ -1214,18 +1118,19 @@ msgstr ""
 "გამოყენება: %s [--help] [--version] [ფაილი]...\n"
 ".lzma ფაილის თავსართში შენახული ინფორმაციის ჩვენება"
 
-#: src/lzmainfo/lzmainfo.c
+#: src/lzmainfo/lzmainfo.c:109
 msgid "File is too small to be a .lzma file"
-msgstr "ფაილი ძალიან მცირეა, რომ იყოს .lzma ფაილი"
+msgstr "%s: მეტისმეტად პატარაა, რომ სწორ .xz ფაილს წარმოადგენდეს"
 
-#: src/lzmainfo/lzmainfo.c
+#: src/lzmainfo/lzmainfo.c:122
 msgid "Not a .lzma file"
 msgstr "არ წარმოადგენს .lzma ფაილს"
 
-#: src/common/tuklib_exit.c
+#: src/common/tuklib_exit.c:39
 msgid "Writing to standard output failed"
 msgstr "სტანდარტული გამოტანაში ჩაწერის შეცდომა"
 
-#: src/common/tuklib_exit.c
+#: src/common/tuklib_exit.c:42
 msgid "Unknown error"
-msgstr "უცნობ შეცდომა"
+msgstr "უცნობი შეცდომა"
+

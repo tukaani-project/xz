@@ -24,9 +24,17 @@ tuklib_mbstr_width(const char *str, size_t *bytes)
 	if (bytes != NULL)
 		*bytes = len;
 
+	return tuklib_mbstr_width_mem(str, len);
+}
+
+
+extern size_t
+tuklib_mbstr_width_mem(const char *str, size_t len)
+{
 #ifndef HAVE_MBRTOWC
 	// In single-byte mode, the width of the string is the same
 	// as its length.
+	(void)str;
 	return len;
 
 #else

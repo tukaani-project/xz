@@ -27,10 +27,7 @@ extern size_t tuklib_mbstr_width(const char *str, size_t *bytes);
 ///
 /// This is somewhat similar to wcswidth() but works on multibyte strings.
 ///
-/// \param      str         String whose width is to be calculated. If the
-///                         current locale uses a multibyte character set
-///                         that has shift states, the string must begin
-///                         and end in the initial shift state.
+/// \param      str         String whose width is to be calculated.
 /// \param      bytes       If this is not NULL, *bytes is set to the
 ///                         value returned by strlen(str) (even if an
 ///                         error occurs when calculating the width).
@@ -38,8 +35,7 @@ extern size_t tuklib_mbstr_width(const char *str, size_t *bytes);
 /// \return     On success, the number of columns needed to display the
 ///             string e.g. in a terminal emulator is returned. On error,
 ///             (size_t)-1 is returned. Possible errors include invalid,
-///             partial, or non-printable multibyte character in str, or
-///             that str doesn't end in the initial shift state.
+///             partial, or non-printable multibyte character in str.
 
 #define tuklib_mbstr_fw TUKLIB_SYMBOL(tuklib_mbstr_fw)
 extern int tuklib_mbstr_fw(const char *str, int columns_min);

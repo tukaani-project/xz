@@ -53,11 +53,11 @@ tuklib_mbstr_width(const char *str, size_t *bytes)
 		width += (size_t)wc_width;
 	}
 
-	// Require that the string ends in the initial shift state.
-	// This way the caller can be combine the string with other
-	// strings without needing to worry about the shift states.
-	if (!mbsinit(&state))
-		return (size_t)-1;
+	// Don't bother checking if mbsinit(&state) returns 0.
+	//   - We already check that mbrtowc() didn't return (size_t)-2
+	//     which would indicate a partial multibyte character.
+	//   - It is assumed that this code won't be used with charsets
+	//     that use locking shift states.
 
 	return width;
 #endif

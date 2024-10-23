@@ -936,126 +936,195 @@ message_version(void)
 }
 
 
+static void
+catch_wrapping_errors(int e)
+{
+#ifndef NDEBUG
+	// This might help in catching problematic strings in translations.
+	// It's a debug message so don't translate this.
+	if (e & TUKLIB_MBSTR_WRAP_WARN_OVERLONG)
+		message_fatal("The help text contains overlong lines");
+#endif
+
+	if (e & ~TUKLIB_MBSTR_WRAP_WARN_OVERLONG)
+		message_fatal(_("Error printing the help text "
+				"(error code %d)"), e);
+
+	return;
+}
+
+
 extern void
 message_help(bool long_help)
 {
-	printf(_("Usage: %s [OPTION]... [FILE]...\n"
-			"Compress or decompress FILEs in the .xz format.\n\n"),
-			progname);
+	static const struct tuklib_mbstr_wrap wrap0 = {  0,  0,  0,  0, 79 };
+	static const struct tuklib_mbstr_wrap wrap1 = {  1,  1,  1,  1, 79 };
+	static const struct tuklib_mbstr_wrap wrap2 = {  2,  2, 22, 22, 79 };
+	static const struct tuklib_mbstr_wrap wrap3 = { 24, 24, 35, 35, 79 };
 
-	// NOTE: The short help doesn't currently have options that
-	// take arguments.
-	if (long_help)
-		puts(_("Mandatory arguments to long options are mandatory "
-				"for short options too.\n"));
+	// Accumulated error codes from tuklib_mbstr_wrap functions
+	int e = 0;
 
-	if (long_help)
-		puts(_(" Operation mode:\n"));
+	printf(_("Usage: %s [OPTION]... [FILE]...\n"), progname);
+	e |= tuklib_mbstr_wraps(stdout, &wrap0,
+			W_("Compress or decompress FILEs in the .xz format."));
 
-	puts(_(
-"  -z, --compress      force compression\n"
-"  -d, --decompress    force decompression\n"
-"  -t, --test          test compressed file integrity\n"
-"  -l, --list          list information about .xz files"));
+	putchar('\n');
 
-	if (long_help)
-		puts(_("\n Operation modifiers:\n"));
+	// The short help might have more than one option that takes
+	// an argument but let's print this message anyway.
+	e |= tuklib_mbstr_wraps(stdout, &wrap0,
+			W_("Mandatory arguments to long options are "
+			"mandatory for short options too."));
+	putchar('\n');
 
-	puts(_(
-"  -k, --keep          keep (don't delete) input files\n"
-"  -f, --force         force overwrite of output file and (de)compress links\n"
-"  -c, --stdout        write to standard output and don't delete input files"));
+	if (long_help) {
+		e |= tuklib_mbstr_wraps(stdout, &wrap1, W_("Operation mode:"));
+		putchar('\n');
+	}
+
+	e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"-z, --compress\t%s\r"
+			"-d, --decompress\t%s\r"
+			"-t, --test\t%s\r"
+			"-l, --list\t%s",
+			W_("force compression"),
+			W_("force decompression"),
+			W_("test compressed file integrity"),
+			W_("list information about .xz files"));
+
+	if (long_help) {
+		putchar('\n');
+		e |= tuklib_mbstr_wraps(stdout, &wrap1,
+				W_("Operation modifiers:"));
+		putchar('\n');
+	}
+
+	e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+		"-k, --keep\t%s\r"
+		"-f, --force\t%s\r"
+		"-c, --stdout\t%s",
+		W_("keep (don't delete) input files"),
+		W_("force overwrite of output file and (de)compress links"),
+		W_("write to standard output and don't delete input files"));
 	// NOTE: --to-stdout isn't included above because it's not
 	// the recommended spelling. It was copied from gzip but other
 	// compressors with gzip-like syntax don't support it.
 
 	if (long_help) {
-		puts(_(
-"      --single-stream decompress only the first stream, and silently\n"
-"                      ignore possible remaining input data"));
-		puts(_(
-"      --no-sparse     do not create sparse files when decompressing\n"
-"  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
-"      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-"                      omitted, filenames are read from the standard input;\n"
-"                      filenames must be terminated with the newline character\n"
-"      --files0[=FILE] like --files but use the null character as terminator"));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"    --single-stream\t%s\r"
+			"    --no-sparse\t%s\r"
+			"-S, --suffix=%s\t%s\r"
+			"    --files[=%s]\t%s\r"
+			"    --files0[=%s]\t%s\r",
+			W_("decompress only the first stream, and silently "
+				"ignore possible remaining input data"),
+			W_("do not create sparse files when decompressing"),
+			_(".SUF"),
+			W_("use the suffix '.SUF' on compressed files"),
+			_("FILE"),
+			W_("read filenames to process from FILE; "
+				"if FILE is omitted, "
+				"filenames are read from the standard input; "
+				"filenames must be terminated with "
+				"the newline character"),
+			_("FILE"),
+			W_("like --files but use the null character as "
+				"terminator"));
+
+		e |= tuklib_mbstr_wraps(stdout, &wrap1,
+			W_("Basic file format and compression options:"));
+
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"\n"
+			"-F, --format=%s\t%s\r"
+			"-C, --check=%s\t%s\r"
+			"    --ignore-check\t%s",
+			_("FORMAT"),
+			W_("file format to encode or decode; possible values "
+				"are 'auto' (default), 'xz', 'lzma', 'lzip', "
+				"and 'raw'"),
+			_("CHECK"),
+			W_("integrity check type: 'none' (use with caution), "
+				"'crc32', 'crc64' (default), or 'sha256'"),
+			W_("don't verify the integrity check when "
+				"decompressing"));
+	}
+
+	e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+		"-0 ... -9\t%s\r"
+		"-e, --extreme\t%s\r"
+		"-T, --threads=%s\t%s",
+		W_("compression preset; default is 6; take compressor *and* "
+			"decompressor memory usage into account before "
+			"using 7-9!"),
+		W_("try to improve compression ratio by using more CPU time; "
+			"does not affect decompressor memory requirements"),
+		_("NUM"),
+		W_("use at most NUM threads; the default is 0 which uses "
+			"as many threads as there are processor cores"));
+
+	if (long_help) {
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"    --block-size=%s\t%s\r"
+			"    --block-list=%s\t%s\r"
+			"    --flush-timeout=%s\t%s",
+			_("SIZE"),
+			W_("start a new .xz block after every SIZE bytes "
+				"of input; use this to set the block size "
+				"for threaded compression"),
+			_("BLOCKS"),
+			W_("start a new .xz block after the given "
+				"comma-separated intervals of uncompressed "
+				"data; optionally, specify a "
+				"filter chain number (0-9) followed by "
+				"a ':' before the uncompressed data size"),
+			_("TIMEOUT"),
+			W_("when compressing, if more than TIMEOUT "
+				"milliseconds has passed since the previous "
+				"flush and reading more input would block, "
+				"all pending data is flushed out"));
+
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"    --memlimit-compress=%1$s\n"
+			"    --memlimit-decompress=%1$s\n"
+			"    --memlimit-mt-decompress=%1$s\n"
+			"-M, --memlimit=%1$s\t%2$s\r"
+			"    --no-adjust\t%3$s",
+			_("LIMIT"),
+			// xgettext:no-c-format
+			W_("set memory usage limit for compression, "
+				"decompression, threaded decompression, "
+				"or all of these; LIMIT is in "
+				"bytes, % of RAM, or 0 for defaults"),
+			W_("if compression settings exceed the "
+				"memory usage limit, "
+				"give an error instead of adjusting "
+				"the settings downwards"));
 	}
 
 	if (long_help) {
-		puts(_("\n Basic file format and compression options:\n"));
-		puts(_(
-"  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
-"  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
-"                      'crc32', 'crc64' (default), or 'sha256'"));
-		puts(_(
-"      --ignore-check  don't verify the integrity check when decompressing"));
-	}
+		putchar('\n');
 
-	puts(_(
-"  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
-"                      decompressor memory usage into account before using 7-9!"));
+		e |= tuklib_mbstr_wraps(stdout, &wrap1,
+			W_("Custom filter chain for compression "
+				"(alternative for using presets):"));
 
-	puts(_(
-"  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
-"                      does not affect decompressor memory requirements"));
-
-	puts(_(
-"  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
-"                      as many threads as there are processor cores"));
-
-	if (long_help) {
-		puts(_(
-"      --block-size=SIZE\n"
-"                      start a new .xz block after every SIZE bytes of input;\n"
-"                      use this to set the block size for threaded compression"));
-		puts(_(
-"      --block-list=BLOCKS\n"
-"                      start a new .xz block after the given comma-separated\n"
-"                      intervals of uncompressed data; optionally, specify a\n"
-"                      filter chain number (0-9) followed by a ':' before the\n"
-"                      uncompressed data size"));
-		puts(_(
-"      --flush-timeout=TIMEOUT\n"
-"                      when compressing, if more than TIMEOUT milliseconds has\n"
-"                      passed since the previous flush and reading more input\n"
-"                      would block, all pending data is flushed out"
-		));
-		puts(_( // xgettext:no-c-format
-"      --memlimit-compress=LIMIT\n"
-"      --memlimit-decompress=LIMIT\n"
-"      --memlimit-mt-decompress=LIMIT\n"
-"  -M, --memlimit=LIMIT\n"
-"                      set memory usage limit for compression, decompression,\n"
-"                      threaded decompression, or all of these; LIMIT is in\n"
-"                      bytes, % of RAM, or 0 for defaults"));
-
-		puts(_(
-"      --no-adjust     if compression settings exceed the memory usage limit,\n"
-"                      give an error instead of adjusting the settings downwards"));
-	}
-
-	if (long_help) {
-		puts(_(
-"\n Custom filter chain for compression (alternative for using presets):"));
-
-		puts(_(
-"\n"
-"  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
-"                      syntax; use --filters-help for more information"
-		));
-
-		puts(_(
-"  --filters1=FILTERS ... --filters9=FILTERS\n"
-"                      set additional filter chains using the liblzma filter\n"
-"                      string syntax to use with --block-list"
-		));
-
-		puts(_(
-"  --filters-help      display more information about the liblzma filter string\n"
-"                      syntax and exit."
-		));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"\n"
+			"--filters=%1$s\t%2$s\r"
+			"--filters1=%1$s ... --filters9=%1$s\t%3$s\r"
+			"--filters-help\t%4$s",
+			_("FILTERS"),
+			W_("set the filter chain using the "
+				"liblzma filter string syntax; "
+				"use --filters-help for more information"),
+			W_("set additional filter chains using the "
+				"liblzma filter string syntax to use "
+				"with --block-list"),
+			W_("display more information about the "
+				"liblzma filter string syntax and exit."));
 
 #if defined(HAVE_ENCODER_LZMA1) || defined(HAVE_DECODER_LZMA1) \
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
@@ -1063,86 +1132,139 @@ message_help(bool long_help)
 		// means how many "context bits" to use when encoding
 		// literals. A literal is a single 8-bit byte. It doesn't
 		// mean "literally" here.
-		puts(_(
-"\n"
-"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
-"  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
-"                        preset=PRE reset options to a preset (0-9[e])\n"
-"                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
-"                        lc=NUM     number of literal context bits (0-4; 3)\n"
-"                        lp=NUM     number of literal position bits (0-4; 0)\n"
-"                        pb=NUM     number of position bits (0-4; 2)\n"
-"                        mode=MODE  compression mode (fast, normal; normal)\n"
-"                        nice=NUM   nice length of a match (2-273; 64)\n"
-"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
-"                        depth=NUM  maximum search depth; 0=automatic (default)"));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"\n"
+			"--lzma1[=%1$s]\n"
+			"--lzma2[=%1$s]\t%2$s",
+			_("OPTS"),
+			W_("LZMA1 or LZMA2; OPTS is a comma-separated list "
+				"of zero or more of the following options "
+				"(valid values; default):"));
+
+		e |= tuklib_mbstr_wrapf(stdout, &wrap3,
+			"preset=%s\t%s (0-9[e])\r"
+			"dict=%s\t%s (4KiB - 1536MiB; 8MiB)\r"
+			"lc=%s\t%s (0-4; 3)\r"
+			"lp=%s\t%s (0-4; 0)\r"
+			"pb=%s\t%s (0-4; 2)\r"
+			"mode=%s\t%s (fast, normal; normal)\r"
+			"nice=%s\t%s (2-273; 64)\r"
+			"mf=%s\t%s (hc3, hc4, bt2, bt3, bt4; bt4)\r"
+			"depth=%s\t%s",
+			_("PRE"), W_("reset options to a preset"),
+			_("NUM"), W_("dictionary size"),
+			_("NUM"), W_("number of literal context bits"),
+			_("NUM"), W_("number of literal position bits"),
+			_("NUM"), W_("number of position bits"),
+			_("MODE"), W_("compression mode"),
+			_("NUM"), W_("nice length of a match"),
+			_("NAME"), W_("match finder"),
+			_("NUM"), W_("maximum search depth; "
+				"0=automatic (default)"));
 #endif
 
-		puts(_(
-"\n"
-"  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-"  --arm[=OPTS]        ARM BCJ filter\n"
-"  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-"  --arm64[=OPTS]      ARM64 BCJ filter\n"
-"  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-"  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-"  --sparc[=OPTS]      SPARC BCJ filter\n"
-"  --riscv[=OPTS]      RISC-V BCJ filter\n"
-"                      Valid OPTS for all BCJ filters:\n"
-"                        start=NUM  start offset for conversions (default=0)"));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"\n"
+			"--x86[=%1$s]\t%2$s\r"
+			"--arm[=%1$s]\t%3$s\r"
+			"--armthumb[=%1$s]\t%4$s\r"
+			"--arm64[=%1$s]\t%5$s\r"
+			"--powerpc[=%1$s]\t%6$s\r"
+			"--ia64[=%1$s]\t%7$s\r"
+			"--sparc[=%1$s]\t%8$s\r"
+			"--riscv[=%1$s]\t%9$s\r"
+			"\t%10$s",
+			_("OPTS"),
+			W_("x86 BCJ filter (32-bit and 64-bit)"),
+			W_("ARM BCJ filter"),
+			W_("ARM-Thumb BCJ filter"),
+			W_("ARM64 BCJ filter"),
+			W_("PowerPC BCJ filter (big endian only)"),
+			W_("IA-64 (Itanium) BCJ filter"),
+			W_("SPARC BCJ filter"),
+			W_("RISC-V BCJ filter"),
+			W_("Valid OPTS for all BCJ filters:"));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap3,
+			"start=%s\t%s",
+			_("NUM"),
+			W_("start offset for conversions (default=0)"));
 
 #if defined(HAVE_ENCODER_DELTA) || defined(HAVE_DECODER_DELTA)
-		puts(_(
-"\n"
-"  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
-"                        dist=NUM   distance between bytes being subtracted\n"
-"                                   from each other (1-256; 1)"));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+			"\n"
+			"--delta[=%s]\t%s",
+			_("OPTS"),
+			W_("Delta filter; valid OPTS "
+				"(valid values; default):"));
+		e |= tuklib_mbstr_wrapf(stdout, &wrap3,
+			"dist=%s\t%s (1-256; 1)",
+			_("NUM"),
+			W_("distance between bytes being subtracted "
+				"from each other"));
 #endif
 	}
 
-	if (long_help)
-		puts(_("\n Other options:\n"));
-
-	puts(_(
-"  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
-"  -v, --verbose       be verbose; specify twice for even more verbose"));
-
 	if (long_help) {
-		puts(_(
-"  -Q, --no-warn       make warnings not affect the exit status"));
-		puts(_(
-"      --robot         use machine-parsable messages (useful for scripts)"));
-		puts("");
-		puts(_(
-"      --info-memory   display the total amount of RAM and the currently active\n"
-"                      memory usage limits, and exit"));
-		puts(_(
-"  -h, --help          display the short help (lists only the basic options)\n"
-"  -H, --long-help     display this long help and exit"));
-	} else {
-		puts(_(
-"  -h, --help          display this short help and exit\n"
-"  -H, --long-help     display the long help (lists also the advanced options)"));
+		putchar('\n');
+		e |= tuklib_mbstr_wraps(stdout, &wrap1, W_("Other options:"));
+		putchar('\n');
 	}
 
-	puts(_(
-"  -V, --version       display the version number and exit"));
+	e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+		"-q, --quiet\t%s\r"
+		"-v, --verbose\t%s",
+		W_("suppress warnings; specify twice to suppress errors too"),
+		W_("be verbose; specify twice for even more verbose"));
 
-	puts(_("\nWith no FILE, or when FILE is -, read standard input.\n"));
+	if (long_help) {
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+		"-Q, --no-warn\t%s\r"
+		"    --robot\t%s\r"
+		"\n"
+		"    --info-memory\t%s\r"
+		"-h, --help\t%s\r"
+		"-H, --long-help\t%s",
+		W_("make warnings not affect the exit status"),
+		W_("use machine-parsable messages (useful for scripts)"),
+		W_("display the total amount of RAM and the currently active "
+			"memory usage limits, and exit"),
+		W_("display the short help (lists only the basic options)"),
+		W_("display this long help and exit"));
+	} else {
+		e |= tuklib_mbstr_wrapf(stdout, &wrap2,
+		"-h, --help\t%s\r"
+		"-H, --long-help\t%s",
+		W_("display this short help and exit"),
+		W_("display the long help (lists also the advanced options)"));
+	}
 
-	// TRANSLATORS: This message indicates the bug reporting address
-	// for this package. Please add _another line_ saying
-	// "Report translation bugs to <...>\n" with the email or WWW
-	// address for translation bugs. Thanks.
-	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
-			PACKAGE_BUGREPORT);
-	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
+	e |= tuklib_mbstr_wrapf(stdout, &wrap2, "-V, --version\t%s",
+			W_("display the version number and exit"));
+
+	putchar('\n');
+	e |= tuklib_mbstr_wraps(stdout, &wrap0,
+		W_("With no FILE, or when FILE is -, read standard input."));
+	putchar('\n');
+
+	e |= tuklib_mbstr_wrapf(stdout, &wrap0,
+		// TRANSLATORS: This message indicates the bug reporting
+		// address for this package. Please add another line saying
+		// "\nReport translation bugs to <...>." with the email or WWW
+		// address for translation bugs. Thanks!
+		W_("Report bugs to <%s> (in English or Finnish)."),
+		PACKAGE_BUGREPORT);
+
+	e |= tuklib_mbstr_wrapf(stdout, &wrap0,
+		// TRANSLATORS: The first %s is the name of this software.
+		// The second <%s> is an URL.
+		W_("%s home page: <%s>"), PACKAGE_NAME, PACKAGE_URL);
 
 #if LZMA_VERSION_STABILITY != LZMA_VERSION_STABILITY_STABLE
-	puts(_(
+	e |= tuklib_mbstr_wraps(stdout, &wrap0, W_(
 "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."));
 #endif
 
+	catch_wrapping_errors(e);
 	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }
 
@@ -1150,20 +1272,25 @@ message_help(bool long_help)
 extern void
 message_filters_help(void)
 {
+	static const struct tuklib_mbstr_wrap wrap = { .right_margin = 72 };
+
 	char *encoder_options;
 	if (lzma_str_list_filters(&encoder_options, LZMA_VLI_UNKNOWN,
 			LZMA_STR_ENCODER, NULL) != LZMA_OK)
 		message_bug();
 
 	if (!opt_robot) {
-		puts(_(
-"Filter chains are set using the --filters=FILTERS or\n"
-"--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
-"can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
-"specified instead of a filter chain.\n"
-		));
+		int e = tuklib_mbstr_wrapf(stdout, &wrap,
+W_("Filter chains are set using the --filters=FILTERS or "
+"--filters1=FILTERS ... --filters9=FILTERS options. "
+"Each filter in the chain can be separated by spaces or '--'. "
+"Alternatively a preset %s can be specified instead of a filter chain."),
+				"<0-9>[e]");
+		putchar('\n');
+		e |= tuklib_mbstr_wraps(stdout, &wrap,
+			W_("The supported filters and their options are:"));
 
-		puts(_("The supported filters and their options are:"));
+		catch_wrapping_errors(e);
 	}
 
 	puts(encoder_options);

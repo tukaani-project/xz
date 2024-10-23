@@ -28,4 +28,4 @@ stamp-po
 *.gmo
 
 # cached templates (make)
-xz.pot
+#xz.pot

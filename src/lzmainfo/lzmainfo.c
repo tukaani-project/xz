@@ -29,17 +29,21 @@ tuklib_attr_noreturn
 static void
 help(void)
 {
-	printf(
-_("Usage: %s [--help] [--version] [FILE]...\n"
-"Show information stored in the .lzma file header"), progname);
+	// We don't need automatic word-wrapping here. A few strings are
+	// the same as in xz/message.c but here we need to add the newlines
+	// with putchar('\n'). This way translators won't get two variants
+	// of the same string: one without and another with \n at the end.
+	printf(_("Usage: %s [--help] [--version] [FILE]...\n"), progname);
+	puts(_("Show information stored in the .lzma file header."));
+	puts(_("With no FILE, or when FILE is -, read standard input."));
 
-	printf(_(
-"\nWith no FILE, or when FILE is -, read standard input.\n"));
-	printf("\n");
+	putchar('\n');
 
-	printf(_("Report bugs to <%s> (in English or Finnish).\n"),
+	printf(_("Report bugs to <%s> (in English or Finnish)."),
 			PACKAGE_BUGREPORT);
-	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
+	putchar('\n');
+	printf(_("%s home page: <%s>"), PACKAGE_NAME, PACKAGE_URL);
+	putchar('\n');
 
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }

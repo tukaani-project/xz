@@ -28,6 +28,8 @@ arm64_code(void *simple lzma_attribute((__unused__)),
 		uint32_t now_pos, bool is_encoder,
 		uint8_t *buffer, size_t size)
 {
+	size &= ~(size_t)3;
+
 	size_t i;
 
 	// Clang 14.0.6 on x86-64 makes this four times bigger and 40 % slower
@@ -37,7 +39,7 @@ arm64_code(void *simple lzma_attribute((__unused__)),
 #ifdef __clang__
 #	pragma clang loop vectorize(disable)
 #endif
-	for (i = 0; i + 4 <= size; i += 4) {
+	for (i = 0; i < size; i += 4) {
 		uint32_t pc = (uint32_t)(now_pos + i);
 		uint32_t instr = read32le(buffer + i);
 

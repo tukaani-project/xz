@@ -1034,7 +1034,7 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 		printf("  %-*s %s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
 				xfi->all_have_sizes ? _("Yes") : _("No"));
 		//printf("  %-*s %s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
-		printf(_("  Minimum XZ Utils version: %s\n"),
+		printf("  %s %s\n", _("Minimum XZ Utils version:"),
 				xz_ver_to_str(xfi->min_version));
 	}
 
@@ -1219,7 +1219,7 @@ print_totals_adv(void)
 		printf("  %-*s %s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
 				totals.all_have_sizes ? _("Yes") : _("No"));
 		//printf("  %-*s %s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
-		printf(_("  Minimum XZ Utils version: %s\n"),
+		printf("  %s %s\n", _("Minimum XZ Utils version:"),
 				xz_ver_to_str(totals.min_version));
 	}
 

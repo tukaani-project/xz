@@ -56,6 +56,25 @@ has_dir_sep(const char *str)
 #endif
 }
 
+/// \brief      Return the last directory separator or NULL if none is found.
+static char *
+get_last_dir_sep(const char *str)
+{
+#ifdef TUKLIB_DOSLIKE
+	char *r;
+
+	r = strrchr(str, '/');
+	if (r)
+		return r;
+	r = strrchr(str, '\\')
+	if (r)
+		return r;
+	return NULL;
+#else
+	return strrchr(str, '/');
+#endif
+}
+
 
 #ifdef __DJGPP__
 /// \brief      Test for special suffix used for 8.3 short filenames (SFN)
@@ -107,6 +126,29 @@ test_suffix(const char *suffix, const char *src_name, size_t src_len)
 		return src_len - suffix_len;
 
 	return 0;
+}
+
+
+/// \brief      Returns the directory name of the file
+///
+/// \return     Name of the directory of the file.
+char *
+suffix_get_directory_name(const char *f_name)
+{
+	char *name;
+	char *dir_sep;
+
+	name = xstrdup(f_name);
+	dir_sep = get_last_dir_sep(name);
+	if (dir_sep) {
+		dir_sep++;
+		*dir_sep = '\0';
+	} else {
+		name[0] = '.';
+		name[1] = '\0';
+	}
+
+	return name;
 }
 
 

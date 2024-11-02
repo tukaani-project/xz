@@ -72,6 +72,9 @@ static bool warn_fchown;
 		((e) == EAGAIN || (e) == EWOULDBLOCK)
 #endif
 
+#ifndef O_DIRECTORY
+#	define O_DIRECTORY O_NOCTTY
+#endif
 
 typedef enum {
 	IO_WAIT_MORE,    // Reading or writing is possible.
@@ -707,6 +710,7 @@ io_open_src(const char *src_name)
 		.dest_name = NULL,
 		.src_fd = -1,
 		.dest_fd = -1,
+		.dest_dir_fd = -1,
 		.src_eof = false,
 		.src_has_seen_input = false,
 		.flush_needed = false,
@@ -856,6 +860,15 @@ io_open_dest_real(file_pair *pair)
 			free(pair->dest_name);
 			return true;
 		}
+#ifndef TUKLIB_DOSLIKE
+		if (!opt_keep_original) {
+			char *dest_dir_name;
+
+			dest_dir_name = suffix_get_directory_name(pair->dest_name);
+			pair->dest_dir_fd = open(dest_dir_name, O_DIRECTORY);
+			free(dest_dir_name);
+		}
+#endif
 	}
 
 	if (fstat(pair->dest_fd, &pair->dest_st)) {
@@ -887,7 +900,10 @@ io_open_dest_real(file_pair *pair)
 		// dest_fd needs to be reset to -1 to keep io_close() working.
 		(void)close(pair->dest_fd);
 		pair->dest_fd = -1;
-
+		if (pair->dest_dir_fd >= 0) {
+			(void)close(pair->dest_dir_fd);
+			pair->dest_dir_fd = -1;
+		}
 		free(pair->dest_name);
 		return true;
 	}
@@ -1003,6 +1019,8 @@ io_close_dest(file_pair *pair, bool success)
 	if (pair->dest_fd == -1 || pair->dest_fd == STDOUT_FILENO)
 		return false;
 
+	if (pair->dest_dir_fd >= 0)
+		close(pair->dest_dir_fd);
 	if (close(pair->dest_fd)) {
 		message_error(_("%s: Closing the file failed: %s"),
 				pair->dest_name, strerror(errno));
@@ -1055,8 +1073,25 @@ io_close(file_pair *pair, bool success)
 
 	// Copy the file attributes. We need to skip this if destination
 	// file isn't open or it is standard output.
-	if (success && pair->dest_fd != -1 && pair->dest_fd != STDOUT_FILENO)
+	if (success && pair->dest_fd != -1 && pair->dest_fd != STDOUT_FILENO) {
 		io_copy_attrs(pair);
+#ifndef TUKLIB_DOSLIKE
+		if (!opt_keep_original) {
+			if (fdatasync(pair->dest_fd)) {
+				success = false;
+				message_error(_("Failed to sync %s: %s"), pair->dest_name,
+					      strerror(errno));
+			}
+			if (pair->dest_dir_fd >= 0)
+				if (fsync(pair->dest_dir_fd)) {
+					success = false;
+					message_error(_("Failed to sync directory of %s: %s"),
+						      pair->dest_name,
+						      strerror(errno));
+				}
+		}
+#endif
+	}
 
 	// Close the destination first. If it fails, we must not remove
 	// the source file!

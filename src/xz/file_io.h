@@ -55,6 +55,9 @@ typedef struct {
 	/// File descriptor of the target file
 	int dest_fd;
 
+	/// File descriptor of the target file's directory
+	int dest_dir_fd;
+
 	/// True once end of the source file has been detected.
 	bool src_eof;
 

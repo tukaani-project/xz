@@ -196,6 +196,7 @@ enable_landlock(uint64_t required_rights)
 	if (syscall(SYS_landlock_restrict_self, ruleset_fd, 0U) != 0)
 		message_fatal(_("Failed to enable the sandbox"));
 
+	(void)close(ruleset_fd);
 	return;
 }
 

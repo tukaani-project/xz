@@ -1,22 +1,24 @@
-# Chinese translations for xz package.
-# This file is put in the public domain.
+# SPDX-License-Identifier: 0BSD
 #
-# Yi-Jyun Pan <pan93412@gmail.com>, 2019, 2023
+# Chinese translations for xz package.
+# This file is published under the BSD Zero Clause License.
+#
+# Yi-Jyun Pan <pan93412@gmail.com>, 2019, 2023, 2024
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.4.3\n"
+"Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-05-29 17:41+0300\n"
-"PO-Revision-Date: 2023-07-08 23:05+0800\n"
+"POT-Creation-Date: 2024-09-02 19:19+0300\n"
+"PO-Revision-Date: 2024-11-30 13:55+0800\n"
 "Last-Translator: Yi-Jyun Pan <pan93412@gmail.com>\n"
-"Language-Team: Chinese (traditional) <zh-l10n@lists.linux.org.tw>\n"
+"Language-Team: Chinese (traditional) <zh-l10n@lists.slat.org>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: src/xz/args.c
@@ -32,7 +34,7 @@ msgstr "%s：傳入 --block-list 的參數過多"
 #: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr ""
+msgstr "在 --block-list 中，過濾器串鏈編號「%c:」後方遺漏區塊大小"
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
@@ -49,8 +51,6 @@ msgid "%s: Unsupported integrity check type"
 msgstr "%s：不支援的完整性檢查類型"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "Only one file can be specified with `--files' or `--files0'."
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "「--files」或「--files0」只能指定一個檔案。"
 
@@ -58,10 +58,9 @@ msgstr "「--files」或「--files0」只能指定一個檔案。"
 #. string because French needs a space
 #. before the colon ("%s : %s").
 #: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
-#, fuzzy, c-format
-#| msgid "%s: "
+#, c-format
 msgid "%s: %s"
-msgstr "%s："
+msgstr "%s：%s"
 
 #: src/xz/args.c
 #, c-format
@@ -82,7 +81,7 @@ msgstr "不支援壓縮為 lzip 檔案 (.lz)"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr ""
+msgstr "--block-list 只有在壓縮成 .xz 格式時才會生效"
 
 #: src/xz/args.c
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
@@ -90,21 +89,21 @@ msgstr "搭配 --format=raw 時，除非寫入標準輸出，否則需要傳入 
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
-msgstr "最多只能指定 4 個篩選器"
+msgstr "最多只能指定 4 個過濾器"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
-msgstr ""
+msgstr "--filters%s=FILTERS 選項發生錯誤："
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
-msgstr "記憶體用量限制過低，不足以設定指定的篩選器。"
+msgstr "記憶體用量限制過低，不足以設定指定的過濾器。"
 
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr ""
+msgstr "--block-list 使用了過濾器串鏈 %u，但未使用 --filters%u= 指定"
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -116,27 +115,25 @@ msgstr "設定檔的選項可能因軟體版本而有異。"
 
 #: src/xz/coder.c
 msgid "The .lzma format supports only the LZMA1 filter"
-msgstr ".lzma 格式僅支援 LZMA1 篩選器"
+msgstr ".lzma 格式僅支援 LZMA1 過濾器"
 
 #: src/xz/coder.c
 msgid "LZMA1 cannot be used with the .xz format"
 msgstr "LZMA1 不能與 .xz 格式一同使用"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "The filter chain is incompatible with --flush-timeout"
+#, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "篩選鏈不相容 --flush-timeout"
+msgstr "過濾器串鏈 %u 與 --flush-timeout 不相容"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "因指定 --flush-timeout，因此切換到單執行緒模式"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Unsupported options"
+#, c-format
 msgid "Unsupported options in filter chain %u"
-msgstr "不支援的選項"
+msgstr "過濾器串鏈 %u 不支援此選項"
 
 #: src/xz/coder.c
 #, c-format
@@ -145,7 +142,7 @@ msgstr "使用最多 %<PRIu32> 個執行緒。"
 
 #: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
-msgstr "不支援的篩選鏈或篩選器選項"
+msgstr "不支援的過濾器串鏈或過濾器選項"
 
 #: src/xz/coder.c
 #, c-format
@@ -173,16 +170,14 @@ msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the m
 msgstr "已將 LZMA%c 的字典大小從 %s MiB 調整至 %s MiB，以不超過記憶體用量的 %s MiB 限制"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "已將 LZMA%c 的字典大小從 %s MiB 調整至 %s MiB，以不超過記憶體用量的 %s MiB 限制"
+msgstr "已將 --filters%2$u 的 LZMA%1$c 字典大小，將 %3$s MiB 調整為 %4$s MiB，以避免超過 %5$s MiB 的記憶體用量限制"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Error creating a pipe: %s"
+#, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "建立管線時發生錯誤：%s"
+msgstr "變更為過濾器串鏈 %u 時發生錯誤：%s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -451,7 +446,7 @@ msgstr "Mem用量"
 
 #: src/xz/list.c
 msgid "Filters"
-msgstr "篩選器"
+msgstr "過濾器"
 
 #. TRANSLATORS: Indicates that there is no integrity check.
 #. This string is used in tables. In older xz version this
@@ -562,7 +557,7 @@ msgstr "--list 只能在 .xz 檔使用（--format=xz 或 --format=auto）"
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
-msgstr ""
+msgstr "試試看用「lzmainfo」處理 .lzma 檔案。"
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
@@ -579,8 +574,7 @@ msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s：讀取檔名時遇到非預期的輸入結尾"
 
 #: src/xz/main.c
-#, fuzzy, c-format
-#| msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
+#, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "%s：讀取檔名時發現空字元；或許您想使用「--files0」而非「--files」？"
 
@@ -650,11 +644,10 @@ msgstr "需要 %s MiB 的記憶體。記憶體限制為 %s。"
 #: src/xz/message.c
 #, c-format
 msgid "%s: Filter chain: %s\n"
-msgstr "%s：篩選鏈：%s\n"
+msgstr "%s：過濾器串鏈：%s\n"
 
 #: src/xz/message.c
-#, fuzzy, c-format
-#| msgid "Try `%s --help' for more information."
+#, c-format
 msgid "Try '%s --help' for more information."
 msgstr "嘗試「%s --help」取得更多資訊。"
 
@@ -716,14 +709,6 @@ msgstr ""
 "                      安靜地忽略可能剩餘的輸入檔"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --no-sparse     do not create sparse files when decompressing\n"
-#| "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
-#| "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-#| "                      omitted, filenames are read from the standard input;\n"
-#| "                      filenames must be terminated with the newline character\n"
-#| "      --files0[=FILE] like --files but use the null character as terminator"
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
@@ -732,11 +717,12 @@ msgid ""
 "                      filenames must be terminated with the newline character\n"
 "      --files0[=FILE] like --files but use the null character as terminator"
 msgstr ""
-"      --no-sparse     不在解壓縮時建立疏鬆檔案\n"
-"  -S, --suffix=.SUF   在壓縮檔加上後綴「.SUF」\n"
-"      --files[=檔案]  讀取檔案名稱以處理 <檔案>；如省略 <檔案>\n"
-"                      則從標準輸入讀取檔名；檔名必須以換行字元作為結尾\n"
-"      --files0[=檔案] 類似 --files 但是以 null 空字元作結尾"
+"      --no-sparse     解壓縮時不建立稀疏檔案\n"
+"  -S, --suffix=.SUF   在壓縮檔案上使用「.SUF」作為檔名後綴\n"
+"      --files[=FILE]  從 FILE 讀取要處理的檔案名稱；如果省略 FILE，\n"
+"                      則從標準輸入讀取檔案名稱；\n"
+"                      檔案名稱必須以換行字元結尾\n"
+"      --files0[=FILE] 類似 --files，但使用空字元作為結尾符號"
 
 #: src/xz/message.c
 msgid ""
@@ -747,22 +733,16 @@ msgstr ""
 " 基本檔案格式與壓縮選項：\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-#| "                      `auto' (default), `xz', `lzma', `lzip', and `raw'\n"
-#| "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-#| "                      `crc32', `crc64' (default), or `sha256'"
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
 "  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
 "                      'crc32', 'crc64' (default), or 'sha256'"
 msgstr ""
-"  -F, --format=格式   用於編碼或解碼的檔案格式；可用的值有：\n"
-"                      “auto”（預設）、“xz”、“lzma”、“lzip” 及 “raw”\n"
-"  -C, --check=檢查碼   完整性檢查類型：“none”（謹慎使用）、“crc32”、\n"
-"                      “crc64”（預設值）或“sha256”"
+"  -F, --format=FMT    要編碼或解碼的檔案格式；可選值為\n"
+"                      ‘auto’（預設）、’xz’、’lzma’、’lzip’ 和 ‘raw’\n"
+"  -C, --check=CHECK   完整性檢查類型：’none’（請謹慎使用）、\n"
+"                      ’crc32’、’crc64’（預設）或 ‘sha256’"
 
 #: src/xz/message.c
 msgid "      --ignore-check  don't verify the integrity check when decompressing"
@@ -785,16 +765,12 @@ msgstr ""
 "                      不影響解壓縮器的記憶體需求"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-#| "                      to use as many threads as there are processor cores"
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=NUM   使用最多 NUM 個執行緒；預設為 1；設成 0 則使用所有的\n"
-"                      處理機核心"
+"  -T, --threads=NUM   使用最多 NUM 個執行緒，預設為 0，\n"
+"                      即使用所有的處理機核心"
 
 #: src/xz/message.c
 msgid ""
@@ -807,11 +783,6 @@ msgstr ""
 "                      使用此功能以設定多執行緒壓縮的區塊大小"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --block-list=SIZES\n"
-#| "                      start a new .xz block after the given comma-separated\n"
-#| "                      intervals of uncompressed data"
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -819,9 +790,11 @@ msgid ""
 "                      filter chain number (0-9) followed by a ':' before the\n"
 "                      uncompressed data size"
 msgstr ""
-"      --block-list=SIZES\n"
-"                      在指定以逗號隔開的未壓縮資料間隔之後\n"
-"                      開始新的 .xz 區塊"
+"      --block-list=BLOCKS\n"
+"                      在指定的以逗號分隔的未壓縮資料區間\n"
+"                      後開始新的 .xz 區塊。可選擇在未壓縮\n"
+"                      資料大小之前，指定一個過濾器串鏈編號\n"
+"                      （0-9），並以「:」為分隔符號。"
 
 #: src/xz/message.c
 msgid ""
@@ -867,7 +840,7 @@ msgid ""
 " Custom filter chain for compression (alternative for using presets):"
 msgstr ""
 "\n"
-" 自訂壓縮篩選鏈（使用設定檔時選用）："
+" 自訂壓縮過濾器串鏈（使用設定檔時選用）："
 
 #: src/xz/message.c
 msgid ""
@@ -875,6 +848,9 @@ msgid ""
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
 "                      syntax; use --filters-help for more information"
 msgstr ""
+"\n"
+"  --filters=FILTERS   使用 liblzma 過濾器字串語法設定過濾器串鏈；\n"
+"                      若需更多資訊，請使用 --filters-help"
 
 #: src/xz/message.c
 msgid ""
@@ -882,12 +858,17 @@ msgid ""
 "                      set additional filter chains using the liblzma filter\n"
 "                      string syntax to use with --block-list"
 msgstr ""
+"  --filters1=FILTERS ... --filters9=FILTERS\n"
+"                      使用 liblzma 過濾器字串語法設定其他\n"
+"                      過濾器串鏈，以便與 --block-list 一起使用"
 
 #: src/xz/message.c
 msgid ""
 "  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
 msgstr ""
+"  --filters-help      顯示有關 liblzma 過濾器字串語法的\n"
+"                      更多資訊後結束。"
 
 #: src/xz/message.c
 msgid ""
@@ -918,18 +899,6 @@ msgstr ""
 "                        depth=NUM  最大搜尋深度；0=自動（預設）"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-#| "  --arm[=OPTS]        ARM BCJ filter\n"
-#| "  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-#| "  --arm64[=OPTS]      ARM64 BCJ filter\n"
-#| "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-#| "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-#| "  --sparc[=OPTS]      SPARC BCJ filter\n"
-#| "                      Valid OPTS for all BCJ filters:\n"
-#| "                        start=NUM  start offset for conversions (default=0)"
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -944,15 +913,16 @@ msgid ""
 "                        start=NUM  start offset for conversions (default=0)"
 msgstr ""
 "\n"
-"  --x86[=OPTS]        x86 BCJ 篩選器 (32 位元和 64 位元)\n"
-"  --arm[=OPTS]        ARM BCJ 篩選器\n"
-"  --armthumb[=OPTS]   ARM-Thumb BCJ 篩選器\n"
-"  --arm64[=OPTS]      ARM64 BCJ 篩選器\n"
-"  --powerpc[=OPTS]    PowerPC BCJ 篩選器（僅大端序）\n"
-"  --ia64[=OPTS]       IA-64 (Itanium) BCJ 篩選器\n"
-"  --sparc[=OPTS]      SPARC BCJ 篩選器\n"
-"                      所有 BCJ 篩選器可用的 OPTS：\n"
-"                        start=NUM  轉換起始位移（預設值=0）"
+"  --x86[=OPTS]        x86 BCJ 過濾器（32 位元和 64 位元）\n"
+"  --arm[=OPTS]        ARM BCJ 過濾器\n"
+"  --armthumb[=OPTS]   ARM-Thumb BCJ 過濾器\n"
+"  --arm64[=OPTS]      ARM64 BCJ 過濾器\n"
+"  --powerpc[=OPTS]    PowerPC BCJ 過濾器（只支援大端序）\n"
+"  --ia64[=OPTS]       IA-64（Itanium）BCJ 過濾器\n"
+"  --sparc[=OPTS]      SPARC BCJ 過濾器\n"
+"  --riscv[=OPTS]      RISC-V BCJ 過濾器\n"
+"                      所有 BCJ 過濾器的有效 OPTS：\n"
+"                        start=NUM  轉換的起始偏移（預設=0）"
 
 #: src/xz/message.c
 msgid ""
@@ -962,7 +932,7 @@ msgid ""
 "                                   from each other (1-256; 1)"
 msgstr ""
 "\n"
-"  --delta[=OPTS]      增量篩選器 (有效值; 預設值)：\n"
+"  --delta[=OPTS]      增量過濾器 (有效值; 預設值)：\n"
 "                        dist=NUM   相減的位元組之間的距離\n"
 "                                   (1-256; 1)"
 
@@ -1050,18 +1020,19 @@ msgid ""
 "can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
 "specified instead of a filter chain.\n"
 msgstr ""
+"過濾器串鏈是使用 --filters=FILTERS 或\n"
+"--filters1=FILTERS ... --filters9=FILTERS\n"
+"選項設定的。每個過濾器可以用空格或「--」隔開。\n"
+"或者也可以指定預設的 <0-9>[e] 來代替過濾器串鏈。\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid "Unsupported filter chain or filter options"
 msgid "The supported filters and their options are:"
-msgstr "不支援的篩選鏈或篩選器選項"
+msgstr "支援的過濾器和選項為："
 
 #: src/xz/options.c
-#, fuzzy, c-format
-#| msgid "%s: Options must be `name=value' pairs separated with commas"
+#, c-format
 msgid "%s: Options must be 'name=value' pairs separated with commas"
-msgstr "%s：選項形式必須為以逗號分隔的「name=value」值對"
+msgstr "%s：選項必須是以逗號分隔的「name=value」值對"
 
 #: src/xz/options.c
 #, c-format
@@ -1088,10 +1059,9 @@ msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s：檔名有未知後綴，跳過"
 
 #: src/xz/suffix.c
-#, fuzzy, c-format
-#| msgid "%s: File already has `%s' suffix, skipping"
+#, c-format
 msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s：檔案已有「%s」後綴，跳過"
+msgstr "%s：檔案已有「%s」後綴，略過"
 
 #: src/xz/suffix.c
 #, c-format
@@ -1109,16 +1079,13 @@ msgid "%s: Invalid multiplier suffix"
 msgstr "%s：乘數後綴無效"
 
 #: src/xz/util.c
-#, fuzzy
-#| msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "有效的後綴有「KiB」(2^10)、「MiB」(2^20) 及「GiB」(2^30)。"
 
 #: src/xz/util.c
-#, fuzzy, c-format
-#| msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+#, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
-msgstr "選項「%s」的數值必須在 [%<PRIu64>, %<PRIu64>] 範圍內"
+msgstr "選項「%s」的數值必須落在 [%<PRIu64>, %<PRIu64>] 範圍內"
 
 #: src/xz/util.c
 msgid "Compressed data cannot be read from a terminal"
@@ -1134,16 +1101,16 @@ msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
 "Show information stored in the .lzma file header"
 msgstr ""
+"用法：%s [--help] [--version] [FILE]...\n"
+"顯示儲存在 .lzma 檔案標頭的資訊"
 
 #: src/lzmainfo/lzmainfo.c
-#, fuzzy
-#| msgid "%s: Too small to be a valid .xz file"
 msgid "File is too small to be a .lzma file"
-msgstr "%s：因過小而不認為是個有效 .xz 檔"
+msgstr "檔案過小，故不是 .lzma 檔案"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"
-msgstr ""
+msgstr "不是 .lzma 檔案"
 
 #: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"

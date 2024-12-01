@@ -5,3 +5,4 @@
 /.github export-ignore
 
 /build-aux/ci_build.bash export-ignore
+/doc/SHA256SUMS export-ignore

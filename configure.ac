@@ -57,6 +57,7 @@ AC_SUBST([LN_EXEEXT])
 echo
 echo "Configure options:"
 AM_CFLAGS=
+AM_LDFLAGS=
 
 
 #############
@@ -868,6 +869,13 @@ AC_CHECK_MEMBERS([
 AC_SYS_LARGEFILE
 AC_C_BIGENDIAN
 
+case $host_os in
+	aix*)
+		if test "x$gl_cv_host_cpu_c_abi_32bit" = xyes ; then
+			AM_LDFLAGS="$AM_LDFLAGS -Wl,-bmaxdata:0x80000000"
+		fi
+esac
+
 # __attribute__((__constructor__)) can be used for one-time initializations.
 # Use -Werror because some compilers accept unknown attributes and just
 # give a warning.
@@ -1323,6 +1331,7 @@ AM_CONDITIONAL([COND_GNULIB], test -n "$LIBOBJS")
 
 # Add default AM_CFLAGS.
 AC_SUBST([AM_CFLAGS])
+AC_SUBST([AM_LDFLAGS])
 
 # This is needed for src/scripts.
 xz=`echo xz | sed "$program_transform_name"`

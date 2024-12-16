@@ -14,7 +14,7 @@ subdir = po
 top_builddir = ..
 
 # These options get passed to xgettext.
-XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ --add-location=file --no-wrap
+XGETTEXT_OPTIONS = --add-location=file --no-wrap --keyword=_ --keyword=N_ '--keyword=W_:1,"This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care."'
 
 # This is the copyright holder that gets inserted into the header of the
 # $(DOMAIN).pot file.  Set this to the copyright holder of the surrounding

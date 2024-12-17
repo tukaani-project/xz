@@ -1996,6 +1996,8 @@ if(XZ_TOOL_XZ)
         src/common/tuklib_mbstr.h
         src/common/tuklib_mbstr_fw.c
         src/common/tuklib_mbstr_width.c
+        src/common/tuklib_mbstr_wrap.c
+        src/common/tuklib_mbstr_wrap.h
         src/common/tuklib_open_stdxxx.c
         src/common/tuklib_open_stdxxx.h
         src/common/tuklib_progname.c

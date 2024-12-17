@@ -67,6 +67,31 @@ This is useful for programs that use main():
     to the UTF-8 code page and aren't distinguishable from
     filenames that contain the actual replacement character U+FFFD.
 
+    FindFirstFileA() and FindFirstFileExA() also suffer from the above
+    issue where unpaired surrogates become U+FFFD. Another issue is
+    that filenames may require more bytes in UTF-8 than in a legacy
+    code page. In UTF-8, a very long filename may exceed MAX_PATH bytes
+    and thus these APIs cannot list such filenames anymore because
+    WIN32_FIND_DATAA has a member "CHAR cFileName[MAX_PATH]".
+
+In addition to the application manifest, setlocale(LC_ALL, ".UTF8")
+needs to be called to make functions like mbrtowc() use UTF-8. Regular
+setlocale(LC_ALL, "") uses a legacy code page even when an application
+manifest specifies UTF-8. The effects of setlocale(LC_ALL, ".UTF8")
+partially overlap with the application manifest though:
+
+  - Application manifest affects argv[] in main() and file system APIs.
+    Multibyte functions like mbrtowc() aren't affected.
+
+  - setlocale() affects file system APIs and multibyte functions like
+    mbrtowc(). argv[] isn't affected because argv[] has already been
+    constructed when an application has a chance to call setlocale().
+
+To keep everything in sync, it's best to set an UTF-8 locale only when
+the active code page is UTF-8 and thus argv[] is in UTF-8:
+
+    setlocale(LC_ALL, GetACP() == CP_UTF8 ? ".UTF8" : "");
+
 If different programs use different code pages, compatibility issues
 are possible. For example, if one program produces a list of
 filenames and another program reads it, both programs should use
@@ -76,7 +101,8 @@ char-based file system APIs.
 If building with a MinGW-w64 toolchain, it is strongly recommended
 to use UCRT instead of the old MSVCRT. For example, with the UTF-8
 code page, MSVCRT doesn't convert non-ASCII characters correctly
-when writing to console with printf(). With UCRT it works.
+when writing to console with printf(). With UCRT it works. Also,
+MSVCRT doesn't support ".UTF8" in setlocale().
 
 
 Long path names

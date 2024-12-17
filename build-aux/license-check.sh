@@ -64,6 +64,7 @@ PAT_UNTAGGED_0BSD='^(.*/)?\.gitattributes$
 ^THANKS$
 ^TODO$
 ^(.*/)?[^/]+\.txt$
+^doc/SHA256SUMS$
 ^po/LINGUAS$
 ^src/common/w32_application\.manifest$
 ^tests/xzgrep_expected_output$

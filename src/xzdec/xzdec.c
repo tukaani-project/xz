@@ -41,6 +41,7 @@
 #endif
 
 #include "getopt.h"
+#include "tuklib_gettext.h"
 #include "tuklib_progname.h"
 #include "tuklib_exit.h"
 
@@ -418,6 +419,17 @@ main(int argc, char **argv)
 	// fails here the error will still be detected when it matters.
 	(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 #endif
+
+	// We need to set the locale even though we don't have any
+	// translated messages:
+	//
+	//   - This is needed on Windows to make non-ASCII filenames display
+	//     properly when the active code page has been set to UTF-8
+	//     in the application manifest. Use the helper macro from
+	//     tuklib_gettext.h instead of plain setlocale(LC_ALL, "")
+	//     because on Windows the standard call isn't enough for
+	//     full UTF-8 support.
+	tuklib_gettext_setlocale();
 
 	// Parse the command line options.
 	parse_options(argc, argv);

@@ -17,6 +17,7 @@
 #include "getopt.h"
 #include "tuklib_gettext.h"
 #include "tuklib_progname.h"
+#include "tuklib_mbstr_nonprint.h"
 #include "tuklib_exit.h"
 
 #ifdef TUKLIB_DOSLIKE
@@ -108,7 +109,8 @@ lzmainfo(const char *name, FILE *f)
 	uint8_t buf[13];
 	const size_t size = fread(buf, 1, sizeof(buf), f);
 	if (size != 13) {
-		fprintf(stderr, "%s: %s: %s\n", progname, name,
+		fprintf(stderr, "%s: %s: %s\n", progname,
+				tuklib_mask_nonprint(name),
 				ferror(f) ? strerror(errno)
 				: _("File is too small to be a .lzma file"));
 		return true;
@@ -122,7 +124,8 @@ lzmainfo(const char *name, FILE *f)
 		break;
 
 	case LZMA_OPTIONS_ERROR:
-		fprintf(stderr, "%s: %s: %s\n", progname, name,
+		fprintf(stderr, "%s: %s: %s\n", progname,
+				tuklib_mask_nonprint(name),
 				_("Not a .lzma file"));
 		return true;
 
@@ -146,7 +149,7 @@ lzmainfo(const char *name, FILE *f)
 	// this output and we don't want to break that when people move
 	// from LZMA Utils to XZ Utils.
 	if (f != stdin)
-		printf("%s\n", name);
+		printf("%s\n", tuklib_mask_nonprint(name));
 
 	printf("Uncompressed size:             ");
 	if (uncompressed_size == UINT64_MAX)
@@ -204,9 +207,10 @@ main(int argc, char **argv)
 				if (f == NULL) {
 					ret = EXIT_FAILURE;
 					fprintf(stderr, "%s: %s: %s\n",
-							progname,
-							argv[optind],
-							strerror(errno));
+						progname,
+						tuklib_mask_nonprint(
+							argv[optind]),
+						strerror(errno));
 					continue;
 				}
 

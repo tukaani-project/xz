@@ -254,7 +254,16 @@ tuklib_wrapf(FILE *stream, const struct tuklib_wrap_opt *opt,
 
 #ifdef HAVE_VASPRINTF
 	va_start(ap, fmt);
+
+#ifdef __clang__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 	const int n = vasprintf(&buf, fmt, ap);
+#ifdef __clang__
+#	pragma GCC diagnostic pop
+#endif
+
 	va_end(ap);
 	if (n == -1)
 		return TUKLIB_WRAP_ERR_FORMAT;

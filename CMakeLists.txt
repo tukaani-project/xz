@@ -1989,6 +1989,8 @@ if(XZ_TOOL_XZ)
         src/common/sysdefs.h
         src/common/tuklib_common.h
         src/common/tuklib_config.h
+        src/common/tuklib_mbstr_nonprint.c
+        src/common/tuklib_mbstr_nonprint.h
         src/common/tuklib_exit.c
         src/common/tuklib_exit.h
         src/common/tuklib_gettext.h

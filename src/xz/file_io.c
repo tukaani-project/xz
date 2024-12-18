@@ -205,8 +205,9 @@ io_wait(file_pair *pair, int timeout, bool is_reading)
 				continue;
 
 			message_error(_("%s: poll() failed: %s"),
-					is_reading ? pair->src_name
-						: pair->dest_name,
+					tuklib_mask_nonprint(is_reading
+						? pair->src_name
+						: pair->dest_name),
 					strerror(errno));
 			return IO_WAIT_ERROR;
 		}
@@ -272,14 +273,15 @@ io_unlink(const char *name, const struct stat *known_st)
 		// of the original file, and in that case it obviously
 		// shouldn't be removed.
 		message_warning(_("%s: File seems to have been moved, "
-				"not removing"), name);
+				"not removing"), tuklib_mask_nonprint(name));
 	else
 #endif
 		// There's a race condition between lstat() and unlink()
 		// but at least we have tried to avoid removing wrong file.
 		if (unlink(name))
 			message_warning(_("%s: Cannot remove: %s"),
-					name, strerror(errno));
+					tuklib_mask_nonprint(name),
+					strerror(errno));
 
 	return;
 }
@@ -305,7 +307,8 @@ io_copy_attrs(const file_pair *pair)
 	if (fchown(pair->dest_fd, pair->src_st.st_uid, (gid_t)(-1))
 			&& warn_fchown)
 		message_warning(_("%s: Cannot set the file owner: %s"),
-				pair->dest_name, strerror(errno));
+				tuklib_mask_nonprint(pair->dest_name),
+				strerror(errno));
 
 	mode_t mode;
 
@@ -318,7 +321,8 @@ io_copy_attrs(const file_pair *pair)
 			&& fchown(pair->dest_fd, (uid_t)(-1),
 				pair->src_st.st_gid)) {
 		message_warning(_("%s: Cannot set the file group: %s"),
-				pair->dest_name, strerror(errno));
+				tuklib_mask_nonprint(pair->dest_name),
+				strerror(errno));
 		// We can still safely copy some additional permissions:
 		// 'group' must be at least as strict as 'other' and
 		// also vice versa.
@@ -337,7 +341,8 @@ io_copy_attrs(const file_pair *pair)
 
 	if (fchmod(pair->dest_fd, mode))
 		message_warning(_("%s: Cannot set the file permissions: %s"),
-				pair->dest_name, strerror(errno));
+				tuklib_mask_nonprint(pair->dest_name),
+				strerror(errno));
 #endif
 
 	// Copy the timestamps. We have several possible ways to do this, of
@@ -515,13 +520,15 @@ io_open_src_real(file_pair *pair)
 	if (!follow_symlinks) {
 		struct stat st;
 		if (lstat(pair->src_name, &st)) {
-			message_error(_("%s: %s"), pair->src_name,
+			message_error(_("%s: %s"),
+					tuklib_mask_nonprint(pair->src_name),
 					strerror(errno));
 			return true;
 
 		} else if (S_ISLNK(st.st_mode)) {
 			message_warning(_("%s: Is a symbolic link, "
-					"skipping"), pair->src_name);
+					"skipping"),
+					tuklib_mask_nonprint(pair->src_name));
 			return true;
 		}
 	}
@@ -583,13 +590,15 @@ io_open_src_real(file_pair *pair)
 
 		if (was_symlink)
 			message_warning(_("%s: Is a symbolic link, "
-					"skipping"), pair->src_name);
+					"skipping"),
+					tuklib_mask_nonprint(pair->src_name));
 		else
 #endif
 			// Something else than O_NOFOLLOW failing
 			// (assuming that the race conditions didn't
 			// confuse us).
-			message_error(_("%s: %s"), pair->src_name,
+			message_error(_("%s: %s"),
+					tuklib_mask_nonprint(pair->src_name),
 					strerror(errno));
 
 		return true;
@@ -612,13 +621,13 @@ io_open_src_real(file_pair *pair)
 
 	if (S_ISDIR(pair->src_st.st_mode)) {
 		message_warning(_("%s: Is a directory, skipping"),
-				pair->src_name);
+				tuklib_mask_nonprint(pair->src_name));
 		goto error;
 	}
 
 	if (reg_files_only && !S_ISREG(pair->src_st.st_mode)) {
 		message_warning(_("%s: Not a regular file, skipping"),
-				pair->src_name);
+				tuklib_mask_nonprint(pair->src_name));
 		goto error;
 	}
 
@@ -636,21 +645,21 @@ io_open_src_real(file_pair *pair)
 			// explicitly in io_copy_attr().
 			message_warning(_("%s: File has setuid or "
 					"setgid bit set, skipping"),
-					pair->src_name);
+					tuklib_mask_nonprint(pair->src_name));
 			goto error;
 		}
 
 		if (pair->src_st.st_mode & S_ISVTX) {
 			message_warning(_("%s: File has sticky bit "
 					"set, skipping"),
-					pair->src_name);
+					tuklib_mask_nonprint(pair->src_name));
 			goto error;
 		}
 
 		if (pair->src_st.st_nlink > 1) {
 			message_warning(_("%s: Input file has more "
-					"than one hard link, "
-					"skipping"), pair->src_name);
+					"than one hard link, skipping"),
+					tuklib_mask_nonprint(pair->src_name));
 			goto error;
 		}
 	}
@@ -679,7 +688,8 @@ io_open_src_real(file_pair *pair)
 	return false;
 
 error_msg:
-	message_error(_("%s: %s"), pair->src_name, strerror(errno));
+	message_error(_("%s: %s"), tuklib_mask_nonprint(pair->src_name),
+			strerror(errno));
 error:
 	(void)close(pair->src_fd);
 	return true;
@@ -816,7 +826,8 @@ io_open_dest_real(file_pair *pair)
 			if (st.st_dev == -1) {
 				message_error("%s: Refusing to write to "
 						"a DOS special file",
-						pair->dest_name);
+						tuklib_mask_nonprint(
+							pair->dest_name));
 				free(pair->dest_name);
 				return true;
 			}
@@ -826,7 +837,8 @@ io_open_dest_real(file_pair *pair)
 					&& st.st_ino == pair->src_st.st_ino) {
 				message_error("%s: Output file is the same "
 						"as the input file",
-						pair->dest_name);
+						tuklib_mask_nonprint(
+							pair->dest_name));
 				free(pair->dest_name);
 				return true;
 			}
@@ -836,7 +848,8 @@ io_open_dest_real(file_pair *pair)
 		// If --force was used, unlink the target file first.
 		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
 			message_error(_("%s: Cannot remove: %s"),
-					pair->dest_name, strerror(errno));
+					tuklib_mask_nonprint(pair->dest_name),
+					strerror(errno));
 			free(pair->dest_name);
 			return true;
 		}
@@ -851,7 +864,8 @@ io_open_dest_real(file_pair *pair)
 		pair->dest_fd = open(pair->dest_name, flags, mode);
 
 		if (pair->dest_fd == -1) {
-			message_error(_("%s: %s"), pair->dest_name,
+			message_error(_("%s: %s"),
+					tuklib_mask_nonprint(pair->dest_name),
 					strerror(errno));
 			free(pair->dest_name);
 			return true;
@@ -882,7 +896,7 @@ io_open_dest_real(file_pair *pair)
 	else if (pair->dest_fd != STDOUT_FILENO
 			&& !S_ISREG(pair->dest_st.st_mode)) {
 		message_error("%s: Destination is not a regular file",
-				pair->dest_name);
+				tuklib_mask_nonprint(pair->dest_name));
 
 		// dest_fd needs to be reset to -1 to keep io_close() working.
 		(void)close(pair->dest_fd);
@@ -1005,7 +1019,8 @@ io_close_dest(file_pair *pair, bool success)
 
 	if (close(pair->dest_fd)) {
 		message_error(_("%s: Closing the file failed: %s"),
-				pair->dest_name, strerror(errno));
+				tuklib_mask_nonprint(pair->dest_name),
+				strerror(errno));
 
 		// Closing destination file failed, so we cannot trust its
 		// contents. Get rid of junk:
@@ -1042,7 +1057,8 @@ io_close(file_pair *pair, bool success)
 				SEEK_CUR) == -1) {
 			message_error(_("%s: Seeking failed when trying "
 					"to create a sparse file: %s"),
-					pair->dest_name, strerror(errno));
+					tuklib_mask_nonprint(pair->dest_name),
+					strerror(errno));
 			success = false;
 		} else {
 			const uint8_t zero[1] = { '\0' };
@@ -1141,7 +1157,8 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 #endif
 
 			message_error(_("%s: Read error: %s"),
-					pair->src_name, strerror(errno));
+					tuklib_mask_nonprint(pair->src_name),
+					strerror(errno));
 
 			return SIZE_MAX;
 		}
@@ -1171,7 +1188,8 @@ io_seek_src(file_pair *pair, uint64_t pos)
 
 	if (lseek(pair->src_fd, (off_t)(pos), SEEK_SET) == -1) {
 		message_error(_("%s: Error seeking the file: %s"),
-				pair->src_name, strerror(errno));
+				tuklib_mask_nonprint(pair->src_name),
+				strerror(errno));
 		return true;
 	}
 
@@ -1195,7 +1213,7 @@ io_pread(file_pair *pair, io_buf *buf, size_t size, uint64_t pos)
 
 	if (amount != size) {
 		message_error(_("%s: Unexpected end of file"),
-				pair->src_name);
+				tuklib_mask_nonprint(pair->src_name));
 		return true;
 	}
 
@@ -1254,7 +1272,8 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 			// user_abort, and get EPIPE here.
 			if (errno != EPIPE)
 				message_error(_("%s: Write error: %s"),
-					pair->dest_name, strerror(errno));
+					tuklib_mask_nonprint(pair->dest_name),
+					strerror(errno));
 
 			return true;
 		}
@@ -1304,7 +1323,9 @@ io_write(file_pair *pair, const io_buf *buf, size_t size)
 					SEEK_CUR) == -1) {
 				message_error(_("%s: Seeking failed when "
 						"trying to create a sparse "
-						"file: %s"), pair->dest_name,
+						"file: %s"),
+						tuklib_mask_nonprint(
+							pair->dest_name),
 						strerror(errno));
 				return true;
 			}

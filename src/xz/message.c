@@ -196,10 +196,12 @@ print_filename(void)
 		// If we don't know how many files there will be due
 		// to usage of --files or --files0.
 		if (files_total == 0)
-			fprintf(file, "%s (%u)\n", filename,
+			fprintf(file, "%s (%u)\n",
+					tuklib_mask_nonprint(filename),
 					files_pos);
 		else
-			fprintf(file, "%s (%u/%u)\n", filename,
+			fprintf(file, "%s (%u/%u)\n",
+					tuklib_mask_nonprint(filename),
 					files_pos, files_total);
 
 		signals_unblock();
@@ -648,7 +650,7 @@ progress_flush(bool finished)
 				cols[4]);
 	} else {
 		// The filename is always printed.
-		fprintf(stderr, _("%s: "), filename);
+		fprintf(stderr, _("%s: "), tuklib_mask_nonprint(filename));
 
 		// Percentage is printed only if we didn't finish yet.
 		if (!finished) {

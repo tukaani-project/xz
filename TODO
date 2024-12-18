@@ -19,9 +19,6 @@ Known bugs
     compress extremely well, so going from compression ratio of 0.003
     to 0.004 means big relative increase in the compressed file size.
 
-    xz doesn't quote unprintable characters when it displays file names
-    given on the command line.
-
     tuklib_exit() doesn't block signals => EINTR is possible.
 
     If liblzma has created threads and fork() gets called, liblzma

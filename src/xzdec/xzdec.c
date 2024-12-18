@@ -391,6 +391,9 @@ error:
 int
 main(int argc, char **argv)
 {
+	// Initialize progname which we will be used in error messages.
+	tuklib_progname_init(argv);
+
 #ifdef HAVE_PLEDGE
 	// OpenBSD's pledge(2) sandbox.
 	// Initially enable the sandbox slightly more relaxed so that
@@ -415,9 +418,6 @@ main(int argc, char **argv)
 	// fails here the error will still be detected when it matters.
 	(void)prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 #endif
-
-	// Initialize progname which we will be used in error messages.
-	tuklib_progname_init(argv);
 
 	// Parse the command line options.
 	parse_options(argc, argv);

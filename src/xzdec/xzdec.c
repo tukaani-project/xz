@@ -14,6 +14,7 @@
 
 #include <stdarg.h>
 #include <errno.h>
+#include <locale.h>
 #include <stdio.h>
 
 #ifndef _MSC_VER
@@ -41,7 +42,6 @@
 #endif
 
 #include "getopt.h"
-#include "tuklib_gettext.h"
 #include "tuklib_progname.h"
 #include "tuklib_mbstr_nonprint.h"
 #include "tuklib_exit.h"
@@ -430,11 +430,8 @@ main(int argc, char **argv)
 	//
 	//   - This is needed on Windows to make non-ASCII filenames display
 	//     properly when the active code page has been set to UTF-8
-	//     in the application manifest. Use the helper macro from
-	//     tuklib_gettext.h instead of plain setlocale(LC_ALL, "")
-	//     because on Windows the standard call isn't enough for
-	//     full UTF-8 support.
-	tuklib_gettext_setlocale();
+	//     in the application manifest.
+	setlocale(LC_ALL, "");
 
 	// Parse the command line options.
 	parse_options(argc, argv);

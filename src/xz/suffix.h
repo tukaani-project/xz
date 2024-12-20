@@ -17,6 +17,10 @@
 /// NULL is returned.
 extern char *suffix_get_dest_name(const char *src_name);
 
+/// \brief      Returns the directory name of the file
+///
+/// Returns the name of directory where this file is locacted.
+extern char *suffix_get_directory_name(const char *f_name);
 
 /// \brief      Set a custom filename suffix
 ///

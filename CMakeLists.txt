@@ -175,6 +175,12 @@ endif()
 # On Apple OSes, don't build executables as bundles:
 set(CMAKE_MACOSX_BUNDLE OFF)
 
+# The targets defined here don't support compiling as a unity build. Encoder
+# and decoder source files define different types with the same name, and some
+# internal header files don't have header guards leading to redeclaration
+# errors.
+set(CMAKE_UNITY_BUILD OFF)
+
 # Set CMAKE_INSTALL_LIBDIR and friends. This needs to be done before
 # the LOCALEDIR_DEFINITION workaround below.
 include(GNUInstallDirs)

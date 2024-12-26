@@ -177,6 +177,6 @@ extern bool io_pread(file_pair *pair, io_buf *buf, size_t size, uint64_t pos);
 /// \param      buf     Buffer containing the data to be written
 /// \param      size    Size of the buffer; must be at most IO_BUFFER_SIZE
 ///
-/// \return     On success, zero is returned. On error, -1 is returned
-///             and error message printed.
+/// \return     On success, false is returned. On error, error message
+///             is printed and true is returned.
 extern bool io_write(file_pair *pair, const io_buf *buf, size_t size);

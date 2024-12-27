@@ -17,6 +17,7 @@
 #	include <io.h>
 #else
 #	include <poll.h>
+#	include <libgen.h>
 static bool warn_fchown;
 #endif
 
@@ -56,12 +57,24 @@ static bool warn_fchown;
 #	define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
 #endif
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#	define fsync _commit
+#endif
+
 #ifndef O_BINARY
 #	define O_BINARY 0
 #endif
 
 #ifndef O_NOCTTY
 #	define O_NOCTTY 0
+#endif
+
+#ifndef O_SEARCH
+#	define O_SEARCH O_RDONLY
+#endif
+
+#ifndef O_DIRECTORY
+#	define O_DIRECTORY 0
 #endif
 
 // Using this macro to silence a warning from gcc -Wlogical-op.
@@ -450,6 +463,63 @@ io_copy_attrs(const file_pair *pair)
 }
 
 
+extern bool
+io_sync_dest(file_pair *pair)
+{
+	assert(pair->dest_fd != -1);
+
+	if (fsync(pair->dest_fd)) {
+		// If dest_fd is STDOUT_FILENO, we might be writing to
+		// something which cannot be synced and thus syncing will
+		// fail with EINVAL. Ignore the error in that case and
+		// return successfully.
+		//
+		// FIXME? On Windows, fsync() is actually _commit() due
+		// to the #define at the top of this file. _commit() sets
+		// errno to EBADF instead of EINVAL when stdout is console
+		// or nul. Ignoring EBADF wouldn't be good though because
+		// it might be that _commit() uses EBADF for *all* errors.
+		// It feels safest to leave this broken for cases where
+		// stdout isn't a regular file.
+		if (errno == EINVAL) {
+			assert(pair->dest_fd == STDOUT_FILENO);
+			return false;
+		}
+
+		message_error(_("%s: Synchronizing the file failed: %s"),
+				tuklib_mask_nonprint(pair->dest_name),
+				strerror(errno));
+		return true;
+	}
+
+#ifndef TUKLIB_DOSLIKE
+	// If we have a file descriptor of the directory that contains
+	// the file, try to sync the directory.
+	if (pair->dir_fd != -1) {
+		if (fsync(pair->dir_fd)) {
+			message_error(_("%s: Synchronizing the directory of "
+					"the file failed: %s"),
+					tuklib_mask_nonprint(pair->dest_name),
+					strerror(errno));
+			return true;
+		}
+
+		// With the combination of --flush-timeout and --synchronous,
+		// this function may be called multiple times for the same
+		// file. The directory needs to be synced only once though.
+		//
+		// NOTE: This is correct but weird. A typical use case of
+		// --flush-timeout writes to stdout, and then dir_fd isn't
+		// available.
+		(void)close(pair->dir_fd);
+		pair->dir_fd = -1;
+	}
+#endif
+
+	return false;
+}
+
+
 /// Opens the source file. Returns false on success, true on error.
 static bool
 io_open_src_real(file_pair *pair)
@@ -717,6 +787,9 @@ io_open_src(const char *src_name)
 		.dest_name = NULL,
 		.src_fd = -1,
 		.dest_fd = -1,
+#ifndef TUKLIB_DOSLIKE
+		.dir_fd = -1,
+#endif
 		.src_eof = false,
 		.src_has_seen_input = false,
 		.flush_needed = false,
@@ -819,6 +892,46 @@ io_open_dest_real(file_pair *pair)
 		if (pair->dest_name == NULL)
 			return true;
 
+#ifndef TUKLIB_DOSLIKE
+		// If --synchronous is used, open also the directory
+		// so that we can sync it.
+		if (opt_synchronous) {
+			char *buf = xstrdup(pair->dest_name);
+			const char *dir_name = dirname(buf);
+
+			// O_NOCTTY and O_NONBLOCK are there in case
+			// O_DIRECTORY is 0 and dir_name doesn't refer
+			// to a directory. (We opened the source file
+			// already but directories might have been renamed
+			// after the source file was opened.)
+			pair->dir_fd = open(dir_name, O_SEARCH | O_DIRECTORY
+					| O_NOCTTY | O_NONBLOCK);
+			if (pair->dir_fd == -1) {
+				// Since we did open the source file
+				// successfully, we should rarely get here.
+				// Perhaps something has been renamed or
+				// had its permissions changed.
+				//
+				// In an odd case, the directory has write
+				// and search permissions but not read
+				// permission (d-wx------), and O_SEARCH is
+				// actually O_RDONLY. Then we would be able
+				// to create a new file and only the directory
+				// syncing would be impossible. But if user
+				// specifies --synchronous, let's be strict
+				// about it.
+				message_error(_("%s: Opening the directory "
+					"failed: %s"),
+					tuklib_mask_nonprint(dir_name),
+					strerror(errno));
+				free(buf);
+				goto error;
+			}
+
+			free(buf);
+		}
+#endif
+
 #ifdef __DJGPP__
 		struct stat st;
 		if (stat(pair->dest_name, &st) == 0) {
@@ -866,6 +979,10 @@ io_open_dest_real(file_pair *pair)
 					strerror(errno));
 			goto error;
 		}
+
+		// If using --synchronous, we could sync dir_fd now and
+		// close it. However, performance can be better if this is
+		// delayed until dest_fd has been synced in io_sync_dest().
 	}
 
 	if (fstat(pair->dest_fd, &pair->dest_st)) {
@@ -971,6 +1088,14 @@ io_open_dest_real(file_pair *pair)
 	return false;
 
 error:
+#ifndef TUKLIB_DOSLIKE
+	// io_close() closes pair->dir_fd but let's do it here anyway.
+	if (pair->dir_fd != -1) {
+		(void)close(pair->dir_fd);
+		pair->dir_fd = -1;
+	}
+#endif
+
 	free(pair->dest_name);
 	return true;
 }
@@ -1071,6 +1196,19 @@ io_close(file_pair *pair, bool success)
 	// file isn't open or it is standard output.
 	if (success && pair->dest_fd != -1 && pair->dest_fd != STDOUT_FILENO)
 		io_copy_attrs(pair);
+
+	// Synchronize the file (and possibly its directory) if requested.
+	if (opt_synchronous) {
+		if (success && pair->dest_fd != -1)
+			success = !io_sync_dest(pair);
+
+#ifndef TUKLIB_DOSLIKE
+		// If io_sync_dest() was successfully called, it
+		// already closed dir_fd. Otherwise we do it here.
+		if (pair->dir_fd != -1)
+			(void)close(pair->dir_fd);
+#endif
+	}
 
 	// Close the destination first. If it fails, we must not remove
 	// the source file!

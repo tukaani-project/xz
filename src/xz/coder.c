@@ -1244,6 +1244,12 @@ coder_normal(file_pair *pair)
 				if (coder_write_output(pair))
 					break;
 
+				// If --flush-timeout is combined with
+				// --synchronous, each flush is also
+				// synced to permanent storage.
+				if (opt_synchronous && io_sync_dest(pair))
+					break;
+
 				// Mark that we haven't seen any new input
 				// since the previous flush.
 				pair->src_has_seen_input = false;

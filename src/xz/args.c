@@ -21,6 +21,7 @@
 bool opt_stdout = false;
 bool opt_force = false;
 bool opt_keep_original = false;
+bool opt_synchronous = false;
 bool opt_robot = false;
 bool opt_ignore_check = false;
 
@@ -217,6 +218,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_LZMA1,
 		OPT_LZMA2,
 
+		OPT_SYNCHRONOUS,
 		OPT_SINGLE_STREAM,
 		OPT_NO_SPARSE,
 		OPT_FILES,
@@ -249,6 +251,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "force",        no_argument,       NULL,  'f' },
 		{ "stdout",       no_argument,       NULL,  'c' },
 		{ "to-stdout",    no_argument,       NULL,  'c' },
+		{ "synchronous",  no_argument,       NULL,  OPT_SYNCHRONOUS },
 		{ "single-stream", no_argument,      NULL,  OPT_SINGLE_STREAM },
 		{ "no-sparse",    no_argument,       NULL,  OPT_NO_SPARSE },
 		{ "suffix",       required_argument, NULL,  'S' },
@@ -653,6 +656,10 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_FLUSH_TIMEOUT:
 			opt_flush_timeout = str_to_uint64("flush-timeout",
 					optarg, 0, UINT64_MAX);
+			break;
+
+		case OPT_SYNCHRONOUS:
+			opt_synchronous = true;
 			break;
 
 		default:

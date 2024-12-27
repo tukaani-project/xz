@@ -226,7 +226,9 @@ sandbox_init(void)
 	// rights because files are created with open() using O_EXCL and
 	// without O_TRUNC.
 	//
-	// LANDLOCK_ACCESS_FS_READ_DIR is included here to get a clear error
+	// LANDLOCK_ACCESS_FS_READ_DIR is required when using --synchronous.
+	//
+	// LANDLOCK_ACCESS_FS_READ_DIR is also helpful to show a clear error
 	// message if xz is given a directory name. Without this permission
 	// the message would be "Permission denied" but with this permission
 	// it's "Is a directory, skipping". It could be worked around with

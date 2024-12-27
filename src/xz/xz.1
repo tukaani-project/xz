@@ -1039,6 +1039,41 @@ is unsuitable for decompressing the stream in real time due to how
 .B xz
 does buffering.
 .TP
+.B \-\-synchronous
+After successful compression or decompression,
+synchronize the target file to the storage device.
+The synchronization is done before possibly removing the source file,
+thus at least one of the two files should exist after a system crash.
+.IP ""
+On POSIX systems,
+also the directory containing the file is synchronized
+.BR "except when writing to standard output".
+If the directory isn't synchronized,
+it's possible that the directory entry for the file won't exist after a crash
+even if the file itself has been synchronized.
+A workaround is to create an empty file first and synchronize the directory.
+An example using
+.BR sync (1)
+from GNU coreutils:
+.RS
+.IP ""
+.nf
+.ft CR
+touch foo/bar/target.xz
+sync foo/bar
+sometool | xz --synchronous > foo/bar/target.xz
+.ft R
+.fi
+.RE
+.IP ""
+If
+.B \-\-synchronous
+is used together with
+.BR \-\-flush\-timeout ,
+the file is also synchronized after every flush.
+This way all the data until the most recent flush
+should be recoverable after a system crash.
+.TP
 .BI \-\-memlimit\-compress= limit
 Set a memory usage limit for compression.
 If this option is specified multiple times,

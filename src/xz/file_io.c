@@ -828,8 +828,7 @@ io_open_dest_real(file_pair *pair)
 						"a DOS special file",
 						tuklib_mask_nonprint(
 							pair->dest_name));
-				free(pair->dest_name);
-				return true;
+				goto error;
 			}
 
 			// Check that we aren't overwriting the source file.
@@ -839,8 +838,7 @@ io_open_dest_real(file_pair *pair)
 						"as the input file",
 						tuklib_mask_nonprint(
 							pair->dest_name));
-				free(pair->dest_name);
-				return true;
+				goto error;
 			}
 		}
 #endif
@@ -850,8 +848,7 @@ io_open_dest_real(file_pair *pair)
 			message_error(_("%s: Cannot remove: %s"),
 					tuklib_mask_nonprint(pair->dest_name),
 					strerror(errno));
-			free(pair->dest_name);
-			return true;
+			goto error;
 		}
 
 		// Open the file.
@@ -867,8 +864,7 @@ io_open_dest_real(file_pair *pair)
 			message_error(_("%s: %s"),
 					tuklib_mask_nonprint(pair->dest_name),
 					strerror(errno));
-			free(pair->dest_name);
-			return true;
+			goto error;
 		}
 	}
 
@@ -901,9 +897,7 @@ io_open_dest_real(file_pair *pair)
 		// dest_fd needs to be reset to -1 to keep io_close() working.
 		(void)close(pair->dest_fd);
 		pair->dest_fd = -1;
-
-		free(pair->dest_name);
-		return true;
+		goto error;
 	}
 #elif !defined(TUKLIB_DOSLIKE)
 	else if (try_sparse && opt_mode == MODE_DECOMPRESS) {
@@ -975,6 +969,10 @@ io_open_dest_real(file_pair *pair)
 #endif
 
 	return false;
+
+error:
+	free(pair->dest_name);
+	return true;
 }
 
 

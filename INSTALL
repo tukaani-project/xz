@@ -726,6 +726,25 @@ XZ Utils Installation
                   - CMake build uses /bin/sh except on Solaris the
                     default is /usr/xpg4/bin/sh.
 
+    CMAKE_DLL_NAME_WITH_SOVERSION=ON
+                CMake on native Windows (not Cygwin) only:
+
+                This changes the filename liblzma.dll to liblzma-5.dll.
+
+                The unversioned filename liblzma.dll has been used
+                since XZ Utils 5.0.0 when creating binary packages
+                using the included windows/build.bash. The same
+                unversioned filename is the default with CMake.
+                However, there are popular builds that, very
+                understandably and reasonably, use the versioned
+                filename produced by GNU Libtool.
+
+                This option should usually be left to its default value
+                (OFF). It can be set to ON if the liblzma DLL filename
+                must be compatible with the versioned filename
+                produced by GNU Libtool. For example, binaries
+                distributed in MSYS2 use a versioned DLL filename.
+
 
 2.1. Static vs. dynamic linking of liblzma
 

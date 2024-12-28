@@ -1464,12 +1464,57 @@ elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "generic")
     )
 endif()
 
+# Calculate Libtool-compatible Mach-O versions for Apple OSes.
+# Switching from CMake's or Meson's default Mach-O versioning style to
+# GNU Libtool style is always a backward compatible change because the
+# Libtool style always results in higher Mach-O version values.
+#
+# The other way would be a breaking change, and switching from Autotools
+# to CMake used to result in "Incompatible library version" error from the
+# dynamic linker ("dyld") when trying to run existing executables. This
+# happened because the Mach-O current_version in the CMake-built library
+# was less than the compatibility_version stored in the executable.
+#
+# Example: If on GNU/Linux one had libfoo.so.5.6.7, on macOS one would
+# have libfoo.5.dylib containing the following Mach-O versions:
+#
+#                compatibility_version    current_version
+#     Libtool    12.0.0                   12.7.0
+#     CMake      5.0.0                    5.6.7
+#     Meson      5.0.0                    5.0.0
+#
+# Apple's docs say that the major version is encoded in the library filename,
+# and the Mach-O version fields are for tracking backward compatible changes
+# (minor versions). The default Mach-O versioning styles in CMake and
+# Meson don't store the minor version in the compatibility_version though
+# but Libtool does (using its own idiosyncratic encoding). In practice the
+# lack of minor ABI version tracking doesn't matter much; it's the
+# compatibility between the build systems that counts.
+#
+# It's unclear how much this matters in 2024. It might be that the
+# dynamic linker in macOS >= 12 doesn't enforce the version checks.
+# But this is a simple and safe change so it's fine to do it anyway.
+#
+# Apple docs:
+# https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/DynamicLibraryDesignGuidelines.html
+#
+# This change was made in XZ Utils 5.7.1alpha.
+#
+# * * * * *
+#
+# At least for now the xz package versioning matches the rules used for
+# shared library versioning (excluding development releases) so it is
+# fine to use the package version when setting the liblzma ABI version.
+math(EXPR LIBLZMA_MACHO_COMPATIBILITY_VERSION
+          "${xz_VERSION_MAJOR} + ${xz_VERSION_MINOR} + 1")
+set(LIBLZMA_MACHO_CURRENT_VERSION
+    "${LIBLZMA_MACHO_COMPATIBILITY_VERSION}.${xz_VERSION_PATCH}")
+
 set_target_properties(liblzma PROPERTIES
-    # At least for now the package versioning matches the rules used for
-    # shared library versioning (excluding development releases) so it is
-    # fine to use the package version here.
     SOVERSION "${xz_VERSION_MAJOR}"
     VERSION "${xz_VERSION}"
+    MACHO_COMPATIBILITY_VERSION "${LIBLZMA_MACHO_COMPATIBILITY_VERSION}"
+    MACHO_CURRENT_VERSION "${LIBLZMA_MACHO_CURRENT_VERSION}"
 
     # The name liblzma a mess because in many places "lib" is just a prefix
     # and not part of the actual name. (Don't name a new library this way!)

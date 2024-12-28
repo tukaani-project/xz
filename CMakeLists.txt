@@ -1505,7 +1505,7 @@ endif()
 
 # Create liblzma-config-version.cmake.
 #
-# FIXME: SameMajorVersion is correct for stable releases but it is wrong
+# NOTE: SameMajorVersion is correct for stable releases but it is wrong
 # for development releases where each release may have incompatible changes.
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(

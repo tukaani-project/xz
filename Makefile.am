@@ -70,11 +70,11 @@ manfiles = \
 	src/scripts/xzless.1 \
 	src/scripts/xzmore.1
 
-# Create ChangeLog from output of "git log --date=iso --stat".
+# Create ChangeLog using "git log".
 # Convert the man pages to plain text (ASCII only) format.
 dist-hook:
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
-		( cd "$(srcdir)" && git log --date=iso --stat \
+		( cd "$(srcdir)" && git log --pretty=medium --date=iso --stat \
 			b69da6d4bb6bb11fc0cf066920791990d2b22a06^..HEAD ) \
 			> "$(distdir)/ChangeLog"; \
 	fi

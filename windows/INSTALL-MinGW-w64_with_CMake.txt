@@ -51,23 +51,29 @@ Building XZ Utils on Windows using MinGW-w64 and CMake
 -----------------
 
     Both GCC and Clang/LLVM based MinGW-w64 toolchains come in MSVCRT
-    and Universal C runtime (UCRT) variants. MSVCRT is the old one.
-    32-bit builds of XZ Utils with MSVCRT should run on Windows 2000
-    and later (even Windows 95 should still be possible with trivial
-    edits to the source code).
+    and Universal C runtime (UCRT) variants. Use the UCRT variant
+    unless you have a good reason to why you still need to use MSVCRT.
+
+    MSVCRT is old. 32-bit builds of XZ Utils with MSVCRT should run on
+    Windows 2000 and later (even Windows 95 should still be possible
+    with trivial edits to the source code). However, MSVCRT doesn't
+    support the UTF-8 code page. Under Windows 10 version 1903 and
+    later, the command line tools of XZ Utils 5.6.3 and later use the
+    UTF-8 code page. If the command line tools are built against MSVCRT
+    and used on Win10 v1903 or later, non-ASCII characters may be
+    displayed incorrectly. Otherwise the tools should still function
+    correctly, so it's mostly a cosmetic issue.
 
     UCRT is included in Windows 10, and it's possible to install UCRT
-    on Windows XP and later. UCRT might be the preferred choice if
-    out-of-the-box compatibility with Windows versions older than 10
-    is not required. Visual Studio 2015 and later produce binaries
-    that use UCRT.
+    on Windows XP and later. UCRT supports the UTF-8 code page. UCRT is
+    the preferred choice if out-of-the-box compatibility with Windows
+    versions older than 10 is not required. Visual Studio 2015 and
+    later produce binaries that use UCRT.
 
     If you want to build liblzma.dll for use with your application,
-    it's recommended to use the same CRT for all components. If this
-    isn't possible, see the file liblzma-crt-mixing.txt.
-
-    If you only need the command line tools, the choice of CRT isn't
-    important, at least for now.
+    it's recommended to use the same CRT for all components (the UTF-8
+    code page issue only affects the command line tools, not liblzma).
+    If this isn't possible, see the file liblzma-crt-mixing.txt.
 
 
 3. CMake
@@ -101,7 +107,8 @@ Building XZ Utils on Windows using MinGW-w64 and CMake
 
     For GCC, download appropriate packages from Mingw-builds depending
     on if you want to build 32-bit or 64-bit x86 version of XZ Utils
-    and if the XZ Utils binaries should link against MSVCRT or UCRT:
+    and if the XZ Utils binaries should link against MSVCRT or UCRT
+    (use 64-bit UCRT if possible):
 
         https://github.com/niXman/mingw-builds-binaries/releases
 
@@ -125,7 +132,8 @@ Building XZ Utils on Windows using MinGW-w64 and CMake
 
 4.2. MinGW-w64 with Clang/LLVM
 
-    For Clang/LLVM, download an appropriate package from LLVM-MinGW:
+    For Clang/LLVM, download an appropriate package from LLVM-MinGW
+    (use 64-bit UCRT if possible):
 
         https://github.com/mstorsjo/llvm-mingw/releases
 

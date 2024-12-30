@@ -4,7 +4,7 @@
 .\" Authors: Lasse Collin
 .\"          Jia Tan
 .\"
-.TH XZ 1 "2024-04-08" "Tukaani" "XZ Utils"
+.TH XZ 1 "2024-12-30" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -351,9 +351,24 @@ the command name (for example,
 .B unxz
 implies
 .BR \-\-decompress ).
+.IP ""
+.\" The DESCRIPTION section already says this but it's good to repeat it
+.\" here because the default behavior is a bit dangerous and new users
+.\" in a hurry may skip reading the DESCRIPTION section.
+After successful compression, the source file is removed
+unless writing to standard output or
+.B \-\-keep
+was specified.
 .TP
 .BR \-d ", " \-\-decompress ", " \-\-uncompress
 Decompress.
+.\" The DESCRIPTION section already says this but it's good to repeat it
+.\" here because the default behavior is a bit dangerous and new users
+.\" in a hurry may skip reading the DESCRIPTION section.
+After successful decompression, the source file is removed
+unless writing to standard output or
+.B \-\-keep
+was specified.
 .TP
 .BR \-t ", " \-\-test
 Test the integrity of compressed

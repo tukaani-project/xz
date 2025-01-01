@@ -203,4 +203,13 @@ typedef unsigned char _Bool;
 #	define lzma_attr_alloc_size(x)
 #endif
 
+#if __STDC_VERSION__ >= 202311
+#	define FALLTHROUGH [[__fallthrough__]]
+#elif (defined(__GNUC__) && __GNUC__ >= 7) \
+		|| (defined(__clang_major__) && __clang_major__ >= 10)
+#	define FALLTHROUGH __attribute__((__fallthrough__))
+#else
+#	define FALLTHROUGH ((void)0)
+#endif
+
 #endif

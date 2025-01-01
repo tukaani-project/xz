@@ -434,6 +434,8 @@ if(CMAKE_C_COMPILER_ID MATCHES GNU|Clang)
                 -Wmissing-prototypes
                 -Wmissing-declarations
                 -Wredundant-decls
+                -Wimplicit-fallthrough
+                -Wimplicit-fallthrough=5
 
                 -Wc99-compat
                 -Wc11-extensions

@@ -1299,6 +1299,8 @@ AS_IF([test "$GCC" = yes], [
 			-Wmissing-prototypes \
 			-Wmissing-declarations \
 			-Wredundant-decls \
+			-Wimplicit-fallthrough \
+			-Wimplicit-fallthrough=5 \
 			\
 			-Wc99-compat \
 			-Wc11-extensions \

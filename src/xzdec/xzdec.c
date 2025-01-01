@@ -395,7 +395,7 @@ error:
 int
 main(int argc, char **argv)
 {
-	// Initialize progname which we will be used in error messages.
+	// Initialize progname which will be used in error messages.
 	tuklib_progname_init(argv);
 
 #ifdef HAVE_PLEDGE

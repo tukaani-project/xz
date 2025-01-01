@@ -1077,9 +1077,9 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 
 		if (coder->tell_any_check)
 			return LZMA_GET_CHECK;
-	}
 
-	// Fall through
+		FALLTHROUGH;
+	}
 
 	case SEQ_BLOCK_HEADER: {
 		const size_t in_old = *in_pos;
@@ -1214,9 +1214,8 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		}
 
 		coder->sequence = SEQ_BLOCK_INIT;
+		FALLTHROUGH;
 	}
-
-	// Fall through
 
 	case SEQ_BLOCK_INIT: {
 		// Check if decoding is possible at all with the current
@@ -1303,9 +1302,8 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		}
 
 		coder->sequence = SEQ_BLOCK_THR_INIT;
+		FALLTHROUGH;
 	}
-
-	// Fall through
 
 	case SEQ_BLOCK_THR_INIT: {
 		// We need to wait for a multiple conditions to become true
@@ -1508,9 +1506,8 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		}
 
 		coder->sequence = SEQ_BLOCK_THR_RUN;
+		FALLTHROUGH;
 	}
-
-	// Fall through
 
 	case SEQ_BLOCK_THR_RUN: {
 		if (action == LZMA_FINISH && coder->fail_fast) {
@@ -1613,9 +1610,8 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		coder->mem_direct_mode = coder->mem_next_filters;
 
 		coder->sequence = SEQ_BLOCK_DIRECT_RUN;
+		FALLTHROUGH;
 	}
-
-	// Fall through
 
 	case SEQ_BLOCK_DIRECT_RUN: {
 		const size_t in_old = *in_pos;
@@ -1652,8 +1648,7 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 			return LZMA_OK;
 
 		coder->sequence = SEQ_INDEX_DECODE;
-
-	// Fall through
+		FALLTHROUGH;
 
 	case SEQ_INDEX_DECODE: {
 		// If we don't have any input, don't call
@@ -1672,9 +1667,8 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 			return ret;
 
 		coder->sequence = SEQ_STREAM_FOOTER;
+		FALLTHROUGH;
 	}
-
-	// Fall through
 
 	case SEQ_STREAM_FOOTER: {
 		// Copy the Stream Footer to the internal buffer.
@@ -1714,9 +1708,8 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 			return LZMA_STREAM_END;
 
 		coder->sequence = SEQ_STREAM_PADDING;
+		FALLTHROUGH;
 	}
-
-	// Fall through
 
 	case SEQ_STREAM_PADDING:
 		assert(coder->concatenated);

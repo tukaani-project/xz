@@ -621,7 +621,7 @@ parse_real(args_info *args, int argc, char **argv)
 		case OPT_FILES:
 			args->files_delim = '\n';
 
-		// Fall through
+			FALLTHROUGH;
 
 		case OPT_FILES0:
 			if (args->files_name != NULL)

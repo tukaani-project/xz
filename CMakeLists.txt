@@ -2074,6 +2074,7 @@ option(XZ_TOOL_XZ "Build and install the xz command line tool" ON)
 
 if(XZ_TOOL_XZ)
     add_executable(xz
+        src/common/my_landlock.h
         src/common/mythread.h
         src/common/sysdefs.h
         src/common/tuklib_common.h

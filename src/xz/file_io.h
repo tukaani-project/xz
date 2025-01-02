@@ -55,6 +55,12 @@ typedef struct {
 	/// File descriptor of the target file
 	int dest_fd;
 
+#ifndef TUKLIB_DOSLIKE
+	/// File descriptor of the directory of the target file (which is
+	/// also the directory of the source file)
+	int dir_fd;
+#endif
+
 	/// True once end of the source file has been detected.
 	bool src_eof;
 
@@ -180,3 +186,12 @@ extern bool io_pread(file_pair *pair, io_buf *buf, size_t size, uint64_t pos);
 /// \return     On success, false is returned. On error, error message
 ///             is printed and true is returned.
 extern bool io_write(file_pair *pair, const io_buf *buf, size_t size);
+
+
+/// \brief      Synchronizes the destination file to permanent storage
+///
+/// \param      pair    File pair having the destination file open for writing
+///
+/// \return     On success, false is returned. On error, error message
+///             is printed and true is returned.
+extern bool io_sync_dest(file_pair *pair);

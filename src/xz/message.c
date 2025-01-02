@@ -1069,7 +1069,8 @@ message_help(bool long_help)
 		e |= tuklib_wrapf(stdout, &wrap2,
 			"    --block-size=%s\v%s\r"
 			"    --block-list=%s\v%s\r"
-			"    --flush-timeout=%s\v%s",
+			"    --flush-timeout=%s\v%s\r"
+			"    --synchronous\v%s",
 			_("SIZE"),
 			W_("start a new .xz block after every SIZE bytes "
 				"of input; use this to set the block size "
@@ -1084,7 +1085,10 @@ message_help(bool long_help)
 			W_("when compressing, if more than NUM "
 				"milliseconds has passed since the previous "
 				"flush and reading more input would block, "
-				"all pending data is flushed out"));
+				"all pending data is flushed out"),
+			W_("synchronize the output file to the storage device "
+				 "after successful compression, "
+				 "decompression, or flushing"));
 
 		e |= tuklib_wrapf(stdout, &wrap2,
 			"    --memlimit-compress=%1$s\n"

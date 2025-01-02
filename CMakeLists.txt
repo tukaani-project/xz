@@ -359,6 +359,35 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
                             "disabled by passing -DENABLE_NLS=OFF to cmake.")
         endif()
 
+        if(ENABLE_NLS AND WIN32)
+            # The command line tools use UTF-8 on native Windows.
+            # Non-ASCII characters display correctly only when
+            # using UCRT and gettext-runtime >= 0.23.1.
+            check_c_source_compiles(
+                    "#define WIN32_LEAN_AND_MEAN
+                    #include <windows.h>
+                    #include <libintl.h>
+
+                    #ifndef _UCRT
+                    #error \"Not UCRT\"
+                    #endif
+
+                    #if LIBINTL_VERSION < 0x001701
+                    #error \"gettext-runtime < 0.23.1\"
+                    #endif
+
+                    int main(void) { return 0; }
+                "
+                USING_UCRT_AND_RECENT_GETTEXT)
+            if(NOT USING_UCRT_AND_RECENT_GETTEXT)
+                message(FATAL_ERROR "Native language support (NLS) was enabled "
+                                    "but it requires UCRT and "
+                                    "gettext-runtime >= 0.23.1. To build with "
+                                    "MSVCRT or old gettext-runtime, "
+                                    "set ENABLE_NLS=OFF.")
+            endif()
+        endif()
+
         # Warn if NLS is enabled but translated man pages are missing.
         if(UNIX AND ENABLE_NLS AND
                 NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/po4a/man")

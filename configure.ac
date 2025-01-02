@@ -811,6 +811,35 @@ AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.6])
 AM_GNU_GETTEXT_VERSION([0.19.6])
 AM_GNU_GETTEXT([external])
 
+# The command line tools use UTF-8 on native Windows. Non-ASCII characters
+# display correctly only when using UCRT and gettext-runtime >= 0.23.1.
+AS_CASE([$USE_NLS-$host_os],
+	[yes-mingw*], [
+		AC_MSG_CHECKING([for UCRT and gettext-runtime >= 0.23.1])
+		AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
+			#define WIN32_LEAN_AND_MEAN
+			#include <windows.h>
+			#include <libintl.h>
+
+			#ifndef _UCRT
+			#error "Not UCRT"
+			#endif
+
+			#if LIBINTL_VERSION < 0x001701
+			#error "gettext-runtime < 0.23.1"
+			#endif
+		]])], [
+			AC_MSG_RESULT([yes])
+		], [
+			AC_MSG_RESULT([no])
+			AC_MSG_ERROR([
+    Translation support (--enable-nls) on native Windows requires
+    UCRT and gettext-runtime >= 0.23.1. Use --disable-nls to build
+    with MSVCRT or old gettext-runtime.])
+		])
+	]
+)
+
 
 ###############################################################################
 # Checks for header files.

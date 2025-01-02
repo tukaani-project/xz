@@ -17,6 +17,7 @@ endif
 
 EXTRA_DIST = \
 	common/common_w32res.rc \
+	common/my_landlock.h \
 	common/mythread.h \
 	common/sysdefs.h \
 	common/tuklib_common.h \

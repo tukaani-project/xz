@@ -26,7 +26,7 @@ set PATH=%1;%2;%PATH%
 md build || exit /b
 cd build || exit /b
 
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DENABLE_NLS=OFF -DBUILD_SHARED_LIBS=%3 ..\.. || exit /b
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DXZ_NLS=OFF -DBUILD_SHARED_LIBS=%3 ..\.. || exit /b
 mingw32-make || exit /b
 mingw32-make test || exit /b
 

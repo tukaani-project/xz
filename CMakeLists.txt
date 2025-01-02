@@ -1940,6 +1940,7 @@ if(HAVE_DECODERS)
 
     foreach(XZDEC ${XZDEC_TOOLS})
         add_executable("${XZDEC}"
+            src/common/my_landlock.h
             src/common/sysdefs.h
             src/common/tuklib_common.h
             src/common/tuklib_config.h

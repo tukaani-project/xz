@@ -26,14 +26,7 @@
 #endif
 
 #ifdef HAVE_LINUX_LANDLOCK
-#	include <linux/landlock.h>
-#	include <sys/prctl.h>
-#	include <sys/syscall.h>
-#	ifdef LANDLOCK_ACCESS_NET_BIND_TCP
-#		define LANDLOCK_ABI_MAX 4
-#	else
-#		define LANDLOCK_ABI_MAX 3
-#	endif
+#	include "my_landlock.h"
 #endif
 
 #if defined(HAVE_CAP_RIGHTS_LIMIT) || defined(HAVE_PLEDGE) \
@@ -338,32 +331,17 @@ sandbox_enter(int src_fd)
 	(void)src_fd;
 
 #elif defined(HAVE_LINUX_LANDLOCK)
-	int landlock_abi = syscall(SYS_landlock_create_ruleset,
-			(void *)NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
-
-	if (landlock_abi > 0) {
-		if (landlock_abi > LANDLOCK_ABI_MAX)
-			landlock_abi = LANDLOCK_ABI_MAX;
-
-		const struct landlock_ruleset_attr attr = {
-			.handled_access_fs = (1ULL
-				<< (12 + my_min(3, landlock_abi))) - 1,
-#	if LANDLOCK_ABI_MAX >= 4
-			.handled_access_net = landlock_abi < 4 ? 0 :
-				(LANDLOCK_ACCESS_NET_BIND_TCP
-				| LANDLOCK_ACCESS_NET_CONNECT_TCP),
-#	endif
-		};
-
-		const int ruleset_fd = syscall(SYS_landlock_create_ruleset,
-				&attr, sizeof(attr), 0U);
+	struct landlock_ruleset_attr attr;
+	if (my_landlock_ruleset_attr_forbid_all(&attr) > 0) {
+		const int ruleset_fd = my_landlock_create_ruleset(
+				&attr, sizeof(attr), 0);
 		if (ruleset_fd < 0)
 			goto error;
 
 		// All files we need should have already been opened. Thus,
 		// we don't need to add any rules using landlock_add_rule(2)
 		// before activating the sandbox.
-		if (syscall(SYS_landlock_restrict_self, ruleset_fd, 0U) != 0)
+		if (my_landlock_restrict_self(ruleset_fd, 0) != 0)
 			goto error;
 	}
 

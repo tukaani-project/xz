@@ -1087,11 +1087,14 @@ message_help(bool long_help)
 				"all pending data is flushed out"));
 
 		e |= tuklib_wrapf(stdout, &wrap2,
-			"    --memlimit-compress=%1$s\n"
-			"    --memlimit-decompress=%1$s\n"
-			"    --memlimit-mt-decompress=%1$s\n"
-			"-M, --memlimit=%1$s\v%2$s\r"
-			"    --no-adjust\v%3$s",
+			"    --memlimit-compress=%s\n"
+			"    --memlimit-decompress=%s\n"
+			"    --memlimit-mt-decompress=%s\n"
+			"-M, --memlimit=%s\v%s\r"
+			"    --no-adjust\v%s",
+			_("LIMIT"),
+			_("LIMIT"),
+			_("LIMIT"),
 			_("LIMIT"),
 			// xgettext:no-c-format
 			W_("set memory usage limit for compression, "
@@ -1113,13 +1116,15 @@ message_help(bool long_help)
 
 		e |= tuklib_wrapf(stdout, &wrap2,
 			"\n"
-			"--filters=%1$s\v%2$s\r"
-			"--filters1=%1$s ... --filters9=%1$s\v%3$s\r"
-			"--filters-help\v%4$s",
+			"--filters=%s\v%s\r"
+			"--filters1=%s ... --filters9=%s\v%s\r"
+			"--filters-help\v%s",
 			_("FILTERS"),
 			W_("set the filter chain using the "
 				"liblzma filter string syntax; "
 				"use --filters-help for more information"),
+			_("FILTERS"),
+			_("FILTERS"),
 			W_("set additional filter chains using the "
 				"liblzma filter string syntax to use "
 				"with --block-list"),
@@ -1130,9 +1135,10 @@ message_help(bool long_help)
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
 		e |= tuklib_wrapf(stdout, &wrap2,
 			"\n"
-			"--lzma1[=%1$s]\n"
-			"--lzma2[=%1$s]\v%2$s",
+			"--lzma1[=%s]\n"
+			"--lzma2[=%s]\v%s",
 			// TRANSLATORS: Short for OPTIONS.
+			_("OPTS"),
 			_("OPTS"),
 			// TRANSLATORS: Use semicolon (or its fullwidth form)
 			// in "(valid values; default)" even if it is weird in
@@ -1176,23 +1182,30 @@ message_help(bool long_help)
 
 		e |= tuklib_wrapf(stdout, &wrap2,
 			"\n"
-			"--x86[=%1$s]\v%2$s\r"
-			"--arm[=%1$s]\v%3$s\r"
-			"--armthumb[=%1$s]\v%4$s\r"
-			"--arm64[=%1$s]\v%5$s\r"
-			"--powerpc[=%1$s]\v%6$s\r"
-			"--ia64[=%1$s]\v%7$s\r"
-			"--sparc[=%1$s]\v%8$s\r"
-			"--riscv[=%1$s]\v%9$s\r"
-			"\v%10$s",
+			"--x86[=%s]\v%s\r"
+			"--arm[=%s]\v%s\r"
+			"--armthumb[=%s]\v%s\r"
+			"--arm64[=%s]\v%s\r"
+			"--powerpc[=%s]\v%s\r"
+			"--ia64[=%s]\v%s\r"
+			"--sparc[=%s]\v%s\r"
+			"--riscv[=%s]\v%s\r"
+			"\v%s",
 			_("OPTS"),
 			W_("x86 BCJ filter (32-bit and 64-bit)"),
+			_("OPTS"),
 			W_("ARM BCJ filter"),
+			_("OPTS"),
 			W_("ARM-Thumb BCJ filter"),
+			_("OPTS"),
 			W_("ARM64 BCJ filter"),
+			_("OPTS"),
 			W_("PowerPC BCJ filter (big endian only)"),
+			_("OPTS"),
 			W_("IA-64 (Itanium) BCJ filter"),
+			_("OPTS"),
 			W_("SPARC BCJ filter"),
+			_("OPTS"),
 			W_("RISC-V BCJ filter"),
 			W_("Valid OPTS for all BCJ filters:"));
 		e |= tuklib_wrapf(stdout, &wrap3,

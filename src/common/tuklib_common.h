@@ -56,6 +56,13 @@
 #	define TUKLIB_GNUC_REQ(major, minor) 0
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#	define tuklib_attr_format_printf(fmt_index, args_index) \
+		__attribute__((__format__(__printf__, fmt_index, args_index)))
+#else
+#	define tuklib_attr_format_printf(fmt_index, args_index)
+#endif
+
 // tuklib_attr_noreturn attribute is used to mark functions as non-returning.
 // We cannot use "noreturn" as the macro name because then C23 code that
 // uses [[noreturn]] would break as it would expand to [[ [[noreturn]] ]].

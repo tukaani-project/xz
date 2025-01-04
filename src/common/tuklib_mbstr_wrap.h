@@ -186,6 +186,7 @@ extern int tuklib_wraps(FILE *stream, const struct tuklib_wrap_opt *opt,
 ///             all strings have (hopefully) been printed.
 
 #define tuklib_wrapf TUKLIB_SYMBOL(tuklib_wrapf)
+tuklib_attr_format_printf(3, 4)
 extern int tuklib_wrapf(FILE *stream, const struct tuklib_wrap_opt *opt,
 		const char *fmt, ...);
 ///<

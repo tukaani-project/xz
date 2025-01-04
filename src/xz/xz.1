@@ -4,7 +4,7 @@
 .\" Authors: Lasse Collin
 .\"          Jia Tan
 .\"
-.TH XZ 1 "2024-12-30" "Tukaani" "XZ Utils"
+.TH XZ 1 "2025-01-04" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -497,6 +497,13 @@ This option has no effect if the operation mode is not
 .B \-\-decompress
 or
 .BR \-\-test .
+.IP ""
+Since
+.B xz
+5.7.1alpha,
+.B \-\-single\-stream
+implies
+.BR \-\-keep .
 .TP
 .B \-\-no\-sparse
 Disable creation of sparse files.

@@ -612,6 +612,9 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case OPT_SINGLE_STREAM:
 			opt_single_stream = true;
+
+			// Since 5.7.1alpha --single-stream implies --keep.
+			opt_keep_original = true;
 			break;
 
 		case OPT_NO_SPARSE:

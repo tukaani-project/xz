@@ -362,6 +362,8 @@ sandbox_enter(int src_fd)
 		// before activating the sandbox.
 		if (syscall(SYS_landlock_restrict_self, ruleset_fd, 0U) != 0)
 			goto error;
+
+		(void)close(ruleset_fd);
 	}
 
 	(void)src_fd;

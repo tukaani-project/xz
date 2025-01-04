@@ -343,6 +343,8 @@ sandbox_enter(int src_fd)
 		// before activating the sandbox.
 		if (my_landlock_restrict_self(ruleset_fd, 0) != 0)
 			goto error;
+
+		(void)close(ruleset_fd);
 	}
 
 	(void)src_fd;

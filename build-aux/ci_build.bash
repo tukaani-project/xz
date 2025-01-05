@@ -273,7 +273,7 @@ then
 	;;
 	cmake)
 		cd "$DEST_DIR"
-		if ${WRAPPER} make test
+		if ${WRAPPER} make CTEST_OUTPUT_ON_FAILURE=1 test
 		then
 			:
 		else

@@ -4,7 +4,7 @@
 .\" Authors: Lasse Collin
 .\"          Jia Tan
 .\"
-.TH XZ 1 "2025-01-04" "Tukaani" "XZ Utils"
+.TH XZ 1 "2025-01-05" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -1060,6 +1060,28 @@ Currently
 is unsuitable for decompressing the stream in real time due to how
 .B xz
 does buffering.
+.TP
+.B \-\-no\-sync
+Do not synchronize the target file and its directory
+to the storage device before removing the source file.
+This can improve performance if compressing or decompressing
+many small files.
+However, if the system crashes soon after the deletion,
+it is possible that the target file was not written
+to the storage device but the delete operation was.
+In that case neither the original source file
+nor the target file is available.
+.IP ""
+This option has an effect only when
+.B xz
+is going to remove the source file.
+In other cases synchronization is never done.
+.IP ""
+The synchronization and
+.B \-\-no\-sync
+were added in
+.B xz
+5.7.1alpha.
 .TP
 .BI \-\-memlimit\-compress= limit
 Set a memory usage limit for compression.

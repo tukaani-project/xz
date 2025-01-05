@@ -55,6 +55,12 @@ typedef struct {
 	/// File descriptor of the target file
 	int dest_fd;
 
+#ifndef TUKLIB_DOSLIKE
+	/// File descriptor of the directory of the target file (which is
+	/// also the directory of the source file)
+	int dir_fd;
+#endif
+
 	/// True once end of the source file has been detected.
 	bool src_eof;
 

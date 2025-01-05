@@ -1011,11 +1011,14 @@ message_help(bool long_help)
 
 	if (long_help) {
 		e |= tuklib_wrapf(stdout, &wrap2,
+			"    --no-sync\v%s\r"
 			"    --single-stream\v%s\r"
 			"    --no-sparse\v%s\r"
 			"-S, --suffix=%s\v%s\r"
 			"    --files[=%s]\v%s\r"
 			"    --files0[=%s]\v%s\r",
+			W_("don't synchronize the output file to the storage "
+				"device before removing the input file"),
 			W_("decompress only the first stream, and silently "
 				"ignore possible remaining input data"),
 			W_("do not create sparse files when decompressing"),

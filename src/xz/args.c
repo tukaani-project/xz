@@ -21,6 +21,7 @@
 bool opt_stdout = false;
 bool opt_force = false;
 bool opt_keep_original = false;
+bool opt_synchronous = true;
 bool opt_robot = false;
 bool opt_ignore_check = false;
 
@@ -217,6 +218,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_LZMA1,
 		OPT_LZMA2,
 
+		OPT_NO_SYNC,
 		OPT_SINGLE_STREAM,
 		OPT_NO_SPARSE,
 		OPT_FILES,
@@ -249,6 +251,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "force",        no_argument,       NULL,  'f' },
 		{ "stdout",       no_argument,       NULL,  'c' },
 		{ "to-stdout",    no_argument,       NULL,  'c' },
+		{ "no-sync",      no_argument,       NULL,  OPT_NO_SYNC },
 		{ "single-stream", no_argument,      NULL,  OPT_SINGLE_STREAM },
 		{ "no-sparse",    no_argument,       NULL,  OPT_NO_SPARSE },
 		{ "suffix",       required_argument, NULL,  'S' },
@@ -658,6 +661,10 @@ parse_real(args_info *args, int argc, char **argv)
 					optarg, 0, UINT64_MAX);
 			break;
 
+		case OPT_NO_SYNC:
+			opt_synchronous = false;
+			break;
+
 		default:
 			message_try_help();
 			tuklib_exit(E_ERROR, E_ERROR, false);
@@ -825,6 +832,13 @@ args_parse(args_info *args, int argc, char **argv)
 		opt_keep_original = true;
 		opt_stdout = true;
 	}
+
+	// Don't use fsync() if --keep is specified or implied.
+	// However, don't document this as "--keep implies --no-sync"
+	// because if syncing support was added to --flush-timeout,
+	// it would sync even if --keep was specified.
+	if (opt_keep_original)
+		opt_synchronous = false;
 
 	// When compressing, if no --format flag was used, or it
 	// was --format=auto, we compress to the .xz format.

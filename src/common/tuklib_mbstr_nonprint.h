@@ -25,7 +25,8 @@ extern bool tuklib_has_nonprint(const char *str);
 /// \brief      Check if a string contains any non-printable characters
 ///
 /// \return     false if str contains only valid multibyte characters and
-///             iswprint(3) returns non-zero for all of them; true otherwise
+///             iswprint(3) returns non-zero for all of them; true otherwise.
+///             The value of errno is preserved.
 ///
 /// \note       In case mbrtowc(3) isn't available, single-byte character set
 ///             is assumed and isprint(3) is used instead of iswprint(3).
@@ -49,6 +50,7 @@ extern const char *tuklib_mask_nonprint_r(const char *str, char **mem);
 ///             allocated memory is also stored to *mem. A modified string
 ///             has the problematic characters replaced by '?'. If memory
 ///             allocation fails, "???" is returned and *mem is NULL.
+///             The value of errno is preserved.
 
 #define tuklib_mask_nonprint TUKLIB_SYMBOL(tuklib_mask_nonprint)
 extern const char *tuklib_mask_nonprint(const char *str);

@@ -12,6 +12,7 @@
 #include "tuklib_mbstr_nonprint.h"
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #ifdef HAVE_MBRTOWC
 #	include <wchar.h>
@@ -94,13 +95,18 @@ has_nonprint(const char *str, size_t len)
 extern bool
 tuklib_has_nonprint(const char *str)
 {
-	return has_nonprint(str, strlen(str));
+	const int saved_errno = errno;
+	const bool ret = has_nonprint(str, strlen(str));
+	errno = saved_errno;
+	return ret;
 }
 
 
 extern const char *
 tuklib_mask_nonprint_r(const char *str, char **mem)
 {
+	const int saved_errno = errno;
+
 	// Free the old string, if any.
 	free(*mem);
 	*mem = NULL;
@@ -108,8 +114,10 @@ tuklib_mask_nonprint_r(const char *str, char **mem)
 	// If the whole input string contains only printable characters,
 	// return the input string.
 	const size_t len = strlen(str);
-	if (!has_nonprint(str, len))
+	if (!has_nonprint(str, len)) {
+		errno = saved_errno;
 		return str;
+	}
 
 	// Allocate memory for the masked string. Since we use the single-byte
 	// character '?' to mask non-printable characters, it's possible that
@@ -119,8 +127,10 @@ tuklib_mask_nonprint_r(const char *str, char **mem)
 	// If allocation fails, return "???" because it should be safer than
 	// returning the unmasked string.
 	*mem = malloc(len + 1);
-	if (*mem == NULL)
+	if (*mem == NULL) {
+		errno = saved_errno;
 		return "???";
+	}
 
 	// Replace all non-printable characters with '?'.
 	char *dest = *mem;
@@ -139,6 +149,7 @@ tuklib_mask_nonprint_r(const char *str, char **mem)
 
 	*dest = '\0';
 
+	errno = saved_errno;
 	return *mem;
 }
 

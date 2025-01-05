@@ -69,10 +69,6 @@ static bool warn_fchown;
 #	define O_NOCTTY 0
 #endif
 
-#ifndef O_SEARCH
-#	define O_SEARCH O_RDONLY
-#endif
-
 #ifndef O_DIRECTORY
 #	define O_DIRECTORY 0
 #endif
@@ -890,7 +886,7 @@ io_open_dest_real(file_pair *pair)
 			// to a directory. (We opened the source file
 			// already but directories might have been renamed
 			// after the source file was opened.)
-			pair->dir_fd = open(dir_name, O_SEARCH | O_DIRECTORY
+			pair->dir_fd = open(dir_name, O_RDONLY | O_DIRECTORY
 					| O_NOCTTY | O_NONBLOCK);
 			if (pair->dir_fd == -1) {
 				// Since we did open the source file
@@ -900,12 +896,15 @@ io_open_dest_real(file_pair *pair)
 				//
 				// In an odd case, the directory has write
 				// and search permissions but not read
-				// permission (d-wx------), and O_SEARCH is
-				// actually O_RDONLY. Then we would be able
-				// to create a new file and only the directory
-				// syncing would be impossible. But let's be
-				// strict about syncing and require users to
-				// explicitly disable it if they don't want it.
+				// permission (d-wx------). Then we would be
+				// able to create a new file and only the
+				// directory syncing would be impossible. But
+				// let's be strict about syncing and require
+				// users to explicitly disable it if they
+				// don't want it.
+				//
+				// NOTE: O_SEARCH doesn't allow fsync().
+				// musl maps O_SEARCH to O_PATH.
 				message_error(_("%s: Opening the directory "
 					"failed: %s"),
 					tuklib_mask_nonprint(dir_name),

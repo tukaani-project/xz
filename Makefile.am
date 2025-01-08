@@ -104,7 +104,8 @@ mydist:
 		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=4 | cut -b2-`; \
 		test -n "$$SNAPSHOT" && VERSION=$$SNAPSHOT; \
 	fi; \
-	TAR_OPTIONS='--owner=0 --group=0 --numeric-owner --mode=u+rw,go+r-w' \
+	TAR_OPTIONS='--owner=0 --group=0 --numeric-owner --mode=u+rw,go+r-w --sort=name' \
+		LC_COLLATE=C \
 		$(MAKE) VERSION="$$VERSION" dist-gzip
 
 # NOTE: This only creates the PDFs. The install rules are missing.

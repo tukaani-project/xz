@@ -69,6 +69,17 @@ static bool warn_fchown;
 #	define O_NOCTTY 0
 #endif
 
+// In musl 1.2.5, O_SEARCH is defined to O_PATH. As of Linux 6.12,
+// a file descriptor from open("dir", O_SEARCH | O_DIRECTORY) cannot be
+// used with fsync() (fails with EBADF). musl 1.2.5 doesn't emulate it
+// using /proc/self/fd. Even if it did, it might need to do it with
+// fd = open("/proc/...", O_RDONLY); fsync(fd); which fails if the
+// directory lacks read permission. Since we need a working fsync(),
+// O_RDONLY imitates O_SEARCH better than O_PATH.
+#if defined(O_SEARCH) && defined(O_PATH) && O_SEARCH == O_PATH
+#	undef O_SEARCH
+#endif
+
 #ifndef O_SEARCH
 #	define O_SEARCH O_RDONLY
 #endif

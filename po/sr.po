@@ -1,20 +1,23 @@
+# SPDX-License-Identifier: 0BSD
+#
 # Serbian translation of xz.
-# This file is put in the public domain.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020.
+# This file is published under the BSD Zero Clause License.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020-2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.2.4\n"
+"Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-05-29 17:41+0300\n"
-"PO-Revision-Date: 2022-06-24 22:07+0800\n"
+"POT-Creation-Date: 2025-01-10 10:29+0200\n"
+"PO-Revision-Date: 2025-01-09 22:10+0100\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Poedit 3.5\n"
 
 #: src/xz/args.c
 #, c-format
@@ -29,7 +32,7 @@ msgstr "%s: Превише аргумената за „--block-list“"
 #: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr ""
+msgstr "У „--block-list“, величина блока недостаје након ланца филтера број „%c:“"
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
@@ -46,8 +49,6 @@ msgid "%s: Unsupported integrity check type"
 msgstr "%s: Неподржана врста провере целовитости"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "Only one file can be specified with `--files' or `--files0'."
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Само једну датотеку можете навести са „--files“ или „--files0“."
 
@@ -55,10 +56,9 @@ msgstr "Само једну датотеку можете навести са �
 #. string because French needs a space
 #. before the colon ("%s : %s").
 #: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
-#, fuzzy, c-format
-#| msgid "%s: "
+#, c-format
 msgid "%s: %s"
-msgstr "%s: "
+msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -75,17 +75,15 @@ msgstr "Подршка распакивања је искључена у вре�
 
 #: src/xz/args.c
 msgid "Compression of lzip files (.lz) is not supported"
-msgstr ""
+msgstr "Запакивање „lzip“ датотека (.lz) није подржано"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr ""
+msgstr "„--block-list“ се занемарује осим ако се пакује у „.xz“ формат"
 
 #: src/xz/args.c
-#, fuzzy
-#| msgid "%s: With --format=raw, --suffix=.SUF is required unless writing to stdout"
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "%s: Са „--format=raw“, „--suffix=.SUF“ је потребно осим ако пише на стандардни излаз"
+msgstr "Са „--format=raw“, „--suffix=.SUF“ је потребно осим ако се пише на стандардни излаз"
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
@@ -94,7 +92,7 @@ msgstr "Највећи број филтера је четири"
 #: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
-msgstr ""
+msgstr "Грешка у опцији „--filters%s=ФИЛТЕРИ“:"
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
@@ -103,7 +101,7 @@ msgstr "Ограничење коришћења меморије је према
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr ""
+msgstr "ланац филтера „%u“ је коришћен од „--block-list“ али није наведен са „--filters%u=“"
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -122,20 +120,18 @@ msgid "LZMA1 cannot be used with the .xz format"
 msgstr "Не можете користити „LZMA1“ са „.xz“ форматом"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "The filter chain is incompatible with --flush-timeout"
+#, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "Ланац филтера није сагласан са „--flush-timeout“"
+msgstr "Ланац филтера „%u“ није сагласан са „--flush-timeout“"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
 msgstr "Пребацујем се на режим једне нити због „--flush-timeout“"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Unsupported options"
+#, c-format
 msgid "Unsupported options in filter chain %u"
-msgstr "Неподржане опције"
+msgstr "Неподржане опције у ланцу филтера %u"
 
 #: src/xz/coder.c
 #, c-format
@@ -152,21 +148,19 @@ msgid "Decompression will need %s MiB of memory."
 msgstr "За распакивање ће бити потребно %s MiB меморије."
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
-msgstr "Број нити је промењен са %s на %s да се неби прекорачило ограничење коришћења меморије од %s MiB"
+msgstr "Број нити је смањен са %s на %s да се не би прекорачило ограничење коришћења меморије од %s MiB"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Reduced the number of threads from %s to one. The automatic memory usage limit of %s MiB is still being exceeded. %s MiB of memory is required. Continuing anyway."
-msgstr ""
+msgstr "Број нити је смањен са %s на једну. Аутоматско ограничење коришћења меморије од %s MiB је ипак премашено. %s MiB меморије је потребно. Ипак настављам."
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Switching to single-threaded mode to not exceed the memory usage limit of %s MiB"
-msgstr "Број нити је промењен са %s на %s да се неби прекорачило ограничење коришћења меморије од %s MiB"
+msgstr "Прелазим на режим једне нити да се не би прекорачило ограничење коришћења меморије од %s MiB"
 
 #: src/xz/coder.c
 #, c-format
@@ -174,16 +168,14 @@ msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the m
 msgstr "Величина „LZMA%c“ речника је промењена са %s на %s да се неби прекорачило ограничење коришћења меморије од %s MiB"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
+#, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "Величина „LZMA%c“ речника је промењена са %s на %s да се неби прекорачило ограничење коришћења меморије од %s MiB"
+msgstr "Величина „LZMA%c“ речника је промењена за „--filters%u“ са %s MiB на %s MiB да се не прекорачи ограничење коришћења меморије од %s MiB"
 
 #: src/xz/coder.c
-#, fuzzy, c-format
-#| msgid "Error creating a pipe: %s"
+#, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "Грешка стварања спојке: %s"
+msgstr "Грешка промене на ланац филтера „%u“: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -319,160 +311,140 @@ msgid "Disabled"
 msgstr "Искључено"
 
 #: src/xz/hardware.c
-#, fuzzy
-#| msgid "Total amount of physical memory (RAM): "
 msgid "Amount of physical memory (RAM):"
-msgstr "Укупна количина физичке меморије (RAM):        "
+msgstr "Укупна количина физичке меморије (RAM):"
 
 #: src/xz/hardware.c
 msgid "Number of processor threads:"
-msgstr ""
+msgstr "Број нити процесора:"
 
 #: src/xz/hardware.c
 msgid "Compression:"
-msgstr ""
+msgstr "Запакивање:"
 
 #: src/xz/hardware.c
 msgid "Decompression:"
-msgstr ""
+msgstr "Распакивање:"
 
 #: src/xz/hardware.c
-#, fuzzy
-#| msgid "Memory usage limit for decompression:  "
 msgid "Multi-threaded decompression:"
-msgstr "Ограничење коришћења меморије за распакивање:  "
+msgstr "Вишенитно распакивање:"
 
 #: src/xz/hardware.c
 msgid "Default for -T0:"
-msgstr ""
+msgstr "Основно за „-T0“:"
 
 #: src/xz/hardware.c
 msgid "Hardware information:"
-msgstr ""
+msgstr "О хардверу:"
 
 #: src/xz/hardware.c
-#, fuzzy
-#| msgid "Memory usage limit reached"
 msgid "Memory usage limits:"
-msgstr "Ограничење коришћења меморије је достигнуто"
+msgstr "Ограничење коришћења меморије:"
 
 #: src/xz/list.c
 msgid "Streams:"
-msgstr ""
+msgstr "Токови:"
 
 #: src/xz/list.c
 msgid "Blocks:"
-msgstr ""
+msgstr "Блокови:"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "  Compressed size:    %s\n"
 msgid "Compressed size:"
-msgstr "  Величина сажетог:           %s\n"
+msgstr "Величина сажетог:"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "  Uncompressed size:  %s\n"
 msgid "Uncompressed size:"
-msgstr "  Величина несажетог:         %s\n"
+msgstr "Величина несажетог:"
 
 #: src/xz/list.c
 msgid "Ratio:"
-msgstr ""
+msgstr "Однос:"
 
 #: src/xz/list.c
 msgid "Check:"
-msgstr ""
+msgstr "Провери:"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "  Stream padding:     %s\n"
 msgid "Stream Padding:"
-msgstr "  Попуна тока:                %s\n"
+msgstr "Попуна тока:"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "  Memory needed:      %s MiB\n"
 msgid "Memory needed:"
-msgstr "  Потребна меморија:          %s MiB\n"
+msgstr "Потребна меморија:"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "  Sizes in headers:   %s\n"
 msgid "Sizes in headers:"
-msgstr "  Величине у заглављима:      %s\n"
+msgstr "Величине у заглављима:"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "  Number of files:    %s\n"
 msgid "Number of files:"
-msgstr "  Број датотека:              %s\n"
+msgstr "Број датотека:"
 
 #: src/xz/list.c
 msgid "Stream"
-msgstr ""
+msgstr "Ток"
 
 #: src/xz/list.c
 msgid "Block"
-msgstr ""
+msgstr "Блок"
 
 #: src/xz/list.c
 msgid "Blocks"
-msgstr ""
+msgstr "Блокови"
 
 #: src/xz/list.c
 msgid "CompOffset"
-msgstr ""
+msgstr "ПомерЗапак"
 
 #: src/xz/list.c
 msgid "UncompOffset"
-msgstr ""
+msgstr "ПомерНсжтог"
 
 #: src/xz/list.c
 msgid "CompSize"
-msgstr ""
+msgstr "ВлчнаЗапак"
 
 #: src/xz/list.c
 msgid "UncompSize"
-msgstr ""
+msgstr "ВлчнаНсжтог"
 
 #: src/xz/list.c
-#, fuzzy
-#| msgid "Totals:"
 msgid "TotalSize"
-msgstr "Укупно:"
+msgstr "УкупнаВлчна"
 
 #: src/xz/list.c
 msgid "Ratio"
-msgstr ""
+msgstr "Однос"
 
 #: src/xz/list.c
 msgid "Check"
-msgstr ""
+msgstr "Провери"
 
 #: src/xz/list.c
 msgid "CheckVal"
-msgstr ""
+msgstr "ПровериВредн"
 
 #: src/xz/list.c
 msgid "Padding"
-msgstr ""
+msgstr "Попуна"
 
 #: src/xz/list.c
 msgid "Header"
-msgstr ""
+msgstr "Заглавље"
 
 #: src/xz/list.c
 msgid "Flags"
-msgstr ""
+msgstr "Заставице"
 
 #: src/xz/list.c
 msgid "MemUsage"
-msgstr ""
+msgstr "КоришћМемор"
 
 #: src/xz/list.c
 msgid "Filters"
-msgstr ""
+msgstr "Филтери"
 
 #. TRANSLATORS: Indicates that there is no integrity check.
 #. This string is used in tables. In older xz version this
@@ -550,7 +522,7 @@ msgstr "%s: Премало је да би било исправна „.xz“ д
 #. use two lines here. Test with "xz -l foo.xz".
 #: src/xz/list.c
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
-msgstr "Токови Блокови  Запаковано  Распаковано  Однос  Провера Датотека"
+msgstr "Токови Блокови  Запаковано Распаковано   Однос  Провера  Датотека"
 
 #: src/xz/list.c
 msgid "Yes"
@@ -585,7 +557,7 @@ msgstr "„--list“ ради само над „.xz“ датотекама (--
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
-msgstr ""
+msgstr "Пробајте „lzmainfo“ са „.lzma“ датотекама."
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
@@ -602,10 +574,9 @@ msgid "%s: Unexpected end of input when reading filenames"
 msgstr "%s: Неочекивани крај улаза приликом читања назива датотека"
 
 #: src/xz/main.c
-#, fuzzy, c-format
-#| msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
+#, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Нађох ништаван знак приликом читања назива датотека; можта сте хтели да користите „--files0“ уместо „--files“?"
+msgstr "%s: Нађох ништаван знак приликом читања назива датотека; можда сте хтели да користите „--files0“ уместо „--files“?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -676,8 +647,7 @@ msgid "%s: Filter chain: %s\n"
 msgstr "%s: Ланац филтера: %s\n"
 
 #: src/xz/message.c
-#, fuzzy, c-format
-#| msgid "Try `%s --help' for more information."
+#, c-format
 msgid "Try '%s --help' for more information."
 msgstr "Пробајте „%s --help“ за више података."
 
@@ -740,14 +710,6 @@ msgstr ""
 "                            занемарује могуће преостале улазне податке"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --no-sparse     do not create sparse files when decompressing\n"
-#| "  -S, --suffix=.SUF   use the suffix `.SUF' on compressed files\n"
-#| "      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-#| "                      omitted, filenames are read from the standard input;\n"
-#| "                      filenames must be terminated with the newline character\n"
-#| "      --files0[=FILE] like --files but use the null character as terminator"
 msgid ""
 "      --no-sparse     do not create sparse files when decompressing\n"
 "  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
@@ -760,7 +722,7 @@ msgstr ""
 "  -S, --suffix=.СУФ         користи суфикс „.СУФ“ на запакованим датотекама\n"
 "      --files[=ДТТКА]       чита називе датотека за обраду из ДАТОТЕКЕ; ако је\n"
 "                            ДАТОТЕКА изостављено, називи датотека се читају са\n"
-"                            стандардног улаза називи датотека се морају\n"
+"                            стандардног улаза; називи датотека се морају\n"
 "                            завршавати знаком новог реда\n"
 "      --files0[=ДТТКА]      као „--files“ али користи празан знак као завршни"
 
@@ -773,12 +735,6 @@ msgstr ""
 " Основне опције формата датотеке и запакивања:\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -F, --format=FMT    file format to encode or decode; possible values are\n"
-#| "                      `auto' (default), `xz', `lzma', and `raw'\n"
-#| "  -C, --check=CHECK   integrity check type: `none' (use with caution),\n"
-#| "                      `crc32', `crc64' (default), or `sha256'"
 msgid ""
 "  -F, --format=FMT    file format to encode or decode; possible values are\n"
 "                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
@@ -787,7 +743,7 @@ msgid ""
 msgstr ""
 "  -F, --format=ФМТ          формат датотеке за кодирање и декодирање; могуће\n"
 "                            вредности су „auto“ (основно), „xz“, „lzma“,\n"
-"                            и „raw“\n"
+"                            „lzip“ и „raw“\n"
 "  -C, --check=ПРОВЕРА       врста провере целовитости: „none“ (користите уз\n"
 "                            опрез), „crc32“, „crc64“ (основно), или „sha256“"
 
@@ -816,17 +772,12 @@ msgstr ""
 "                            распакивача"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "  -T, --threads=NUM   use at most NUM threads; the default is 1; set to 0\n"
-#| "                      to use as many threads as there are processor cores"
 msgid ""
 "  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
 "                      as many threads as there are processor cores"
 msgstr ""
-"  -T, --threads=БР          користи највише БР нити; основно је 1; поставите\n"
-"                            на 0 за коришћење онолико нити колико има\n"
-"                            процесорских језгара"
+"  -T, --threads=БР          користи највише БР нити; основно је 0 за\n"
+"                            коришћење онолико нити колико има језгара процесора"
 
 #: src/xz/message.c
 msgid ""
@@ -840,11 +791,6 @@ msgstr ""
 "                            блока за нитирано запакивање"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "      --block-list=SIZES\n"
-#| "                      start a new .xz block after the given comma-separated\n"
-#| "                      intervals of uncompressed data"
 msgid ""
 "      --block-list=BLOCKS\n"
 "                      start a new .xz block after the given comma-separated\n"
@@ -852,9 +798,11 @@ msgid ""
 "                      filter chain number (0-9) followed by a ':' before the\n"
 "                      uncompressed data size"
 msgstr ""
-"      --block-list=ВЕЛИЧИНА\n"
+"      --block-list=БЛОКОВИ\n"
 "                            започиње нови „.xz“ блок након датих зарезом\n"
-"                            раздвојених периода незапакованих података"
+"                            одвојених интервала несажетих података; изборно,\n"
+"                            наводи број ланца филтера (0-9) за којим следи „:“\n"
+"                            пре величине несажетих података"
 
 #: src/xz/message.c
 msgid ""
@@ -870,13 +818,7 @@ msgstr ""
 "                            истискују ван"
 
 #: src/xz/message.c
-#, fuzzy, no-c-format
-#| msgid ""
-#| "      --memlimit-compress=LIMIT\n"
-#| "      --memlimit-decompress=LIMIT\n"
-#| "  -M, --memlimit=LIMIT\n"
-#| "                      set memory usage limit for compression, decompression,\n"
-#| "                      or both; LIMIT is in bytes, % of RAM, or 0 for defaults"
+#, no-c-format
 msgid ""
 "      --memlimit-compress=LIMIT\n"
 "      --memlimit-decompress=LIMIT\n"
@@ -890,8 +832,9 @@ msgstr ""
 "      --memlimit-decompress=ОГРАНИЧЕЊЕ\n"
 "  -M, --memlimit=ОГРАНИЧЕЊЕ\n"
 "                            поставља ограничење коришћења меморије за\n"
-"                            запакивање, распакивање, или оба; ОГРАНИЧЕЊЕ је у\n"
-"                            бајтовима, % o РАМ, или 0 за основно"
+"                            запакивање, распакивање, нитно распакивање или све\n"
+"                            од тога; ОГРАНИЧЕЊЕ је у бајтовима, % РАМ-а, или 0\n"
+"                            за основно"
 
 #: src/xz/message.c
 msgid ""
@@ -917,6 +860,9 @@ msgid ""
 "  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
 "                      syntax; use --filters-help for more information"
 msgstr ""
+"\n"
+"  --filters=ФИЛТЕРИ   поставља ланац филтера користећи синтаксу ниске „liblzma“\n"
+"                      филтера; користите „--filters-help“ за више информација"
 
 #: src/xz/message.c
 msgid ""
@@ -924,12 +870,17 @@ msgid ""
 "                      set additional filter chains using the liblzma filter\n"
 "                      string syntax to use with --block-list"
 msgstr ""
+"  --filters1=ФИЛТЕРИ ... --filters9=ФИЛТЕРИ\n"
+"                      поставља додатне ланце филтера користећи синтаксу ниске\n"
+"                      „liblzma“ филтера за коришћење са „--block-list“"
 
 #: src/xz/message.c
 msgid ""
 "  --filters-help      display more information about the liblzma filter string\n"
 "                      syntax and exit."
 msgstr ""
+"  --filters-help      приказује више информација о синтакси ниске „liblzma“\n"
+"                      филтера и излази."
 
 #: src/xz/message.c
 msgid ""
@@ -947,9 +898,9 @@ msgid ""
 "                        depth=NUM  maximum search depth; 0=automatic (default)"
 msgstr ""
 "\n"
-"  --lzma1[=ОПЦИЈЕ]          LZMA1 или LZMA2; ОПЦИЈЕ је зарезом раздвојен\n"
-"  --lzma2[=ОПЦИЈЕ]          списак нула или више од пратећих опција (исправне\n"
-"                            вредности; основно):\n"
+"  --lzma1[=ОПЦИЈЕ]    LZMA1 или LZMA2; ОПЦИЈЕ је зарезом раздвојен списак\n"
+"  --lzma2[=ОПЦИЈЕ]    нула или више од пратећих опција (исправне вредности;\n"
+"                      основно):\n"
 "                        preset=ПРЕ    враћа опције на претподешавање (0-9[e])\n"
 "                        dict=БРОЈ     величина речника (4KiB – 1536MiB; 8MiB)\n"
 "                        lc=БРОЈ       број битова дословног контекста (0-4; 3)\n"
@@ -963,17 +914,6 @@ msgstr ""
 "                                      (основно)"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-#| "  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-#| "  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-#| "  --arm[=OPTS]        ARM BCJ filter (little endian only)\n"
-#| "  --armthumb[=OPTS]   ARM-Thumb BCJ filter (little endian only)\n"
-#| "  --sparc[=OPTS]      SPARC BCJ filter\n"
-#| "                      Valid OPTS for all BCJ filters:\n"
-#| "                        start=NUM  start offset for conversions (default=0)"
 msgid ""
 "\n"
 "  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
@@ -988,15 +928,16 @@ msgid ""
 "                        start=NUM  start offset for conversions (default=0)"
 msgstr ""
 "\n"
-"  --x86[=ОПЦИЈЕ]            „x86 BCJ“ филтер (32-бита и 64-бита)\n"
-"  --powerpc[=ОПЦИЈЕ]        „PowerPC BCJ“ филтер (само велика крајњост)\n"
-"  --ia64[=ОПЦИЈЕ]           „IA-64 (Itanium) BCJ“ филтер\n"
-"  --arm[=ОПЦИЈЕ]            „ARM BCJ“ филтер (само мала крајњост)\n"
-"  --armthumb[=ОПЦИЈЕ]       „ARM-Thumb BCJ“ филтер (само мала крајњост)\n"
-"  --sparc[=ОПЦИЈЕ]          „SPARC BCJ“ филтер\n"
-"                            Исправне ОПЦИЈЕ за све „BCJ“ филтере:\n"
-"                              start=БРОЈ  померај почетка за претварања\n"
-"                              (основно=0)"
+"  --x86[=ОПЦИЈЕ]      x86 BCJ филтер (32-бита и 64-бита)\n"
+"  --arm[=ОПЦИЈЕ]      ARM BCJ филтер\n"
+"  --armthumb[=ОПЦИЈЕ] ARM-Thumb BCJ филтер\n"
+"  --arm64[=ОПЦИЈЕ]    ARM64 BCJ филтер\n"
+"  --powerpc[=ОПЦИЈЕ]  PowerPC BCJ филтер (big endian only)\n"
+"  --ia64[=ОПЦИЈЕ]     IA-64 (Itanium) BCJ филтер\n"
+"  --sparc[=ОПЦИЈЕ]    SPARC BCJ филтер\n"
+"  --riscv[=ОПЦИЈЕ]    RISC-V BCJ филтер\n"
+"                      Исправне ОПЦИЈЕ за све „BCJ“ филтере:\n"
+"                        start=БРОЈ  померај почетка за претварања (основно=0)"
 
 #: src/xz/message.c
 msgid ""
@@ -1006,10 +947,10 @@ msgid ""
 "                                   from each other (1-256; 1)"
 msgstr ""
 "\n"
-"  --delta[=ОПЦИЈЕ]          Делта филтер; исправне ОПЦИЈЕ (исправне вредности;\n"
-"                            основно):\n"
-"                              dist=БРОЈ   растојање између бајтова који су\n"
-"                                          одузети из свих других (1-256; 1)"
+"  --delta[=ОПЦИЈЕ]    Делта филтер; исправне ОПЦИЈЕ (исправне вредности;\n"
+"                      основно):\n"
+"                        dist=БРОЈ   растојање између бајтова који су одузети\n"
+"                                    из свих других (1-256; 1)"
 
 #: src/xz/message.c
 msgid ""
@@ -1035,8 +976,8 @@ msgstr "  -Q, --no-warn             чини да упозорења не дел
 #: src/xz/message.c
 msgid "      --robot         use machine-parsable messages (useful for scripts)"
 msgstr ""
-"      --robot               користи поруке обрадиве рачунаром\n"
-"                            (корисно за скрипте)"
+"      --robot               користи поруке обрадиве рачунаром (корисно за\n"
+"                            скрипте)"
 
 #: src/xz/message.c
 msgid ""
@@ -1102,18 +1043,19 @@ msgid ""
 "can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
 "specified instead of a filter chain.\n"
 msgstr ""
+"Ланци филтера су постављени са опцијама „--filters=ФИЛТЕРИ“ или\n"
+"„--filters1=ФИЛТЕРИ“ ... „--filters9=ФИЛТЕРИ“. Сваки филтер у ланцу\n"
+"се може одвојити размацима или „--“. Или предподешеност <0-9>[e] се\n"
+"може навести уместо ланца филтера.\n"
 
 #: src/xz/message.c
-#, fuzzy
-#| msgid "Unsupported filter chain or filter options"
 msgid "The supported filters and their options are:"
-msgstr "Неподржан ланац филтера или опције филтера"
+msgstr "Подржани филтери и њихове опције су:"
 
 #: src/xz/options.c
-#, fuzzy, c-format
-#| msgid "%s: Options must be `name=value' pairs separated with commas"
+#, c-format
 msgid "%s: Options must be 'name=value' pairs separated with commas"
-msgstr "%s: Опције морају бити парови „name=value“ раздвојени зарезима"
+msgstr "%s: Опције морају бити парови „назив=вредност“ раздвојени зарезима"
 
 #: src/xz/options.c
 #, c-format
@@ -1140,8 +1082,7 @@ msgid "%s: Filename has an unknown suffix, skipping"
 msgstr "%s: Назив датотеке има непознат суфикс, прескачем"
 
 #: src/xz/suffix.c
-#, fuzzy, c-format
-#| msgid "%s: File already has `%s' suffix, skipping"
+#, c-format
 msgid "%s: File already has '%s' suffix, skipping"
 msgstr "%s: Датотека већ има суфикс „%s“, прескачем"
 
@@ -1161,14 +1102,11 @@ msgid "%s: Invalid multiplier suffix"
 msgstr "%s: Неисправан суфикс умножавача"
 
 #: src/xz/util.c
-#, fuzzy
-#| msgid "Valid suffixes are `KiB' (2^10), `MiB' (2^20), and `GiB' (2^30)."
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
 msgstr "Исправни суфикси су KiB (2^10), MiB (2^20), и GiB (2^30)."
 
 #: src/xz/util.c
-#, fuzzy, c-format
-#| msgid "Value of the option `%s' must be in the range [%<PRIu64>, %<PRIu64>]"
+#, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
 msgstr "Вредност опције „%s“ мора бити у опсегу [%<PRIu64>, %<PRIu64>]"
 
@@ -1186,16 +1124,16 @@ msgid ""
 "Usage: %s [--help] [--version] [FILE]...\n"
 "Show information stored in the .lzma file header"
 msgstr ""
+"Коришћење: %s [--help] [--version] [ДАТОТЕКА]...\n"
+"Приказује информације смештене у заглављу „.lzma“ датотеке"
 
 #: src/lzmainfo/lzmainfo.c
-#, fuzzy
-#| msgid "%s: Too small to be a valid .xz file"
 msgid "File is too small to be a .lzma file"
-msgstr "%s: Премало је да би било исправна „.xz“ датотека"
+msgstr "Датотека је премала да би била „.lzma“ датотека"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Not a .lzma file"
-msgstr ""
+msgstr "Није „.lzma“ датотека"
 
 #: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"
@@ -1207,48 +1145,6 @@ msgstr "Непозната грешка"
 
 #~ msgid "Failed to enable the sandbox"
 #~ msgstr "Нисам успео да укључим безбедно окружење"
-
-#~ msgid "Memory usage limit for compression:    "
-#~ msgstr "Ограничење коришћења меморије за запакивање:   "
-
-#, c-format
-#~ msgid "  Streams:            %s\n"
-#~ msgstr "  Токова:                     %s\n"
-
-#, c-format
-#~ msgid "  Blocks:             %s\n"
-#~ msgstr "  Блокова:                    %s\n"
-
-#, c-format
-#~ msgid "  Ratio:              %s\n"
-#~ msgstr "  Однос:                      %s\n"
-
-#, c-format
-#~ msgid "  Check:              %s\n"
-#~ msgstr "  Провера:                    %s\n"
-
-#~ msgid ""
-#~ "  Streams:\n"
-#~ "    Stream    Blocks      CompOffset    UncompOffset        CompSize      UncompSize  Ratio  Check      Padding"
-#~ msgstr ""
-#~ "  Токови:\n"
-#~ "       Ток   Блокови       Помезапак     Поменезапак        Велзапак      Велнезапак  Однос  Провера     Попуна"
-
-#, c-format
-#~ msgid ""
-#~ "  Blocks:\n"
-#~ "    Stream     Block      CompOffset    UncompOffset       TotalSize      UncompSize  Ratio  Check"
-#~ msgstr ""
-#~ "  Блокови:\n"
-#~ "       Ток      Блок       Помезапак     Поменезапак        Велукупн      Велнезапак  Однос  Провера"
-
-#, c-format
-#~ msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
-#~ msgstr "    ВреднПров %*s Заглав Заставице    Велзапак  Коришмемор  Филтери"
-
-#, c-format
-#~ msgid "The selected match finder requires at least nice=%<PRIu32>"
-#~ msgstr "Изабрани налазач поклапања захтева барем „nice=%<PRIu32>“"
 
 #~ msgid "Sandbox is disabled due to incompatible command line arguments"
 #~ msgstr "Безбедно окружење је искључено услед несагласних аргумената линије наредби"

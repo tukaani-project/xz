@@ -89,11 +89,18 @@ when writing to console with printf(). With UCRT it works.
 Long path names
 ---------------
 
-The manifest enables support for path names longer than 259
-characters if the feature has been enabled in the Windows registry.
-Omit the longPathAware element from the manifest if the application
-isn't compatible with it. For example, uses of MAX_PATH might be
-a sign of incompatibility.
+The manifest enables support for path names longer than 260 wide
+characters (UTF-16 code units) if the feature has been enabled in
+the Windows registry. Omit the longPathAware element from the manifest
+if the application isn't compatible with it. For example, some uses
+of MAX_PATH might be a sign of incompatibility.
+
+Note that UTF-8 encoded filenames can exceed MAX_PATH (260) bytes when
+the UTF-16 form is still within MAX_PATH wide characters. In this
+situation the application doesn't need to be long path aware: functions
+like _open() work with UTF-8 names that exceed MAX_PATH bytes if the
+wide character form stays within MAX_PATH wide characters. (MAX_PATH
+includes the terminating null character.)
 
 Documentation of the registry setting:
 https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry#enable-long-paths-in-windows-10-version-1607-and-later
@@ -130,9 +137,9 @@ trustInfo
 longPathAware
 
     Declare the application as long path aware. This way many file
-    system operations aren't limited by MAX_PATH (260 characters
-    including the terminating null character) if the feature has
-    also been enabled in the Windows registry.
+    system operations aren't limited to MAX_PATH (260) wide characters
+    (including the terminating null character). The feature has to be
+    enabled in the Windows registry too.
 
 activeCodePage
 

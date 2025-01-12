@@ -28,18 +28,17 @@ Introduction
 Package contents
 ----------------
 
-    All executables and libraries in this package require msvcrt.dll,
-    not Universal CRT (UCRT).
+    All executables and libraries in this package require
+    Universal CRT (UCRT). It is included in Windows 10 and later.
 
     There is a SSE2 optimization in the compression code but this
     version of XZ Utils doesn't include run-time processor detection.
-    This is why there is a separate i686-SSE2 version.
+    The binaries don't work on 32-bit processors without SSE2 support.
 
     There is one directory for each type of executable and library files:
 
-        bin_i686        32-bit x86 (i686 and newer), Windows 2000 and later
-        bin_i686-sse2   32-bit x86 (i686 with SSE2), Windows 2000 and later
-        bin_x86-64      64-bit x86-64, Windows Vista and later
+        bin_i686-sse2   32-bit x86 (i686 with SSE2)
+        bin_x86-64      64-bit x86-64
 
     Each of the above directories have the following files:
 
@@ -67,8 +66,7 @@ Package contents
                       copyright and license information.
                       liblzma.def is in this directory too.
 
-        doc/manuals   The manuals of the command line tools in
-                      plain text (TXT) format.
+        doc/manuals   The manuals of the command line tools
 
         doc/examples  Example programs for basic liblzma usage.
 
@@ -90,7 +88,8 @@ Creating an import library for MSVC / Visual Studio
 
         lib /def:liblzma.def /out:liblzma.lib /machine:x64
 
-    IMPORTANT: See also the file liblzma-crt-mixing.txt.
+    IMPORTANT: See also the file liblzma-crt-mixing.txt if your
+    application isn't using UCRT.
 
 
 Reporting bugs

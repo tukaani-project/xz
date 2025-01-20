@@ -103,8 +103,8 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 		return max;
 
 	if (*value < '0' || *value > '9')
-		message_fatal(_("%s: Value is not a non-negative "
-				"decimal integer"), value);
+		message_fatal(_("%s: %s"), value,
+			_("Value is not a non-negative decimal integer"));
 
 	do {
 		// Don't overflow.

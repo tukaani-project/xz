@@ -124,6 +124,15 @@ lzma_simple_arm64_encoder_init(lzma_next_coder *next,
 {
 	return arm64_coder_init(next, allocator, filters, true);
 }
+
+
+extern LZMA_API(size_t)
+lzma_bcj_arm64_encode(uint32_t start_offset, uint8_t *buf, size_t size)
+{
+	// start_offset must be a multiple of four.
+	start_offset &= ~UINT32_C(3);
+	return arm64_code(NULL, start_offset, true, buf, size);
+}
 #endif
 
 
@@ -134,5 +143,14 @@ lzma_simple_arm64_decoder_init(lzma_next_coder *next,
 		const lzma_filter_info *filters)
 {
 	return arm64_coder_init(next, allocator, filters, false);
+}
+
+
+extern LZMA_API(size_t)
+lzma_bcj_arm64_decode(uint32_t start_offset, uint8_t *buf, size_t size)
+{
+	// start_offset must be a multiple of four.
+	start_offset &= ~UINT32_C(3);
+	return arm64_code(NULL, start_offset, false, buf, size);
 }
 #endif

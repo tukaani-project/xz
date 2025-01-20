@@ -331,7 +331,7 @@ parse_lzma12_preset(const char **const str, const char *str_end,
 			break;
 
 		default:
-			return "Unsupported preset flag";
+			return "Unsupported flag in the preset";
 		}
 	}
 
@@ -696,8 +696,9 @@ parse_options(const char **const str, const char *str_end,
 				if ((optmap[i].flags & OPTMAP_USE_BYTE_SUFFIX)
 						== 0) {
 					*str = multiplier_start;
-					return "This option does not support "
-						"any integer suffixes";
+					return "This option does not "
+						"support any multiplier "
+						"suffixes";
 				}
 
 				uint32_t shift;
@@ -870,7 +871,7 @@ str_to_filters(const char **const str, lzma_filter *filters, uint32_t flags,
 
 	if (**str == '\0')
 		return "Empty string is not allowed, "
-				"try \"6\" if a default value is needed";
+				"try '6' if a default value is needed";
 
 	// Detect the type of the string.
 	//

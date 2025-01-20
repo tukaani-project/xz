@@ -168,16 +168,13 @@ str_to_filters(const char *str, uint32_t index, uint32_t flags)
 		if (index > 0)
 			filter_num[0] = '0' + index;
 
-		// FIXME? The message in err isn't translated.
-		// Including the translations in the xz translations is
-		// slightly ugly but possible. Creating a new domain for
-		// liblzma might not be worth it especially since on some
-		// OSes it adds extra dependencies to translation libraries.
+		// liblzma doesn't translate the error messages but
+		// the messages are included in xz's translations.
 		message(V_ERROR, _("Error in --filters%s=FILTERS option:"),
 				filter_num);
 		message(V_ERROR, "%s", str);
 		message(V_ERROR, "%*s^", error_pos, "");
-		message_fatal("%s", err);
+		message_fatal("%s", _(err));
 	}
 }
 

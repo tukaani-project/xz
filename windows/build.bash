@@ -228,8 +228,8 @@ do
 	[ -x "$SEVENZ" ] && break
 done
 
+VER=$(sh build-aux/version.sh)
 if [ -x "$SEVENZ" ]; then
-	VER=$(sh build-aux/version.sh)
 	cd pkg
 	"$SEVENZ" a -tzip ../xz-$VER-windows.zip *
 	"$SEVENZ" a ../xz-$VER-windows.7z *

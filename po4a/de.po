@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-man 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2024-05-29 17:45+0300\n"
+"POT-Creation-Date: 2025-01-23 11:47+0200\n"
 "PO-Revision-Date: 2024-02-15 19:18+0100\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -27,11 +27,11 @@ msgid "XZ"
 msgstr "XZ"
 
 #. type: TH
-#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#: ../src/xz/xz.1
 #, fuzzy, no-wrap
-#| msgid "2024-02-25"
-msgid "2024-04-08"
-msgstr "25. Februar 2024"
+#| msgid "2024-01-19"
+msgid "2025-01-05"
+msgstr "19. Januar 2024"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -325,16 +325,27 @@ msgstr "B<-z>, B<--compress>"
 msgid "Compress.  This is the default operation mode when no operation mode option is specified and no other operation mode is implied from the command name (for example, B<unxz> implies B<--decompress>)."
 msgstr "Kompression. Dies ist der voreingestellte Aktionsmodus, sofern keiner angegeben ist und auch kein bestimmter Modus aus dem Befehlsnamen abgeleitet werden kann (der Befehl B<unxz> impliziert zum Beispiel B<--decompress>)."
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
+
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
 #, no-wrap
 msgid "B<-d>, B<--decompress>, B<--uncompress>"
 msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "Decompress."
-msgstr "dekomprimpiert."
+msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -447,6 +458,11 @@ msgstr "B<xz> dekomprimiert niemals mehr als einen Datenstrom aus B<.lzma>-Datei
 #: ../src/xz/xz.1
 msgid "This option has no effect if the operation mode is not B<--decompress> or B<--test>."
 msgstr "Diese Option ist wirkungslos, wenn der Aktionsmodus nicht B<--decompress> oder B<--test> ist."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since B<xz> 5.7.1alpha, B<--single-stream> implies B<--keep>."
+msgstr ""
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -1243,6 +1259,28 @@ msgstr "Dieses Funktionsmerkmal ist außerhalb von POSIX-Systemen nicht verfügb
 #: ../src/xz/xz.1
 msgid "B<This feature is still experimental.> Currently B<xz> is unsuitable for decompressing the stream in real time due to how B<xz> does buffering."
 msgstr "B<Dieses Funktionsmerkmal ist noch experimentell.> Gegenwärtig ist B<xz> aufgrund der Art und Weise, wie B<xz> puffert, für Dekompression in Echtzeit ungeeignet."
+
+#. type: TP
+#: ../src/xz/xz.1
+#, fuzzy, no-wrap
+#| msgid "B<--no-sparse>"
+msgid "B<--no-sync>"
+msgstr "B<--no-sparse>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Do not synchronize the target file and its directory to the storage device before removing the source file.  This can improve performance if compressing or decompressing many small files.  However, if the system crashes soon after the deletion, it is possible that the target file was not written to the storage device but the delete operation was.  In that case neither the original source file nor the target file is available."
+msgstr ""
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This option has an effect only when B<xz> is going to remove the source file.  In other cases synchronization is never done."
+msgstr ""
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The synchronization and B<--no-sync> were added in B<xz> 5.7.1alpha."
+msgstr ""
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3414,6 +3452,13 @@ msgstr "LZMA-SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
 msgid "XZDEC"
 msgstr "XZDEC"
 
+#. type: TH
+#: ../src/xzdec/xzdec.1
+#, fuzzy, no-wrap
+#| msgid "2024-02-25"
+msgid "2024-04-08"
+msgstr "25. Februar 2024"
+
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "xzdec, lzmadec - Small .xz and .lzma decompressors"
@@ -3883,6 +3928,5 @@ msgstr "Falls die Umgebungsvariable B<PAGER> gesetzt ist, wird diese als Pager (
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 
-#, no-wrap
-#~ msgid "2024-01-19"
-#~ msgstr "19. Januar 2024"
+#~ msgid "Decompress."
+#~ msgstr "dekomprimpiert."

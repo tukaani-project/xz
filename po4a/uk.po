@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: xz-man-5.6.0-pre2\n"
-"POT-Creation-Date: 2024-05-29 17:45+0300\n"
+"POT-Creation-Date: 2025-01-23 11:21+0200\n"
 "PO-Revision-Date: 2024-02-15 17:53+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
@@ -27,11 +27,11 @@ msgid "XZ"
 msgstr "XZ"
 
 #. type: TH
-#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#: ../src/xz/xz.1
 #, fuzzy, no-wrap
-#| msgid "2024-02-25"
-msgid "2024-04-08"
-msgstr "25 лютого 2024 року"
+#| msgid "2024-02-13"
+msgid "2024-12-30"
+msgstr "13 лютого 2024 року"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -324,16 +324,27 @@ msgstr "B<-z>, B<--compress>"
 msgid "Compress.  This is the default operation mode when no operation mode option is specified and no other operation mode is implied from the command name (for example, B<unxz> implies B<--decompress>)."
 msgstr "Стиснути. Це типовий режим дій, якщо не вказано параметр режиму дій, а назва команди неявним чином не визначає іншого режиму дій (наприклад, B<unxz> неявно визначає B<--decompress>)."
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
+
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
 #, no-wrap
 msgid "B<-d>, B<--decompress>, B<--uncompress>"
 msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "Decompress."
-msgstr "Розпакувати."
+msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3408,6 +3419,13 @@ msgstr "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
 msgid "XZDEC"
 msgstr "XZDEC"
 
+#. type: TH
+#: ../src/xzdec/xzdec.1
+#, fuzzy, no-wrap
+#| msgid "2024-02-25"
+msgid "2024-04-08"
+msgstr "25 лютого 2024 року"
+
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "xzdec, lzmadec - Small .xz and .lzma decompressors"
@@ -3876,6 +3894,9 @@ msgstr "Якщо встановлено значення B<PAGER>, значен�
 #: ../src/scripts/xzmore.1
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
+
+#~ msgid "Decompress."
+#~ msgstr "Розпакувати."
 
 #, no-wrap
 #~ msgid "2024-01-19"

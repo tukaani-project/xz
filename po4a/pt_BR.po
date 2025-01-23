@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: xz-man 5.4.0-pre2\n"
-"POT-Creation-Date: 2024-05-29 17:45+0300\n"
+"POT-Creation-Date: 2025-01-23 11:21+0200\n"
 "PO-Revision-Date: 2023-01-26 13:29-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge.net>\n"
@@ -25,9 +25,9 @@ msgid "XZ"
 msgstr "XZ"
 
 #. type: TH
-#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#: ../src/xz/xz.1
 #, no-wrap
-msgid "2024-04-08"
+msgid "2024-12-30"
 msgstr ""
 
 #. type: TH
@@ -321,16 +321,27 @@ msgstr "B<-z>, B<--compress>"
 msgid "Compress.  This is the default operation mode when no operation mode option is specified and no other operation mode is implied from the command name (for example, B<unxz> implies B<--decompress>)."
 msgstr "Compacta. Este é o modo de operação padrão quando nenhuma opção de modo de operação é especificada e nenhum outro modo de operação está implícito no nome do comando (por exemplo, B<unxz> implica em B<--decompress>)."
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
+
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
 #, no-wrap
 msgid "B<-d>, B<--decompress>, B<--uncompress>"
 msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "Decompress."
-msgstr "Descompacta."
+msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3414,6 +3425,12 @@ msgstr ""
 msgid "XZDEC"
 msgstr "XZDEC"
 
+#. type: TH
+#: ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "2024-04-08"
+msgstr ""
+
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "xzdec, lzmadec - Small .xz and .lzma decompressors"
@@ -3920,3 +3937,6 @@ msgstr ""
 #: ../src/scripts/xzmore.1
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
+
+#~ msgid "Decompress."
+#~ msgstr "Descompacta."

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: xz-man 5.6.0-pre2\n"
-"POT-Creation-Date: 2024-05-29 17:45+0300\n"
+"POT-Creation-Date: 2025-01-23 11:21+0200\n"
 "PO-Revision-Date: 2024-02-21 00:14+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
@@ -25,11 +25,11 @@ msgid "XZ"
 msgstr "XZ"
 
 #. type: TH
-#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#: ../src/xz/xz.1
 #, fuzzy, no-wrap
-#| msgid "2024-02-25"
-msgid "2024-04-08"
-msgstr "2024-02-25"
+#| msgid "2024-02-13"
+msgid "2024-12-30"
+msgstr "2024-02-13"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -322,16 +322,27 @@ msgstr "B<-z>, B<--compress>"
 msgid "Compress.  This is the default operation mode when no operation mode option is specified and no other operation mode is implied from the command name (for example, B<unxz> implies B<--decompress>)."
 msgstr "압축합니다.  어떤 동작 모드 옵션도 지정하지 않고 다른 동작 모드를 명령행에 따로 지정하지 않았다면 이 동작 모드는 기본입니다(예: B<unxz> 는 B<--decompress>를 암시)."
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
+
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
 #, no-wrap
 msgid "B<-d>, B<--decompress>, B<--uncompress>"
 msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "Decompress."
-msgstr "압축을 해제합니다."
+msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr ""
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3404,6 +3415,13 @@ msgstr "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
 msgid "XZDEC"
 msgstr "XZDEC"
 
+#. type: TH
+#: ../src/xzdec/xzdec.1
+#, fuzzy, no-wrap
+#| msgid "2024-02-25"
+msgid "2024-04-08"
+msgstr "2024-02-25"
+
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "xzdec, lzmadec - Small .xz and .lzma decompressors"
@@ -3872,6 +3890,9 @@ msgstr "B<PAGER> 환경변수 값을 설정했다면 B<more>(1) 대신 해당 �
 #: ../src/scripts/xzmore.1
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
+
+#~ msgid "Decompress."
+#~ msgstr "압축을 해제합니다."
 
 #, no-wrap
 #~ msgid "2024-01-19"

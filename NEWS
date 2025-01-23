@@ -2,6 +2,113 @@
 XZ Utils Release Notes
 ======================
 
+5.7.1alpha (2025-01-23)
+
+    * All fixes from 5.6.4.
+
+    * liblzma:
+
+        - Improve LZMA/LZMA2 encoder speed on 64-bit PowerPC (both
+          endiannesses) and those 64-bit RISC-V processors that
+          support fast unaligned access.
+
+        - x86/x86-64/E2K CLMUL CRC code was rewritten. It's faster and
+          doesn't cause false positives from sanitizers. Attributes
+          like __attribute__((__no_sanitize_address__)) are no longer
+          present.
+
+        - On 32-bit x86, CLMUL CRC and the old (but still good)
+          assembly versions now co-exist with runtime detection.
+          Both Autotools and CMake build systems handle this
+          automatically now.
+
+        - Use the CRC32 instructions on LoongArch to make CRC32
+          calculation faster.
+
+        - Add low-level APIs for RISC-V, ARM64, and x86 BCJ filters
+          to lzma/bcj.h. These are primarily for erofs-utils.
+
+        - Minor tweaks to ARM64 CRC32 code and BCJ filters were made.
+
+    * xz:
+
+        - Synchronize the output file and its directory before deleting
+          the input file using fsync(). This reduces the probability of
+          data loss after a system crash. However, it can be a major
+          performance hit if processing many small files.
+
+          NOTE: No syncing is done when xz isn't going to delete
+          the input file.
+
+        - Add a new option --no-sync to disable the sync-before-delete
+          behavior. It's useful when compressing many small files and
+          one doesn't worry about data loss in case of a system crash.
+
+        - Make --single-stream imply --keep.
+
+        - Use automatic word wrapping for the text in --help and
+          similar situations to hopefully make the strings easier for
+          majority of translators (no need to count spaces anymore).
+
+    * xz, xzdec, lzmainfo: When printing messages, replace
+      non-printable characters with question marks. This way
+      malicious filenames cannot be used to send escape sequences
+      to a terminal. This change is also applied to filenames shown
+      in "xz --robot --list".
+
+    * xz and xzdec on Linux: Add support for Landlock ABI versions 5
+      and 6.
+
+    * CMake updates:
+
+        - Increase the minimum required CMake version to 3.20.
+
+        - Revise the configuration variables and some of their options.
+          Document them in the file INSTALL.
+
+        - Attempt to produce liblzma.pc so that the paths are based on
+          ${prefix}, which makes it simpler to override the paths
+          if the liblzma files have been moved.
+
+        - To enable translations, gettext-tools is now required. The
+          CMake build no longer supports installing pre-compiled
+          message catalog binary files (po/*.gmo).
+
+        - Apple: Use Mach-O shared library versioning that is
+          compatible with GNU Libtool. This should make it easier to
+          switch between the build systems on Apple OSes that enforce
+          the correct compatibility_version (macOS >= 12 doesn't?).
+          This change is backward compatible: binaries linked against
+          old CMake-built liblzma will run with liblzma that uses
+          Libtool style versioning.
+
+        - Windows (not Cygwin): Document CMAKE_DLL_NAME_WITH_SOVERSION
+          (CMake >= 3.27) in the file INSTALL. This option should
+          usually be left to its default value (OFF). It can be set
+          to ON if the liblzma DLL filename must be compatible with
+          the versioned filename produced by GNU Libtool. For example,
+          binaries distributed in MSYS2 use a versioned DLL filename.
+
+        - CMake support is no longer experimental. (It was already
+          not experimental when building for native Windows.)
+
+    * Windows: Building liblzma with Visual Studio 2013 is no longer
+      supported. Visual Studio 2015 or later (with CMake) can be used
+      to build liblzma and the command line tools.
+
+    * Add preliminary Georgian translation. This already contains
+      translations of most of the strings that are now automatically
+      word wrapped.
+
+    * Add build-aux/license-check.sh. Without arguments, it checks that
+      no license information has been forgotten. With the -v argument,
+      it shows the license info (or the lack of it) for each file.
+
+      If the .git directory is available, only the files in the
+      repository are checked. Without the .git directory, a clean tree
+      from an extracted release tarball is expected.
+
+
 5.6.4 (2025-01-23)
 
     * liblzma: Fix LZMA/LZMA2 encoder on big endian ARM64.

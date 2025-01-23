@@ -5,7 +5,8 @@ XZ Utils Release Notes
 5.6.3 (2024-10-01)
 
     IMPORTANT: This includes a Windows-specific security fix to
-    the command line tools. liblzma isn't affected by this issue.
+    the command line tools (CVE-2024-47611). liblzma isn't affected
+    by this issue.
 
     * liblzma:
 
@@ -55,6 +56,7 @@ XZ Utils Release Notes
               which can be exploited with malicious filenames to do
               argument injection or directory traversal attacks.
               UTF-8 avoids best-fit mappings and thus fixes the issue.
+              (CVE-2024-47611)
 
               Forcing the process code page to UTF-8 is possible only
               on Windows 10 version 1903 and later. The command line

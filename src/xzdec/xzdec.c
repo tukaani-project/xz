@@ -230,8 +230,17 @@ uncompress(lzma_stream *strm, FILE *file, const char *filename)
 				// Wouldn't be a surprise if writing to stderr
 				// would fail too but at least try to show an
 				// error message.
-				my_errorf("Cannot write to standard output: "
+#if defined(_WIN32) && !defined(__CYGWIN__)
+				// On native Windows, broken pipe is reported
+				// as EINVAL. Don't show an error message
+				// in this case.
+				if (errno != EINVAL)
+#endif
+				{
+					my_errorf("Cannot write to "
+						"standard output: "
 						"%s", strerror(errno));
+				}
 				exit(EXIT_FAILURE);
 			}
 

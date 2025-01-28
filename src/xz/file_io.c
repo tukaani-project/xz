@@ -1390,6 +1390,19 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 			}
 #endif
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+			// On native Windows, broken pipe is reported as
+			// EINVAL. Don't show an error message in this case.
+			// Try: xz -dc bigfile.xz | head -n1
+			if (errno == EINVAL
+					&& pair->dest_fd == STDOUT_FILENO) {
+				// Emulate SIGPIPE by setting user_abort here.
+				user_abort = true;
+				set_exit_status(E_ERROR);
+				return true;
+			}
+#endif
+
 			// Handle broken pipe specially. gzip and bzip2
 			// don't print anything on SIGPIPE. In addition,
 			// gzip --quiet uses exit status 2 (warning) on

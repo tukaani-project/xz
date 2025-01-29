@@ -2016,8 +2016,12 @@ if(XZ_TOOL_LZMAINFO AND HAVE_DECODERS)
         src/common/sysdefs.h
         src/common/tuklib_common.h
         src/common/tuklib_config.h
+        src/common/tuklib_mbstr.h
         src/common/tuklib_mbstr_nonprint.c
         src/common/tuklib_mbstr_nonprint.h
+        src/common/tuklib_mbstr_width.c
+        src/common/tuklib_mbstr_wrap.c
+        src/common/tuklib_mbstr_wrap.h
         src/common/tuklib_exit.c
         src/common/tuklib_exit.h
         src/common/tuklib_gettext.h

@@ -18,6 +18,7 @@
 #include "tuklib_gettext.h"
 #include "tuklib_progname.h"
 #include "tuklib_mbstr_nonprint.h"
+#include "tuklib_mbstr_wrap.h"
 #include "tuklib_exit.h"
 
 #ifdef TUKLIB_DOSLIKE
@@ -30,21 +31,36 @@ tuklib_attr_noreturn
 static void
 help(void)
 {
-	// We don't need automatic word-wrapping here. A few strings are
-	// the same as in xz/message.c but here we need to add the newlines
-	// with putchar('\n'). This way translators won't get two variants
-	// of the same string: one without and another with \n at the end.
+	// A few languages use so long strings that we need automatic
+	// wrapping. A few strings are the same as in xz/message.c and
+	// should be kept in sync.
+	static const struct tuklib_wrap_opt wrap0 = {  0,  0,  0,  0, 79 };
+	int e = 0;
+
 	printf(_("Usage: %s [--help] [--version] [FILE]...\n"), progname);
-	puts(_("Show information stored in the .lzma file header."));
-	puts(_("With no FILE, or when FILE is -, read standard input."));
+
+	e |= tuklib_wraps(stdout, &wrap0,
+		W_("Show information stored in the .lzma file header."));
+	e |= tuklib_wraps(stdout, &wrap0,
+		W_("With no FILE, or when FILE is -, read standard input."));
 
 	putchar('\n');
 
-	printf(_("Report bugs to <%s> (in English or Finnish)."),
+	e |= tuklib_wrapf(stdout, &wrap0,
+			W_("Report bugs to <%s> (in English or Finnish)."),
 			PACKAGE_BUGREPORT);
-	putchar('\n');
-	printf(_("%s home page: <%s>"), PACKAGE_NAME, PACKAGE_URL);
-	putchar('\n');
+
+	e |= tuklib_wrapf(stdout, &wrap0,
+			W_("%s home page: <%s>"), PACKAGE_NAME, PACKAGE_URL);
+
+	if (e != 0) {
+		// Avoid new translatable strings by printing the message
+		// in pieces.
+		fprintf(stderr, _("%s: "), progname);
+		fprintf(stderr, _("Error printing the help text "
+				"(error code %d)"), e);
+		fprintf(stderr, "\n");
+	}
 
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }

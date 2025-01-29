@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: 0BSD
 #
 # Ukrainian translation for xz-man.
-# This file is distributed under the same license as the xz-man package.
+# This file is published under the BSD Zero Clause License.
 # Copyright (C) The XZ Utils authors and contributors
 #
-# Yuri Chornoivan <yurchor@ukr.net>, 2019, 2022, 2023, 2024.
+# Yuri Chornoivan <yurchor@ukr.net>, 2019, 2022, 2023, 2024, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man-5.6.0-pre2\n"
-"POT-Creation-Date: 2025-01-23 11:47+0200\n"
-"PO-Revision-Date: 2024-02-15 17:53+0200\n"
+"Project-Id-Version: xz-man-5.7.1-dev1\n"
+"POT-Creation-Date: 2025-01-23 12:06+0200\n"
+"PO-Revision-Date: 2025-01-24 15:25+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 23.04.1\n"
+"X-Generator: Lokalize 23.04.3\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -28,10 +28,9 @@ msgstr "XZ"
 
 #. type: TH
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "2024-01-19"
+#, no-wrap
 msgid "2025-01-05"
-msgstr "19 січня 2024 року"
+msgstr "5 січня 2025 року"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -330,7 +329,7 @@ msgstr "Стиснути. Це типовий режим дій, якщо не �
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
-msgstr ""
+msgstr "Після успішного пакування початковий файл буде вилучено, якщо виведення не відбувається до стандартного виведення або не вказано параметра B<--keep>."
 
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
@@ -344,7 +343,7 @@ msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
-msgstr ""
+msgstr "Розпакувати. Після успішного розпаковування початковий файл буде вилучено, якщо виведення не відбувається до стандартного виведення або не вказано параметра B<--keep>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -461,7 +460,7 @@ msgstr "Цей параметр нічого не змінює, якщо реж�
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Since B<xz> 5.7.1alpha, B<--single-stream> implies B<--keep>."
-msgstr ""
+msgstr "З B<xz> 5.7.1alpha, B<--single-stream> неявно визначає B<--keep>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -1258,25 +1257,24 @@ msgstr "B<Ця можливість усе ще є експерименталь�
 
 #. type: TP
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "B<--no-sparse>"
+#, no-wrap
 msgid "B<--no-sync>"
-msgstr "B<--no-sparse>"
+msgstr "B<--no-sync>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Do not synchronize the target file and its directory to the storage device before removing the source file.  This can improve performance if compressing or decompressing many small files.  However, if the system crashes soon after the deletion, it is possible that the target file was not written to the storage device but the delete operation was.  In that case neither the original source file nor the target file is available."
-msgstr ""
+msgstr "Не синхронізувати файл призначення та його каталог із пристроєм зберігання даних до вилучення початкового файла. Це може підвищити швидкодію, якщо виконується стискання або розпаковування багатьох малих файлів. Втім, якщо система аварійно завершує роботу невдовзі після вилучення, можлива ситуація, коли файл призначення не буде записано на пристрій зберігання даних, а дію з вилучення буде записано. У цьому випадку буде знищено дані як початкового файла, так і файла призначення."
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This option has an effect only when B<xz> is going to remove the source file.  In other cases synchronization is never done."
-msgstr ""
+msgstr "Цей параметр матиме хоч який вплив, лише якщо B<xz> вилучає початковий файл. В інших випадках синхронізація не виконується."
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The synchronization and B<--no-sync> were added in B<xz> 5.7.1alpha."
-msgstr ""
+msgstr "Синхронізацію і B<--no-sync> було додано у версії B<xz> 5.7.1alpha."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2902,10 +2900,9 @@ msgstr "Цю змінну призначено для передавання п�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<XZ_OPT=-2v tar caf foo.tar.xz foo>\n"
+#, no-wrap
 msgid "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
-msgstr "CW<XZ_OPT=-2v tar caf foo.tar.xz foo>\n"
+msgstr "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2914,16 +2911,13 @@ msgstr "Скрипти можуть використовувати B<XZ_OPT>, н
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<XZ_OPT=${XZ_OPT-\"-7e\"}\n"
-#| "export XZ_OPT>\n"
+#, no-wrap
 msgid ""
 "\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
 "export XZ_OPT\\fR\n"
 msgstr ""
-"CW<XZ_OPT=${XZ_OPT-\"-7e\"}\n"
-"export XZ_OPT>\n"
+"\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
+"export XZ_OPT\\fR\n"
 
 #. type: SH
 #: ../src/xz/xz.1
@@ -3155,10 +3149,9 @@ msgstr "Стиснути файл I<foo> до I<foo.xz> за допомогою 
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz foo>\n"
+#, no-wrap
 msgid "\\f(CRxz foo\\fR\n"
-msgstr "CW<xz foo>\n"
+msgstr "\\f(CRxz foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3167,10 +3160,9 @@ msgstr "Розпакувати I<bar.xz> до I<bar> і не вилучати I<
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -dk bar.xz>\n"
+#, no-wrap
 msgid "\\f(CRxz -dk bar.xz\\fR\n"
-msgstr "CW<xz -dk bar.xz>\n"
+msgstr "\\f(CRxz -dk bar.xz\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3179,10 +3171,9 @@ msgstr "Створити I<baz.tar.xz> з використанням шабло�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<tar cf - baz | xz -4e E<gt> baz.tar.xz>\n"
+#, no-wrap
 msgid "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
-msgstr "CW<tar cf - baz | xz -4e E<gt> baz.tar.xz>\n"
+msgstr "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3191,10 +3182,9 @@ msgstr "Суміш стиснених і нестиснених файлів м�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt>\n"
+#, no-wrap
 msgid "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
-msgstr "CW<xz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt>\n"
+msgstr "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
 
 #. type: SS
 #: ../src/xz/xz.1
@@ -3209,16 +3199,13 @@ msgstr "У GNU і *BSD можна скористатися B<find>(1) і B<xargs
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<find . -type f \\e! -name '*.xz' -print0 \\e\n"
-#| "    | xargs -0r -P4 -n16 xz -T1>\n"
+#, no-wrap
 msgid ""
 "\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
 "    | xargs -0r -P4 -n16 xz -T1\\fR\n"
 msgstr ""
-"CW<find . -type f \\e! -name '*.xz' -print0 \\e\n"
-"    | xargs -0r -P4 -n16 xz -T1>\n"
+"\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
+"    | xargs -0r -P4 -n16 xz -T1\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3243,10 +3230,9 @@ msgstr "Обчислити скільки байтів було заощадже
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --robot --list *.xz | awk '/^totals/{print $5-$4}'>\n"
+#, no-wrap
 msgid "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
-msgstr "CW<xz --robot --list *.xz | awk '/^totals/{print $5-$4}'>\n"
+msgstr "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3255,13 +3241,7 @@ msgstr "Скрипту можуть знадобитися дані щодо т�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
-#| "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
-#| "    echo \"Your xz is too old.\"\n"
-#| "fi\n"
-#| "unset XZ_VERSION LIBLZMA_VERSION>\n"
+#, no-wrap
 msgid ""
 "\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
@@ -3269,11 +3249,11 @@ msgid ""
 "fi\n"
 "unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
 msgstr ""
-"CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
+"\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
 "    echo \"Your xz is too old.\"\n"
 "fi\n"
-"unset XZ_VERSION LIBLZMA_VERSION>\n"
+"unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3282,14 +3262,7 @@ msgstr "Встановити обмеження на використання п
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<NEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
-#| "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
-#| "if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
-#| "    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
-#| "    export XZ_OPT\n"
-#| "fi>\n"
+#, no-wrap
 msgid ""
 "\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
 "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
@@ -3298,12 +3271,12 @@ msgid ""
 "    export XZ_OPT\n"
 "fi\\fR\n"
 msgstr ""
-"CW<NEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
+"\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
 "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
 "if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
 "    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
 "    export XZ_OPT\n"
-"fi>\n"
+"fi\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3322,10 +3295,9 @@ msgstr "Якщо вам відомо, що певний файл потребу�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --lzma2=preset=1,dict=32MiB foo.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
-msgstr "CW<xz --lzma2=preset=1,dict=32MiB foo.tar>\n"
+msgstr "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3339,10 +3311,9 @@ msgstr "Якщо дуже високий рівень використання �
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -vv --lzma2=dict=192MiB big_foo.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
-msgstr "CW<xz -vv --lzma2=dict=192MiB big_foo.tar>\n"
+msgstr "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3356,10 +3327,9 @@ msgstr "Іноді час стискання не має значення, ал�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --check=crc32 --lzma2=preset=6e,dict=64KiB foo>\n"
+#, no-wrap
 msgid "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
-msgstr "CW<xz --check=crc32 --lzma2=preset=6e,dict=64KiB foo>\n"
+msgstr "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3368,10 +3338,9 @@ msgstr "Якщо вам потрібно витиснути зі стискан�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --lzma2=preset=6e,pb=0,lc=4 source_code.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
-msgstr "CW<xz --lzma2=preset=6e,pb=0,lc=4 source_code.tar>\n"
+msgstr "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3380,10 +3349,9 @@ msgstr "Використання іншого фільтра разом із LZM
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --x86 --lzma2 libfoo.so>\n"
+#, no-wrap
 msgid "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
-msgstr "CW<xz --x86 --lzma2 libfoo.so>\n"
+msgstr "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3402,10 +3370,9 @@ msgstr "Зображення слід берегти у нестисненому
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --delta=dist=3 --lzma2=pb=0 foo.tiff>\n"
+#, no-wrap
 msgid "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
-msgstr "CW<xz --delta=dist=3 --lzma2=pb=0 foo.tiff>\n"
+msgstr "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3448,10 +3415,9 @@ msgstr "XZDEC"
 
 #. type: TH
 #: ../src/xzdec/xzdec.1
-#, fuzzy, no-wrap
-#| msgid "2024-02-25"
+#, no-wrap
 msgid "2024-04-08"
-msgstr "25 лютого 2024 року"
+msgstr "8 квітня 2024 року"
 
 #. type: Plain text
 #: ../src/xzdec/xzdec.1

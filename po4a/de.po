@@ -3,13 +3,13 @@
 # This file is published under the BSD Zero Clause License.
 # Copyright (C) The XZ Utils authors and contributors
 #
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2015, 2019-2020, 2022-2024.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2015, 2019-2020, 2022-2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.6.0-pre2\n"
+"Project-Id-Version: xz-man 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 11:47+0200\n"
-"PO-Revision-Date: 2024-02-15 19:18+0100\n"
+"POT-Creation-Date: 2025-01-23 12:06+0200\n"
+"PO-Revision-Date: 2025-01-26 11:19+0100\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 23.08.4\n"
+"X-Generator: Lokalize 24.12.1\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -28,10 +28,9 @@ msgstr "XZ"
 
 #. type: TH
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "2024-01-19"
+#, no-wrap
 msgid "2025-01-05"
-msgstr "19. Januar 2024"
+msgstr "5. Januar 2025"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -331,7 +330,7 @@ msgstr "Kompression. Dies ist der voreingestellte Aktionsmodus, sofern keiner an
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
-msgstr ""
+msgstr "Nach erfolgreicher Kompression wird die Quelldatei gelöscht, außer wenn in die Standardausgabe geschrieben wird oder B<--keep> angegeben wurde."
 
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
@@ -345,7 +344,7 @@ msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
-msgstr ""
+msgstr "Dekomprimieren. Nach erfolgreicher Dekompression wird die Quelldatei gelöscht, außer wenn in die Standardausgabe geschrieben wird oder B<--keep> angegeben wurde."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -462,7 +461,7 @@ msgstr "Diese Option ist wirkungslos, wenn der Aktionsmodus nicht B<--decompress
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Since B<xz> 5.7.1alpha, B<--single-stream> implies B<--keep>."
-msgstr ""
+msgstr "Seit der Programmversion B<xz> 5.7.1alpha impliziert B<--single-stream> zusätzlich die Option B<--keep>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -1262,25 +1261,24 @@ msgstr "B<Dieses Funktionsmerkmal ist noch experimentell.> Gegenwärtig ist B<xz
 
 #. type: TP
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "B<--no-sparse>"
+#, no-wrap
 msgid "B<--no-sync>"
-msgstr "B<--no-sparse>"
+msgstr "B<--no-sync>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Do not synchronize the target file and its directory to the storage device before removing the source file.  This can improve performance if compressing or decompressing many small files.  However, if the system crashes soon after the deletion, it is possible that the target file was not written to the storage device but the delete operation was.  In that case neither the original source file nor the target file is available."
-msgstr ""
+msgstr "synchronisiert die Zieldatei und deren Verzeichnis auf dem Speichergerät nicht, bevor die Quelldatei gelöscht wird. So kann die Performance beim Komprimieren oder Dekomprimieren vieler kleiner Dateien verbessert werden. Jedoch wäre es möglich, falls es kurz nach dem Löschen zu einem Systemabsturz kommt, dass die Zieldatei noch nicht auf dem Speichergerät geschrieben, aber der Löschvorgang bereits ausgeführt wurde. In diesem Fall gehen sowohl die Quelldatei als auch die Zieldatei verloren."
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This option has an effect only when B<xz> is going to remove the source file.  In other cases synchronization is never done."
-msgstr ""
+msgstr "Diese Option ist nur wirksam, wenn B<xz> die Quelldatei löscht. In anderen Fällen wird niemals synchronisiert."
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The synchronization and B<--no-sync> were added in B<xz> 5.7.1alpha."
-msgstr ""
+msgstr "Die Synchronisierung und B<--no-sync> wurden in Version B<xz> 5.7.1alpha hinzugefügt."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2908,10 +2906,9 @@ msgstr "Dies dient der Übergabe von Optionen an B<xz>, wenn es nicht möglich i
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<XZ_OPT=-2v tar caf foo.tar.xz foo>\n"
+#, no-wrap
 msgid "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
-msgstr "CW<XZ_OPT=-2v tar caf foo.tar.xz foo>\n"
+msgstr "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2920,16 +2917,13 @@ msgstr "Skripte können B<XZ_OPT> zum Beispiel zum Setzen skriptspezifischer Sta
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<XZ_OPT=${XZ_OPT-\"-7e\"}\n"
-#| "export XZ_OPT>\n"
+#, no-wrap
 msgid ""
 "\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
 "export XZ_OPT\\fR\n"
 msgstr ""
-"CW<XZ_OPT=${XZ_OPT-\"-7e\"}\n"
-"export XZ_OPT>\n"
+"\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
+"export XZ_OPT\\fR\n"
 
 #. type: SH
 #: ../src/xz/xz.1
@@ -3161,10 +3155,9 @@ msgstr "Komprimiert die Datei I<foo> mit der Standard-Kompressionsstufe (B<-6>) 
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz foo>\n"
+#, no-wrap
 msgid "\\f(CRxz foo\\fR\n"
-msgstr "CW<xz foo>\n"
+msgstr "\\f(CRxz foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3173,10 +3166,9 @@ msgstr "I<bar.xz> in I<bar> dekomprimieren und I<bar.xz> selbst dann nicht lösc
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -dk bar.xz>\n"
+#, no-wrap
 msgid "\\f(CRxz -dk bar.xz\\fR\n"
-msgstr "CW<xz -dk bar.xz>\n"
+msgstr "\\f(CRxz -dk bar.xz\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3185,10 +3177,9 @@ msgstr "I<baz.tar.xz> mit der Voreinstellung B<-4e> (B<-4 --extreme>) erzeugen, 
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<tar cf - baz | xz -4e E<gt> baz.tar.xz>\n"
+#, no-wrap
 msgid "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
-msgstr "CW<tar cf - baz | xz -4e E<gt> baz.tar.xz>\n"
+msgstr "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3197,10 +3188,9 @@ msgstr "Eine Mischung aus komprimierten und unkomprimierten Dateien kann mit ein
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt>\n"
+#, no-wrap
 msgid "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
-msgstr "CW<xz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt>\n"
+msgstr "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
 
 #. type: SS
 #: ../src/xz/xz.1
@@ -3215,16 +3205,13 @@ msgstr "Auf GNU- und *BSD-Systemen können B<find>(1) und B<xargs>(1) zum Parall
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<find . -type f \\e! -name '*.xz' -print0 \\e\n"
-#| "    | xargs -0r -P4 -n16 xz -T1>\n"
+#, no-wrap
 msgid ""
 "\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
 "    | xargs -0r -P4 -n16 xz -T1\\fR\n"
 msgstr ""
-"CW<find . -type f \\e! -name '*.xz' -print0 \\e\n"
-"    | xargs -0r -P4 -n16 xz -T1>\n"
+"\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
+"    | xargs -0r -P4 -n16 xz -T1\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3249,10 +3236,9 @@ msgstr "Berechnen, wie viel Byte nach der Kompression mehrerer Dateien insgesamt
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --robot --list *.xz | awk '/^totals/{print $5-$4}'>\n"
+#, no-wrap
 msgid "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
-msgstr "CW<xz --robot --list *.xz | awk '/^totals/{print $5-$4}'>\n"
+msgstr "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3261,13 +3247,7 @@ msgstr "Ein Skript könnte abfragen wollen, ob es ein B<xz> verwendet, das aktue
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
-#| "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
-#| "    echo \"Your xz is too old.\"\n"
-#| "fi\n"
-#| "unset XZ_VERSION LIBLZMA_VERSION>\n"
+#, no-wrap
 msgid ""
 "\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
@@ -3275,11 +3255,11 @@ msgid ""
 "fi\n"
 "unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
 msgstr ""
-"CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
+"\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
 "    echo \"Ihre Version von Xz ist zu alt.\"\n"
 "fi\n"
-"unset XZ_VERSION LIBLZMA_VERSION>\n"
+"unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3288,14 +3268,7 @@ msgstr "Eine Speicherbedarfsbegrenzung für die Dekompression mit B<XZ_OPT> setz
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<NEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
-#| "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
-#| "if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
-#| "    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
-#| "    export XZ_OPT\n"
-#| "fi>\n"
+#, no-wrap
 msgid ""
 "\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
 "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
@@ -3304,12 +3277,12 @@ msgid ""
 "    export XZ_OPT\n"
 "fi\\fR\n"
 msgstr ""
-"CW<NEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
+"\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
 "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
 "if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
 "    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
 "    export XZ_OPT\n"
-"fi>\n"
+"fi\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3328,10 +3301,9 @@ msgstr "Wenn Sie wissen, dass eine Datei für eine gute Kompression ein etwas gr
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --lzma2=preset=1,dict=32MiB foo.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
-msgstr "CW<xz --lzma2=preset=1,dict=32MiB foo.tar>\n"
+msgstr "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3345,10 +3317,9 @@ msgstr "Wenn hoher Speicherbedarf für Kompression und Dekompression kein Proble
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -vv --lzma2=dict=192MiB big_foo.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
-msgstr "CW<xz -vv --lzma2=dict=192MiB big_foo.tar>\n"
+msgstr "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3362,10 +3333,9 @@ msgstr "Manchmal spielt die Kompressionszeit keine Rolle, aber der Speicherbedar
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --check=crc32 --lzma2=preset=6e,dict=64KiB foo>\n"
+#, no-wrap
 msgid "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
-msgstr "CW<xz --check=crc32 --lzma2=preset=6e,dict=64KiB foo>\n"
+msgstr "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3374,10 +3344,9 @@ msgstr "Wenn Sie so viele Byte wie möglich herausquetschen wollen, kann die Anp
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --lzma2=preset=6e,pb=0,lc=4 source_code.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
-msgstr "CW<xz --lzma2=preset=6e,pb=0,lc=4 Quellcode.tar>\n"
+msgstr "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3386,10 +3355,9 @@ msgstr "Die Verwendung eines anderen Filters mit LZMA2 kann die Kompression bei 
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --x86 --lzma2 libfoo.so>\n"
+#, no-wrap
 msgid "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
-msgstr "CW<xz --x86 --lzma2 libfoo.so>\n"
+msgstr "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3408,10 +3376,9 @@ msgstr "Das Bild muss in einem unkomprimierten Format gespeichert werden, zum Be
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --delta=dist=3 --lzma2=pb=0 foo.tiff>\n"
+#, no-wrap
 msgid "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
-msgstr "CW<xz --delta=dist=3 --lzma2=pb=0 foo.tiff>\n"
+msgstr "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3454,10 +3421,9 @@ msgstr "XZDEC"
 
 #. type: TH
 #: ../src/xzdec/xzdec.1
-#, fuzzy, no-wrap
-#| msgid "2024-02-25"
+#, no-wrap
 msgid "2024-04-08"
-msgstr "25. Februar 2024"
+msgstr "8. August 2024"
 
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
@@ -3842,7 +3808,7 @@ msgstr "B<xzless> ist ein Filter, der Text aus komprimierten Dateien in einem Te
 #. type: Plain text
 #: ../src/scripts/xzless.1
 msgid "B<xzless> uses B<less>(1)  to present its output.  Unlike B<xzmore>, its choice of pager cannot be altered by setting an environment variable.  Commands are based on both B<more>(1)  and B<vi>(1)  and allow back and forth movement and searching.  See the B<less>(1)  manual for more information."
-msgstr "B<xzless> verwendet B<less>(1) zur Darstellung der Ausgabe. Im Gegensatz zu B<xzmore> können Sie das zu verwendende Textanzeigeprogramm nicht durch Setzen einer Umgebungsvariable ändern. Die Befehle basieren auf B<more>(1) und B<vi>(1) und ermöglichen Vorwärts- und Rückwärtssprünge sowie Suchvorgänge. In der Handbuchseite zu B<less>(1) finden Sie weiter Information."
+msgstr "B<xzless> verwendet B<less>(1) zur Darstellung der Ausgabe. Im Gegensatz zu B<xzmore> können Sie das zu verwendende Textanzeigeprogramm nicht durch Setzen einer Umgebungsvariable ändern. Die Befehle basieren auf B<more>(1) und B<vi>(1) und ermöglichen Vorwärts- und Rückwärtssprünge sowie Suchvorgänge. In der Handbuchseite zu B<less>(1) finden Sie weitere Informationen."
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
@@ -3921,12 +3887,9 @@ msgstr "B<PAGER>"
 #. type: Plain text
 #: ../src/scripts/xzmore.1
 msgid "If B<PAGER> is set, its value is used as the pager instead of B<more>(1)."
-msgstr "Falls die Umgebungsvariable B<PAGER> gesetzt ist, wird diese als Pager (Textanzeigeprogramm) anstelle von B<more>(1) verwendet."
+msgstr "Falls die Umgebungsvariable B<PAGER> gesetzt ist, wird deren Wert als Pager (Textanzeigeprogramm) anstelle von B<more>(1) verwendet."
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
-
-#~ msgid "Decompress."
-#~ msgstr "dekomprimpiert."

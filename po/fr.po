@@ -26,7 +26,7 @@ msgstr "%s : argument de l'option --block-list invalide"
 #: src/xz/args.c
 #, c-format
 msgid "%s: Too many arguments to --block-list"
-msgstr "%s : trop d'arguments pour l'option --block-list"
+msgstr "%s : Trop d'arguments pour l'option --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -69,7 +69,7 @@ msgstr "La variable d'environnement %s contient trop d'arguments"
 
 #: src/xz/args.c
 msgid "Compression support was disabled at build time"
-msgstr "Le support de la compression à était désactivé lors de la compilaton"
+msgstr "Le support de compression a été désactivé lors de la compilation"
 
 #: src/xz/args.c
 msgid "Decompression support was disabled at build time"
@@ -77,7 +77,7 @@ msgstr "Le support de la décompression a été désactivé lors de la compilati
 
 #: src/xz/args.c
 msgid "Compression of lzip files (.lz) is not supported"
-msgstr ""
+msgstr "La compression des fichiers lzip (.lz) n'est pas supportée"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
@@ -339,11 +339,11 @@ msgstr ""
 
 #: src/xz/hardware.c
 msgid "Compression:"
-msgstr ""
+msgstr "Compression:"
 
 #: src/xz/hardware.c
 msgid "Decompression:"
-msgstr ""
+msgstr "Décompression : "
 
 #: src/xz/hardware.c
 #, fuzzy
@@ -355,8 +355,8 @@ msgid "Default for -T0:"
 msgstr ""
 
 #: src/xz/hardware.c
-msgid "Hardware information:"
-msgstr ""
+msgid "Hardware information : "
+msgstr "Informations sur le matériel : "
 
 #: src/xz/hardware.c
 #, fuzzy

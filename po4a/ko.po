@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.6.0-pre2\n"
-"POT-Creation-Date: 2025-01-23 11:47+0200\n"
-"PO-Revision-Date: 2024-02-21 00:14+0900\n"
+"Project-Id-Version: xz-man 5.7.1-dev1\n"
+"POT-Creation-Date: 2025-01-23 12:06+0200\n"
+"PO-Revision-Date: 2025-01-30 23:49+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
 "Language: ko\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.5\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -26,10 +26,9 @@ msgstr "XZ"
 
 #. type: TH
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "2024-01-19"
+#, no-wrap
 msgid "2025-01-05"
-msgstr "2024-01-19"
+msgstr "2025-01-05"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -328,7 +327,7 @@ msgstr "압축합니다.  어떤 동작 모드 옵션도 지정하지 않고 다
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
-msgstr ""
+msgstr "압축을 제대로 끝내고 나면, 표준 출력에 기록하거나 B<--keep> 옵션을 지정하지 않았다면 원본 파일을 제거합니다."
 
 #. type: TP
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
@@ -342,7 +341,7 @@ msgstr "B<-d>, B<--decompress>, B<--uncompress>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
-msgstr ""
+msgstr "압축 해제입니다.  압축 해제를 제대로 끝내고 나면, 표준 출력에 기록하거나 B<--keep> 옵션을 지정하지 않았다면 원본 파일을 제거합니다."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -459,7 +458,7 @@ msgstr "이 옵션은 동작 모드가 B<--decompress> 또는 B<--test>가 아�
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Since B<xz> 5.7.1alpha, B<--single-stream> implies B<--keep>."
-msgstr ""
+msgstr "B<xz> 5.7.1alpha 부터는 B<--single-stream> 옵션의 동작에 B<--keep> 동작이 들어갑니다."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -1256,25 +1255,24 @@ msgstr "B<이 기능은 여전히 시험중입니다>.  현재로서는, B<xz> �
 
 #. type: TP
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "B<--no-sparse>"
+#, no-wrap
 msgid "B<--no-sync>"
-msgstr "B<--no-sparse>"
+msgstr "B<--no-sync>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Do not synchronize the target file and its directory to the storage device before removing the source file.  This can improve performance if compressing or decompressing many small files.  However, if the system crashes soon after the deletion, it is possible that the target file was not written to the storage device but the delete operation was.  In that case neither the original source file nor the target file is available."
-msgstr ""
+msgstr "원본 파일을 제거하기 전까지는 스토릿지 장치에 대상 파일과 디렉터리를 동기화하지 않습니다.  작은 여러 파일을 압축하거나 압축해제할 때 성능을 개선할 수 있습니다.  그러나, 삭제 과정을 진행한 다음 시스템이 바로 치명적인 오류가 나타난다면, 대상 파일을 스토릿지 장치에 저장하지 않았지만 삭제 동작이 이루어졌을 수도 있습니다.  이 경우 원본 파일 뿐만 아니라 대상 파일도 나타나지 않습니다."
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This option has an effect only when B<xz> is going to remove the source file.  In other cases synchronization is never done."
-msgstr ""
+msgstr "이 옵션은 B<xz> 프로그램이 원본 파일을 삭제할 때만 동작합니다.  다른 경우에는 전혀 동기화가 이루어지지 않습니다."
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The synchronization and B<--no-sync> were added in B<xz> 5.7.1alpha."
-msgstr ""
+msgstr "동기화 동작과 B<--no-sync> 옵션은 B<xz> 5.7.1alpha에 추가했습니다."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -1873,7 +1871,7 @@ msgstr "B<--sparc>[B<=>I<E<lt>옵션E<gt>>]"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<--riscv>[B<=>I<options>]"
-msgstr "B<--riscv>[B<=>I<E<lt>옵션E<gt>>]"
+msgstr "B<--riscv>[B<=>I<options>]"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2898,10 +2896,9 @@ msgstr "B<xz> 명령행으로 옵션 설정 값을 직접 전달할 수 없을 �
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<XZ_OPT=-2v tar caf foo.tar.xz foo>\n"
+#, no-wrap
 msgid "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
-msgstr "CW<XZ_OPT=-2v tar caf foo.tar.xz foo>\n"
+msgstr "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2910,16 +2907,13 @@ msgstr "예를 들면, 스크립트에서 B<XZ_OPT> 를 활용하여, 스크립�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<XZ_OPT=${XZ_OPT-\"-7e\"}\n"
-#| "export XZ_OPT>\n"
+#, no-wrap
 msgid ""
 "\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
 "export XZ_OPT\\fR\n"
 msgstr ""
-"CW<XZ_OPT=${XZ_OPT-\"-7e\"}\n"
-"export XZ_OPT>\n"
+"\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
+"export XZ_OPT\\fR\n"
 
 #. type: SH
 #: ../src/xz/xz.1
@@ -3151,10 +3145,9 @@ msgstr "I<foo> 파일을 기본 압축 수준 (B<-6>) 으로 I<foo.xz> 파일에
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz foo>\n"
+#, no-wrap
 msgid "\\f(CRxz foo\\fR\n"
-msgstr "CW<xz foo>\n"
+msgstr "\\f(CRxz foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3163,10 +3156,9 @@ msgstr "I<bar.xz>를 I<bar> 에 압축을 해제한 후 압축 해제가 무사�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -dk bar.xz>\n"
+#, no-wrap
 msgid "\\f(CRxz -dk bar.xz\\fR\n"
-msgstr "CW<xz -dk bar.xz>\n"
+msgstr "\\f(CRxz -dk bar.xz\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3175,10 +3167,9 @@ msgstr "기본 사전 설정 B<-6> 보다는 느리지만, 압축 및 압축 해
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<tar cf - baz | xz -4e E<gt> baz.tar.xz>\n"
+#, no-wrap
 msgid "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
-msgstr "CW<tar cf - baz | xz -4e E<gt> baz.tar.xz>\n"
+msgstr "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3187,10 +3178,9 @@ msgstr "압축 및 비압축 파일을 단일 명령으로 표준 출력에 압�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt>\n"
+#, no-wrap
 msgid "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
-msgstr "CW<xz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt>\n"
+msgstr "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
 
 #. type: SS
 #: ../src/xz/xz.1
@@ -3205,16 +3195,13 @@ msgstr "GNU와 *BSD에서는 B<find>(1)  명령과 B<xargs>(1)  명령으로 여
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<find . -type f \\e! -name '*.xz' -print0 \\e\n"
-#| "    | xargs -0r -P4 -n16 xz -T1>\n"
+#, no-wrap
 msgid ""
 "\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
 "    | xargs -0r -P4 -n16 xz -T1\\fR\n"
 msgstr ""
-"CW<find . -type f \\e! -name '*.xz' -print0 \\e\n"
-"    | xargs -0r -P4 -n16 xz -T1>\n"
+"\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
+"    | xargs -0r -P4 -n16 xz -T1\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3239,10 +3226,9 @@ msgstr "여러 파일을 압축한 후 저장할 바이트 용량을 계산합�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --robot --list *.xz | awk '/^totals/{print $5-$4}'>\n"
+#, no-wrap
 msgid "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
-msgstr "CW<xz --robot --list *.xz | awk '/^totals/{print $5-$4}'>\n"
+msgstr "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3251,13 +3237,7 @@ msgstr "이 스크립트에서는 충분히 최신의 B<xz> 명령을 사용하�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
-#| "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
-#| "    echo \"Your xz is too old.\"\n"
-#| "fi\n"
-#| "unset XZ_VERSION LIBLZMA_VERSION>\n"
+#, no-wrap
 msgid ""
 "\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
@@ -3265,11 +3245,11 @@ msgid ""
 "fi\n"
 "unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
 msgstr ""
-"CW<if ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
+"\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
 "        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
 "    echo \"Your xz is too old.\"\n"
 "fi\n"
-"unset XZ_VERSION LIBLZMA_VERSION>\n"
+"unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3278,14 +3258,7 @@ msgstr "B<XZ_OPT> 환경 변수로 압축 해제시 메뢰 사용량 한계를 �
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid ""
-#| "CW<NEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
-#| "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
-#| "if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
-#| "    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
-#| "    export XZ_OPT\n"
-#| "fi>\n"
+#, no-wrap
 msgid ""
 "\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
 "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
@@ -3294,12 +3267,12 @@ msgid ""
 "    export XZ_OPT\n"
 "fi\\fR\n"
 msgstr ""
-"CW<NEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
+"\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
 "OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
 "if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
 "    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
 "    export XZ_OPT\n"
-"fi>\n"
+"fi\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3318,10 +3291,9 @@ msgstr "어떤 파일을 압축할 때 상당히 큰 딕셔너리(예: 32MiB)가
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --lzma2=preset=1,dict=32MiB foo.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
-msgstr "CW<xz --lzma2=preset=1,dict=32MiB foo.tar>\n"
+msgstr "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3335,10 +3307,9 @@ msgstr "압축 프로그램과 압축 해제 프로그램에서 메모리를 엄
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz -vv --lzma2=dict=192MiB big_foo.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
-msgstr "CW<xz -vv --lzma2=dict=192MiB big_foo.tar>\n"
+msgstr "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3352,10 +3323,9 @@ msgstr "때로는 압축 시간이 딱히 상관이 없을 수도 있습니다�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --check=crc32 --lzma2=preset=6e,dict=64KiB foo>\n"
+#, no-wrap
 msgid "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
-msgstr "CW<xz --check=crc32 --lzma2=preset=6e,dict=64KiB foo>\n"
+msgstr "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3364,10 +3334,9 @@ msgstr "가능한 한 수 바이트를 더 쥐어 짜내고 싶을 때, 리터�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --lzma2=preset=6e,pb=0,lc=4 source_code.tar>\n"
+#, no-wrap
 msgid "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
-msgstr "CW<xz --lzma2=preset=6e,pb=0,lc=4 source_code.tar>\n"
+msgstr "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3376,10 +3345,9 @@ msgstr "LZMA2와 다른 필터를 함께 사용하면 일부 파일 형식에 �
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --x86 --lzma2 libfoo.so>\n"
+#, no-wrap
 msgid "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
-msgstr "CW<xz --x86 --lzma2 libfoo.so>\n"
+msgstr "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3398,10 +3366,9 @@ msgstr "예를 들어 이미지를 압축하지 않은 비압축 TIFF로 저장�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "CW<xz --delta=dist=3 --lzma2=pb=0 foo.tiff>\n"
+#, no-wrap
 msgid "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
-msgstr "CW<xz --delta=dist=3 --lzma2=pb=0 foo.tiff>\n"
+msgstr "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3424,12 +3391,12 @@ msgstr "B<xzdec>(1), B<xzdiff>(1), B<xzgrep>(1), B<xzless>(1), B<xzmore>(1), B<g
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "XZ Utils: E<lt>https://tukaani.org/xz/E<gt>"
-msgstr "XZ 유틸리티: E<lt>https://tukaani.org/xz-utils/E<gt>"
+msgstr "XZ 유틸리티: E<lt>https://tukaani.org/xz/E<gt>"
 
 #. type: Plain text
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1
 msgid "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
-msgstr "XZ 임베디드: E<lt>https://tukaani.org/xz/embedded/E<gt>"
+msgstr "XZ 임베디드: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3444,10 +3411,9 @@ msgstr "XZDEC"
 
 #. type: TH
 #: ../src/xzdec/xzdec.1
-#, fuzzy, no-wrap
-#| msgid "2024-02-25"
+#, no-wrap
 msgid "2024-04-08"
-msgstr "2024-02-25"
+msgstr "2024-04-08"
 
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
@@ -3911,7 +3877,7 @@ msgstr "B<PAGER>"
 #. type: Plain text
 #: ../src/scripts/xzmore.1
 msgid "If B<PAGER> is set, its value is used as the pager instead of B<more>(1)."
-msgstr "B<PAGER> 환경변수 값을 설정했다면 B<more>(1) 대신 해당 환경변수 값을 사용합니다."
+msgstr "B<PAGER> 환경변수 값을 설정했다면, B<more>(1) 대신 해당 환경변수 값을 화면 표시 프로그램으로 사용합니다."
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1

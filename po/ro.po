@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2025-01-23 12:05+0200\n"
-"PO-Revision-Date: 2025-01-24 14:24+0100\n"
+"PO-Revision-Date: 2025-01-31 17:31+0100\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -609,15 +609,15 @@ msgstr "Totaluri:"
 
 #: src/xz/list.c
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
-msgstr "--list funcționează numai pe fișierele .xz (--format=xz sau --format=auto)"
+msgstr "„--list” funcționează numai pe fișierele .xz („--format=xz” sau „--format=auto”)"
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
-msgstr "Încercați «lzmainfo» cu fișiere .lzma."
+msgstr "Încercați «lzmainfo» cu fișiere .lzma ."
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
-msgstr "--list nu acceptă citirea de la intrarea standard"
+msgstr "„--list” nu acceptă citirea de la intrarea standard"
 
 #: src/xz/main.c
 #, c-format
@@ -728,7 +728,7 @@ msgstr "Utilizare: %s [OPȚIUNE]... [FIȘIER]...\n"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "Compress or decompress FILEs in the .xz format."
-msgstr "Comprimă sau decomprimă FIȘIER(e) în formatul .xz."
+msgstr "Comprimă sau decomprimă FIȘIER(e) în formatul .xz ."
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1230,7 +1230,7 @@ msgstr "Utilizare: %s [--help] [--version] [FIȘIER]...\n"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
-msgstr "Afișează informațiile stocate în antetul fișierului .lzma."
+msgstr "Afișează informațiile stocate în antetul fișierului .lzma ."
 
 #: src/lzmainfo/lzmainfo.c
 msgid "File is too small to be a .lzma file"

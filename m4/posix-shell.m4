@@ -1,12 +1,13 @@
 dnl SPDX-License-Identifier: FSFULLR
 
+# posix-shell.m4
+# serial 1
+dnl Copyright (C) 2007-2024 Free Software Foundation, Inc.
+dnl This file is free software; the Free Software Foundation
+dnl gives unlimited permission to copy and/or distribute it,
+dnl with or without modifications, as long as this notice is preserved.
+
 # Find a POSIX-conforming shell.
-
-# Copyright (C) 2007-2008 Free Software Foundation, Inc.
-
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
 
 # Written by Paul Eggert.
 
@@ -19,22 +20,22 @@ AC_DEFUN([gl_POSIX_SHELL],
   AC_CACHE_CHECK([for a shell that conforms to POSIX], [gl_cv_posix_shell],
     [gl_test_posix_shell_script='
        func_return () {
-	 (exit [$]1)
+         (exit [$]1)
        }
        func_success () {
-	 func_return 0
+         func_return 0
        }
        func_failure () {
-	 func_return 1
+         func_return 1
        }
        func_ret_success () {
-	 return 0
+         return 0
        }
        func_ret_failure () {
-	 return 1
+         return 1
        }
        subshell_umask_sanity () {
-	 (umask 22; (umask 0); test $(umask) -eq 22)
+         (umask 22; (umask 0); test $(umask) -eq 22)
        }
        test "[$](echo foo)" = foo &&
        func_success &&
@@ -45,11 +46,11 @@ AC_DEFUN([gl_POSIX_SHELL],
        subshell_umask_sanity
      '
      for gl_cv_posix_shell in \
-	 "$CONFIG_SHELL" "$SHELL" /bin/sh /bin/bash /bin/ksh /bin/sh5 no; do
+         "$CONFIG_SHELL" "$SHELL" /bin/sh /bin/bash /bin/ksh /bin/sh5 no; do
        case $gl_cv_posix_shell in
          /*)
-	   "$gl_cv_posix_shell" -c "$gl_test_posix_shell_script" 2>/dev/null \
-	     && break;;
+           "$gl_cv_posix_shell" -c "$gl_test_posix_shell_script" 2>/dev/null \
+             && break;;
        esac
      done])
 

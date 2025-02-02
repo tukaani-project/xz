@@ -1235,8 +1235,9 @@ AS_CASE([$enable_sandbox],
 		]])], [
 			enable_sandbox=found
 
-			AS_CASE([$CFLAGS], [*-fsanitize=*], [AC_MSG_ERROR([
-    CFLAGS contains '-fsanitize=' which is incompatible with the Landlock
+			AS_CASE(["$CC $CFLAGS"], [*-fsanitize=*],
+				[AC_MSG_ERROR([
+    CC or CFLAGS contain '-fsanitize=' which is incompatible with the Landlock
     sandboxing. Use --disable-sandbox when using '-fsanitize'.])])
 
 			AC_DEFINE([HAVE_LINUX_LANDLOCK], [1],

@@ -5,10 +5,10 @@
 # Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020-2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.6.0-pre2\n"
+"Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-10 10:29+0200\n"
-"PO-Revision-Date: 2025-01-09 22:10+0100\n"
+"POT-Creation-Date: 2025-01-29 22:12+0200\n"
+"PO-Revision-Date: 2025-02-03 07:28+0100\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
@@ -55,7 +55,8 @@ msgstr "Само једну датотеку можете навести са �
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
 #. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
+#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
+#: src/xz/util.c
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -224,6 +225,16 @@ msgstr "%s: Не могу да поставим овлашћења датоте�
 
 #: src/xz/file_io.c
 #, c-format
+msgid "%s: Synchronizing the file failed: %s"
+msgstr "%s: Усклађивање датотеке није успело: %s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Synchronizing the directory of the file failed: %s"
+msgstr "%s: Усклађивање директоријума датотеке није успело: %s"
+
+#: src/xz/file_io.c
+#, c-format
 msgid "Error getting the file status flags from standard input: %s"
 msgstr "Грешка добављања заставица стања датотеке са стандардног улаза: %s"
 
@@ -270,6 +281,16 @@ msgstr "Грешка повраћаја заставица стања на ст�
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
 msgstr "Грешка добављања заставица стања датотеке са стандардног излаза: %s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Opening the directory failed: %s"
+msgstr "%s: Отварање директоријума није успело: %s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Destination is not a regular file"
+msgstr "%s: Одредиште није обична датотека"
 
 #: src/xz/file_io.c
 #, c-format
@@ -533,9 +554,8 @@ msgid "No"
 msgstr "Не"
 
 #: src/xz/list.c
-#, c-format
-msgid "  Minimum XZ Utils version: %s\n"
-msgstr "  Најмање издање XZ помагала: %s\n"
+msgid "Minimum XZ Utils version:"
+msgstr "Најмање издање XZ помагала:"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
@@ -590,7 +610,7 @@ msgstr "Не могу да читам податке са стандардног
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -651,428 +671,468 @@ msgstr "%s: Ланац филтера: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "Пробајте „%s --help“ за више података."
 
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#, c-format
+msgid "Error printing the help text (error code %d)"
+msgstr "Грешка исписивања текста помоћи (код грешке %d)"
+
 #: src/xz/message.c
 #, c-format
-msgid ""
-"Usage: %s [OPTION]... [FILE]...\n"
-"Compress or decompress FILEs in the .xz format.\n"
-"\n"
-msgstr ""
-"Коришћење: %s [ОПЦИЈА]... [ДАТОТЕКА]...\n"
-"Пакује или распакује ДАТОТЕКЕ у „.xz“ формату.\n"
-"\n"
+msgid "Usage: %s [OPTION]... [FILE]...\n"
+msgstr "Коришћење: %s [ОПЦИЈА]... [ДАТОТЕКА]...\n"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Compress or decompress FILEs in the .xz format."
+msgstr "Пакује или распакује ДАТОТЕКЕ у „.xz“ формату."
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Mandatory arguments to long options are mandatory for short options too."
+msgstr "Обавезни аргументи за дуге опције су такође обавезни и за кратке опције."
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Operation mode:"
+msgstr "Режим рада:"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "force compression"
+msgstr "приморава запакивање"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "force decompression"
+msgstr "приморава распакивање"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "test compressed file integrity"
+msgstr "испробава целовитост запаковане датотеке"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "list information about .xz files"
+msgstr "исписује информације о „.xz“ даттотекама"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Operation modifiers:"
+msgstr "Измењивачи рада:"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "keep (don't delete) input files"
+msgstr "задржава (не брише) улазне датотеке"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "force overwrite of output file and (de)compress links"
+msgstr "приморава преписивање излазне датотеке и (рас)пакује везе"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "write to standard output and don't delete input files"
+msgstr "пише на стандардни излаз и не брише улазне датотеке"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "don't synchronize the output file to the storage device before removing the input file"
+msgstr "не усклађује излазну датотеку са смештајним уређајем пре уклањања улазне датотеке"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "decompress only the first stream, and silently ignore possible remaining input data"
+msgstr "распакује само први ток, и тихо занемарује могуће преостале улазне податке"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "do not create sparse files when decompressing"
+msgstr "не ствара привидне датотеке када распакује"
 
 #: src/xz/message.c
-msgid "Mandatory arguments to long options are mandatory for short options too.\n"
-msgstr "Обавезни аргументи за дуге опције су такође обавезни и за кратке опције.\n"
+msgid ".SUF"
+msgstr ".SUF"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "use the suffix '.SUF' on compressed files"
+msgstr "користи суфикс „.SUF“ на запакованим датотекама"
 
 #: src/xz/message.c
-msgid " Operation mode:\n"
-msgstr " Режим рада:\n"
+msgid "FILE"
+msgstr "ДАТОТЕКА"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "read filenames to process from FILE; if FILE is omitted, filenames are read from the standard input; filenames must be terminated with the newline character"
+msgstr "чита називе датотека процесу из ДАТОТЕКА; ако је ДАТОТЕКА изостављено, називи датотека се читају са стандардног улаза; називи датотека се морају завршавати знаком новог реда"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "like --files but use the null character as terminator"
+msgstr "исто као „--files“ али користи знак ништице као окончавач"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Basic file format and compression options:"
+msgstr "Основне опције формата датотеке и запакивања:"
 
 #: src/xz/message.c
-msgid ""
-"  -z, --compress      force compression\n"
-"  -d, --decompress    force decompression\n"
-"  -t, --test          test compressed file integrity\n"
-"  -l, --list          list information about .xz files"
-msgstr ""
-"  -z, --compress            приморава запакивање\n"
-"  -d, --decompress          приморава распакивање\n"
-"  -t, --test                тестира целовитост запаковане датотеке\n"
-"  -l, --list                исписује податке о „.xz“ датотекама"
+msgid "FORMAT"
+msgstr "ФОРМАТ"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "file format to encode or decode; possible values are 'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'"
+msgstr "формат датотеке за шифровање или дешифровање; могуће вредности су „auto“ (основно), xz, lzma, lzip, и raw"
 
 #: src/xz/message.c
-msgid ""
-"\n"
-" Operation modifiers:\n"
-msgstr ""
-"\n"
-" Измењивачи рада:\n"
+msgid "NAME"
+msgstr "НАЗИВ"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "integrity check type: 'none' (use with caution), 'crc32', 'crc64' (default), or 'sha256'"
+msgstr "врста провере целовитости: „none“ (користите уз опрез), „crc32“, „crc64“ (основно), или „sha256“"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "don't verify the integrity check when decompressing"
+msgstr "не потврђује проверу целовитости приликом распакивања"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "compression preset; default is 6; take compressor *and* decompressor memory usage into account before using 7-9!"
+msgstr "претподешавање запакивања; основно је 6; узмите у обзир коришћење меморије запакивања *и* распакивања пре него ли употребите 7-9!"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "try to improve compression ratio by using more CPU time; does not affect decompressor memory requirements"
+msgstr "покушава да побољша однос запакивања користећи више времена процесора; не утиче на потребе меморије распакивача"
+
+#. TRANSLATORS: Short for NUMBER. A longer string is fine but
+#. wider than 5 columns makes --long-help a few lines longer.
+#: src/xz/message.c
+msgid "NUM"
+msgstr "БРОЈ"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "use at most NUM threads; the default is 0 which uses as many threads as there are processor cores"
+msgstr "користи највише БРОЈ нити; основно је 0 за коришћење онолико нити колико има језгара процесора"
 
 #: src/xz/message.c
-msgid ""
-"  -k, --keep          keep (don't delete) input files\n"
-"  -f, --force         force overwrite of output file and (de)compress links\n"
-"  -c, --stdout        write to standard output and don't delete input files"
-msgstr ""
-"  -k, --keep                задржава (не брише) улазне датотеке\n"
-"  -f, --force               приморава преписивање излазне датотеке и веза\n"
-"                            (рас)запакивања\n"
-"  -c, --stdout              пише на стандардни излаз и не брише улазне датотеке"
+msgid "SIZE"
+msgstr "ВЕЛИЧИНА"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "start a new .xz block after every SIZE bytes of input; use this to set the block size for threaded compression"
+msgstr "започиње нови „.xz“ блок након свака ВЕЛИЧИНА бајта улаза; користите ово да поставите величину блока за нитирано запакивање"
 
 #: src/xz/message.c
-msgid ""
-"      --single-stream decompress only the first stream, and silently\n"
-"                      ignore possible remaining input data"
-msgstr ""
-"      --single-stream       распакује само први ток, и тихо\n"
-"                            занемарује могуће преостале улазне податке"
+msgid "BLOCKS"
+msgstr "БЛОКОВИ"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "start a new .xz block after the given comma-separated intervals of uncompressed data; optionally, specify a filter chain number (0-9) followed by a ':' before the uncompressed data size"
+msgstr "започиње нови „.xz“ блок након датих зарезом одвојених интервала несажетих података; изборно, наводи број ланца филтера (0-9) за којим следе „:“ пре величине несажетих података"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "when compressing, if more than NUM milliseconds has passed since the previous flush and reading more input would block, all pending data is flushed out"
+msgstr "приликом запакивања, ако је прошло више од ВРЕМЕ_ИСТЕКА милисекунди до претходног убацивања и читања још улаза блокираће, сви подаци на чекању се истискују ван"
 
 #: src/xz/message.c
-msgid ""
-"      --no-sparse     do not create sparse files when decompressing\n"
-"  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
-"      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-"                      omitted, filenames are read from the standard input;\n"
-"                      filenames must be terminated with the newline character\n"
-"      --files0[=FILE] like --files but use the null character as terminator"
-msgstr ""
-"      --no-sparse           не ствара оскудне датотеке приликом распакивања\n"
-"  -S, --suffix=.СУФ         користи суфикс „.СУФ“ на запакованим датотекама\n"
-"      --files[=ДТТКА]       чита називе датотека за обраду из ДАТОТЕКЕ; ако је\n"
-"                            ДАТОТЕКА изостављено, називи датотека се читају са\n"
-"                            стандардног улаза; називи датотека се морају\n"
-"                            завршавати знаком новог реда\n"
-"      --files0[=ДТТКА]      као „--files“ али користи празан знак као завршни"
+msgid "LIMIT"
+msgstr "ОГРАНИЧЕЊЕ"
 
-#: src/xz/message.c
-msgid ""
-"\n"
-" Basic file format and compression options:\n"
-msgstr ""
-"\n"
-" Основне опције формата датотеке и запакивања:\n"
-
-#: src/xz/message.c
-msgid ""
-"  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
-"  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
-"                      'crc32', 'crc64' (default), or 'sha256'"
-msgstr ""
-"  -F, --format=ФМТ          формат датотеке за кодирање и декодирање; могуће\n"
-"                            вредности су „auto“ (основно), „xz“, „lzma“,\n"
-"                            „lzip“ и „raw“\n"
-"  -C, --check=ПРОВЕРА       врста провере целовитости: „none“ (користите уз\n"
-"                            опрез), „crc32“, „crc64“ (основно), или „sha256“"
-
-#: src/xz/message.c
-msgid "      --ignore-check  don't verify the integrity check when decompressing"
-msgstr ""
-"      --ignore-check        не потврђује проверу целовитости приликом\n"
-"                            распакивања"
-
-#: src/xz/message.c
-msgid ""
-"  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
-"                      decompressor memory usage into account before using 7-9!"
-msgstr ""
-"  -0 ... -9                 претподешавање запакивања; основно је 6; узмите у\n"
-"                            обзир коришћење меморије запакивања *и* распакивања\n"
-"                            пре него ли употребите 7-9!"
-
-#: src/xz/message.c
-msgid ""
-"  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
-"                      does not affect decompressor memory requirements"
-msgstr ""
-"  -e, --extreme             покушава да побољша однос запакивања користећи више\n"
-"                            времена процесора; не утиче на потребе меморије\n"
-"                            распакивача"
-
-#: src/xz/message.c
-msgid ""
-"  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
-"                      as many threads as there are processor cores"
-msgstr ""
-"  -T, --threads=БР          користи највише БР нити; основно је 0 за\n"
-"                            коришћење онолико нити колико има језгара процесора"
-
-#: src/xz/message.c
-msgid ""
-"      --block-size=SIZE\n"
-"                      start a new .xz block after every SIZE bytes of input;\n"
-"                      use this to set the block size for threaded compression"
-msgstr ""
-"      --block-size=ВЕЛИЧИНА\n"
-"                            започиње нови „.xz“ блок након свака ВЕЛИЧИНА\n"
-"                            бајта улаза; користите ово да поставите величину\n"
-"                            блока за нитирано запакивање"
-
-#: src/xz/message.c
-msgid ""
-"      --block-list=BLOCKS\n"
-"                      start a new .xz block after the given comma-separated\n"
-"                      intervals of uncompressed data; optionally, specify a\n"
-"                      filter chain number (0-9) followed by a ':' before the\n"
-"                      uncompressed data size"
-msgstr ""
-"      --block-list=БЛОКОВИ\n"
-"                            започиње нови „.xz“ блок након датих зарезом\n"
-"                            одвојених интервала несажетих података; изборно,\n"
-"                            наводи број ланца филтера (0-9) за којим следи „:“\n"
-"                            пре величине несажетих података"
-
-#: src/xz/message.c
-msgid ""
-"      --flush-timeout=TIMEOUT\n"
-"                      when compressing, if more than TIMEOUT milliseconds has\n"
-"                      passed since the previous flush and reading more input\n"
-"                      would block, all pending data is flushed out"
-msgstr ""
-"      --flush-timeout=ВРЕМЕ_ИСТЕКА\n"
-"                            приликом запакивања, ако је прошло више од\n"
-"                            ВРЕМЕ_ИСТЕКА милисекунди до претходног убацивања и\n"
-"                            читања још улаза блокираће, сви подаци на чекању се\n"
-"                            истискују ван"
-
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 #, no-c-format
-msgid ""
-"      --memlimit-compress=LIMIT\n"
-"      --memlimit-decompress=LIMIT\n"
-"      --memlimit-mt-decompress=LIMIT\n"
-"  -M, --memlimit=LIMIT\n"
-"                      set memory usage limit for compression, decompression,\n"
-"                      threaded decompression, or all of these; LIMIT is in\n"
-"                      bytes, % of RAM, or 0 for defaults"
-msgstr ""
-"      --memlimit-compress=ОГРАНИЧЕЊЕ\n"
-"      --memlimit-decompress=ОГРАНИЧЕЊЕ\n"
-"  -M, --memlimit=ОГРАНИЧЕЊЕ\n"
-"                            поставља ограничење коришћења меморије за\n"
-"                            запакивање, распакивање, нитно распакивање или све\n"
-"                            од тога; ОГРАНИЧЕЊЕ је у бајтовима, % РАМ-а, или 0\n"
-"                            за основно"
+msgid "set memory usage limit for compression, decompression, threaded decompression, or all of these; LIMIT is in bytes, % of RAM, or 0 for defaults"
+msgstr "поставља ограничење коришћења меморије за запакивање, распакивање, распакивање нити или за све ово; ОГРАНИЧЕЊЕ је у бајтовима, % РАМ-а или 0 за основно"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "if compression settings exceed the memory usage limit, give an error instead of adjusting the settings downwards"
+msgstr "ако подешавања запакивања пређу ограничење коришћења меморије, даје грешку уместо дотеривања подешавања"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Custom filter chain for compression (an alternative to using presets):"
+msgstr "Произвољни ланац филтера за запакивање (алтернатива за коришћење предподешавања):"
 
 #: src/xz/message.c
-msgid ""
-"      --no-adjust     if compression settings exceed the memory usage limit,\n"
-"                      give an error instead of adjusting the settings downwards"
-msgstr ""
-"      --no-adjust           ако подешавања запакивања пређу ограничење\n"
-"                            коришћења меморије, даје грешку уместо дотеривања\n"
-"                            подешавања"
+msgid "FILTERS"
+msgstr "ФИЛТЕРИ"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "set the filter chain using the liblzma filter string syntax; use --filters-help for more information"
+msgstr "поставља ланац филтера користећи синтаксу ниске „liblzma“ филтера; користите „--filters-help“ за више информација"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "set additional filter chains using the liblzma filter string syntax to use with --block-list"
+msgstr "поставља додатне ланце филтера користећи синтаксу ниске „liblzma“ филтера за коришћење са „--block-list“"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display more information about the liblzma filter string syntax and exit"
+msgstr "приказује више информација о синтакси ниске „liblzma“ филтера и излази"
+
+#. TRANSLATORS: Short for OPTIONS.
+#: src/xz/message.c
+msgid "OPTS"
+msgstr "ОПЦИЈЕ"
+
+#. TRANSLATORS: Use semicolon (or its fullwidth form)
+#. in "(valid values; default)" even if it is weird in
+#. your language. There are non-translatable strings
+#. that look like "(foo, bar, baz; foo)" which list
+#. the supported values and the default value.
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
+msgstr "LZMA1 или LZMA2; ОПЦИЈЕ је зарезом раздвојен списак нула или више следећих опција (исправне вредности; основно):"
+
+#. TRANSLATORS: Short for PRESET. A longer string is
+#. fine but wider than 4 columns makes --long-help
+#. one line longer.
+#: src/xz/message.c
+msgid "PRE"
+msgstr "ПРЕ"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "reset options to a preset"
+msgstr "враћа опције на предподешеност"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "dictionary size"
+msgstr "величина речника"
+
+#. TRANSLATORS: The word "literal" in "literal context
+#. bits" means how many "context bits" to use when
+#. encoding literals. A literal is a single 8-bit
+#. byte. It doesn't mean "literally" here.
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "number of literal context bits"
+msgstr "број битова контекста литерала"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "number of literal position bits"
+msgstr "број битова положаја литерала"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "number of position bits"
+msgstr "број битова положаја"
 
 #: src/xz/message.c
-msgid ""
-"\n"
-" Custom filter chain for compression (alternative for using presets):"
-msgstr ""
-"\n"
-" Произвољни ланац филтера за запакивање (алтернатива за коришћење\n"
-" претподешавања):"
+msgid "MODE"
+msgstr "РЕЖИМ"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
-"                      syntax; use --filters-help for more information"
-msgstr ""
-"\n"
-"  --filters=ФИЛТЕРИ   поставља ланац филтера користећи синтаксу ниске „liblzma“\n"
-"                      филтера; користите „--filters-help“ за више информација"
+msgid "compression mode"
+msgstr "режим запакивања"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  --filters1=FILTERS ... --filters9=FILTERS\n"
-"                      set additional filter chains using the liblzma filter\n"
-"                      string syntax to use with --block-list"
-msgstr ""
-"  --filters1=ФИЛТЕРИ ... --filters9=ФИЛТЕРИ\n"
-"                      поставља додатне ланце филтера користећи синтаксу ниске\n"
-"                      „liblzma“ филтера за коришћење са „--block-list“"
+msgid "nice length of a match"
+msgstr "фина дужина поклапања"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  --filters-help      display more information about the liblzma filter string\n"
-"                      syntax and exit."
-msgstr ""
-"  --filters-help      приказује више информација о синтакси ниске „liblzma“\n"
-"                      филтера и излази."
+msgid "match finder"
+msgstr "поклапа налазача"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
-"  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
-"                        preset=PRE reset options to a preset (0-9[e])\n"
-"                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
-"                        lc=NUM     number of literal context bits (0-4; 3)\n"
-"                        lp=NUM     number of literal position bits (0-4; 0)\n"
-"                        pb=NUM     number of position bits (0-4; 2)\n"
-"                        mode=MODE  compression mode (fast, normal; normal)\n"
-"                        nice=NUM   nice length of a match (2-273; 64)\n"
-"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
-"                        depth=NUM  maximum search depth; 0=automatic (default)"
-msgstr ""
-"\n"
-"  --lzma1[=ОПЦИЈЕ]    LZMA1 или LZMA2; ОПЦИЈЕ је зарезом раздвојен списак\n"
-"  --lzma2[=ОПЦИЈЕ]    нула или више од пратећих опција (исправне вредности;\n"
-"                      основно):\n"
-"                        preset=ПРЕ    враћа опције на претподешавање (0-9[e])\n"
-"                        dict=БРОЈ     величина речника (4KiB – 1536MiB; 8MiB)\n"
-"                        lc=БРОЈ       број битова дословног контекста (0-4; 3)\n"
-"                        lp=БРОЈ       број битова дословног положаја (0-4; 0)\n"
-"                        pb=БРОЈ       број битова положаја (0-4; 2)\n"
-"                        mode=РЕЖИМ    режим запакивања (брзо, обично; обично)\n"
-"                        nice=БРОЈ     фина дужина поклапања (2-273; 64)\n"
-"                        mf=НАЗИВ      налазач поклапања (hc3, hc4, bt2, bt3,\n"
-"                                      bt4; bt4)\n"
-"                        depth=БРОЈ    највећа дубина тражења; 0=самостално\n"
-"                                      (основно)"
+msgid "maximum search depth; 0=automatic (default)"
+msgstr "највећа дубина претраге; 0=аутоматски (основно)"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-"  --arm[=OPTS]        ARM BCJ filter\n"
-"  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-"  --arm64[=OPTS]      ARM64 BCJ filter\n"
-"  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-"  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-"  --sparc[=OPTS]      SPARC BCJ filter\n"
-"  --riscv[=OPTS]      RISC-V BCJ filter\n"
-"                      Valid OPTS for all BCJ filters:\n"
-"                        start=NUM  start offset for conversions (default=0)"
-msgstr ""
-"\n"
-"  --x86[=ОПЦИЈЕ]      x86 BCJ филтер (32-бита и 64-бита)\n"
-"  --arm[=ОПЦИЈЕ]      ARM BCJ филтер\n"
-"  --armthumb[=ОПЦИЈЕ] ARM-Thumb BCJ филтер\n"
-"  --arm64[=ОПЦИЈЕ]    ARM64 BCJ филтер\n"
-"  --powerpc[=ОПЦИЈЕ]  PowerPC BCJ филтер (big endian only)\n"
-"  --ia64[=ОПЦИЈЕ]     IA-64 (Itanium) BCJ филтер\n"
-"  --sparc[=ОПЦИЈЕ]    SPARC BCJ филтер\n"
-"  --riscv[=ОПЦИЈЕ]    RISC-V BCJ филтер\n"
-"                      Исправне ОПЦИЈЕ за све „BCJ“ филтере:\n"
-"                        start=БРОЈ  померај почетка за претварања (основно=0)"
+msgid "x86 BCJ filter (32-bit and 64-bit)"
+msgstr "x86 BCJ филтер (32-бита и 64-бита)"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
-"                        dist=NUM   distance between bytes being subtracted\n"
-"                                   from each other (1-256; 1)"
-msgstr ""
-"\n"
-"  --delta[=ОПЦИЈЕ]    Делта филтер; исправне ОПЦИЈЕ (исправне вредности;\n"
-"                      основно):\n"
-"                        dist=БРОЈ   растојање између бајтова који су одузети\n"
-"                                    из свих других (1-256; 1)"
+msgid "ARM BCJ filter"
+msgstr "ARM BCJ филтер"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-" Other options:\n"
-msgstr ""
-"\n"
-" Остале опције:\n"
+msgid "ARM-Thumb BCJ filter"
+msgstr "ARM-Thumb BCJ филтер"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
-"  -v, --verbose       be verbose; specify twice for even more verbose"
-msgstr ""
-"  -q, --quiet               потискује упозорења; наведите два пута да потисне и\n"
-"                            грешке такође\n"
-"  -v, --verbose             бива опширан; наведите два пута за још опширније"
+msgid "ARM64 BCJ filter"
+msgstr "ARM64 BCJ филтер"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid "  -Q, --no-warn       make warnings not affect the exit status"
-msgstr "  -Q, --no-warn             чини да упозорења не делују на стање излаза"
+msgid "PowerPC BCJ filter (big endian only)"
+msgstr "PowerPC BCJ филтер (само велика крајност)"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid "      --robot         use machine-parsable messages (useful for scripts)"
-msgstr ""
-"      --robot               користи поруке обрадиве рачунаром (корисно за\n"
-"                            скрипте)"
+msgid "IA-64 (Itanium) BCJ filter"
+msgstr "IA-64 (Itanium) BCJ филтер"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"      --info-memory   display the total amount of RAM and the currently active\n"
-"                      memory usage limits, and exit"
-msgstr ""
-"      --info-memory         приказује укупан износ РАМ-а и тренутно активна\n"
-"                            ограничења коришћења меморије, и излази"
+msgid "SPARC BCJ filter"
+msgstr "SPARC BCJ филтер"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  -h, --help          display the short help (lists only the basic options)\n"
-"  -H, --long-help     display this long help and exit"
-msgstr ""
-"  -h, --help                приказује кратку помоћ (исписује само основне\n"
-"                            опције)\n"
-"  -H, --long-help           приказује ову дугу помоћ и излази"
+msgid "RISC-V BCJ filter"
+msgstr "RISC-V BCJ филтер"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  -h, --help          display this short help and exit\n"
-"  -H, --long-help     display the long help (lists also the advanced options)"
-msgstr ""
-"  -h, --help                приказује ову кратку помоћ и излази\n"
-"  -H, --long-help           приказује дугу помоћ (исписује такође и напредне\n"
-"                            опције)"
+msgid "Valid OPTS for all BCJ filters:"
+msgstr "Исправне ОПЦИЈЕ за све BCJ филтере:"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid "  -V, --version       display the version number and exit"
-msgstr "  -V, --version             приказује број издања и излази"
+msgid "start offset for conversions (default=0)"
+msgstr "померај почетка за претварање (основно=0)"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Delta filter; valid OPTS (valid values; default):"
+msgstr "Делта филтер; исправне ОПЦИЈЕ (исправне вредности; основно):"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "distance between bytes being subtracted from each other"
+msgstr "растојање између бајтова који су одузети један од другог"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Other options:"
+msgstr "Остале опције:"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "suppress warnings; specify twice to suppress errors too"
+msgstr "потискује упозорења; наведите два пута да би потискивао и грешке"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "be verbose; specify twice for even more verbose"
+msgstr "бива опширан; наведите два пута за још више опширности"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "make warnings not affect the exit status"
+msgstr "чини да упозорења не делују на стање излаза"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "use machine-parsable messages (useful for scripts)"
+msgstr "користи поруке обрадиве рачунаром (корисно за скрипте)"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the total amount of RAM and the currently active memory usage limits, and exit"
+msgstr "приказује укупан износ РАМ-а и тренутно ограничење коришћења активне меморије, и излази"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the short help (lists only the basic options)"
+msgstr "приказује кратку помоћ (исписује само основне опције)"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display this long help and exit"
+msgstr "приказује ову опширну помоћ и излази"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display this short help and exit"
+msgstr "приказује ову кратку помоћ и излази"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the long help (lists also the advanced options)"
+msgstr "приказује дугу помоћ (исписује такође и напредне опције)"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the version number and exit"
+msgstr "приказује број издања и излази"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+msgid "With no FILE, or when FILE is -, read standard input."
+msgstr "Без ДАТОТЕКЕ, или када је ДАТОТЕКА -, чита стандардни улаз."
+
+#. TRANSLATORS: This message indicates the bug reporting
+#. address for this package. Please add another line saying
+#. "\nReport translation bugs to <...>." with the email or WWW
+#. address for translation bugs. Thanks!
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
-msgid ""
-"\n"
-"With no FILE, or when FILE is -, read standard input.\n"
-msgstr ""
-"\n"
-"Без ДАТОТЕКЕ, или када је ДАТОТЕКА -, чита стандардни улаз.\n"
+msgid "Report bugs to <%s> (in English or Finnish)."
+msgstr "Грешке пријавите на <%s> (на енглеском или финском)."
 
-#. TRANSLATORS: This message indicates the bug reporting address
-#. for this package. Please add _another line_ saying
-#. "Report translation bugs to <...>\n" with the email or WWW
-#. address for translation bugs. Thanks.
+#. TRANSLATORS: The first %s is the name of this software.
+#. The second <%s> is an URL.
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
-msgid "Report bugs to <%s> (in English or Finnish).\n"
-msgstr "Грешке пријавите на <%s> (на енглеском или финском).\n"
+msgid "%s home page: <%s>"
+msgstr "„%s“ матична страница: <%s>"
 
-#: src/xz/message.c src/lzmainfo/lzmainfo.c
-#, c-format
-msgid "%s home page: <%s>\n"
-msgstr "„%s“ матична страница: <%s>\n"
-
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
 msgstr "ОВО ЈЕ РАЗВОЈНО ИЗДАЊЕ И НИЈЕ НАМЕЊЕНО ЗА ПРОФЕСИОНАЛНУ УПОТРЕБУ."
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"Filter chains are set using the --filters=FILTERS or\n"
-"--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
-"can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
-"specified instead of a filter chain.\n"
-msgstr ""
-"Ланци филтера су постављени са опцијама „--filters=ФИЛТЕРИ“ или\n"
-"„--filters1=ФИЛТЕРИ“ ... „--filters9=ФИЛТЕРИ“. Сваки филтер у ланцу\n"
-"се може одвојити размацима или „--“. Или предподешеност <0-9>[e] се\n"
-"може навести уместо ланца филтера.\n"
+#, c-format
+msgid "Filter chains are set using the --filters=FILTERS or --filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain can be separated by spaces or '--'. Alternatively a preset %s can be specified instead of a filter chain."
+msgstr "Ланци филтера су постављени са опцијама „--filters=ФИЛТЕРИ“ или „--filters1=ФИЛТЕРИ“ ... „--filters9=ФИЛТЕРИ“. Сваки филтер у ланцу се може одвојити размацима или „--“. Или предподешеност „%s“ се може навести уместо ланца филтера."
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "The supported filters and their options are:"
 msgstr "Подржани филтери и њихове опције су:"
 
-#: src/xz/options.c
-#, c-format
-msgid "%s: Options must be 'name=value' pairs separated with commas"
-msgstr "%s: Опције морају бити парови „назив=вредност“ раздвојени зарезима"
+#: src/xz/options.c src/liblzma/common/string_conversion.c
+msgid "Options must be 'name=value' pairs separated with commas"
+msgstr "Опције морају бити парови „назив=вредност“ раздвојени зарезима"
 
 #: src/xz/options.c
 #, c-format
 msgid "%s: Invalid option name"
 msgstr "%s: Неисправан назив опције"
 
-#: src/xz/options.c
-#, c-format
-msgid "%s: Invalid option value"
-msgstr "%s: Неисправна вредност опције"
+#: src/xz/options.c src/liblzma/common/string_conversion.c
+msgid "Invalid option value"
+msgstr "Неисправна вредност опције"
 
 #: src/xz/options.c
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
 msgstr "Неподржано претподешавање „LZMA1/LZMA2“: %s"
 
-#: src/xz/options.c
+#: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
 msgstr "Збир „lc“ и „lp“ не сме премашити 4"
 
@@ -1091,10 +1151,9 @@ msgstr "%s: Датотека већ има суфикс „%s“, прескач
 msgid "%s: Invalid filename suffix"
 msgstr "%s: Неисправан суфикс назива датотеке"
 
-#: src/xz/util.c
-#, c-format
-msgid "%s: Value is not a non-negative decimal integer"
-msgstr "%s: Вредност није не-негативан децимални цео број"
+#: src/xz/util.c src/liblzma/common/string_conversion.c
+msgid "Value is not a non-negative decimal integer"
+msgstr "Вредност није не-негативан децимални цео број"
 
 #: src/xz/util.c
 #, c-format
@@ -1120,12 +1179,13 @@ msgstr "Запаковани подаци се не могу писати на �
 
 #: src/lzmainfo/lzmainfo.c
 #, c-format
-msgid ""
-"Usage: %s [--help] [--version] [FILE]...\n"
-"Show information stored in the .lzma file header"
-msgstr ""
-"Коришћење: %s [--help] [--version] [ДАТОТЕКА]...\n"
-"Приказује информације смештене у заглављу „.lzma“ датотеке"
+msgid "Usage: %s [--help] [--version] [FILE]...\n"
+msgstr "Коришћење: %s [--help] [--version] [ДАТОТЕКА]...\n"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/lzmainfo/lzmainfo.c
+msgid "Show information stored in the .lzma file header."
+msgstr "Приказује информације смештене у заглављу „.lzma“ датотеке."
 
 #: src/lzmainfo/lzmainfo.c
 msgid "File is too small to be a .lzma file"
@@ -1143,11 +1203,62 @@ msgstr "Писање на стандардни излаз није успело"
 msgid "Unknown error"
 msgstr "Непозната грешка"
 
-#~ msgid "Failed to enable the sandbox"
-#~ msgstr "Нисам успео да укључим безбедно окружење"
+#: src/liblzma/common/string_conversion.c
+msgid "Unsupported preset"
+msgstr "Неподржано предподешавање"
 
-#~ msgid "Sandbox is disabled due to incompatible command line arguments"
-#~ msgstr "Безбедно окружење је искључено услед несагласних аргумената линије наредби"
+#: src/liblzma/common/string_conversion.c
+msgid "Unsupported flag in the preset"
+msgstr "Неподржана заставица у предподешавању"
 
-#~ msgid "Sandbox was successfully enabled"
-#~ msgstr "Безбедно окружење је успешно укључено"
+#: src/liblzma/common/string_conversion.c
+msgid "Unknown option name"
+msgstr "Непознат назив опције"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Option value cannot be empty"
+msgstr "Вредност опције не може бити празна"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Value out of range"
+msgstr "Вредност је ван опсега"
+
+#: src/liblzma/common/string_conversion.c
+msgid "This option does not support any multiplier suffixes"
+msgstr "Ова опција не подржава никакве суфиксе умножавача"
+
+#. TRANSLATORS: Don't translate the
+#. suffixes "KiB", "MiB", or "GiB"
+#. because a user can only specify
+#. untranslated suffixes.
+#: src/liblzma/common/string_conversion.c
+msgid "Invalid multiplier suffix (KiB, MiB, or GiB)"
+msgstr "Неисправан суфикс умножавача (KiB, MiB, или GiB)"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Unknown filter name"
+msgstr "Непознат назив филтера"
+
+#: src/liblzma/common/string_conversion.c
+msgid "This filter cannot be used in the .xz format"
+msgstr "Филтер се не може користити у „.xz“ формату"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Memory allocation failed"
+msgstr "Додела меморије није успела"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Empty string is not allowed, try '6' if a default value is needed"
+msgstr "Празна ниска није дозвољена, пробајте 6 ако је основна вредност потребна"
+
+#: src/liblzma/common/string_conversion.c
+msgid "The maximum number of filters is four"
+msgstr "Највећи број филтера је четири"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Filter name is missing"
+msgstr "Недостаје назив филтера"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Invalid filter chain ('lzma2' missing at the end?)"
+msgstr "Неисправан ланац филтера („lzma2“ недостаје на крају?)"

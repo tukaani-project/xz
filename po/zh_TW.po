@@ -6,10 +6,10 @@
 # Yi-Jyun Pan <pan93412@gmail.com>, 2019, 2023, 2024
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.6.0-pre2\n"
+"Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2024-09-02 19:19+0300\n"
-"PO-Revision-Date: 2024-11-30 13:55+0800\n"
+"POT-Creation-Date: 2025-01-23 12:05+0200\n"
+"PO-Revision-Date: 2025-02-02 00:12+0800\n"
 "Last-Translator: Yi-Jyun Pan <pan93412@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@lists.slat.org>\n"
 "Language: zh_TW\n"
@@ -34,7 +34,7 @@ msgstr "%s：傳入 --block-list 的參數過多"
 #: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr "在 --block-list 中，過濾器串鏈編號「%c:」後方遺漏區塊大小"
+msgstr "在 --block-list 中，編號「%c:」後方遺漏區塊大小"
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
@@ -57,7 +57,8 @@ msgstr "「--files」或「--files0」只能指定一個檔案。"
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
 #. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c
+#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
+#: src/xz/util.c
 #, c-format
 msgid "%s: %s"
 msgstr "%s：%s"
@@ -103,7 +104,7 @@ msgstr "記憶體用量限制過低，不足以設定指定的過濾器。"
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr "--block-list 使用了過濾器串鏈 %u，但未使用 --filters%u= 指定"
+msgstr "--block-list 使用了 %u，但未使用 --filters%u= 指定"
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -124,7 +125,7 @@ msgstr "LZMA1 不能與 .xz 格式一同使用"
 #: src/xz/coder.c
 #, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "過濾器串鏈 %u 與 --flush-timeout 不相容"
+msgstr "過濾鏈 %u 與 --flush-timeout 不相容"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
@@ -133,7 +134,7 @@ msgstr "因指定 --flush-timeout，因此切換到單執行緒模式"
 #: src/xz/coder.c
 #, c-format
 msgid "Unsupported options in filter chain %u"
-msgstr "過濾器串鏈 %u 不支援此選項"
+msgstr "過濾鏈 %u 不支援此選項"
 
 #: src/xz/coder.c
 #, c-format
@@ -142,7 +143,7 @@ msgstr "使用最多 %<PRIu32> 個執行緒。"
 
 #: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
-msgstr "不支援的過濾器串鏈或過濾器選項"
+msgstr "不支援的或過濾器選項"
 
 #: src/xz/coder.c
 #, c-format
@@ -177,7 +178,7 @@ msgstr "已將 --filters%2$u 的 LZMA%1$c 字典大小，將 %3$s MiB 調整為 
 #: src/xz/coder.c
 #, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "變更為過濾器串鏈 %u 時發生錯誤：%s"
+msgstr "變更為 %u 時發生錯誤：%s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -223,6 +224,16 @@ msgstr "%s：無法設定檔案群組：%s"
 #, c-format
 msgid "%s: Cannot set the file permissions: %s"
 msgstr "%s：無法設定檔案權限：%s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Synchronizing the file failed: %s"
+msgstr "%s：同步檔案失敗：%s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Synchronizing the directory of the file failed: %s"
+msgstr "%s：同步檔案目錄失敗：%s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -272,6 +283,16 @@ msgstr "將狀態旗標還原到標準輸入時發生錯誤：%s"
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
 msgstr "從標準輸出取得檔案狀態旗標時發生錯誤：%s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Opening the directory failed: %s"
+msgstr "%s：開啟目錄失敗：%s"
+
+#: src/xz/file_io.c
+#, c-format
+msgid "%s: Destination is not a regular file"
+msgstr "%s：目的地不是一般檔案"
 
 #: src/xz/file_io.c
 #, c-format
@@ -430,7 +451,7 @@ msgstr "檢查值"
 
 #: src/xz/list.c
 msgid "Padding"
-msgstr "填充"
+msgstr "補空"
 
 #: src/xz/list.c
 msgid "Header"
@@ -535,9 +556,8 @@ msgid "No"
 msgstr "否"
 
 #: src/xz/list.c
-#, c-format
-msgid "  Minimum XZ Utils version: %s\n"
-msgstr "  最小 XZ 工具程式版本: %s\n"
+msgid "Minimum XZ Utils version:"
+msgstr "最小 XZ 工具程式版本："
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
@@ -590,7 +610,7 @@ msgstr "從標準輸入讀取檔名時，無法從標準輸入讀取資料"
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s："
@@ -644,412 +664,478 @@ msgstr "需要 %s MiB 的記憶體。記憶體限制為 %s。"
 #: src/xz/message.c
 #, c-format
 msgid "%s: Filter chain: %s\n"
-msgstr "%s：過濾器串鏈：%s\n"
+msgstr "%s：過濾鏈：%s\n"
 
 #: src/xz/message.c
 #, c-format
 msgid "Try '%s --help' for more information."
 msgstr "嘗試「%s --help」取得更多資訊。"
 
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#, c-format
+msgid "Error printing the help text (error code %d)"
+msgstr "輸出說明文字時發生錯誤（錯誤碼 %d）"
+
 #: src/xz/message.c
 #, c-format
-msgid ""
-"Usage: %s [OPTION]... [FILE]...\n"
-"Compress or decompress FILEs in the .xz format.\n"
-"\n"
-msgstr ""
-"用法：%s [選項]... [檔案]...\n"
-"用 .xz 格式壓縮，或解壓縮 .xz 格式中的 <檔案>。\n"
-"\n"
+msgid "Usage: %s [OPTION]... [FILE]...\n"
+msgstr "用法：%s [OPTION]... [FILE]...\n"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Compress or decompress FILEs in the .xz format."
+msgstr "用 .xz 格式壓縮，或解壓縮 .xz 格式中的 <檔案>。"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Mandatory arguments to long options are mandatory for short options too."
+msgstr "長選項的必填引數，對短選項也是必填。"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Operation mode:"
+msgstr "操作模式："
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "force compression"
+msgstr "強制壓縮"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "force decompression"
+msgstr "強制解壓縮"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "test compressed file integrity"
+msgstr "測試壓縮後檔案的完整性"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "list information about .xz files"
+msgstr "列出更多 .xz 檔案的資訊"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Operation modifiers:"
+msgstr "操作修飾元："
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "keep (don't delete) input files"
+msgstr "保留（不要刪除）輸入檔案"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "force overwrite of output file and (de)compress links"
+msgstr "強制覆蓋輸出檔案並壓縮/解壓縮連結"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "write to standard output and don't delete input files"
+msgstr "輸出到標準輸出，且不刪除輸入檔案"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "don't synchronize the output file to the storage device before removing the input file"
+msgstr "移除輸入檔案前，不要將輸出檔案同步至儲存裝置"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "decompress only the first stream, and silently ignore possible remaining input data"
+msgstr "僅解壓縮第一個串流，再安靜地忽略可能剩餘的輸入資料"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "do not create sparse files when decompressing"
+msgstr "不要在解壓縮時建立稀疏檔案"
 
 #: src/xz/message.c
-msgid "Mandatory arguments to long options are mandatory for short options too.\n"
-msgstr "長選項的必填參數，對短選項也是必填。\n"
+msgid ".SUF"
+msgstr ".SUF"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "use the suffix '.SUF' on compressed files"
+msgstr "在壓縮後的檔案加入「.SUF」後綴"
 
 #: src/xz/message.c
-msgid " Operation mode:\n"
-msgstr " 操作模式：\n"
+msgid "FILE"
+msgstr "FILE"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "read filenames to process from FILE; if FILE is omitted, filenames are read from the standard input; filenames must be terminated with the newline character"
+msgstr "從 FILE 讀取要處理的檔案名稱，若未指定 FILE，\t則從標準輸入讀取檔案名稱。檔案名稱必須以換行字元結尾"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "like --files but use the null character as terminator"
+msgstr "類似 --files 但使用 null 字元作為終止字元"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Basic file format and compression options:"
+msgstr "基本檔案格式與壓縮選項："
 
 #: src/xz/message.c
-msgid ""
-"  -z, --compress      force compression\n"
-"  -d, --decompress    force decompression\n"
-"  -t, --test          test compressed file integrity\n"
-"  -l, --list          list information about .xz files"
-msgstr ""
-"  -z, --compress      強制壓縮\n"
-"  -d, --decompress    強制解壓縮\n"
-"  -t, --test          測試壓縮檔完整性\n"
-"  -l, --list          列出 .xz 檔的資訊"
+msgid "FORMAT"
+msgstr "FORMAT"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "file format to encode or decode; possible values are 'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'"
+msgstr "要編解碼的檔案格式，可以輸入的值有「auto」（預設值）、\t「xz」、「lzma」、「lzip」和「raw」"
 
 #: src/xz/message.c
-msgid ""
-"\n"
-" Operation modifiers:\n"
-msgstr ""
-"\n"
-" 操作修飾詞：\n"
+msgid "NAME"
+msgstr "NAME"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "integrity check type: 'none' (use with caution), 'crc32', 'crc64' (default), or 'sha256'"
+msgstr "完整性檢查類型：「none」（小心使用）、「crc32」、\t「crc64」（預設值）或「sha256」"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "don't verify the integrity check when decompressing"
+msgstr "解壓縮時不進行完整性檢查"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "compression preset; default is 6; take compressor *and* decompressor memory usage into account before using 7-9!"
+msgstr "壓縮設定檔。預設值為 6，使用 7-9 壓縮等級前，\t請務必考量壓縮與解壓縮的記憶體用量！"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "try to improve compression ratio by using more CPU time; does not affect decompressor memory requirements"
+msgstr "嘗試使用更多 CPU 時間來改善壓縮率\t（不影響解壓縮器的記憶體需求）"
+
+#. TRANSLATORS: Short for NUMBER. A longer string is fine but
+#. wider than 5 columns makes --long-help a few lines longer.
+#: src/xz/message.c
+msgid "NUM"
+msgstr "NUM"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "use at most NUM threads; the default is 0 which uses as many threads as there are processor cores"
+msgstr "使用最多 NUM 個執行緒。預設為 0，即使用所有的處理器核心"
 
 #: src/xz/message.c
-msgid ""
-"  -k, --keep          keep (don't delete) input files\n"
-"  -f, --force         force overwrite of output file and (de)compress links\n"
-"  -c, --stdout        write to standard output and don't delete input files"
-msgstr ""
-"  -k, --keep          保留（不刪除）輸入檔\n"
-"  -f, --force         強制覆寫輸出檔並（解）壓縮連結\n"
-"  -c, --stdout        寫入標準輸出並不刪除輸入檔"
+msgid "SIZE"
+msgstr "SIZE"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "start a new .xz block after every SIZE bytes of input; use this to set the block size for threaded compression"
+msgstr "每處理 SIZE 位元組的輸入資料後，就開始一個新的 .xz 區塊。\t使用這個設定多執行緒壓縮的區塊大小"
 
 #: src/xz/message.c
-msgid ""
-"      --single-stream decompress only the first stream, and silently\n"
-"                      ignore possible remaining input data"
-msgstr ""
-"      --single-stream 僅解壓縮第一個串流，再\n"
-"                      安靜地忽略可能剩餘的輸入檔"
+msgid "BLOCKS"
+msgstr "BLOCKS"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "start a new .xz block after the given comma-separated intervals of uncompressed data; optionally, specify a filter chain number (0-9) followed by a ':' before the uncompressed data size"
+msgstr "在指定的未壓縮資料間隔（以逗號分隔）後開始新的 .xz 區塊，\t可以選擇在未壓縮資料大小前加上過濾鏈編號（0-9）\t和冒號「:」"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "when compressing, if more than NUM milliseconds has passed since the previous flush and reading more input would block, all pending data is flushed out"
+msgstr "壓縮時，若自上次排清後已超過 NUM 毫秒，\t且讀取更多輸入會造成阻塞，則將所有待處理資料排清"
 
 #: src/xz/message.c
-msgid ""
-"      --no-sparse     do not create sparse files when decompressing\n"
-"  -S, --suffix=.SUF   use the suffix '.SUF' on compressed files\n"
-"      --files[=FILE]  read filenames to process from FILE; if FILE is\n"
-"                      omitted, filenames are read from the standard input;\n"
-"                      filenames must be terminated with the newline character\n"
-"      --files0[=FILE] like --files but use the null character as terminator"
-msgstr ""
-"      --no-sparse     解壓縮時不建立稀疏檔案\n"
-"  -S, --suffix=.SUF   在壓縮檔案上使用「.SUF」作為檔名後綴\n"
-"      --files[=FILE]  從 FILE 讀取要處理的檔案名稱；如果省略 FILE，\n"
-"                      則從標準輸入讀取檔案名稱；\n"
-"                      檔案名稱必須以換行字元結尾\n"
-"      --files0[=FILE] 類似 --files，但使用空字元作為結尾符號"
+msgid "LIMIT"
+msgstr "LIMIT"
 
-#: src/xz/message.c
-msgid ""
-"\n"
-" Basic file format and compression options:\n"
-msgstr ""
-"\n"
-" 基本檔案格式與壓縮選項：\n"
-
-#: src/xz/message.c
-msgid ""
-"  -F, --format=FMT    file format to encode or decode; possible values are\n"
-"                      'auto' (default), 'xz', 'lzma', 'lzip', and 'raw'\n"
-"  -C, --check=CHECK   integrity check type: 'none' (use with caution),\n"
-"                      'crc32', 'crc64' (default), or 'sha256'"
-msgstr ""
-"  -F, --format=FMT    要編碼或解碼的檔案格式；可選值為\n"
-"                      ‘auto’（預設）、’xz’、’lzma’、’lzip’ 和 ‘raw’\n"
-"  -C, --check=CHECK   完整性檢查類型：’none’（請謹慎使用）、\n"
-"                      ’crc32’、’crc64’（預設）或 ‘sha256’"
-
-#: src/xz/message.c
-msgid "      --ignore-check  don't verify the integrity check when decompressing"
-msgstr "      --ignore-check  不在解壓縮時驗證完整性"
-
-#: src/xz/message.c
-msgid ""
-"  -0 ... -9           compression preset; default is 6; take compressor *and*\n"
-"                      decompressor memory usage into account before using 7-9!"
-msgstr ""
-"  -0 ... -9           壓縮設定檔；預設值為 6；使用 7-9 前請考慮\n"
-"                      壓縮和解壓縮所使用的記憶體！"
-
-#: src/xz/message.c
-msgid ""
-"  -e, --extreme       try to improve compression ratio by using more CPU time;\n"
-"                      does not affect decompressor memory requirements"
-msgstr ""
-"  -e, --extreme       使用更多 CPU 時間以嘗試改善壓縮比；\n"
-"                      不影響解壓縮器的記憶體需求"
-
-#: src/xz/message.c
-msgid ""
-"  -T, --threads=NUM   use at most NUM threads; the default is 0 which uses\n"
-"                      as many threads as there are processor cores"
-msgstr ""
-"  -T, --threads=NUM   使用最多 NUM 個執行緒，預設為 0，\n"
-"                      即使用所有的處理機核心"
-
-#: src/xz/message.c
-msgid ""
-"      --block-size=SIZE\n"
-"                      start a new .xz block after every SIZE bytes of input;\n"
-"                      use this to set the block size for threaded compression"
-msgstr ""
-"      --block-size=SIZE\n"
-"                      輸入每 SIZE 位元組後，開始一個新 .xz 區塊；\n"
-"                      使用此功能以設定多執行緒壓縮的區塊大小"
-
-#: src/xz/message.c
-msgid ""
-"      --block-list=BLOCKS\n"
-"                      start a new .xz block after the given comma-separated\n"
-"                      intervals of uncompressed data; optionally, specify a\n"
-"                      filter chain number (0-9) followed by a ':' before the\n"
-"                      uncompressed data size"
-msgstr ""
-"      --block-list=BLOCKS\n"
-"                      在指定的以逗號分隔的未壓縮資料區間\n"
-"                      後開始新的 .xz 區塊。可選擇在未壓縮\n"
-"                      資料大小之前，指定一個過濾器串鏈編號\n"
-"                      （0-9），並以「:」為分隔符號。"
-
-#: src/xz/message.c
-msgid ""
-"      --flush-timeout=TIMEOUT\n"
-"                      when compressing, if more than TIMEOUT milliseconds has\n"
-"                      passed since the previous flush and reading more input\n"
-"                      would block, all pending data is flushed out"
-msgstr ""
-"      --flush-timeout=TIMEOUT\n"
-"                      壓縮時，倘若繼上次排清 (flush) 已經超過 TIMEOUT 毫秒\n"
-"                      而且讀入更多輸入會阻塞，則所有待排清的資料都將排清"
-
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 #, no-c-format
-msgid ""
-"      --memlimit-compress=LIMIT\n"
-"      --memlimit-decompress=LIMIT\n"
-"      --memlimit-mt-decompress=LIMIT\n"
-"  -M, --memlimit=LIMIT\n"
-"                      set memory usage limit for compression, decompression,\n"
-"                      threaded decompression, or all of these; LIMIT is in\n"
-"                      bytes, % of RAM, or 0 for defaults"
-msgstr ""
-"      --memlimit-compress=LIMIT\n"
-"      --memlimit-decompress=LIMIT\n"
-"      --memlimit-mt-decompress=LIMIT\n"
-"  -M, --memlimit=LIMIT\n"
-"                      限制壓縮、解壓縮、多執行緒解壓縮或以上全部的記憶體\n"
-"                      用量上限。LIMIT 得是位元組、記憶體百分比 (%)，或 0\n"
-"                      (預設值)"
+msgid "set memory usage limit for compression, decompression, threaded decompression, or all of these; LIMIT is in bytes, % of RAM, or 0 for defaults"
+msgstr "設定壓縮、解壓縮、多執行緒解壓縮或所有這些模式的記憶體\t上限。\tLIMIT 的單位可以是位元組、\t記憶體佔用百分比，\t或 0 表示預設值"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "if compression settings exceed the memory usage limit, give an error instead of adjusting the settings downwards"
+msgstr "如果壓縮設定超過記憶體用量上限，請給出錯誤而非下調設定"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Custom filter chain for compression (an alternative to using presets):"
+msgstr "自訂壓縮過濾鏈（設定檔以外的替代選項）："
 
 #: src/xz/message.c
-msgid ""
-"      --no-adjust     if compression settings exceed the memory usage limit,\n"
-"                      give an error instead of adjusting the settings downwards"
-msgstr ""
-"      --no-adjust     若壓縮設定超過記憶體用量上限，請給出\n"
-"                      錯誤而非下調設定"
+msgid "FILTERS"
+msgstr "FILTERS"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "set the filter chain using the liblzma filter string syntax; use --filters-help for more information"
+msgstr "使用 liblzma 過濾器字串語法設定過濾鏈。輸入 --filters-help 取得更多資訊"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "set additional filter chains using the liblzma filter string syntax to use with --block-list"
+msgstr "使用 liblzma 過濾器字串語法設定額外的過濾鏈，以配合 --block-list 使用"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display more information about the liblzma filter string syntax and exit"
+msgstr "顯示有關 liblzma 過濾器字串語法的更多資訊後結束"
+
+#. TRANSLATORS: Short for OPTIONS.
+#: src/xz/message.c
+msgid "OPTS"
+msgstr "OPTS"
+
+#. TRANSLATORS: Use semicolon (or its fullwidth form)
+#. in "(valid values; default)" even if it is weird in
+#. your language. There are non-translatable strings
+#. that look like "(foo, bar, baz; foo)" which list
+#. the supported values and the default value.
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
+msgstr "LZMA1 或 LZMA2。OPTS 是個以逗號分隔的列表，內有 0 或多個下述選項（有效值；預設值）："
+
+#. TRANSLATORS: Short for PRESET. A longer string is
+#. fine but wider than 4 columns makes --long-help
+#. one line longer.
+#: src/xz/message.c
+msgid "PRE"
+msgstr "PRE"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "reset options to a preset"
+msgstr "將選項重設為設定檔的值"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "dictionary size"
+msgstr "字典大小"
+
+#. TRANSLATORS: The word "literal" in "literal context
+#. bits" means how many "context bits" to use when
+#. encoding literals. A literal is a single 8-bit
+#. byte. It doesn't mean "literally" here.
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+#, fuzzy
+msgid "number of literal context bits"
+msgstr "字元上下文位元數"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+#, fuzzy
+msgid "number of literal position bits"
+msgstr "字元位置位元數"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+#, fuzzy
+msgid "number of position bits"
+msgstr "位置位元的數量"
 
 #: src/xz/message.c
-msgid ""
-"\n"
-" Custom filter chain for compression (alternative for using presets):"
-msgstr ""
-"\n"
-" 自訂壓縮過濾器串鏈（使用設定檔時選用）："
+msgid "MODE"
+msgstr "MODE"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --filters=FILTERS   set the filter chain using the liblzma filter string\n"
-"                      syntax; use --filters-help for more information"
-msgstr ""
-"\n"
-"  --filters=FILTERS   使用 liblzma 過濾器字串語法設定過濾器串鏈；\n"
-"                      若需更多資訊，請使用 --filters-help"
+msgid "compression mode"
+msgstr "壓縮模式"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  --filters1=FILTERS ... --filters9=FILTERS\n"
-"                      set additional filter chains using the liblzma filter\n"
-"                      string syntax to use with --block-list"
-msgstr ""
-"  --filters1=FILTERS ... --filters9=FILTERS\n"
-"                      使用 liblzma 過濾器字串語法設定其他\n"
-"                      過濾器串鏈，以便與 --block-list 一起使用"
+msgid "nice length of a match"
+msgstr "符合項目的最佳長度"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  --filters-help      display more information about the liblzma filter string\n"
-"                      syntax and exit."
-msgstr ""
-"  --filters-help      顯示有關 liblzma 過濾器字串語法的\n"
-"                      更多資訊後結束。"
+msgid "match finder"
+msgstr "比對搜尋器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --lzma1[=OPTS]      LZMA1 or LZMA2; OPTS is a comma-separated list of zero or\n"
-"  --lzma2[=OPTS]      more of the following options (valid values; default):\n"
-"                        preset=PRE reset options to a preset (0-9[e])\n"
-"                        dict=NUM   dictionary size (4KiB - 1536MiB; 8MiB)\n"
-"                        lc=NUM     number of literal context bits (0-4; 3)\n"
-"                        lp=NUM     number of literal position bits (0-4; 0)\n"
-"                        pb=NUM     number of position bits (0-4; 2)\n"
-"                        mode=MODE  compression mode (fast, normal; normal)\n"
-"                        nice=NUM   nice length of a match (2-273; 64)\n"
-"                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
-"                        depth=NUM  maximum search depth; 0=automatic (default)"
-msgstr ""
-"\n"
-"  --lzma1[=操作]      LZMA1 或 LZMA2；<操作> 是以下選項中的 0 個或以上選項\n"
-"  --lzma2[=操作]      （有效值; 預設）：\n"
-"                        preset=PRE 將選項重設至某設定檔的選項 (0-9[e])\n"
-"                        dict=NUM   字典大小 (4KiB - 1536MiB; 8MiB)\n"
-"                        lc=NUM     文字內文位元數 (0-4; 3)\n"
-"                        lp=NUM     文字位置位元數 (0-4; 0)\n"
-"                        pb=NUM     位置位元數    (0-4; 2)\n"
-"                        mode=模式  壓縮模式 (fast, normal; normal)\n"
-"                        nice=NUM   符合項目的 nice 長度 (2-273; 64)\n"
-"                        mf=名稱    尋找符合搜尋器 (hc3, hc4, bt2, bt3, bt4; bt4)\n"
-"                        depth=NUM  最大搜尋深度；0=自動（預設）"
+msgid "maximum search depth; 0=automatic (default)"
+msgstr "最大搜尋深度。0 表示自動（預設值）"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --x86[=OPTS]        x86 BCJ filter (32-bit and 64-bit)\n"
-"  --arm[=OPTS]        ARM BCJ filter\n"
-"  --armthumb[=OPTS]   ARM-Thumb BCJ filter\n"
-"  --arm64[=OPTS]      ARM64 BCJ filter\n"
-"  --powerpc[=OPTS]    PowerPC BCJ filter (big endian only)\n"
-"  --ia64[=OPTS]       IA-64 (Itanium) BCJ filter\n"
-"  --sparc[=OPTS]      SPARC BCJ filter\n"
-"  --riscv[=OPTS]      RISC-V BCJ filter\n"
-"                      Valid OPTS for all BCJ filters:\n"
-"                        start=NUM  start offset for conversions (default=0)"
-msgstr ""
-"\n"
-"  --x86[=OPTS]        x86 BCJ 過濾器（32 位元和 64 位元）\n"
-"  --arm[=OPTS]        ARM BCJ 過濾器\n"
-"  --armthumb[=OPTS]   ARM-Thumb BCJ 過濾器\n"
-"  --arm64[=OPTS]      ARM64 BCJ 過濾器\n"
-"  --powerpc[=OPTS]    PowerPC BCJ 過濾器（只支援大端序）\n"
-"  --ia64[=OPTS]       IA-64（Itanium）BCJ 過濾器\n"
-"  --sparc[=OPTS]      SPARC BCJ 過濾器\n"
-"  --riscv[=OPTS]      RISC-V BCJ 過濾器\n"
-"                      所有 BCJ 過濾器的有效 OPTS：\n"
-"                        start=NUM  轉換的起始偏移（預設=0）"
+msgid "x86 BCJ filter (32-bit and 64-bit)"
+msgstr "x86 BCJ 過濾器（32 或 64 位元）"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-"  --delta[=OPTS]      Delta filter; valid OPTS (valid values; default):\n"
-"                        dist=NUM   distance between bytes being subtracted\n"
-"                                   from each other (1-256; 1)"
-msgstr ""
-"\n"
-"  --delta[=OPTS]      增量過濾器 (有效值; 預設值)：\n"
-"                        dist=NUM   相減的位元組之間的距離\n"
-"                                   (1-256; 1)"
+msgid "ARM BCJ filter"
+msgstr "ARM BCJ 過濾器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"\n"
-" Other options:\n"
-msgstr ""
-"\n"
-" 其他選項：\n"
+msgid "ARM-Thumb BCJ filter"
+msgstr "ARM-Thumb BCJ 過濾器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  -q, --quiet         suppress warnings; specify twice to suppress errors too\n"
-"  -v, --verbose       be verbose; specify twice for even more verbose"
-msgstr ""
-"  -q, --quiet         隱藏警告訊息；指定兩次也一併隱藏錯誤訊息\n"
-"  -v, --verbose       輸出較詳細內容；指定兩次更詳細輸出"
+msgid "ARM64 BCJ filter"
+msgstr "ARM64 BCJ 過濾器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid "  -Q, --no-warn       make warnings not affect the exit status"
-msgstr "  -Q, --no-warn       即使有警告，退出狀態碼仍不變"
+msgid "PowerPC BCJ filter (big endian only)"
+msgstr "PowerPC BCJ 過濾器（只面向大端序）"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid "      --robot         use machine-parsable messages (useful for scripts)"
-msgstr "      --robot         使用機器可解析訊息（適合用於指令稿）"
+msgid "IA-64 (Itanium) BCJ filter"
+msgstr "IA-64 (Itanium) BCJ 過濾器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"      --info-memory   display the total amount of RAM and the currently active\n"
-"                      memory usage limits, and exit"
-msgstr "      --info-memory   顯示記憶體總量和使用中的記憶體用量限制後退出"
+msgid "SPARC BCJ filter"
+msgstr "SPARC BCJ 過濾器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  -h, --help          display the short help (lists only the basic options)\n"
-"  -H, --long-help     display this long help and exit"
-msgstr ""
-"  -h, --help          顯示較短說明（僅列出基本選項）\n"
-"  -H, --long-help     顯示較長說明後退出"
+msgid "RISC-V BCJ filter"
+msgstr "RISC-V BCJ 過濾器"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"  -h, --help          display this short help and exit\n"
-"  -H, --long-help     display the long help (lists also the advanced options)"
-msgstr ""
-"  -h, --help          顯示較短說明後退出\n"
-"  -H, --long-help     顯示較長說明（也列出進階選項）"
+msgid "Valid OPTS for all BCJ filters:"
+msgstr "對所有 BCJ 過濾器都有效的 OPTS："
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid "  -V, --version       display the version number and exit"
-msgstr "  -V, --version       顯示版本號碼後退出"
+msgid "start offset for conversions (default=0)"
+msgstr "轉換的起始位移（預設值=0）"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Delta filter; valid OPTS (valid values; default):"
+msgstr "差異過濾器。有效 OPTS（有效值；預設值）："
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "distance between bytes being subtracted from each other"
+msgstr "相減位元組之間的距離"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "Other options:"
+msgstr "其他選項："
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "suppress warnings; specify twice to suppress errors too"
+msgstr "隱藏警告，指定兩次則一併隱藏錯誤"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "be verbose; specify twice for even more verbose"
+msgstr "輸出得更詳細，指定兩次則會輸出得更詳細"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "make warnings not affect the exit status"
+msgstr "即使有警告也不改變結束狀態碼"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "use machine-parsable messages (useful for scripts)"
+msgstr "輸出機器可以解析的訊息（適合用於指令稿）"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the total amount of RAM and the currently active memory usage limits, and exit"
+msgstr "顯示記憶體總量和目前生效的記憶體用量限制後結束"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the short help (lists only the basic options)"
+msgstr "顯示比較短的說明文字（只列出基本選項）"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display this long help and exit"
+msgstr "顯示較長的說明文字後結束"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display this short help and exit"
+msgstr "顯示較短的說明文字後結束"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the long help (lists also the advanced options)"
+msgstr "顯示比較長的說明文字（一併列出進階選項）"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c
+msgid "display the version number and exit"
+msgstr "顯示版本號碼後結束"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+msgid "With no FILE, or when FILE is -, read standard input."
+msgstr "如果 FILE 沒有指定或指定為 -，則從標準輸入讀取。"
+
+#. TRANSLATORS: This message indicates the bug reporting
+#. address for this package. Please add another line saying
+#. "\nReport translation bugs to <...>." with the email or WWW
+#. address for translation bugs. Thanks!
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
-msgid ""
-"\n"
-"With no FILE, or when FILE is -, read standard input.\n"
-msgstr ""
-"\n"
-"如果未指定 <檔案>，或 <檔案> 是 -，則從標準輸入讀取。\n"
+msgid "Report bugs to <%s> (in English or Finnish)."
+msgstr "請回報臭蟲至 <%s>（使用英文或芬蘭語）。"
 
-#. TRANSLATORS: This message indicates the bug reporting address
-#. for this package. Please add _another line_ saying
-#. "Report translation bugs to <...>\n" with the email or WWW
-#. address for translation bugs. Thanks.
+#. TRANSLATORS: The first %s is the name of this software.
+#. The second <%s> is an URL.
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
-msgid "Report bugs to <%s> (in English or Finnish).\n"
-msgstr "請回報臭蟲至 <%s>（使用英文或芬蘭語）。\n"
+msgid "%s home page: <%s>"
+msgstr "%s 首頁：<%s>"
 
-#: src/xz/message.c src/lzmainfo/lzmainfo.c
-#, c-format
-msgid "%s home page: <%s>\n"
-msgstr "%s 首頁：<%s>\n"
-
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."
 msgstr "此為開發版本，不打算在生產環境使用。"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-msgid ""
-"Filter chains are set using the --filters=FILTERS or\n"
-"--filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain\n"
-"can be separated by spaces or '--'. Alternatively a preset <0-9>[e] can be\n"
-"specified instead of a filter chain.\n"
-msgstr ""
-"過濾器串鏈是使用 --filters=FILTERS 或\n"
-"--filters1=FILTERS ... --filters9=FILTERS\n"
-"選項設定的。每個過濾器可以用空格或「--」隔開。\n"
-"或者也可以指定預設的 <0-9>[e] 來代替過濾器串鏈。\n"
+#, c-format
+msgid "Filter chains are set using the --filters=FILTERS or --filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain can be separated by spaces or '--'. Alternatively a preset %s can be specified instead of a filter chain."
+msgstr "過濾鏈可透過 --filters=FILTERS 或 --filters1=FILTERS ... --filters9=FILTERS 選項來設定。鏈中的每個過濾器可以用空格或 '--' 分隔。您也可以指定 %s 設定檔來取代過濾鏈。"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "The supported filters and their options are:"
 msgstr "支援的過濾器和選項為："
 
-#: src/xz/options.c
-#, c-format
-msgid "%s: Options must be 'name=value' pairs separated with commas"
-msgstr "%s：選項必須是以逗號分隔的「name=value」值對"
+#: src/xz/options.c src/liblzma/common/string_conversion.c
+msgid "Options must be 'name=value' pairs separated with commas"
+msgstr "選項必須是以逗號分隔的「name=value」值對"
 
 #: src/xz/options.c
 #, c-format
 msgid "%s: Invalid option name"
 msgstr "%s：選項名稱無效"
 
-#: src/xz/options.c
-#, c-format
-msgid "%s: Invalid option value"
-msgstr "%s：選項值無效"
+#: src/xz/options.c src/liblzma/common/string_conversion.c
+msgid "Invalid option value"
+msgstr "選項值無效"
 
 #: src/xz/options.c
 #, c-format
 msgid "Unsupported LZMA1/LZMA2 preset: %s"
 msgstr "不支援的 LZMA1/LZMA2 設定檔：%s"
 
-#: src/xz/options.c
+#: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
 msgstr "lc 和 lp 的總和不能超過 4"
 
@@ -1068,10 +1154,9 @@ msgstr "%s：檔案已有「%s」後綴，略過"
 msgid "%s: Invalid filename suffix"
 msgstr "%s：檔名後綴無效"
 
-#: src/xz/util.c
-#, c-format
-msgid "%s: Value is not a non-negative decimal integer"
-msgstr "%s：數值不是非負數十進位整數"
+#: src/xz/util.c src/liblzma/common/string_conversion.c
+msgid "Value is not a non-negative decimal integer"
+msgstr "數值不是非負數十進位整數"
 
 #: src/xz/util.c
 #, c-format
@@ -1097,12 +1182,13 @@ msgstr "不能將已壓縮資料寫入終端機"
 
 #: src/lzmainfo/lzmainfo.c
 #, c-format
-msgid ""
-"Usage: %s [--help] [--version] [FILE]...\n"
-"Show information stored in the .lzma file header"
-msgstr ""
-"用法：%s [--help] [--version] [FILE]...\n"
-"顯示儲存在 .lzma 檔案標頭的資訊"
+msgid "Usage: %s [--help] [--version] [FILE]...\n"
+msgstr "用法：%s [--help] [--version] [FILE]...\n"
+
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
+#: src/lzmainfo/lzmainfo.c
+msgid "Show information stored in the .lzma file header."
+msgstr "顯示儲存在 .lzma 檔案標頭中的資訊。"
 
 #: src/lzmainfo/lzmainfo.c
 msgid "File is too small to be a .lzma file"
@@ -1120,49 +1206,62 @@ msgstr "寫入標準輸出失敗"
 msgid "Unknown error"
 msgstr "未知錯誤"
 
-#~ msgid "Failed to enable the sandbox"
-#~ msgstr "無法啟用沙盒"
+#: src/liblzma/common/string_conversion.c
+msgid "Unsupported preset"
+msgstr "不支援的設定檔"
 
-#~ msgid "Sandbox is disabled due to incompatible command line arguments"
-#~ msgstr "由於指定不相容的指令列參數，已停用沙盒"
+#: src/liblzma/common/string_conversion.c
+msgid "Unsupported flag in the preset"
+msgstr "設定檔中包含不支援的旗標"
 
-#~ msgid "Sandbox was successfully enabled"
-#~ msgstr "已成功啟用沙盒"
+#: src/liblzma/common/string_conversion.c
+msgid "Unknown option name"
+msgstr "未知選項名稱"
 
-#~ msgid "Memory usage limit for compression:    "
-#~ msgstr "壓縮記憶體限制：       "
+#: src/liblzma/common/string_conversion.c
+msgid "Option value cannot be empty"
+msgstr "選項值不能空白"
 
-#~ msgid "  Streams:            %s\n"
-#~ msgstr "  串流：　　　　　　　　　%s\n"
+#: src/liblzma/common/string_conversion.c
+msgid "Value out of range"
+msgstr "數值超出範圍"
 
-#~ msgid "  Blocks:             %s\n"
-#~ msgstr "  區塊：　　　　　　　　　%s\n"
+#: src/liblzma/common/string_conversion.c
+msgid "This option does not support any multiplier suffixes"
+msgstr "這個選項不支援任何乘數後綴"
 
-#~ msgid "  Ratio:              %s\n"
-#~ msgstr "  壓縮比：　　　　　　　　%s\n"
+#. TRANSLATORS: Don't translate the
+#. suffixes "KiB", "MiB", or "GiB"
+#. because a user can only specify
+#. untranslated suffixes.
+#: src/liblzma/common/string_conversion.c
+msgid "Invalid multiplier suffix (KiB, MiB, or GiB)"
+msgstr "乘數後綴無效（KiB、MiB 或 GiB）"
 
-#~ msgid "  Check:              %s\n"
-#~ msgstr "  檢驗碼：　　　　　　　　%s\n"
+#: src/liblzma/common/string_conversion.c
+msgid "Unknown filter name"
+msgstr "未知過濾器名稱"
 
-# 下方的文字因排版有一些障礙，因此暫時不理他。
-#~ msgid ""
-#~ "  Streams:\n"
-#~ "    Stream    Blocks      CompOffset    UncompOffset        CompSize      UncompSize  Ratio  Check      Padding"
-#~ msgstr ""
-#~ "  串流：\n"
-#~ "    Stream    Blocks      CompOffset    UncompOffset        CompSize      UncompSize  Ratio  Check      Padding"
+#: src/liblzma/common/string_conversion.c
+msgid "This filter cannot be used in the .xz format"
+msgstr "這個過濾器不能在 .xz 格式中使用"
 
-# 下方的文字因排版有一些障礙，因此暫時不理他。
-#~ msgid ""
-#~ "  Blocks:\n"
-#~ "    Stream     Block      CompOffset    UncompOffset       TotalSize      UncompSize  Ratio  Check"
-#~ msgstr ""
-#~ "  區塊：\n"
-#~ "    Stream     Block      CompOffset    UncompOffset       TotalSize      UncompSize  Ratio  Check"
+#: src/liblzma/common/string_conversion.c
+msgid "Memory allocation failed"
+msgstr "分配記憶體失敗"
 
-# 下方的文字因排版有一些障礙，因此暫時不理他。
-#~ msgid "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
-#~ msgstr "      CheckVal %*s Header  Flags        CompSize    MemUsage  Filters"
+#: src/liblzma/common/string_conversion.c
+msgid "Empty string is not allowed, try '6' if a default value is needed"
+msgstr "不允許輸入空白字串，如需預設值請輸入「6」"
 
-#~ msgid "The selected match finder requires at least nice=%<PRIu32>"
-#~ msgstr "選取的符合搜尋工具需要至少 nice=%<PRIu32>"
+#: src/liblzma/common/string_conversion.c
+msgid "The maximum number of filters is four"
+msgstr "過濾器最多只能指定 4 個"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Filter name is missing"
+msgstr "缺少過濾器名稱"
+
+#: src/liblzma/common/string_conversion.c
+msgid "Invalid filter chain ('lzma2' missing at the end?)"
+msgstr "無效的過濾鏈（結尾缺少「lzma2」？）"

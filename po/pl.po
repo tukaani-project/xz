@@ -75,7 +75,7 @@ msgstr "Obsługa dekompresji została wyłączona na etapie budowania"
 
 #: src/xz/args.c
 msgid "Compression of lzip files (.lz) is not supported"
-msgstr "Kompresja plików lzip (.lz) nie jest osbługiwana"
+msgstr "Kompresja plików lzip (.lz) nie jest obsługiwana"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
@@ -83,7 +83,7 @@ msgstr "--block-list jest ignorowane poza kompresją do formatu .xz"
 
 #: src/xz/args.c
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "Przy --format=raw i zapisie do pliku wymagana jest opcja --suffix=.ROZ"
+msgstr "Przy użyciu --format=raw i zapisie do pliku wymagana jest opcja --suffix=.ROZ"
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
@@ -105,7 +105,7 @@ msgstr "łańcuch filtrów %u użyty w --block-list, ale nie podany przez --filt
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
-msgstr "Użycie ustawień predefiniowanych w trybie surowym jest odradzane."
+msgstr "Używanie ustawień predefiniowanych w trybie surowym jest odradzane."
 
 #: src/xz/coder.c
 msgid "The exact options of the presets may vary between software versions."
@@ -122,7 +122,7 @@ msgstr "LZMA1 nie może być używany z formatem .xz"
 #: src/xz/coder.c
 #, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "Łańcuch filtrów %u jest niezgodny z --flush-timeout"
+msgstr "Łańcuch filtrów %u jest niekompatybilny z --flush-timeout"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
@@ -131,12 +131,12 @@ msgstr "Przełączanie w tryb jednowątkowy z powodu --flush-timeout"
 #: src/xz/coder.c
 #, c-format
 msgid "Unsupported options in filter chain %u"
-msgstr "Nieobsługiwane opcje w łańcuchu filtrów %u"
+msgstr "Nieobsługiwane opcje w łańcuchu filtrów nr %u"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Using up to %<PRIu32> threads."
-msgstr "Maksymalna liczba używanych wątków: %<PRIu32>."
+msgstr "Używanie maksymalnie %u wątków."
 
 #: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
@@ -145,12 +145,12 @@ msgstr "Nieobsługiwany łańcuch filtrów lub opcje filtra"
 #: src/xz/coder.c
 #, c-format
 msgid "Decompression will need %s MiB of memory."
-msgstr "Dekompresja będzie wymagała %s MiB pamięci."
+msgstr "Do dekompresji będzie potrzebne %s MiB pamięci."
 
 #: src/xz/coder.c
 #, c-format
 msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
-msgstr "Zmniejszono liczbę wątków z %s do %s, aby nie przekroczyć limitu użycia pamięci %s MiB"
+msgstr "Zmniejszono liczbę wątków z %s do %s, aby nie przekroczyć limitu użycia pamięci wynoszącego %s MiB"
 
 #: src/xz/coder.c
 #, c-format

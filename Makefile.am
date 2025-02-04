@@ -101,7 +101,7 @@ mydist:
 	VERSION=$(VERSION); \
 	if test -d "$(srcdir)/.git" && type git > /dev/null 2>&1; then \
 		$(SHELL) "$(srcdir)/build-aux/license-check.sh" || exit 1; \
-		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=4 | cut -b2-`; \
+		SNAPSHOT=`cd "$(srcdir)" && git describe --abbrev=8 | cut -b2-`; \
 		test -n "$$SNAPSHOT" && VERSION=$$SNAPSHOT; \
 	fi; \
 	TAR_OPTIONS='--owner=0 --group=0 --numeric-owner --mode=u+rw,go+r-w --sort=name' \

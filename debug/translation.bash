@@ -10,8 +10,8 @@
 # cover most of the cases where mistakes can easily happen.
 #
 # Give the path and filename of the xz executable as an argument. If no
-# arguments are given, this script uses ../src/xz/xz (relative to the
-# location of this script).
+# arguments are given, this script uses src/xz/xz (relative to the current
+# directory).
 #
 # You may want to pipe the output of this script to less -S to view the
 # tables printed by xz --list on a 80-column terminal. On the other hand,
@@ -32,10 +32,6 @@ if [ -n "$1" ]; then
 	[ "x${XZ:0:1}" != "x/" ] && XZ="$PWD/$XZ"
 fi
 
-# Locate top_srcdir and go there.
-top_srcdir="$(cd -- "$(dirname -- "$0")" && cd .. && pwd)"
-cd -- "$top_srcdir"
-
 # If XZ wasn't already set, use the default location.
 XZ=${XZ-"$PWD/src/xz/xz"}
 if [ "$(type -t "$XZ" || true)" != "file" ]; then
@@ -45,15 +41,20 @@ if [ "$(type -t "$XZ" || true)" != "file" ]; then
 fi
 XZ=$(type -p -- "$XZ")
 
+# Locate top_srcdir and go there.
+top_srcdir="$(cd -- "$(dirname -- "$0")" && cd .. && pwd)"
+cd -- "$top_srcdir"
+
 # Print the xz version and locale information.
 echo "$XZ --version"
 "$XZ" --version
 echo
 if [ -d .git ] && type git > /dev/null 2>&1; then
 	echo "Source code version in $PWD:"
-	git describe --abbrev=4
+	git describe --abbrev=8
 fi
 echo
+echo "LANGUAGE=$LANGUAGE"
 locale
 echo
 
@@ -81,13 +82,10 @@ for CMD in \
 	"xz --lzma2=nice=50000" \
 	"xz --help" \
 	"xz --long-help" \
+	"xz --filters-help" \
 	"xz --list good-*lzma2*" \
-	"xz --list good-1-check*" \
-	"xz --list --verbose good-*lzma2*" \
-	"xz --list --verbose good-1-check*" \
-	"xz --list --verbose --verbose good-*lzma2*" \
-	"xz --list --verbose --verbose good-1-check*" \
-	"xz --list --verbose --verbose unsupported-check.xz"
+	"xz --list good-1-check* unsupported-check.xz" \
+	"xz --list --verbose --verbose good-1-arm64-lzma2-1.xz good-1-block_header-1.xz good-1-check-sha256.xz good-2-lzma2.xz"
 do
 	echo "-----------------------------------------------------------"
 	echo

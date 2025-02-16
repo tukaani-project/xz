@@ -16,6 +16,10 @@ AC_DEFUN([gl_FUNC_GETOPT_GNU],
 [
   AC_REQUIRE([gl_GETOPT_CHECK_HEADERS])
 
+  dnl Other modules can request the gnulib implementation of the getopt
+  dnl functions unconditionally, by defining gl_REPLACE_GETOPT_ALWAYS.
+  m4_ifdef([gl_REPLACE_GETOPT_ALWAYS], [gl_replace_getopt=yes], [])
+
   if test -n "$gl_replace_getopt"; then
     gl_GETOPT_SUBSTITUTE
   fi

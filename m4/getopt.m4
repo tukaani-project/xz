@@ -12,9 +12,6 @@ dnl with or without modifications, as long as this notice is preserved.
 # Pass gl_replace_getopt=yes (or any non-empty value instead of "yes") as
 # an argument to configure to force the use of the getopt_long replacement.
 
-# Check for a POSIX compliant getopt function with GNU extensions (such as
-# options with optional arguments) and the functions getopt_long,
-# getopt_long_only.
 AC_DEFUN([gl_FUNC_GETOPT_GNU],
 [
   AC_REQUIRE([gl_GETOPT_CHECK_HEADERS])

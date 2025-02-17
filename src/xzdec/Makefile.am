@@ -21,11 +21,13 @@ endif
 xzdec_CPPFLAGS = \
 	-DTUKLIB_GETTEXT=0 \
 	-I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/liblzma/api \
-	-I$(top_builddir)/lib
+	-I$(top_srcdir)/src/liblzma/api
 xzdec_LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB
+xzdec_CPPFLAGS += \
+	-I$(top_builddir)/lib \
+	-I$(top_srcdir)/lib
 xzdec_LDADD += $(top_builddir)/lib/libgnu.a
 endif
 

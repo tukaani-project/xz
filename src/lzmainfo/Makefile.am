@@ -18,12 +18,14 @@ endif
 lzmainfo_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/liblzma/api \
-	-I$(top_builddir)/lib
+	-I$(top_srcdir)/src/liblzma/api
 
 lzmainfo_LDADD = $(top_builddir)/src/liblzma/liblzma.la
 
 if COND_GNULIB
+lzmainfo_CPPFLAGS += \
+	-I$(top_builddir)/lib \
+	-I$(top_srcdir)/lib
 lzmainfo_LDADD += $(top_builddir)/lib/libgnu.a
 endif
 

@@ -244,7 +244,7 @@ msgstr "Greška pri pokušaju dobivanja oznaka statusa datoteke iz standardnog u
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: To je simbolička poveznica -- preskočeno"
+msgstr "%s: To je simbolična poveznica -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
@@ -269,7 +269,7 @@ msgstr "%s: Datoteka ima postavljen ljepljivi bit -- preskočeno"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Ulazna datoteka ima više od jedne tvrde poveznice -- preskočeno"
+msgstr "%s: Ulazna datoteka ima više od jednog tvrdog linka -- preskočeno"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -732,7 +732,7 @@ msgstr "sprema ulazne datoteke (ne brisati ih)"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "force overwrite of output file and (de)compress links"
-msgstr "prisilno piše preko izlazne datoteke i (de)komprimira poveznice"
+msgstr "prisilno piše preko izlazne datoteke i (de)komprimira linkove"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c

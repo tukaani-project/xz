@@ -4,7 +4,7 @@
 .\" Authors: Lasse Collin
 .\"          Jia Tan
 .\"
-.TH XZ 1 "2025-01-05" "Tukaani" "XZ Utils"
+.TH XZ 1 "2025-03-06" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -2596,12 +2596,34 @@ all non-options are silently ignored.
 Parsing is done with
 .BR getopt_long (3)
 which is used also for the command line arguments.
+.PP
+.B Warning:
+By setting these environment variables,
+one is effectively modifying programs and scripts that run
+.BR xz .
+Most of the time it is safe to set memory usage limits, number of threads,
+and compression options via the environment variables.
+However, some options can break scripts subtly or completely.
+An obvious example is
+.B \-\-help
+which makes
+.B xz
+show the help text instead of compressing or decompressing a file.
+A more subtle example is
+.B \-\-verbose
+which undoes the effect of
+.B \-\-quiet
+and also affects the behavior of
+.BR \-\-list ,
+thus
+.B \-\-verbose
+isn't safe to use all the time.
 .TP
 .B XZ_DEFAULTS
 User-specific or system-wide default options.
 Typically this is set in a shell initialization script to enable
 .BR xz 's
-memory usage limiter by default.
+memory usage limiter by default or set the default number of threads.
 Excluding shell initialization scripts
 and similar special cases, scripts must never set or unset
 .BR XZ_DEFAULTS .

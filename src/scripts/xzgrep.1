@@ -5,7 +5,7 @@
 .\"
 .\" (Note that this file is not based on gzip's zgrep.1.)
 .\"
-.TH XZGREP 1 "2024-02-13" "Tukaani" "XZ Utils"
+.TH XZGREP 1 "2025-03-06" "Tukaani" "XZ Utils"
 .SH NAME
 xzgrep \- search possibly-compressed files for patterns
 .
@@ -23,12 +23,15 @@ xzgrep \- search possibly-compressed files for patterns
 .br
 .B lzgrep
 \&...
+(DEPRECATED)
 .br
 .B lzegrep
 \&...
+(DEPRECATED)
 .br
 .B lzfgrep
 \&...
+(DEPRECATED)
 .
 .SH DESCRIPTION
 .B xzgrep
@@ -106,6 +109,7 @@ The commands
 and
 .B lzfgrep
 are provided for backward compatibility with LZMA Utils.
+They are deprecated and will be removed in a future version.
 .
 .SH EXIT STATUS
 .TP

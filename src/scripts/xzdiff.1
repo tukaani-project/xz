@@ -5,7 +5,7 @@
 .\"
 .\" (Note that this file is not based on gzip's zdiff.1.)
 .\"
-.TH XZDIFF 1 "2024-02-13" "Tukaani" "XZ Utils"
+.TH XZDIFF 1 "2025-03-06" "Tukaani" "XZ Utils"
 .SH NAME
 xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .
@@ -20,9 +20,11 @@ xzcmp, xzdiff, lzcmp, lzdiff \- compare compressed files
 .br
 .B lzcmp
 \&...
+(DEPRECATED)
 .br
 .B lzdiff
 \&...
+(DEPRECATED)
 .
 .SH DESCRIPTION
 .B xzcmp
@@ -75,6 +77,7 @@ The commands
 and
 .B lzdiff
 are provided for backward compatibility with LZMA Utils.
+They are deprecated and will be removed in a future version.
 .
 .SH EXIT STATUS
 If a decompression error occurs, the exit status is

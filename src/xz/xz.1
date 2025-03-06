@@ -237,6 +237,8 @@ The memory usage limiter can be enabled with
 the command line option \fB\-\-memlimit=\fIlimit\fR.
 Often it is more convenient to enable the limiter
 by default by setting the environment variable
+.\" TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS.
+.\" It's a name of an environment variable.
 .BR XZ_DEFAULTS ,
 for example,
 .BR XZ_DEFAULTS=\-\-memlimit=150MiB .
@@ -575,6 +577,7 @@ Specify the file
 to compress or decompress:
 .RS
 .TP
+.\" TRANSLATORS: Don't translate bold string B<auto>.
 .B auto
 This is the default.
 When compressing,
@@ -661,6 +664,9 @@ Supported
 types:
 .RS
 .TP
+.\" TRANSLATORS: Don't translate the bold strings B<none>, B<crc32>,
+.\" B<crc64>, and B<sha256>. The command line option --check accepts
+.\" only the untranslated strings.
 .B none
 Don't calculate an integrity check at all.
 This is usually a bad idea.
@@ -1497,6 +1503,11 @@ LZMA1 and LZMA2 share the same set of
 .IR options :
 .RS
 .TP
+.\" TRANSLATORS: Don't translate bold strings like B<preset>, B<dict>,
+.\" B<mode>, B<nice>, B<fast>, or B<normal> because those are command line
+.\" options. On the other hand, do translate the italic strings like
+.\" I<preset>, I<size>, and I<mode>, because such italic strings are
+.\" placeholders which a user replaces with an actual value.
 .BI preset= preset
 Reset all LZMA1 or LZMA2
 .I options
@@ -2147,6 +2158,11 @@ uses tab-separated output.
 The first column of every line has a string
 that indicates the type of the information found on that line:
 .TP
+.\" TRANSLATORS: The bold strings B<name>, B<file>, B<stream>, B<block>,
+.\" B<summary>, and B<totals> are produced by the xz tool for scripts to
+.\" parse, thus the untranslated strings must be included in the translated
+.\" man page. It may be useful to provide a translated string in parenthesis
+.\" without bold, for example: "B<name> (nimi)"
 .B name
 This is always the first line when starting to list a file.
 The second column on the line is the filename.
@@ -2225,6 +2241,9 @@ are displayed instead of the ratio.
 .IP 7. 4
 Comma-separated list of integrity check names.
 The following strings are used for the known check types:
+.\" TRANSLATORS: Don't translate the bold strings B<None>, B<CRC32>,
+.\" B<CRC64>, B<SHA-256>, or B<Unknown-> here. In robot mode, xz produces
+.\" them in untranslated form for scripts to parse.
 .BR None ,
 .BR CRC32 ,
 .BR CRC64 ,
@@ -2511,6 +2530,7 @@ prints the version number of
 .B xz
 and liblzma in the following format:
 .PP
+.\" TRANSLATORS: Don't translate the uppercase XZ_VERSION or LIBLZMA_VERSION.
 .BI XZ_VERSION= XYYYZZZS
 .br
 .BI LIBLZMA_VERSION= XYYYZZZS
@@ -2565,6 +2585,8 @@ don't affect the exit status.
 .B xz
 parses space-separated lists of options
 from the environment variables
+.\" TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS or XZ_OPT.
+.\" They are names of environment variables.
 .B XZ_DEFAULTS
 and
 .BR XZ_OPT ,

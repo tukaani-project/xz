@@ -2,6 +2,41 @@
 XZ Utils Release Notes
 ======================
 
+5.7.2beta (2025-03-08)
+
+    * On the man pages, mark the following LZMA Utils script aliases as
+      deprecated: lzcmp, lzdiff, lzless, lzmore, lzgrep, lzegrep, and
+      lzfgrep. The commands that start with xz* instead of lz* have
+      identical behavior.
+
+      The LZMA Utils aliases lzma, unlzma, and lzcat aren't deprecated
+      because some of these aliases are still in common use. lzmadec
+      and lzmainfo aren't deprecated either.
+
+    * xz: In the ENVIRONMENT section of the man page, warn about
+      problems that some uses of XZ_DEFAULTS and XZ_OPT may create.
+
+    * Windows (native builds, not Cygwin): In xz, xzdec, and lzmadec,
+      avoid an error message on broken pipe.
+
+    * Autotools: Fix out-of-tree builds when using the bundled
+      getopt_long.
+
+    * Translations:
+
+        - Updated: Chinese (traditional), Croatian, Finnish, Georgian,
+          German, Korean, Polish, Romanian, Serbian, Spanish, Swedish,
+          Turkish, and Ukrainian
+
+        - Added: Dutch
+
+    * Man page translations:
+
+        - Updated: German, Korean, Romanian, and Ukrainian
+
+        - Added: Italian and Serbian
+
+
 5.7.1alpha (2025-01-23)
 
     * All fixes from 5.6.4.

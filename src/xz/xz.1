@@ -4,7 +4,7 @@
 .\" Authors: Lasse Collin
 .\"          Jia Tan
 .\"
-.TH XZ 1 "2025-03-06" "Tukaani" "XZ Utils"
+.TH XZ 1 "2025-03-08" "Tukaani" "XZ Utils"
 .
 .SH NAME
 xz, unxz, xzcat, lzma, unlzma, lzcat \- Compress or decompress .xz and .lzma files
@@ -2603,21 +2603,21 @@ one is effectively modifying programs and scripts that run
 .BR xz .
 Most of the time it is safe to set memory usage limits, number of threads,
 and compression options via the environment variables.
-However, some options can break scripts subtly or completely.
+However, some options can break scripts.
 An obvious example is
 .B \-\-help
 which makes
 .B xz
 show the help text instead of compressing or decompressing a file.
-A more subtle example is
-.B \-\-verbose
-which undoes the effect of
+More subtle examples are
 .B \-\-quiet
-and also affects the behavior of
-.BR \-\-list ,
-thus
-.B \-\-verbose
-isn't safe to use all the time.
+and
+.BR \-\-verbose .
+In many cases it works well to enable the progress indicator using
+.BR \-\-verbose ,
+but in some situations the extra messages create problems.
+The verbosity level also affects the behavior of
+.BR \-\-list .
 .TP
 .B XZ_DEFAULTS
 User-specific or system-wide default options.
@@ -2625,7 +2625,7 @@ Typically this is set in a shell initialization script to enable
 .BR xz 's
 memory usage limiter by default or set the default number of threads.
 Excluding shell initialization scripts
-and similar special cases, scripts must never set or unset
+and similar special cases, scripts should never set or unset
 .BR XZ_DEFAULTS .
 .TP
 .B XZ_OPT

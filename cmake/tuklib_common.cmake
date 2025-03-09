@@ -26,25 +26,28 @@ endfunction()
 
 # This is an over-simplified version of AC_USE_SYSTEM_EXTENSIONS in Autoconf
 # or gl_USE_SYSTEM_EXTENSIONS in gnulib.
-macro(tuklib_use_system_extensions TARGET_OR_ALL)
-    if(NOT WIN32)
-        # FIXME? The Solaris-specific __EXTENSIONS__ should be conditional
-        #        even on Solaris. See gnulib: git log m4/extensions.m4.
-        # FIXME? gnulib and autoconf.git has lots of new stuff.
-        tuklib_add_definitions("${TARGET_OR_ALL}"
-            _GNU_SOURCE
-            __EXTENSIONS__
-            _POSIX_PTHREAD_SEMANTICS
-            _TANDEM_SOURCE
-            _ALL_SOURCE
+function(tuklib_use_system_extensions)
+    if(NOT MSVC)
+        add_compile_definitions(
+            _GNU_SOURCE        # glibc, musl, mingw-w64
+            _NETBSD_SOURCE     # NetBSD, MINIX 3
+            _OPENBSD_SOURCE    # Also NetBSD!
+            __EXTENSIONS__     # Solaris
+            _POSIX_PTHREAD_SEMANTICS # Solaris
+            _DARWIN_C_SOURCE   # macOS
+            _TANDEM_SOURCE     # HP NonStop
+            _ALL_SOURCE        # AIX, z/OS
         )
 
         list(APPEND CMAKE_REQUIRED_DEFINITIONS
             -D_GNU_SOURCE
+            -D_NETBSD_SOURCE
+            -D_OPENBSD_SOURCE
             -D__EXTENSIONS__
             -D_POSIX_PTHREAD_SEMANTICS
+            -D_DARWIN_C_SOURCE
             -D_TANDEM_SOURCE
             -D_ALL_SOURCE
         )
     endif()
-endmacro()
+endfunction()

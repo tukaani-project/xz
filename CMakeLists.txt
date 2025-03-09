@@ -286,7 +286,7 @@ endif()
 
 # _GNU_SOURCE and such definitions. This specific macro is special since
 # it also adds the definitions to CMAKE_REQUIRED_DEFINITIONS.
-tuklib_use_system_extensions(ALL)
+tuklib_use_system_extensions()
 
 # Check for large file support. It's required on some 32-bit platforms and
 # even on 64-bit MinGW-w64 to get 64-bit off_t. This can be forced off on

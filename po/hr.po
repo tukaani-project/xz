@@ -1,18 +1,19 @@
 # SPDX-License-Identifier: 0BSD
-# SPDX-FileCopyrightText: 2020, 2022, 2023, 2024,2025 Božidar Putanec <bozidarp@yahoo.com>
-# SPDX-FileCopyrightText: The XZ Utils authors and contributors
 #
 # Croatian messages for xz.
+# Hrvatski prijevod poruka XZ paketa
 # This file is published under the BSD Zero Clause License.
-# Božidar Putanec <bozidarp@yahoo.com>, 2020, 2022, 2023, 2024,2025.
+# Copyright (C) The XZ Utils authors and contributors
+#
+# Božidar Putanec <bozidarp@yahoo.com>, 2020-2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 12:05+0200\n"
-"PO-Revision-Date: 2025-01-27 13:49-0800\n"
+"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"PO-Revision-Date: 2025-03-09 11:56-0700\n"
 "Last-Translator: Božidar Putanec <bozidarp@yahoo.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "Language: hr\n"
@@ -21,6 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: vim9.1\n"
 
 #: src/xz/args.c
 #, c-format
@@ -613,7 +615,7 @@ msgstr "Nije moguće čitati podatke iz standardnog ulaza dok se čitaju imena d
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -674,7 +676,7 @@ msgstr "%s: Lanac filtara: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "Pokušajte s '%s --help’ za pomoć i više informacija."
 
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
 msgstr "Greška prilikom ispisa teksta pomoći (kod greške %d)"
@@ -1187,6 +1189,7 @@ msgstr "Nije moguće pisati komprimirane podatke na terminal"
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
 msgstr "Uporaba: %s [--help] [--version] [DATOTEKA...]\n"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
 msgstr "Pokaže informacije pohranjene u zaglavlju datoteke .lzma."

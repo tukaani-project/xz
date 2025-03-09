@@ -12,6 +12,7 @@
 #############################################################################
 
 include("${CMAKE_CURRENT_LIST_DIR}/tuklib_common.cmake")
+include(CMakePushCheckState)
 include(CheckCSourceCompiles)
 include(CheckIncludeFile)
 
@@ -76,11 +77,11 @@ function(tuklib_physmem_internal_check)
     endif()
 
     # sysctl()
+    cmake_push_check_state()
     check_include_file(sys/param.h HAVE_SYS_PARAM_H)
     if(HAVE_SYS_PARAM_H)
         list(APPEND CMAKE_REQUIRED_DEFINITIONS -DHAVE_SYS_PARAM_H)
     endif()
-
     check_c_source_compiles("
             #ifdef HAVE_SYS_PARAM_H
             #   include <sys/param.h>
@@ -96,6 +97,7 @@ function(tuklib_physmem_internal_check)
             }
         "
         TUKLIB_PHYSMEM_SYSCTL)
+    cmake_pop_check_state()
     if(TUKLIB_PHYSMEM_SYSCTL)
         if(HAVE_SYS_PARAM_H)
             set(TUKLIB_PHYSMEM_DEFINITIONS

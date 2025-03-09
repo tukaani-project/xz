@@ -14,13 +14,14 @@
 # Actualizare a traducerii pentru versiunea 5.6.0-pre1, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea 5.6.0-pre2, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea 5.7.1-dev1, făcută de R-GC, ian-2025.
+# Actualizare a traducerii pentru versiunea 5.8.0-pre1, făcută de R-GC, mar-2025.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.7.1-dev1\n"
-"POT-Creation-Date: 2025-01-23 12:06+0200\n"
-"PO-Revision-Date: 2025-01-24 13:00+0100\n"
+"Project-Id-Version: xz-man 5.8.0-pre1\n"
+"POT-Creation-Date: 2025-03-08 14:50+0200\n"
+"PO-Revision-Date: 2025-03-09 20:57+0100\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -40,8 +41,8 @@ msgstr "XZ"
 #. type: TH
 #: ../src/xz/xz.1
 #, no-wrap
-msgid "2025-01-05"
-msgstr "5 ianuarie 2025"
+msgid "2025-03-08"
+msgstr "8 martie 2025"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -232,6 +233,8 @@ msgstr "Cantitatea de memorie utilizată de B<xz> variază de la câteva sute de
 msgid "Especially users of older systems may find the possibility of very large memory usage annoying.  To prevent uncomfortable surprises, B<xz> has a built-in memory usage limiter, which is disabled by default.  While some operating systems provide ways to limit the memory usage of processes, relying on it wasn't deemed to be flexible enough (for example, using B<ulimit>(1)  to limit virtual memory tends to cripple B<mmap>(2))."
 msgstr "În special utilizatorii de sisteme mai vechi pot considera deranjantă posibilitatea unei utilizări foarte mari a memoriei. Pentru a preveni surprizele neplăcute, B<xz> are încorporat un limitator de utilizare a memoriei, care este dezactivat implicit. În timp ce unele sisteme de operare oferă modalități de a limita utilizarea memoriei proceselor, bazarea pe aceasta nu a fost considerată a fi suficient de flexibilă (de exemplu, utilizarea B<ulimit>(1) pentru a limita memoria virtuală tinde să paralizeze B<mmap>(2))."
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS.
+#.  It's a name of an environment variable.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The memory usage limiter can be enabled with the command line option B<--memlimit=>I<limit>.  Often it is more convenient to enable the limiter by default by setting the environment variable B<XZ_DEFAULTS>, for example, B<XZ_DEFAULTS=--memlimit=150MiB>.  It is possible to set the limits separately for compression and decompression by using B<--memlimit-compress=>I<limit> and B<--memlimit-decompress=>I<limit>.  Using these two options outside B<XZ_DEFAULTS> is rarely useful because a single run of B<xz> cannot do both compression and decompression and B<--memlimit=>I<limit> (or B<-M> I<limit>)  is shorter to type on the command line."
@@ -382,7 +385,7 @@ msgstr "B<-l>, B<--list>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Print information about compressed I<files>.  No uncompressed output is produced, and no files are created or removed.  In list mode, the program cannot read the compressed data from standard input or from other unseekable sources."
-msgstr "Afișează informații despre I<fișiere> comprimate. Nu are loc nicio decomprimare la ieșire și nu sunt create sau eliminate fișiere. În modul listă, programul nu poate citi datele comprimate din intrarea standard sau din alte surse care nu pot fi căutate."
+msgstr "Afișează informații despre I<fișiere> comprimate. Nu are loc nicio decomprimare la ieșire și nu sunt create sau eliminate fișiere. În modul listă, programul nu poate citi datele comprimate din intrarea standard sau din alte surse care nu pot fi explorate."
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -550,6 +553,7 @@ msgstr "B<-F> I<format>, B<--format=>I<format>"
 msgid "Specify the file I<format> to compress or decompress:"
 msgstr "Specifică I<formatul> fișierului pentru comprimare sau decomprimare:"
 
+#.  TRANSLATORS: Don't translate bold string B<auto>.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -631,6 +635,9 @@ msgstr "Specifică tipul verificării integrității. Verificarea este calculat�
 msgid "Supported I<check> types:"
 msgstr "Tipuri de I<verificare> acceptate:"
 
+#.  TRANSLATORS: Don't translate the bold strings B<none>, B<crc32>,
+#.  B<crc64>, and B<sha256>. The command line option --check accepts
+#.  only the untranslated strings.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -1562,6 +1569,11 @@ msgstr "LZMA1 este un filtru vechi, care este acceptat aproape exclusiv datorit�
 msgid "LZMA1 and LZMA2 share the same set of I<options>:"
 msgstr "LZMA1 și LZMA2 au același set de I<opțiuni>:"
 
+#.  TRANSLATORS: Don't translate bold strings like B<preset>, B<dict>,
+#.  B<mode>, B<nice>, B<fast>, or B<normal> because those are command line
+#.  options. On the other hand, do translate the italic strings like
+#.  I<preset>, I<size>, and I<mode>, because such italic strings are
+#.  placeholders which a user replaces with an actual value.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -2268,6 +2280,11 @@ msgstr "Modul listă"
 msgid "B<xz --robot --list> uses tab-separated output.  The first column of every line has a string that indicates the type of the information found on that line:"
 msgstr "B<xz --robot --list> utilizează o ieșire separată de tabulatori. Prima coloană a fiecărei linii are un șir care indică tipul de informații găsite pe acea linie:"
 
+#.  TRANSLATORS: The bold strings B<name>, B<file>, B<stream>, B<block>,
+#.  B<summary>, and B<totals> are produced by the xz tool for scripts to
+#.  parse, thus the untranslated strings must be included in the translated
+#.  man page. It may be useful to provide a translated string in parenthesis
+#.  without bold, for example: "B<name> (nimi)"
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -2400,10 +2417,13 @@ msgstr "Raportul de comprimare, de exemplu, B<0,123>. Dacă raportul este peste 
 msgid "7."
 msgstr "7."
 
+#.  TRANSLATORS: Don't translate the bold strings B<None>, B<CRC32>,
+#.  B<CRC64>, B<SHA-256>, or B<Unknown-> here. In robot mode, xz produces
+#.  them in untranslated form for scripts to parse.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Comma-separated list of integrity check names.  The following strings are used for the known check types: B<None>, B<CRC32>, B<CRC64>, and B<SHA-256>.  For unknown check types, B<Unknown->I<N> is used, where I<N> is the Check ID as a decimal number (one or two digits)."
-msgstr "Lista de nume de verificare a integrității, separate prin virgule. Următoarele șiruri sunt utilizate pentru tipurile de verificare cunoscute: B<None>, B<CRC32>, B<CRC64> și B<SHA-256>. Pentru tipurile de verificări necunoscute, se utilizează B<None->I<N>, unde I<N> este ID-ul de verificare ca număr zecimal (una sau două cifre)."
+msgstr "Lista de nume de verificare a integrității, separate prin virgule. Următoarele șiruri sunt utilizate pentru tipurile de verificare cunoscute: B<None>, B<CRC32>, B<CRC64> și B<SHA-256>. Pentru tipurile de verificări necunoscute, se utilizează B<Unknown->I<N>, unde I<N> este ID-ul de verificare ca număr zecimal (una sau două cifre)."
 
 #. type: IP
 #: ../src/xz/xz.1
@@ -2781,6 +2801,7 @@ msgstr "Versiunea"
 msgid "B<xz --robot --version> prints the version number of B<xz> and liblzma in the following format:"
 msgstr "B<xz --robot --version> va afișa numărul versiunii B<xz> și liblzma în următorul format:"
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_VERSION or LIBLZMA_VERSION.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<XZ_VERSION=>I<XYYYZZZS>"
@@ -2897,10 +2918,17 @@ msgstr "Notificările (nu avertismentele sau erorile) afișate la ieșirea de er
 msgid "ENVIRONMENT"
 msgstr "VARIABILE DE MEDIU"
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS or XZ_OPT.
+#.  They are names of environment variables.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<xz> parses space-separated lists of options from the environment variables B<XZ_DEFAULTS> and B<XZ_OPT>, in this order, before parsing the options from the command line.  Note that only options are parsed from the environment variables; all non-options are silently ignored.  Parsing is done with B<getopt_long>(3)  which is used also for the command line arguments."
 msgstr "B<xz> analizează liste de opțiuni separate prin spații din variabilele de mediu B<XZ_DEFAULTS> și B<XZ_OPT>, în această ordine, înainte de a analiza opțiunile din linia de comandă. Rețineți că numai opțiunile sunt analizate din variabilele de mediu; toate non-opțiunile sunt ignorate în tăcere. Analiza se face cu funcția B<getopt_long>(3) care este folosită și pentru argumentele liniei de comandă."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<Warning:> By setting these environment variables, one is effectively modifying programs and scripts that run B<xz>.  Most of the time it is safe to set memory usage limits, number of threads, and compression options via the environment variables.  However, some options can break scripts.  An obvious example is B<--help> which makes B<xz> show the help text instead of compressing or decompressing a file.  More subtle examples are B<--quiet> and B<--verbose>.  In many cases it works well to enable the progress indicator using B<--verbose>, but in some situations the extra messages create problems.  The verbosity level also affects the behavior of B<--list>."
+msgstr "B<Avertisment:> Prin definirea acestor variabile de mediu, se modifică efectiv programele și scripturile care rulează B<xz>.  De cele mai multe ori este sigur să se definească limitele de utilizare a memoriei, numărul de fire și opțiunile de comprimare prin intermediul variabilelor de mediu.  Cu toate acestea, unele opțiuni pot întrerupe scripturile. Un exemplu evident este B<--help> care face ca B<xz> să afișeze textul de ajutor în loc să comprime sau să decomprime un fișier. Exemple mai subtile sunt B<--quiet> și B<--verbose>. În multe cazuri funcționează bine activarea indicatorului de progres folosind B<--verbose>, dar în unele situații mesajele suplimentare creează probleme. Nivelul de detaliere al mesajelor afectează, de asemenea, comportamentul lui B<--list>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2910,8 +2938,8 @@ msgstr "B<XZ_DEFAULTS>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default.  Excluding shell initialization scripts and similar special cases, scripts must never set or unset B<XZ_DEFAULTS>."
-msgstr "Opțiuni implicite specifice utilizatorului sau la nivelul întregului sistem. De obicei, acest lucru este specificat într-un script de inițializare shell pentru a activa limitatorul de utilizare a memoriei lui B<xz> implicit. Excluzând scripturile de inițializare shell și cazurile speciale similare, scripturile nu trebuie niciodată să modifice sau să dezactiveze B<XZ_DEFAULTS>."
+msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default or set the default number of threads.  Excluding shell initialization scripts and similar special cases, scripts should never set or unset B<XZ_DEFAULTS>."
+msgstr "Opțiuni implicite specifice utilizatorului sau la nivelul întregului sistem. De obicei, acest lucru este specificat într-un script de inițializare shell pentru a activa limitatorul de utilizare a memoriei lui B<xz> implicit sau pentru a stabili numărul implicit de fire. Excluzând scripturile de inițializare shell și cazurile speciale similare, scripturile nu trebuie niciodată să modifice sau să dezactiveze B<XZ_DEFAULTS>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3585,10 +3613,11 @@ msgid "XZDIFF"
 msgstr "XZDIFF"
 
 #. type: TH
-#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
 #, no-wrap
-msgid "2024-02-13"
-msgstr "13 februarie 2024"
+msgid "2025-03-06"
+msgstr "6 martie 2025"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3607,13 +3636,13 @@ msgstr "B<xzdiff> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "B<lzcmp> \\&..."
-msgstr "B<lzcmp> \\&..."
+msgid "B<lzcmp> \\&...  (DEPRECATED)"
+msgstr "B<lzcmp> \\&...  (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "B<lzdiff> \\&..."
-msgstr "B<lzdiff> \\&..."
+msgid "B<lzdiff> \\&...  (DEPRECATED)"
+msgstr "B<lzdiff> \\&...  (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3632,8 +3661,8 @@ msgstr "În cazul în care se furnizează un singur nume de fișier, I<fișier1>
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils."
-msgstr "Comenzile B<lzcmp> și B<lzdiff> sunt furnizate pentru compatibilitate retroactivă cu LZMA Utils."
+msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
+msgstr "Comenzile B<lzcmp> și B<lzdiff> sunt furnizate pentru compatibilitate retroactivă cu LZMA Utils.  Acestea sunt depreciate și vor fi eliminate într-o versiune viitoare."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3673,18 +3702,18 @@ msgstr "B<xzfgrep> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzgrep> \\&..."
-msgstr "B<lzgrep> \\&..."
+msgid "B<lzgrep> \\&...  (DEPRECATED)"
+msgstr "B<lzgrep> \\&...  (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzegrep> \\&..."
-msgstr "B<lzegrep> \\&..."
+msgid "B<lzegrep> \\&...  (DEPRECATED)"
+msgstr "B<lzegrep> \\&...  (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzfgrep> \\&..."
-msgstr "B<lzfgrep> \\&..."
+msgid "B<lzfgrep> \\&...  (DEPRECATED)"
+msgstr "B<lzfgrep> \\&...  (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
@@ -3753,8 +3782,8 @@ msgstr "B<xzegrep> este un alias pentru B<xzgrep -E>. B<xzfgrep> este un alias p
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils."
-msgstr "Comenzile B<lzgrep>, B<lzegrep> și B<lzfgrep> sunt furnizate pentru compatibilitate retroactivă cu LZMA Utils."
+msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
+msgstr "Comenzile B<lzgrep>, B<lzegrep> și B<lzfgrep> sunt furnizate pentru compatibilitate retroactivă cu LZMA Utils. Acestea sunt depreciate și vor fi eliminate într-o versiune viitoare."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
@@ -3799,12 +3828,6 @@ msgstr "B<grep>(1), B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), B
 msgid "XZLESS"
 msgstr "XZLESS"
 
-#. type: TH
-#: ../src/scripts/xzless.1 ../src/scripts/xzmore.1
-#, no-wrap
-msgid "2024-02-12"
-msgstr "12 februarie 2024"
-
 #. type: Plain text
 #: ../src/scripts/xzless.1
 msgid "xzless, lzless - view xz or lzma compressed (text) files"
@@ -3817,13 +3840,13 @@ msgstr "B<xzless> [I<fișier>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-msgid "B<lzless> [I<file>...]"
-msgstr "B<lzless> [I<fișier>...]"
+msgid "B<lzless> [I<file>...] (DEPRECATED)"
+msgstr "B<lzless> [I<fișier>...] (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
 msgid "B<xzless> is a filter that displays text from compressed files to a terminal.  Files supported by B<xz>(1)  are decompressed; other files are assumed to be in uncompressed form already.  If no I<files> are given, B<xzless> reads from standard input."
-msgstr "B<xzless> este un filtru care afișează textul din fișierele comprimate pe un terminal.  Fișierele acceptate de B<xz>(1) sunt decomprimate; se presupune că celelalte fișiere sunt deja în format necomprimat. Dacă nu se dă nici un I<fișier>, B<xzless> citește de la intrarea standard."
+msgstr "B<xzless> este un filtru care afișează textul din fișierele comprimate pe un terminal. Fișierele acceptate de B<xz>(1) sunt decomprimate; se presupune că celelalte fișiere sunt deja în format necomprimat. Dacă nu se dă nici un I<fișier>, B<xzless> citește de la intrarea standard."
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
@@ -3832,8 +3855,8 @@ msgstr "B<xzless> folosește B<less>(1) pentru a-și prezenta rezultatul. Spre d
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils."
-msgstr "Comanda numită B<lzless> este furnizată pentru compatibilitatea cu LZMA Utils."
+msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
+msgstr "Comanda numită B<lzless> este furnizată pentru compatibilitatea cu LZMA Utils. Aceasta este depreciată și va fi eliminată într-o versiune viitoare."
 
 #. type: TP
 #: ../src/scripts/xzless.1
@@ -3880,8 +3903,8 @@ msgstr "B<xzmore> [I<fișier>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-msgid "B<lzmore> [I<file>...]"
-msgstr "B<lzmore> [I<fișier>...]"
+msgid "B<lzmore> [I<file>...] (DEPRECATED)"
+msgstr "B<lzmore> [I<fișier>...] (DEPRECIATĂ)"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
@@ -3895,9 +3918,11 @@ msgstr "Rețineți că este posibil ca derularea înapoi să nu fie posibilă î
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils."
-msgstr "Comanda B<lzmore> este furnizată pentru compatibilitate retroactivă cu LZMA Utils."
+msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
+msgstr "Comanda B<lzmore> este furnizată pentru compatibilitate retroactivă cu LZMA Utils. Aceasta este depreciată și va fi eliminată într-o versiune viitoare."
 
+#.  TRANSLATORS: Don't translate the uppercase PAGER.
+#.  It is a name of an environment variable.
 #. type: TP
 #: ../src/scripts/xzmore.1
 #, no-wrap
@@ -3913,6 +3938,3 @@ msgstr "Dacă variabila de mediu B<PAGER>, este definită, valoarea sa este util
 #: ../src/scripts/xzmore.1
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
-
-#~ msgid "Decompress."
-#~ msgstr "Decomprimare."

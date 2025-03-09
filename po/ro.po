@@ -17,14 +17,15 @@
 # Actualizare a traducerii pentru versiunea 5.6.0-pre1, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea 5.6.0-pre2, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea 5.7.1-dev1, făcută de R-GC, ian-2025.
+# Actualizare a traducerii pentru versiunea 5.8.0-pre1, făcută de R-GC, mar-2025.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 12:05+0200\n"
-"PO-Revision-Date: 2025-01-31 17:31+0100\n"
+"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"PO-Revision-Date: 2025-03-09 19:21+0100\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -342,7 +343,7 @@ msgstr "%s: Eroare de citire: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Error seeking the file: %s"
-msgstr "%s: Eroare la căutarea fișierului: %s"
+msgstr "%s: Eroare la explorarea fișierului: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -654,7 +655,7 @@ msgstr "Nu se pot citi date de la intrarea standard atunci când se citesc numel
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -665,7 +666,7 @@ msgstr "Eroare internă (bug)"
 
 #: src/xz/message.c
 msgid "Cannot establish signal handlers"
-msgstr "Nu se pot stabili operatorii de semnal"
+msgstr "Nu se pot stabili gestionarii de semnal"
 
 #: src/xz/message.c
 msgid "No integrity check; not verifying file integrity"
@@ -715,7 +716,7 @@ msgstr "%s: Lanț de filtre: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "Încercați «%s --help» pentru mai multe informații."
 
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
 msgstr "Eroare la afișarea textului de ajutor (cod de eroare %d)"
@@ -883,7 +884,7 @@ msgstr "BLOCURI"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "start a new .xz block after the given comma-separated intervals of uncompressed data; optionally, specify a filter chain number (0-9) followed by a ':' before the uncompressed data size"
-msgstr "începe un nou bloc .xz după intervalele date separate prin virgulă, de date necomprimate; opțional, specificați un număr de lanț de filtrare (0-9) urmat de „:” înainte de dimensiunea datelor necomprimate"
+msgstr "începe un nou bloc .xz după intervalele specificate separate prin virgule, de date necomprimate; opțional, specificați un număr de lanț de filtrare (0-9) urmat de „:” înainte de dimensiunea datelor necomprimate"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -903,7 +904,7 @@ msgstr "stabilește limita de utilizare a memoriei pentru comprimare, decomprima
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "if compression settings exceed the memory usage limit, give an error instead of adjusting the settings downwards"
-msgstr "dacă setările de comprimare depășesc limita de utilizare a memoriei, dă o eroare în loc să reducă val. stabilite"
+msgstr "dacă valorile de comprimare depășesc limita de utilizare a memoriei, dă o eroare în loc să reducă val. stabilite"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -942,7 +943,7 @@ msgstr "OPȚI"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
-msgstr "LZMA1 sau LZMA2; OPȚI este o listă separată prin virgulă, de niciuna sau de mai multe dintre următoarele opțiuni (între paranteze: valorile valide, și cele implicite)"
+msgstr "LZMA1 sau LZMA2; OPȚI este o listă separată prin virgule, de niciuna sau de mai multe dintre următoarele opțiuni (între paranteze: valorile valide, și cele implicite)"
 
 #. TRANSLATORS: Short for PRESET. A longer string is
 #. fine but wider than 4 columns makes --long-help
@@ -1185,7 +1186,7 @@ msgstr "Suma de lc și lp nu trebuie să depășească 4"
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Numele fișierului are un sufix necunoscut, care se omite"
+msgstr "%s: Numele fișierului are un sufix necunoscut, se omite"
 
 #: src/xz/suffix.c
 #, c-format
@@ -1228,6 +1229,7 @@ msgstr "Datele comprimate nu pot fi scrise pe un terminal"
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
 msgstr "Utilizare: %s [--help] [--version] [FIȘIER]...\n"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
 msgstr "Afișează informațiile stocate în antetul fișierului .lzma ."

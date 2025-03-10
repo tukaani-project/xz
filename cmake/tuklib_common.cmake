@@ -26,7 +26,10 @@ endfunction()
 
 # This is an over-simplified version of AC_USE_SYSTEM_EXTENSIONS in Autoconf
 # or gl_USE_SYSTEM_EXTENSIONS in gnulib.
-function(tuklib_use_system_extensions)
+#
+# NOTE: This is a macro because the changes to CMAKE_REQUIRED_DEFINITIONS
+# must be visible in the calling scope.
+macro(tuklib_use_system_extensions)
     if(NOT MSVC)
         add_compile_definitions(
             _GNU_SOURCE        # glibc, musl, mingw-w64
@@ -50,4 +53,4 @@ function(tuklib_use_system_extensions)
             -D_ALL_SOURCE
         )
     endif()
-endfunction()
+endmacro()

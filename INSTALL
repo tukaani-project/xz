@@ -76,6 +76,11 @@ XZ Utils Installation
     you use CC=xlc instead, you must disable threading support
     with --disable-threads (usually not recommended).
 
+    If building a 32-bit executable, the address space available to xz
+    might be limited to 256 MiB by default. To increase the address
+    space to 2 GiB, pass LDFLAGS=-Wl,-bmaxdata:0x80000000 as an argument
+    to configure.
+
 
 1.2.2. IRIX
 

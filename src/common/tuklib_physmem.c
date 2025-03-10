@@ -148,7 +148,7 @@ tuklib_physmem(void)
 			ret += entries[i].end - entries[i].start + 1;
 
 #elif defined(TUKLIB_PHYSMEM_AIX)
-	ret = _system_configuration.physmem;
+	ret = (uint64_t)_system_configuration.physmem;
 
 #elif defined(TUKLIB_PHYSMEM_SYSCONF)
 	const long pagesize = sysconf(_SC_PAGESIZE);

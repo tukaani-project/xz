@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.7.1-dev1\n"
-"POT-Creation-Date: 2025-01-23 12:06+0200\n"
-"PO-Revision-Date: 2025-01-24 10:06+0000\n"
+"Project-Id-Version: xz-man 5.8.0-pre1\n"
+"POT-Creation-Date: 2025-03-08 14:50+0200\n"
+"PO-Revision-Date: 2025-03-10 08:02+0000\n"
 "Last-Translator: Luca Vercelli <luca.vercelli.to@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -18,8 +18,9 @@ msgstr ""
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=n!=1;\n"
 "X-Loco-Source-Locale: it_IT\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Loco https://localise.biz/X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Loco https://localise.biz/\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -30,8 +31,8 @@ msgstr "XZ"
 #. type: TH
 #: ../src/xz/xz.1
 #, no-wrap
-msgid "2025-01-05"
-msgstr "05/01/2025"
+msgid "2025-03-08"
+msgstr "08/03/2025"
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -218,6 +219,8 @@ msgstr "L'utilizzo della memoria di B<xz> varia da poche centinaia di kilobyte a
 msgid "Especially users of older systems may find the possibility of very large memory usage annoying.  To prevent uncomfortable surprises, B<xz> has a built-in memory usage limiter, which is disabled by default.  While some operating systems provide ways to limit the memory usage of processes, relying on it wasn't deemed to be flexible enough (for example, using B<ulimit>(1)  to limit virtual memory tends to cripple B<mmap>(2))."
 msgstr "Soprattutto gli utenti di sistemi più vecchi possono trovare fastidiosa l'eventualità di un utilizzo molto elevato di memoria. Per evitare spiacevoli sorprese, B<xz> dispone di un limitatore di utilizzo della memoria incorporato, che è disabilitato per impostazione predefinita. Anche se alcuni sistemi operativi forniscono modi per limitare l'utilizzo della memoria dei processi, fare affidamento su questi non è stato ritenuto sufficientemente flessibile (ad esempio, l'uso di B<ulimit>(1) per limitare la memoria virtuale tende a paralizzare B<mmap>(2))."
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS.
+#.  It's a name of an environment variable.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The memory usage limiter can be enabled with the command line option B<--memlimit=>I<limit>.  Often it is more convenient to enable the limiter by default by setting the environment variable B<XZ_DEFAULTS>, for example, B<XZ_DEFAULTS=--memlimit=150MiB>.  It is possible to set the limits separately for compression and decompression by using B<--memlimit-compress=>I<limit> and B<--memlimit-decompress=>I<limit>.  Using these two options outside B<XZ_DEFAULTS> is rarely useful because a single run of B<xz> cannot do both compression and decompression and B<--memlimit=>I<limit> (or B<-M> I<limit>)  is shorter to type on the command line."
@@ -536,6 +539,7 @@ msgstr "B<-F> I<FORMATO>, B<--format=>I<FORMATO>"
 msgid "Specify the file I<format> to compress or decompress:"
 msgstr "Specifica il I<FORMATO> del file da comprimere o decomprimere:"
 
+#.  TRANSLATORS: Don't translate bold string B<auto>.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -617,6 +621,9 @@ msgstr "Specifica il tipo di controllo di integrità. Il controllo viene calcola
 msgid "Supported I<check> types:"
 msgstr "Tipi di I<CONTROLLI> supportati:"
 
+#.  TRANSLATORS: Don't translate the bold strings B<none>, B<crc32>,
+#.  B<crc64>, and B<sha256>. The command line option --check accepts
+#.  only the untranslated strings.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -1541,6 +1548,11 @@ msgstr "LZMA1 è un filtro obsoleto, supportato quasi esclusivamente a causa del
 msgid "LZMA1 and LZMA2 share the same set of I<options>:"
 msgstr "LZMA1 e LZMA2 condividono lo stesso insieme di I<OPZIONI>:"
 
+#.  TRANSLATORS: Don't translate bold strings like B<preset>, B<dict>,
+#.  B<mode>, B<nice>, B<fast>, or B<normal> because those are command line
+#.  options. On the other hand, do translate the italic strings like
+#.  I<preset>, I<size>, and I<mode>, because such italic strings are
+#.  placeholders which a user replaces with an actual value.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -2243,11 +2255,16 @@ msgstr "Modalità stampa"
 msgid "B<xz --robot --list> uses tab-separated output.  The first column of every line has a string that indicates the type of the information found on that line:"
 msgstr "B<xz --robot --list> usa un output separato da tabulazione. La prima colonna di ogni riga contiene una stringa che indica il tipo di informazione contenuta in quella riga:"
 
+#.  TRANSLATORS: The bold strings B<name>, B<file>, B<stream>, B<block>,
+#.  B<summary>, and B<totals> are produced by the xz tool for scripts to
+#.  parse, thus the untranslated strings must be included in the translated
+#.  man page. It may be useful to provide a translated string in parenthesis
+#.  without bold, for example: "B<name> (nimi)"
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<name>"
-msgstr "B<nome>"
+msgstr "B<name>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2263,46 +2280,46 @@ msgstr "B<file>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This line contains overall information about the B<.xz> file.  This line is always printed after the B<name> line."
-msgstr "Questa riga contiene informazioni generali sul file B<.xz>. Questa riga viene sempre stampata dopo la riga B<nome>."
+msgstr "Questa riga contiene informazioni generali sul file B<.xz>. Questa riga viene sempre stampata dopo la riga B<name>."
 
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<stream>"
-msgstr "B<flusso>"
+msgstr "B<stream>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This line type is used only when B<--verbose> was specified.  There are as many B<stream> lines as there are streams in the B<.xz> file."
-msgstr "Questo tipo di riga viene utilizzato solo quando è stato specificato B<--verbose>. Sono presenti tante righe B<flusso> quanti sono i flussi nel file B<.xz>."
+msgstr "Questo tipo di riga viene utilizzato solo quando è stato specificato B<--verbose>. Sono presenti tante righe B<stream> quanti sono i flussi nel file B<.xz>."
 
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<block>"
-msgstr "B<blocco>"
+msgstr "B<block>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This line type is used only when B<--verbose> was specified.  There are as many B<block> lines as there are blocks in the B<.xz> file.  The B<block> lines are shown after all the B<stream> lines; different line types are not interleaved."
-msgstr "Questo tipo di riga viene utilizzato solo quando è stato specificato B<--verbose>. Ci sono tante righe B<blocco> quanti sono i blocchi nel file B<.xz>. Le righe B<blocco> vengono visualizzate dopo tutte le righe B<flusso>; i diversi tipi di riga non vengono interlacciati."
+msgstr "Questo tipo di riga viene utilizzato solo quando è stato specificato B<--verbose>. Ci sono tante righe B<block> quanti sono i blocchi nel file B<.xz>. Le righe B<block> vengono visualizzate dopo tutte le righe B<stream>; i diversi tipi di riga non vengono interlacciati."
 
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<summary>"
-msgstr "B<sommario>"
+msgstr "B<summary>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "This line type is used only when B<--verbose> was specified twice.  This line is printed after all B<block> lines.  Like the B<file> line, the B<summary> line contains overall information about the B<.xz> file."
-msgstr "Questo tipo di riga viene utilizzato solo quando B<--verbose> è stato specificato due volte. Questa riga viene stampata dopo tutte le righe B<blocco>. Come la riga B<file>, la riga B<sommario> contiene informazioni generali sul file B<.xz>."
+msgstr "Questo tipo di riga viene utilizzato solo quando B<--verbose> è stato specificato due volte. Questa riga viene stampata dopo tutte le righe B<block>. Come la riga B<file>, la riga B<summary> contiene informazioni generali sul file B<.xz>."
 
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<totals>"
-msgstr "B<totali>"
+msgstr "B<totals>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2375,6 +2392,9 @@ msgstr "Rapporto di compressione, es. B<0.123>. Se il rapporto è oltre 9999, al
 msgid "7."
 msgstr "7."
 
+#.  TRANSLATORS: Don't translate the bold strings B<None>, B<CRC32>,
+#.  B<CRC64>, B<SHA-256>, or B<Unknown-> here. In robot mode, xz produces
+#.  them in untranslated form for scripts to parse.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Comma-separated list of integrity check names.  The following strings are used for the known check types: B<None>, B<CRC32>, B<CRC64>, and B<SHA-256>.  For unknown check types, B<Unknown->I<N> is used, where I<N> is the Check ID as a decimal number (one or two digits)."
@@ -2394,7 +2414,7 @@ msgstr "Dimensione totale del padding del flusso nel file"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The columns of the B<stream> lines:"
-msgstr "Le colonne delle righe B<flusso>:"
+msgstr "Le colonne delle righe B<stream>:"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2456,7 +2476,7 @@ msgstr "Dimensione del padding del flusso"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The columns of the B<block> lines:"
-msgstr "Le colonne delle righe B<blocco>:"
+msgstr "Le colonne delle righe B<block>:"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2491,7 +2511,7 @@ msgstr "Dimensione totale compressa del blocco (incluse le intestazioni)"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "If B<--verbose> was specified twice, additional columns are included on the B<block> lines.  These are not displayed with a single B<--verbose>, because getting this information requires many seeks and can thus be slow:"
-msgstr "Se B<--verbose> viene specificato due volte, sono incluse colonne aggiuntive nelle righe B<blocco>. Queste non sono mostrate con un B<--verbose> singolo, perché recuperare queste informazioni richiede molte ricerche e quindi può essere lento:"
+msgstr "Se B<--verbose> viene specificato due volte, sono incluse colonne aggiuntive nelle righe B<block>. Queste non sono mostrate con un B<--verbose> singolo, perché recuperare queste informazioni richiede molte ricerche e quindi può essere lento:"
 
 #. type: IP
 #: ../src/xz/xz.1
@@ -2562,7 +2582,7 @@ msgstr "Catena di filtri. Si noti che la maggior parte delle opzioni utilizzate 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The columns of the B<summary> lines:"
-msgstr "Le colonne delle righe B<sommario>:"
+msgstr "Le colonne delle righe B<summary>:"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2756,6 +2776,7 @@ msgstr "Versione"
 msgid "B<xz --robot --version> prints the version number of B<xz> and liblzma in the following format:"
 msgstr "B<xz --robot --version> stampa il numero di versione di B<xz> e liblzma nel seguente formato:"
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_VERSION or LIBLZMA_VERSION.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<XZ_VERSION=>I<XYYYZZZS>"
@@ -2872,10 +2893,17 @@ msgstr "Gli avvisi (non gli avvertimenti o gli errori) stampati sullo standard e
 msgid "ENVIRONMENT"
 msgstr "AMBIENTE"
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS or XZ_OPT.
+#.  They are names of environment variables.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<xz> parses space-separated lists of options from the environment variables B<XZ_DEFAULTS> and B<XZ_OPT>, in this order, before parsing the options from the command line.  Note that only options are parsed from the environment variables; all non-options are silently ignored.  Parsing is done with B<getopt_long>(3)  which is used also for the command line arguments."
 msgstr "B<xz> analizza elenchi di opzioni separate da spazi dalle variabili d'ambiente B<XZ_DEFAULTS> e B<XZ_OPT>, in questo ordine, analizzando prima le opzioni dalla riga di comando. Si noti che solo le opzioni vengono analizzate dalle variabili d'ambiente; tutte le non-opzioni vengono ignorate silenziosamente. L'analisi viene eseguita con B<getopt_long>(3) che viene utilizzato anche per gli argomenti della riga di comando."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<Warning:> By setting these environment variables, one is effectively modifying programs and scripts that run B<xz>.  Most of the time it is safe to set memory usage limits, number of threads, and compression options via the environment variables.  However, some options can break scripts.  An obvious example is B<--help> which makes B<xz> show the help text instead of compressing or decompressing a file.  More subtle examples are B<--quiet> and B<--verbose>.  In many cases it works well to enable the progress indicator using B<--verbose>, but in some situations the extra messages create problems.  The verbosity level also affects the behavior of B<--list>."
+msgstr "B<Attenzione:> Impostando queste variabili di ambiente, si sta di fatto modificando programmi e script che lanciano B<xz>.  La maggior parte delle volte va bene impostare i limiti di utilizzo della memoria, il numero di thread e le opzioni di compressione tramite variabili d'ambiente.  Tuttavia, alcune opzioni possono rompere degli script.  Un esempio banale è B<--help> che forza B<xz> a mostrare la pagina di aiuto anziché comprimere o decomprimere file. Esempi meno ovvi sono B<--quiet> e B<--verbose>.  In molti casi funziona bene abilitare l'indicatore di avanzamento usando B<--verbose>, ma in alcune situazioni i messaggi extra creano problemi.  Il livello di prolissità influisce anche sul comportamento di B<--list>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2885,8 +2913,8 @@ msgstr "B<XZ_DEFAULTS>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default.  Excluding shell initialization scripts and similar special cases, scripts must never set or unset B<XZ_DEFAULTS>."
-msgstr "Opzioni predefinite specifiche dell'utente o a livello di sistema. In genere questo viene impostato in uno script di inizializzazione della shell per abilitare il limitatore di utilizzo della memoria di B<xz> per impostazione predefinita. Escludendo gli script di inizializzazione della shell e analoghi casi particolari, gli script non devono mai impostare o annullare l'impostazione di B<XZ_DEFAULTS>."
+msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default or set the default number of threads.  Excluding shell initialization scripts and similar special cases, scripts should never set or unset B<XZ_DEFAULTS>."
+msgstr "Opzioni predefinite specifiche dell'utente o a livello di sistema. In genere questo viene impostato in uno script di inizializzazione della shell per abilitare il valore predefinito del limitatore di utilizzo della memoria di B<xz>, o per impostare il numero di thread predefinito. Escludendo gli script di inizializzazione della shell e analoghi casi particolari, gli script non dovrebbero mai impostare o annullare l'impostazione di B<XZ_DEFAULTS>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3546,10 +3574,11 @@ msgid "XZDIFF"
 msgstr "XZDIFF"
 
 #. type: TH
-#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
 #, no-wrap
-msgid "2024-02-13"
-msgstr "13/02/2024"
+msgid "2025-03-06"
+msgstr "06/03/2025"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3568,13 +3597,13 @@ msgstr "B<xzdiff> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "B<lzcmp> \\&..."
-msgstr "B<lzcmp> \\&..."
+msgid "B<lzcmp> \\&...  (DEPRECATED)"
+msgstr "B<lzcmp> \\&... (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "B<lzdiff> \\&..."
-msgstr "B<lzdiff> \\&..."
+msgid "B<lzdiff> \\&...  (DEPRECATED)"
+msgstr "B<lzdiff> \\&... (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3593,8 +3622,8 @@ msgstr "Se viene fornito un solo nome di file, I<FILE1> deve avere un suffisso d
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils."
-msgstr "I comandi B<lzcmp>, e B<lzdiff> sono forniti per retrocompatibilità con le LZMA Utils."
+msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
+msgstr "I comandi B<lzcmp>, e B<lzdiff> sono forniti per retrocompatibilità con le LZMA Utils. Sono deprecati e saranno rimosso in una versione futura."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3634,18 +3663,18 @@ msgstr "B<xzfgrep> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzgrep> \\&..."
-msgstr "B<lzgrep> \\&..."
+msgid "B<lzgrep> \\&...  (DEPRECATED)"
+msgstr "B<lzgrep> \\&... (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzegrep> \\&..."
-msgstr "B<lzegrep> \\&..."
+msgid "B<lzegrep> \\&...  (DEPRECATED)"
+msgstr "B<lzegrep> \\&... (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzfgrep> \\&..."
-msgstr "B<lzfgrep> \\&..."
+msgid "B<lzfgrep> \\&...  (DEPRECATED)"
+msgstr "B<lzfgrep> \\&... (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
@@ -3714,8 +3743,8 @@ msgstr "B<xzegrep> è un alias per B<xzgrep -E>.  B<xzfgrep> è un alias per B<x
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils."
-msgstr "I comandi B<lzgrep>, B<lzegrep>, e B<lzfgrep> sono forniti per retrocompatibilità con le LZMA Utils."
+msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
+msgstr "I comandi B<lzgrep>, B<lzegrep>, e B<lzfgrep> sono forniti per retrocompatibilità con le LZMA Utils. Sono deprecati e saranno rimosso in una versione futura."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
@@ -3760,12 +3789,6 @@ msgstr "B<grep>(1), B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), B
 msgid "XZLESS"
 msgstr "XZLESS"
 
-#. type: TH
-#: ../src/scripts/xzless.1 ../src/scripts/xzmore.1
-#, no-wrap
-msgid "2024-02-12"
-msgstr "12/02/2024"
-
 #. type: Plain text
 #: ../src/scripts/xzless.1
 msgid "xzless, lzless - view xz or lzma compressed (text) files"
@@ -3778,8 +3801,8 @@ msgstr "B<xzless> [I<FILE>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-msgid "B<lzless> [I<file>...]"
-msgstr "B<lzless> [I<FILE>...]"
+msgid "B<lzless> [I<file>...] (DEPRECATED)"
+msgstr "B<lzless> [I<FILE>...] (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
@@ -3793,8 +3816,8 @@ msgstr "B<xzless> usa B<less>(1)  per mostrare il suo output. A differenza di B<
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils."
-msgstr "Il comando chiamato B<lzless> è fornito per retrocompatibilità con le LZMA Utils."
+msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
+msgstr "Il comando chiamato B<lzless> è fornito per retrocompatibilità con le LZMA Utils. È deprecato e sarà rimosso in una versione futura."
 
 #. type: TP
 #: ../src/scripts/xzless.1
@@ -3841,8 +3864,8 @@ msgstr "B<xzmore> [I<FILE>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-msgid "B<lzmore> [I<file>...]"
-msgstr "B<lzmore> [I<FILE>...]"
+msgid "B<lzmore> [I<file>...] (DEPRECATED)"
+msgstr "B<lzmore> [I<FILE>...] (DEPRECATO)"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
@@ -3856,9 +3879,11 @@ msgstr "Si noti che lo scorrimento all'indietro potrebbe non essere possibile a 
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils."
-msgstr "Il comando B<lzmore> è fornito per retrocompatibilità con le LZMA Utils."
+msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
+msgstr "Il comando B<lzmore> è fornito per retrocompatibilità con le LZMA Utils. È deprecato e sarà rimosso in una versione futura."
 
+#.  TRANSLATORS: Don't translate the uppercase PAGER.
+#.  It is a name of an environment variable.
 #. type: TP
 #: ../src/scripts/xzmore.1
 #, no-wrap

@@ -98,7 +98,7 @@ msgstr "Il numero massimo di filtri è quattro"
 #: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
-msgstr "Errore nell'opzione --filters%s=FILTRI"
+msgstr "Errore nell'opzione --filters%s=FILTRI:"
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
@@ -142,7 +142,7 @@ msgstr "Opzioni non supportate nella catena di filtri %u"
 #: src/xz/coder.c
 #, c-format
 msgid "Using up to %<PRIu32> threads."
-msgstr "Vengono usati circa %<PRIu32> thread."
+msgstr "Vengono usati fino a %<PRIu32> thread."
 
 #: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
@@ -151,7 +151,7 @@ msgstr "Catena di filtri od opzioni del filtro non supportata"
 #: src/xz/coder.c
 #, c-format
 msgid "Decompression will need %s MiB of memory."
-msgstr "L'estrazione necessita di %s MiB di memoria."
+msgstr "La decompressione necessita di %s MiB di memoria."
 
 #: src/xz/coder.c
 #, c-format
@@ -320,7 +320,7 @@ msgstr "%s: errore di lettura: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Error seeking the file: %s"
-msgstr "%s: errore nel cercare il file: %s"
+msgstr "%s: errore nel cercare nel file: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -334,7 +334,7 @@ msgstr "%s: errore di scrittura: %s"
 
 #: src/xz/hardware.c
 msgid "Disabled"
-msgstr "Disabilitato"
+msgstr "Disabilitata"
 
 #: src/xz/hardware.c
 msgid "Amount of physical memory (RAM):"
@@ -350,7 +350,7 @@ msgstr "Compressione:"
 
 #: src/xz/hardware.c
 msgid "Decompression:"
-msgstr "Decmpressione:"
+msgstr "Decompressione:"
 
 #: src/xz/hardware.c
 msgid "Multi-threaded decompression:"
@@ -604,7 +604,7 @@ msgstr "%s: trovato carattere null durante la lettura dei nomi dei file; forse s
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
-msgstr "La compressione e l'estrazione con --robot non sono ancora supportate."
+msgstr "La compressione e la decompressione con --robot non sono ancora supportate."
 
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
@@ -738,7 +738,7 @@ msgstr "forza la sovrascrittura del file output e dei link (de)compressi"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "write to standard output and don't delete input files"
-msgstr "scrivere sullo standard ouput e non eliminare i file input"
+msgstr "scrivere sullo standard output e non eliminare i file input"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -944,7 +944,7 @@ msgstr "numero di bit di posizione"
 
 #: src/xz/message.c
 msgid "MODE"
-msgstr "MODALITA"
+msgstr "MODALITÀ"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -954,12 +954,12 @@ msgstr "modalità di compressione"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "nice length of a match"
-msgstr ""
+msgstr "lunghezza ragionevole di una corrispondenza"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "match finder"
-msgstr ""
+msgstr "cercatore di corrispondenze"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1054,7 +1054,7 @@ msgstr "usa messaggi analizzabili (utile per gli script)"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "display the total amount of RAM and the currently active memory usage limits, and exit"
-msgstr "visualizza la quantità totale di RAM e il limite attuale attivo di utilizzo della memore ed esce"
+msgstr "visualizza la quantità totale di RAM e il limite attuale attivo di utilizzo della memoria ed esce"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1181,7 +1181,7 @@ msgstr "I dati compressi non possono essere letti da un terminale"
 
 #: src/xz/util.c
 msgid "Compressed data cannot be written to a terminal"
-msgstr "I dati compressi non possono essere scritti ad un terminale"
+msgstr "I dati compressi non possono essere scritti su un terminale"
 
 #: src/lzmainfo/lzmainfo.c
 #, c-format
@@ -1203,7 +1203,7 @@ msgstr "Non è un file .lzma"
 
 #: src/common/tuklib_exit.c
 msgid "Writing to standard output failed"
-msgstr "Scrittura sullo standard ouput non riuscita"
+msgstr "Scrittura sullo standard output non riuscita"
 
 #: src/common/tuklib_exit.c
 msgid "Unknown error"
@@ -1227,7 +1227,7 @@ msgstr "Il valore dell'opzione non può essere vuoto"
 
 #: src/liblzma/common/string_conversion.c
 msgid "Value out of range"
-msgstr "Valori fuori scala"
+msgstr "Valore fuori scala"
 
 #: src/liblzma/common/string_conversion.c
 msgid "This option does not support any multiplier suffixes"
@@ -1267,4 +1267,4 @@ msgstr "Nome del filtro mancante"
 
 #: src/liblzma/common/string_conversion.c
 msgid "Invalid filter chain ('lzma2' missing at the end?)"
-msgstr "Catena di filtro non valida (manca 'lzma2' al fondo?)"
+msgstr "Catena di filtro non valida (manca \"lzma2\" al fondo?)"

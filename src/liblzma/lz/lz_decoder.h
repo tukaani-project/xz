@@ -161,7 +161,8 @@ dict_is_distance_valid(const lzma_dict *const dict, const size_t distance)
 
 /// Repeat *len bytes at distance.
 static inline bool
-dict_repeat(lzma_dict *dict, uint32_t distance, uint32_t *len)
+dict_repeat(lzma_dict *restrict dict,
+		uint32_t distance, uint32_t *restrict len)
 {
 	// Don't write past the end of the dictionary.
 	const size_t dict_avail = dict->limit - dict->pos;
@@ -195,7 +196,7 @@ dict_repeat(lzma_dict *dict, uint32_t distance, uint32_t *len)
 
 
 static inline void
-dict_put(lzma_dict *dict, uint8_t byte)
+dict_put(lzma_dict *restrict dict, uint8_t byte)
 {
 	dict->buf[dict->pos++] = byte;
 
@@ -207,7 +208,7 @@ dict_put(lzma_dict *dict, uint8_t byte)
 /// Puts one byte into the dictionary. Returns true if the dictionary was
 /// already full and the byte couldn't be added.
 static inline bool
-dict_put_safe(lzma_dict *dict, uint8_t byte)
+dict_put_safe(lzma_dict *restrict dict, uint8_t byte)
 {
 	if (unlikely(dict->pos == dict->limit))
 		return true;

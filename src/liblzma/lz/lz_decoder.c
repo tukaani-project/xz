@@ -261,10 +261,12 @@ lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// recommended to give aligned buffers to liblzma.
 	//
 	// Reserve 2 * LZ_DICT_REPEAT_MAX bytes of extra space which is
-	// needed for alloc_size.
+	// needed for alloc_size. Reserve also LZ_DICT_EXTRA bytes of extra
+	// space which is *not* counted in alloc_size or coder->dict.size.
 	//
 	// Avoid integer overflow.
-	if (lz_options.dict_size > SIZE_MAX - 15 - 2 * LZ_DICT_REPEAT_MAX)
+	if (lz_options.dict_size > SIZE_MAX - 15 - 2 * LZ_DICT_REPEAT_MAX
+			- LZ_DICT_EXTRA)
 		return LZMA_MEM_ERROR;
 
 	lz_options.dict_size = (lz_options.dict_size + 15) & ~((size_t)(15));
@@ -277,7 +279,13 @@ lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// Allocate and initialize the dictionary.
 	if (coder->dict.size != alloc_size) {
 		lzma_free(coder->dict.buf, allocator);
-		coder->dict.buf = lzma_alloc(alloc_size, allocator);
+
+		// The LZ_DICT_EXTRA bytes at the end of the buffer aren't
+		// included in alloc_size. These extra bytes allow
+		// dict_repeat() to read and write more data than requested.
+		// Otherwise this extra space is ignored.
+		coder->dict.buf = lzma_alloc(alloc_size + LZ_DICT_EXTRA,
+				allocator);
 		if (coder->dict.buf == NULL)
 			return LZMA_MEM_ERROR;
 

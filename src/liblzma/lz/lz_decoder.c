@@ -53,9 +53,9 @@ typedef struct {
 static void
 lz_decoder_reset(lzma_coder *coder)
 {
-	coder->dict.pos = 2 * LZ_DICT_REPEAT_MAX;
+	coder->dict.pos = LZ_DICT_INIT_POS;
 	coder->dict.full = 0;
-	coder->dict.buf[2 * LZ_DICT_REPEAT_MAX - 1] = '\0';
+	coder->dict.buf[LZ_DICT_INIT_POS - 1] = '\0';
 	coder->dict.has_wrapped = false;
 	coder->dict.need_reset = false;
 	return;

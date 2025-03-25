@@ -29,7 +29,8 @@ Package contents
 ----------------
 
     All executables and libraries in this package require
-    Universal CRT (UCRT). It is included in Windows 10 and later.
+    Universal CRT (UCRT). It is included in Windows 10 and later,
+    and it's possible to install UCRT on Windows XP and later.
 
     There is a SSE2 optimization in the compression code but this
     version of XZ Utils doesn't include run-time processor detection.

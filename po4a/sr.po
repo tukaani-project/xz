@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: xz-man 5.7.1-dev1\n"
-"POT-Creation-Date: 2025-01-23 12:06+0200\n"
+"POT-Creation-Date: 2025-03-25 12:28+0200\n"
 "PO-Revision-Date: 2025-03-02 17:46+0100\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
@@ -28,8 +28,9 @@ msgstr "XZ"
 
 #. type: TH
 #: ../src/xz/xz.1
-#, no-wrap
-msgid "2025-01-05"
+#, fuzzy, no-wrap
+#| msgid "2025-01-05"
+msgid "2025-03-08"
 msgstr "05.01.2025."
 
 #. type: TH
@@ -2898,6 +2899,11 @@ msgstr "ОКРУЖЕЊЕ"
 msgid "B<xz> parses space-separated lists of options from the environment variables B<XZ_DEFAULTS> and B<XZ_OPT>, in this order, before parsing the options from the command line.  Note that only options are parsed from the environment variables; all non-options are silently ignored.  Parsing is done with B<getopt_long>(3)  which is used also for the command line arguments."
 msgstr "B<xz> обрађује размаком одвојени списак опција из променљивих окружења B<XZ_DEFAULTS> и B<XZ_OPT>, тим редом, пре обраде опција са линије наредби.  Знајте да се обрађују само опције из променљивих окружења; све што нису опције се тихо занемарује.  Обрада се ради са B<getopt_long>(3) која се користи такође за аргументе линије наредби."
 
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<Warning:> By setting these environment variables, one is effectively modifying programs and scripts that run B<xz>.  Most of the time it is safe to set memory usage limits, number of threads, and compression options via the environment variables.  However, some options can break scripts.  An obvious example is B<--help> which makes B<xz> show the help text instead of compressing or decompressing a file.  More subtle examples are B<--quiet> and B<--verbose>.  In many cases it works well to enable the progress indicator using B<--verbose>, but in some situations the extra messages create problems.  The verbosity level also affects the behavior of B<--list>."
+msgstr ""
+
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -2906,7 +2912,9 @@ msgstr "B<XZ_DEFAULTS>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default.  Excluding shell initialization scripts and similar special cases, scripts must never set or unset B<XZ_DEFAULTS>."
+#, fuzzy
+#| msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default.  Excluding shell initialization scripts and similar special cases, scripts must never set or unset B<XZ_DEFAULTS>."
+msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default or set the default number of threads.  Excluding shell initialization scripts and similar special cases, scripts should never set or unset B<XZ_DEFAULTS>."
 msgstr "Кориснику специфичне или свеопште системске основне опције.  Обично је ово постављено у скрипти покретања конзоле за укључивање B<xz> ограничавача коришћења меморије по основи.  Искључивање скрипти покретања конзоле и сличних специјалних случајева, скрипте не смеју никада да поставе или пониште B<XZ_DEFAULTS>."
 
 #. type: TP
@@ -3581,10 +3589,12 @@ msgid "XZDIFF"
 msgstr "XZDIFF"
 
 #. type: TH
-#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1
-#, no-wrap
-msgid "2024-02-13"
-msgstr "13.02.2024."
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, fuzzy, no-wrap
+#| msgid "2025-01-05"
+msgid "2025-03-06"
+msgstr "05.01.2025."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3603,12 +3613,16 @@ msgstr "B<xzdiff> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "B<lzcmp> \\&..."
+#, fuzzy
+#| msgid "B<lzcmp> \\&..."
+msgid "B<lzcmp> \\&...  (DEPRECATED)"
 msgstr "B<lzcmp> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "B<lzdiff> \\&..."
+#, fuzzy
+#| msgid "B<lzdiff> \\&..."
+msgid "B<lzdiff> \\&...  (DEPRECATED)"
 msgstr "B<lzdiff> \\&..."
 
 #. type: Plain text
@@ -3628,7 +3642,9 @@ msgstr "Ако је достављен само један назив датот
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils."
+#, fuzzy
+#| msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils."
+msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
 msgstr "Наредбе B<lzcmp> и B<lzdiff> се достављају зарад назадне сагласности са LZMA Utils."
 
 #. type: Plain text
@@ -3669,17 +3685,23 @@ msgstr "B<xzfgrep> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzgrep> \\&..."
+#, fuzzy
+#| msgid "B<lzgrep> \\&..."
+msgid "B<lzgrep> \\&...  (DEPRECATED)"
 msgstr "B<lzgrep> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzegrep> \\&..."
+#, fuzzy
+#| msgid "B<lzegrep> \\&..."
+msgid "B<lzegrep> \\&...  (DEPRECATED)"
 msgstr "B<lzegrep> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "B<lzfgrep> \\&..."
+#, fuzzy
+#| msgid "B<lzfgrep> \\&..."
+msgid "B<lzfgrep> \\&...  (DEPRECATED)"
 msgstr "B<lzfgrep> \\&..."
 
 #. type: Plain text
@@ -3749,7 +3771,9 @@ msgstr "B<xzegrep> је алијас за B<xzgrep -E>.  B<xzfgrep> је али�
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils."
+#, fuzzy
+#| msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils."
+msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
 msgstr "Наредбе B<lzgrep>, B<lzegrep> и B<lzfgrep> се достављају зарад назадне сагласности са LZMA Utils."
 
 #. type: Plain text
@@ -3795,12 +3819,6 @@ msgstr "B<grep>(1), B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), B
 msgid "XZLESS"
 msgstr "XZLESS"
 
-#. type: TH
-#: ../src/scripts/xzless.1 ../src/scripts/xzmore.1
-#, no-wrap
-msgid "2024-02-12"
-msgstr "12.02.2024."
-
 #. type: Plain text
 #: ../src/scripts/xzless.1
 msgid "xzless, lzless - view xz or lzma compressed (text) files"
@@ -3813,7 +3831,9 @@ msgstr "B<xzless> [I<датотека>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-msgid "B<lzless> [I<file>...]"
+#, fuzzy
+#| msgid "B<lzless> [I<file>...]"
+msgid "B<lzless> [I<file>...] (DEPRECATED)"
 msgstr "B<lzless> [I<датотека>...]"
 
 #. type: Plain text
@@ -3828,7 +3848,9 @@ msgstr "B<xzless> користи B<less>(1) да представи свој и�
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils."
+#, fuzzy
+#| msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils."
+msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
 msgstr "Наредба B<lzless> се доставља зарад назадне сагласности са LZMA Utils."
 
 #. type: TP
@@ -3876,7 +3898,9 @@ msgstr "B<xzmore> [I<датотека>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-msgid "B<lzmore> [I<file>...]"
+#, fuzzy
+#| msgid "B<lzmore> [I<file>...]"
+msgid "B<lzmore> [I<file>...] (DEPRECATED)"
 msgstr "B<lzmore> [I<датотека>...]"
 
 #. type: Plain text
@@ -3891,7 +3915,9 @@ msgstr "Знајте да клизање уназад можда неће бит
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils."
+#, fuzzy
+#| msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils."
+msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
 msgstr "Наредба B<lzmore> се доставља зарад назадне сагласности са LZMA Utils."
 
 #.  TRANSLATORS: Don't translate the uppercase PAGER.
@@ -3911,6 +3937,3 @@ msgstr "Ако је B<PAGER> постављено, његова вредност
 #: ../src/scripts/xzmore.1
 msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
 msgstr "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
-
-#~ msgid "Decompress."
-#~ msgstr "Распакује."

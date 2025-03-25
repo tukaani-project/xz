@@ -328,5 +328,6 @@ lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 extern uint64_t
 lzma_lz_decoder_memusage(size_t dictionary_size)
 {
-	return sizeof(lzma_coder) + (uint64_t)(dictionary_size);
+	return sizeof(lzma_coder) + (uint64_t)(dictionary_size)
+			+ 2 * LZ_DICT_REPEAT_MAX + LZ_DICT_EXTRA;
 }

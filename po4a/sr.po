@@ -215,10 +215,12 @@ msgstr "Коришћење меморије B<xz> се мења од некол�
 msgid "Especially users of older systems may find the possibility of very large memory usage annoying.  To prevent uncomfortable surprises, B<xz> has a built-in memory usage limiter, which is disabled by default.  While some operating systems provide ways to limit the memory usage of processes, relying on it wasn't deemed to be flexible enough (for example, using B<ulimit>(1)  to limit virtual memory tends to cripple B<mmap>(2))."
 msgstr "Нарочито корисници старијих система могу наћи досадном могућност коришћења врло велике меморије.  Да би се спречила нежељена изненађења, B<xz> има уграђен ограничавач коришћења меморије, који је искључен по основи.  Док неки оперативни системи пружају начин за ограничавање коришћење меморије за процесе, ослањање на то сматра се да није довољно прилагодљиво (на пример, коришћење B<ulimit>(1) за ограничавање виртуелне меморије тежи да обогаљи B<mmap>(2))."
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS.
+#.  It's a name of an environment variable.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The memory usage limiter can be enabled with the command line option B<--memlimit=>I<limit>.  Often it is more convenient to enable the limiter by default by setting the environment variable B<XZ_DEFAULTS>, for example, B<XZ_DEFAULTS=--memlimit=150MiB>.  It is possible to set the limits separately for compression and decompression by using B<--memlimit-compress=>I<limit> and B<--memlimit-decompress=>I<limit>.  Using these two options outside B<XZ_DEFAULTS> is rarely useful because a single run of B<xz> cannot do both compression and decompression and B<--memlimit=>I<limit> (or B<-M> I<limit>)  is shorter to type on the command line."
-msgstr "Ограничавач коришћења меморије се може укључити опцијом линије наредби B<--memlimit=>I<ограничење>.  Често је најпогодније укључити ограничавач по основи постављањем променљиве окружења B<XZ_ОСНОВНОСТИ>, на пример, B<XZ_DEFAULTS=--memlimit=150MiB>.  Могуће је поставити ограничења засебно за запакивање и распакивање коришћењем B<--memlimit-compress=>I<ограничење> и B<--memlimit-decompress=>I<ограничење>.  Коришћење ове две опције ван B<XZ_ОСНОВНОСТИ> је ретко корисно јер једно покретање B<xz> не може да ради и запакивање и распакивање а B<--memlimit=>I<ограничење> (или B<-M> I<ограничење>) је краће за куцање на линији наредби."
+msgstr "Ограничавач коришћења меморије се може укључити опцијом линије наредби B<--memlimit=>I<ограничење>.  Често је најпогодније укључити ограничавач по основи постављањем променљиве окружења B<XZ_DEFAULTS>, на пример, B<XZ_DEFAULTS=--memlimit=150MiB>.  Могуће је поставити ограничења засебно за запакивање и распакивање коришћењем B<--memlimit-compress=>I<ограничење> и B<--memlimit-decompress=>I<ограничење>.  Коришћење ове две опције ван B<XZ_DEFAULTS> је ретко корисно јер једно покретање B<xz> не може да ради и запакивање и распакивање а B<--memlimit=>I<ограничење> (или B<-M> I<ограничење>) је краће за куцање на линији наредби."
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -533,11 +535,12 @@ msgstr "B<-F> I<формат>, B<--format=>I<формат>"
 msgid "Specify the file I<format> to compress or decompress:"
 msgstr "Наводи I<формат> датотеке за запакивање или распакивање:"
 
+#.  TRANSLATORS: Don't translate bold string B<auto>.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<auto>"
-msgstr "B<ауто>"
+msgstr "B<auto>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -614,11 +617,14 @@ msgstr "Наводи врсту провере целовитости.  Пров
 msgid "Supported I<check> types:"
 msgstr "Подржане врсте I<провере>:"
 
+#.  TRANSLATORS: Don't translate the bold strings B<none>, B<crc32>,
+#.  B<crc64>, and B<sha256>. The command line option --check accepts
+#.  only the untranslated strings.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<none>"
-msgstr "B<ништа>"
+msgstr "B<none>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -1315,7 +1321,7 @@ msgstr "I<Ограничење> може бити апсолутна велич�
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "The I<limit> can be specified as a percentage of total physical memory (RAM).  This can be useful especially when setting the B<XZ_DEFAULTS> environment variable in a shell initialization script that is shared between different computers.  That way the limit is automatically bigger on systems with more memory.  Example: B<--memlimit-compress=70%>"
-msgstr "I<Ограничење> се може навести као проценат укупне физичке меморије (RAM).  Ово може бити корисно нарочито приликом постављања променљиве окружења B<XZ_ОСНОВНОСТИ> у скрпти покретања конзоле која се дели између различитих рачунара.  На тај начин ограничење је аутоматски веће на системима са више меморије.  Пример: B<--memlimit-compress=70%>"
+msgstr "I<Ограничење> се може навести као проценат укупне физичке меморије (RAM).  Ово може бити корисно нарочито приликом постављања променљиве окружења B<XZ_DEFAULTS> у скрпти покретања конзоле која се дели између различитих рачунара.  На тај начин ограничење је аутоматски веће на системима са више меморије.  Пример: B<--memlimit-compress=70%>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -1540,6 +1546,11 @@ msgstr "LZMA1 је стари филтер, који је подржан угл�
 msgid "LZMA1 and LZMA2 share the same set of I<options>:"
 msgstr "LZMA1 и LZMA2 деле исти скуп I<опција>:"
 
+#.  TRANSLATORS: Don't translate bold strings like B<preset>, B<dict>,
+#.  B<mode>, B<nice>, B<fast>, or B<normal> because those are command line
+#.  options. On the other hand, do translate the italic strings like
+#.  I<preset>, I<size>, and I<mode>, because such italic strings are
+#.  placeholders which a user replaces with an actual value.
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
@@ -1785,7 +1796,7 @@ msgstr "B<mode=>I<режим>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Compression I<mode> specifies the method to analyze the data produced by the match finder.  Supported I<modes> are B<fast> and B<normal>.  The default is B<fast> for I<presets> 0\\(en3 and B<normal> for I<presets> 4\\(en9."
-msgstr "I<Режим> запакивања наводи методу за анализу података које произведе налазач поклапања.  Подржани I<режими> су B<брзи> и B<обичан>.  Подразумева се B<брзи> за I<предподешавања> 0\\(en3 и B<обичан> за I<предподешавања> 4\\(en9."
+msgstr "I<Режим> запакивања наводи методу за анализу података које произведе налазач поклапања.  Подржани I<режими> су B<fast> и B<normal>.  Подразумева се B<fast> за I<предподешавања> 0\\(en3 и B<normal> за I<предподешавања> 4\\(en9."
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2242,11 +2253,16 @@ msgstr "Режим списка"
 msgid "B<xz --robot --list> uses tab-separated output.  The first column of every line has a string that indicates the type of the information found on that line:"
 msgstr "B<xz --robot --list> користи излаз раздвојен табулатором.  Прва колона сваког реда садржи ниску која указује на врсту информације која се налази у том реду:"
 
+#.  TRANSLATORS: The bold strings B<name>, B<file>, B<stream>, B<block>,
+#.  B<summary>, and B<totals> are produced by the xz tool for scripts to
+#.  parse, thus the untranslated strings must be included in the translated
+#.  man page. It may be useful to provide a translated string in parenthesis
+#.  without bold, for example: "B<name> (nimi)"
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<name>"
-msgstr "B<назив>"
+msgstr "B<name> (назив)"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2257,7 +2273,7 @@ msgstr "Ово је увек први ред приликом почетка л�
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<file>"
-msgstr "B<датотека>"
+msgstr "B<file> (датотека)"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2268,7 +2284,7 @@ msgstr "Овај ред садржи свеукупне информације �
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<stream>"
-msgstr "B<ток>"
+msgstr "B<stream> (ток)"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2279,7 +2295,7 @@ msgstr "Ова врста реда се користи само када је B<
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<block>"
-msgstr "B<блок>"
+msgstr "B<block> (блок)"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2290,7 +2306,7 @@ msgstr "Ова врста реда се користи само када је B<
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<summary>"
-msgstr "B<сажетак>"
+msgstr "B<summary> (сажетак)"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2301,7 +2317,7 @@ msgstr "Ова врста реда се користи само када је B<
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<totals>"
-msgstr "B<укупност>"
+msgstr "B<totals> (укупност)"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2374,6 +2390,9 @@ msgstr "Размера паковања, на пример, B<0.123>.  Ако ј
 msgid "7."
 msgstr "7."
 
+#.  TRANSLATORS: Don't translate the bold strings B<None>, B<CRC32>,
+#.  B<CRC64>, B<SHA-256>, or B<Unknown-> here. In robot mode, xz produces
+#.  them in untranslated form for scripts to parse.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Comma-separated list of integrity check names.  The following strings are used for the known check types: B<None>, B<CRC32>, B<CRC64>, and B<SHA-256>.  For unknown check types, B<Unknown->I<N> is used, where I<N> is the Check ID as a decimal number (one or two digits)."
@@ -2755,15 +2774,16 @@ msgstr "Издање"
 msgid "B<xz --robot --version> prints the version number of B<xz> and liblzma in the following format:"
 msgstr "B<xz --robot --version> исписује број издања за B<xz> и „liblzma“ у следећем формату:"
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_VERSION or LIBLZMA_VERSION.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<XZ_VERSION=>I<XYYYZZZS>"
-msgstr "B<XZ_ИЗДАЊЕ=>I<XYYYZZZS>"
+msgstr "B<XZ_VERSION=>I<XYYYZZZS>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<LIBLZMA_VERSION=>I<XYYYZZZS>"
-msgstr "B<LIBLZMA_ИЗДАЊЕ=>I<XYYYZZZS>"
+msgstr "B<LIBLZMA_VERSION=>I<XYYYZZZS>"
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2871,27 +2891,29 @@ msgstr "Обавештења (без упозорења или грешака) �
 msgid "ENVIRONMENT"
 msgstr "ОКРУЖЕЊЕ"
 
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS or XZ_OPT.
+#.  They are names of environment variables.
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<xz> parses space-separated lists of options from the environment variables B<XZ_DEFAULTS> and B<XZ_OPT>, in this order, before parsing the options from the command line.  Note that only options are parsed from the environment variables; all non-options are silently ignored.  Parsing is done with B<getopt_long>(3)  which is used also for the command line arguments."
-msgstr "B<xz> обрађује размаком одвојени списак опција из променљивих окружења B<XZ_ОСНОВНОСТИ> и B<XZ_ОПЦ>, тим редом, пре обраде опција са линије наредби.  Знајте да се обрађују само опције из променљивих окружења; све што нису опције се тихо занемарује.  Обрада се ради са B<getopt_long>(3) која се користи такође за аргументе линије наредби."
+msgstr "B<xz> обрађује размаком одвојени списак опција из променљивих окружења B<XZ_DEFAULTS> и B<XZ_OPT>, тим редом, пре обраде опција са линије наредби.  Знајте да се обрађују само опције из променљивих окружења; све што нису опције се тихо занемарује.  Обрада се ради са B<getopt_long>(3) која се користи такође за аргументе линије наредби."
 
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<XZ_DEFAULTS>"
-msgstr "B<XZ_ОСНОВНОСТИ>"
+msgstr "B<XZ_DEFAULTS>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default.  Excluding shell initialization scripts and similar special cases, scripts must never set or unset B<XZ_DEFAULTS>."
-msgstr "Кориснику специфичне или свеопште системске основне опције.  Обично је ово постављено у скрипти покретања конзоле за укључивање B<xz> ограничавача коришћења меморије по основи.  Искључивање скрипти покретања конзоле и сличних специјалних случајева, скрипте не смеју никада да поставе или пониште B<XZ_ОСНОВНОСТИ>."
+msgstr "Кориснику специфичне или свеопште системске основне опције.  Обично је ово постављено у скрипти покретања конзоле за укључивање B<xz> ограничавача коришћења меморије по основи.  Искључивање скрипти покретања конзоле и сличних специјалних случајева, скрипте не смеју никада да поставе или пониште B<XZ_DEFAULTS>."
 
 #. type: TP
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "B<XZ_OPT>"
-msgstr "B<XZ_ОПЦ>"
+msgstr "B<XZ_OPT>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -2907,7 +2929,7 @@ msgstr "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Scripts may use B<XZ_OPT>, for example, to set script-specific default compression options.  It is still recommended to allow users to override B<XZ_OPT> if that is reasonable.  For example, in B<sh>(1)  scripts one may use something like this:"
-msgstr "Скрипте могу да користе B<XZ_ОПЦ>, на пример, за постављање основних опција запакивања специфичних скрипти.  Још увек се препоручује омогућавање корисницима да пишу преко B<XZ_ОПЦ> ако је то разумљиво.  На пример, у B<sh>(1) скриптама неко може користити нешто као ово:"
+msgstr "Скрипте могу да користе B<XZ_OPT>, на пример, за постављање основних опција запакивања специфичних скрипти.  Још увек се препоручује омогућавање корисницима да пишу преко B<XZ_OPT> ако је то разумљиво.  На пример, у B<sh>(1) скриптама неко може користити нешто као ово:"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3258,7 +3280,7 @@ msgstr ""
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Set a memory usage limit for decompression using B<XZ_OPT>, but if a limit has already been set, don't increase it:"
-msgstr "Поставља ограничење коришћења меморије за распакивање коришћењем B<XZ_ОПЦ>, али ако је ограничење већ постављено, не повећава је:"
+msgstr "Поставља ограничење коришћења меморије за распакивање коришћењем B<XZ_OPT>, али ако је ограничење већ постављено, не повећава је:"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3442,7 +3464,7 @@ msgstr "B<xzdec> је алат само за распакивање заснов
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "To reduce the size of the executable, B<xzdec> doesn't support multithreading or localization, and doesn't read options from B<XZ_DEFAULTS> and B<XZ_OPT> environment variables.  B<xzdec> doesn't support displaying intermediate progress information: sending B<SIGINFO> to B<xzdec> does nothing, but sending B<SIGUSR1> terminates the process instead of displaying progress information."
-msgstr "За смањење величине извршне, B<xzdec> не подржава више нити или локализацију, и не чита опције из променљивих окружења B<XZ_ОСНОВНОСТИ> и B<XZ_ОПЦ>.  B<xzdec> не подржава приказивање посредничких информација напредовања: слање B<SIGINFO> ка B<xzdec> не ради ништа, али слање B<SIGUSR1> окончава процес уместо да прикаже информације о напредовању."
+msgstr "За смањење величине извршне, B<xzdec> не подржава више нити или локализацију, и не чита опције из променљивих окружења B<XZ_DEFAULTS> и B<XZ_OPT>.  B<xzdec> не подржава приказивање посредничких информација напредовања: слање B<SIGINFO> ка B<xzdec> не ради ништа, али слање B<SIGUSR1> окончава процес уместо да прикаже информације о напредовању."
 
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
@@ -3872,11 +3894,13 @@ msgstr "Знајте да клизање уназад можда неће бит
 msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils."
 msgstr "Наредба B<lzmore> се доставља зарад назадне сагласности са LZMA Utils."
 
+#.  TRANSLATORS: Don't translate the uppercase PAGER.
+#.  It is a name of an environment variable.
 #. type: TP
 #: ../src/scripts/xzmore.1
 #, no-wrap
 msgid "B<PAGER>"
-msgstr "B<СТРАНИЧАР>"
+msgstr "B<PAGER>"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1

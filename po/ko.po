@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 12:05+0200\n"
+"POT-Creation-Date: 2025-01-29 20:59+0200\n"
 "PO-Revision-Date: 2025-01-24 23:22+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
@@ -609,7 +609,7 @@ msgstr "표준 출력에서 파일 이름을 읽을 때 표준 입력에서 데�
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -670,7 +670,7 @@ msgstr "%s: 필터 체인: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "자세한 사용법은 '%s --help'를 입력하십시오."
 
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
 msgstr "도움말 텍스트 출력 오류(오류 코드 %d)"
@@ -1184,6 +1184,7 @@ msgstr "압축 데이터를 터미널에 기록할 수 없습니다"
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
 msgstr "사용법: %s [--help] [--version] [<파일>]...\n"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
 msgstr ".lzma 파일 헤더에 저장한 정보를 보여줍니다."

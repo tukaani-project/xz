@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 12:05+0200\n"
+"POT-Creation-Date: 2025-01-29 20:59+0200\n"
 "PO-Revision-Date: 2025-01-24 09:25-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
@@ -610,7 +610,7 @@ msgstr "No se pueden leer datos de la entrada estándar cuando se leen nombres d
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -671,7 +671,7 @@ msgstr "%s: Cadena de filtro: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "Pruebe '%s --help' para obtener más información."
 
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
 msgstr "Error al mostrar el texto de ayuda (código de error %d)"
@@ -1184,6 +1184,7 @@ msgstr "No se pueden escribir datos comprimidos a una terminal"
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
 msgstr "Uso: %s [--help] [--version] [FICHERO]...\n"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
 msgstr "Muestra información almacenada en la cabecera del fichero .lzma"

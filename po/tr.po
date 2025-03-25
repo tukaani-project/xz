@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 12:05+0200\n"
+"POT-Creation-Date: 2025-01-29 20:59+0200\n"
 "PO-Revision-Date: 2025-01-25 17:00+0300\n"
 "Last-Translator: Emir SARI <emir_sari@icloud.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -610,7 +610,7 @@ msgstr "Standart girdi'den dosya adları okunurken standart girdi'den veri okuna
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -671,7 +671,7 @@ msgstr "%s: Süzgeç zinciri: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "Daha fazla bilgi için '%s --help' deneyin."
 
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
 msgstr "Yardım metni yazdırılırken hata (hata kodu %d)"
@@ -1182,6 +1182,7 @@ msgstr "Bir uçbirime sıkıştırılmış veri yazılamaz"
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
 msgstr "Kullanım: %s [--help] [--version] [DOSYA]...\n"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
 msgstr ".lzma dosya üstbilgisinde depolanan bilgiyi göster."

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-23 12:05+0200\n"
+"POT-Creation-Date: 2025-01-29 20:59+0200\n"
 "PO-Revision-Date: 2025-01-24 13:54+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
@@ -614,7 +614,7 @@ msgstr "Читання даних зі стандартного джерела �
 #. of the line in messages. Usually it becomes "xz: ".
 #. This is a translatable string because French needs
 #. a space before a colon.
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
 msgstr "%s: "
@@ -675,7 +675,7 @@ msgstr "%s: ланцюжок фільтрування: %s\n"
 msgid "Try '%s --help' for more information."
 msgstr "Спробуйте «%s --help» для отримання докладнішого опису."
 
-#: src/xz/message.c
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
 msgstr "Помилка при друці тексту довідки (код помилки %d)"
@@ -1186,6 +1186,7 @@ msgstr "Стиснені дані неможливо записати до те�
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
 msgstr "Користування: %s [--help] [--version] [ФАЙЛ]...\n"
 
+#. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
 msgstr "Показати відомості, що зберігаються у заголовку файла .lzma."

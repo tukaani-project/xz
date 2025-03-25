@@ -42,8 +42,6 @@
 
 #define LZMA_API(type) LZMA_API_EXPORT type LZMA_API_CALL
 
-#define LZMA_UNSTABLE
-
 #include "lzma.h"
 
 // This is for detecting modern GCC and Clang attributes

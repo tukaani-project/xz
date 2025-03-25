@@ -98,7 +98,6 @@ typedef struct {
 } lzma_options_bcj;
 
 
-#ifdef LZMA_UNSTABLE
 /**
  * \brief       Raw ARM64 BCJ encoder
  *
@@ -194,4 +193,3 @@ extern LZMA_API(size_t) lzma_bcj_x86_encode(
  */
 extern LZMA_API(size_t) lzma_bcj_x86_decode(
 		uint32_t start_offset, uint8_t *buf, size_t size) lzma_nothrow;
-#endif

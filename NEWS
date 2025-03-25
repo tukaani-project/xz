@@ -2,6 +2,68 @@
 XZ Utils Release Notes
 ======================
 
+5.8.0 (2025-03-25)
+
+    This bumps the minor version of liblzma because new features were
+    added. The API and ABI are still backward compatible with liblzma
+    5.6.x, 5.4.x, 5.2.x, and 5.0.x.
+
+    * liblzma on 32/64-bit x86: When possible, use SSE2 intrinsics
+      instead of memcpy() in the LZMA/LZMA2 decoder. In typical cases,
+      this may reduce decompression time by 0-5 %. However, when built
+      against musl libc, over 15 % time reduction was observed with
+      highly compressed files.
+
+    * CMake: Make the feature test macros match the Autotools-based
+      build on NetBSD, Darwin, and mingw-w64.
+
+    * Update the Croatian, Italian, Portuguese, and Romanian
+      translations.
+
+    * Update the German, Italian, Korean, Romanian, Serbian, and
+      Ukrainian man page translations.
+
+    Summary of changes in the 5.7.x development releases:
+
+    * Mark the following LZMA Utils script aliases as deprecated:
+      lzcmp, lzdiff, lzless, lzmore, lzgrep, lzegrep, and lzfgrep.
+
+    * liblzma:
+
+        - Improve LZMA/LZMA2 encoder speed on 64-bit PowerPC (both
+          endiannesses) and those 64-bit RISC-V processors that
+          support fast unaligned access.
+
+        - Add low-level APIs for RISC-V, ARM64, and x86 BCJ filters
+          to lzma/bcj.h. These are primarily for erofs-utils.
+
+        - x86/x86-64/E2K CLMUL CRC code was rewritten.
+
+        - Use the CRC32 instructions on LoongArch.
+
+    * xz:
+
+        - Synchronize the output file and its directory using fsync()
+          before deleting the input file. No syncing is done when xz
+          isn't going to delete the input file.
+
+        - Add --no-sync to disable the sync-before-delete behavior.
+
+        - Make --single-stream imply --keep.
+
+    * xz, xzdec, lzmainfo: When printing messages, replace
+      non-printable characters with question marks.
+
+    * xz and xzdec on Linux: Support Landlock ABI versions 5 and 6.
+
+    * CMake: Revise the configuration variables and some of their
+      options, and document them in the file INSTALL. CMake support
+      is no longer experimental. (It was already not experimental
+      when building for native Windows.)
+
+    * Add build-aux/license-check.sh.
+
+
 5.7.2beta (2025-03-08)
 
     * On the man pages, mark the following LZMA Utils script aliases as

@@ -35,6 +35,9 @@
 /// LZMA's longest match length is 273 so pick a multiple of 16 above that.
 #define LZ_DICT_REPEAT_MAX 288
 
+/// Initial position in lzma_dict.buf when the dictionary is empty.
+#define LZ_DICT_INIT_POS (2 * LZ_DICT_REPEAT_MAX)
+
 
 typedef struct {
 	/// Pointer to the dictionary buffer.
@@ -185,7 +188,7 @@ dict_repeat(lzma_dict *dict, uint32_t distance, uint32_t *len)
 
 	// Update how full the dictionary is.
 	if (!dict->has_wrapped)
-		dict->full = dict->pos - 2 * LZ_DICT_REPEAT_MAX;
+		dict->full = dict->pos - LZ_DICT_INIT_POS;
 
 	return *len != 0;
 }
@@ -197,7 +200,7 @@ dict_put(lzma_dict *dict, uint8_t byte)
 	dict->buf[dict->pos++] = byte;
 
 	if (!dict->has_wrapped)
-		dict->full = dict->pos - 2 * LZ_DICT_REPEAT_MAX;
+		dict->full = dict->pos - LZ_DICT_INIT_POS;
 }
 
 
@@ -234,7 +237,7 @@ dict_write(lzma_dict *restrict dict, const uint8_t *restrict in,
 			dict->buf, &dict->pos, dict->limit);
 
 	if (!dict->has_wrapped)
-		dict->full = dict->pos - 2 * LZ_DICT_REPEAT_MAX;
+		dict->full = dict->pos - LZ_DICT_INIT_POS;
 
 	return;
 }

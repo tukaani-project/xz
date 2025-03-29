@@ -172,7 +172,9 @@ typedef unsigned char _Bool;
 #if __STDC_VERSION__ >= 202311
 	// alignas is a keyword in C23. Do nothing.
 #elif __STDC_VERSION__ >= 201112
-#	include <stdalign.h>
+	// Oracle Developer Studio 12.6 lacks <stdalign.h>.
+	// For simplicity, avoid the header with all C11/C17 compilers.
+#	define alignas _Alignas
 #elif defined(__GNUC__) || defined(__clang__)
 #	define alignas(n) __attribute__((__aligned__(n)))
 #else

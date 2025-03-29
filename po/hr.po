@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: xz 5.8.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2025-01-29 20:59+0200\n"
-"PO-Revision-Date: 2025-03-09 11:56-0700\n"
+"PO-Revision-Date: 2025-03-26 21:00-0700\n"
 "Last-Translator: Božidar Putanec <bozidarp@yahoo.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "Language: hr\n"
@@ -69,7 +69,7 @@ msgstr "%s: %s"
 #: src/xz/args.c
 #, c-format
 msgid "The environment variable %s contains too many arguments"
-msgstr "Varijabla okoline '%s' sadrži previše argumenata"
+msgstr "Varijabla okruženja '%s' sadrži previše argumenata"
 
 #: src/xz/args.c
 msgid "Compression support was disabled at build time"
@@ -394,7 +394,7 @@ msgstr "Kontrola:"
 
 #: src/xz/list.c
 msgid "Stream Padding:"
-msgstr "Ispuna toka:"
+msgstr "Dopuna toka:"
 
 #: src/xz/list.c
 msgid "Memory needed:"
@@ -454,7 +454,7 @@ msgstr "KontrVrijedn"
 
 #: src/xz/list.c
 msgid "Padding"
-msgstr "Ispuna"
+msgstr "Dopuna"
 
 #: src/xz/list.c
 msgid "Header"
@@ -1013,7 +1013,7 @@ msgstr "Valid OPTS za sve BCJ filtre:"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "start offset for conversions (default=0)"
-msgstr "početni odmak za konverzije (zadano=0)"
+msgstr "početni pomak za konverzije (zadano=0)"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1160,12 +1160,12 @@ msgstr "%s: Nevaljana ekstenzija u imenu datoteke"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
-msgstr "Vrijednost nije nula ili pozitivni decimalni cijeli broj"
+msgstr "Vrijednost nije nula ili pozitivni dekadski cijeli broj"
 
 #: src/xz/util.c
 #, c-format
 msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Nevaljana sufiks-množitelj"
+msgstr "%s: Nevaljani sufiks-množitelj"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

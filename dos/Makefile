@@ -45,7 +45,9 @@ SRCS_C = \
 	../src/common/tuklib_cpucores.c \
 	../src/common/tuklib_exit.c \
 	../src/common/tuklib_mbstr_fw.c \
+	../src/common/tuklib_mbstr_nonprint.c \
 	../src/common/tuklib_mbstr_width.c \
+	../src/common/tuklib_mbstr_wrap.c \
 	../src/common/tuklib_open_stdxxx.c \
 	../src/common/tuklib_physmem.c \
 	../src/common/tuklib_progname.c \

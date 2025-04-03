@@ -435,8 +435,7 @@ next_loop_unlocked:
 	}
 
 	// Either we finished successfully (LZMA_STREAM_END) or an error
-	// occurred. Both cases are handled almost identically. The error
-	// case requires updating thr->coder->thread_error.
+	// occurred.
 	//
 	// The sizes are in the Block Header and the Block decoder
 	// checks that they match, thus we know these:
@@ -444,14 +443,28 @@ next_loop_unlocked:
 	assert(ret != LZMA_STREAM_END
 		|| thr->out_pos == thr->block_options.uncompressed_size);
 
-	// Free the input buffer. Don't update in_size as we need
-	// it later to update thr->coder->mem_in_use.
-	lzma_free(thr->in, thr->allocator);
-	thr->in = NULL;
-
 	mythread_sync(thr->mutex) {
+		// Block decoder ensures this, but do a sanity check anyway
+		// because thr->in_filled < thr->in_size means that the main
+		// thread is still writing to thr->in.
+		if (ret == LZMA_STREAM_END && thr->in_filled != thr->in_size) {
+			assert(0);
+			ret = LZMA_PROG_ERROR;
+		}
+
 		if (thr->state != THR_EXIT)
 			thr->state = THR_IDLE;
+	}
+
+	// Free the input buffer. Don't update in_size as we need
+	// it later to update thr->coder->mem_in_use.
+	//
+	// This step is skipped if an error occurred because the main thread
+	// might still be writing to thr->in. The memory will be freed after
+	// threads_end() sets thr->state = THR_EXIT.
+	if (ret == LZMA_STREAM_END) {
+		lzma_free(thr->in, thr->allocator);
+		thr->in = NULL;
 	}
 
 	mythread_sync(thr->coder->mutex) {
@@ -474,8 +487,8 @@ next_loop_unlocked:
 			thr->coder->thread_error = ret;
 
 		// Return the worker thread to the stack of available
-		// threads.
-		{
+		// threads only if no errors occurred.
+		if (ret == LZMA_STREAM_END) {
 			// Update memory usage counters.
 			thr->coder->mem_in_use -= thr->in_size;
 			thr->in_size = 0; // thr->in was freed above.

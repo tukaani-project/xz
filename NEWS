@@ -2,6 +2,36 @@
 XZ Utils Release Notes
 ======================
 
+5.8.1 (2025-04-03)
+
+    IMPORTANT: This includes a security fix for CVE-2025-31115 which
+    affects XZ Utils from 5.3.3alpha to 5.8.0. No new 5.4.x or 5.6.x
+    releases will be made, but the fix is in the v5.4 and v5.6 branches
+    in the xz Git repository. A standalone patch for all affected
+    versions is available as well.
+
+    * Multithreaded .xz decoder (lzma_stream_decoder_mt()):
+
+        - Fix a bug that could at least result in a crash with
+          invalid input. (CVE-2025-31115)
+
+        - Fix a performance bug: Only one thread was used if the whole
+          input file was provided at once to lzma_code(), the output
+          buffer was big enough, timeout was disabled, and LZMA_FINISH
+          was used. There are no bug reports about this, thus it's
+          possible that no real-world application was affected.
+
+    * Avoid <stdalign.h> even with C11/C17 compilers. This fixes the
+      build with Oracle Developer Studio 12.6 on Solaris 10 when the
+      compiler is in C11 mode (the header doesn't exist).
+
+    * Autotools: Restore compatibility with GNU make versions older
+      than 4.0 by creating the package using GNU gettext 0.23.1
+      infrastructure instead of 0.24.
+
+    * Update Croatian translation.
+
+
 5.8.0 (2025-03-25)
 
     This bumps the minor version of liblzma because new features were

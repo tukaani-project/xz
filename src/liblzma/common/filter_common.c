@@ -130,6 +130,15 @@ static const struct {
 		.changes_size = false,
 	},
 #endif
+#if defined(HAVE_ENCODER_LOONGARCH) || defined(HAVE_DECODER_LOONGARCH)
+	{
+		.id = LZMA_FILTER_LOONGARCH,
+		.options_size = sizeof(lzma_options_bcj),
+		.non_last_ok = true,
+		.last_ok = false,
+		.changes_size = false,
+	},
+#endif
 #if defined(HAVE_ENCODER_DELTA) || defined(HAVE_DECODER_DELTA)
 	{
 		.id = LZMA_FILTER_DELTA,

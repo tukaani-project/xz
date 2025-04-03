@@ -347,7 +347,7 @@ worker_enable_partial_update(void *thr_ptr)
 
 
 /// Things do to at THR_STOP or when finishing a Block.
-/// This is called with thr->mutex locked.
+/// This is called with thr->coder->mutex locked.
 static void
 worker_stop(struct worker_thread *thr)
 {

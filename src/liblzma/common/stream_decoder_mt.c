@@ -1540,10 +1540,17 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		// Read output from the output queue. Just like in
 		// SEQ_BLOCK_HEADER, we wait to fill the output buffer
 		// only if waiting_allowed was set to true in the beginning
-		// of this function (see the comment there).
+		// of this function (see the comment there) and there is
+		// no input available. In SEQ_BLOCK_HEADER, there is never
+		// input available when read_output_and_wait() is called,
+		// but here there can be when LZMA_FINISH is used, thus we
+		// need to check if *in_pos == in_size. Otherwise we would
+		// wait here instead of using the available input to start
+		// a new thread.
 		return_if_error(read_output_and_wait(coder, allocator,
 				out, out_pos, out_size,
-				NULL, waiting_allowed,
+				NULL,
+				waiting_allowed && *in_pos == in_size,
 				&wait_abs, &has_blocked));
 
 		if (coder->pending_error != LZMA_OK) {

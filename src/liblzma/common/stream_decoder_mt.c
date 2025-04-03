@@ -491,8 +491,6 @@ next_loop_unlocked:
 		if (ret == LZMA_STREAM_END) {
 			// Update memory usage counters.
 			thr->coder->mem_in_use -= thr->in_size;
-			thr->in_size = 0; // thr->in was freed above.
-
 			thr->coder->mem_in_use -= thr->mem_filters;
 			thr->coder->mem_cached += thr->mem_filters;
 
@@ -1557,6 +1555,10 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		}
 
 		// Return if the input didn't contain the whole Block.
+		//
+		// NOTE: When we updated coder->thr->in_filled a few lines
+		// above, the worker thread might by now have finished its
+		// work and returned itself back to the stack of free threads.
 		if (coder->thr->in_filled < coder->thr->in_size) {
 			assert(*in_pos == in_size);
 			return LZMA_OK;

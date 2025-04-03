@@ -24,14 +24,9 @@ typedef enum {
 	THR_IDLE,
 
 	/// Decoding is in progress.
-	/// Main thread may change this to THR_STOP or THR_EXIT.
+	/// Main thread may change this to THR_IDLE or THR_EXIT.
 	/// The worker thread may change this to THR_IDLE.
 	THR_RUN,
-
-	/// The main thread wants the thread to stop whatever it was doing
-	/// but not exit. Main thread may change this to THR_EXIT.
-	/// The worker thread may change this to THR_IDLE.
-	THR_STOP,
 
 	/// The main thread wants the thread to exit.
 	THR_EXIT,
@@ -347,27 +342,6 @@ worker_enable_partial_update(void *thr_ptr)
 }
 
 
-/// Things do to at THR_STOP or when finishing a Block.
-/// This is called with thr->coder->mutex locked.
-static void
-worker_stop(struct worker_thread *thr)
-{
-	// Update memory usage counters.
-	thr->coder->mem_in_use -= thr->in_size;
-	thr->in_size = 0; // thr->in was freed above.
-
-	thr->coder->mem_in_use -= thr->mem_filters;
-	thr->coder->mem_cached += thr->mem_filters;
-
-	// Put this thread to the stack of free threads.
-	thr->next = thr->coder->threads_free;
-	thr->coder->threads_free = thr;
-
-	mythread_cond_signal(&thr->coder->cond);
-	return;
-}
-
-
 static MYTHREAD_RET_TYPE
 worker_decoder(void *thr_ptr)
 {
@@ -396,17 +370,6 @@ next_loop_unlocked:
 		mythread_cond_destroy(&thr->cond);
 
 		return MYTHREAD_RET_VALUE;
-	}
-
-	if (thr->state == THR_STOP) {
-		thr->state = THR_IDLE;
-		mythread_mutex_unlock(&thr->mutex);
-
-		mythread_sync(thr->coder->mutex) {
-			worker_stop(thr);
-		}
-
-		goto next_loop_lock;
 	}
 
 	assert(thr->state == THR_RUN);
@@ -511,7 +474,22 @@ next_loop_unlocked:
 				&& thr->coder->thread_error == LZMA_OK)
 			thr->coder->thread_error = ret;
 
-		worker_stop(thr);
+		// Return the worker thread to the stack of available
+		// threads.
+		{
+			// Update memory usage counters.
+			thr->coder->mem_in_use -= thr->in_size;
+			thr->in_size = 0; // thr->in was freed above.
+
+			thr->coder->mem_in_use -= thr->mem_filters;
+			thr->coder->mem_cached += thr->mem_filters;
+
+			// Put this thread to the stack of free threads.
+			thr->next = thr->coder->threads_free;
+			thr->coder->threads_free = thr;
+		}
+
+		mythread_cond_signal(&thr->coder->cond);
 	}
 
 	goto next_loop_lock;
@@ -545,17 +523,22 @@ threads_end(struct lzma_stream_coder *coder, const lzma_allocator *allocator)
 }
 
 
+/// Tell worker threads to stop without doing any cleaning up.
+/// The clean up will be done when threads_exit() is called;
+/// it's not possible to reuse the threads after threads_stop().
+///
+/// This is called before returning an unrecoverable error code
+/// to the application. It would be waste of processor time
+/// to keep the threads running in such a situation.
 static void
 threads_stop(struct lzma_stream_coder *coder)
 {
 	for (uint32_t i = 0; i < coder->threads_initialized; ++i) {
+		// The threads that are in the THR_RUN state will stop
+		// when they check the state the next time. There's no
+		// need to signal coder->threads[i].cond.
 		mythread_sync(coder->threads[i].mutex) {
-			// The state must be changed conditionally because
-			// THR_IDLE -> THR_STOP is not a valid state change.
-			if (coder->threads[i].state != THR_IDLE) {
-				coder->threads[i].state = THR_STOP;
-				mythread_cond_signal(&coder->threads[i].cond);
-			}
+			coder->threads[i].state = THR_IDLE;
 		}
 	}
 
@@ -1949,7 +1932,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// accounting from scratch, too. Changes in filter and block sizes may
 	// affect number of threads.
 	//
-	// FIXME? Reusing should be easy but unlike the single-threaded
+	// Reusing threads doesn't seem worth it. Unlike the single-threaded
 	// decoder, with some types of input file combinations reusing
 	// could leave quite a lot of memory allocated but unused (first
 	// file could allocate a lot, the next files could use fewer

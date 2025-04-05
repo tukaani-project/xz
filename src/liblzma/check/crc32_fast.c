@@ -176,6 +176,14 @@ crc32_dispatch(const uint8_t *buf, size_t size, uint32_t crc)
 extern LZMA_API(uint32_t)
 lzma_crc32(const uint8_t *buf, size_t size, uint32_t crc)
 {
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__clang__) \
+		&& defined(_M_IX86) && defined(CRC32_ARCH_OPTIMIZED)
+	// VS2015-2022 might corrupt the ebx register on 32-bit x86 when
+	// the CLMUL code is enabled. This hack forces MSVC to store and
+	// restore ebx.
+	__asm  mov ebx, ebx
+#endif
+
 #if defined(CRC32_GENERIC) && defined(CRC32_ARCH_OPTIMIZED)
 /*
 #ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR

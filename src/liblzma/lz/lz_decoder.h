@@ -26,9 +26,8 @@
 // 2 = Use x86 SSE2 for non-overlapping copies.
 #ifndef LZMA_LZ_DECODER_CONFIG
 #	if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
-		&& defined(HAVE_IMMINTRIN_H) \
-		&& (defined(__SSE2__) || defined(_M_X64) \
-			|| (defined(_M_IX86_FP) && _M_IX86_FP >= 2))
+			&& defined(HAVE_IMMINTRIN_H) \
+			&& (defined(__SSE2__) || defined(_M_X64))
 #		define LZMA_LZ_DECODER_CONFIG 2
 #	else
 #		define LZMA_LZ_DECODER_CONFIG 1

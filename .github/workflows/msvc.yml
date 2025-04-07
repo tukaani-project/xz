@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: 0BSD
+
+# Author: Lasse Collin
+
+name: Windows-MSVC
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  MSVC:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2019, windows-latest ]
+        arch: [ Win32, x64 ]
+        build: [ Debug, Release ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Configure
+        run: >
+          cmake
+          -A ${{ matrix.arch }}
+          -B build-msvc
+
+      - name: Build
+        run: >
+          cmake
+          --build build-msvc
+          --config ${{ matrix.build }}
+
+      - name: Test
+        run: >
+          ctest
+          --test-dir build-msvc
+          --build-config ${{ matrix.build }}
+          --output-on-failure

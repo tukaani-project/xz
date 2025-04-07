@@ -78,7 +78,8 @@ PAT_TARBALL_IGNORE='^(m4/)?[^/]*\.m4$
 ^ABOUT-NLS$
 ^build-aux/(config\..*|ltmain\.sh|[^.]*)$
 ^config\.h\.in$
-^configure$'
+^configure$
+^git_commit_info\.h\.in$'
 
 
 # Go to the top source dir.

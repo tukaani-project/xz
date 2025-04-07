@@ -7,6 +7,9 @@
 # Git repository commit information to be included in --version messages
 # and such places. "make clean" or the equivalent should remove the file.
 #
+# If the Git repository or the git tool aren't available but the source
+# directory contains git_commit_info.h.in, use its contents as is.
+#
 # $1 = path to source tree (default is current directory)
 # $2 = path/to/git_commit_info.h to create or update;
 #      if not provided, print to standard output
@@ -22,16 +25,18 @@ set -e
 SRCDIR=${1:-.}
 FILE=$2
 
-COMMIT=
 if test -d "$SRCDIR/.git" && type git > /dev/null 2>&1
 then
 	# Abbreviated commit ID could look prettier, but web search engines
 	# won't find anything with those.
 	COMMIT=`git -C "$SRCDIR" log -n1 --pretty='%cs %H'`
-	COMMIT=" ($COMMIT)"
+	NEW="#define GIT_COMMIT_INFO \" ($COMMIT)\""
+elif test -f "$SRCDIR/git_commit_info.h.in"
+then
+	NEW=`cat "$SRCDIR/git_commit_info.h.in"`
+else
+	NEW='#define GIT_COMMIT_INFO ""'
 fi
-
-NEW="#define GIT_COMMIT_INFO \"$COMMIT\""
 
 # If no target file was provided, print the result to standard output.
 if test -z "$FILE"

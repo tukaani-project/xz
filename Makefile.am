@@ -95,6 +95,8 @@ dist-hook:
 		( cd "$(srcdir)" && git log --pretty=medium --date=iso --stat \
 			b69da6d4bb6bb11fc0cf066920791990d2b22a06^..HEAD ) \
 			> "$(distdir)/ChangeLog"; \
+		$(SHELL) "$(srcdir)/build-aux/git_commit_info.sh" "$(srcdir)" \
+			> "$(distdir)/git_commit_info.h.in"; \
 	fi
 	if type groff > /dev/null 2>&1; then \
 		dest="$(distdir)/doc/man" && \

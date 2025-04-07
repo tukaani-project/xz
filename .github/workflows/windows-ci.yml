@@ -6,23 +6,21 @@
 #
 #############################################################################
 
-name: Windows-CI
+name: Windows-MSYS2
 
 # Only run the Windows CI manually since it takes much longer than the others.
 on: workflow_dispatch
 
+permissions: {}
+
 jobs:
-  POSIX:
+  MSYS2:
     strategy:
       matrix:
         # Test different environments since the code may change between
         # them and we want to ensure that we support all potential users.
-        # clang64 builds are currently broken when building static libraries
-        # due to a bug in ldd search path:
-        # https://github.com/llvm/llvm-project/issues/67779
-        # TODO - re-enable clang64 when this is resolved.
-        msys2_env: [mingw64, mingw32, ucrt64, msys]
-        build_system: [autotools, cmake]
+        msys2_env: [ mingw32, mingw64, ucrt64, clang64, msys ]
+        build_system: [ autotools, cmake ]
 
     # Set the shell to be msys2 as a default to avoid setting it for
     # every individual run command.
@@ -39,13 +37,13 @@ jobs:
 
       # Rely on the msys2 GitHub Action to set up the msys2 environment.
       - name: Setup MSYS2
-        uses: msys2/setup-msys2@cc11e9188b693c2b100158c3322424c4cc1dadea #v2.22.0
+        uses: msys2/setup-msys2@v2.27.0
         with:
           msystem: ${{ matrix.msys2_env }}
           update: true
           install: pactoys make
 
-      - name: Checkout code
+      - name: Git configuration
         # Need to explicitly set the shell here since we set the default
         # shell as msys2 earlier. This avoids an extra msys2 dependency on
         # git.
@@ -55,7 +53,7 @@ jobs:
         # text file and will not match the output from xzgrep.
         run: git config --global core.autocrlf false
 
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4
 
 
       ########################
@@ -68,11 +66,11 @@ jobs:
         # of ifs.
       - name: Install Dependencies
         if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'autotools' }}
-        run: pacman --noconfirm -S --needed autotools base-devel doxygen gettext-devel gcc
+        run: pacman --noconfirm -S --needed autotools base-devel gettext-devel gcc
 
       - name: Install Dependencies
         if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'autotools' }}
-        run: pacboy --noconfirm -S --needed autotools:p toolchain:p doxygen:p
+        run: pacboy --noconfirm -S --needed autotools:p toolchain:p
 
       - name: Install Dependencies
         if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'cmake' }}
@@ -87,29 +85,32 @@ jobs:
       ##################
 
       - name: Build with full features
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -p build
+        run: >
+          ./build-aux/ci_build.bash
+          -a "--no-po4a"
+          -b ${{ matrix.build_system }}
+          ${{ startsWith(matrix.msys2_env, 'mingw') && '-d nls' || '' }}
+          -p build
       - name: Test with full features
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -p test -n full_features
+        run: >
+          ./build-aux/ci_build.bash
+          -b ${{ matrix.build_system }}
+          -p test
+          -n full_features
 
       - name: Build without threads
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p build
+        run: >
+          ./build-aux/ci_build.bash
+          -a "--no-po4a"
+          -b ${{ matrix.build_system }}
+          -d threads,shared,nls
+          -p build
       - name: Test without threads
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p test -n no_threads
-
-      - name: Build without encoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p build
-      - name: Test without encoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p test -n no_encoders
-
-      - name: Build without decoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p build
-      - name: Test without decoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p test -n no_decoders
-
-      - name: Build with only crc32 check
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p build
-      - name: Test with only crc32 check
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p test -n crc32_only
+        run: >
+          ./build-aux/ci_build.bash
+          -b ${{ matrix.build_system }}
+          -p test
+          -n no_threads
 
 
       ###############
@@ -117,8 +118,8 @@ jobs:
       ###############
 
       # Upload the test logs as artifacts if any step has failed.
-      - uses: actions/upload-artifact@v4.3.3
-        if: ${{ failure() }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
         with:
           name: ${{ matrix.msys2_env }} ${{ matrix.build_system }} Test Logs
           path: build-aux/artifacts

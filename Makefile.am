@@ -53,6 +53,7 @@ EXTRA_DIST = \
 	PACKAGERS \
 	TODO \
 	autogen.sh \
+	build-aux/git_commit_info.sh \
 	build-aux/license-check.sh \
 	build-aux/manconv.sh \
 	build-aux/version.sh \
@@ -70,6 +71,22 @@ manfiles = \
 	src/scripts/xzgrep.1 \
 	src/scripts/xzless.1 \
 	src/scripts/xzmore.1
+
+
+# When .git dir and the git tool are available, put commit information
+# into git_commit_info.h. It is used in version strings.
+CLEANFILES = git_commit_info.h
+
+git_commit_info.h:
+	$(AM_V_GEN) \
+	$(SHELL) $(srcdir)/build-aux/git_commit_info.sh "$(srcdir)" $@
+
+.PHONY: git_commit_info.h
+
+if COND_GIT_COMMIT_INFO
+$(RECURSIVE_TARGETS): git_commit_info.h
+endif
+
 
 # Create ChangeLog using "git log".
 # Convert the man pages to plain text (ASCII only) format.

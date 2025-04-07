@@ -1363,6 +1363,29 @@ AS_IF([test "$GCC" = yes], [
 
 
 ###############################################################################
+# Conditionally include Git commit version in the version string.
+###############################################################################
+
+# git_commit_info.sh checks that .git and the git tool are available.
+# The check below for .git is to keep builds from tarballs slightly cleaner.
+AC_ARG_ENABLE([git-commit-info],
+	AS_HELP_STRING([--disable-git-commit-info],
+		[Do not include Git commit information in the version string
+		when building from a Git repository.]),
+	[],
+	[AS_IF([test -d "$srcdir/.git"],
+		[enable_git_commit_info=yes],
+		[enable_git_commit_info=no])])
+
+AS_IF([test "x$enable_git_commit_info" = xyes],
+	[AC_DEFINE([HAVE_GIT_COMMIT_INFO_H], [1],
+		[Define to 1 if git_commit_info.h is generated.])])
+
+AM_CONDITIONAL([COND_GIT_COMMIT_INFO],
+	[test "x$enable_git_commit_info" = xyes])
+
+
+###############################################################################
 # Create the makefiles and config.h
 ###############################################################################
 

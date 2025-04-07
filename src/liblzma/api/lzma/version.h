@@ -34,7 +34,7 @@
  */
 #define LZMA_VERSION_STABILITY LZMA_VERSION_STABILITY_STABLE
 
-/** \brief Commit version number of the liblzma release */
+/** \brief This was never used, but it's retained for compatibility. */
 #ifndef LZMA_VERSION_COMMIT
 #	define LZMA_VERSION_COMMIT ""
 #endif
@@ -94,10 +94,9 @@
  * \brief       Compile-time version as a string
  *
  * This can be for example "4.999.5alpha", "4.999.8beta", or "5.0.0" (stable
- * versions don't have any "stable" suffix). In future, a snapshot built
- * from source code repository may include an additional suffix, for example
- * "4.999.8beta-21-g1d92". The commit ID won't be available in numeric form
- * in LZMA_VERSION macro.
+ * versions don't have any "stable" suffix). Unlike the return value of
+ * lzma_version_string(), LZMA_VERSION_STRING never includes any commit info.
+ * LZMA_VERSION_COMMIT is used here only for compatibility reasons.
  */
 #define LZMA_VERSION_STRING LZMA_VERSION_STRING_C( \
 		LZMA_VERSION_MAJOR, LZMA_VERSION_MINOR, \
@@ -124,7 +123,8 @@ extern LZMA_API(uint32_t) lzma_version_number(void)
  * \brief       Run-time version as a string
  *
  * This function may be useful to display which version of liblzma an
- * application is currently using.
+ * application is currently using. In addition to the version itself,
+ * this might also include commit info in parenthesis (YYYY-MM-DD commit-ID).
  *
  * \return      Run-time version of liblzma
  */

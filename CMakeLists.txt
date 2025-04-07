@@ -466,6 +466,34 @@ if(CMAKE_C_COMPILER_ID MATCHES GNU|Clang)
 endif()
 
 
+######################
+# Git commit version #
+######################
+
+set(XZ_GIT_COMMIT_INFO_DEFAULT OFF)
+if(UNIX AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+    set(XZ_GIT_COMMIT_INFO_DEFAULT ON)
+endif()
+
+option(XZ_GIT_COMMIT_INFO "Include Git commit information in the version \
+string when building from a Git repository" "${XZ_GIT_COMMIT_INFO_DEFAULT}")
+
+if(XZ_GIT_COMMIT_INFO)
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/git_commit_info")
+    add_custom_target(git_commit_info
+        BYPRODUCTS git_commit_info/git_commit_info.h
+        COMMAND /bin/sh
+                "${CMAKE_CURRENT_SOURCE_DIR}/build-aux/git_commit_info.sh"
+                "${CMAKE_CURRENT_SOURCE_DIR}"
+                "${CMAKE_CURRENT_BINARY_DIR}/git_commit_info/git_commit_info.h"
+        VERBATIM)
+    include_directories("${CMAKE_CURRENT_BINARY_DIR}/git_commit_info")
+    add_compile_definitions(HAVE_GIT_COMMIT_INFO_H)
+else()
+    add_custom_target(git_commit_info)
+endif()
+
+
 #############################################################################
 # liblzma
 #############################################################################
@@ -619,6 +647,8 @@ target_include_directories(liblzma PRIVATE
     src/liblzma/simple
     src/common
 )
+
+add_dependencies(liblzma git_commit_info)
 
 
 #############
@@ -1954,6 +1984,8 @@ if(HAVE_DECODERS)
             src/xzdec/xzdec.c
         )
 
+        add_dependencies("${XZDEC}" git_commit_info)
+
         target_include_directories("${XZDEC}" PRIVATE
             src/common
             src/liblzma/api
@@ -2029,6 +2061,8 @@ if(XZ_TOOL_LZMAINFO AND HAVE_DECODERS)
         src/common/tuklib_progname.h
         src/lzmainfo/lzmainfo.c
     )
+
+    add_dependencies(lzmainfo git_commit_info)
 
     target_include_directories(lzmainfo PRIVATE
         src/common
@@ -2124,6 +2158,8 @@ if(XZ_TOOL_XZ)
         src/xz/util.c
         src/xz/util.h
     )
+
+    add_dependencies(xz git_commit_info)
 
     target_include_directories(xz PRIVATE
         src/common

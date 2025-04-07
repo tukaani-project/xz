@@ -8,6 +8,11 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
+#ifdef HAVE_GIT_COMMIT_INFO_H
+# include "git_commit_info.h"
+#else
+# define GIT_COMMIT_INFO ""
+#endif
 #define LZMA_H_INTERNAL
 #define LZMA_H_INTERNAL_RC
 #include "lzma/version.h"
@@ -38,11 +43,11 @@ BEGIN
         BEGIN
             VALUE "CompanyName", MY_COMPANY
             VALUE "FileDescription", MY_DESC
-            VALUE "FileVersion", LZMA_VERSION_STRING
+            VALUE "FileVersion", LZMA_VERSION_STRING GIT_COMMIT_INFO
             VALUE "InternalName", MY_NAME
             VALUE "OriginalFilename", MY_FILENAME
             VALUE "ProductName", MY_PRODUCT
-            VALUE "ProductVersion", LZMA_VERSION_STRING
+            VALUE "ProductVersion", LZMA_VERSION_STRING GIT_COMMIT_INFO
         END
     END
     BLOCK "VarFileInfo"

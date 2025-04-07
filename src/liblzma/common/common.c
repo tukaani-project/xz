@@ -11,6 +11,12 @@
 
 #include "common.h"
 
+#ifdef HAVE_GIT_COMMIT_INFO_H
+#	include "git_commit_info.h"
+#else
+#	define GIT_COMMIT_INFO ""
+#endif
+
 
 /////////////
 // Version //
@@ -26,7 +32,7 @@ lzma_version_number(void)
 extern LZMA_API(const char *)
 lzma_version_string(void)
 {
-	return LZMA_VERSION_STRING;
+	return LZMA_VERSION_STRING GIT_COMMIT_INFO;
 }
 
 

@@ -14,6 +14,12 @@
 #include "tuklib_mbstr_wrap.h"
 #include <stdarg.h>
 
+#ifdef HAVE_GIT_COMMIT_INFO_H
+#	include "git_commit_info.h"
+#else
+#	define GIT_COMMIT_INFO ""
+#endif
+
 
 /// Number of the current file
 static unsigned int files_pos = 0;
@@ -930,7 +936,8 @@ message_version(void)
 		printf("XZ_VERSION=%" PRIu32 "\nLIBLZMA_VERSION=%" PRIu32 "\n",
 				LZMA_VERSION, lzma_version_number());
 	} else {
-		printf("xz (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n");
+		printf("xz (" PACKAGE_NAME ") "
+				LZMA_VERSION_STRING GIT_COMMIT_INFO "\n");
 		printf("liblzma %s\n", lzma_version_string());
 	}
 

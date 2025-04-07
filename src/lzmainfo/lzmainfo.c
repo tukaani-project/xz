@@ -26,6 +26,12 @@
 #	include <io.h>
 #endif
 
+#ifdef HAVE_GIT_COMMIT_INFO_H
+#	include "git_commit_info.h"
+#else
+#	define GIT_COMMIT_INFO ""
+#endif
+
 
 tuklib_attr_noreturn
 static void
@@ -70,7 +76,8 @@ tuklib_attr_noreturn
 static void
 version(void)
 {
-	puts("lzmainfo (" PACKAGE_NAME ") " LZMA_VERSION_STRING);
+	puts("lzmainfo (" PACKAGE_NAME ") "
+			LZMA_VERSION_STRING GIT_COMMIT_INFO);
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, true);
 }
 

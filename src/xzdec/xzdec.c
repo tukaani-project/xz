@@ -48,6 +48,12 @@
 #	endif
 #endif
 
+#ifdef HAVE_GIT_COMMIT_INFO_H
+#	include "git_commit_info.h"
+#else
+#	define GIT_COMMIT_INFO ""
+#endif
+
 
 #ifdef LZMADEC
 #	define TOOL_FORMAT "lzma"
@@ -108,7 +114,8 @@ tuklib_attr_noreturn
 static void
 version(void)
 {
-	printf(TOOL_FORMAT "dec (" PACKAGE_NAME ") " LZMA_VERSION_STRING "\n"
+	printf(TOOL_FORMAT "dec (" PACKAGE_NAME ") "
+			LZMA_VERSION_STRING GIT_COMMIT_INFO "\n"
 			"liblzma %s\n", lzma_version_string());
 
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);

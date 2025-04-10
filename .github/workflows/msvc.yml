@@ -17,29 +17,73 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-2019, windows-latest ]
-        arch: [ Win32, x64 ]
-        build: [ Debug, Release ]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - name: Configure
+      - name: Configure Win32
         run: >
           cmake
-          -A ${{ matrix.arch }}
-          -B build-msvc
+          -A Win32
+          -B build-msvc-win32
 
-      - name: Build
+      - name: Build Win32 Debug
         run: >
           cmake
-          --build build-msvc
-          --config ${{ matrix.build }}
+          --build build-msvc-win32
+          --config Debug
 
-      - name: Test
+      - name: Test Win32 Debug
         run: >
           ctest
-          --test-dir build-msvc
-          --build-config ${{ matrix.build }}
+          --test-dir build-msvc-win32
+          --build-config Debug
+          --output-on-failure
+
+      - name: Build Win32 Release
+        run: >
+          cmake
+          --build build-msvc-win32
+          --config Release
+
+      # This fails with VS 2019 without b5a5d9e3f702.
+      - name: Test Win32 Release
+        run: >
+          ctest
+          --test-dir build-msvc-win32
+          --build-config Release
+          --output-on-failure
+
+      - name: Configure x64
+        run: >
+          cmake
+          -A x64
+          -B build-msvc-x64
+
+      - name: Build x64 Debug
+        run: >
+          cmake
+          --build build-msvc-x64
+          --config Debug
+
+      - name: Test x64 Debug
+        run: >
+          ctest
+          --test-dir build-msvc-x64
+          --build-config Debug
+          --output-on-failure
+
+      - name: Build x64 Release
+        run: >
+          cmake
+          --build build-msvc-x64
+          --config Release
+
+      - name: Test x64 Release
+        run: >
+          ctest
+          --test-dir build-msvc-x64
+          --build-config Release
           --output-on-failure

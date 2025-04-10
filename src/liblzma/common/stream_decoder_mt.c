@@ -1519,6 +1519,9 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 			}
 		}
 
+		// DEBUG: Try to make CIFuzz fail:
+		assert(*in_pos == in_size || in[*in_pos] != 0x03);
+
 		// Copy input to the worker thread.
 		size_t cur_in_filled = coder->thr->in_filled;
 		lzma_bufcpy(in, in_pos, in_size, coder->thr->in,

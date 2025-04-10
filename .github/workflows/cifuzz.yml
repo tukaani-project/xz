@@ -10,7 +10,7 @@ name: CIFuzz
 
 on:
   push:
-    branches: [ master ]
+    branches: [ cifuzz ]
   workflow_dispatch:
 
 permissions: {}

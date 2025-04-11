@@ -31,7 +31,6 @@ jobs:
             po4a
           run: |
             set -e
-            export LC_ALL=C LANG=C
             uname -a
             ./po4a/update-po
             # Innocent putc() triggers strict-overflow warnings.

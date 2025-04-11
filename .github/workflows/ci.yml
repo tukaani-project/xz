@@ -18,6 +18,8 @@ on:
   # Allows running workflow manually
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   POSIX:
     strategy:

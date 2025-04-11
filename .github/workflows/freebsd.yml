@@ -4,7 +4,7 @@ name: FreeBSD
 
 on:
   push:
-    branches: [ master ]
+    branches: [ msys2ci ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:

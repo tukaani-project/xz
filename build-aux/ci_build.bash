@@ -209,7 +209,7 @@ then
 		add_extra_option "$NATIVE_LANG_SUPPORT" "" "--disable-nls"
 		add_extra_option "$SMALL" "--enable-small" ""
 		add_extra_option "$CLMUL" "" "--disable-clmul-crc"
-		add_extra_option "$SANDBOX" "" "--enable-sandbox=no"
+		add_extra_option "$SANDBOX" "" "--disable-sandbox"
 		add_extra_option "$DOXYGEN" "--enable-doxygen" ""
 
 		# Workaround a bug in too old config.guess. Version with

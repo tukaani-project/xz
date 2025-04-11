@@ -9,24 +9,45 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
-  FreeBSD-test:
+  FreeBSD:
+    strategy:
+      matrix:
+        include:
+          - version: 12.4
+            arch: x86_64
+          - version: 14.2
+            arch: aarch64
+          - version: 15.0
+            arch: x86_64
+
     runs-on: ubuntu-latest
-    name: Test xz on FreeBSD
+
+    name: FreeBSD
+
     steps:
-    - uses: actions/checkout@v4.1.6
-    - name: Test in FreeBSD
-      id: test
-      uses: vmactions/FreeBSD-vm@d7b8fcc7711aa41ad45e8d9b737cf90f035a7e3d #v1.1.3
-      with:
-        usesh: true
-        prepare: |
-         pkg install -y autoconf automake gmake gettext-tools gtar libtool m4 po4a
-        run: |
-          set -e
-          export LC_ALL=C LANG=C
-          uname -a
-          ./autogen.sh
-          ./configure --enable-werror
-          make
-          make check VERBOSE=1
+      - uses: actions/checkout@v4
+
+      - name: Test in FreeBSD
+        uses: vmactions/FreeBSD-vm@c3ae29a132c8ef1924775414107a97cac042aad5 #v1.2.0
+        with:
+          release: ${{ matrix.release }}
+          arch: ${{ matrix.arch }}
+          usesh: true
+          prepare: >
+            pkg install -y
+            autoconf
+            automake
+            gettext-tools
+            libtool
+            m4
+            po4a
+          run: |
+            set -e
+            export LC_ALL=C LANG=C
+            uname -a
+            ./autogen.sh
+            ./configure --disable-static --enable-debug --enable-werror
+            make -j4 check

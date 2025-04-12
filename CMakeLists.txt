@@ -2171,8 +2171,10 @@ this many MiB of RAM if xz cannot determine the amount at runtime")
     tuklib_progname(xz)
     tuklib_mbstr(xz)
 
-    check_symbol_exists(optreset getopt.h HAVE_OPTRESET)
-    tuklib_add_definition_if(xz HAVE_OPTRESET)
+    if(HAVE_GETOPT_LONG)
+        check_symbol_exists(optreset getopt.h HAVE_OPTRESET)
+        tuklib_add_definition_if(xz HAVE_OPTRESET)
+    endif()
 
     check_symbol_exists(posix_fadvise fcntl.h HAVE_POSIX_FADVISE)
     tuklib_add_definition_if(xz HAVE_POSIX_FADVISE)

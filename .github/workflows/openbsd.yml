@@ -9,27 +9,31 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
-  OpenBSD-test:
+  OpenBSD:
     runs-on: ubuntu-latest
-    name: Test xz on OpenBSD
+    name: OpenBSD
     steps:
-    - uses: actions/checkout@v4.1.6
-    - name: Test in OpenBSD
-      id: test
-      uses: vmactions/OpenBSD-vm@ebafa4eac4adf5e7d04e5bbb4aa764b75dd160df #v1.1.2
-      with:
-        usesh: true
-        prepare: |
-          /usr/sbin/pkg_add -I -v autoconf-2.71 automake-1.16.5 gmake gettext-tools gtar libtool m4
-        run: |
-          set -e
-          export LC_ALL=C LANG=C
-          export AUTOCONF_VERSION=2.71
-          export AUTOMAKE_VERSION=1.16
-          uname -a
-          # OpenBSD ports lack po4a
-          ./autogen.sh --no-po4a
-          ./configure --enable-werror
-          make
-          make check VERBOSE=1
+      - uses: actions/checkout@v4
+
+      - name: Test in OpenBSD
+        uses: vmactions/openbsd-vm@284abc8fb4cd88f69946a0d4c27c4eecd82fdde9 #v1.1.7
+        with:
+          usesh: true
+          prepare: >
+            /usr/sbin/pkg_add -I -v
+            autoconf-2.72p0
+            automake-1.16.5
+            gettext-tools
+            libtool
+            m4
+          run: |
+            set -e
+            export AUTOCONF_VERSION=2.72
+            export AUTOMAKE_VERSION=1.16
+            uname -a
+            ./autogen.sh --no-po4a
+            ./configure --disable-static --enable-debug --enable-werror --disable-nls --enable-external-sha256
+            make -j4 check

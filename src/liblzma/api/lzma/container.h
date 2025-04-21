@@ -862,18 +862,17 @@ extern LZMA_API(lzma_ret) lzma_alone_decoder(
  * Just like with lzma_stream_decoder() for .xz files, LZMA_CONCATENATED
  * should be used when decompressing normal standalone .lz files.
  *
- * The .lz format allows putting non-.lz data at the end of a file after at
- * least one valid .lz member. That is, one can append custom data at the end
- * of a .lz file and the decoder is required to ignore it. In liblzma this
- * is relevant only when LZMA_CONCATENATED is used. In that case lzma_code()
- * will return LZMA_STREAM_END and leave lzma_stream.next_in pointing to
- * the first byte of the non-.lz data. An exception to this is if the first
- * 1-3 bytes of the non-.lz data are identical to the .lz magic bytes
- * (0x4C, 0x5A, 0x49, 0x50; "LZIP" in US-ASCII). In such a case the 1-3 bytes
- * will have been ignored by lzma_code(). If one wishes to locate the non-.lz
- * data reliably, one must ensure that the first byte isn't 0x4C. Actually
- * one should ensure that none of the first four bytes of trailing data are
- * equal to the magic bytes because lzip >= 1.20 requires it by default.
+ * If LZMA_CONCATENATED is used and there is non-.lz data after at least one
+ * valid .lz member, lzma_code() leaves lzma_stream.next_in pointing to the
+ * first byte of the non-.lz data and returns LZMA_STREAM_END. That is, one
+ * can append custom data at the end of a .lz file and the decoder will
+ * ignore it. An exception to this is if the first 1-3 bytes of the non-.lz
+ * data are identical to the .lz magic bytes (0x4C, 0x5A, 0x49, 0x50; "LZIP"
+ * in US-ASCII). In such a case the 1-3 bytes are consumed by lzma_code().
+ * If one wishes to locate the non-.lz data reliably, one must ensure that
+ * the first byte isn't 0x4C. It's best if none of the first four bytes of
+ * trailing data are equal to the magic bytes because if two or three bytes
+ * are, lzip >= 1.20 diagnoses it as a corrupt member header by default.
  *
  * \param       strm        Pointer to lzma_stream that is at least initialized
  *                          with LZMA_STREAM_INIT.

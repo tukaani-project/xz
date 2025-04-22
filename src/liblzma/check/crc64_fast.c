@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-/// \file       crc64.c
+/// \file       crc64_fast.c
 /// \brief      CRC64 calculation
 //
 //  Authors:    Lasse Collin

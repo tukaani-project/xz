@@ -34,6 +34,6 @@ jobs:
             uname -a
             ./po4a/update-po
             # Innocent putc() triggers strict-overflow warnings.
-            cmake -G Ninja -B build -DBUILD_SHARED_LIBS=ON -DCMAKE_C_FLAGS='-g -O2 -pipe -Wno-error=strict-overflow' -DCMAKE_COMPILE_WARNING_AS_ERROR=ON
+            cmake -G Ninja -B build -DBUILD_SHARED_LIBS=ON -DCMAKE_C_FLAGS='-UNDEBUG -g -O2 -pipe -Wno-error=strict-overflow' -DCMAKE_COMPILE_WARNING_AS_ERROR=ON
             ninja -C build
             ctest --test-dir build --output-on-failure

@@ -2,27 +2,32 @@
 
 #############################################################################
 #
-# Author: Jia Tan
+# Authors: Jia Tan
+#          Lasse Collin
 #
 #############################################################################
 
-name: Windows-CI
+name: Windows-MSYS2
 
-# Only run the Windows CI manually since it takes much longer than the others.
-on: workflow_dispatch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions: {}
 
 jobs:
-  POSIX:
+  MSYS2:
     strategy:
+      fail-fast: false
       matrix:
-        # Test different environments since the code may change between
-        # them and we want to ensure that we support all potential users.
-        # clang64 builds are currently broken when building static libraries
-        # due to a bug in ldd search path:
-        # https://github.com/llvm/llvm-project/issues/67779
-        # TODO - re-enable clang64 when this is resolved.
-        msys2_env: [mingw64, mingw32, ucrt64, msys]
-        build_system: [autotools, cmake]
+        runner: [ windows-latest ]
+        sys: [ mingw32, ucrt64, clang64, msys ]
+        include:
+          - runner: windows-11-arm
+            sys: clangarm64
 
     # Set the shell to be msys2 as a default to avoid setting it for
     # every individual run command.
@@ -30,22 +35,39 @@ jobs:
       run:
         shell: msys2 {0}
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
 
     steps:
-      #####################
-      # Setup Environment #
-      #####################
-
-      # Rely on the msys2 GitHub Action to set up the msys2 environment.
       - name: Setup MSYS2
-        uses: msys2/setup-msys2@cc11e9188b693c2b100158c3322424c4cc1dadea #v2.22.0
+        if: ${{ matrix.sys == 'msys' }}
+        uses: msys2/setup-msys2@61f9e5e925871ba6c9e3e8da24ede83ea27fa91f # v2.27.0
         with:
-          msystem: ${{ matrix.msys2_env }}
+          msystem: ${{ matrix.sys }}
           update: true
-          install: pactoys make
+          install: >
+            make
+            ninja
+            autotools
+            cmake
+            base-devel
+            gettext-devel
+            gcc
 
-      - name: Checkout code
+      - name: Setup MSYS2
+        if: ${{ matrix.sys != 'msys' }}
+        uses: msys2/setup-msys2@61f9e5e925871ba6c9e3e8da24ede83ea27fa91f # v2.27.0
+        with:
+          msystem: ${{ matrix.sys }}
+          update: true
+          pacboy: >
+            make:p
+            ninja:p
+            autotools:p
+            cmake:p
+            toolchain:p
+            gettext:p
+
+      - name: Git configuration
         # Need to explicitly set the shell here since we set the default
         # shell as msys2 earlier. This avoids an extra msys2 dependency on
         # git.
@@ -55,70 +77,71 @@ jobs:
         # text file and will not match the output from xzgrep.
         run: git config --global core.autocrlf false
 
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4
 
+      - name: CMake (full, shared)
+        run: |
+          set -e
+          cmake -G Ninja -B b-cmake-full \
+              -DBUILD_SHARED_LIBS=ON \
+              -DCMAKE_C_FLAGS='-UNDEBUG -g -O2 -pipe' \
+              -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+              ${{ startsWith(matrix.sys, 'mingw') && '-DXZ_NLS=OFF' || '' }}
+          ninja -C b-cmake-full
+          ctest --test-dir b-cmake-full --output-on-failure
 
-      ########################
-      # Install Dependencies #
-      ########################
+      - name: CMake (small, static)
+        if: ${{ matrix.runner == 'windows-latest' }}
+        run: |
+          set -e
+          cmake -G Ninja -B b-cmake-small \
+              -DBUILD_SHARED_LIBS=OFF \
+              -DCMAKE_C_FLAGS='-UNDEBUG -g -Os -pipe' \
+              -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+              -DXZ_SMALL=ON \
+              -DXZ_THREADS=no \
+              -DXZ_NLS=OFF
+          ninja -C b-cmake-small
+          ctest --test-dir b-cmake-small --output-on-failure
 
-        # The pacman repository has a different naming scheme for default
-        # msys packages than the others. The pacboy tool allows installing
-        # the packages possible in matrix setup without a burdensome amount
-        # of ifs.
-      - name: Install Dependencies
-        if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'autotools' }}
-        run: pacman --noconfirm -S --needed autotools base-devel doxygen gettext-devel gcc
+      - name: autogen.sh
+        run: ./autogen.sh --no-po4a
 
-      - name: Install Dependencies
-        if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'autotools' }}
-        run: pacboy --noconfirm -S --needed autotools:p toolchain:p doxygen:p
+      - name: Autotools (full, shared)
+        run: |
+          set -e
+          mkdir b-autotools-full
+          cd b-autotools-full
+          ../configure \
+              --enable-debug \
+              --enable-werror \
+              --disable-static \
+              ${{ startsWith(matrix.sys, 'mingw') && '--disable-nls' || '' }}
+          make -j"$(nproc)" check
 
-      - name: Install Dependencies
-        if: ${{ matrix.msys2_env == 'msys' && matrix.build_system == 'cmake' }}
-        run: pacman --noconfirm -S --needed cmake base-devel gcc
-
-      - name: Install Dependencies
-        if: ${{ matrix.msys2_env != 'msys' && matrix.build_system == 'cmake' }}
-        run: pacboy --noconfirm -S --needed cmake:p toolchain:p
-
-      ##################
-      # Build and Test #
-      ##################
-
-      - name: Build with full features
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -p build
-      - name: Test with full features
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -p test -n full_features
-
-      - name: Build without threads
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p build
-      - name: Test without threads
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d threads,shared -p test -n no_threads
-
-      - name: Build without encoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p build
-      - name: Test without encoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d encoders,shared -p test -n no_encoders
-
-      - name: Build without decoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p build
-      - name: Test without decoders
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -d decoders,shared -p test -n no_decoders
-
-      - name: Build with only crc32 check
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p build
-      - name: Test with only crc32 check
-        run: ./build-aux/ci_build.bash -a "--no-po4a" -b ${{ matrix.build_system }} -c crc32 -d shared,nls -p test -n crc32_only
-
-
-      ###############
-      # Upload Logs #
-      ###############
+      - name: Autotools (small, static)
+        if: ${{ matrix.runner == 'windows-latest' }}
+        run: |
+          set -e
+          mkdir b-autotools-small
+          cd b-autotools-small
+          ../configure \
+              --enable-debug \
+              --enable-werror \
+              --disable-shared \
+              --enable-small \
+              --disable-threads \
+              --disable-nls \
+              CFLAGS='-g -Os'
+          make -j"$(nproc)" check
 
       # Upload the test logs as artifacts if any step has failed.
-      - uses: actions/upload-artifact@v4.3.3
-        if: ${{ failure() }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
         with:
-          name: ${{ matrix.msys2_env }} ${{ matrix.build_system }} Test Logs
-          path: build-aux/artifacts
+          name: test-logs-${{ matrix.sys }}
+          path: |
+            b-cmake-*/Testing/Temporary/
+            b-cmake-*/test_*/
+            b-autotools-*/tests/*.log
+            b-autotools-*/tests/*output

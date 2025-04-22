@@ -99,7 +99,7 @@ jobs:
 
       - name: Build with Valgrind
         if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
-        run: ./build-aux/ci_build.bash -b autotools -p build -d sandbox
+        run: ./build-aux/ci_build.bash -b autotools -p build -d shared,sandbox
       - name: Test with Valgrind
         if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: |

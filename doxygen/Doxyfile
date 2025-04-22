@@ -8,7 +8,7 @@
 #   - Instead of API docs, docs of XZ Utils internals may be built.
 #   - Change the output directory for out-of-tree builds.
 #
-# These options were tested with Doxygen 1.10.0.
+# These options were tested with Doxygen 1.9.8 and 1.13.2.
 
 PROJECT_NAME           = "liblzma (XZ Utils)"
 OUTPUT_DIRECTORY       = ../doc

@@ -24,7 +24,7 @@ jobs:
   POSIX:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
         build_system: [autotools, cmake]
     runs-on: ${{ matrix.os }}
     steps:
@@ -36,10 +36,15 @@ jobs:
 
       # Install Autotools on Linux
       - name: Install Dependencies
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: |
             sudo apt-get update
-            sudo apt-get install -y autoconf automake build-essential po4a autopoint gcc-multilib doxygen musl-tools valgrind
+            sudo apt-get install -y autoconf automake build-essential po4a autopoint doxygen musl-tools valgrind
+
+      - name: Install Dependencies
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        run: |
+            sudo apt-get install -y gcc-multilib
 
       # Install Autotools on Mac
       - name: Install Dependencies
@@ -48,7 +53,7 @@ jobs:
 
       # Install CMake on Linux
       - name: Install Dependencies
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'cmake' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'cmake' }}
         run: |
             sudo apt-get update
             sudo apt-get install -y build-essential cmake gettext doxygen musl-tools
@@ -83,33 +88,33 @@ jobs:
       # the /proc/ filesystem on Linux, which is used by the sanitizer's
       # instrumentation.
       - name: Build with -fsanitize=address,undefined
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: ./build-aux/ci_build.bash -b autotools -p build -f "-fsanitize=address,undefined" -d sandbox
       - name: Test with -fsanitize=address,undefined
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: |
             export UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1
             ./build-aux/ci_build.bash -b autotools -p test -f "-fsanitize=address,undefined" -d sandbox
             cd ../xz_build && make distclean
 
       - name: Build with Valgrind
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: ./build-aux/ci_build.bash -b autotools -p build -d sandbox
       - name: Test with Valgrind
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: |
             ./build-aux/ci_build.bash -b autotools -p test -d sandbox -w "valgrind --quiet --trace-children=yes --trace-children-skip-by-arg=ls,cp,sed,grep,bash,sh --exit-on-first-error=yes --error-exitcode=1"
             cd ../xz_build && make distclean
 
       - name: Build with musl libc
-        if: ${{ matrix.os == 'ubuntu-latest'}}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: ./build-aux/ci_build.bash -b ${{ matrix.build_system }} -p build -m "/usr/bin/musl-gcc"
       - name: Test with musl libc
-        if: ${{ matrix.os == 'ubuntu-latest'}}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: |
             ./build-aux/ci_build.bash -b ${{ matrix.build_system }} -p test -m "/usr/bin/musl-gcc"
       - name: Clean up musl libc run
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_system == 'autotools' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.build_system == 'autotools' }}
         run: cd ../xz_build && make distclean
 
       - name: Build with full features

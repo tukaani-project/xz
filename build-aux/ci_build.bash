@@ -241,6 +241,7 @@ then
 		# CMake disables the shared library by default.
 		add_extra_option "$SHARED" "-DBUILD_SHARED_LIBS=ON" ""
 
+		add_extra_option "$NATIVE_LANG_SUPPORT" "" "-DXZ_NLS=OFF"
 		add_extra_option "$SMALL" "-DXZ_SMALL=ON" ""
 
 		# Remove old cache file to clear previous settings.

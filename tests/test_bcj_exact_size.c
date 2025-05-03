@@ -27,7 +27,7 @@ test_exact_size(void)
 				"is disabled");
 
 	// Something to be compressed
-	const uint8_t in[16] = "0123456789ABCDEF";
+	const uint8_t in[16] = "0123456789ABCDE";
 
 	// in[] after compression
 	uint8_t compressed[1024];

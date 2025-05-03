@@ -63,7 +63,7 @@ done
 cmp="$cmp --"
 
 for file; do
-  test "X$file" = X- || <"$file" || exit 2
+  test "X$file" = X- || true < "$file" || exit 2
 done
 
 # xz needs -qQ to ignore warnings like unsupported check type.

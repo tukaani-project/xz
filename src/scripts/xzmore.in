@@ -58,7 +58,7 @@ if test $# = 0; then
 else
 	FIRST=1
 	for FILE; do
-		< "$FILE" || continue
+		true < "$FILE" || continue
 		if test $FIRST -eq 0; then
 			printf "%s--More--(Next file: %s)" "" "$FILE"
 			stty $cb -echo 2>/dev/null

@@ -16,6 +16,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# shellcheck shell=sh disable=SC1003,SC2016
+
 @enable_path_for_scripts@
 #SET_PATH - This line is a placeholder to ease patching this script.
 
@@ -90,6 +92,8 @@ if test $# -eq 1; then
       printf '%s\n' "$0: $1: Unknown compressed file name suffix" >&2
       exit 2;;
   esac
+  # The FILE variable is used with eval, and shellcheck doesn't see that.
+  # shellcheck disable=SC2034
   case $1 in
     *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *[-.]lzo | *[-.]zst | *[-.]lz4)
       FILE=`expr "X$1" : 'X\(.*\)[-.][abglmostxzZ24]*$'`;;

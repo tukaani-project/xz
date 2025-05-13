@@ -16,6 +16,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# shellcheck shell=sh disable=SC2089,SC2090
+
 @enable_path_for_scripts@
 #SET_PATH - This line is a placeholder to ease patching this script.
 

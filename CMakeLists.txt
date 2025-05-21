@@ -85,6 +85,7 @@ include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
 include(CheckCCompilerFlag)
+include(CheckLinkerFlag)
 include(cmake/tuklib_large_file_support.cmake)
 include(cmake/tuklib_integer.cmake)
 include(cmake/tuklib_cpucores.cmake)
@@ -555,6 +556,21 @@ symbol versioning (${SUPPORTED_SYMBOL_VERSIONING_VARIANTS})")
                XZ_SYMBOL_VERSIONING STREQUAL "yes")
             set(SYMBOL_VERSIONING "generic")
         endif()
+    endif()
+
+    if(NOT SYMBOL_VERSIONING STREQUAL "no")
+        # If features are disabled in liblzma, some symbols may be missing.
+        # LLVM's lld defaults to --no-undefined-version and the build breaks
+        # if not all symbols in the version script exist. That is good for
+        # catching errors like typos, but in our case the downside is too big.
+        # Avoid the problem by using --undefined-version if the linker
+        # supports it.
+        #
+        # GNU ld has had --no-undefined-version for a long time but it's not
+        # the default. The opposite option --undefined-version was only added
+        # in 2022, thus we must use --undefined-version conditionally.
+        check_linker_flag(C "-Wl,--undefined-version"
+                          HAVE_LINKER_FLAG_UNDEFINED_VERSION)
     endif()
 endif()
 
@@ -1480,6 +1496,9 @@ elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "linux")
     # NOTE: Set it explicitly to 1 to make it clear that versioning is
     # done unconditionally in the C files.
     target_compile_definitions(liblzma PRIVATE HAVE_SYMBOL_VERSIONS_LINUX=1)
+    if(HAVE_LINKER_FLAG_UNDEFINED_VERSION)
+        target_link_options(liblzma PRIVATE "-Wl,--undefined-version")
+    endif()
     target_link_options(liblzma PRIVATE
         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_linux.map"
     )
@@ -1487,6 +1506,9 @@ elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "linux")
         LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_linux.map"
     )
 elseif(BUILD_SHARED_LIBS AND SYMBOL_VERSIONING STREQUAL "generic")
+    if(HAVE_LINKER_FLAG_UNDEFINED_VERSION)
+        target_link_options(liblzma PRIVATE "-Wl,--undefined-version")
+    endif()
     target_link_options(liblzma PRIVATE
         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/liblzma/liblzma_generic.map"
     )

@@ -7,9 +7,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.7.1-dev1\n"
-"POT-Creation-Date: 2025-03-25 12:28+0200\n"
-"PO-Revision-Date: 2025-03-02 17:46+0100\n"
+"Project-Id-Version: xz-man 5.8.0-pre1\n"
+"POT-Creation-Date: 2025-03-08 14:50+0200\n"
+"PO-Revision-Date: 2025-05-18 07:01+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
@@ -28,10 +28,9 @@ msgstr "XZ"
 
 #. type: TH
 #: ../src/xz/xz.1
-#, fuzzy, no-wrap
-#| msgid "2025-01-05"
+#, no-wrap
 msgid "2025-03-08"
-msgstr "05.01.2025."
+msgstr "08.03.2025."
 
 #. type: TH
 #: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
@@ -1561,7 +1560,7 @@ msgstr "B<preset=>I<предподешавање>"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Reset all LZMA1 or LZMA2 I<options> to I<preset>.  I<Preset> consist of an integer, which may be followed by single-letter preset modifiers.  The integer can be from B<0> to B<9>, matching the command line options B<-0> \\&...\\& B<-9>.  The only supported modifier is currently B<e>, which matches B<--extreme>.  If no B<preset> is specified, the default values of LZMA1 or LZMA2 I<options> are taken from the preset B<6>."
-msgstr "Враћа све LZMA1 или LZMA2 I<опције> на I<предподешеност>.  I<Предпдешеност> се састоји од целог броја, за којим може да следи једнословни измењивач предподешености.  Цео број може бити од B<0> до B<9>, поклапајући опције линије наредби B<-0> \\&...\\& B<-9>.  Једини тренутно подржани измењивач је B<e>, који се поклапа са B<--extreme>.  Ако B<предподешеност> није наведена, основне вредности LZMA1 или LZMA2 I<опција> се узимају из предподешености B<6>."
+msgstr "Враћа све LZMA1 или LZMA2 I<опције> на I<предподешеност>.  I<Предпдешеност> се састоји од целог броја, за којим може да следи једнословни измењивач предподешености.  Цео број може бити од B<0> до B<9>, поклапајући опције линије наредби B<-0> \\&...\\& B<-9>.  Једини тренутно подржани измењивач је B<e>, који се поклапа са B<--extreme>.  Ако B<preset> није наведено, основне вредности LZMA1 или LZMA2 I<опција> се узимају из предподешености B<6>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2902,7 +2901,7 @@ msgstr "B<xz> обрађује размаком одвојени списак о
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "B<Warning:> By setting these environment variables, one is effectively modifying programs and scripts that run B<xz>.  Most of the time it is safe to set memory usage limits, number of threads, and compression options via the environment variables.  However, some options can break scripts.  An obvious example is B<--help> which makes B<xz> show the help text instead of compressing or decompressing a file.  More subtle examples are B<--quiet> and B<--verbose>.  In many cases it works well to enable the progress indicator using B<--verbose>, but in some situations the extra messages create problems.  The verbosity level also affects the behavior of B<--list>."
-msgstr ""
+msgstr "B<Упозорење:> Постављањем ових променљивих окружења, ефективно мењате програме и скрипте које покреће B<xz>.  У већини случајева је безбедно поставити ограничење коришћења, број нити и опција паковања путем променљивих окружења.  Међутим, неке опције могу да уруше скрипте.  Очигледан пример је B<--help> која чини да B<xz> прикаже текст помоћи уместо да запакује или распакује датотеку.  Суптилнији примери су B<--quiet> и B<--verbose>.  У многим случајевима добро функционише омогућавање указивача напредовања коришћењем B<--verbose>, али у неким ситуацијама додатне поруке стварају проблеме. Ниво опширности такође утиче на понашање B<--list>"
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -2912,10 +2911,8 @@ msgstr "B<XZ_DEFAULTS>"
 
 #. type: Plain text
 #: ../src/xz/xz.1
-#, fuzzy
-#| msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default.  Excluding shell initialization scripts and similar special cases, scripts must never set or unset B<XZ_DEFAULTS>."
 msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default or set the default number of threads.  Excluding shell initialization scripts and similar special cases, scripts should never set or unset B<XZ_DEFAULTS>."
-msgstr "Кориснику специфичне или свеопште системске основне опције.  Обично је ово постављено у скрипти покретања конзоле за укључивање B<xz> ограничавача коришћења меморије по основи.  Искључивање скрипти покретања конзоле и сличних специјалних случајева, скрипте не смеју никада да поставе или пониште B<XZ_DEFAULTS>."
+msgstr "Кориснику специфичне или свеопште системске основне опције.  Обично је ово постављено у скрипти покретања конзоле за укључивање B<xz> ограничавача коришћења меморије по основи или за постављање основног броја нити.  Искључивање скрипти покретања конзоле и сличних специјалних случајева, скрипте не смеју никада да поставе или пониште B<XZ_DEFAULTS>."
 
 #. type: TP
 #: ../src/xz/xz.1
@@ -3591,10 +3588,9 @@ msgstr "XZDIFF"
 #. type: TH
 #: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
 #: ../src/scripts/xzmore.1
-#, fuzzy, no-wrap
-#| msgid "2025-01-05"
+#, no-wrap
 msgid "2025-03-06"
-msgstr "05.01.2025."
+msgstr "06.03.2025."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3613,17 +3609,13 @@ msgstr "B<xzdiff> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-#, fuzzy
-#| msgid "B<lzcmp> \\&..."
 msgid "B<lzcmp> \\&...  (DEPRECATED)"
-msgstr "B<lzcmp> \\&..."
+msgstr "B<lzcmp> \\&...  (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-#, fuzzy
-#| msgid "B<lzdiff> \\&..."
 msgid "B<lzdiff> \\&...  (DEPRECATED)"
-msgstr "B<lzdiff> \\&..."
+msgstr "B<lzdiff> \\&...  (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3642,10 +3634,8 @@ msgstr "Ако је достављен само један назив датот
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
-#, fuzzy
-#| msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils."
 msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
-msgstr "Наредбе B<lzcmp> и B<lzdiff> се достављају зарад назадне сагласности са LZMA Utils."
+msgstr "Наредбе B<lzcmp> и B<lzdiff> се достављају зарад назадне сагласности са LZMA Utils. Застареле су и биће уклоњене у будућем издању."
 
 #. type: Plain text
 #: ../src/scripts/xzdiff.1
@@ -3685,29 +3675,23 @@ msgstr "B<xzfgrep> \\&..."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-#, fuzzy
-#| msgid "B<lzgrep> \\&..."
 msgid "B<lzgrep> \\&...  (DEPRECATED)"
-msgstr "B<lzgrep> \\&..."
+msgstr "B<lzgrep> \\&...  (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-#, fuzzy
-#| msgid "B<lzegrep> \\&..."
 msgid "B<lzegrep> \\&...  (DEPRECATED)"
-msgstr "B<lzegrep> \\&..."
+msgstr "B<lzegrep> \\&...  (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-#, fuzzy
-#| msgid "B<lzfgrep> \\&..."
 msgid "B<lzfgrep> \\&...  (DEPRECATED)"
-msgstr "B<lzfgrep> \\&..."
+msgstr "B<lzfgrep> \\&...  (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
 msgid "B<xzgrep> invokes B<grep>(1)  on uncompressed contents of files.  The formats of the I<files> are determined from the filename suffixes.  Any I<file> with a suffix supported by B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), or B<lz4>(1)  will be decompressed; all other files are assumed to be uncompressed."
-msgstr "B<xzgrep> призива B<grep>(1) на незапакованим садржајима датотека.  Формати I<датотека> се одређују из суфикса назива датотека.  Било која I<датотека> са суфиксом подржаним од стране B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1) или B<lz4>(1) биће распакована; све остале датотеке се подразумевају да нису запаковане"
+msgstr "B<xzgrep> призива B<grep>(1) на незапакованим садржајима датотека.  Формати I<датотека> се одређују из суфикса назива датотека.  Било која I<датотека> са суфиксом подржаним од стране B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1) или B<lz4>(1) биће распакована; све остале датотеке се подразумевају да нису запаковане."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
@@ -3771,10 +3755,8 @@ msgstr "B<xzegrep> је алијас за B<xzgrep -E>.  B<xzfgrep> је али�
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
-#, fuzzy
-#| msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils."
 msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
-msgstr "Наредбе B<lzgrep>, B<lzegrep> и B<lzfgrep> се достављају зарад назадне сагласности са LZMA Utils."
+msgstr "Наредбе B<lzgrep>, B<lzegrep> и B<lzfgrep> се достављају зарад назадне сагласности са LZMA Utils. Застареле су и биће уклоњене у будућем издању."
 
 #. type: Plain text
 #: ../src/scripts/xzgrep.1
@@ -3831,10 +3813,8 @@ msgstr "B<xzless> [I<датотека>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-#, fuzzy
-#| msgid "B<lzless> [I<file>...]"
 msgid "B<lzless> [I<file>...] (DEPRECATED)"
-msgstr "B<lzless> [I<датотека>...]"
+msgstr "B<lzless> [I<датотека>...] (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
@@ -3848,10 +3828,8 @@ msgstr "B<xzless> користи B<less>(1) да представи свој и�
 
 #. type: Plain text
 #: ../src/scripts/xzless.1
-#, fuzzy
-#| msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils."
 msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
-msgstr "Наредба B<lzless> се доставља зарад назадне сагласности са LZMA Utils."
+msgstr "Наредба B<lzless> се доставља зарад назадне сагласности са LZMA Utils. Застарела је и биће уклоњена у будућем издању."
 
 #. type: TP
 #: ../src/scripts/xzless.1
@@ -3898,10 +3876,8 @@ msgstr "B<xzmore> [I<датотека>...]"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-#, fuzzy
-#| msgid "B<lzmore> [I<file>...]"
 msgid "B<lzmore> [I<file>...] (DEPRECATED)"
-msgstr "B<lzmore> [I<датотека>...]"
+msgstr "B<lzmore> [I<датотека>...] (ЗАСТАРЕЛО)"
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
@@ -3915,10 +3891,8 @@ msgstr "Знајте да клизање уназад можда неће бит
 
 #. type: Plain text
 #: ../src/scripts/xzmore.1
-#, fuzzy
-#| msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils."
 msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
-msgstr "Наредба B<lzmore> се доставља зарад назадне сагласности са LZMA Utils."
+msgstr "Наредба B<lzmore> се доставља зарад назадне сагласности са LZMA Utils. Застарела је и биће уклоњена у будућем издању."
 
 #.  TRANSLATORS: Don't translate the uppercase PAGER.
 #.  It is a name of an environment variable.

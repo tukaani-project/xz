@@ -1,16 +1,16 @@
 # SPDX-License-Identifier: 0BSD
 #
-# Spanish translation for xz-5.7.1-dev1.
+# Spanish translation for xz-5.8.0-pre1.
 # Copyright (C) 2024, 2025 The XZ Utils authors and contributors
 # This file is published under the BSD Zero Clause License.
 # Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023, 2024, 2025.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2025-01-29 20:59+0200\n"
-"PO-Revision-Date: 2025-01-24 09:25-0600\n"
+"PO-Revision-Date: 2025-05-14 14:23-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -1169,7 +1169,7 @@ msgstr "Los sufijos válidos son 'KiB' (2^10), 'MiB' (2^20), y 'GiB' (2^30)."
 #: src/xz/util.c
 #, c-format
 msgid "Value of the option '%s' must be in the range [%<PRIu64>, %<PRIu64>]"
-msgstr "El valor de la opción '%s' debe estar en el rango [%<PRIu64>, %<PRIu64>]"
+msgstr "El valor de la opción '%s' debe estar en el intervalo [%<PRIu64>, %<PRIu64>]"
 
 #: src/xz/util.c
 msgid "Compressed data cannot be read from a terminal"
@@ -1223,7 +1223,7 @@ msgstr "El valor de la opción no puede estar vacío"
 
 #: src/liblzma/common/string_conversion.c
 msgid "Value out of range"
-msgstr "Valor fuera de rango"
+msgstr "Valor fuera de intervalo"
 
 #: src/liblzma/common/string_conversion.c
 msgid "This option does not support any multiplier suffixes"

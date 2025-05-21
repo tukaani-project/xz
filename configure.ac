@@ -758,6 +758,7 @@ fi
 # --with-pic and --without-pic though. As long as neither --with-pic nor
 # --without-pic is used then we can use #ifdef PIC to detect if the file is
 # being built for a shared library.
+LINKER_FLAG_UNDEFINED_VERSION=
 AS_IF([test "x$enable_symbol_versions" = xno], [
 	enable_symbol_versions=no
 	AC_MSG_RESULT([no])
@@ -831,12 +832,34 @@ AS_IF([test "x$enable_symbol_versions" = xno], [
 		AC_MSG_ERROR([unknown symbol versioning variant '$enable_symbol_versions'])
 	fi
 	AC_MSG_RESULT([yes ($enable_symbol_versions)])
+
+	# If features are disabled in liblzma, some symbols may be missing.
+	# LLVM's lld defaults to --no-undefined-version and the build breaks
+	# if not all symbols in the version script exist. That is good for
+	# catching errors like typos, but in our case the downside is too big.
+	# Avoid the problem by using --undefined-version if the linker
+	# supports it.
+	#
+	# GNU ld has had --no-undefined-version for a long time but it's not
+	# the default. The opposite option --undefined-version was only added
+	# in 2022, thus we must use --undefined-version conditionally.
+	AC_MSG_CHECKING([if linker supports --undefined-version])
+	OLD_LDFLAGS=$LDFLAGS
+	LDFLAGS="$LDFLAGS -Wl,--undefined-version"
+	AC_LINK_IFELSE([AC_LANG_SOURCE([[int main(void) { return 0; }]])], [
+		LINKER_FLAG_UNDEFINED_VERSION=-Wl,--undefined-version
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
+	LDFLAGS=$OLD_LDFLAGS
 ])
 
 AM_CONDITIONAL([COND_SYMVERS_LINUX],
 	[test "x$enable_symbol_versions" = xlinux])
 AM_CONDITIONAL([COND_SYMVERS_GENERIC],
 	[test "x$enable_symbol_versions" = xgeneric])
+AC_SUBST([LINKER_FLAG_UNDEFINED_VERSION])
 
 
 ###############################################################################

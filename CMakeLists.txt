@@ -484,7 +484,7 @@ if(NOT WIN32)
     # auto      Autodetect between no, generic, and linux
     # yes       Force on by autodetecting between linux and generic
     # no        Disable symbol versioning
-    # generic   FreeBSD, most Linux/glibc systems, and GNU/Hurd
+    # generic   FreeBSD, some Linux/glibc systems, and GNU/Hurd
     # linux     Linux/glibc with extra symbol versions for compatibility
     #           with binaries that have been linked against a liblzma version
     #           that has been patched with "xz-5.2.2-compat-libs.patch" from
@@ -541,7 +541,7 @@ symbol versioning (${SUPPORTED_SYMBOL_VERSIONING_VARIANTS})")
             # somewhere in the string).
             #
             # NVIDIA HPC Compiler doesn't support symbol versioning but
-            # it uses the linked from the system so the linker script
+            # it uses the linker from the system so the linker script
             # can still be used to get the generic symbol versioning.
             set(SYMBOL_VERSIONING "generic")
 

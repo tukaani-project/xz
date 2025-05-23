@@ -10,7 +10,8 @@ PROGS = \
 	02_decompress \
 	03_compress_custom \
 	04_compress_easy_mt \
-	11_file_info
+	11_file_info \
+	12_seekable_decompress
 
 all: $(PROGS)
 

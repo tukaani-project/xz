@@ -630,7 +630,7 @@ extern LZMA_API(lzma_bool) lzma_index_iter_next(
 
 
 /**
- * \brief       Locate a Block
+ * \brief       Locate a Block by uncompressed offset
  *
  * If it is possible to seek in the .xz file, it is possible to parse
  * the Index field(s) and use lzma_index_iter_locate() to do random-access
@@ -648,7 +648,8 @@ extern LZMA_API(lzma_bool) lzma_index_iter_next(
  *
  * \param       iter    Iterator that was earlier initialized with
  *                      lzma_index_iter_init().
- * \param       target  Uncompressed target offset which the caller would
+ * \param       target_offset
+ *                      Uncompressed target offset which the caller would
  *                      like to locate from the Stream
  *
  * \return      lzma_bool:
@@ -658,7 +659,7 @@ extern LZMA_API(lzma_bool) lzma_index_iter_next(
  *                of the Stream (success)
  */
 extern LZMA_API(lzma_bool) lzma_index_iter_locate(
-		lzma_index_iter *iter, lzma_vli target) lzma_nothrow;
+		lzma_index_iter *iter, lzma_vli target_offset) lzma_nothrow;
 
 
 /**

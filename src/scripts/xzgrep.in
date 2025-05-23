@@ -57,6 +57,7 @@ files_with_matches=0
 files_without_matches=0
 no_filename=0
 with_filename=0
+recursive=0
 
 # See if -H and --label options are supported (GNU and *BSDs).
 if test f:x = "$(eval "echo x | $grep -H --label=f x 2> /dev/null")"; then
@@ -118,11 +119,14 @@ while test $# -ne 0; do
   esac
 
   case $option in
-  (-[drRzZ] | --di* | --exc* | --inc* | --rec* | --nu*)
+  (-[dRzZ] | --di* | --exc* | --inc* | --nu*)
     printf >&2 '%s: %s: Option not supported\n' "$0" "$option"
     exit 2;;
   (-[ef]* | --file | --file=* | --reg*)
     have_pat=1;;
+  (-r | --recursive)
+    recursive=1
+    continue;;
   (--h | --he | --hel | --help)
     printf '%s\n' "$usage" || exit 2
     exit;;
@@ -175,7 +179,18 @@ exec 3>&1
 # res=1 means that no file matched yet
 res=1
 
+args=()
 for i; do
+    if test $recursive -ne 0 -a -d "$i"; then
+        while read line; do
+            args+=( "${line}" )
+        done < <(find "$i" -mindepth 1 -type f)
+    else
+        args+=( "$i" )
+    fi
+done
+
+for i in "${args[@]}"; do
   case $i in
     *[-.][zZ] | *_z | *[-.]gz | *.t[ag]z) uncompress="gzip -cdf";;
     *[-.]bz2 | *[-.]tbz | *.tbz2) uncompress="bzip2 -cdf";;

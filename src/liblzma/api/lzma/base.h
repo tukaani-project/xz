@@ -561,7 +561,7 @@ typedef struct {
 	 * \brief       New seek input position for LZMA_SEEK_NEEDED
 	 *
 	 * When lzma_code() returns LZMA_SEEK_NEEDED, the new input position
-	 * needed by liblzma will be available seek_pos. The value is
+	 * needed by liblzma will be available in seek_pos. The value is
 	 * guaranteed to not exceed the file size that was specified when
 	 * this lzma_stream was initialized.
 	 *

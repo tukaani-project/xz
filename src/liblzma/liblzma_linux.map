@@ -155,4 +155,5 @@ global:
 XZ_5.9.0alpha {
 global:
 	lzma_index_iter_locate_block;
+	lzma_seekable_decoder;
 } XZ_5.8;

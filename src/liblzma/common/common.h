@@ -159,7 +159,7 @@
 
 
 /// Largest valid lzma_action value as unsigned integer.
-#define LZMA_ACTION_MAX ((unsigned int)(LZMA_FULL_BARRIER))
+#define LZMA_ACTION_MAX ((unsigned int)(LZMA_SEEK_TO_BLOCK))
 
 
 /// Special return value (lzma_ret) to indicate that a timeout was reached

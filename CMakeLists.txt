@@ -1118,6 +1118,7 @@ if(HAVE_DECODERS)
         src/liblzma/common/index_decoder.c
         src/liblzma/common/index_decoder.h
         src/liblzma/common/index_hash.c
+        src/liblzma/common/seekable_decoder.c
         src/liblzma/common/stream_buffer_decoder.c
         src/liblzma/common/stream_decoder.c
         src/liblzma/common/stream_flags_decoder.c

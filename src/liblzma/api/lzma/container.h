@@ -745,6 +745,76 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder(
 
 
 /**
+ * \brief       Initialize seekable .xz decoder
+ *
+ * To initialize a seekable decoder, lzma_index from the .xz file is needed.
+ * This can be acquired using lzma_file_info_decoder(). Read its docs first
+ * (from index.h). The seekable decoder uses LZMA_SEEK_NEEDED like the
+ * file info decoder does, and those instructions aren't repeated here.
+ *
+ * After initialization, the seekable decoder expects the input position to
+ * be at the beginning of the .xz file and the output will start from the
+ * first Block.
+ *
+ * To seek to an uncompressed offset, set strm->seek_pos to the desired
+ * uncompressed offset and call lzma_code() with 'action' set to
+ * LZMA_SEEK_TO_OFFSET. If input seeking is required, lzma_code() will
+ * return LZMA_SEEK_NEEDED and the new input position is available at
+ * strm->seek_pos. If no seeking was required, new output may have been
+ * written to strm->next_out if strm->avail_out was non-zero. To continue
+ * decoding, use LZMA_RUN as the 'action' on later lzma_code() calls.
+ *
+ * If one tries to seek to the end of the file or past it (strm->seek_pos is
+ * greater than or equal to the uncompressed size of the file), lzma_code()
+ * will return LZMA_SEEK_ERROR and the read position in *strm is not changed
+ * (decoding can be continued from the old position or one can seek again).
+ *
+ * To seek to the beginning of a specific Block, set strm->seek_pos to the
+ * desired Block number (the first Block is 1) and call lzma_code() with
+ * 'action' set to LZMA_SEEK_TO_BLOCK. Otherwise this works similarly to
+ * LZMA_SEEK_TO_OFFSET. If a non-existing Block number is specified,
+ * lzma_code() returns LZMA_SEEK_ERROR.
+ *
+ * \note        Even if LZMA_SEEK_TO_OFFSET or LZMA_SEEK_TO_BLOCK was not used
+ *              at all, in certain situations lzma_code() may still return
+ *              LZMA_SEEK_NEEDED. It's because the seekable decoder only
+ *              decodes Blocks; other fields in the .xz file are skipped over.
+ *
+ * While the 'action' LZMA_FINISH is supported at the end of the file like
+ * with other decoders, there is no need to use LZMA_FINISH with the seekable
+ * decoder because it knows the input file size from the provided lzma_index.
+ * Like with other decoders, one cannot change directly from LZMA_FINISH back
+ * to LZMA_RUN, but seekable decoder allows changing from LZMA_FINISH to
+ * LZMA_SEEK_TO_OFFSET or LZMA_SEEK_TO_BLOCK, and then one can use LZMA_RUN.
+ *
+ * \param       strm        Pointer to lzma_stream that is at least initialized
+ *                          with LZMA_STREAM_INIT.
+ * \param       memlimit    Memory usage limit as bytes. Use UINT64_MAX
+ *                          to effectively disable the limiter.
+ * \param       flags       Bitwise-or of zero or more of the decoder flags:
+ *                          LZMA_IGNORE_CHECK
+ * \param       idx         lzma_index of the .xz file. This can be acquired
+ *                          using lzma_file_info_decoder() (see index.h). The
+ *                          lzma_index must remain valid and unchanged as long
+ *                          as lzma_code() might be called on this decoder
+ *                          instance. Multiple seekable decoder instances can
+ *                          share the same lzma_index.
+ *
+ * \return      Possible lzma_ret values:
+ *              - LZMA_OK: Initialization was successful.
+ *              - LZMA_MEM_ERROR: Cannot allocate memory.
+ *              - LZMA_OPTIONS_ERROR: Unsupported flags
+ *              - LZMA_PROG_ERROR
+ *
+ * \since       5.9.1alpha
+ */
+extern LZMA_API(lzma_ret) lzma_seekable_decoder(
+		lzma_stream *strm, uint64_t memlimit, uint32_t flags,
+		const lzma_index *idx)
+		lzma_nothrow lzma_attr_warn_unused_result;
+
+
+/**
  * \brief       Initialize multithreaded .xz Stream decoder
  *
  * The decoder can decode multiple Blocks in parallel. This requires that each

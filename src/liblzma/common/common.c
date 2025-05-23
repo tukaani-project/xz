@@ -229,6 +229,8 @@ lzma_code(lzma_stream *strm, lzma_action action)
 	case ISEQ_RUN:
 		switch (action) {
 		case LZMA_RUN:
+		case LZMA_SEEK_TO_OFFSET:
+		case LZMA_SEEK_TO_BLOCK:
 			break;
 
 		case LZMA_SYNC_FLUSH:
@@ -267,7 +269,10 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		break;
 
 	case ISEQ_FINISH:
-		if (action != LZMA_FINISH
+		if (action == LZMA_SEEK_TO_OFFSET
+				|| action == LZMA_SEEK_TO_BLOCK)
+			strm->internal->sequence = ISEQ_RUN;
+		else if (action != LZMA_FINISH
 				|| strm->internal->avail_in != strm->avail_in)
 			return LZMA_PROG_ERROR;
 
@@ -281,6 +286,10 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		break;
 
 	case ISEQ_END:
+		if (action == LZMA_SEEK_TO_OFFSET
+				|| action == LZMA_SEEK_TO_BLOCK)
+			strm->internal->sequence = ISEQ_RUN;
+
 		return LZMA_STREAM_END;
 
 	case ISEQ_ERROR:
@@ -360,6 +369,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 	case LZMA_UNSUPPORTED_CHECK:
 	case LZMA_GET_CHECK:
 	case LZMA_MEMLIMIT_ERROR:
+	case LZMA_SEEK_ERROR:
 		// Something else than LZMA_OK, but not a fatal error,
 		// that is, coding may be continued (except if ISEQ_END).
 		strm->internal->allow_buf_error = false;

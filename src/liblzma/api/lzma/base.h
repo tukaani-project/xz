@@ -256,6 +256,16 @@ typedef enum {
 		 * pass it normally via lzma_stream.next_in and .avail_in.
 		 */
 
+	LZMA_SEEK_ERROR         = 13,
+		/**<
+		 * \brief       Invalid seek request
+		 *
+		 * This is returned by lzma_code() if LZMA_SEEK_TO_OFFSET or
+		 * LZMA_SEEK_TO_BLOCK is used with seekable .xz decoder
+		 * (lzma_seekable_decoder()) and the uncompressed offset
+		 * or Block number doesn't exist.
+		 */
+
 	/*
 	 * These enumerations may be used internally by liblzma
 	 * but they will never be returned to applications.
@@ -359,7 +369,7 @@ typedef enum {
 		 * LZMA_FULL_BARRIER is an alias for LZMA_FULL_FLUSH.
 		 */
 
-	LZMA_FINISH = 3
+	LZMA_FINISH = 3,
 		/**<
 		 * \brief       Finish the coding operation
 		 *
@@ -375,6 +385,22 @@ typedef enum {
 		 * initialized. When LZMA_CONCATENATED was not used, the only
 		 * effect of LZMA_FINISH is that the amount of input must not
 		 * be changed just like in the encoder.
+		 */
+
+	LZMA_SEEK_TO_OFFSET = 5,
+		/**<
+		 * \brief       Seek to an uncompressed offset
+		 *
+		 * This is only supported by seekable .xz decoder.
+		 * See lzma_seekable_decoder().
+		 */
+
+	LZMA_SEEK_TO_BLOCK = 6
+		/**<
+		 * \brief       Seek to the beginning of a Block
+		 *
+		 * This is only supported by seekable .xz decoder.
+		 * See lzma_seekable_decoder().
 		 */
 } lzma_action;
 

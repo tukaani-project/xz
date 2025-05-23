@@ -1110,6 +1110,7 @@ if(HAVE_DECODERS)
         src/liblzma/common/block_header_decoder.c
         src/liblzma/common/easy_decoder_memusage.c
         src/liblzma/common/file_info.c
+        src/liblzma/common/file_info.h
         src/liblzma/common/filter_buffer_decoder.c
         src/liblzma/common/filter_decoder.c
         src/liblzma/common/filter_decoder.h

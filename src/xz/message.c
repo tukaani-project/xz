@@ -819,9 +819,11 @@ message_strm(lzma_ret code)
 
 	case LZMA_OK:
 	case LZMA_STREAM_END:
+	case LZMA_BLOCK_END:
 	case LZMA_GET_CHECK:
 	case LZMA_PROG_ERROR:
 	case LZMA_SEEK_NEEDED:
+	case LZMA_SEEK_ERROR:
 	case LZMA_RET_INTERNAL1:
 	case LZMA_RET_INTERNAL2:
 	case LZMA_RET_INTERNAL3:

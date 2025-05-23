@@ -72,7 +72,8 @@ typedef struct {
 	/// Every Record group is part of index_stream.groups tree.
 	index_tree_node node;
 
-	/// Number of Blocks in this Stream before this group.
+	/// Block number (in this Stream) of the first Record in this group.
+	/// The first Block in the Stream is 1.
 	lzma_vli number_base;
 
 	/// Number of Records that can be put in records[].

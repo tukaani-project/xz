@@ -1267,3 +1267,68 @@ lzma_index_iter_locate(lzma_index_iter *iter, lzma_vli target)
 
 	return false;
 }
+
+
+extern LZMA_API(lzma_bool)
+lzma_index_iter_locate_block(lzma_index_iter *iter, lzma_vli target_block)
+{
+	const lzma_index *i = iter->internal[ITER_INDEX].p;
+
+	// Block numbering starts from one, so return immediately if
+	// Block zero was requested. Also return if the Block number
+	// exceeds the number of Records/Blocks we have.
+	if (target_block == 0 || i->record_count < target_block)
+		return true;
+
+	// Find the Stream that contains the target Block.
+	const index_stream *stream = NULL;
+	{
+		const index_stream *s = (const index_stream *)i->streams.root;
+		while (s != NULL) {
+			// s->block_number_base tells how many Blocks there
+			// are before the Stream, and Block numbering starts
+			// from one, so >= is correct.
+			if (s->block_number_base >= target_block) {
+				s = (const index_stream *)s->node.left;
+			} else {
+				stream = s;
+				s = (const index_stream *)s->node.right;
+			}
+		}
+	}
+
+	// A Stream must have been found because we checked that
+	// target_block doesn't exceed the number of Records.
+	assert(stream != NULL);
+
+	// Find the Record group from the Stream.
+	const index_group *group = NULL;
+	{
+		const index_group *g
+				= (const index_group *)stream->groups.root;
+		while (g != NULL) {
+			// g->number_base tells the Block number of the first
+			// Record in the group, and Block numbering starts
+			// from one, so > is correct.
+			if (g->number_base > target_block) {
+				g = (const index_group *)g->node.left;
+			} else {
+				group = g;
+				g = (const index_group *)g->node.right;
+			}
+		}
+	}
+
+	// The correct group must have been found.
+	assert(group != NULL);
+	assert(group->number_base <= target_block);
+	assert(group->number_base + group->last >= target_block);
+
+	iter->internal[ITER_STREAM].p = stream;
+	iter->internal[ITER_GROUP].p = group;
+	iter->internal[ITER_RECORD].s = target_block - group->number_base;
+
+	iter_set_info(iter);
+
+	return false;
+}

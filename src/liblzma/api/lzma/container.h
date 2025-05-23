@@ -76,6 +76,7 @@ typedef struct {
 	 * - LZMA_IGNORE_CHECK
 	 * - LZMA_CONCATENATED
 	 * - LZMA_FAIL_FAST
+	 * - LZMA_TELL_BLOCK_END
 	 */
 	uint32_t flags;
 
@@ -719,6 +720,16 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
 
 
 /**
+ * This flag makes lzma_code() return LZMA_BLOCK_END at the end of every .xz
+ * Block when decoding a .xz file. Other than providing this information,
+ * LZMA_BLOCK_END can be handled like LZMA_OK.
+ *
+ * \since       5.9.1alpha
+ */
+#define LZMA_TELL_BLOCK_END             UINT32_C(0x40)
+
+
+/**
  * \brief       Initialize .xz Stream decoder
  *
  * \param       strm        Pointer to lzma_stream that is at least initialized
@@ -731,7 +742,8 @@ extern LZMA_API(lzma_ret) lzma_microlzma_encoder(
  * \param       flags       Bitwise-or of zero or more of the decoder flags:
  *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
  *                          LZMA_TELL_ANY_CHECK, LZMA_IGNORE_CHECK,
- *                          LZMA_CONCATENATED, LZMA_FAIL_FAST
+ *                          LZMA_CONCATENATED, LZMA_FAIL_FAST,
+ *                          LZMA_TELL_BLOCK_END
  *
  * \return      Possible lzma_ret values:
  *              - LZMA_OK: Initialization was successful.
@@ -872,7 +884,8 @@ extern LZMA_API(lzma_ret) lzma_stream_decoder_mt(
  * \param       flags       Bitwise-or of zero or more of the decoder flags:
  *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
  *                          LZMA_TELL_ANY_CHECK, LZMA_IGNORE_CHECK,
- *                          LZMA_CONCATENATED, LZMA_FAIL_FAST
+ *                          LZMA_CONCATENATED, LZMA_FAIL_FAST,
+ *                          LZMA_TELL_BLOCK_END
  *
  * \return      Possible lzma_ret values:
  *              - LZMA_OK: Initialization was successful.
@@ -953,9 +966,9 @@ extern LZMA_API(lzma_ret) lzma_alone_decoder(
  *                          although only LZMA_CONCATENATED and (in very rare
  *                          cases) LZMA_IGNORE_CHECK are actually useful.
  *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
- *                          and LZMA_FAIL_FAST do nothing. LZMA_TELL_ANY_CHECK
- *                          is supported for consistency only as CRC32 is
- *                          always used in the .lz format.
+ *                          LZMA_FAIL_FAST, and LZMA_TELL_BLOCK_END do nothing.
+ *                          LZMA_TELL_ANY_CHECK is supported for consistency
+ *                          only as CRC32 is always used in the .lz format.
  *
  * \return      Possible lzma_ret values:
  *              - LZMA_OK: Initialization was successful.
@@ -979,7 +992,8 @@ extern LZMA_API(lzma_ret) lzma_lzip_decoder(
  *                          LZMA_TELL_NO_CHECK, LZMA_TELL_UNSUPPORTED_CHECK,
  *                          LZMA_IGNORE_CHECK, LZMA_CONCATENATED,
  *                          LZMA_FAIL_FAST. Note that LZMA_TELL_ANY_CHECK
- *                          is not allowed and will return LZMA_PROG_ERROR.
+ *                          and LZMA_TELL_BLOCK_END are not allowed and will
+ *                          return LZMA_PROG_ERROR.
  * \param       allocator   lzma_allocator for custom allocator functions.
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer

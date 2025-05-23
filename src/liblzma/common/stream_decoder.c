@@ -60,6 +60,10 @@ typedef struct {
 	/// and verifying the integrity check.
 	bool ignore_check;
 
+	/// If true, LZMA_BLOCK_END is returned every time we finish
+	/// decoding a Block.
+	bool tell_block_end;
+
 	/// If true, we will decode concatenated Streams that possibly have
 	/// Stream Padding between or after them. LZMA_STREAM_END is returned
 	/// once the application isn't giving us any new input (LZMA_FINISH),
@@ -271,6 +275,10 @@ stream_decode(void *coder_ptr, const lzma_allocator *allocator,
 				coder->block_options.uncompressed_size));
 
 		coder->sequence = SEQ_BLOCK_HEADER;
+
+		if (coder->tell_block_end)
+			return LZMA_BLOCK_END;
+
 		break;
 	}
 
@@ -450,6 +458,7 @@ lzma_stream_decoder_init(
 			= (flags & LZMA_TELL_UNSUPPORTED_CHECK) != 0;
 	coder->tell_any_check = (flags & LZMA_TELL_ANY_CHECK) != 0;
 	coder->ignore_check = (flags & LZMA_IGNORE_CHECK) != 0;
+	coder->tell_block_end = (flags & LZMA_TELL_BLOCK_END) != 0;
 	coder->concatenated = (flags & LZMA_CONCATENATED) != 0;
 	coder->first_stream = true;
 

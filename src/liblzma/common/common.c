@@ -365,6 +365,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 
 		FALLTHROUGH;
 
+	case LZMA_BLOCK_END:
 	case LZMA_NO_CHECK:
 	case LZMA_UNSUPPORTED_CHECK:
 	case LZMA_GET_CHECK:

@@ -26,7 +26,7 @@ lzma_stream_buffer_decode(uint64_t *memlimit, uint32_t flags,
 		return LZMA_PROG_ERROR;
 
 	// Catch flags that are not allowed in buffer-to-buffer decoding.
-	if (flags & LZMA_TELL_ANY_CHECK)
+	if (flags & (LZMA_TELL_ANY_CHECK | LZMA_TELL_BLOCK_END))
 		return LZMA_PROG_ERROR;
 
 	// Initialize the Stream decoder.

@@ -302,14 +302,14 @@ extern "C" {
 #include "lzma/delta.h"
 #include "lzma/lzma12.h"
 
-/* Container formats */
-#include "lzma/container.h"
-
 /* Advanced features */
 #include "lzma/stream_flags.h"
 #include "lzma/block.h"
 #include "lzma/index.h"
 #include "lzma/index_hash.h"
+
+/* Container formats */
+#include "lzma/container.h"
 
 /* Hardware information */
 #include "lzma/hardware.h"

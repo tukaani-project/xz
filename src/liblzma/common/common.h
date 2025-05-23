@@ -155,7 +155,8 @@
 	| LZMA_TELL_ANY_CHECK \
 	| LZMA_IGNORE_CHECK \
 	| LZMA_CONCATENATED \
-	| LZMA_FAIL_FAST )
+	| LZMA_FAIL_FAST \
+	| LZMA_TELL_BLOCK_END )
 
 
 /// Largest valid lzma_action value as unsigned integer.

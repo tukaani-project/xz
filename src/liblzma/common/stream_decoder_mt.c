@@ -287,6 +287,10 @@ struct lzma_stream_coder {
 	/// and verifying the integrity check.
 	bool ignore_check;
 
+	/// If true, LZMA_BLOCK_END is returned every time we finish
+	/// decoding a Block.
+	bool tell_block_end;
+
 	/// If true, we will decode concatenated Streams that possibly have
 	/// Stream Padding between or after them. LZMA_STREAM_END is returned
 	/// once the application isn't giving us any new input (LZMA_FINISH),
@@ -676,12 +680,30 @@ read_output_and_wait(struct lzma_stream_coder *coder,
 				// thread of the next Block (if it is still
 				// running) to start telling the main thread
 				// when new output is available.
-				if (ret == LZMA_STREAM_END)
+				if (ret == LZMA_STREAM_END) {
 					lzma_outq_enable_partial_output(
 						&coder->outq,
 						&worker_enable_partial_update);
 
-				// Loop until a Block wasn't finished.
+					// If LZMA_TELL_BLOCK_END was used,
+					// return LZMA_BLOCK_END.
+					//
+					// Also set out_was_filled = true even
+					// though the out buffer might not
+					// have become full; LZMA_BLOCK_END
+					// is a kind of "no more output was
+					// possible" situation, and thus we
+					// don't want waiting_allowed to be
+					// true on the next call to
+					// stream_decode_mt().
+					if (coder->tell_block_end) {
+						coder->out_was_filled = true;
+						ret = LZMA_BLOCK_END;
+					}
+				}
+
+				// Unless LZMA_TELL_BLOCK_END was used,
+				// loop until a Block wasn't finished.
 				// It's important to loop around even if
 				// *out_pos == out_size because there could
 				// be an empty Block that will return
@@ -690,7 +712,8 @@ read_output_and_wait(struct lzma_stream_coder *coder,
 			} while (ret == LZMA_STREAM_END);
 
 			// Check if lzma_outq_read reported an error from
-			// the Block decoder.
+			// the Block decoder or if we are returning
+			// LZMA_BLOCK_END.
 			if (ret != LZMA_OK)
 				break;
 
@@ -863,7 +886,7 @@ read_output_and_wait(struct lzma_stream_coder *coder,
 	// If we are returning an error, then the application cannot get
 	// more output from us and thus keeping the threads running is
 	// useless and waste of CPU time.
-	if (ret != LZMA_OK && ret != LZMA_TIMED_OUT)
+	if (ret != LZMA_OK && ret != LZMA_TIMED_OUT && ret != LZMA_BLOCK_END)
 		threads_stop(coder);
 
 	return ret;
@@ -1639,6 +1662,10 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 				coder->block_options.uncompressed_size));
 
 		coder->sequence = SEQ_BLOCK_HEADER;
+
+		if (coder->tell_block_end)
+			return LZMA_BLOCK_END;
+
 		break;
 	}
 
@@ -1987,6 +2014,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 			= (options->flags & LZMA_TELL_UNSUPPORTED_CHECK) != 0;
 	coder->tell_any_check = (options->flags & LZMA_TELL_ANY_CHECK) != 0;
 	coder->ignore_check = (options->flags & LZMA_IGNORE_CHECK) != 0;
+	coder->tell_block_end = (options->flags & LZMA_TELL_BLOCK_END) != 0;
 	coder->concatenated = (options->flags & LZMA_CONCATENATED) != 0;
 	coder->fail_fast = (options->flags & LZMA_FAIL_FAST) != 0;
 

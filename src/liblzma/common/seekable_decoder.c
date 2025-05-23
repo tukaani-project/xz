@@ -39,6 +39,10 @@ typedef struct {
 	/// and verifying the integrity check.
 	bool ignore_check;
 
+	/// If true, LZMA_BLOCK_END is returned every time we finish
+	/// decoding a Block.
+	bool tell_block_end;
+
 	/// Pointer to lzma_stream.seek_pos:
 	///   - This is written to pass the target input seek position to
 	///     the application when we return LZMA_SEEK_NEEDED.
@@ -119,9 +123,13 @@ seekable_seek_output(lzma_seekable_coder *coder,
 	if (action == LZMA_SEEK_TO_OFFSET) {
 		// Don't call locate if we already have the right Block.
 		//
-		// NOTE: SEQ_ITER_NEXT_BLOCK means that we are seeking
-		// right after the decoder initialization, and thus
-		// the iterator doesn't contain valid data yet.
+		// NOTE: SEQ_ITER_NEXT_BLOCK means that we are
+		//       (1) seeking right after the decoder initialization,
+		//           and thus the iterator doesn't contain valid
+		//           data yet; or
+		//       (2) seeking right after returning LZMA_BLOCK_END,
+		//           and thus the desired target offset cannot
+		//           be in the current Block.
 		if (coder->sequence != SEQ_ITER_NEXT_BLOCK
 				&& coder->cur_out_offset <= target
 				&& target
@@ -422,6 +430,12 @@ seekable_decode(void *coder_ptr, const lzma_allocator *allocator,
 		// Block decoder, it has verified that they match the Index;
 		// we don't need to check them here.
 		coder->sequence = SEQ_ITER_NEXT_BLOCK;
+
+		// If the flag LZMA_TELL_BLOCK_END was used,
+		// return LZMA_BLOCK_END now.
+		if (coder->tell_block_end)
+			return LZMA_BLOCK_END;
+
 		break;
 	}
 
@@ -478,7 +492,7 @@ seekable_decoder_init(
 		return LZMA_PROG_ERROR;
 
 	// Not many flags are supported.
-	if (flags & ~LZMA_IGNORE_CHECK)
+	if (flags & ~(LZMA_IGNORE_CHECK | LZMA_TELL_BLOCK_END))
 		return LZMA_OPTIONS_ERROR;
 
 	lzma_seekable_coder *coder = next->coder;
@@ -501,6 +515,7 @@ seekable_decoder_init(
 	coder->memusage = LZMA_MEMUSAGE_BASE;
 
 	coder->ignore_check = (flags & LZMA_IGNORE_CHECK) != 0;
+	coder->tell_block_end = (flags & LZMA_TELL_BLOCK_END) != 0;
 
 	lzma_index_iter_init(&coder->iter, idx);
 	coder->external_seek_pos = seek_pos;

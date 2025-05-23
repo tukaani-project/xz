@@ -70,6 +70,17 @@ typedef enum {
 		 * output bytes should be picked from strm->next_out.
 		 */
 
+	LZMA_BLOCK_END          = 14,
+		/**<
+		 * \brief       End of .xz Block was reached
+		 *
+		 * This can only be returned if the LZMA_TELL_BLOCK_END flag
+		 * was used when a .xz decoder was initialized. It indicates
+		 * that end of a .xz Block was successfully reached (including
+		 * verifying its integrity check). Other than providing this
+		 * information, this can be handled like LZMA_OK.
+		 */
+
 	LZMA_NO_CHECK           = 2,
 		/**<
 		 * \brief       Input stream has no integrity check

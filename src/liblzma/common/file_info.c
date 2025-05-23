@@ -9,6 +9,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "file_info.h"
 #include "index_decoder.h"
 
 
@@ -776,7 +777,7 @@ file_info_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
 }
 
 
-static lzma_ret
+extern lzma_ret
 lzma_file_info_decoder_init(lzma_next_coder *next,
 		const lzma_allocator *allocator, uint64_t *seek_pos,
 		lzma_index **dest_index,

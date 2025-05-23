@@ -663,6 +663,38 @@ extern LZMA_API(lzma_bool) lzma_index_iter_locate(
 
 
 /**
+ * \brief       Locate a Block by Block number
+ *
+ * If target_block is non-zero and doesn't exceed the number of Blocks in
+ * the lzma_index (the value returned by lzma_index_block_count()):
+ *  - Information about the Stream and Block containing the requested
+ *    Block is stored into *iter. iter->block.number_in_file will equal
+ *    target_block.
+ *  - Internal state of the iterator is adjusted so that
+ *    lzma_index_iter_next() can be used to read subsequent Blocks or Streams.
+ *
+ * If target_block is zero or greater than the number of Blocks in the
+ * lzma_index, *iter is not modified.
+ *
+ * \param       iter    Iterator that was earlier initialized with
+ *                      lzma_index_iter_init().
+ * \param       target_block
+ *                      Block number which the caller would like to locate
+ *                      from the Stream. The first Block is 1.
+ *
+ * \return      lzma_bool:
+ *              - true if target_block is zero or greater than the number of
+ *                Blocks in the Index (failure)
+ *              - false if target_block > 0 and
+ *                target_block <= lzma_index_block_count() (success)
+ *
+ * \since       5.9.1alpha
+ */
+extern LZMA_API(lzma_bool) lzma_index_iter_locate_block(
+		lzma_index_iter *iter, lzma_vli target_block) lzma_nothrow;
+
+
+/**
  * \brief       Concatenate lzma_indexes
  *
  * Concatenating lzma_indexes is useful when doing random-access reading in

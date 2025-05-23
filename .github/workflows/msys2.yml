@@ -36,6 +36,7 @@ jobs:
         shell: msys2 {0}
 
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
 
     steps:
       - name: Setup MSYS2

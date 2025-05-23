@@ -27,6 +27,7 @@ jobs:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
         build_system: [autotools, cmake]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 

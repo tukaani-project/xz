@@ -27,6 +27,7 @@ jobs:
           #   arch: aarch64
 
     runs-on: ${{ matrix.host }}
+    timeout-minutes: 10
 
     name: FreeBSD
 

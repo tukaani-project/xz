@@ -14,6 +14,7 @@ permissions: {}
 jobs:
   NetBSD:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: NetBSD
     steps:
       - uses: actions/checkout@v4

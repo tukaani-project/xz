@@ -42,12 +42,12 @@ case $FORMAT in
 		groff -t -mandoc -Tutf8 -P-c | col -bx
 		;;
 	ps)
-		sed "$SED_PD" | groff -dpaper=$PAPER -t -mandoc \
-				-rC1 -rS$FONT -Tps -P-p$PAPER
+		sed "$SED_PD" | groff -dpaper="$PAPER" -t -mandoc \
+				-rC1 -rS"$FONT" -Tps -P-p"$PAPER"
 		;;
 	pdf)
-		sed "$SED_PD" | groff -dpaper=$PAPER -t -mandoc \
-				-rC1 -rS$FONT -Tps -P-p$PAPER | ps2pdf - -
+		sed "$SED_PD" | groff -dpaper="$PAPER" -t -mandoc \
+				-rC1 -rS"$FONT" -Tps -P-p"$PAPER" | ps2pdf - -
 		;;
 	*)
 		echo 'Invalid arguments' >&2

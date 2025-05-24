@@ -20,6 +20,7 @@
 #include "tuklib_mbstr_nonprint.h"
 #include "tuklib_mbstr_wrap.h"
 #include "tuklib_exit.h"
+#include "my_allocator.h"
 
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
@@ -135,7 +136,7 @@ lzmainfo(const char *name, FILE *f)
 	lzma_filter filter = { .id = LZMA_FILTER_LZMA1 };
 
 	// Parse the first five bytes.
-	switch (lzma_properties_decode(&filter, NULL, buf, 5)) {
+	switch (lzma_properties_decode(&filter, MY_ALLOCATOR, buf, 5)) {
 	case LZMA_OK:
 		break;
 

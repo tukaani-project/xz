@@ -38,6 +38,7 @@
 #include "tuklib_progname.h"
 #include "tuklib_mbstr_nonprint.h"
 #include "tuklib_exit.h"
+#include "my_allocator.h"
 
 #ifdef TUKLIB_DOSLIKE
 #	include <fcntl.h>
@@ -429,6 +430,7 @@ main(int argc, char **argv)
 	// we don't need to reallocate memory for every file if they use same
 	// compression settings.
 	lzma_stream strm = LZMA_STREAM_INIT;
+	MY_ALLOCATOR_SET(strm);
 
 	// Some systems require setting stdin and stdout to binary mode.
 #ifdef TUKLIB_DOSLIKE

@@ -12,6 +12,7 @@
 
 #include "private.h"
 #include "tuklib_mbstr_wrap.h"
+#include "my_allocator.h"
 #include <stdarg.h>
 
 
@@ -900,7 +901,7 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 
 	char *buf;
 	const lzma_ret ret = lzma_str_from_filters(&buf, filters,
-			LZMA_STR_ENCODER | LZMA_STR_GETOPT_LONG, NULL);
+			LZMA_STR_ENCODER | LZMA_STR_GETOPT_LONG, MY_ALLOCATOR);
 	if (ret != LZMA_OK)
 		message_fatal("%s", message_strm(ret));
 
@@ -1303,7 +1304,7 @@ message_filters_help(void)
 
 	char *encoder_options;
 	if (lzma_str_list_filters(&encoder_options, LZMA_VLI_UNKNOWN,
-			LZMA_STR_ENCODER, NULL) != LZMA_OK)
+			LZMA_STR_ENCODER, MY_ALLOCATOR) != LZMA_OK)
 		message_bug();
 
 	if (!opt_robot) {

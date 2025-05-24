@@ -11,6 +11,7 @@
 
 #include "private.h"
 #include "tuklib_integer.h"
+#include "my_allocator.h"
 
 
 /// Information about a .xz file
@@ -360,6 +361,7 @@ parse_indexes(xz_file_info *xfi, file_pair *pair)
 
 	io_buf buf;
 	lzma_stream strm = LZMA_STREAM_INIT;
+	MY_ALLOCATOR_SET(strm);
 	lzma_index *idx = NULL;
 
 	lzma_ret ret = lzma_file_info_decoder(&strm, &idx,
@@ -472,7 +474,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 		goto data_error;
 
 	// Decode the Block Header.
-	switch (lzma_block_header_decode(&block, NULL, buf.u8)) {
+	switch (lzma_block_header_decode(&block, MY_ALLOCATOR, buf.u8)) {
 	case LZMA_OK:
 		break;
 
@@ -529,7 +531,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 
 	case LZMA_DATA_ERROR:
 		// Free the memory allocated by lzma_block_header_decode().
-		lzma_filters_free(filters, NULL);
+		lzma_filters_free(filters, MY_ALLOCATOR);
 		goto data_error;
 
 	default:
@@ -584,10 +586,10 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 	// Convert the filter chain to human readable form.
 	const lzma_ret str_ret = lzma_str_from_filters(
 			&bhi->filter_chain, filters,
-			LZMA_STR_DECODER | LZMA_STR_GETOPT_LONG, NULL);
+			LZMA_STR_DECODER | LZMA_STR_GETOPT_LONG, MY_ALLOCATOR);
 
 	// Free the memory allocated by lzma_block_header_decode().
-	lzma_filters_free(filters, NULL);
+	lzma_filters_free(filters, MY_ALLOCATOR);
 
 	// Check if the stringification succeeded.
 	if (str_ret != LZMA_OK) {
@@ -1349,7 +1351,7 @@ list_file(const char *filename)
 		if (!fail)
 			update_totals(&xfi);
 
-		lzma_index_end(xfi.idx, NULL);
+		lzma_index_end(xfi.idx, MY_ALLOCATOR);
 	}
 
 	io_close(pair, false);

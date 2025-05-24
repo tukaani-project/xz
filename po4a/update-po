@@ -82,7 +82,7 @@ po4a --force --verbose \
 
 # Remove the *.po.authors files that were generated above.
 # This way they won't get included in distribution tarballs.
-rm -f *.po.authors
+rm -f -- *.po.authors
 
 # Add the customized POT header which contains the SPDX license
 # identifier and spells out the license name instead of saying

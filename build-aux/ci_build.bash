@@ -115,6 +115,10 @@ while getopts a:b:c:d:l:m:n:s:p:f:w:h opt; do
 	;;
 	w) WRAPPER="$OPTARG"
 	;;
+	*)
+		echo "Unsupported option: $opt"
+		exit 1
+	;;
 	esac
 done
 

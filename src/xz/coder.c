@@ -12,6 +12,7 @@
 
 #include "private.h"
 #include "tuklib_integer.h"
+#include "my_allocator.h"
 
 
 /// Return value type for coder_init().
@@ -102,7 +103,7 @@ forget_filter_chain(void)
 	// Setting a preset or using --filters makes us forget
 	// the earlier custom filter chain (if any).
 	if (filters_count > 0) {
-		lzma_filters_free(chains[0], NULL);
+		lzma_filters_free(chains[0], MY_ALLOCATOR);
 		filters_count = 0;
 	}
 
@@ -161,7 +162,7 @@ str_to_filters(const char *str, uint32_t index, uint32_t flags)
 {
 	int error_pos;
 	const char *err = lzma_str_to_filters(str, &error_pos,
-			chains[index], flags, NULL);
+			chains[index], flags, MY_ALLOCATOR);
 
 	if (err != NULL) {
 		char filter_num[2] = "";
@@ -208,7 +209,7 @@ coder_add_block_filters(const char *str, size_t slot)
 {
 	// Free old filters first, if they were previously allocated.
 	if (chains_used_mask & (1U << slot))
-		lzma_filters_free(chains[slot], NULL);
+		lzma_filters_free(chains[slot], MY_ALLOCATOR);
 
 	str_to_filters(str, slot, 0);
 
@@ -747,7 +748,8 @@ is_format_lzma(void)
 
 	// Decode the LZMA1 properties.
 	lzma_filter filter = { .id = LZMA_FILTER_LZMA1 };
-	if (lzma_properties_decode(&filter, NULL, in_buf.u8, 5) != LZMA_OK)
+	if (lzma_properties_decode(&filter, MY_ALLOCATOR, in_buf.u8, 5)
+			!= LZMA_OK)
 		return false;
 
 	// A hack to ditch tons of false positives: We allow only dictionary
@@ -820,6 +822,9 @@ coder_init(file_pair *pair)
 	lzma_filter *active_filters = opt_block_list == NULL
 			? chains[0]
 			: chains[opt_block_list[0].chain_num];
+
+	// See src/common/my_allocator.h.
+	MY_ALLOCATOR_SET(strm);
 
 	if (opt_mode == MODE_COMPRESS) {
 #ifdef HAVE_ENCODERS
@@ -1467,7 +1472,7 @@ coder_free(void)
 	// don't worry about freeing it.
 	for (uint32_t i = 1; i < ARRAY_SIZE(chains); i++) {
 		if (chains_used_mask & (1U << i))
-			lzma_filters_free(chains[i], NULL);
+			lzma_filters_free(chains[i], MY_ALLOCATOR);
 	}
 
 	lzma_end(&strm);

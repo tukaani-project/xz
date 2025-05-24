@@ -231,8 +231,8 @@ done
 VER=$(sh build-aux/version.sh)
 if [ -x "$SEVENZ" ]; then
 	cd pkg
-	"$SEVENZ" a -tzip ../xz-$VER-windows.zip *
-	"$SEVENZ" a ../xz-$VER-windows.7z *
+	"$SEVENZ" a -tzip "../xz-$VER-windows.zip" *
+	"$SEVENZ" a "../xz-$VER-windows.7z" *
 else
 	echo
 	echo "NOTE: 7z was not found. xz-$VER-windows.zip"

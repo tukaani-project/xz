@@ -118,8 +118,8 @@ else
 fi
 
 # Create two temporary files to be used with --files and --files0.
-printf "$SUFFIX_INPUT\n" > "$SUFFIX_INPUT_FILES"
-printf "$SUFFIX_INPUT\0" > "$SUFFIX_INPUT_FILES0"
+printf '%s\n' "$SUFFIX_INPUT" > "$SUFFIX_INPUT_FILES"
+printf '%s\0' "$SUFFIX_INPUT" > "$SUFFIX_INPUT_FILES0"
 
 # Test proper handling of --files/--files0 when no suffix is set. This
 # must result in an error because xz does not know how to rename the output

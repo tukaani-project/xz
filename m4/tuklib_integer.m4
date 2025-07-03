@@ -78,7 +78,7 @@ if test "x$enable_unaligned_access" = xauto ; then
 		i?86|x86_64|powerpc|powerpc64|powerpc64le)
 			enable_unaligned_access=yes
 			;;
-		arm*|aarch64*|riscv*)
+		arm*|aarch64*|riscv*|loongarch*)
 			# On 32-bit and 64-bit ARM, GCC and Clang
 			# #define __ARM_FEATURE_UNALIGNED if
 			# unaligned access is supported.
@@ -101,7 +101,8 @@ if test "x$enable_unaligned_access" = xauto ; then
 			AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #if !defined(__ARM_FEATURE_UNALIGNED) \
 		&& !defined(__riscv_misaligned_fast) \
-		&& !defined(_MSC_VER)
+		&& !defined(_MSC_VER) \
+		&& !defined(__loongarch__) 
 compile error
 #endif
 int main(void) { return 0; }

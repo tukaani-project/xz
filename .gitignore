@@ -111,3 +111,4 @@ coverage
 /*.gmo
 
 /.vscode/
+src_rust/target/

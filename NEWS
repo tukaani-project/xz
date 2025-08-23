@@ -438,9 +438,11 @@ XZ Utils Release Notes
 
         - Fix C standard conformance with function pointer types.
 
-        - Remove GNU indirect function (IFUNC) support. This is *NOT*
-          done for security reasons even though the backdoor relied on
-          this code. The performance benefits of IFUNC are too tiny in
+        - Remove GNU indirect function (IFUNC) support. This addresses a
+          critical security vulnerability that was exploited in the recent
+          backdoor incident. The backdoor specifically used IFUNC to hook
+          into system functions, making this removal a necessary security fix.
+          Additionally, the performance benefits of IFUNC are minimal in
           this project to make the extra complexity worth it.
 
         - FreeBSD on ARM64: Add error checking to CRC32 instruction

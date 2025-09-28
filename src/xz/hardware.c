@@ -11,6 +11,9 @@
 
 #include "private.h"
 
+#if defined(HAVE_GETRLIMIT) && defined(HAVE_RLIMIT_DATA)
+#	include <sys/resource.h>
+#endif
 
 /// Maximum number of worker threads. This can be set with
 /// the --threads=NUM command line option.
@@ -320,6 +323,17 @@ hardware_init(void)
 	// One Linux-specific suggestion is to use MemAvailable from
 	// /proc/meminfo as the starting point.
 	memlimit_mt_default = total_ram / 4;
+
+#if defined(HAVE_GETRLIMIT) && defined(HAVE_RLIMIT_DATA)
+	struct rlimit rlp;
+	if (getrlimit(RLIMIT_DATA, &rlp) == 0
+#if defined(HAVE_RLIM_INFINITY)
+	    && rlp.rlim_cur != RLIM_INFINITY
+#endif
+	    && memlimit_mt_default > rlp.rlim_cur
+	)
+		memlimit_mt_default = rlp.rlim_cur;
+#endif
 
 #if SIZE_MAX == UINT32_MAX
 	// A too high value may cause 32-bit xz to run out of address space.

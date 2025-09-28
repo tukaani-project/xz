@@ -335,6 +335,14 @@ if(HAVE_CLOCK_GETTIME OR HAVE_CLOCK_GETTIME_LIBRT)
     tuklib_add_definition_if(ALL HAVE_CLOCK_MONOTONIC)
 endif()
 
+check_symbol_exists(getrlimit sys/resource.h HAVE_GETRLIMIT)
+tuklib_add_definition_if(ALL HAVE_GETRLIMIT)
+
+check_symbol_exists(RLIMIT_DATA sys/resource.h HAVE_RLIMIT_DATA)
+tuklib_add_definition_if(ALL HAVE_RLIMIT_DATA)
+
+check_symbol_exists(RLIM_INFINITY sys/resource.h HAVE_RLIM_INFINITY)
+tuklib_add_definition_if(ALL HAVE_RLIM_INFINITY)
 
 # The definition ENABLE_NLS is added only to those targets that use it, thus
 # it's not done here. (xz has translations, xzdec doesn't.)

@@ -1005,6 +1005,14 @@ AC_CHECK_DECL([CLOCK_MONOTONIC], [AC_DEFINE([HAVE_CLOCK_MONOTONIC], [1],
 	[Define to 1 if 'CLOCK_MONOTONIC' is declared in <time.h>.])], [],
 	[[#include <time.h>]])
 
+AC_CHECK_FUNCS([getrlimit])
+AC_CHECK_DECL([RLIMIT_DATA], [AC_DEFINE([HAVE_RLIMIT_DATA], [1],
+	[Define to 1 if 'RLIMIT_DATA' is declared in <sys/resource.h>.])], [],
+	[[#include <sys/resource.h>]])
+AC_CHECK_DECL([RLIM_INFINITY], [AC_DEFINE([HAVE_RLIMIT_INFINITY], [1],
+	[Define to 1 if 'RLIMIT_INFINITY' is declared in <sys/resource.h>.])], [],
+	[[#include <sys/resource.h>]])
+
 # Find the best function to set timestamps.
 AC_CHECK_FUNCS([futimens futimes futimesat utimes _futime utime], [break])
 

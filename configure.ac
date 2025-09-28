@@ -1168,7 +1168,8 @@ int main(void)
 
 # Check for ARM64 CRC32 instruction runtime detection.
 #
-#   - getauxval() is supported on Linux.
+#   - getauxval() is supported on Linux. We also need HWCAP_CRC32 which was
+#     added in glibc 2.24.
 #
 #   - elf_aux_info() is supported on FreeBSD and OpenBSD >= 7.6.
 #
@@ -1180,6 +1181,9 @@ int main(void)
 #
 AS_IF([test "x$enable_arm64_crc32" = xyes], [
 	AC_CHECK_FUNCS([getauxval elf_aux_info sysctlbyname], [break])
+	AC_CHECK_DECL([HWCAP_CRC32], [AC_DEFINE([HAVE_HWCAP_CRC32], [1],
+		[Define to 1 if 'HWCAP_CRC32' is declared in <sys/auxv.h>.])],
+		[], [[#include <sys/auxv.h>]])
 ])
 
 

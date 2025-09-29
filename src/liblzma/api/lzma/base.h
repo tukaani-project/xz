@@ -450,7 +450,9 @@ typedef struct {
 	 * \param       opaque  lzma_allocator.opaque (see below)
 	 * \param       ptr     Pointer returned by lzma_allocator.alloc(),
 	 *                      or when it is set to NULL, a pointer returned
-	 *                      by the standard malloc().
+	 *                      by the standard malloc(). In addition, NULL
+	 *                      is a possible value. The function should do
+	 *                      nothing when ptr == NULL.
 	 */
 	void (LZMA_API_CALL *free)(void *opaque, void *ptr);
 

@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-2019, windows-latest ]
+        os: [ windows-latest ]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10

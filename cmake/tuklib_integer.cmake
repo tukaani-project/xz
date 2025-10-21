@@ -64,9 +64,16 @@ function(tuklib_integer TARGET_OR_ALL)
     #   - 32/64-bit x86 / x86-64
     #   - 32/64-bit big endian PowerPC
     #   - 64-bit little endian PowerPC
+    #   - 32/64-bit Loongarch (*)
     #   - Some 32-bit ARM
     #   - Some 64-bit ARM64 (AArch64)
     #   - Some 32/64-bit RISC-V
+    #
+    # (*) Loongarch: GCC defaults to -mno-strict-align and so do
+    #     majority of GNU/Linux distributions. As of GCC 15.2, there
+    #     is no predefined macro to detect if -mstrict-align or
+    #     -mno-strict-align is in effect, so in the uncommon cases
+    #     where unaligned isn't fast, one has to manually disable it.
     #
     # CMake doesn't provide a standardized/normalized list of processor arch
     # names. For example, x86-64 may be "x86_64" (Linux), "AMD64" (Windows),
@@ -76,7 +83,7 @@ function(tuklib_integer TARGET_OR_ALL)
 
     # There is no ^ in the first regex branch to allow "i" at the beginning
     # so it can match "i386" to "i786", and "x86_64".
-    if(PROCESSOR MATCHES "[x34567]86|^x64|^amd64|^em64t")
+    if(PROCESSOR MATCHES "[x34567]86|^x64|^amd64|^em64t|^loongarch")
         set(FAST_UNALIGNED_GUESS ON)
 
     elseif(PROCESSOR MATCHES "^powerpc|^ppc")

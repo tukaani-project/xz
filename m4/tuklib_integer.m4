@@ -75,7 +75,12 @@ if test "x$enable_unaligned_access" = xauto ; then
 	# NOTE: There might be other architectures on which unaligned access
 	# is fast.
 	case $host_cpu in
-		i?86|x86_64|powerpc|powerpc64|powerpc64le)
+		# LoongArch: GCC defaults to -mno-strict-align and so do
+		# majority of GNU/Linux distributions. As of GCC 15.2, there
+		# is no predefined macro to detect if -mstrict-align or
+		# -mno-strict-align is in effect, so in the uncommon cases
+		# where unaligned isn't fast, one has to manually disable it.
+		i?86|x86_64|powerpc|powerpc64|powerpc64le|loongarch*)
 			enable_unaligned_access=yes
 			;;
 		arm*|aarch64*|riscv*)

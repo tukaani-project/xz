@@ -1008,8 +1008,8 @@ AC_CHECK_DECL([CLOCK_MONOTONIC], [AC_DEFINE([HAVE_CLOCK_MONOTONIC], [1],
 # Find the best function to set timestamps.
 AC_CHECK_FUNCS([futimens futimes futimesat utimes _futime utime], [break])
 
-# This is nice to have but not mandatory.
-AC_CHECK_FUNCS([posix_fadvise])
+# These are nice to have but not mandatory.
+AC_CHECK_FUNCS([getrlimit posix_fadvise])
 
 TUKLIB_PROGNAME
 TUKLIB_INTEGER

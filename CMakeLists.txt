@@ -2198,6 +2198,9 @@ this many MiB of RAM if xz cannot determine the amount at runtime")
         tuklib_add_definition_if(xz HAVE_OPTRESET)
     endif()
 
+    check_symbol_exists(getrlimit sys/resource.h HAVE_GETRLIMIT)
+    tuklib_add_definition_if(xz HAVE_GETRLIMIT)
+
     check_symbol_exists(posix_fadvise fcntl.h HAVE_POSIX_FADVISE)
     tuklib_add_definition_if(xz HAVE_POSIX_FADVISE)
 

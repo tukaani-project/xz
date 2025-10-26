@@ -119,6 +119,10 @@ message_init(void)
 	// exception, even if --verbose was not used, user can send SIGALRM
 	// to make us print progress information once without automatic
 	// updating.
+	//
+	// In robot mode, the progress info is always automatic.
+	// We cannot check for opt_robot here because it's not
+	// initialized yet. We do it in message_progress_start() instead.
 	progress_automatic = is_tty(STDERR_FILENO);
 
 #ifdef SIGALRM
@@ -246,6 +250,12 @@ message_progress_start(lzma_stream *strm, bool is_passthru, uint64_t in_size)
 	// printing error messages.
 	progress_started = true;
 
+	// In --robot mode, progress info is updated regularly even if
+	// standard error isn't a terminal. This cannot be done in
+	// message_init() because it's called before opt_robot is initialized.
+	if (opt_robot)
+		progress_automatic = true;
+
 	// If progress indicator is wanted, print the filename and possibly
 	// the file count now.
 	if (verbosity >= V_VERBOSE && progress_automatic) {
@@ -278,7 +288,7 @@ progress_percentage(uint64_t in_pos)
 	// size of the file, show a static string indicating that we have
 	// no idea of the completion percentage.
 	if (expected_in_size == 0 || in_pos > expected_in_size)
-		return "--- %";
+		return opt_robot ? "-" : "--- %";
 
 	// Never show 100.0 % before we actually are finished.
 	double percentage = (double)(in_pos) / (double)(expected_in_size)
@@ -286,7 +296,10 @@ progress_percentage(uint64_t in_pos)
 
 	// Use big enough buffer to hold e.g. a multibyte decimal point.
 	static char buf[16];
-	snprintf(buf, sizeof(buf), "%.1f %%", percentage);
+	if (opt_robot)
+		snprintf(buf, sizeof(buf), "%u", (unsigned)(percentage));
+	else
+		snprintf(buf, sizeof(buf), "%.1f %%", percentage);
 
 	return buf;
 }
@@ -521,6 +534,41 @@ progress_pos(uint64_t *in_pos,
 }
 
 
+static void
+progress_robot(uint64_t in_pos, uint64_t compressed_pos,
+		uint64_t uncompressed_pos, uint64_t elapsed, bool finished)
+{
+	char in_size_buf[24] = "-";
+	if (expected_in_size > 0 && expected_in_size >= in_pos)
+		snprintf(in_size_buf, sizeof(in_size_buf),
+				"%" PRIu64, expected_in_size);
+
+	// The "progress" column is there to distinguish the line
+	// from other messages on stderr. The other messages should
+	// contain a colon like in "xz:" so the likelyhood of
+	// confusion should be low enough.
+	// FIXME: If argv[0] is untrusted, "progress" is ambiguous.
+	fprintf(stderr, "progress"
+			"\t%" PRIu64 // Input bytes read
+			"\t%" PRIu64 // Output bytes written
+			"\t%" PRIu64 // Compressed bytes encoded/decoded
+			"\t%" PRIu64 // Uncompressed bytes encoded/decoded
+			"\t%s"       // Expected input size or "-"
+			"\t%s"       // Percentage as integer or "-"
+			"\t%" PRIu64 ".%03" PRIu64 // Elapsed time as seconds
+			"\n",
+			progress_strm->total_in,
+			progress_strm->total_out,
+			compressed_pos,
+			uncompressed_pos,
+			in_size_buf,
+			finished ? "100" : progress_percentage(in_pos),
+			elapsed / 1000, elapsed % 1000);
+
+	return;
+}
+
+
 extern void
 message_progress_update(void)
 {
@@ -546,26 +594,34 @@ message_progress_update(void)
 	// Block signals so that fprintf() doesn't get interrupted.
 	signals_block();
 
-	// Print the filename if it hasn't been printed yet.
-	if (!current_filename_printed)
-		print_filename();
+	if (opt_robot) {
+		// TODO: Print filename?
+		progress_robot(in_pos, compressed_pos, uncompressed_pos,
+				elapsed, false);
+	} else {
+		// Print the filename if it hasn't been printed yet.
+		if (!current_filename_printed)
+			print_filename();
 
-	// Print the actual progress message. The idea is that there is at
-	// least three spaces between the fields in typical situations, but
-	// even in rare situations there is at least one space.
-	const char *cols[5] = {
-		progress_percentage(in_pos),
-		progress_sizes(compressed_pos, uncompressed_pos, false),
-		progress_speed(uncompressed_pos, elapsed),
-		progress_time(elapsed),
-		progress_remaining(in_pos, elapsed),
-	};
-	fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\r",
-			tuklib_mbstr_fw(cols[0], 6), cols[0],
-			tuklib_mbstr_fw(cols[1], 35), cols[1],
-			tuklib_mbstr_fw(cols[2], 9), cols[2],
-			cols[3],
-			cols[4]);
+		// Print the actual progress message. The idea is that there
+		// is at least three spaces between the fields in typical
+		// situations, but even in rare situations there is at least
+		// one space.
+		const char *cols[5] = {
+			progress_percentage(in_pos),
+			progress_sizes(compressed_pos, uncompressed_pos,
+					false),
+			progress_speed(uncompressed_pos, elapsed),
+			progress_time(elapsed),
+			progress_remaining(in_pos, elapsed),
+		};
+		fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\r",
+				tuklib_mbstr_fw(cols[0], 6), cols[0],
+				tuklib_mbstr_fw(cols[1], 35), cols[1],
+				tuklib_mbstr_fw(cols[2], 9), cols[2],
+				cols[3],
+				cols[4]);
+	}
 
 #ifdef SIGALRM
 	// Updating the progress info was finished. Reset
@@ -588,7 +644,8 @@ message_progress_update(void)
 		// The progress message was printed because user had sent us
 		// SIGALRM. In this case, each progress message is printed
 		// on its own line.
-		fputc('\n', stderr);
+		if (!opt_robot)
+			fputc('\n', stderr);
 	}
 #else
 	// When SIGALRM isn't supported and we get here, it's always due to
@@ -631,10 +688,14 @@ progress_flush(bool finished)
 
 	signals_block();
 
-	// When using the auto-updating progress indicator, the final
-	// statistics are printed in the same format as the progress
-	// indicator itself.
-	if (progress_automatic) {
+	if (opt_robot) {
+		// TODO: Print filename in some cases?
+		progress_robot(in_pos, compressed_pos, uncompressed_pos,
+				elapsed, finished);
+	} else if (progress_automatic) {
+		// When using the auto-updating progress indicator, the final
+		// statistics are printed in the same format as the progress
+		// indicator itself.
 		const char *cols[5] = {
 			finished ? "100 %" : progress_percentage(in_pos),
 			progress_sizes(compressed_pos, uncompressed_pos, true),

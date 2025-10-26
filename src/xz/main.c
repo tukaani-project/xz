@@ -191,10 +191,6 @@ main(int argc, char **argv)
 	args_info args;
 	args_parse(&args, argc, argv);
 
-	if (opt_mode != MODE_LIST && opt_robot)
-		message_fatal(_("Compression and decompression with --robot "
-			"are not supported yet."));
-
 	// Tell the message handling code how many input files there are if
 	// we know it. This way the progress indicator can show it.
 	if (args.files_name != NULL)

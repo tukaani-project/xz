@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Test in FreeBSD
-        uses: vmactions/freebsd-vm@c3ae29a132c8ef1924775414107a97cac042aad5 #v1.2.0
+        uses: vmactions/freebsd-vm@487ce35b96fae3e60d45b521735f5aa436ecfade #v1.2.4
         with:
           release: ${{ matrix.release }}
           arch: ${{ matrix.arch }}

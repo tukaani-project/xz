@@ -21,7 +21,7 @@ jobs:
 
       - name: Test in NetBSD
         id: test
-        uses: vmactions/netbsd-vm@46a58bbf03682b4cb24142b97fa315ae52bed573 #v1.1.8
+        uses: vmactions/netbsd-vm@7aea50f9eb16df034be5d71eb81fea9804505c28 #v1.2.0
         with:
           usesh: true
           prepare: >

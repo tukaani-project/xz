@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: 0BSD
 
-name: DragonflyBSD
+name: DragonFly BSD
 
 on:
   push:
@@ -15,13 +15,13 @@ jobs:
   DragonflyBSD:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    name: DragonflyBSD
+    name: DragonFly BSD
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test in DragonflyBSD
+      - name: Test in DragonFly BSD
         id: test
-        uses: vmactions/dragonflybsd-vm@e3c420e8a2362c2496fca6e76a291abd46f5d8e7 #v1.1.0
+        uses: vmactions/dragonflybsd-vm@ff1f01c32b9e82f2ba388d0ff270442bcd6ceddc #v1.1.1
         with:
           usesh: true
           prepare: >

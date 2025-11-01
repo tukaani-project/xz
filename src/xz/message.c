@@ -1193,6 +1193,7 @@ message_help(bool long_help)
 			"--ia64[=%s]\v%s\r"
 			"--sparc[=%s]\v%s\r"
 			"--riscv[=%s]\v%s\r"
+			"--loongarch[=%s]\v%s\r"
 			"\v%s",
 			_("OPTS"),
 			W_("x86 BCJ filter (32-bit and 64-bit)"),
@@ -1210,6 +1211,8 @@ message_help(bool long_help)
 			W_("SPARC BCJ filter"),
 			_("OPTS"),
 			W_("RISC-V BCJ filter"),
+			_("OPTS"),
+			W_("LoongArch BCJ filter"),
 			W_("Valid OPTS for all BCJ filters:"));
 		e |= tuklib_wrapf(stdout, &wrap3,
 			"start=%s\v%s",

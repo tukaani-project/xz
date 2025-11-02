@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: 0BSD
+
+name: Coverity Scan
+
+# We only want to test a special branch, per
+# https://docs.travis-ci.com/user/coverity-scan/#build-submission-frequency
+on:
+  push:
+    branches: [coverity_scan]
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy autoconf automake build-essential autopoint gcc-multilib
+
+    - name: Run autogen.sh
+      run: ./autogen.sh --no-po4a
+
+    - name: Run configure
+      run: ./configure --enable-debug --disable-silent-rules
+
+    # Coverity doesn't understand what the inline asm does,
+    # which results in false positives.
+    - name: Disable complex inline assembly code
+      run: echo '#define LZMA_RANGE_DECODER_CONFIG 0' >> config.h
+
+    - name: Coverity Scan
+      uses: vapier/coverity-scan-action@2068473c7bdf8c2fb984a6a40ae76ee7facd7a85 # v1.8.0
+      with:
+        command: make -Oline -j$(nproc)
+        email: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        token: ${{ secrets.COVERITY_SCAN_TOKEN }}

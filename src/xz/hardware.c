@@ -351,6 +351,16 @@ hardware_init(void)
 	const rlim_t margin = 64 << 20;
 
 	for (size_t i = 0; i < ARRAY_SIZE(resources); ++i) {
+		// glibc: When GNU extensions are enabled, <sys/resource.h>
+		// declares getrlimit() so that the first argument is an enum
+		// instead of int as in POSIX. GCC and Clang use unsigned int
+		// for enums when possible, so a sign conversion occurs when
+		// resources[i] is convert to the enum type. Clang warns about
+		// this with -Wsign-conversion but GCC doesn't.
+#ifdef __clang__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
 		// RLIM_SAVED_* might be used on some 32-bit OSes
 		// (AIX at least) when the limit doesn't fit in a 32-bit
 		// unsigned integer. Thus, for us these are the same thing
@@ -360,6 +370,9 @@ hardware_init(void)
 				&& rl.rlim_cur != RLIM_INFINITY
 				&& rl.rlim_cur != RLIM_SAVED_CUR
 				&& rl.rlim_cur != RLIM_SAVED_MAX) {
+#ifdef __clang__
+#	pragma GCC diagnostic pop
+#endif
 			// Subtract the margin from the current resource
 			// limit, but avoid negative results. Avoid also 0
 			// because hardware_memlimit_show() (--info-memory)

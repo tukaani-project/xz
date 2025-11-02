@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.8.0-pre1\n"
-"POT-Creation-Date: 2025-03-08 14:50+0200\n"
-"PO-Revision-Date: 2025-03-11 01:03+0900\n"
+"Project-Id-Version: xz-man 5.8.2-pre1\n"
+"POT-Creation-Date: 2025-10-31 13:23+0200\n"
+"PO-Revision-Date: 2025-11-01 23:14+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
 "Language: ko\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.7\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -580,13 +580,8 @@ msgstr "압축 해제시 B<.lz> 파일만 받아들입니다.  압축은 지원�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "The B<.lz> format version 0 and the unextended version 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18."
-msgstr "B<.lz> 형식 버전 0과 비확장 버전 1을 지원합니다.  버전 0파일은 B<lzip> 1.3 이전에서만 만듭니다.  일반적이진 않지만 일부 파일의 경우 이 형식과 관련된 원본 패키지로 보관한 파일을 찾을 수도 있습니다.  개인적으로 이 형식으로 압축한 오래된 개인 파일을 가지고 있을 수도 있습니다.  형식 버전 0 압축 해제 지원은 B<lzip> 1.18에서 제거했습니다."
-
-#. type: Plain text
-#: ../src/xz/xz.1
-msgid "B<lzip> 1.4 and later create files in the format version 1.  The sync flush marker extension to the format version 1 was added in B<lzip> 1.6.  This extension is rarely used and isn't supported by B<xz> (diagnosed as corrupt input)."
-msgstr "B<lzip> 1.4 이상에서는 버전 1형식의 파일을 만듭니다.  형식 버전 1로의 동기화 제거 마커 확장은 B<lzip> 1.6에 추가했습니다.  이 확장은 거의 쓰지 않으며 B<xz> 에서 조차도 지원하지 않습니다(손상된 입력 파일로 진단함)."
+msgid "The B<.lz> format versions 0 and 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18.  B<lzip> 1.4 and later create files in the format version 1."
+msgstr "B<.lz> 형식 버전 0과 1을 지원합니다.  버전 0파일은 B<lzip> 1.3 이전에서만 만듭니다.  일반적이진 않지만 일부 파일의 경우 이 형식의 원본 패키지로 보관한 파일을 찾을 수도 있습니다.  개인적으로 이 형식으로 압축한 오래된 개인 파일을 가지고 있을 수도 있습니다.  형식 버전 0 압축 해제 지원은 B<lzip> 1.18에서 제거했습니다. B<lzip> 1.4 이후의 버전에서는 버전 1 형식 파일을 만듭니다."
 
 #. type: TP
 #: ../src/xz/xz.1

@@ -31,9 +31,6 @@ static sigset_t hooked_signals;
 /// signals_unblock() are called before signals_init() has been called.
 static bool signals_are_initialized = false;
 
-/// signals_block() and signals_unblock() can be called recursively.
-static size_t signals_block_count = 0;
-
 
 static void
 signal_handler(int sig)
@@ -137,6 +134,10 @@ signals_init(void)
 
 
 #ifndef __VMS
+/// signals_block() and signals_unblock() can be called recursively.
+static size_t signals_block_count = 0;
+
+
 extern void
 signals_block(void)
 {

@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.8.0-pre1\n"
-"POT-Creation-Date: 2025-03-08 14:50+0200\n"
-"PO-Revision-Date: 2025-03-10 08:02+0000\n"
+"Project-Id-Version: xz-man 5.8.2-pre1\n"
+"POT-Creation-Date: 2025-10-31 13:23+0200\n"
+"PO-Revision-Date: 2025-11-01 11:04+0200\n"
 "Last-Translator: Luca Vercelli <luca.vercelli.to@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -586,13 +586,8 @@ msgstr "Accetta solo file B<.lz> per la decompressione. La compressione non è s
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "The B<.lz> format version 0 and the unextended version 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18."
-msgstr "Sono supportati il formato B<.lz> versione 0 e la versione 1 non estesa. I file della versione 0 sono stati prodotti da B<lzip> 1.3 e precedenti. Tali file non sono comuni, ma possono essere trovati negli archivi di file poiché alcuni pacchetti sorgente sono stati rilasciati in questo formato. Anche alcune persone potrebbero avere vecchi file personali in questo formato. Il supporto alla decompressione per il formato versione 0 è stato rimosso in B<lzip> 1.18."
-
-#. type: Plain text
-#: ../src/xz/xz.1
-msgid "B<lzip> 1.4 and later create files in the format version 1.  The sync flush marker extension to the format version 1 was added in B<lzip> 1.6.  This extension is rarely used and isn't supported by B<xz> (diagnosed as corrupt input)."
-msgstr "B<lzip> 1.4 e successivi creano file nel formato v1. L'estensione del marcatore di scaricamento sincronizzazione al formato v1 è stata aggiunta in B<lzip> 1.6. Questa estensione è utilizzata raramente e non è supportata da B<xz>(viene segnalata come input corrotto)."
+msgid "The B<.lz> format versions 0 and 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18.  B<lzip> 1.4 and later create files in the format version 1."
+msgstr "Sono supportate le versioni 0 e 1 del formato B<.lz>. I file in versione 0 sono stati prodotti da B<lzip> 1.3 e precedenti. Questi file non sono comuni, ma possono essere trovati negli archivi di file, perché alcuni pacchetti sorgente erano stati rilasciati in questo formato. Qualcuno potrebbe anche avere vecchi file personali in questo formato. Il supporto alla decompressione per la versione di formato 0 è stato rimosso in B<lzip> 1.18. B<lzip> 1.4 e successivi creano i file nella versione di formato 1."
 
 #. type: TP
 #: ../src/xz/xz.1

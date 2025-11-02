@@ -7,9 +7,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.8.0-pre1\n"
-"POT-Creation-Date: 2025-03-08 14:50+0200\n"
-"PO-Revision-Date: 2025-05-18 07:01+0200\n"
+"Project-Id-Version: xz-man 5.8.2-pre1\n"
+"POT-Creation-Date: 2025-10-31 13:23+0200\n"
+"PO-Revision-Date: 2025-11-01 07:51+0100\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -582,13 +582,8 @@ msgstr "Прихвата само B<.lz> датотеке приликом ра�
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "The B<.lz> format version 0 and the unextended version 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18."
-msgstr "Формат B<.lz> издање 0 и непроширено издање 1 су подржани.  Датотеке издања 0 су настале са B<lzip> 1.3 и старијим.  Такве датотеке нису уобичајене али се могу наћи у архивама датотека јер је неколико пакета извора издато у овом формату.  Такође можда неко има старе личне датотеке у овом формату.  Подршка распакивања за формат издања 0 је уклоњена у B<lzip> 1.18."
-
-#. type: Plain text
-#: ../src/xz/xz.1
-msgid "B<lzip> 1.4 and later create files in the format version 1.  The sync flush marker extension to the format version 1 was added in B<lzip> 1.6.  This extension is rarely used and isn't supported by B<xz> (diagnosed as corrupt input)."
-msgstr "B<lzip> 1.4 и новији праве датотеке у формату издања 1.  Проширење означавача испирања усклађивања за формат издања 1 додато је у B<lzip> 1.6.  Ово проширење се ретко користи и не подржава га B<xz> (препознаје се као оштећени улаз)."
+msgid "The B<.lz> format versions 0 and 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18.  B<lzip> 1.4 and later create files in the format version 1."
+msgstr "Формат B<.lz> издања 0 и 1 је подржан.  Датотеке издања 0 су настале са B<lzip> 1.3 и старијим.  Такве датотеке нису уобичајене али се могу наћи у архивама датотека јер је неколико пакета извора издато у овом формату.  Такође можда неко има старе личне датотеке у овом формату.  Подршка распакивања за формат издања 0 је уклоњена у B<lzip> 1.18.  B<lzip> 1.4 и новији ствара датотеке у формату издања 1."
 
 #. type: TP
 #: ../src/xz/xz.1

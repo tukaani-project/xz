@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-man 5.8.2-pre1\n"
 "POT-Creation-Date: 2025-10-31 13:23+0200\n"
-"PO-Revision-Date: 2025-11-01 07:51+0100\n"
+"PO-Revision-Date: 2025-11-02 19:22+0100\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
@@ -2640,7 +2640,7 @@ msgstr "Број датотека. Ту се држи поредак раниј�
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "If B<--verbose> was specified twice, additional columns are included on the B<totals> line:"
-msgstr "Ако је B<--verbose> наведено два пута, додатне колоне су укључене у реду B<укупности>:"
+msgstr "Ако је B<--verbose> наведено два пута, додатне колоне су укључене у реду B<totals>:"
 
 #. type: Plain text
 #: ../src/xz/xz.1

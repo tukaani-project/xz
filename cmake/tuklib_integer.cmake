@@ -130,8 +130,42 @@ function(tuklib_integer TARGET_OR_ALL)
         endif()
 
     elseif(PROCESSOR MATCHES "^loongarch")
-        # TODO
+        # Build a static library because then the function won't be optimized
+        # away, and there shouldn't be any unrelated startup code either.
+        set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
+        # Force -O2 because memcpy() won't be optimized out if optimizations
+        # are disabled.
+        #
+        # FIXME? Something should clean up tuklib_integer_strict_align.a
+        # or it should be placed elsewhere.
+        try_compile(
+            TUKLIB_INTEGER_STRICT_ALIGN_LOONGARCH
+            "${CMAKE_BINARY_DIR}"
+            "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tuklib_integer_strict_align.c"
+            COMPILE_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}"
+            CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${CMAKE_REQUIRED_FLAGS} -O2"
+            COPY_FILE "${CMAKE_BINARY_DIR}/tuklib_integer_strict_align.a"
+        )
+
+        if(NOT TUKLIB_INTEGER_STRICT_ALIGN_LOONGARCH)
+            message(FATAL_ERROR "Compilation of "
+                "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tuklib_integer_strict_align.c "
+                "failed. Either the specified compiler flags are broken "
+                "or ${CMAKE_CURRENT_FUNCTION_LIST_FILE} has a bug.")
+        endif()
+
+        execute_process(
+            COMMAND "${CMAKE_OBJDUMP}" --disassemble=check_strict_align
+                    "${CMAKE_BINARY_DIR}/tuklib_integer_strict_align.a"
+            OUTPUT_VARIABLE TUKLIB_INTEGER_OBJDUMP_OUTPUT
+            RESULT_VARIABLE TUKLIB_INTEGER_OBJDUMP_RESULT
+        )
+
+        if(TUKLIB_INTEGER_OBJDUMP_RESULT STREQUAL "0" AND
+                NOT TUKLIB_INTEGER_OBJDUMP_OUTPUT MATCHES "[ \t]ld\\.bu[ \t]")
+            set(FAST_UNALIGNED_GUESS ON)
+        endif()
     endif()
 
     option(TUKLIB_FAST_UNALIGNED_ACCESS

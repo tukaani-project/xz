@@ -64,9 +64,21 @@ function(tuklib_integer TARGET_OR_ALL)
     #   - 32/64-bit x86 / x86-64
     #   - 32/64-bit big endian PowerPC
     #   - 64-bit little endian PowerPC
+    #   - 32/64-bit Loongarch (*)
     #   - Some 32-bit ARM
     #   - Some 64-bit ARM64 (AArch64)
     #   - Some 32/64-bit RISC-V
+    #
+    # (*) See sections 7.4, 8.1, and 8.2:
+    #     https://github.com/loongson/la-softdev-convention/blob/v0.2/la-softdev-convention.adoc
+    #
+    #     That is, desktop and server processors likely support
+    #     unaligned access in hardware but embedded processors
+    #     might not. GCC defaults to -mno-strict-align and so
+    #     do majority of GNU/Linux distributions. As of
+    #     GCC 15.2, there is no predefined macro to detect
+    #     if -mstrict-align or -mno-strict-align is in effect.
+    #     We use heuristics based on compiler output.
     #
     # CMake doesn't provide a standardized/normalized list of processor arch
     # names. For example, x86-64 may be "x86_64" (Linux), "AMD64" (Windows),
@@ -116,6 +128,10 @@ function(tuklib_integer TARGET_OR_ALL)
         if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
             set(FAST_UNALIGNED_GUESS ON)
         endif()
+
+    elseif(PROCESSOR MATCHES "^loongarch")
+        # TODO
+
     endif()
 
     option(TUKLIB_FAST_UNALIGNED_ACCESS

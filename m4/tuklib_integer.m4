@@ -62,6 +62,10 @@ main(void)
 	fi
 ])
 
+# On LoongArch we need objdump to detect support for unaligned access.
+# Libtool needs objdump too, but let's keep this working without Libtool too.
+AC_CHECK_TOOL([OBJDUMP], [objdump], [false])
+
 AC_MSG_CHECKING([if unaligned memory access should be used])
 AC_ARG_ENABLE([unaligned-access], AS_HELP_STRING([--enable-unaligned-access],
 		[Enable if the system supports *fast* unaligned memory access
@@ -106,6 +110,50 @@ compile error
 #endif
 int main(void) { return 0; }
 ])], [enable_unaligned_access=yes], [enable_unaligned_access=no])
+			;;
+		loongarch*)
+			# First guess no. We might change it below.
+			enable_unaligned_access=no
+
+			# See sections 7.4, 8.1, and 8.2:
+			# https://github.com/loongson/la-softdev-convention/blob/v0.2/la-softdev-convention.adoc
+			#
+			# That is, desktop and server processors likely support
+			# unaligned access in hardware but embedded processors
+			# might not. GCC defaults to -mno-strict-align and so
+			# do majority of GNU/Linux distributions. As of
+			# GCC 15.2, there is no predefined macro to detect
+			# if -mstrict-align or -mno-strict-align is in effect.
+			# Use heuristics based on compiler output.
+			# Force -O2 because without optimizations
+			# the memcpy() won't be optimized out.
+			tuklib_integer_saved_CFLAGS=$CFLAGS
+			CFLAGS="$CFLAGS -O2"
+			AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <string.h>
+int check_strict_align(const void *p)
+{
+	int i;
+	memcpy(&i, p, sizeof(i));
+	return i;
+}
+]])], [[
+# Disassemble the test function from the object file.
+if $OBJDUMP --disassemble=check_strict_align conftest.$ac_objext > conftest.s \
+		&& test -s conftest.s ; then
+	# Check if there are instructions that load bytes. Such
+	# instructions indicate that -mstrict-align is in effect.
+	if grep '^[[:blank:]]*ld\.bu[[:blank:]]' conftest.s > /dev/null ; then
+		:
+	else
+		# No single-byte unsigned load instructions were found,
+		# so it seems that -mno-strict-align is in effect.
+		# Override our earlier guess.
+		enable_unaligned_access=yes
+	fi
+fi
+			]])
+			CFLAGS=$tuklib_integer_saved_CFLAGS
 			;;
 		*)
 			enable_unaligned_access=no

@@ -143,7 +143,7 @@ if $OBJDUMP --disassemble=check_strict_align conftest.$ac_objext > conftest.s \
 		&& test -s conftest.s ; then
 	# Check if there are instructions that load bytes. Such
 	# instructions indicate that -mstrict-align is in effect.
-	if grep '^[[:blank:]]*ld\.bu[[:blank:]]' conftest.s > /dev/null ; then
+	if grep '[[:blank:]]ld\.bu[[:blank:]]' conftest.s > /dev/null ; then
 		:
 	else
 		# No single-byte unsigned load instructions were found,

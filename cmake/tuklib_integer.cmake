@@ -86,6 +86,11 @@ function(tuklib_integer TARGET_OR_ALL)
     set(FAST_UNALIGNED_GUESS OFF)
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" PROCESSOR)
 
+    # FIXME DEBUG
+    message(STATUS "DEBUG "
+            "CMAKE_SYSTEM_PROCESSOR=\"${CMAKE_SYSTEM_PROCESSOR}\" "
+            "PROCESSOR=\"${PROCESSOR}\"")
+
     # There is no ^ in the first regex branch to allow "i" at the beginning
     # so it can match "i386" to "i786", and "x86_64".
     if(PROCESSOR MATCHES "[x34567]86|^x64|^amd64|^em64t")

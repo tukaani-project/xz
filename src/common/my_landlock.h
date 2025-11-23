@@ -4,6 +4,10 @@
 //
 /// \file       my_landlock.h
 /// \brief      Linux Landlock sandbox helper functions
+///
+/// \note       This uses static variables to cache the Landlock ABI version.
+///             Only one file in an application should include this header.
+///             Only one thread should call these functions.
 //
 //  Author:     Lasse Collin
 //
@@ -32,8 +36,16 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 {
 	memzero(attr, sizeof(*attr));
 
-	const int abi_version = syscall(SYS_landlock_create_ruleset,
+	// Cache the Landlock ABI version:
+	//  0 = not checked yet
+	// -1 = Landlock not supported
+	// >0 = Landlock ABI version
+	static int abi_version = 0;
+
+	if (abi_version == 0)
+		abi_version = syscall(SYS_landlock_create_ruleset,
 			(void *)NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
+
 	if (abi_version <= 0)
 		return -1;
 

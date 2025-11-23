@@ -43,17 +43,20 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 	// >0 = Landlock ABI version
 	static int abi_version = 0;
 
+#ifdef LANDLOCK_SCOPE_SIGNAL
 	// Red Hat Enterprise Linux 9 kernel since 5.14.0-603.el9 (2025-07-30)
 	// claims ABI version 6 support, but as of 5.14.0-643.el9 (2025-11-22)
 	// it lacks LANDLOCK_SCOPE_SIGNAL. ABI version 6 was added in upstream
 	// Linux 6.12 while RHEL 9 has Linux 5.14 with lots of backports.
 	// We assume that any kernel version 5.14 with ABI version 6 is buggy.
 	static bool is_rhel9 = false;
+#endif
 
 	if (abi_version == 0) {
 		abi_version = syscall(SYS_landlock_create_ruleset,
 			(void *)NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
 
+#ifdef LANDLOCK_SCOPE_SIGNAL
 		if (abi_version == 6) {
 			static const char rel[] = "5.14.";
 			const size_t rel_len = sizeof(rel) - 1;
@@ -63,6 +66,7 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 					un.release, rel, rel_len) == 0)
 				is_rhel9 = true;
 		}
+#endif
 	}
 
 	if (abi_version <= 0)
@@ -141,8 +145,10 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 		FALLTHROUGH;
 
 	case 6:
+#ifdef LANDLOCK_SCOPE_SIGNAL
 		if (is_rhel9)
 			attr->scoped &= ~LANDLOCK_SCOPE_SIGNAL;
+#endif
 
 		FALLTHROUGH;
 

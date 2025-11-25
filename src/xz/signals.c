@@ -187,8 +187,14 @@ signals_exit(void)
 		sa.sa_handler = SIG_DFL;
 		sigfillset(&sa.sa_mask);
 		sa.sa_flags = 0;
-		sigaction(sig, &sa, NULL);
-		raise(sig);
+
+		// This shouldn't fail, but check it anyway.
+		if (sigaction(sig, &sa, NULL) == 0)
+			raise(sig);
+
+		// We shouldn't get here, but just in case we do,
+		// make main() exit with E_ERROR.
+		set_exit_status(E_ERROR);
 #endif
 	}
 

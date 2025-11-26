@@ -90,3 +90,49 @@ jobs:
           --test-dir build-msvc-x64
           --build-config Release
           --output-on-failure
+
+      - name: Configure ClangCL x64
+        run: >
+          cmake
+          -T ClangCL
+          -A x64
+          -B build-clangcl-x64
+          -DCMAKE_C_FLAGS="
+            -Wno-cast-align
+            -Wno-cast-qual
+            -Wno-covered-switch-default
+            -Wno-declaration-after-statement
+            -Wno-deprecated-declarations
+            -Wno-disabled-macro-expansion
+            -Wno-nonportable-system-include-path
+            -Wno-overlength-strings
+            -Wno-pre-c11-compat
+            -Wno-reserved-identifier
+            -Wno-unsafe-buffer-usage
+            -Wno-used-but-marked-unused"
+
+      - name: Build ClangCL x64 Debug
+        run: >
+          cmake
+          --build build-clangcl-x64
+          --config Debug
+
+      - name: Test ClangCL x64 Debug
+        run: >
+          ctest
+          --test-dir build-clangcl-x64
+          --build-config Debug
+          --output-on-failure
+
+      - name: Build ClangCL x64 Release
+        run: >
+          cmake
+          --build build-clangcl-x64
+          --config Release
+
+      - name: Test ClangCL x64 Release
+        run: >
+          ctest
+          --test-dir build-clangcl-x64
+          --build-config Release
+          --output-on-failure

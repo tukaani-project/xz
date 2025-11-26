@@ -27,7 +27,7 @@ do { \
 	memzero(&(block), sizeof(lzma_block)); \
 	(block).filters = filters_; \
 	(block).check = LZMA_CHECK_CRC32; \
-} while (0);
+} while (0)
 
 
 #ifdef HAVE_ENCODERS

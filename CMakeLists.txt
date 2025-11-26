@@ -449,6 +449,7 @@ if(CMAKE_C_COMPILER_ID MATCHES GNU|Clang)
                 -Wdocumentation
                 -Wduplicate-enum
                 -Wempty-translation-unit
+                -Wextra-semi-stmt
                 -Wflexible-array-extensions
                 -Wmissing-variable-declarations
                 -Wnewline-eof

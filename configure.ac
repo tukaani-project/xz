@@ -1360,6 +1360,7 @@ AS_IF([test "$GCC" = yes], [
 			-Wdocumentation \
 			-Wduplicate-enum \
 			-Wempty-translation-unit \
+			-Wextra-semi-stmt \
 			-Wflexible-array-extensions \
 			-Wmissing-variable-declarations \
 			-Wnewline-eof \

@@ -15,13 +15,14 @@
 # Actualizare a traducerii pentru versiunea 5.6.0-pre2, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea 5.7.1-dev1, făcută de R-GC, ian-2025.
 # Actualizare a traducerii pentru versiunea 5.8.0-pre1, făcută de R-GC, mar-2025.
+# Actualizare a traducerii pentru versiunea 5.8.2-pre1, făcută de R-GC, oct-2025.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.8.0-pre1\n"
-"POT-Creation-Date: 2025-03-08 14:50+0200\n"
-"PO-Revision-Date: 2025-03-09 20:57+0100\n"
+"Project-Id-Version: xz-man 5.8.2-pre1\n"
+"POT-Creation-Date: 2025-10-31 13:23+0200\n"
+"PO-Revision-Date: 2025-10-31 18:03+0100\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -30,7 +31,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: plural=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -600,13 +601,8 @@ msgstr "Acceptă numai fișierele B<.lz> când decomprimă. Comprimarea nu este 
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "The B<.lz> format version 0 and the unextended version 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18."
-msgstr "Formatul B<.lz> versiunea 0 și versiunea neextinsă 1 sunt acceptate. Fișierele versiunea 0 au fost produse de B<lzip> cu versiunea 1.3 sau mai veche. Astfel de fișiere nu sunt obișnuite, dar pot fi găsite în arhivele de fișiere, deoarece câteva pachete sursă au fost lansate în acest format. Oamenii ar putea avea și fișiere personale vechi în acest format. Suportul de decomprimare pentru versiunea de format 0 a fost eliminat în B<lzip> 1.18."
-
-#. type: Plain text
-#: ../src/xz/xz.1
-msgid "B<lzip> 1.4 and later create files in the format version 1.  The sync flush marker extension to the format version 1 was added in B<lzip> 1.6.  This extension is rarely used and isn't supported by B<xz> (diagnosed as corrupt input)."
-msgstr "B<lzip> 1.4 și versiunile ulterioare creează fișiere în formatul versiunea 1. Extensia „sync flush marker” pentru versiunea 1 de format a fost adăugată în B<lzip> 1.6. Această extensie este folosită rar și nu este acceptată de B<xz> (diagnosticată ca intrare coruptă)."
+msgid "The B<.lz> format versions 0 and 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18.  B<lzip> 1.4 and later create files in the format version 1."
+msgstr "Sunt acceptate versiunile 0 și 1 ale formatului B<.lz>. Fișierele versiunii 0 au fost create cu B<lzip> 1.3 și versiuni mai vechi. Astfel de fișiere nu sunt comune, dar pot fi găsite în arhivele de fișiere, deoarece câteva pachete sursă au fost lansate în acest format. Este posibil ca oamenii să aibă și fișiere personale vechi în acest format.  Suportul pentru decomprimare pentru versiunea 0 a formatului a fost eliminat în B<lzip> 1.18.  B<lzip> 1.4 și versiunile ulterioare creează fișiere în versiunea 1 a formatului."
 
 #. type: TP
 #: ../src/xz/xz.1

@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Setup MSYS2
         if: ${{ matrix.sys == 'msys' }}
-        uses: msys2/setup-msys2@61f9e5e925871ba6c9e3e8da24ede83ea27fa91f # v2.27.0
+        uses: msys2/setup-msys2@fb197b72ce45fb24f17bf3f807a388985654d1f2 # v2.29.0
         with:
           msystem: ${{ matrix.sys }}
           update: true
@@ -56,7 +56,7 @@ jobs:
 
       - name: Setup MSYS2
         if: ${{ matrix.sys != 'msys' }}
-        uses: msys2/setup-msys2@61f9e5e925871ba6c9e3e8da24ede83ea27fa91f # v2.27.0
+        uses: msys2/setup-msys2@fb197b72ce45fb24f17bf3f807a388985654d1f2 # v2.29.0
         with:
           msystem: ${{ matrix.sys }}
           update: true

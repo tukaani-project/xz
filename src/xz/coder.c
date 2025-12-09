@@ -452,7 +452,7 @@ coder_set_compression_settings(void)
 	// Memory usage for each encoder filter chain (default
 	// or --filtersX). The encoder options may need to be
 	// scaled down depending on the memory usage limit.
-	uint64_t encoder_memusages[ARRAY_SIZE(chains)];
+	uint64_t encoder_memusages[ARRAY_SIZE(chains)] = {0};
 #endif
 
 	if (opt_mode == MODE_COMPRESS) {

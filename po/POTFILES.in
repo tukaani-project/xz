@@ -10,6 +10,7 @@ src/xz/main.c
 src/xz/message.c
 src/xz/mytime.c
 src/xz/options.c
+src/xz/sandbox.c
 src/xz/signals.c
 src/xz/suffix.c
 src/xz/util.c

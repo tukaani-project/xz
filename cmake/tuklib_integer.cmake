@@ -14,6 +14,69 @@ include(CheckCSourceCompiles)
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 
+# An internal helper for tuklib_integer that attempts to detect if
+# -mstrict-align or -mno-strict-align is in effect. This sets the
+# cache variable TUKLIB_INTEGER_STRICT_ALIGN to ON if OBJDUMP_REGEX
+# matches the objdump output of a check program. Otherwise it is set to OFF.
+function(tuklib_integer_internal_strict_align OBJDUMP_REGEX)
+    if(NOT DEFINED TUKLIB_INTEGER_STRICT_ALIGN)
+        # Build a static library because then the function won't be optimized
+        # away, and there won't be any unrelated startup code either.
+        set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+        # CMake >= 3.25 wouldn't require us to create a temporary file,
+        # but the following method is compatible with 3.20.
+        file(WRITE "${CMAKE_BINARY_DIR}/tuklib_integer_strict_align.c" "
+                #include <string.h>
+                unsigned int check_strict_align(const void *p)
+                {
+                    unsigned int i;
+                    memcpy(&i, p, sizeof(i));
+                    return i;
+                }
+            ")
+
+        # Force -O2 because memcpy() won't be optimized out if optimizations
+        # are disabled.
+        try_compile(
+            TRY_COMPILE_RESULT
+            "${CMAKE_BINARY_DIR}"
+            "${CMAKE_BINARY_DIR}/tuklib_integer_strict_align.c"
+            COMPILE_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}"
+            CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${CMAKE_REQUIRED_FLAGS} -O2"
+            COPY_FILE "${CMAKE_BINARY_DIR}/tuklib_integer_strict_align.a"
+        )
+
+        if(NOT TRY_COMPILE_RESULT)
+            message(FATAL_ERROR
+                    "Compilation of the strict align check failed. "
+                    "Either the specified compiler flags are broken "
+                    "or ${CMAKE_CURRENT_FUNCTION_LIST_FILE} has a bug.")
+        endif()
+
+        # Use WORKING_DIRECTORY instead of passing the full path to objdump.
+        # This ensures that the pathname won't affect the objdump output,
+        # which could result in an unwanted regex match in the next step.
+        execute_process(
+            COMMAND "${CMAKE_OBJDUMP}" -d "tuklib_integer_strict_align.a"
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+            OUTPUT_VARIABLE OBJDUMP_OUTPUT
+            RESULT_VARIABLE OBJDUMP_RESULT
+        )
+
+        # FIXME? Should we remove the temporary files here?
+
+        # Look for instructions that load unsigned bytes. If none are found,
+        # assume that -mno-strict-align is in effect.
+        if(OBJDUMP_RESULT STREQUAL "0" AND
+                OBJDUMP_OUTPUT MATCHES "${OBJDUMP_REGEX}")
+            set(TUKLIB_INTEGER_STRICT_ALIGN ON CACHE INTERNAL "")
+        else()
+            set(TUKLIB_INTEGER_STRICT_ALIGN OFF CACHE INTERNAL "")
+        endif()
+    endif()
+endfunction()
+
 function(tuklib_integer TARGET_OR_ALL)
     # Check for endianness. Unlike the Autoconf's AC_C_BIGENDIAN, this doesn't
     # support Apple universal binaries. The CMake module will leave the
@@ -64,9 +127,21 @@ function(tuklib_integer TARGET_OR_ALL)
     #   - 32/64-bit x86 / x86-64
     #   - 32/64-bit big endian PowerPC
     #   - 64-bit little endian PowerPC
+    #   - 32/64-bit Loongarch (*)
     #   - Some 32-bit ARM
     #   - Some 64-bit ARM64 (AArch64)
     #   - Some 32/64-bit RISC-V
+    #
+    # (*) See sections 7.4, 8.1, and 8.2:
+    #     https://github.com/loongson/la-softdev-convention/blob/v0.2/la-softdev-convention.adoc
+    #
+    #     That is, desktop and server processors likely support
+    #     unaligned access in hardware but embedded processors
+    #     might not. GCC defaults to -mno-strict-align and so
+    #     do majority of GNU/Linux distributions. As of
+    #     GCC 15.2, there is no predefined macro to detect
+    #     if -mstrict-align or -mno-strict-align is in effect.
+    #     We use heuristics based on compiler output.
     #
     # CMake doesn't provide a standardized/normalized list of processor arch
     # names. For example, x86-64 may be "x86_64" (Linux), "AMD64" (Windows),
@@ -114,6 +189,12 @@ function(tuklib_integer TARGET_OR_ALL)
             "
             TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
         if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+            set(FAST_UNALIGNED_GUESS ON)
+        endif()
+
+    elseif(PROCESSOR MATCHES "^loongarch")
+        tuklib_integer_internal_strict_align("[ \t]ld\\.bu[ \t]")
+        if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
             set(FAST_UNALIGNED_GUESS ON)
         endif()
     endif()

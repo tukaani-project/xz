@@ -1,6 +1,8 @@
 .gitattributes export-ignore
 .gitignore export-ignore
 
+/ChangeLog export-subst
+
 /.codespellrc export-ignore
 /.github export-ignore
 

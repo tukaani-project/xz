@@ -5,3 +5,16 @@ See the commit log in the git repository:
 Note that "make dist" doesn't put this tiny file into the package.
 Instead, the git commit log is used as ChangeLog. See dist-hook in
 Makefile.am for details.
+
+When git-archive(1) is used, information about the latest commit
+is included below.
+
+----
+
+commit $Format:%H$
+Author:     $Format:%an <%ae>$
+AuthorDate: $Format:%ai$
+Commit:     $Format:%cn <%ce>$
+CommitDate: $Format:%ci$
+
+$Format:%B$

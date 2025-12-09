@@ -62,6 +62,58 @@ main(void)
 	fi
 ])
 
+# On archs that we use tuklib_integer_strict_align() (see below), we need
+# objdump to detect support for unaligned access. (Libtool needs objdump
+# too, so Libtool does this same tool check as well.)
+AC_CHECK_TOOL([OBJDUMP], [objdump], [false])
+
+# An internal helper that attempts to detect if -mstrict-align or
+# -mno-strict-align is in effect. This sets enable_unaligned_access=yes
+# if compilation succeeds and the regex passed as an argument does *not*
+# match the objdump output of a check program. Otherwise this sets
+# enable_unaligned_access=no.
+tuklib_integer_strict_align ()
+{
+	# First guess no.
+	enable_unaligned_access=no
+
+	# Force -O2 because without optimizations the memcpy()
+	# won't be optimized out.
+	tuklib_integer_saved_CFLAGS=$CFLAGS
+	CFLAGS="$CFLAGS -O2"
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+			#include <string.h>
+			unsigned int check_strict_align(const void *p)
+			{
+				unsigned int i;
+				memcpy(&i, p, sizeof(i));
+				return i;
+			}
+		]])], [
+			# Disassemble the test function from the object file.
+			if $OBJDUMP -d conftest.$ac_objext > conftest.s ; then
+				# This function should be passed a regex that
+				# matches if there are instructions that load
+				# unsigned bytes. Such instructions indicate
+				# that -mstrict-align is in effect.
+				#
+				# NOTE: Use braces to avoid M4 parameter
+				# expansion.
+				if grep -- "${1}" conftest.s > /dev/null ; then
+					:
+				else
+					# No single-byte unsigned load
+					# instructions were found,
+					# so it seems that -mno-strict-align
+					# is in effect.
+					# Override our earlier guess.
+					enable_unaligned_access=yes
+				fi
+			fi
+		])
+	CFLAGS=$tuklib_integer_saved_CFLAGS
+}
+
 AC_MSG_CHECKING([if unaligned memory access should be used])
 AC_ARG_ENABLE([unaligned-access], AS_HELP_STRING([--enable-unaligned-access],
 		[Enable if the system supports *fast* unaligned memory access
@@ -106,6 +158,22 @@ compile error
 #endif
 int main(void) { return 0; }
 ])], [enable_unaligned_access=yes], [enable_unaligned_access=no])
+			;;
+		loongarch*)
+			# See sections 7.4, 8.1, and 8.2:
+			# https://github.com/loongson/la-softdev-convention/blob/v0.2/la-softdev-convention.adoc
+			#
+			# That is, desktop and server processors likely support
+			# unaligned access in hardware but embedded processors
+			# might not. GCC defaults to -mno-strict-align and so
+			# do majority of GNU/Linux distributions. As of
+			# GCC 15.2, there is no predefined macro to detect
+			# if -mstrict-align or -mno-strict-align is in effect.
+			# Use heuristics based on compiler output.
+			[
+				tuklib_integer_strict_align \
+						'[[:blank:]]ld\.bu[[:blank:]]'
+			]
 			;;
 		*)
 			enable_unaligned_access=no

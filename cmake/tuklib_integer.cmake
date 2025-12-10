@@ -143,11 +143,22 @@ function(tuklib_integer TARGET_OR_ALL)
     #     if -mstrict-align or -mno-strict-align is in effect.
     #     We use heuristics based on compiler output.
     #
-    # CMake doesn't provide a standardized/normalized list of processor arch
+    # CMake < 4.1 doesn't provide a standardized/normalized list of arch
     # names. For example, x86-64 may be "x86_64" (Linux), "AMD64" (Windows),
     # or even "EM64T" (64-bit WinXP).
     set(FAST_UNALIGNED_GUESS OFF)
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" PROCESSOR)
+
+    # CMake 4.1 made CMAKE_<LANG>_COMPILER_ARCHITECTURE_ID useful on many
+    # targets. In earlier versions it's still useful with MSVC with which
+    # CMAKE_SYSTEM_PROCESSOR can refer to the build machine.
+    if(NOT CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "")
+        # CMake 4.2.0 docs say that the list typically has only one entry
+        # except possibly on macOS. On macOS, most (all?) archs support
+        # unaligned access. Just pick the first one from the list.
+        list(GET CMAKE_C_COMPILER_ARCHITECTURE_ID 0 PROCESSOR)
+        string(TOLOWER "${PROCESSOR}" PROCESSOR)
+    endif()
 
     # There is no ^ in the first regex branch to allow "i" at the beginning
     # so it can match "i386" to "i786", and "x86_64".

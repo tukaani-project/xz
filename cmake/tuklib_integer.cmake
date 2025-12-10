@@ -159,24 +159,16 @@ function(tuklib_integer TARGET_OR_ALL)
             set(FAST_UNALIGNED_GUESS ON)
         endif()
 
-    elseif(PROCESSOR MATCHES "^arm|^aarch64|^riscv")
-        # On 32-bit and 64-bit ARM, GCC and Clang
-        # #define __ARM_FEATURE_UNALIGNED if
-        # unaligned access is supported.
-        #
-        # Exception: GCC at least up to 13.2.0
-        # defines it even when using -mstrict-align
-        # so in that case this autodetection goes wrong.
-        # Most of the time -mstrict-align isn't used so it
-        # shouldn't be a common problem in practice. See:
-        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+    elseif(PROCESSOR MATCHES "^arm|^riscv" AND NOT PROCESSOR MATCHES "^arm64")
+        # On 32-bit ARM, GCC and Clang # #define __ARM_FEATURE_UNALIGNED
+        # if and only if unaligned access is supported.
         #
         # RISC-V C API Specification says that if
         # __riscv_misaligned_fast is defined then
         # unaligned access is known to be fast.
         #
         # MSVC is handled as a special case: We assume that
-        # 32/64-bit ARM supports fast unaligned access.
+        # 32-bit ARM supports fast unaligned access.
         # If MSVC gets RISC-V support then this will assume
         # fast unaligned access on RISC-V too.
         check_c_source_compiles("
@@ -190,6 +182,53 @@ function(tuklib_integer TARGET_OR_ALL)
             TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
         if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
             set(FAST_UNALIGNED_GUESS ON)
+        endif()
+
+    elseif(PROCESSOR MATCHES "^aarch64|^arm64")
+        # On ARM64, Clang defines __ARM_FEATURE_UNALIGNED if and only if
+        # unaligned access is supported. However, GCC (at least up to 15.2.0)
+        # defines it even when using -mstrict-align, so autodetection with
+        # this macro doesn't work with GCC on ARM64. (It does work on
+        # 32-bit ARM.) See:
+        #
+        #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+        #
+        # We need three checks:
+        #
+        # 1. If __ARM_FEATURE_UNALIGNED is defined and the
+        #    compiler isn't GCC, unaligned access is enabled.
+        #    If the compiler is MSVC, unaligned access is
+        #    enabled even without __ARM_FEATURE_UNALIGNED.
+        check_c_source_compiles("
+                #if defined(__ARM_FEATURE_UNALIGNED) \
+                        && (!defined(__GNUC__) || defined(__clang__))
+                #elif defined(_MSC_VER)
+                #else
+                compile error
+                #endif
+                int main(void) { return 0; }
+            "
+            TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+        if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+            set(FAST_UNALIGNED_GUESS ON)
+        else()
+            # 2. If __ARM_FEATURE_UNALIGNED is not defined,
+            #    unaligned access is disabled.
+            check_c_source_compiles("
+                    #ifdef __ARM_FEATURE_UNALIGNED
+                    compile error
+                    #endif
+                    int main(void) { return 0; }
+                "
+                TUKLIB_FAST_UNALIGNED_NOT_DEFINED_BY_PREPROCESSOR)
+            if(NOT TUKLIB_FAST_UNALIGNED_NOT_DEFINED_BY_PREPROCESSOR)
+                # 3. Use heuristics to detect if -mstrict-align is
+                #    in effect when building with GCC.
+                tuklib_integer_internal_strict_align("[ \t]ldrb[ \t]")
+                if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
+                    set(FAST_UNALIGNED_GUESS ON)
+                endif()
+            endif()
         endif()
 
     elseif(PROCESSOR MATCHES "^loongarch")

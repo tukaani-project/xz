@@ -130,34 +130,74 @@ if test "x$enable_unaligned_access" = xauto ; then
 		i?86|x86_64|powerpc|powerpc64|powerpc64le)
 			enable_unaligned_access=yes
 			;;
-		arm*|aarch64*|riscv*)
-			# On 32-bit and 64-bit ARM, GCC and Clang
-			# #define __ARM_FEATURE_UNALIGNED if
-			# unaligned access is supported.
-			#
-			# Exception: GCC at least up to 13.2.0
-			# defines it even when using -mstrict-align
-			# so in that case this autodetection goes wrong.
-			# Most of the time -mstrict-align isn't used so it
-			# shouldn't be a common problem in practice. See:
-			# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+		arm*|riscv*)
+			# On 32-bit ARM, GCC and Clang
+			# #define __ARM_FEATURE_UNALIGNED
+			# if and only if unaligned access is supported.
 			#
 			# RISC-V C API Specification says that if
 			# __riscv_misaligned_fast is defined then
 			# unaligned access is known to be fast.
 			#
 			# MSVC is handled as a special case: We assume that
-			# 32/64-bit ARM supports fast unaligned access.
+			# 32-bit ARM supports fast unaligned access.
 			# If MSVC gets RISC-V support then this will assume
 			# fast unaligned access on RISC-V too.
 			AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-#if !defined(__ARM_FEATURE_UNALIGNED) \
-		&& !defined(__riscv_misaligned_fast) \
-		&& !defined(_MSC_VER)
-compile error
-#endif
-int main(void) { return 0; }
-])], [enable_unaligned_access=yes], [enable_unaligned_access=no])
+				#if !defined(__ARM_FEATURE_UNALIGNED) \
+					&& !defined(__riscv_misaligned_fast) \
+					&& !defined(_MSC_VER)
+				compile error
+				#endif
+				int main(void) { return 0; }
+			])],
+			[enable_unaligned_access=yes],
+			[enable_unaligned_access=no])
+			;;
+		aarch64*)
+			# On ARM64, Clang defines __ARM_FEATURE_UNALIGNED
+			# if and only if unaligned access is supported.
+			# However, GCC (at least up to 15.2.0) defines it
+			# even when using -mstrict-align, so autodetection
+			# with this macro doesn't work with GCC on ARM64.
+			# (It does work on 32-bit ARM.) See:
+			#
+			# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+			#
+			# We need three checks:
+			#
+			# 1. If __ARM_FEATURE_UNALIGNED is defined and the
+			#    compiler isn't GCC, unaligned access is enabled.
+			#    If the compiler is MSVC, unaligned access is
+			#    enabled even without __ARM_FEATURE_UNALIGNED.
+			AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+				#if defined(__ARM_FEATURE_UNALIGNED) \
+					&& (!defined(__GNUC__) \
+						|| defined(__clang__))
+				#elif defined(_MSC_VER)
+				#else
+				compile error
+				#endif
+				int main(void) { return 0; }
+			])], [enable_unaligned_access=yes])
+
+			# 2. If __ARM_FEATURE_UNALIGNED is not defined,
+			#    unaligned access is disabled.
+			if test "x$enable_unaligned_access" = xauto ; then
+				AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+					#ifdef __ARM_FEATURE_UNALIGNED
+					compile error
+					#endif
+					int main(void) { return 0; }
+				])], [enable_unaligned_access=no])
+			fi
+
+			# 3. Use heuristics to detect if -mstrict-align is
+			#    in effect when building with GCC.
+			if test "x$enable_unaligned_access" = xauto ; then
+				[tuklib_integer_strict_align \
+						'[[:blank:]]ldrb[[:blank:]]']
+			fi
 			;;
 		loongarch*)
 			# See sections 7.4, 8.1, and 8.2:

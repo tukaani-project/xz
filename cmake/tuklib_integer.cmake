@@ -130,6 +130,8 @@ function(tuklib_integer TARGET_OR_ALL)
     # option() command after the if()...endif() block.
     set(FAST_UNALIGNED_GUESS OFF)
     if(NOT DEFINED TUKLIB_FAST_UNALIGNED_ACCESS)
+        message(CHECK_START "Check if unaligned memory access should be used")
+
         # Guess that unaligned access is fast on these archs:
         #   - 32/64-bit x86 / x86-64
         #   - 32/64-bit big endian PowerPC
@@ -254,6 +256,12 @@ function(tuklib_integer TARGET_OR_ALL)
             if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
                 set(FAST_UNALIGNED_GUESS ON)
             endif()
+        endif()
+
+        if(FAST_UNALIGNED_GUESS)
+            message(CHECK_PASS "yes")
+        else()
+            message(CHECK_PASS "no")
         endif()
     endif()
 

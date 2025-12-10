@@ -123,129 +123,137 @@ function(tuklib_integer TARGET_OR_ALL)
         endif()
     endif()
 
-    # Guess that unaligned access is fast on these archs:
-    #   - 32/64-bit x86 / x86-64
-    #   - 32/64-bit big endian PowerPC
-    #   - 64-bit little endian PowerPC
-    #   - 32/64-bit Loongarch (*)
-    #   - Some 32-bit ARM
-    #   - Some 64-bit ARM64 (AArch64)
-    #   - Some 32/64-bit RISC-V
-    #
-    # (*) See sections 7.4, 8.1, and 8.2:
-    #     https://github.com/loongson/la-softdev-convention/blob/v0.2/la-softdev-convention.adoc
-    #
-    #     That is, desktop and server processors likely support
-    #     unaligned access in hardware but embedded processors
-    #     might not. GCC defaults to -mno-strict-align and so
-    #     do majority of GNU/Linux distributions. As of
-    #     GCC 15.2, there is no predefined macro to detect
-    #     if -mstrict-align or -mno-strict-align is in effect.
-    #     We use heuristics based on compiler output.
-    #
-    # CMake < 4.1 doesn't provide a standardized/normalized list of arch
-    # names. For example, x86-64 may be "x86_64" (Linux), "AMD64" (Windows),
-    # or even "EM64T" (64-bit WinXP).
+    # Autodetect if unaligned memory access is fast when the cache variable
+    # TUKLIB_FAST_UNALIGNED_ACCESS isn't set. The result is stored in
+    # FAST_UNALIGNED_GUESS. Assume that unaligned access shouldn't be used.
+    # Initialize the variable here so that it's never undefined in the
+    # option() command after the if()...endif() block.
     set(FAST_UNALIGNED_GUESS OFF)
-    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" PROCESSOR)
+    if(NOT DEFINED TUKLIB_FAST_UNALIGNED_ACCESS)
+        # Guess that unaligned access is fast on these archs:
+        #   - 32/64-bit x86 / x86-64
+        #   - 32/64-bit big endian PowerPC
+        #   - 64-bit little endian PowerPC
+        #   - 32/64-bit Loongarch (*)
+        #   - Some 32-bit ARM
+        #   - Some 64-bit ARM64 (AArch64)
+        #   - Some 32/64-bit RISC-V
+        #
+        # (*) See sections 7.4, 8.1, and 8.2:
+        #     https://github.com/loongson/la-softdev-convention/blob/v0.2/la-softdev-convention.adoc
+        #
+        #     That is, desktop and server processors likely support
+        #     unaligned access in hardware but embedded processors
+        #     might not. GCC defaults to -mno-strict-align and so
+        #     do majority of GNU/Linux distributions. As of
+        #     GCC 15.2, there is no predefined macro to detect
+        #     if -mstrict-align or -mno-strict-align is in effect.
+        #     We use heuristics based on compiler output.
+        #
+        # CMake < 4.1 doesn't provide a standardized/normalized list of arch
+        # names. For example, x86-64 may be "x86_64" (Linux),
+        # "AMD64" (Windows), or even "EM64T" (64-bit WinXP).
+        string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" PROCESSOR)
 
-    # CMake 4.1 made CMAKE_<LANG>_COMPILER_ARCHITECTURE_ID useful on many
-    # targets. In earlier versions it's still useful with MSVC with which
-    # CMAKE_SYSTEM_PROCESSOR can refer to the build machine.
-    if(NOT CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "")
-        # CMake 4.2.0 docs say that the list typically has only one entry
-        # except possibly on macOS. On macOS, most (all?) archs support
-        # unaligned access. Just pick the first one from the list.
-        list(GET CMAKE_C_COMPILER_ARCHITECTURE_ID 0 PROCESSOR)
-        string(TOLOWER "${PROCESSOR}" PROCESSOR)
-    endif()
-
-    # There is no ^ in the first regex branch to allow "i" at the beginning
-    # so it can match "i386" to "i786", and "x86_64".
-    if(PROCESSOR MATCHES "[x34567]86|^x64|^amd64|^em64t")
-        set(FAST_UNALIGNED_GUESS ON)
-
-    elseif(PROCESSOR MATCHES "^powerpc|^ppc")
-        if(WORDS_BIGENDIAN OR PROCESSOR MATCHES "64")
-            set(FAST_UNALIGNED_GUESS ON)
+        # CMake 4.1 made CMAKE_<LANG>_COMPILER_ARCHITECTURE_ID useful on many
+        # targets. In earlier versions it's still useful with MSVC with which
+        # CMAKE_SYSTEM_PROCESSOR can refer to the build machine.
+        if(NOT CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "")
+            # CMake 4.2.0 docs say that the list typically has only one entry
+            # except possibly on macOS. On macOS, most (all?) archs support
+            # unaligned access. Just pick the first one from the list.
+            list(GET CMAKE_C_COMPILER_ARCHITECTURE_ID 0 PROCESSOR)
+            string(TOLOWER "${PROCESSOR}" PROCESSOR)
         endif()
 
-    elseif(PROCESSOR MATCHES "^arm|^riscv" AND NOT PROCESSOR MATCHES "^arm64")
-        # On 32-bit ARM, GCC and Clang # #define __ARM_FEATURE_UNALIGNED
-        # if and only if unaligned access is supported.
-        #
-        # RISC-V C API Specification says that if
-        # __riscv_misaligned_fast is defined then
-        # unaligned access is known to be fast.
-        #
-        # MSVC is handled as a special case: We assume that
-        # 32-bit ARM supports fast unaligned access.
-        # If MSVC gets RISC-V support then this will assume
-        # fast unaligned access on RISC-V too.
-        check_c_source_compiles("
-                #if !defined(__ARM_FEATURE_UNALIGNED) \
-                        && !defined(__riscv_misaligned_fast) \
-                        && !defined(_MSC_VER)
-                compile error
-                #endif
-                int main(void) { return 0; }
-            "
-            TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
-        if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+        # There is no ^ in the first regex branch to allow "i" at
+        # the beginning so it can match "i386" to "i786", and "x86_64".
+        if(PROCESSOR MATCHES "[x34567]86|^x64|^amd64|^em64t")
             set(FAST_UNALIGNED_GUESS ON)
-        endif()
 
-    elseif(PROCESSOR MATCHES "^aarch64|^arm64")
-        # On ARM64, Clang defines __ARM_FEATURE_UNALIGNED if and only if
-        # unaligned access is supported. However, GCC (at least up to 15.2.0)
-        # defines it even when using -mstrict-align, so autodetection with
-        # this macro doesn't work with GCC on ARM64. (It does work on
-        # 32-bit ARM.) See:
-        #
-        #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
-        #
-        # We need three checks:
-        #
-        # 1. If __ARM_FEATURE_UNALIGNED is defined and the
-        #    compiler isn't GCC, unaligned access is enabled.
-        #    If the compiler is MSVC, unaligned access is
-        #    enabled even without __ARM_FEATURE_UNALIGNED.
-        check_c_source_compiles("
-                #if defined(__ARM_FEATURE_UNALIGNED) \
-                        && (!defined(__GNUC__) || defined(__clang__))
-                #elif defined(_MSC_VER)
-                #else
-                compile error
-                #endif
-                int main(void) { return 0; }
-            "
-            TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
-        if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
-            set(FAST_UNALIGNED_GUESS ON)
-        else()
-            # 2. If __ARM_FEATURE_UNALIGNED is not defined,
-            #    unaligned access is disabled.
+        elseif(PROCESSOR MATCHES "^powerpc|^ppc")
+            if(WORDS_BIGENDIAN OR PROCESSOR MATCHES "64")
+                set(FAST_UNALIGNED_GUESS ON)
+            endif()
+
+        elseif(PROCESSOR MATCHES "^arm|^riscv" AND
+                NOT PROCESSOR MATCHES "^arm64")
+            # On 32-bit ARM, GCC and Clang # #define __ARM_FEATURE_UNALIGNED
+            # if and only if unaligned access is supported.
+            #
+            # RISC-V C API Specification says that if
+            # __riscv_misaligned_fast is defined then
+            # unaligned access is known to be fast.
+            #
+            # MSVC is handled as a special case: We assume that
+            # 32-bit ARM supports fast unaligned access.
+            # If MSVC gets RISC-V support then this will assume
+            # fast unaligned access on RISC-V too.
             check_c_source_compiles("
-                    #ifdef __ARM_FEATURE_UNALIGNED
+                    #if !defined(__ARM_FEATURE_UNALIGNED) \
+                            && !defined(__riscv_misaligned_fast) \
+                            && !defined(_MSC_VER)
                     compile error
                     #endif
                     int main(void) { return 0; }
                 "
-                TUKLIB_FAST_UNALIGNED_NOT_DEFINED_BY_PREPROCESSOR)
-            if(NOT TUKLIB_FAST_UNALIGNED_NOT_DEFINED_BY_PREPROCESSOR)
-                # 3. Use heuristics to detect if -mstrict-align is
-                #    in effect when building with GCC.
-                tuklib_integer_internal_strict_align("[ \t]ldrb[ \t]")
-                if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
-                    set(FAST_UNALIGNED_GUESS ON)
+                TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+            if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+                set(FAST_UNALIGNED_GUESS ON)
+            endif()
+
+        elseif(PROCESSOR MATCHES "^aarch64|^arm64")
+            # On ARM64, Clang defines __ARM_FEATURE_UNALIGNED if and only if
+            # unaligned access is supported. However, GCC (at least up to 15.2.0)
+            # defines it even when using -mstrict-align, so autodetection with
+            # this macro doesn't work with GCC on ARM64. (It does work on
+            # 32-bit ARM.) See:
+            #
+            #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111555
+            #
+            # We need three checks:
+            #
+            # 1. If __ARM_FEATURE_UNALIGNED is defined and the
+            #    compiler isn't GCC, unaligned access is enabled.
+            #    If the compiler is MSVC, unaligned access is
+            #    enabled even without __ARM_FEATURE_UNALIGNED.
+            check_c_source_compiles("
+                    #if defined(__ARM_FEATURE_UNALIGNED) \
+                            && (!defined(__GNUC__) || defined(__clang__))
+                    #elif defined(_MSC_VER)
+                    #else
+                    compile error
+                    #endif
+                    int main(void) { return 0; }
+                "
+                TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+            if(TUKLIB_FAST_UNALIGNED_DEFINED_BY_PREPROCESSOR)
+                set(FAST_UNALIGNED_GUESS ON)
+            else()
+                # 2. If __ARM_FEATURE_UNALIGNED is not defined,
+                #    unaligned access is disabled.
+                check_c_source_compiles("
+                        #ifdef __ARM_FEATURE_UNALIGNED
+                        compile error
+                        #endif
+                        int main(void) { return 0; }
+                    "
+                    TUKLIB_FAST_UNALIGNED_NOT_DEFINED_BY_PREPROCESSOR)
+                if(NOT TUKLIB_FAST_UNALIGNED_NOT_DEFINED_BY_PREPROCESSOR)
+                    # 3. Use heuristics to detect if -mstrict-align is
+                    #    in effect when building with GCC.
+                    tuklib_integer_internal_strict_align("[ \t]ldrb[ \t]")
+                    if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
+                        set(FAST_UNALIGNED_GUESS ON)
+                    endif()
                 endif()
             endif()
-        endif()
 
-    elseif(PROCESSOR MATCHES "^loongarch")
-        tuklib_integer_internal_strict_align("[ \t]ld\\.bu[ \t]")
-        if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
-            set(FAST_UNALIGNED_GUESS ON)
+        elseif(PROCESSOR MATCHES "^loongarch")
+            tuklib_integer_internal_strict_align("[ \t]ld\\.bu[ \t]")
+            if(NOT TUKLIB_INTEGER_STRICT_ALIGN)
+                set(FAST_UNALIGNED_GUESS ON)
+            endif()
         endif()
     endif()
 

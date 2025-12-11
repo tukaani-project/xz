@@ -904,11 +904,9 @@ args_parse(args_info *args, int argc, char **argv)
 }
 
 
-#ifndef NDEBUG
 extern void
 args_free(void)
 {
 	free(opt_block_list);
 	return;
 }
-#endif

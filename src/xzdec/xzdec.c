@@ -479,11 +479,7 @@ main(int argc, char **argv)
 		} while (++optind < argc);
 	}
 
-#ifndef NDEBUG
-	// Free the memory only when debugging. Freeing wastes some time,
-	// but allows detecting possible memory leaks with Valgrind.
 	lzma_end(&strm);
-#endif
 
 	tuklib_exit(EXIT_SUCCESS, EXIT_FAILURE, display_errors);
 }

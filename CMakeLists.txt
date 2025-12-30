@@ -266,7 +266,7 @@ if(NOT MSVC)
     # building 32-bit executables on a 64-bit system. Also, the strings
     # that identify 32-bit or 64-bit x86 aren't standardized in CMake.
     if(MINGW OR CYGWIN OR CMAKE_SYSTEM_NAME MATCHES
-            "^FreeBSD$|^GNU$|^Linux$|^MirBSD$|^NetBSD$|^OpenBSD$")
+            "^FreeBSD$|^GNU$|^Linux$|^MirBSD$|^NetBSD$|^OpenBSD$|^GNU$")
         check_symbol_exists("__i386__" "" ASM_I386_DEFAULT)
     else()
         set(ASM_I386_DEFAULT OFF)

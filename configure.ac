@@ -350,7 +350,7 @@ if test "x$enable_assembler" = xyes; then
 	case $host_os in
 		# Darwin should work too but only if not creating universal
 		# binaries. Solaris x86 could work too but I cannot test.
-		linux* | *bsd* | mingw* | cygwin | msys | *djgpp*)
+		linux* | *bsd* | mingw* | cygwin | msys | *djgpp* | gnu*)
 			case $host_cpu in
 				i?86)   enable_assembler=x86 ;;
 			esac

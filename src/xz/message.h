@@ -19,6 +19,43 @@
 #define FSI "\342\201\250" /* U+2068 as UTF-8  */
 #define PDI "\342\201\251" /* U+2069 as UTF-8  */
 
+// Terminal escapes to control RTL behavior
+//
+// These are mainly for VTE-based terminals but some others support them too.
+//
+//     ESC [ 2 SPACE k          This and following lines are RTL
+//     ESC [ 0 SPACE k          Set the default mode (usually LTR)
+//
+//     ESC [ ? 2501 h           Enable autodetection
+//     ESC [ ? 2501 l           Disable autodetection
+//     ESC [ ? 2501 s           Save the current autodetection setting
+//     ESC [ ? 2501 r           Restore the saved autodetection setting
+//
+// VTE-based terminals have autodetection of line direction disabled
+// by default. However, RTL users might enable it with printf '\e[2501h'.
+// If it is enabled, it is effective even when the terminal is set to
+// RTL mode using ESC [ 2 SPACE k, which is bad for us because we want
+// to set RTL mode to display error messages RTL even if they begin
+// with a LTR string (like "xz").
+//
+// The above escapes (except save and restore) are documented in
+// this draft specification that VTE-based terminals implement:
+// https://terminal-wg.pages.freedesktop.org/bidi/recommendation/escape-sequences.html
+//
+// Macros:
+//   - Save the current autodetection setting, disable autodetection, and
+//     set the terminal to RTL.
+//   - Set terminal direction to the default and restore the saved
+//     autodetection setting.
+//
+// NOTE: For terminals that don't support these escapes but do support
+// autodetection, we want to use RLM near the beginnings of lines to
+// make autodetection set RTL base direction. Autodetection won't work
+// for error messages because they begin with ASCII letters, but
+// autodetection does work, for example, for --list output.
+#define TERM_SET_RTL "\033[?2501s" "\033[?2501l" "\033[2 k"
+#define TERM_RESTORE "\033[0 k" "\033[?2501r"
+
 
 /// Verbosity levels
 enum message_verbosity {

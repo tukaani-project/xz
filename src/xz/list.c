@@ -13,6 +13,17 @@
 #include "tuklib_integer.h"
 
 
+// Cache if terminal RTL escapes should be used. This avoids calling
+// isatty(3) many times. When NLS is disabled, there are no RTL messages
+// and the compiler should be able to optimize the unneeded code out.
+#ifdef ENABLE_NLS
+static bool use_rtl_escapes_initialized = false;
+static bool use_rtl_escapes = false;
+#else
+#	define use_rtl_escapes false
+#endif
+
+
 /// Information about a .xz file
 typedef struct {
 	/// Combined Index of all Streams in the file
@@ -775,6 +786,9 @@ print_cell(int spaces, int columns_min, const char *str, bool right_aligned)
 static bool
 print_info_basic(const xz_file_info *xfi, file_pair *pair)
 {
+	if (use_rtl_escapes)
+		fputs(TERM_SET_RTL, stdout);
+
 	static bool headings_displayed = false;
 	if (!headings_displayed) {
 		headings_displayed = true;
@@ -818,6 +832,9 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 			tuklib_mask_nonprint(pair->src_name),
 			is_rtl ? PDI : "");
 
+	if (use_rtl_escapes)
+		fputs(TERM_RESTORE, stdout);
+
 	return false;
 }
 
@@ -858,6 +875,9 @@ print_adv_helper(uint64_t stream_count, uint64_t block_count,
 static bool
 print_info_adv(xz_file_info *xfi, file_pair *pair)
 {
+	if (use_rtl_escapes)
+		fputs(TERM_SET_RTL, stdout);
+
 	// Print the overall information.
 	print_adv_helper(lzma_index_stream_count(xfi->idx),
 			lzma_index_block_count(xfi->idx),
@@ -986,11 +1006,20 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 
 		// Iterate over the Blocks.
 		while (!lzma_index_iter_next(&iter, LZMA_INDEX_ITER_BLOCK)) {
+			// parse_details() can fail and print error messages.
+			// If we have set the terminal to RTL mode, restore
+			// the terminal state before the call.
+			if (use_rtl_escapes)
+				fputs(TERM_RESTORE, stdout);
+
 			// If in detailed mode, collect the information from
 			// Block Header before starting to print the next line.
 			block_header_info bhi = BLOCK_HEADER_INFO_INIT;
 			if (detailed && parse_details(pair, &iter, &bhi, xfi))
 				return true;
+
+			if (use_rtl_escapes)
+				fputs(TERM_SET_RTL, stdout);
 
 			if (is_rtl)
 				fputs(" " RLM, stdout);
@@ -1080,6 +1109,9 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 		printf("  %s %s%s\n", _("Minimum XZ Utils version:"), lrm_rlm,
 				xz_ver_to_str(xfi->min_version));
 	}
+
+	if (use_rtl_escapes)
+		fputs(TERM_RESTORE, stdout);
 
 	return false;
 }
@@ -1202,6 +1234,9 @@ update_totals(const xz_file_info *xfi)
 static void
 print_totals_basic(void)
 {
+	if (use_rtl_escapes)
+		fputs(TERM_SET_RTL, stdout);
+
 	// Print a separator line.
 	char line[80];
 	memset(line, '-', sizeof(line));
@@ -1255,6 +1290,9 @@ print_totals_basic(void)
 #	pragma GCC diagnostic pop
 #endif
 
+	if (use_rtl_escapes)
+		fputs(TERM_RESTORE, stdout);
+
 	return;
 }
 
@@ -1262,6 +1300,9 @@ print_totals_basic(void)
 static void
 print_totals_adv(void)
 {
+	if (use_rtl_escapes)
+		fputs(TERM_SET_RTL, stdout);
+
 	const char *const lrm_rlm = is_rtl ? LRM RLM : "";
 
 	putchar('\n');
@@ -1285,6 +1326,9 @@ print_totals_adv(void)
 				lrm_rlm,
 				xz_ver_to_str(totals.min_version));
 	}
+
+	if (use_rtl_escapes)
+		fputs(TERM_RESTORE, stdout);
 
 	return;
 }
@@ -1345,6 +1389,14 @@ list_totals(void)
 extern void
 list_file(const char *filename)
 {
+#ifdef ENABLE_NLS
+	if (!use_rtl_escapes_initialized) {
+		use_rtl_escapes_initialized = true;
+		use_rtl_escapes = is_rtl && !opt_robot
+				&& is_tty(STDOUT_FILENO);
+	}
+#endif
+
 	if (opt_format != FORMAT_XZ && opt_format != FORMAT_AUTO) {
 		// The 'lzmainfo' message is printed only when --format=lzma
 		// is used (it is implied if using "lzma" as the command
@@ -1361,7 +1413,14 @@ list_file(const char *filename)
 		tuklib_exit(E_ERROR, E_ERROR, false);
 	}
 
+	// Wrap the message_filename() call with RTL escapes if needed.
+	if (use_rtl_escapes)
+		fputs(TERM_SET_RTL, stdout);
+
 	message_filename(filename);
+
+	if (use_rtl_escapes)
+		fputs(TERM_RESTORE, stdout);
 
 	if (filename == stdin_filename) {
 		message_error(NULL, _("--list does not support reading from "

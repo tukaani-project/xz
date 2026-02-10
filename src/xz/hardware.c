@@ -299,6 +299,9 @@ hardware_memlimit_show(void)
 				memlimit_mt_default,
 				cputhreads);
 	} else {
+		if (is_rtl && is_tty(STDOUT_FILENO))
+			fputs(TERM_SET_RTL, stdout);
+
 		const char *msgs[] = {
 			_("Amount of physical memory (RAM):"),
 			_("Number of processor threads:"),
@@ -338,6 +341,9 @@ hardware_memlimit_show(void)
 		memlimit_show(msgs[4], width_max,
 				hardware_memlimit_mtdec_get());
 		memlimit_show(msgs[5], width_max, memlimit_mt_default);
+
+		if (is_rtl && is_tty(STDOUT_FILENO))
+			fputs(TERM_RESTORE, stdout);
 	}
 
 	tuklib_exit(E_SUCCESS, E_ERROR, message_verbosity_get() != V_SILENT);

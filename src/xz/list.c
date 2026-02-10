@@ -735,6 +735,30 @@ get_check_names(char buf[CHECKS_STR_SIZE],
 }
 
 
+/// Print "spaces" number of spaces.
+/// Print str using field width of fw (in bytes).
+/// Padding of str depends on right_aligned.
+static void
+print_cell_fw(int spaces, int fw, const char *str, bool right_aligned)
+{
+	printf(right_aligned ? "%*s%*s" : "%*s%-*s",
+			spaces, "", fw, str);
+	return;
+}
+
+
+/// Print "spaces" number of spaces.
+/// Print str. Pad it with spaces to make it at least column_min wide.
+/// The paddding direction depends on right_aligned.
+static void
+print_cell(int spaces, int columns_min, const char *str, bool right_aligned)
+{
+	print_cell_fw(spaces, tuklib_mbstr_fw(str, columns_min), str,
+			right_aligned);
+	return;
+}
+
+
 static bool
 print_info_basic(const xz_file_info *xfi, file_pair *pair)
 {
@@ -752,25 +776,22 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 	char checks[CHECKS_STR_SIZE];
 	get_check_names(checks, lzma_index_checks(xfi->idx), false);
 
-	const char *cols[6] = {
-		uint64_to_str(lzma_index_stream_count(xfi->idx), 0),
-		uint64_to_str(lzma_index_block_count(xfi->idx), 1),
-		uint64_to_nicestr(lzma_index_file_size(xfi->idx),
-			NICESTR_B, NICESTR_TIB, false, 2),
-		uint64_to_nicestr(lzma_index_uncompressed_size(xfi->idx),
-			NICESTR_B, NICESTR_TIB, false, 3),
-		get_ratio(lzma_index_file_size(xfi->idx),
-			lzma_index_uncompressed_size(xfi->idx)),
-		checks,
-	};
-	printf("%*s %*s  %*s  %*s  %*s  %-*s %s\n",
-			tuklib_mbstr_fw(cols[0], 5), cols[0],
-			tuklib_mbstr_fw(cols[1], 7), cols[1],
-			tuklib_mbstr_fw(cols[2], 11), cols[2],
-			tuklib_mbstr_fw(cols[3], 11), cols[3],
-			tuklib_mbstr_fw(cols[4], 5), cols[4],
-			tuklib_mbstr_fw(cols[5], 7), cols[5],
-			tuklib_mask_nonprint(pair->src_name));
+	print_cell(0, 5, uint64_to_str(lzma_index_stream_count(xfi->idx), 0),
+			true);
+	print_cell(1, 7, uint64_to_str(lzma_index_block_count(xfi->idx), 0),
+			true);
+	print_cell(2, 11, uint64_to_nicestr(lzma_index_file_size(xfi->idx),
+				NICESTR_B, NICESTR_TIB, false, 0),
+			true);
+	print_cell(2, 11, uint64_to_nicestr(
+				lzma_index_uncompressed_size(xfi->idx),
+				NICESTR_B, NICESTR_TIB, false, 0),
+			true);
+	print_cell(2, 5, get_ratio(lzma_index_file_size(xfi->idx),
+			lzma_index_uncompressed_size(xfi->idx)), true);
+	print_cell(2, 7, checks, false);
+
+	printf(" %s\n", tuklib_mask_nonprint(pair->src_name));
 
 	return false;
 }
@@ -821,69 +842,50 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	uint32_t check_max = 0;
 
 	// Print information about the Streams.
-	//
+	printf("  %s\n", _(colon_strs[COLON_STR_STREAMS]));
+
 	// All except Check are right aligned; Check is left aligned.
 	// Test with "xz -lv foo.xz".
-	printf("  %s\n    %*s %*s %*s %*s %*s %*s  %*s  %-*s %*s\n",
-			_(colon_strs[COLON_STR_STREAMS]),
-			HEADING_STR(HEADING_STREAM),
-			HEADING_STR(HEADING_BLOCKS),
-			HEADING_STR(HEADING_COMPOFFSET),
-			HEADING_STR(HEADING_UNCOMPOFFSET),
-			HEADING_STR(HEADING_COMPSIZE),
-			HEADING_STR(HEADING_UNCOMPSIZE),
-			HEADING_STR(HEADING_RATIO),
-			HEADING_STR(HEADING_CHECK),
-			HEADING_STR(HEADING_PADDING));
+	print_cell_fw(4, HEADING_STR(HEADING_STREAM), true);
+	print_cell_fw(1, HEADING_STR(HEADING_BLOCKS), true);
+	print_cell_fw(1, HEADING_STR(HEADING_COMPOFFSET), true);
+	print_cell_fw(1, HEADING_STR(HEADING_UNCOMPOFFSET), true);
+	print_cell_fw(1, HEADING_STR(HEADING_COMPSIZE), true);
+	print_cell_fw(1, HEADING_STR(HEADING_UNCOMPSIZE), true);
+	print_cell_fw(2, HEADING_STR(HEADING_RATIO), true);
+	print_cell_fw(2, HEADING_STR(HEADING_CHECK), false);
+	print_cell_fw(1, HEADING_STR(HEADING_PADDING), true);
+	putchar('\n');
 
 	lzma_index_iter iter;
 	lzma_index_iter_init(&iter, xfi->idx);
 
 	while (!lzma_index_iter_next(&iter, LZMA_INDEX_ITER_STREAM)) {
-		const char *cols1[4] = {
-			uint64_to_str(iter.stream.number, 0),
-			uint64_to_str(iter.stream.block_count, 1),
-			uint64_to_str(iter.stream.compressed_offset, 2),
-			uint64_to_str(iter.stream.uncompressed_offset, 3),
-		};
-		printf("    %*s %*s %*s %*s ",
-			tuklib_mbstr_fw(cols1[0],
-				headings[HEADING_STREAM].columns),
-			cols1[0],
-			tuklib_mbstr_fw(cols1[1],
-				headings[HEADING_BLOCKS].columns),
-			cols1[1],
-			tuklib_mbstr_fw(cols1[2],
-				headings[HEADING_COMPOFFSET].columns),
-			cols1[2],
-			tuklib_mbstr_fw(cols1[3],
-				headings[HEADING_UNCOMPOFFSET].columns),
-			cols1[3]);
+		print_cell(4, headings[HEADING_STREAM].columns,
+			uint64_to_str(iter.stream.number, 0), true);
+		print_cell(1, headings[HEADING_BLOCKS].columns,
+			uint64_to_str(iter.stream.block_count, 0), true);
+		print_cell(1, headings[HEADING_COMPOFFSET].columns,
+			uint64_to_str(iter.stream.compressed_offset, 0),
+			true);
+		print_cell(1, headings[HEADING_UNCOMPOFFSET].columns,
+			uint64_to_str(iter.stream.uncompressed_offset, 0),
+			true);
 
-		const char *cols2[5] = {
-			uint64_to_str(iter.stream.compressed_size, 0),
-			uint64_to_str(iter.stream.uncompressed_size, 1),
+		print_cell(1, headings[HEADING_COMPSIZE].columns,
+			uint64_to_str(iter.stream.compressed_size, 0), true);
+		print_cell(1, headings[HEADING_UNCOMPSIZE].columns,
+			uint64_to_str(iter.stream.uncompressed_size, 0), true);
+		print_cell(2, headings[HEADING_RATIO].columns,
 			get_ratio(iter.stream.compressed_size,
 				iter.stream.uncompressed_size),
-			_(check_names[iter.stream.flags->check]),
-			uint64_to_str(iter.stream.padding, 2),
-		};
-		printf("%*s %*s  %*s  %-*s %*s\n",
-			tuklib_mbstr_fw(cols2[0],
-				headings[HEADING_COMPSIZE].columns),
-			cols2[0],
-			tuklib_mbstr_fw(cols2[1],
-				headings[HEADING_UNCOMPSIZE].columns),
-			cols2[1],
-			tuklib_mbstr_fw(cols2[2],
-				headings[HEADING_RATIO].columns),
-			cols2[2],
-			tuklib_mbstr_fw(cols2[3],
-				headings[HEADING_CHECK].columns),
-			cols2[3],
-			tuklib_mbstr_fw(cols2[4],
-				headings[HEADING_PADDING].columns),
-			cols2[4]);
+			true);
+		print_cell(2, headings[HEADING_CHECK].columns,
+			_(check_names[iter.stream.flags->check]), false);
+		print_cell(1, headings[HEADING_PADDING].columns,
+			uint64_to_str(iter.stream.padding, 0), true);
+
+		putchar('\n');
 
 		// Update the maximum Check size.
 		if (lzma_check_size(iter.stream.flags->check) > check_max)
@@ -906,34 +908,38 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 				headings[HEADING_CHECKVAL].columns,
 				(int)(2 * check_max));
 
+		printf("  %s\n", _(colon_strs[COLON_STR_BLOCKS]));
+
 		// All except Check are right aligned; Check is left aligned.
-		printf("  %s\n    %*s %*s %*s %*s %*s %*s  %*s  %-*s",
-				_(colon_strs[COLON_STR_BLOCKS]),
-				HEADING_STR(HEADING_STREAM),
-				HEADING_STR(HEADING_BLOCK),
-				HEADING_STR(HEADING_COMPOFFSET),
-				HEADING_STR(HEADING_UNCOMPOFFSET),
-				HEADING_STR(HEADING_TOTALSIZE),
-				HEADING_STR(HEADING_UNCOMPSIZE),
-				HEADING_STR(HEADING_RATIO),
-				detailed ? headings[HEADING_CHECK].fw : 1,
-				_(headings[HEADING_CHECK].str));
+		print_cell_fw(4, HEADING_STR(HEADING_STREAM), true);
+		print_cell_fw(1, HEADING_STR(HEADING_BLOCK), true);
+		print_cell_fw(1, HEADING_STR(HEADING_COMPOFFSET), true);
+		print_cell_fw(1, HEADING_STR(HEADING_UNCOMPOFFSET), true);
+		print_cell_fw(1, HEADING_STR(HEADING_TOTALSIZE), true);
+		print_cell_fw(1, HEADING_STR(HEADING_UNCOMPSIZE), true);
+		print_cell_fw(2, HEADING_STR(HEADING_RATIO), true);
+		print_cell_fw(2, detailed ? headings[HEADING_CHECK].fw : 1,
+					_(headings[HEADING_CHECK].str),
+				false);
 
 		if (detailed) {
 			// CheckVal (Check value), Flags, and Filters are
 			// left aligned. Block Header Size, CompSize, and
 			// MemUsage are right aligned. Test with
 			// "xz -lvv foo.xz".
-			printf(" %-*s  %*s  %-*s %*s %*s  %s",
-				headings[HEADING_CHECKVAL].fw
+			print_cell_fw(1, headings[HEADING_CHECKVAL].fw
 					+ checkval_width
 					- headings[HEADING_CHECKVAL].columns,
 				_(headings[HEADING_CHECKVAL].str),
-				HEADING_STR(HEADING_HEADERSIZE),
-				HEADING_STR(HEADING_HEADERFLAGS),
-				HEADING_STR(HEADING_COMPSIZE),
-				HEADING_STR(HEADING_MEMUSAGE),
-				_(headings[HEADING_FILTERS].str));
+				false);
+			print_cell_fw(2, HEADING_STR(HEADING_HEADERSIZE),
+				true);
+			print_cell_fw(2, HEADING_STR(HEADING_HEADERFLAGS),
+				false);
+			print_cell_fw(1, HEADING_STR(HEADING_COMPSIZE), true);
+			print_cell_fw(1, HEADING_STR(HEADING_MEMUSAGE), true);
+			print_cell_fw(2, 1, _(headings[HEADING_FILTERS].str),
+				false);
 		}
 
 		putchar('\n');
@@ -948,50 +954,34 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 			if (detailed && parse_details(pair, &iter, &bhi, xfi))
 				return true;
 
-			const char *cols1[4] = {
-				uint64_to_str(iter.stream.number, 0),
+			print_cell(4, headings[HEADING_STREAM].columns,
+				uint64_to_str(iter.stream.number, 0), true);
+			print_cell(1, headings[HEADING_BLOCK].columns,
+				uint64_to_str(iter.block.number_in_stream, 0),
+				true);
+			print_cell(1, headings[HEADING_COMPOFFSET].columns,
 				uint64_to_str(
-					iter.block.number_in_stream, 1),
+					iter.block.compressed_file_offset, 0),
+				true);
+			print_cell(1, headings[HEADING_UNCOMPOFFSET].columns,
 				uint64_to_str(
-					iter.block.compressed_file_offset, 2),
-				uint64_to_str(
-					iter.block.uncompressed_file_offset, 3)
-			};
-			printf("    %*s %*s %*s %*s ",
-				tuklib_mbstr_fw(cols1[0],
-					headings[HEADING_STREAM].columns),
-				cols1[0],
-				tuklib_mbstr_fw(cols1[1],
-					headings[HEADING_BLOCK].columns),
-				cols1[1],
-				tuklib_mbstr_fw(cols1[2],
-					headings[HEADING_COMPOFFSET].columns),
-				cols1[2],
-				tuklib_mbstr_fw(cols1[3], headings[
-					HEADING_UNCOMPOFFSET].columns),
-				cols1[3]);
+				iter.block.uncompressed_file_offset, 0),
+				true);
 
-			const char *cols2[4] = {
+			print_cell(1, headings[HEADING_TOTALSIZE].columns,
 				uint64_to_str(iter.block.total_size, 0),
-				uint64_to_str(iter.block.uncompressed_size,
-						1),
+				true);
+			print_cell(1, headings[HEADING_UNCOMPSIZE].columns,
+				uint64_to_str(iter.block.uncompressed_size, 0),
+				true);
+			print_cell(2, headings[HEADING_RATIO].columns,
 				get_ratio(iter.block.total_size,
 					iter.block.uncompressed_size),
-				_(check_names[iter.stream.flags->check])
-			};
-			printf("%*s %*s  %*s  %-*s",
-				tuklib_mbstr_fw(cols2[0],
-					headings[HEADING_TOTALSIZE].columns),
-				cols2[0],
-				tuklib_mbstr_fw(cols2[1],
-					headings[HEADING_UNCOMPSIZE].columns),
-				cols2[1],
-				tuklib_mbstr_fw(cols2[2],
-					headings[HEADING_RATIO].columns),
-				cols2[2],
-				tuklib_mbstr_fw(cols2[3], detailed
-					? headings[HEADING_CHECK].columns : 1),
-				cols2[3]);
+				true);
+			print_cell(2, detailed ?
+					headings[HEADING_CHECK].columns : 1,
+				_(check_names[iter.stream.flags->check]),
+				false);
 
 			if (detailed) {
 				const lzma_vli compressed_size
@@ -1000,33 +990,30 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 						- lzma_check_size(
 						iter.stream.flags->check);
 
-				const char *cols3[6] = {
-					check_value,
+				print_cell_fw(1, checkval_width, check_value,
+						false);
+				print_cell(2, headings[
+						HEADING_HEADERSIZE].columns,
 					uint64_to_str(bhi.header_size, 0),
-					bhi.flags,
-					uint64_to_str(compressed_size, 1),
-					uint64_to_str(
-						round_up_to_mib(bhi.memusage),
-						2),
-					bhi.filter_chain
-				};
+					true);
+				print_cell(2, headings[
+						HEADING_HEADERFLAGS].columns,
+					bhi.flags, false);
+				print_cell(1, headings[
+						HEADING_COMPSIZE].columns,
+					uint64_to_str(compressed_size, 0),
+					true);
+
 				// Show MiB for memory usage, because it
 				// is the only size which is not in bytes.
-				printf(" %-*s  %*s  %-*s %*s %*s MiB  %s",
-					checkval_width, cols3[0],
-					tuklib_mbstr_fw(cols3[1], headings[
-						HEADING_HEADERSIZE].columns),
-					cols3[1],
-					tuklib_mbstr_fw(cols3[2], headings[
-						HEADING_HEADERFLAGS].columns),
-					cols3[2],
-					tuklib_mbstr_fw(cols3[3], headings[
-						HEADING_COMPSIZE].columns),
-					cols3[3],
-					tuklib_mbstr_fw(cols3[4], headings[
-						HEADING_MEMUSAGE].columns - 4),
-					cols3[4],
-					cols3[5]);
+				print_cell(1, headings[
+						HEADING_MEMUSAGE].columns,
+					uint64_to_str_suffix(
+						round_up_to_mib(bhi.memusage),
+						0, " MiB"),
+					true);
+
+				printf("  %s", bhi.filter_chain);
 			}
 
 			putchar('\n');
@@ -1178,16 +1165,19 @@ print_totals_basic(void)
 
 	// Print the totals except the file count, which needs
 	// special handling.
-	printf("%5s %7s  %11s  %11s  %5s  %-7s ",
-			uint64_to_str(totals.streams, 0),
-			uint64_to_str(totals.blocks, 1),
-			uint64_to_nicestr(totals.compressed_size,
-				NICESTR_B, NICESTR_TIB, false, 2),
-			uint64_to_nicestr(totals.uncompressed_size,
-				NICESTR_B, NICESTR_TIB, false, 3),
-			get_ratio(totals.compressed_size,
+	print_cell(0, 5, uint64_to_str(totals.streams, 0), true);
+	print_cell(1, 7, uint64_to_str(totals.blocks, 0), true);
+	print_cell(2, 11, uint64_to_nicestr(totals.compressed_size,
+				NICESTR_B, NICESTR_TIB, false, 0),
+			true);
+	print_cell(2, 11, uint64_to_nicestr(totals.uncompressed_size,
+				NICESTR_B, NICESTR_TIB, false, 0),
+			true);
+	print_cell(2, 5, get_ratio(totals.compressed_size,
 				totals.uncompressed_size),
-			checks);
+			true);
+	print_cell(2, 7, checks, false);
+	putchar(' ');
 
 #if defined(__sun) && (defined(__GNUC__) || defined(__clang__))
 #	pragma GCC diagnostic push

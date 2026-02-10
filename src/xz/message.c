@@ -15,6 +15,10 @@
 #include <stdarg.h>
 
 
+#ifdef ENABLE_NLS
+bool is_rtl;
+#endif
+
 /// Number of the current file
 static unsigned int files_pos = 0;
 
@@ -113,6 +117,12 @@ static uint64_t progress_next_update;
 extern void
 message_init(void)
 {
+#ifdef ENABLE_NLS
+	// TRANSLATORS: If the language is written right-to-left,
+	// translate this to "RTL". Otherwise translate to "LTR".
+	is_rtl = _("LTR")[0] == 'R';
+#endif
+
 	// If --verbose is used, we use a progress indicator if and only
 	// if stderr is a terminal. If stderr is not a terminal, we print
 	// verbose information only after finishing the file. As a special

@@ -11,9 +11,13 @@
 /// to count spaces and determine where line breaks should occur. It's
 /// tedious and error prone, and experience has shown that only some
 /// translators do it well. Automatic word wrapping is less flexible but
-/// results in polished-enough look with less effort from everyone.
-/// Right-to-left languages and languages that don't use spaces between
-/// words will still need extra effort though.
+/// results in polished-enough look with less effort from everyone. Languages
+/// that don't use spaces between words will still need extra effort though.
+///
+/// \note       These functions are for program's own messages, including
+///             translated messages. These functions aren't suitable for
+///             user-supplied untrusted strings because they interpret
+///             some control characters specially.
 //
 //  Author:     Lasse Collin
 //
@@ -26,6 +30,10 @@
 #include <stdio.h>
 
 TUKLIB_DECLS_BEGIN
+
+//////////////////
+// Error codes  //
+//////////////////
 
 /// One or more output lines exceeded right_margin.
 /// This only a warning; everything was still printed successfully.
@@ -48,10 +56,48 @@ TUKLIB_DECLS_BEGIN
 /// format string or arguments.
 #define TUKLIB_WRAP_ERR_FORMAT      0x10
 
+///////////
+// Flags //
+///////////
+
+/// Enable right-to-left (RTL) mode. On lines with `\v`, the text before
+/// `\v` is LTR and the text after is RTL. This asymmetry is convenient
+/// when printing command line options in `--help` text.
+///
+/// In RTL mode, it is assumed that the character set is UTF-8. The RTL mode
+/// uses UTF-8 BiDi control characters, including isolate formatting
+/// characters (LRI/RLI...PDI).
+///
+/// \note       On lines with `\v`, the four left margin options should all
+///             be greater than zero. Otherwise the output will be broken
+///             in some terminal emulators which they ignore BiDi control
+///             characters in the first column.
+///
+/// The caller needs some method to determine if the text is RTL.
+/// The most portable way is to have a string "LTR" which translators
+/// can translate to "RTL" if the language is RTL. Then
+/// `(gettext("LTR")[0] == 'R')` can be used to detect RTL languages.
+///
+/// As of 2026, the quality of the output will depend on the terminal
+/// emulator. VTE-based emulators do well if autodetection is enabled
+/// (`printf '\e[?2501h'`). Konsole is good too except it doesn't mirror
+/// parenthesis, thus they look like )this( instead of (this). In other
+/// terminals, the isolate formatting characters might not be handled
+/// perfectly, for example, they may print as boxes or spaces instead of
+/// being invisible characters.
+#define TUKLIB_WRAP_F_RTL           0x01
+
+/// In RTL mode, also the text before `\v` is RTL. This flag is ignored
+/// if TUKLIB_WRAP_F_RTL isn't set.
+#define TUKLIB_WRAP_F_RTL_BOTH      0x02
+
 /// Options for tuklib_wraps() and tuklib_wrapf()
 struct tuklib_wrap_opt {
 	/// Indentation of the first output line after `\n` or `\r`.
 	/// This can be anything less than right_margin.
+	///
+	/// When in right-to-left (RTL) mode, "left" means the beginning
+	/// of the line and "right" means the end of the line.
 	unsigned short left_margin;
 
 	/// Column where word-wrapped continuation lines start.
@@ -74,6 +120,9 @@ struct tuklib_wrap_opt {
 	/// moves the cursor to the beginning of the next line immediately
 	/// when the last column has been used.
 	unsigned short right_margin;
+
+	/// Bitwise-or of zero or more flags.
+	int flags;
 };
 
 #define tuklib_wraps TUKLIB_SYMBOL(tuklib_wraps)
@@ -104,7 +153,17 @@ extern int tuklib_wraps(FILE *stream, const struct tuklib_wrap_opt *opt,
 ///            blocks are treated as zero-width characters. If line breaks
 ///            are possible around an empty block (like in `"foo \b\b bar"`
 ///            or `"foo \b"`), it can result in weird output.
-///   - `\v` = Change to alternative indentation (left2_margin).
+///   - `\v` = Change to alternative indentation (left2_margin). To ensure
+///            good RTL mode output (these don't matter in LTR mode):
+///              - After a `\v`, a second `\v` must not be used until `\r` has
+///                been used to reset back to the initial indentation.
+///                Otherwise garbage output may occur in RTL mode.
+///              - Since RTL mode treats the text before `\v` differently
+///                than lines without a `\v`, one may sometimes need to
+///                use `\v` even when no text follows it. For example,
+///                `"--foo\v\r--bar\vDescription of --foo and --bar"`
+///                ensures that both `--foo` and `--bar` are rendered
+///                in the same style in RTL mode.
 ///   - `\r` = Reset back to the initial indentation and add a newline.
 ///            The next line will be indented by left_margin.
 ///   - `\n` = Add a newline without resetting the effect of `\v`. The

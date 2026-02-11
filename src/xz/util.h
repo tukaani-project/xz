@@ -60,6 +60,15 @@ extern uint64_t round_up_to_mib(uint64_t n);
 extern const char *uint64_to_str(uint64_t value, uint32_t slot);
 
 
+/// \brief      Convert uint64_t to a string and add a suffix
+///
+/// Like uint64_to_str but appends a suffix to the resulting string.
+/// The suffix must be short to fit in the internal buffer to avoid
+/// truncation.
+extern const char *uint64_to_str_suffix(
+		uint64_t value, uint32_t slot, const char *suffix);
+
+
 enum nicestr_unit {
 	NICESTR_B,
 	NICESTR_KIB,

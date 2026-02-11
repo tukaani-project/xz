@@ -840,20 +840,25 @@ print_adv_helper(uint64_t stream_count, uint64_t block_count,
 	char checks_str[CHECKS_STR_SIZE];
 	get_check_names(checks_str, checks, true);
 
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_STREAMS),
+	// See hardware.c for the explanation of the LRM RLM usage.
+	const char *const lrm_rlm = is_rtl ? LRM RLM : "";
+
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_STREAMS), lrm_rlm,
 			uint64_to_str(stream_count, 0));
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_BLOCKS),
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_BLOCKS), lrm_rlm,
 			uint64_to_str(block_count, 0));
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_COMPRESSED_SIZE),
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_COMPRESSED_SIZE), lrm_rlm,
 			uint64_to_nicestr(compressed_size,
 				NICESTR_B, NICESTR_TIB, true, 0));
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_UNCOMPRESSED_SIZE),
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_UNCOMPRESSED_SIZE),
+			lrm_rlm,
 			uint64_to_nicestr(uncompressed_size,
 				NICESTR_B, NICESTR_TIB, true, 0));
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_RATIO),
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_RATIO), lrm_rlm,
 			get_ratio(compressed_size, uncompressed_size));
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_CHECK), checks_str);
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_STREAM_PADDING),
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_CHECK), lrm_rlm,
+			checks_str);
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_STREAM_PADDING), lrm_rlm,
 			uint64_to_nicestr(stream_padding,
 				NICESTR_B, NICESTR_TIB, true, 0));
 	return;
@@ -1073,13 +1078,16 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	}
 
 	if (detailed) {
-		printf("  %-*s %s MiB\n", COLON_STR(COLON_STR_MEMORY_NEEDED),
+		const char *const lrm_rlm = is_rtl ? LRM RLM : "";
+		printf("  %-*s %s%s MiB\n", COLON_STR(COLON_STR_MEMORY_NEEDED),
+				lrm_rlm,
 				uint64_to_str(
 				round_up_to_mib(xfi->memusage_max), 0));
-		printf("  %-*s %s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
+		printf("  %-*s %s%s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
+				lrm_rlm,
 				xfi->all_have_sizes ? _("Yes") : _("No"));
-		//printf("  %-*s %s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
-		printf("  %s %s\n", _("Minimum XZ Utils version:"),
+		//printf("  %-*s %s%s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
+		printf("  %s %s%s\n", _("Minimum XZ Utils version:"), lrm_rlm,
 				xz_ver_to_str(xfi->min_version));
 	}
 
@@ -1264,22 +1272,27 @@ print_totals_basic(void)
 static void
 print_totals_adv(void)
 {
+	const char *const lrm_rlm = is_rtl ? LRM RLM : "";
+
 	putchar('\n');
 	puts(_("Totals:"));
-	printf("  %-*s %s\n", COLON_STR(COLON_STR_NUMBER_OF_FILES),
+	printf("  %-*s %s%s\n", COLON_STR(COLON_STR_NUMBER_OF_FILES), lrm_rlm,
 			uint64_to_str(totals.files, 0));
 	print_adv_helper(totals.streams, totals.blocks,
 			totals.compressed_size, totals.uncompressed_size,
 			totals.checks, totals.stream_padding);
 
 	if (message_verbosity_get() >= V_DEBUG) {
-		printf("  %-*s %s MiB\n", COLON_STR(COLON_STR_MEMORY_NEEDED),
+		printf("  %-*s %s%s MiB\n", COLON_STR(COLON_STR_MEMORY_NEEDED),
+				lrm_rlm,
 				uint64_to_str(
 				round_up_to_mib(totals.memusage_max), 0));
-		printf("  %-*s %s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
+		printf("  %-*s %s%s\n", COLON_STR(COLON_STR_SIZES_IN_HEADERS),
+				lrm_rlm,
 				totals.all_have_sizes ? _("Yes") : _("No"));
-		//printf("  %-*s %s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
-		printf("  %s %s\n", _("Minimum XZ Utils version:"),
+		//printf("  %-*s %s%s\n", COLON_STR(COLON_STR_MINIMUM_XZ_VERSION),
+		printf("  %s %s%s\n", _("Minimum XZ Utils version:"),
+				lrm_rlm,
 				xz_ver_to_str(totals.min_version));
 	}
 

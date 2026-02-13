@@ -1096,7 +1096,7 @@ msgstr "عند عدم وجود ملف، أو عندما يكون الملف هو
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish)."
-msgstr "أبلغ عن العلل إلى <%s> (بالانجليزية أو الفنلندية)."
+msgstr "أبلغ عن العلل إلى {LRI}<%s>{PDI} (بالانجليزية أو الفنلندية)."
 
 #. TRANSLATORS: The first %s is the name of this software.
 #. The second <%s> is an URL.
@@ -1104,7 +1104,7 @@ msgstr "أبلغ عن العلل إلى <%s> (بالانجليزية أو الف
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s home page: <%s>"
-msgstr "الصفحة الرئيسية لـ %s{RLM}: <%s>"
+msgstr "الصفحة الرئيسية لـ %s{RLM}: {LRI}<%s>{PDI}"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c

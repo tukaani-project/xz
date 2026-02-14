@@ -704,7 +704,8 @@ message_progress_end(bool success)
 
 
 static void
-vmessage(enum message_verbosity v, const char *fmt, va_list ap)
+vmessage(enum message_verbosity v, const char *prefix,
+		const char *fmt, va_list ap)
 {
 	if (v <= verbosity) {
 		signals_block();
@@ -716,6 +717,16 @@ vmessage(enum message_verbosity v, const char *fmt, va_list ap)
 		// This is a translatable string because French needs
 		// a space before a colon.
 		fprintf(stderr, _("%s: "), progname);
+
+		if (prefix != NULL) {
+			// The va_list may contain a string that was masked
+			// with tuklib_mask_nonprint, so use the _r variant
+			// to avoid overwriting strings too early.
+			char *mem = NULL;
+			fprintf(stderr, _("%s: "),
+					tuklib_mask_nonprint_r(prefix, &mem));
+			free(mem);
+		}
 
 #ifdef __clang__
 #	pragma GCC diagnostic push
@@ -740,7 +751,7 @@ message(enum message_verbosity v, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(v, fmt, ap);
+	vmessage(v, NULL, fmt, ap);
 	va_end(ap);
 	return;
 }
@@ -751,7 +762,7 @@ message_warning(const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(V_WARNING, fmt, ap);
+	vmessage(V_WARNING, NULL, fmt, ap);
 	va_end(ap);
 
 	set_exit_status(E_WARNING);
@@ -764,7 +775,7 @@ message_error(const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(V_ERROR, fmt, ap);
+	vmessage(V_ERROR, NULL, fmt, ap);
 	va_end(ap);
 
 	set_exit_status(E_ERROR);
@@ -777,7 +788,7 @@ message_fatal(const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(V_ERROR, fmt, ap);
+	vmessage(V_ERROR, NULL, fmt, ap);
 	va_end(ap);
 
 	tuklib_exit(E_ERROR, E_ERROR, false);

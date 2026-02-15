@@ -80,7 +80,7 @@ xrealloc(void *ptr, size_t size)
 	if (ptr == NULL) {
 		const int saved_errno = errno;
 		free(p);
-		message_fatal("%s", strerror(saved_errno));
+		message_fatal(NULL, "%s", strerror(saved_errno));
 	}
 
 	return ptr;
@@ -111,7 +111,7 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 		return max;
 
 	if (*value < '0' || *value > '9')
-		message_fatal(_("%s: %s"), value,
+		message_fatal(value,
 			_("Value is not a non-negative decimal integer"));
 
 	do {
@@ -155,7 +155,8 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 		if (multiplier == 0) {
 			message(V_ERROR, _("%s: %s"), value - 1,
 					_("Invalid multiplier suffix"));
-			message_fatal(_("Valid suffixes are 'KiB' (2^10), "
+			message_fatal(NULL,
+					_("Valid suffixes are 'KiB' (2^10), "
 					"'MiB' (2^20), and 'GiB' (2^30)."));
 		}
 
@@ -172,7 +173,7 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 	return result;
 
 error:
-	message_fatal(_("Value of the option '%s' must be in the range "
+	message_fatal(NULL, _("Value of the option '%s' must be in the range "
 				"[%" PRIu64 ", %" PRIu64 "]"),
 				name, min, max);
 }

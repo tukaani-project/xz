@@ -784,11 +784,11 @@ message_error(const char *prefix, const char *fmt, ...)
 
 
 extern void
-message_fatal(const char *fmt, ...)
+message_fatal(const char *prefix, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(V_ERROR, NULL, fmt, ap);
+	vmessage(V_ERROR, prefix, fmt, ap);
 	va_end(ap);
 
 	tuklib_exit(E_ERROR, E_ERROR, false);
@@ -798,14 +798,14 @@ message_fatal(const char *fmt, ...)
 extern void
 message_bug(void)
 {
-	message_fatal(_("Internal error (bug)"));
+	message_fatal(NULL, _("Internal error (bug)"));
 }
 
 
 extern void
 message_signal_handler(void)
 {
-	message_fatal(_("Cannot establish signal handlers"));
+	message_fatal(NULL, _("Cannot establish signal handlers"));
 }
 
 
@@ -923,9 +923,14 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 	const lzma_ret ret = lzma_str_from_filters(&buf, filters,
 			LZMA_STR_ENCODER | LZMA_STR_GETOPT_LONG, NULL);
 	if (ret != LZMA_OK)
-		message_fatal("%s", message_strm(ret));
+		message_fatal(NULL, "%s", message_strm(ret));
 
-	message(V_SILENT, _("%s: %s"), _("Filter chain"), buf);
+	message(V_SILENT,
+			// TRANSLATORS: This is a translatable
+			// string because French needs a space
+			// before the colon ("%s : %s").
+			_("%s: %s"),
+			_("Filter chain"), buf);
 	free(buf);
 	return;
 }
@@ -966,11 +971,11 @@ detect_wrapping_errors(int error_mask)
 	// This might help in catching problematic strings in translations.
 	// It's a debug message so don't translate this.
 	if (error_mask & TUKLIB_WRAP_WARN_OVERLONG)
-		message_fatal("The help text contains overlong lines");
+		message_fatal(NULL, "The help text contains overlong lines");
 #endif
 
 	if (error_mask & ~TUKLIB_WRAP_WARN_OVERLONG)
-		message_fatal(_("Error printing the help text "
+		message_fatal(NULL, _("Error printing the help text "
 				"(error code %d)"), error_mask);
 
 	return;

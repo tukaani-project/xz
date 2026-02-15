@@ -82,17 +82,14 @@ parse_options(const char *str, const option_map *opts,
 			*value++ = '\0';
 
 		if (value == NULL || value[0] == '\0')
-			message_fatal(_("%s: %s"), tuklib_mask_nonprint(str),
-					_("Options must be 'name=value' "
+			message_fatal(str, _("Options must be 'name=value' "
 					"pairs separated with commas"));
 
 		// Look for the option name from the option map.
 		unsigned i = 0;
 		while (true) {
 			if (opts[i].name == NULL)
-				message_fatal(_("%s: %s"),
-						tuklib_mask_nonprint(name),
-						_("Invalid option name"));
+				message_fatal(name, _("Invalid option name"));
 
 			if (strcmp(name, opts[i].name) == 0)
 				break;
@@ -111,8 +108,7 @@ parse_options(const char *str, const option_map *opts,
 			}
 
 			if (opts[i].map[j].name == NULL)
-				message_fatal(_("%s: %s"),
-						tuklib_mask_nonprint(value),
+				message_fatal(value,
 						_("Invalid option value"));
 
 			set(filter_options, i, opts[i].map[j].id, value);
@@ -247,8 +243,7 @@ tuklib_attr_noreturn
 static void
 error_lzma_preset(const char *valuestr)
 {
-	message_fatal(_("%s: %s"), tuklib_mask_nonprint(valuestr),
-			_("Unsupported LZMA1/LZMA2 preset"));
+	message_fatal(valuestr, _("Unsupported LZMA1/LZMA2 preset"));
 }
 
 
@@ -356,7 +351,8 @@ options_lzma(const char *str)
 	parse_options(str, opts, &set_lzma, options);
 
 	if (options->lc + options->lp > LZMA_LCLP_MAX)
-		message_fatal(_("The sum of lc and lp must not exceed 4"));
+		message_fatal(NULL,
+				_("The sum of lc and lp must not exceed 4"));
 
 	return options;
 }

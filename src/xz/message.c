@@ -914,7 +914,7 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 	if (ret != LZMA_OK)
 		message_fatal("%s", message_strm(ret));
 
-	fprintf(stderr, _("%s: Filter chain: %s\n"), progname, buf);
+	message(V_SILENT, _("%s: %s"), _("Filter chain"), buf);
 	free(buf);
 	return;
 }

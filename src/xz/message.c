@@ -722,8 +722,11 @@ vmessage(enum message_verbosity v, const char *prefix,
 			// The va_list may contain a string that was masked
 			// with tuklib_mask_nonprint, so use the _r variant
 			// to avoid overwriting strings too early.
+			//
+			// In RTL mode, the "%s: " string isn't translated
+			// for now.
 			char *mem = NULL;
-			fprintf(stderr, _("%s: "),
+			fprintf(stderr, is_rtl ? FSI "%s" PDI ": " : _("%s: "),
 					tuklib_mask_nonprint_r(prefix, &mem));
 			free(mem);
 		}
@@ -732,10 +735,25 @@ vmessage(enum message_verbosity v, const char *prefix,
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
+		if (is_rtl)
+			fputs(RLI, stderr);
+
 		vfprintf(stderr, fmt, ap);
 #ifdef __clang__
 #	pragma GCC diagnostic pop
 #endif
+
+		// FIXME? Add a trailing space. In the RTL base direction,
+		// it will be invisible (unless it happens to make the line
+		// wrap). In the LTR base direction, it results in a double
+		// space after the "progname: prefix:" part, subtly
+		// highlighting that the rest of the string is RTL.
+		//
+		// The RLM is there to make the space effective. (The BiDi
+		// algorithms moves all trailing whitespace and isolate
+		// formatting chars to the visual end of the line.)
+		if (is_rtl)
+			fputs(" " RLM PDI, stderr);
 
 		fputc('\n', stderr);
 
@@ -929,7 +947,7 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 			// TRANSLATORS: This is a translatable
 			// string because French needs a space
 			// before the colon ("%s : %s").
-			_("%s: %s"),
+			is_rtl ? "%s: " LRI "%s" PDI : _("%s: %s"),
 			_("Filter chain"), buf);
 	free(buf);
 	return;

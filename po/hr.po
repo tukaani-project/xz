@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.8.0-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2025-03-26 21:00-0700\n"
 "Last-Translator: Božidar Putanec <bozidarp@yahoo.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -25,12 +25,10 @@ msgstr ""
 "X-Generator: vim9.1\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "nevaljani argument za --block-list"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "Previše argumenata za --block-list"
 
@@ -44,27 +42,16 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "za '--block-list' može se koristiti '0' samo kao posljednji element"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "Nepoznata vrsta formata datoteke"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "Nepodržani način (tip) provjere integriteta"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Samo jedna datoteka može biti specificirana s '--files' ili '--files0'."
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, c-format
-msgid "%s: %s"
-msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -183,94 +170,83 @@ msgstr "Veličina LZMA%c rječnika prilagođena je za '--filters%u' od %s na %s 
 msgid "Error changing to filter chain %u: %s"
 msgstr "Greška pri prebacivanju na lanac filtra %u: %s"
 
-#: src/xz/file_io.c
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/file_io.c
 msgid "Error creating a pipe"
 msgstr "Greška pri stvaranju cijevi"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "poll() nije uspjela"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "Izgleda da je datoteka premještena -- nije izbrisana"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 #, fuzzy
 msgid "Cannot remove"
 msgstr "Brisanje %s nije moguće"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "Nije moguće promijeniti vlasnika datoteke"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "Nije moguće promijeniti grupu datoteke"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "Nije moguće postaviti prava dostupa datoteci"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Synchronizing the file failed"
 msgstr "Nije uspjelo sinkronizirati datoteku"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Synchronizing the directory of the file failed"
 msgstr "Nije uspjelo sinkronizirati direktorij datoteke"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "Greška pri pokušaju dobivanja oznaka statusa datoteke iz standardnog ulaza"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a symbolic link, skipping"
 msgstr "To je simbolična poveznica -- preskočeno"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a directory, skipping"
 msgstr "To je direktorij -- preskočeno"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Not a regular file, skipping"
 msgstr "To nije regularna datoteka -- preskočeno"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "Datoteka ima postavljen SETUID- ili SETGID bit -- preskočeno"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "Datoteka ima postavljen ljepljivi bit -- preskočeno"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "Ulazna datoteka ima više od jednog tvrdog linka -- preskočeno"
 
@@ -279,57 +255,46 @@ msgid "Empty filename, skipping"
 msgstr "Prazna datoteka -- preskočeno"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "Greška pri vraćanju statusnih flags na standardni ulaz"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "Greška pri dobivanju oznaka statusa datoteke iz standardnog izlaza"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Opening the directory failed"
 msgstr "Nije uspjelo otvoriti direktorij"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Destination is not a regular file"
 msgstr "Odredište nije obična datoteka"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "Greška pri vraćanju 'O_APPEND' oznaka na standardni izlaz"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "Nije uspjelo zatvoriti datoteku"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "'Seeking' (traženje) nije uspjelo pri pokušaju stvaranja raštrkane datoteke"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "Greška pri čitanju"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "Greška pri 'seeking' (traženju) datoteke"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "Neočekivani kraj datoteke"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "Greška pri pisanju"
 
@@ -534,12 +499,10 @@ msgid "Unknown-15"
 msgstr "Nepoznat-15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "Datoteka je prazna"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "Datoteka je premala da bude valjana .xz datoteka"
 
@@ -590,17 +553,14 @@ msgid "--list does not support reading from standard input"
 msgstr "'--list' ne podržava čitanje iz standardnog izlaza"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "Greška pri čitanju datoteka"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "Neočekivani kraj ulaznih podataka tijekom čitanja imena datoteka"
 
 #: src/xz/main.c
-#, c-format
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "Prazni NULA-znak pronađen pri čitanju imena datoteka; možda ste mislili koristiti '--files0' umjesto '--files'?"
 
@@ -611,6 +571,14 @@ msgstr "Komprimiranje i dekomprimiranje s '--robot' još nije podržano."
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Nije moguće čitati podatke iz standardnog ulaza dok se čitaju imena datoteka iz standardnog ulaza"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#, fuzzy
+#| msgid "FILTERS"
+msgid "LTR"
+msgstr "FILTRI"
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -668,7 +636,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "%s Potrebno je MiB memorije. Ograničenje je %s."
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "Lanac filtara"
 
@@ -1127,7 +1094,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "Opcije moraju biti parovi 'name=value' odvojeni zarezima"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "Nevaljano ime opcije"
 
@@ -1136,7 +1102,6 @@ msgid "Invalid option value"
 msgstr "Nevaljana vrijednost opcije"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "Nepodržana LZMA1/LZMA2 početna postavka"
 
@@ -1145,7 +1110,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "Zbroj lc i lp ne smije biti veći od 4"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "Ime datoteke nema poznatu ekstenziju, preskačemo"
 
@@ -1155,7 +1119,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "Datoteka već ima '%s' ekstenziju, preskačemo"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "Nevaljana ekstenzija u imenu datoteke"
 
@@ -1164,7 +1127,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "Vrijednost nije nula ili pozitivni dekadski cijeli broj"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "Nevaljani sufiks-množitelj"
 

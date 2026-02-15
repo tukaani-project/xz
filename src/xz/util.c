@@ -302,7 +302,7 @@ is_tty_stdin(void)
 	const bool ret = is_tty(STDIN_FILENO);
 
 	if (ret)
-		message_error(_("Compressed data cannot be read from "
+		message_error(NULL, _("Compressed data cannot be read from "
 				"a terminal"));
 
 	return ret;
@@ -315,7 +315,7 @@ is_tty_stdout(void)
 	const bool ret = is_tty(STDOUT_FILENO);
 
 	if (ret)
-		message_error(_("Compressed data cannot be written to "
+		message_error(NULL, _("Compressed data cannot be written to "
 				"a terminal"));
 
 	return ret;

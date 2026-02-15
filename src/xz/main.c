@@ -86,8 +86,7 @@ read_name(const args_info *args)
 			if (errno == EINTR)
 				continue;
 
-			message_error(_("%s: %s: %s"),
-				tuklib_mask_nonprint(args->files_name),
+			message_error(args->files_name, _("%s: %s"),
 				_("Error reading filenames"),
 				strerror(errno));
 			return NULL;
@@ -95,9 +94,7 @@ read_name(const args_info *args)
 
 		if (feof(args->files_file)) {
 			if (pos != 0)
-				message_error(_("%s: %s"),
-						tuklib_mask_nonprint(
-							args->files_name),
+				message_error(args->files_name,
 						_("Unexpected end of input "
 						"when reading filenames"));
 
@@ -121,8 +118,7 @@ read_name(const args_info *args)
 			// A null character was found when using --files,
 			// which expects plain text input separated with
 			// newlines.
-			message_error(_("%s: %s"),
-					tuklib_mask_nonprint(args->files_name),
+			message_error(args->files_name,
 					_("Null character found when "
 					"reading filenames; maybe you meant "
 					"to use '--files0' instead "
@@ -294,7 +290,7 @@ main(int argc, char **argv)
 			// if we are supposed to read filenames from stdin
 			// too (enabled with --files or --files0).
 			if (args.files_name == stdin_filename) {
-				message_error(_("Cannot read data from "
+				message_error(NULL, _("Cannot read data from "
 						"standard input when "
 						"reading filenames "
 						"from standard input"));

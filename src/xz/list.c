@@ -347,15 +347,12 @@ static bool
 parse_indexes(xz_file_info *xfi, file_pair *pair)
 {
 	if (pair->src_st.st_size <= 0) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
-				_("File is empty"));
+		message_error(pair->src_name, _("File is empty"));
 		return true;
 	}
 
 	if (pair->src_st.st_size < 2 * LZMA_STREAM_HEADER_SIZE) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
+		message_error(pair->src_name,
 				_("Too small to be a valid .xz file"));
 		return true;
 	}
@@ -368,9 +365,7 @@ parse_indexes(xz_file_info *xfi, file_pair *pair)
 			hardware_memlimit_get(MODE_LIST),
 			(uint64_t)(pair->src_st.st_size));
 	if (ret != LZMA_OK) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
-				message_strm(ret));
+		message_error(pair->src_name, "%s", message_strm(ret));
 		return true;
 	}
 
@@ -416,9 +411,7 @@ parse_indexes(xz_file_info *xfi, file_pair *pair)
 		}
 
 		default:
-			message_error(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					message_strm(ret));
+			message_error(pair->src_name, "%s", message_strm(ret));
 
 			// If the error was too low memory usage limit,
 			// show also how much memory would have been needed.
@@ -479,8 +472,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 		break;
 
 	case LZMA_OPTIONS_ERROR:
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
+		message_error(pair->src_name, "%s",
 				message_strm(LZMA_OPTIONS_ERROR));
 		return true;
 
@@ -593,9 +585,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 
 	// Check if the stringification succeeded.
 	if (str_ret != LZMA_OK) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
-				message_strm(str_ret));
+		message_error(pair->src_name, "%s", message_strm(str_ret));
 		return true;
 	}
 
@@ -603,9 +593,7 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 
 data_error:
 	// Show the error message.
-	message_error(_("%s: %s"),
-			tuklib_mask_nonprint(pair->src_name),
-			message_strm(LZMA_DATA_ERROR));
+	message_error(pair->src_name, "%s", message_strm(LZMA_DATA_ERROR));
 	return true;
 }
 
@@ -1376,7 +1364,7 @@ list_file(const char *filename)
 	message_filename(filename);
 
 	if (filename == stdin_filename) {
-		message_error(_("--list does not support reading from "
+		message_error(NULL, _("--list does not support reading from "
 				"standard input"));
 		return;
 	}

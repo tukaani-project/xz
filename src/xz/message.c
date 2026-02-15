@@ -771,11 +771,11 @@ message_warning(const char *prefix, const char *fmt, ...)
 
 
 extern void
-message_error(const char *fmt, ...)
+message_error(const char *prefix, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(V_ERROR, NULL, fmt, ap);
+	vmessage(V_ERROR, prefix, fmt, ap);
 	va_end(ap);
 
 	set_exit_status(E_ERROR);

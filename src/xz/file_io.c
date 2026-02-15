@@ -287,22 +287,20 @@ io_unlink(const char *name, const struct stat *known_st)
 			|| new_st.st_ino != known_st->st_ino
 #	endif
 			)
-		message_warning(_("%s: %s"),
+		message_warning(name,
 			// TRANSLATORS: When compression or decompression
 			// finishes, and xz is going to remove the source
 			// file, xz first checks if the source file still
 			// exists, and that it hasn't been replaced with
 			// a new file. If these checks fail, this message
 			// is shown and the file is not deleted.
-			tuklib_mask_nonprint(name),
 			_("File seems to have been moved, not removing"));
 	else
 #endif
 		// There's a race condition between lstat() and unlink()
 		// but at least we have tried to avoid removing wrong file.
 		if (unlink(name))
-			message_warning(_("%s: %s: %s"),
-					tuklib_mask_nonprint(name),
+			message_warning(name, _("%s: %s"),
 					_("Cannot remove"),
 					strerror(errno));
 
@@ -329,8 +327,7 @@ io_copy_attrs(const file_pair *pair)
 	// about failing fchown() only if we are root.
 	if (fchown(pair->dest_fd, pair->src_st.st_uid, (gid_t)(-1))
 			&& warn_fchown)
-		message_warning(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_warning(pair->dest_name, _("%s: %s"),
 				_("Cannot set the file owner"),
 				strerror(errno));
 
@@ -344,8 +341,7 @@ io_copy_attrs(const file_pair *pair)
 	if (pair->dest_st.st_gid != pair->src_st.st_gid
 			&& fchown(pair->dest_fd, (uid_t)(-1),
 				pair->src_st.st_gid)) {
-		message_warning(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_warning(pair->dest_name, _("%s: %s"),
 				_("Cannot set the file group"),
 				strerror(errno));
 		// We can still safely copy some additional permissions:
@@ -365,8 +361,7 @@ io_copy_attrs(const file_pair *pair)
 	}
 
 	if (fchmod(pair->dest_fd, mode))
-		message_warning(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_warning(pair->dest_name, _("%s: %s"),
 				_("Cannot set the file permissions"),
 				strerror(errno));
 #endif
@@ -589,8 +584,7 @@ io_open_src_real(file_pair *pair)
 			return true;
 
 		} else if (S_ISLNK(st.st_mode)) {
-			message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
+			message_warning(pair->src_name,
 					_("Is a symbolic link, skipping"));
 			return true;
 		}
@@ -652,8 +646,7 @@ io_open_src_real(file_pair *pair)
 #	endif
 
 		if (was_symlink)
-			message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
+			message_warning(pair->src_name,
 					_("Is a symbolic link, skipping"));
 		else
 #endif
@@ -683,15 +676,12 @@ io_open_src_real(file_pair *pair)
 #endif
 
 	if (S_ISDIR(pair->src_st.st_mode)) {
-		message_warning(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
-				_("Is a directory, skipping"));
+		message_warning(pair->src_name, _("Is a directory, skipping"));
 		goto error;
 	}
 
 	if (reg_files_only && !S_ISREG(pair->src_st.st_mode)) {
-		message_warning(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
+		message_warning(pair->src_name,
 				_("Not a regular file, skipping"));
 		goto error;
 	}
@@ -708,26 +698,20 @@ io_open_src_real(file_pair *pair)
 			// We accept setuid and setgid files if
 			// --force or --keep was used. We drop these bits
 			// explicitly in io_copy_attr().
-			message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					_("File has setuid or "
+			message_warning(pair->src_name, _("File has setuid or "
 						"setgid bit set, skipping"));
 			goto error;
 		}
 
 		if (pair->src_st.st_mode & S_ISVTX) {
-			message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					_("File has sticky bit set, "
-						"skipping"));
+			message_warning(pair->src_name, _("File has "
+					"sticky bit set, skipping"));
 			goto error;
 		}
 
 		if (pair->src_st.st_nlink > 1) {
-			message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					_("Input file has more "
-					"than one hard link, skipping"));
+			message_warning(pair->src_name, _("Input file has "
+					"more than one hard link, skipping"));
 			goto error;
 		}
 	}

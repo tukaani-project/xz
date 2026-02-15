@@ -758,11 +758,11 @@ message(enum message_verbosity v, const char *fmt, ...)
 
 
 extern void
-message_warning(const char *fmt, ...)
+message_warning(const char *prefix, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vmessage(V_WARNING, NULL, fmt, ap);
+	vmessage(V_WARNING, prefix, fmt, ap);
 	va_end(ap);
 
 	set_exit_status(E_WARNING);

@@ -23,13 +23,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: argument no vàlid per a --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "argument no vàlid per a --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: massa arguments per a --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "massa arguments per a --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -42,13 +42,13 @@ msgstr "0 només es pot utilitzar com a últim element a --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: tipus de format de fitxer desconegut"
+msgid "Unknown file format type"
+msgstr "tipus de format de fitxer desconegut"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: tipus de comprovació d'integritat no admès"
+msgid "Unsupported integrity check type"
+msgstr "tipus de comprovació d'integritat no admès"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -182,13 +182,13 @@ msgstr "S'ha produït un error en canviar a la cadena de filtres %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "S'ha produït un error en crear una canonada: %s"
+msgid "Error creating a pipe"
+msgstr "S'ha produït un error en crear una canonada"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: ha fallat la funció poll(): %s"
+msgid "poll() failed"
+msgstr "ha fallat la funció poll()"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -202,75 +202,75 @@ msgstr "%s: ha fallat la funció poll(): %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: sembla que el fitxer s'ha mogut, no s'elimina"
+msgid "File seems to have been moved, not removing"
+msgstr "sembla que el fitxer s'ha mogut, no s'elimina"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: no es pot eliminar: %s"
+msgid "Cannot remove"
+msgstr "no es pot eliminar"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: no es pot establir el propietari del fitxer: %s"
+msgid "Cannot set the file owner"
+msgstr "no es pot establir el propietari del fitxer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: no es pot establir el grup de fitxers: %s"
+msgid "Cannot set the file group"
+msgstr "no es pot establir el grup de fitxers"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: no es poden establir els permisos del fitxer: %s"
+msgid "Cannot set the file permissions"
+msgstr "no es poden establir els permisos del fitxer"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: ha fallat el tancament del fitxer: %s"
+msgid "Synchronizing the file failed"
+msgstr "ha fallat el tancament del fitxer"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: ha fallat el tancament del fitxer: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "ha fallat el tancament del fitxer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "S'ha produït un error en obtenir els indicadors d'estat del fitxer de l'entrada estàndard: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "S'ha produït un error en obtenir els indicadors d'estat del fitxer de l'entrada estàndard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: és un enllaç simbòlic, s'omet"
+msgid "Is a symbolic link, skipping"
+msgstr "és un enllaç simbòlic, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: és un directori, s'omet"
+msgid "Is a directory, skipping"
+msgstr "és un directori, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: no és un fitxer normal, s'omet"
+msgid "Not a regular file, skipping"
+msgstr "no és un fitxer normal, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: el fitxer té el bit de setuid o setgid, s'omet"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "el fitxer té el bit de setuid o setgid, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: el fitxer té un bit enganxós, s'omet"
+msgid "File has sticky bit set, skipping"
+msgstr "el fitxer té un bit enganxós, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: el fitxer d'entrada té més d'un enllaç dur, s'omet"
+msgid "Input file has more than one hard link, skipping"
+msgstr "el fitxer d'entrada té més d'un enllaç dur, s'omet"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -278,60 +278,60 @@ msgstr "Nom de fitxer buit, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "S'ha produït un error en restaurar els indicadors d'estat a l'entrada estàndard: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "S'ha produït un error en restaurar els indicadors d'estat a l'entrada estàndard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "S'ha produït un error en obtenir els indicadors d'estat del fitxer de la sortida estàndard: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "S'ha produït un error en obtenir els indicadors d'estat del fitxer de la sortida estàndard"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: ha fallat el tancament del fitxer: %s"
+msgid "Opening the directory failed"
+msgstr "ha fallat el tancament del fitxer"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Not a regular file, skipping"
-msgid "%s: Destination is not a regular file"
-msgstr "%s: no és un fitxer normal, s'omet"
+msgid "Destination is not a regular file"
+msgstr "no és un fitxer normal, s'omet"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "S'ha produït un error en restaurar l'indicador O_APPEND a la sortida estàndard: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "S'ha produït un error en restaurar l'indicador O_APPEND a la sortida estàndard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: ha fallat el tancament del fitxer: %s"
+msgid "Closing the file failed"
+msgstr "ha fallat el tancament del fitxer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: ha fallat la cerca en intentar crear un fitxer dispers: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "ha fallat la cerca en intentar crear un fitxer dispers"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: error de lectura: %s"
+msgid "Read error"
+msgstr "error de lectura"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: error en cercar el fitxer: %s"
+msgid "Error seeking the file"
+msgstr "error en cercar el fitxer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: fi inesperat del fitxer"
+msgid "Unexpected end of file"
+msgstr "fi inesperat del fitxer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: error d'escriptura: %s"
+msgid "Write error"
+msgstr "error d'escriptura"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -535,13 +535,13 @@ msgstr "NoConeix15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: El fitxer està buit"
+msgid "File is empty"
+msgstr "El fitxer està buit"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Massa petit per a ser un fitxer .xz vàlid"
+msgid "Too small to be a valid .xz file"
+msgstr "Massa petit per a ser un fitxer .xz vàlid"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -592,18 +592,18 @@ msgstr "--list no admet la lectura des de l'entrada estàndard"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Error en llegir els noms de fitxer: %s"
+msgid "Error reading filenames"
+msgstr "Error en llegir els noms de fitxer"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Final inesperat de l'entrada en llegir els noms de fitxer"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Final inesperat de l'entrada en llegir els noms de fitxer"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: S'ha trobat un caràcter nul en llegir els noms de fitxer. Potser volíeu utilitzar «--files0» en comptes de «--files»?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "S'ha trobat un caràcter nul en llegir els noms de fitxer. Potser volíeu utilitzar «--files0» en comptes de «--files»?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -670,8 +670,8 @@ msgstr "Es requereixen %s MiB de memòria. El límit és %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Cadena de filtres: %s\n"
+msgid "Filter chain"
+msgstr "Cadena de filtres"
 
 #: src/xz/message.c
 #, c-format
@@ -1298,8 +1298,8 @@ msgstr "%s: les opcions han de ser parelles «name=value» separades per comes"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: nom d'opció no vàlid"
+msgid "Invalid option name"
+msgstr "nom d'opció no vàlid"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1309,8 +1309,8 @@ msgstr "%s: el valor de l'opció no és vàlid"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "No s'admet el LZMA1/LZMA2 predefinit: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "No s'admet el LZMA1/LZMA2 predefinit"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1318,18 +1318,18 @@ msgstr "La suma de lc i lp no ha de superar 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: El nom de fitxer té un sufix desconegut, s'omet"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "El nom de fitxer té un sufix desconegut, s'omet"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: El fitxer ja té el sufix «%s», s'ometrà"
+msgid "File already has '%s' suffix, skipping"
+msgstr "El fitxer ja té el sufix «%s», s'ometrà"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: El sufix del nom de fitxer no és vàlid"
+msgid "Invalid filename suffix"
+msgstr "El sufix del nom de fitxer no és vàlid"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1339,8 +1339,8 @@ msgstr "%s: El valor no és un enter decimal no negatiu"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: el sufix multiplicador no és vàlid"
+msgid "Invalid multiplier suffix"
+msgstr "el sufix multiplicador no és vàlid"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

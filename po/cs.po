@@ -20,12 +20,12 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
+msgid "Invalid argument to --block-list"
 msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
+msgid "Too many arguments to --block-list"
 msgstr ""
 
 #: src/xz/args.c
@@ -39,13 +39,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Neznámý typ formátu souboru"
+msgid "Unknown file format type"
+msgstr "Neznámý typ formátu souboru"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Neznámý typ kontroly integrity"
+msgid "Unsupported integrity check type"
+msgstr "Neznámý typ kontroly integrity"
 
 #: src/xz/args.c
 #, fuzzy
@@ -187,12 +187,12 @@ msgstr ""
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
+msgid "Error creating a pipe"
 msgstr ""
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
+msgid "poll() failed"
 msgstr ""
 
 #. TRANSLATORS: When compression or decompression finishes,
@@ -207,75 +207,75 @@ msgstr ""
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Vypadá to, že soubor byl přesunut, proto nebude odstraněn"
+msgid "File seems to have been moved, not removing"
+msgstr "Vypadá to, že soubor byl přesunut, proto nebude odstraněn"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Nelze odstranit: %s"
+msgid "Cannot remove"
+msgstr "Nelze odstranit"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Nelze nastavit vlastníka souboru: %s"
+msgid "Cannot set the file owner"
+msgstr "Nelze nastavit vlastníka souboru"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Nelze nastavit skupinu souboru: %s"
+msgid "Cannot set the file group"
+msgstr "Nelze nastavit skupinu souboru"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Nelze nastavit oprávnění souboru: %s"
+msgid "Cannot set the file permissions"
+msgstr "Nelze nastavit oprávnění souboru"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Selhalo zavření souboru: %s"
+msgid "Synchronizing the file failed"
+msgstr "Selhalo zavření souboru"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Selhalo zavření souboru: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Selhalo zavření souboru"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
+msgid "Error getting the file status flags from standard input"
 msgstr ""
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Jedná se o symbolický odkaz, vynechává se"
+msgid "Is a symbolic link, skipping"
+msgstr "Jedná se o symbolický odkaz, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Jedná se o složku, vynechává se"
+msgid "Is a directory, skipping"
+msgstr "Jedná se o složku, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Nejedná se o běžný soubor, vynechává se"
+msgid "Not a regular file, skipping"
+msgstr "Nejedná se o běžný soubor, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Soubor má nastavený bit setuid nebo setgid, vynechává se"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Soubor má nastavený bit setuid nebo setgid, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Soubor má nastavený bit sticky, vynechává se"
+msgid "File has sticky bit set, skipping"
+msgstr "Soubor má nastavený bit sticky, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Vstupní soubor má více než jeden pevný odkaz, vynechává se"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Vstupní soubor má více než jeden pevný odkaz, vynechává se"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -283,60 +283,60 @@ msgstr "Prázdný název souboru, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
+msgid "Error restoring the status flags to standard input"
 msgstr ""
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
+msgid "Error getting the file status flags from standard output"
 msgstr ""
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Selhalo zavření souboru: %s"
+msgid "Opening the directory failed"
+msgstr "Selhalo zavření souboru"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Not a regular file, skipping"
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Nejedná se o běžný soubor, vynechává se"
+msgid "Destination is not a regular file"
+msgstr "Nejedná se o běžný soubor, vynechává se"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Chyba při obnovení příznaku O_APPEND na standardní výstup: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Chyba při obnovení příznaku O_APPEND na standardní výstup"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Selhalo zavření souboru: %s"
+msgid "Closing the file failed"
+msgstr "Selhalo zavření souboru"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Selhalo nastavení pozice při pokusu o vytvoření souboru řídké matice: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Selhalo nastavení pozice při pokusu o vytvoření souboru řídké matice"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Chyba čtení: %s"
+msgid "Read error"
+msgstr "Chyba čtení"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Chyba při posunu v rámci souboru: %s"
+msgid "Error seeking the file"
+msgstr "Chyba při posunu v rámci souboru"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Neočekávaný konec souboru"
+msgid "Unexpected end of file"
+msgstr "Neočekávaný konec souboru"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Chyba zápisu: %s"
+msgid "Write error"
+msgstr "Chyba zápisu"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -560,13 +560,13 @@ msgstr "neznámá-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Soubor je prázdný"
+msgid "File is empty"
+msgstr "Soubor je prázdný"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Je příliš malý na to, aby to mohl být platný soubor .xz"
+msgid "Too small to be a valid .xz file"
+msgstr "Je příliš malý na to, aby to mohl být platný soubor .xz"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -616,19 +616,19 @@ msgstr "--list nepodporuje čtení ze standardního vstupu"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Chyba při čtení názvů souborů: %s"
+msgid "Error reading filenames"
+msgstr "Chyba při čtení názvů souborů"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Neočekávaný konec vstupu při čtení názvů souborů"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Neočekávaný konec vstupu při čtení názvů souborů"
 
 #: src/xz/main.c
 #, fuzzy, c-format
 #| msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Byl nalezen nulový znak při čtení názvů souborů; nechtěli jste náhodou použít „--files0“ místo „--files“?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Byl nalezen nulový znak při čtení názvů souborů; nechtěli jste náhodou použít „--files0“ místo „--files“?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -695,8 +695,8 @@ msgstr "Je vyžadováno %s MiB paměti. Limit je %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Omezující filtr: %s\n"
+msgid "Filter chain"
+msgstr "Omezující filtr"
 
 #: src/xz/message.c
 #, fuzzy, c-format
@@ -1241,8 +1241,8 @@ msgstr "%s: Volby musí být páry „název=hodnota“ oddělené čárkami"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Neplatný název volby"
+msgid "Invalid option name"
+msgstr "Neplatný název volby"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1252,8 +1252,8 @@ msgstr "%s: Neplatná hodnota volby"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Nepodporované přednastavení LZMA1/LZMA2: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Nepodporované přednastavení LZMA1/LZMA2"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1261,19 +1261,19 @@ msgstr "Součet lc a lp nesmí překročit hodnotu 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Název souboru má neznámou příponu, vynechává se"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Název souboru má neznámou příponu, vynechává se"
 
 #: src/xz/suffix.c
 #, fuzzy, c-format
 #| msgid "%s: File already has `%s' suffix, skipping"
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Soubor již má příponu „%s“, vynechává se"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Soubor již má příponu „%s“, vynechává se"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Neplatná přípona názvu souboru"
+msgid "Invalid filename suffix"
+msgstr "Neplatná přípona názvu souboru"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1283,8 +1283,8 @@ msgstr "%s: Hodnota není nezáporné desítkové číslo"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Neplatná jednotka s předponou"
+msgid "Invalid multiplier suffix"
+msgstr "Neplatná jednotka s předponou"
 
 #: src/xz/util.c
 #, fuzzy

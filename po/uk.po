@@ -23,13 +23,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: некоректний аргумент --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "некоректний аргумент --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: забагато аргументів --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "забагато аргументів --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -42,13 +42,13 @@ msgstr "0 можна використовувати лише як останні
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: невідомий тип формату файлів"
+msgid "Unknown file format type"
+msgstr "невідомий тип формату файлів"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: непідтримуваний тип перевірки цілісності"
+msgid "Unsupported integrity check type"
+msgstr "непідтримуваний тип перевірки цілісності"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -184,13 +184,13 @@ msgstr "Помилка під час спроби перейти до ланцю
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Помилка під час створення каналу: %s"
+msgid "Error creating a pipe"
+msgstr "Помилка під час створення каналу"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: помилка poll(): %s"
+msgid "poll() failed"
+msgstr "помилка poll()"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -204,73 +204,73 @@ msgstr "%s: помилка poll(): %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: здається, файл пересунуто; не вилучаємо"
+msgid "File seems to have been moved, not removing"
+msgstr "здається, файл пересунуто; не вилучаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: не вдалося вилучити: %s"
+msgid "Cannot remove"
+msgstr "не вдалося вилучити"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: не вдалося встановити власника файла: %s"
+msgid "Cannot set the file owner"
+msgstr "не вдалося встановити власника файла"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: не вдалося встановити групу власника файла: %s"
+msgid "Cannot set the file group"
+msgstr "не вдалося встановити групу власника файла"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: не вдалося встановити права доступу до файла: %s"
+msgid "Cannot set the file permissions"
+msgstr "не вдалося встановити права доступу до файла"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: не вдалося синхронізувати файл: %s"
+msgid "Synchronizing the file failed"
+msgstr "не вдалося синхронізувати файл"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: не вдалося синхронізувати каталог файла: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "не вдалося синхронізувати каталог файла"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Помилка під час спроби отримання прапорців стану файла зі стандартного джерела вхідних даних: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Помилка під час спроби отримання прапорців стану файла зі стандартного джерела вхідних даних"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: є символічним посиланням; пропускаємо"
+msgid "Is a symbolic link, skipping"
+msgstr "є символічним посиланням; пропускаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: є каталогом; пропускаємо"
+msgid "Is a directory, skipping"
+msgstr "є каталогом; пропускаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: не є звичайним файлом; пропускаємо"
+msgid "Not a regular file, skipping"
+msgstr "не є звичайним файлом; пропускаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: для файла встановлено біт setuid або setgid; пропускаємо"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "для файла встановлено біт setuid або setgid; пропускаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: для файла встановлено липкий біт; пропускаємо"
+msgid "File has sticky bit set, skipping"
+msgstr "для файла встановлено липкий біт; пропускаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: виявлено декілька жорстких посилань на файл із вхідними даними; пропускаємо"
+msgid "Input file has more than one hard link, skipping"
+msgstr "виявлено декілька жорстких посилань на файл із вхідними даними; пропускаємо"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -278,58 +278,58 @@ msgstr "Порожня назва файла; пропускаємо"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Помилка під час спроби відновлення прапорців стану для стандартного джерела вхідних даних: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Помилка під час спроби відновлення прапорців стану для стандартного джерела вхідних даних"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Помилка під час спроби отримання прапорців стану файла зі стандартного виведення: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Помилка під час спроби отримання прапорців стану файла зі стандартного виведення"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: не вдалося відкрити каталог: %s"
+msgid "Opening the directory failed"
+msgstr "не вдалося відкрити каталог"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: призначення не є звичайним файлом"
+msgid "Destination is not a regular file"
+msgstr "призначення не є звичайним файлом"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Помилка під час спроби відновлення прапорця O_APPEND для стандартного виведення: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Помилка під час спроби відновлення прапорця O_APPEND для стандартного виведення"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: не вдалося закрити файл: %s"
+msgid "Closing the file failed"
+msgstr "не вдалося закрити файл"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: помилка позиціювання під час спроби створити розріджений файл: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "помилка позиціювання під час спроби створити розріджений файл"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: помилка читання: %s"
+msgid "Read error"
+msgstr "помилка читання"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: помилка позиціювання у файлі: %s"
+msgid "Error seeking the file"
+msgstr "помилка позиціювання у файлі"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: неочікуваний кінець файла"
+msgid "Unexpected end of file"
+msgstr "неочікуваний кінець файла"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: помилка під час спроби запису: %s"
+msgid "Write error"
+msgstr "помилка під час спроби запису"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -533,13 +533,13 @@ msgstr "Невідом-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: файл порожній"
+msgid "File is empty"
+msgstr "файл порожній"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: є надто малим для коректного файла .xz"
+msgid "Too small to be a valid .xz file"
+msgstr "є надто малим для коректного файла .xz"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -589,18 +589,18 @@ msgstr "Використання --list скасовує підтримку чи
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: помилка під час читання назв файлів: %s"
+msgid "Error reading filenames"
+msgstr "помилка під час читання назв файлів"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: неочікуваний кінець вхідних даних під час читання назв файлів"
+msgid "Unexpected end of input when reading filenames"
+msgstr "неочікуваний кінець вхідних даних під час читання назв файлів"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: під час читання назв файлів виявлено нуль-символ; можливо, ви хотіли скористатися --files0, а не --files?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "під час читання назв файлів виявлено нуль-символ; можливо, ви хотіли скористатися --files0, а не --files?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -667,8 +667,8 @@ msgstr "Потрібно %s МіБ пам'яті. Маємо обмеження 
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: ланцюжок фільтрування: %s\n"
+msgid "Filter chain"
+msgstr "ланцюжок фільтрування"
 
 #: src/xz/message.c
 #, c-format
@@ -1124,8 +1124,8 @@ msgstr "параметри -- пари «назва=значення», відо
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: некоректна назва параметра"
+msgid "Invalid option name"
+msgstr "некоректна назва параметра"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1133,8 +1133,8 @@ msgstr "Некоректне значення параметра"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Непідтримуваний рівень стискання LZMA1/LZMA2: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Непідтримуваний рівень стискання LZMA1/LZMA2"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1142,18 +1142,18 @@ msgstr "Сума lc і lp не повинна перевищувати 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: назва файла має невідомий суфікс; пропускаємо"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "назва файла має невідомий суфікс; пропускаємо"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: файл вже має суфікс назви %s; пропускаємо"
+msgid "File already has '%s' suffix, skipping"
+msgstr "файл вже має суфікс назви %s; пропускаємо"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: некоректний суфікс назви файла"
+msgid "Invalid filename suffix"
+msgstr "некоректний суфікс назви файла"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1161,8 +1161,8 @@ msgstr "значення не є невід'ємним десятковим ці
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: некоректний суфікс множника"
+msgid "Invalid multiplier suffix"
+msgstr "некоректний суфікс множника"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

@@ -22,13 +22,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: --block-list -ის არასწორი არგუმენტი"
+msgid "Invalid argument to --block-list"
+msgstr "--block-list -ის არასწორი არგუმენტი"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: --block-list -ის მეტისმეტად ბევრი არგუმენტი"
+msgid "Too many arguments to --block-list"
+msgstr "--block-list -ის მეტისმეტად ბევრი არგუმენტი"
 
 #: src/xz/args.c
 #, c-format
@@ -41,13 +41,13 @@ msgstr "ნული --block-list -ის მხოლოდ ბოლო ელ
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: ფაილის ფორმატის უცნობი ტიპი"
+msgid "Unknown file format type"
+msgstr "ფაილის ფორმატის უცნობი ტიპი"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: სიმრთელის შემოწმების მხარდაუჭერელი ტიპი"
+msgid "Unsupported integrity check type"
+msgstr "სიმრთელის შემოწმების მხარდაუჭერელი ტიპი"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -181,13 +181,13 @@ msgstr "ფილტრების ჯაჭვზე %u შეცვლის 
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "ფაიფის შექმნის შეცდომა: %s"
+msgid "Error creating a pipe"
+msgstr "ფაიფის შექმნის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() -ის შეცდომა: %s"
+msgid "poll() failed"
+msgstr "poll() -ის შეცდომა"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -201,73 +201,73 @@ msgstr "%s: poll() -ის შეცდომა: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: როგორც ჩანს, ფაილი გადატანილია. არ წავშლი"
+msgid "File seems to have been moved, not removing"
+msgstr "როგორც ჩანს, ფაილი გადატანილია. არ წავშლი"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: წაშლა შეუძლებელია: %s"
+msgid "Cannot remove"
+msgstr "წაშლა შეუძლებელია"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: ფაილის მფლობელის დაყენების შეცდომა: %s"
+msgid "Cannot set the file owner"
+msgstr "ფაილის მფლობელის დაყენების შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: ფაილის ჯგუფის დაყენების შეცდომა: %s"
+msgid "Cannot set the file group"
+msgstr "ფაილის ჯგუფის დაყენების შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: ფაილის წვდომების დაყენების შეცდომა: %s"
+msgid "Cannot set the file permissions"
+msgstr "ფაილის წვდომების დაყენების შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: ფაილის სინქრონიზაციის შეცდომა: %s"
+msgid "Synchronizing the file failed"
+msgstr "ფაილის სინქრონიზაციის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: ფაილის საქაღალდის სინქრონიზაციის შეცდომა: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "ფაილის საქაღალდის სინქრონიზაციის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "ფაილის სტატუსის ალმები მიღების შეცდომა სტანდარტული შეყვანიდან: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "ფაილის სტატუსის ალმები მიღების შეცდომა სტანდარტული შეყვანიდან"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: სიმბმულია. გამოტოვება"
+msgid "Is a symbolic link, skipping"
+msgstr "სიმბმულია. გამოტოვება"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: საქაღალდეა, გამოტოვება"
+msgid "Is a directory, skipping"
+msgstr "საქაღალდეა, გამოტოვება"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: ჩვეულებრივი ფაილი არაა. გამოტოვება"
+msgid "Not a regular file, skipping"
+msgstr "ჩვეულებრივი ფაილი არაა. გამოტოვება"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: ფაილს setuid ან setgit ბიტი აქვს დაყენებული. გამოტოვება"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "ფაილს setuid ან setgit ბიტი აქვს დაყენებული. გამოტოვება"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: ფაილს წებოვანი ბიტი აქვს. გამოტოვება"
+msgid "File has sticky bit set, skipping"
+msgstr "ფაილს წებოვანი ბიტი აქვს. გამოტოვება"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: შეყვანილ ფაილს ერთზე მეტი მყარი ბმული გააჩნია. გამოტოვება"
+msgid "Input file has more than one hard link, skipping"
+msgstr "შეყვანილ ფაილს ერთზე მეტი მყარი ბმული გააჩნია. გამოტოვება"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -275,58 +275,58 @@ msgstr "ცარიელი ფაილის სახელი. გამ�
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "სტატუსის ალმების აღდგენის შეცდომა სტანდარტულ შეყვანაზე: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "სტატუსის ალმების აღდგენის შეცდომა სტანდარტულ შეყვანაზე"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "ფაილის სტატუსის ალმების მიღების შეცდომა სტანრარტული გამოტანიდან: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "ფაილის სტატუსის ალმების მიღების შეცდომა სტანრარტული გამოტანიდან"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: საქაღალდის გახსნის შეცდომა: %s"
+msgid "Opening the directory failed"
+msgstr "საქაღალდის გახსნის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: სამიზნე ჩვეულებრივი ფაილი არაა"
+msgid "Destination is not a regular file"
+msgstr "სამიზნე ჩვეულებრივი ფაილი არაა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "O_APPEND ალმის აღდგენის შეცდომა სტანდარტულ გამოტანაზე: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "O_APPEND ალმის აღდგენის შეცდომა სტანდარტულ გამოტანაზე"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: ფაილის დახურვის შეცდომა: %s"
+msgid "Closing the file failed"
+msgstr "ფაილის დახურვის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: გადახვევის შეცდომა დამატებითი ფაილის შექმნის მცდელობისას: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "გადახვევის შეცდომა დამატებითი ფაილის შექმნის მცდელობისას"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: წაკითხვის შეცდომა: %s"
+msgid "Read error"
+msgstr "წაკითხვის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: ფაილის გადახვევის შეცდომა: %s"
+msgid "Error seeking the file"
+msgstr "ფაილის გადახვევის შეცდომა"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: ფაილის მოულოდნელი დასასრული"
+msgid "Unexpected end of file"
+msgstr "ფაილის მოულოდნელი დასასრული"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: ჩაწერის შეცდომა: %s"
+msgid "Write error"
+msgstr "ჩაწერის შეცდომა"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -530,13 +530,13 @@ msgstr "უცნობი-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: ფაილი ცარიელია"
+msgid "File is empty"
+msgstr "ფაილი ცარიელია"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: მეტისმეტად პატარაა, რომ სწორ .xz ფაილს წარმოადგენდეს"
+msgid "Too small to be a valid .xz file"
+msgstr "მეტისმეტად პატარაა, რომ სწორ .xz ფაილს წარმოადგენდეს"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -585,18 +585,18 @@ msgstr "--list -ს სტანდარტული შეყვანიდ�
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: ფაილის სახელების წაკითხვის შეცდომა: %s"
+msgid "Error reading filenames"
+msgstr "ფაილის სახელების წაკითხვის შეცდომა"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: შეყვანის მოულოდნელი დასასრული ფაილის სახელების კითხვისას"
+msgid "Unexpected end of input when reading filenames"
+msgstr "შეყვანის მოულოდნელი დასასრული ფაილის სახელების კითხვისას"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: ფაილის სახელების კითხვისა აღმოჩენილია ნულოვანი სიმბოლო. შეიძლება, '--files'-ის მაგიერ '--files0'-ის გამოყენება გნებავდათ?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "ფაილის სახელების კითხვისა აღმოჩენილია ნულოვანი სიმბოლო. შეიძლება, '--files'-ის მაგიერ '--files0'-ის გამოყენება გნებავდათ?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -663,8 +663,8 @@ msgstr "საჭიროა %s მბ მეხსიერება. ზღ�
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: ფილტრის ჯაჭვი: %s\n"
+msgid "Filter chain"
+msgstr "ფილტრის ჯაჭვი"
 
 #: src/xz/message.c
 #, c-format
@@ -1120,8 +1120,8 @@ msgstr "პარამეტრები უნდა წარმოადგ�
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: არასწორი პარამეტრის სახელი"
+msgid "Invalid option name"
+msgstr "არასწორი პარამეტრის სახელი"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1129,8 +1129,8 @@ msgstr "არასწორი პარამეტრის მნიშვ�
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "მხარდაუჭერელი LZMA1/LZMA2 პრესეტი: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "მხარდაუჭერელი LZMA1/LZMA2 პრესეტი"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1138,18 +1138,18 @@ msgstr "\"lc\" და \"lp\"-ის ჯამი 4-ზე მეტი არ �
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: ფაილის სახელის უცნობი სუფიქსი. გამოტოვება"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "ფაილის სახელის უცნობი სუფიქსი. გამოტოვება"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: ფაილს სუფიქსი `%s' უკვე გააჩნა. გამოტოვება"
+msgid "File already has '%s' suffix, skipping"
+msgstr "ფაილს სუფიქსი `%s' უკვე გააჩნა. გამოტოვება"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: ფაილის სახელის არასწორი სუფიქსი"
+msgid "Invalid filename suffix"
+msgstr "ფაილის სახელის არასწორი სუფიქსი"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1157,8 +1157,8 @@ msgstr "მნიშვნელობა არაუარყოფით მ�
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: არასწორი მამრავლის სუფიქსი"
+msgid "Invalid multiplier suffix"
+msgstr "არასწორი მამრავლის სუფიქსი"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

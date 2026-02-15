@@ -85,8 +85,7 @@ parse_block_list(const char *str_const)
 
 	// Prevent an unlikely integer overflow.
 	if (count > SIZE_MAX / sizeof(block_list_entry) - 1)
-		message_fatal(_("%s: Too many arguments to --block-list"),
-				str);
+		message_fatal(_("Too many arguments to --block-list"));
 
 	// Allocate memory to hold all the sizes specified.
 	// If --block-list was specified already, its value is forgotten.

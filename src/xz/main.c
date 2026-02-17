@@ -339,10 +339,8 @@ main(int argc, char **argv)
 	}
 #endif
 
-#ifndef NDEBUG
 	coder_free();
 	args_free();
-#endif
 
 	// If we have got a signal, raise it to kill the program instead
 	// of calling tuklib_exit().

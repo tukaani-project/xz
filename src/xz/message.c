@@ -292,6 +292,23 @@ progress_percentage(uint64_t in_pos)
 }
 
 
+/// Return completion percentage as an integer [0, 100], or -1 if unknown.
+/// This is used for setting progress info in terminal emulator's tab
+/// and/or in taskbar.
+static int
+progress_percentage_as_int(uint64_t in_pos)
+{
+	if (expected_in_size == 0 || in_pos > expected_in_size)
+		return -1;
+
+	// Never show 100.0 % before we actually are finished.
+	double percentage = (double)(in_pos) / (double)(expected_in_size)
+			* 99.9;
+
+	return (int)(percentage);
+}
+
+
 /// Make the string containing the amount of input processed, amount of
 /// output produced, and the compression ratio.
 static const char *
@@ -584,6 +601,18 @@ message_progress_update(void)
 		// Restart the timer so that progress_needs_updating gets
 		// set to true after about one second.
 		alarm(1);
+
+		// Update the progress indicator in the terminal tab and/or
+		// taskbar. We only do this when we are showing progress info
+		// in text form too, because in other cases it's possible
+		// that some other program is already updating terminal's
+		// progress info.
+		//
+		// See:
+		// https://conemu.github.io/en/AnsiEscapeCodes.html#ConEmu_specific_OSC
+		const int percentage = progress_percentage_as_int(in_pos);
+		if (percentage >= 0)
+			fprintf(stderr, "\033]9;4;1;%u\033\\", percentage);
 	} else {
 		// The progress message was printed because user had sent us
 		// SIGALRM. In this case, each progress message is printed
@@ -633,7 +662,8 @@ progress_flush(bool finished)
 
 	// When using the auto-updating progress indicator, the final
 	// statistics are printed in the same format as the progress
-	// indicator itself.
+	// indicator itself. We also need to disable/remove the progress
+	// state from the terminal with an escape sequence.
 	if (progress_automatic) {
 		const char *cols[5] = {
 			finished ? "100 %" : progress_percentage(in_pos),
@@ -642,7 +672,8 @@ progress_flush(bool finished)
 			progress_time(elapsed),
 			finished ? "" : progress_remaining(in_pos, elapsed),
 		};
-		fprintf(stderr, "\r %*s %*s   %*s %10s   %10s\n",
+		fprintf(stderr, "\033]9;4;0;\033\\"
+				"\r %*s %*s   %*s %10s   %10s\n",
 				tuklib_mbstr_fw(cols[0], 6), cols[0],
 				tuklib_mbstr_fw(cols[1], 35), cols[1],
 				tuklib_mbstr_fw(cols[2], 9), cols[2],

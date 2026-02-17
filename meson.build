@@ -1,0 +1,362 @@
+# SPDX-License-Identifier: 0BSD
+# Author: Vincent Torri
+
+project(
+    'xz',
+    'c',
+    version: '5.6.99',
+    license: '0BSD',
+    license_files: [
+        'COPYING',
+        'COPYING.0BSD',
+        'COPYING.GPLv2',
+        'COPYING.GPLv3',
+        'COPYING.LGPLv2.1'
+    ],
+    default_options: [
+        'b_ndebug=if-release',
+        'c_std=c11',
+        'warning_level=3',
+    ],
+    meson_version: '>= 1.1.0',
+)
+
+v_array = meson.project_version().split('.')
+v_maj = v_array[0]
+
+# config.h
+
+config_dir = [include_directories('.')]
+
+config_h = configuration_data()
+config_h.set_quoted('PACKAGE', 'xz')
+config_h.set_quoted('PACKAGE_BUGREPORT', 'xz@tukaani.org')
+config_h.set_quoted('PACKAGE_NAME', meson.project_name())
+config_h.set_quoted('PACKAGE_URL', 'https://tukaani.org/xz/')
+
+# host
+
+config_h.set('WORDS_BIGENDIAN',
+    host_machine.endian() == 'big',
+    description: 'Defined if the processor stores words with the most significant byte first.'
+)
+
+host_os = host_machine.system()
+
+cygwin = 'cygwin'
+windows = 'windows'
+linux = 'linux'
+sunos = 'sunos'
+asm_os = [ 'linux', 'dragonfly', 'freebsd', 'netbsd', 'openbsd', 'windows', 'cygwin' ]
+sys_cygwin = cygwin.contains(host_os)
+sys_windows = windows.contains(host_os)
+sys_sunos = sunos.contains(host_os)
+
+COND_W32 = sys_cygwin or sys_windows
+
+# binaries
+cc = meson.get_compiler('c')
+
+# try mimic AC_USE_SYSTEM_EXTENSIONS
+add_project_arguments('-D_GNU_SOURCE', language: 'c')
+add_project_arguments('-D__EXTENSIONS__', language: 'c')
+if host_machine.system() == 'sunos'
+    add_project_arguments('-D_POSIX_PTHREAD_SEMANTICS', language: 'c')
+else
+    add_project_arguments('-D_TANDEM_SOURCE', language: 'c')
+    add_project_arguments('-D_ALL_SOURCE', language: 'c')
+endif
+
+# unconditionally define macro for C99 headers
+add_project_arguments('-DHAVE_INTTYPES_H', language: 'c')
+add_project_arguments('-DHAVE_STDBOOL_H', language: 'c')
+add_project_arguments('-DHAVE_STDINT_H', language: 'c')
+# unconditionally define macro for C99 functions
+add_project_arguments('-DHAVE_MBRTOWC', language: 'c')
+
+lzma_c_args = []
+cflags_try = []
+
+if cc.get_argument_syntax() == 'gcc'
+    cflags_try += [
+        '-Wvla',
+        '-Wformat=2',
+        '-Winit-self',
+        '-Wmissing-include-dirs',
+        '-Wshift-overflow=2',
+        '-Wstrict-overflow=3',
+        '-Walloc-zero',
+        '-Wduplicated-cond',
+        '-Wfloat-equal',
+        '-Wundef',
+        '-Wshadow',
+        '-Wpointer-arith',
+        '-Wbad-function-cast',
+        '-Wwrite-strings',
+        '-Wdate-time',
+        '-Wsign-conversion',
+        '-Wfloat-conversion',
+        '-Wlogical-op',
+        '-Waggregate-return',
+        '-Wstrict-prototypes',
+        '-Wold-style-definition',
+        '-Wmissing-prototypes',
+        '-Wmissing-declarations',
+        '-Wredundant-decls',
+        #
+        '-Wc99-compat',
+        '-Wc11-extensions',
+        '-Wc2x-compat',
+        '-Wc2x-extensions',
+        '-Wpre-c2x-compat',
+        '-Warray-bounds-pointer-arithmetic',
+        '-Wassign-enum',
+        '-Wconditional-uninitialized',
+        '-Wdocumentation',
+        '-Wduplicate-enum',
+        '-Wempty-translation-unit',
+        '-Wflexible-array-extensions',
+        '-Wmissing-variable-declarations',
+        '-Wnewline-eof',
+        '-Wshift-sign-overflow',
+        '-Wstring-conversion',
+    ]
+
+    lzma_c_args += cc.get_supported_arguments(cflags_try)
+endif
+
+config_h.set10('HAVE_VISIBILITY',
+    cc.has_function_attribute('visibility'),
+    description: 'Defined to 1 if the compiler supports simple visibility declarations.'
+)
+
+
+config_h.set('HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR',
+    cc.has_function_attribute('constructor'),
+    description: 'Defined if __attribute__((__constructor__)) is supported for functions.',
+)
+
+time_fcts = [
+    [ 'futimens',  [ '#include <sys/stat.h>' ] ],
+    [ 'futimes',   [ '#include <sys/time.h>' ] ],
+    [ 'futimesat', [ '#include <fcntl.h>', '#include <sys/time.h>' ] ],
+    [ 'utimes',    [ '#include <sys/time.h>' ] ],
+    [ '_futime',   [ '#include <sys/utime.h>' ] ],
+    [ 'utime',     [ '#include <sys/types.h>', '#include <utime.h>' ] ],
+]
+
+foreach f : time_fcts
+    res = cc.has_function(f[0], prefix : f[1])
+    config_h.set('HAVE_' + f[0].to_upper(),
+        res,
+        description: 'Defined if the ' + f[0] + '() function is available.'
+    )
+    if res
+        break
+    endif
+endforeach
+
+config_h.set('HAVE_POSIX_FADVISE',
+    cc.has_function('posix_fadvise', prefix : '#include <fcntl.h>'),
+    description: 'Defined if the posix_fadvise() function is available.'
+)
+
+### Filters
+
+## encoders
+encoder_msg = ''
+decoder_msg = ''
+
+simple_filters = [
+    'x86',
+    'powerpc',
+    'ia64',
+    'arm',
+    'armthumb',
+    'arm64',
+    'sparc',
+    'riscv',
+]
+
+# FIXME foreach i in array; set_variable(f'have_@i@', true) endforeach
+
+foreach f : get_option('encoders')
+    config_h.set('HAVE_ENCODER_' + f.underscorify().to_upper(),
+        true,
+        description: 'Defined if ' + f + ' encoder is enabled.'
+    )
+    encoder_msg += f + ' '
+endforeach
+
+foreach f : get_option('decoders')
+    config_h.set('HAVE_DECODER_' + f.underscorify().to_upper(),
+        true,
+        description: 'Defined if ' + f + ' decoder is enabled.'
+    )
+    decoder_msg += f + ' '
+endforeach
+
+have_encoder_simple_filters = false
+have_decoder_simple_filters = false
+foreach f : simple_filters
+    if f in get_option('encoders')
+        have_encoder_simple_filters = true
+    endif
+    if f in get_option('decoders')
+        have_decoder_simple_filters = true
+    endif
+endforeach
+
+if ('lzma2' in get_option('encoders') and not ('lzma1' in get_option('encoders'))) or('lzma2' in get_option('decoders') and not ('lzma1' in get_option('decoders')))
+    error('LZMA2 requires that LZMA1 is also enabled')
+endif
+
+if get_option('encoders').length() > 0
+    config_h.set('HAVE_ENCODERS',
+        true,
+        description: 'Defined if at least one encoder has been enabled.'
+    )
+endif
+
+if get_option('decoders').length() > 0
+    config_h.set('HAVE_DECODERS',
+        true,
+        description: 'Defined if at least one decoder has been enabled.'
+    )
+endif
+
+### Match finders
+
+match_finder_msg = ''
+
+if 'lzma1' in get_option('encoders') or 'lzma2' in get_option('encoders')
+    if get_option('match-finders').length() == 0
+        error('at least one match finder is required for an LZ-based encoder')
+    endif
+
+    foreach m : get_option('match-finders')
+        config_h.set('HAVE_MF_' + m.underscorify().to_upper(),
+            true,
+            description: 'Defined to enable ' + m + ' match finder.'
+        )
+        match_finder_msg += m + ' '
+    endforeach
+endif
+
+### Integrity checks
+
+check_msg = ''
+
+if not ('crc32' in get_option('checks'))
+    error('For now, the CRC32 check must always be enabled')
+endif
+
+foreach c : get_option('checks')
+    config_h.set('HAVE_CHECK_' + c.underscorify().to_upper(),
+        true,
+        description: 'Define to 1 if ' + c + ' integrity check is enabled.'
+    )
+    check_msg += c + ' '
+endforeach
+
+### microLZMA
+
+if get_option('microlzma') == true
+endif
+
+### .lz (lzip) format support
+
+have_lzip = false
+if not ('lzma1' in get_option('encoders'))
+    lzip_msg = 'no (LZMA1 disabled)'
+elif get_option('lzip-decoder')
+    lzip_msg = 'yes'
+    have_lzip = true
+    config_h.set('HAVE_LZIP_DECODER',
+        true,
+        description: 'Defined if .lz (lzip) decompression support is enabled.'
+    )
+else
+    lzip_msg = 'no'
+endif
+
+### assembler optimizations
+
+have_assembler_x86 = false
+if get_option('assembler')
+   if host_os in asm_os and host_machine.cpu_family() == 'x86'
+       have_assembler_x86 = true
+   endif
+endif
+
+### size optimization
+
+config_h.set('HAVE_SMALL',
+    get_option('small'),
+    description: 'Defined if optimizing for size.'
+)
+
+### threading
+
+have_threads = false
+
+if get_option('threads') == true
+    if sys_windows == true
+        config_h.set('MYTHREAD_WIN95',
+            host_machine.cpu_family() == 'x86',
+            description: 'Defined when using Windows 95 (and thus XP) compatible threads. This avoids use of features that were added in Windows Vista.'
+        )
+        config_h.set('MYTHREAD_VISTA',
+            host_machine.cpu_family() != 'x86',
+            description: 'Defined when using Windows Vista compatible threads. This uses features that are not available on Windows XP.'
+        )
+        have_threads = true
+    else
+        # FIXME: pthread detection should be fixed
+        pthread_dep = dependency('threads', required : false)
+        config_h.set('MYTHREAD_POSIX',
+            pthread_dep.found(),
+            description: 'Defined when using POSIX threads (pthreads).'
+        )
+        have_threads = pthread_dep.found()
+    endif
+endif
+
+
+### subdirectories
+
+subdir('src')
+subdir('tests')
+
+configure_file(output: 'config.h', configuration: config_h)
+
+# summary
+
+summary(
+    {
+        'OS': host_os,
+        'endianness': host_machine.endian(),
+        'assembler': get_option('assembler').to_string('yes', 'no'),
+        'encoders': encoder_msg,
+        'decoders': decoder_msg,
+        'match finders': match_finder_msg,
+        'checks': check_msg,
+        'external sha256': get_option('external-sha256').to_string('yes', 'no'),
+        'microLZMA': get_option('microlzma').to_string('yes', 'no'),
+        'lzip decompression': lzip_msg,
+        'small': get_option('small').to_string('yes', 'no'),
+        'threads': have_threads.to_string('yes', 'no'),
+        'fast unaligned access': fast_unaligned_access.to_string('yes', 'no'),
+        'unsafe type punning': get_option('unsafe-type-punning').to_string('yes', 'no')
+    },
+    section: 'Configuration Options Summary:',
+)
+
+summary(
+    {
+        'xzdec': get_option('xzdec').to_string('yes', 'no'),
+        'lzmadec': get_option('lzmadec').to_string('yes', 'no'),
+        'xz': get_option('xz').to_string('yes', 'no') + ((get_option('assume-ram') > 0) ? ' (' + get_option('assume-ram').to_string() + ' MiB)' : ''),
+    },
+    section: 'Tools',
+)

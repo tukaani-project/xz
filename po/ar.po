@@ -542,7 +542,7 @@ msgstr "{RLM}%s: صغير جداً ليكون ملف .xz صالحاً"
 #. use two lines here. Test with "xz -l foo.xz".
 #: src/xz/list.c
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
-msgstr "مجاري   كتل     مضغوط      غير مضغوط     نسبة   فحص     اسم الملف"
+msgstr "{RLI}مجاري{PDI} {RLI}كتل    {PDI}  {RLI}مضغوط      {PDI}  {RLI}غير مضغوط  {PDI}  {RLI}نسبة {PDI}  {RLI}فحص    {PDI} {RLI}اسم الملف{PDI}"
 
 #: src/xz/list.c
 msgid "Yes"

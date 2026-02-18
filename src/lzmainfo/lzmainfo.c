@@ -34,7 +34,9 @@ help(void)
 	// A few languages use so long strings that we need automatic
 	// wrapping. A few strings are the same as in xz/message.c and
 	// should be kept in sync.
-	static const struct tuklib_wrap_opt wrap0 = {  0,  0,  0,  0, 79 };
+	const bool is_rtl = _("LTR")[0] == 'R' ? 1 : 0;
+	const int flags = is_rtl ? TUKLIB_WRAP_F_RTL : 0;
+	const struct tuklib_wrap_opt wrap0 = {  0,  0,  0,  0, 79, flags };
 	int e = 0;
 
 	printf(_("Usage: %s [--help] [--version] [FILE]...\n"), progname);

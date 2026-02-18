@@ -81,7 +81,7 @@ extern void
 sandbox_init(void)
 {
 	if (pledge("stdio rpath wpath cpath fattr", ""))
-		message_fatal("Failed to enable the sandbox");
+		message_fatal(NULL, "Failed to enable the sandbox");
 
 	return;
 }
@@ -93,7 +93,7 @@ sandbox_enable_read_only(void)
 	// We will be opening files for reading but
 	// won't create or remove any files.
 	if (pledge("stdio rpath", ""))
-		message_fatal("Failed to enable the sandbox");
+		message_fatal(NULL, "Failed to enable the sandbox");
 
 	return;
 }
@@ -109,7 +109,7 @@ sandbox_enable_strict_if_allowed(int src_fd lzma_attribute((__unused__)),
 
 	// All files that need to be opened have already been opened.
 	if (pledge("stdio", ""))
-		message_fatal("Failed to enable the sandbox");
+		message_fatal(NULL, "Failed to enable the sandbox");
 
 	return;
 }
@@ -145,7 +145,7 @@ enable_landlock(uint64_t required_rights)
 	const int ruleset_fd = my_landlock_create_ruleset(
 			&attr, sizeof(attr), 0);
 	if (ruleset_fd < 0)
-		message_fatal("Failed to enable the sandbox");
+		message_fatal(NULL, "Failed to enable the sandbox");
 
 	// All files we need should have already been opened. Thus,
 	// we don't need to add any rules using landlock_add_rule(2)
@@ -160,7 +160,7 @@ enable_landlock(uint64_t required_rights)
 	// prctl(PR_SET_NO_NEW_PRIVS, ...) was already called in
 	// sandbox_init() so we don't do it here again.
 	if (my_landlock_restrict_self(ruleset_fd, 0) != 0)
-		message_fatal("Failed to enable the sandbox");
+		message_fatal(NULL, "Failed to enable the sandbox");
 
 	(void)close(ruleset_fd);
 	return;
@@ -311,7 +311,7 @@ error:
 	if (errno == ENOSYS)
 		return;
 
-	message_fatal("Failed to enable the sandbox");
+	message_fatal(NULL, "Failed to enable the sandbox");
 }
 
 #endif

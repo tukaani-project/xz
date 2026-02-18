@@ -134,7 +134,7 @@ extern void
 coder_add_filter(lzma_vli id, void *options)
 {
 	if (filters_count == LZMA_FILTERS_MAX)
-		message_fatal(_("Maximum number of filters is four"));
+		message_fatal(NULL, _("Maximum number of filters is four"));
 
 	if (string_to_filter_used)
 		forget_filter_chain();
@@ -174,7 +174,7 @@ str_to_filters(const char *str, uint32_t index, uint32_t flags)
 				filter_num);
 		message(V_ERROR, "%s", str);
 		message(V_ERROR, "%*s^", error_pos, "");
-		message_fatal("%s", _(err));
+		message_fatal(NULL, "%s", _(err));
 	}
 }
 
@@ -325,7 +325,7 @@ coder_set_compression_settings(void)
 			const unsigned first_missing
 				= (unsigned)ctz32(missing_chains_mask);
 
-			message_fatal(_("filter chain %u used by "
+			message_fatal(NULL, _("filter chain %u used by "
 				"--block-list but not specified "
 				"with --filters%u="),
 				first_missing, first_missing);
@@ -390,7 +390,7 @@ coder_set_compression_settings(void)
 	// --block-list is used, which is incompatible with FORMAT_LZMA.
 	if (opt_format == FORMAT_LZMA && (filters_count != 1
 			|| default_filters[0].id != LZMA_FILTER_LZMA1))
-		message_fatal(_("The .lzma format supports only "
+		message_fatal(NULL, _("The .lzma format supports only "
 				"the LZMA1 filter"));
 
 	// If we are using the .xz format, make sure that there is no LZMA1
@@ -400,7 +400,7 @@ coder_set_compression_settings(void)
 	if (opt_format == FORMAT_XZ && chains_used_mask & 1)
 		for (size_t i = 0; i < filters_count; ++i)
 			if (default_filters[i].id == LZMA_FILTER_LZMA1)
-				message_fatal(_("LZMA1 cannot be used "
+				message_fatal(NULL, _("LZMA1 cannot be used "
 						"with the .xz format"));
 
 	if (chains_used_mask & 1) {
@@ -424,7 +424,8 @@ coder_set_compression_settings(void)
 					break;
 
 				default:
-					message_fatal(_("Filter chain %u is "
+					message_fatal(NULL,
+							_("Filter chain %u is "
 							"incompatible with "
 							"--flush-timeout"),
 							i);
@@ -480,7 +481,8 @@ coder_set_compression_settings(void)
 					// invalid, so there is no point in
 					// progressing further.
 					if (size == UINT64_MAX)
-						message_fatal(_("Unsupported "
+						message_fatal(NULL,
+							_("Unsupported "
 							"options in filter "
 							"chain %u"), i);
 
@@ -523,7 +525,8 @@ coder_set_compression_settings(void)
 	}
 
 	if (memory_usage == UINT64_MAX)
-		message_fatal(_("Unsupported filter chain or filter options"));
+		message_fatal(NULL,
+			_("Unsupported filter chain or filter options"));
 
 	// Print memory usage info before possible dictionary
 	// size auto-adjusting.
@@ -1081,7 +1084,7 @@ split_block(uint64_t *block_remaining,
 					// lzma_stream_encoder_mt_memusage().
 					// Some options are not validated until
 					// the encoders are initialized.
-					message_fatal(
+					message_fatal(NULL,
 						_("Error changing to "
 						"filter chain %u: %s"),
 						chain_num,

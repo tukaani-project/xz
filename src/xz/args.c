@@ -75,8 +75,7 @@ parse_block_list(const char *str_const)
 
 	// It must be non-empty and not begin with a comma.
 	if (str[0] == '\0' || str[0] == ',')
-		message_fatal(_("%s: %s"),
-				_("Invalid argument to --block-list"), str);
+		message_fatal(str, _("Invalid argument to --block-list"));
 
 	// Count the number of comma-separated strings.
 	size_t count = 1;
@@ -86,7 +85,7 @@ parse_block_list(const char *str_const)
 
 	// Prevent an unlikely integer overflow.
 	if (count > SIZE_MAX / sizeof(block_list_entry) - 1)
-		message_fatal(_("Too many arguments to --block-list"));
+		message_fatal(NULL, _("Too many arguments to --block-list"));
 
 	// Allocate memory to hold all the sizes specified.
 	// If --block-list was specified already, its value is forgotten.
@@ -128,7 +127,7 @@ parse_block_list(const char *str_const)
 		// the block size, only the filter chain.
 		if (str[0] >= '0' && str[0] <= '9' && str[1] == ':') {
 			if (str[2] == '\0')
-				message_fatal(_("In --block-list, block "
+				message_fatal(NULL, _("In --block-list, block "
 						"size is missing after "
 						"filter chain number '%c:'"),
 						str[0]);
@@ -157,7 +156,8 @@ parse_block_list(const char *str_const)
 			// Zero indicates no more new Blocks.
 			if (opt_block_list[i].size == 0) {
 				if (i + 1 != count)
-					message_fatal(_("0 can only be used "
+					message_fatal(NULL,
+							_("0 can only be used "
 							"as the last element "
 							"in --block-list"));
 
@@ -560,10 +560,9 @@ parse_real(args_info *args, int argc, char **argv)
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0)
 				if (++i == ARRAY_SIZE(types))
-					message_fatal(_("%s: %s"),
+					message_fatal(optarg,
 							_("Unknown file "
-							"format type"),
-							optarg);
+							"format type"));
 
 			opt_format = types[i].format;
 			break;
@@ -584,18 +583,16 @@ parse_real(args_info *args, int argc, char **argv)
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0) {
 				if (++i == ARRAY_SIZE(types))
-					message_fatal(_("%s: %s"),
-							_("Unsupported "
+					message_fatal(optarg, _("Unsupported "
 							"integrity "
-							"check type"), optarg);
+							"check type"));
 			}
 
 			// Use a separate check in case we are using different
 			// liblzma than what was used to compile us.
 			if (!lzma_check_is_supported(types[i].check))
-				message_fatal(_("%s: %s"),
-						_("Unsupported integrity "
-						"check type"), optarg);
+				message_fatal(optarg, _("Unsupported "
+						"integrity check type"));
 
 			coder_set_check(types[i].check);
 			break;
@@ -633,7 +630,7 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case OPT_FILES0:
 			if (args->files_name != NULL)
-				message_fatal(_("Only one file can be "
+				message_fatal(NULL, _("Only one file can be "
 						"specified with '--files' "
 						"or '--files0'."));
 
@@ -645,10 +642,7 @@ parse_real(args_info *args, int argc, char **argv)
 				args->files_file = fopen(optarg,
 						c == OPT_FILES ? "r" : "rb");
 				if (args->files_file == NULL)
-					// TRANSLATORS: This is a translatable
-					// string because French needs a space
-					// before the colon ("%s : %s").
-					message_fatal(_("%s: %s"), optarg,
+					message_fatal(optarg, "%s",
 							strerror(errno));
 			}
 
@@ -708,7 +702,8 @@ parse_environment(args_info *args, char *argv0, const char *varname)
 			// and to keep it usable for memory allocation.
 			if (++argc == my_min(
 					INT_MAX, SIZE_MAX / sizeof(char *)))
-				message_fatal(_("The environment variable "
+				message_fatal(NULL,
+						_("The environment variable "
 						"%s contains too many "
 						"arguments"), varname);
 		}
@@ -810,20 +805,20 @@ args_parse(args_info *args, int argc, char **argv)
 	// that whatever is in opt_mode is also supported.
 #ifndef HAVE_ENCODERS
 	if (opt_mode == MODE_COMPRESS)
-		message_fatal(_("Compression support was disabled "
+		message_fatal(NULL, _("Compression support was disabled "
 				"at build time"));
 #endif
 #ifndef HAVE_DECODERS
 	// Even MODE_LIST cannot work without decoder support so MODE_COMPRESS
 	// is the only valid choice.
 	if (opt_mode != MODE_COMPRESS)
-		message_fatal(_("Decompression support was disabled "
+		message_fatal(NULL, _("Decompression support was disabled "
 				"at build time"));
 #endif
 
 #ifdef HAVE_LZIP_DECODER
 	if (opt_mode == MODE_COMPRESS && opt_format == FORMAT_LZIP)
-		message_fatal(_("Compression of lzip files (.lz) "
+		message_fatal(NULL, _("Compression of lzip files (.lz) "
 				"is not supported"));
 #endif
 
@@ -865,7 +860,7 @@ args_parse(args_info *args, int argc, char **argv)
 			&& (opt_mode == MODE_COMPRESS
 				|| opt_mode == MODE_DECOMPRESS)) {
 		if (args->files_name != NULL)
-			message_fatal(_("With --format=raw, "
+			message_fatal(NULL, _("With --format=raw, "
 					"--suffix=.SUF is required "
 					"unless writing to stdout"));
 
@@ -874,7 +869,7 @@ args_parse(args_info *args, int argc, char **argv)
 		// then we are only going to be writing to standard out.
 		for (int i = optind; i < argc; i++) {
 			if (strcmp(argv[i], "-") != 0)
-				message_fatal(_("With --format=raw, "
+				message_fatal(NULL, _("With --format=raw, "
 						"--suffix=.SUF is required "
 						"unless writing to stdout"));
 		}

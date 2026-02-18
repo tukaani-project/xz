@@ -906,7 +906,7 @@ msgstr "خيارات"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
-msgstr "{RLM}LZMA1 أو LZMA2؛ الخيارات هي قائمة مفصولة بفاصلة من صفر أو أكثر من الخيارات التالية (قيم صالحة؛ مبدئي):"
+msgstr "LZMA1 أو LZMA2؛ الخيارات هي قائمة مفصولة بفاصلة من صفر أو أكثر من الخيارات التالية (قيم صالحة؛ مبدئي):"
 
 #. TRANSLATORS: Short for PRESET. A longer string is
 #. fine but wider than 4 columns makes --long-help

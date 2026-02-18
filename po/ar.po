@@ -352,7 +352,7 @@ msgstr "فك ضغط متعدد الخيوط:"
 
 #: src/xz/hardware.c
 msgid "Default for -T0:"
-msgstr "المبدئي لـ -T0:"
+msgstr "المبدئي لـ {LRM}-T0{RLM}:"
 
 #: src/xz/hardware.c
 msgid "Hardware information:"

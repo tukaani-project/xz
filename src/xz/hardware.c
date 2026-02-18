@@ -234,15 +234,46 @@ memlimit_show(const char *str, size_t str_columns, uint64_t value)
 	// the field width is fine here so it's not handled specially.
 	const int fw = tuklib_mbstr_fw(str, (int)(str_columns));
 
+	// This is explained a few lines later.
+	const char *const lrm_rlm = is_rtl ? LRM RLM : "";
+
 	// The memory usage limit is considered to be disabled if value
 	// is 0 or UINT64_MAX. This might get a bit more complex once there
 	// is threading support. See the comment in hardware_memlimit_get().
-	if (value == 0 || value == UINT64_MAX)
-		printf("  %-*s  %s\n", fw, str, _("Disabled"));
-	else
-		printf("  %-*s  %s MiB (%s B)\n", fw, str,
-				uint64_to_str(round_up_to_mib(value), 0),
-				uint64_to_str(value, 1));
+	if (value == 0 || value == UINT64_MAX) {
+		printf("  %-*s  %s%s\n", fw, str, lrm_rlm, _("Disabled"));
+	} else {
+		// In a RTL language, we need BiDi formatting because
+		// otherwise the the RTL rendering will be
+		// "MiB (xxx B) yyy" instead of "(B xxx) MiB yyy".
+		//
+		// We are printing a line like this:
+		//
+		//     <RTL text> ":" SPACES LRM RLM <numbers and units>
+		//
+		// We assume that the last strong character in the translated
+		// string is RTL. If it isn't, the translation needs to add
+		// RLM **before** the colon at the end of the string.
+		//
+		// With the above assumption, the ":" and SPACES are between
+		// a strong RTL character (from the translated string) and
+		// a strong LTR character (LRM). Between opposing strong
+		// characters, the colon and spaces take the embedding
+		// direction which in this case is the same as the base
+		// direction. This keeps the two columns displaying sensibly
+		// in both LTR and RTL base directions, and the colon shows
+		// up at the same side with <numbers and units>.
+		//
+		// The purpose of RLM (or actually two of them) is to show
+		// the numbers and units in RTL order when base direction is
+		// RTL. In the LTR base direction, the RLMs make no visible
+		// difference, and the numbers and units are displayed LTR.
+		printf("  %-*s  %s%s MiB%s (%s B)\n",
+			fw, str, lrm_rlm,
+			uint64_to_str(round_up_to_mib(value), 0),
+			is_rtl ? RLM : "",
+			uint64_to_str(value, 1));
+	}
 
 	return;
 }
@@ -294,9 +325,11 @@ hardware_memlimit_show(void)
 
 		puts(_("Hardware information:"));
 		memlimit_show(msgs[0], width_max, total_ram);
-		printf("  %-*s  %" PRIu32 "\n",
+		printf("  %-*s  %s%" PRIu32 "\n",
 				tuklib_mbstr_fw(msgs[1], (int)(width_max)),
-				msgs[1], cputhreads);
+				msgs[1],
+				is_rtl ? LRM RLM : "",
+				cputhreads);
 
 		putchar('\n');
 		puts(_("Memory usage limits:"));

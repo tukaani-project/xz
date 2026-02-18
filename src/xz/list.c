@@ -741,8 +741,31 @@ get_check_names(char buf[CHECKS_STR_SIZE],
 static void
 print_cell_fw(int spaces, int fw, const char *str, bool right_aligned)
 {
-	printf(right_aligned ? "%*s%*s" : "%*s%-*s",
-			spaces, "", fw, str);
+	// In RTL mode, all columns are right-aligned, which is done by
+	// adding spaces after the RTL string.
+	//
+	// A non-space non-formatting character (LRI/RLI/FSI/PDI) must be
+	// added because the BiDi algorithm moves all trailing spaces and
+	// formatting characters to the visual end of the line, which would
+	// make the padding of the last column ineffective when the table
+	// is displayed in LTR base direction. An extra character would only
+	// be needed in the last column but adding it to all cells is simpler.
+	// Use RLM because it is zero-width and not whitespace.
+	//
+	// As of 2026: The parenthesis mirroring issue in VTE-based terminals
+	// shouldn't matter here because the columns shouldn't contain
+	// any Bidi_Mirrored characters.
+	//
+	// An alternative would be to add LRM (not RLM) at the end of the
+	// line after all the isolates. Then the isolates would be between
+	// two strong chars with opposing direction (RLM and LRM), which
+	// would make the isolates take the embedding level. Thus, they
+	// would be displayed in the base direction used by the terminal.
+	if (is_rtl)
+		printf("%*s" RLI "%-*s" RLM PDI, spaces, "", fw, str);
+	else
+		printf(right_aligned ? "%*s%*s" : "%*s%-*s",
+				spaces, "", fw, str);
 	return;
 }
 
@@ -765,6 +788,10 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 	static bool headings_displayed = false;
 	if (!headings_displayed) {
 		headings_displayed = true;
+
+		if (is_rtl)
+			fputs(" " RLM, stdout);
+
 		// TRANSLATORS: These are column headings. From Strms (Streams)
 		// to Ratio, the columns are right aligned. Check and Filename
 		// are left aligned. If you need longer words, it's OK to
@@ -772,6 +799,12 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 		puts(_("Strms  Blocks   Compressed Uncompressed  Ratio  "
 				"Check   Filename"));
 	}
+
+	// A space is needed because some terminals ignore BiDi control chars
+	// in the first column. The extra space was also inserted above when
+	// printing the headings.
+	if (is_rtl)
+		fputs(" " RLM, stdout);
 
 	char checks[CHECKS_STR_SIZE];
 	get_check_names(checks, lzma_index_checks(xfi->idx), false);
@@ -791,7 +824,9 @@ print_info_basic(const xz_file_info *xfi, file_pair *pair)
 			lzma_index_uncompressed_size(xfi->idx)), true);
 	print_cell(2, 7, checks, false);
 
-	printf(" %s\n", tuklib_mask_nonprint(pair->src_name));
+	printf(" %s%s%s\n", is_rtl ? FSI : "",
+			tuklib_mask_nonprint(pair->src_name),
+			is_rtl ? PDI : "");
 
 	return false;
 }
@@ -844,6 +879,9 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	// Print information about the Streams.
 	printf("  %s\n", _(colon_strs[COLON_STR_STREAMS]));
 
+	if (is_rtl)
+		fputs(" " RLM, stdout);
+
 	// All except Check are right aligned; Check is left aligned.
 	// Test with "xz -lv foo.xz".
 	print_cell_fw(4, HEADING_STR(HEADING_STREAM), true);
@@ -861,6 +899,9 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 	lzma_index_iter_init(&iter, xfi->idx);
 
 	while (!lzma_index_iter_next(&iter, LZMA_INDEX_ITER_STREAM)) {
+		if (is_rtl)
+			fputs(" " RLM, stdout);
+
 		print_cell(4, headings[HEADING_STREAM].columns,
 			uint64_to_str(iter.stream.number, 0), true);
 		print_cell(1, headings[HEADING_BLOCKS].columns,
@@ -910,6 +951,9 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 
 		printf("  %s\n", _(colon_strs[COLON_STR_BLOCKS]));
 
+		if (is_rtl)
+			fputs(" " RLM, stdout);
+
 		// All except Check are right aligned; Check is left aligned.
 		print_cell_fw(4, HEADING_STR(HEADING_STREAM), true);
 		print_cell_fw(1, HEADING_STR(HEADING_BLOCK), true);
@@ -953,6 +997,9 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 			block_header_info bhi = BLOCK_HEADER_INFO_INIT;
 			if (detailed && parse_details(pair, &iter, &bhi, xfi))
 				return true;
+
+			if (is_rtl)
+				fputs(" " RLM, stdout);
 
 			print_cell(4, headings[HEADING_STREAM].columns,
 				uint64_to_str(iter.stream.number, 0), true);
@@ -1013,7 +1060,12 @@ print_info_adv(xz_file_info *xfi, file_pair *pair)
 						0, " MiB"),
 					true);
 
-				printf("  %s", bhi.filter_chain);
+				// In RTL mode, the filter chain is the only
+				// column that is printed LTR.
+				printf("  %s%s%s",
+					is_rtl ? LRI : "",
+					bhi.filter_chain,
+					is_rtl ? PDI : "");
 			}
 
 			putchar('\n');
@@ -1163,6 +1215,9 @@ print_totals_basic(void)
 	char checks[CHECKS_STR_SIZE];
 	get_check_names(checks, totals.checks, false);
 
+	if (is_rtl)
+		fputs(" " RLM, stdout);
+
 	// Print the totals except the file count, which needs
 	// special handling.
 	print_cell(0, 5, uint64_to_str(totals.streams, 0), true);
@@ -1178,6 +1233,11 @@ print_totals_basic(void)
 			true);
 	print_cell(2, 7, checks, false);
 	putchar(' ');
+
+	// The next string contains a newline. It will implicitly terminate
+	// the isolate.
+	if (is_rtl)
+		fputs(RLI, stdout);
 
 #if defined(__sun) && (defined(__GNUC__) || defined(__clang__))
 #	pragma GCC diagnostic push

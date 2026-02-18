@@ -90,8 +90,9 @@ parse_options(const char *str, const option_map *opts,
 		unsigned i = 0;
 		while (true) {
 			if (opts[i].name == NULL)
-				message_fatal(_("%s: Invalid option name"),
-						tuklib_mask_nonprint(name));
+				message_fatal(_("%s: %s"),
+						tuklib_mask_nonprint(name),
+						_("Invalid option name"));
 
 			if (strcmp(name, opts[i].name) == 0)
 				break;
@@ -246,8 +247,8 @@ tuklib_attr_noreturn
 static void
 error_lzma_preset(const char *valuestr)
 {
-	message_fatal(_("Unsupported LZMA1/LZMA2 preset: %s"),
-			tuklib_mask_nonprint(valuestr));
+	message_fatal(_("%s: %s"), tuklib_mask_nonprint(valuestr),
+			_("Unsupported LZMA1/LZMA2 preset"));
 }
 
 

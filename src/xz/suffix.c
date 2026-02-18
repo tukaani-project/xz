@@ -162,8 +162,8 @@ uncompressed_name(const char *src_name, const size_t src_len)
 		new_len = test_suffix(custom_suffix, src_name, src_len);
 
 	if (new_len == 0) {
-		message_warning(_("%s: Filename has an unknown suffix, "
-				"skipping"), tuklib_mask_nonprint(src_name));
+		message_warning(_("%s: %s"), tuklib_mask_nonprint(src_name),
+				_("Filename has an unknown suffix, skipping"));
 		return NULL;
 	}
 
@@ -391,8 +391,8 @@ suffix_set(const char *suffix)
 	// Empty suffix and suffixes having a directory separator are
 	// rejected. Such suffixes would break things later.
 	if (suffix[0] == '\0' || has_dir_sep(suffix))
-		message_fatal(_("%s: Invalid filename suffix"),
-				tuklib_mask_nonprint(suffix));
+		message_fatal(_("%s: %s"), tuklib_mask_nonprint(suffix),
+				_("Invalid filename suffix"));
 
 	// Replace the old custom_suffix (if any) with the new suffix.
 	free(custom_suffix);

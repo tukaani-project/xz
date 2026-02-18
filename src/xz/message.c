@@ -914,7 +914,15 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 	if (ret != LZMA_OK)
 		message_fatal("%s", message_strm(ret));
 
-	fprintf(stderr, _("%s: Filter chain: %s\n"), progname, buf);
+	// This message is printed before signal handlers have been
+	// established, so there is no need to block/unblock signals.
+	//
+	// Print it in pieces to avoid adding a translatable
+	// string "%s: %s: %s".
+	fprintf(stderr, _("%s: "), progname);
+	fprintf(stderr, _("%s: %s"), _("Filter chain"), buf);
+	fputc('\n', stderr);
+
 	free(buf);
 	return;
 }

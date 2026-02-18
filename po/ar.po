@@ -1188,7 +1188,7 @@ msgstr "لا يمكن كتابة البيانات المضغوطة إلى طرف
 #: src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
-msgstr "الاستخدام: %s [{LRM}--help] [{LRM}--version] [ملف]...\n"
+msgstr "الاستخدام: %s {RLM}[{LRM}--help] {RLM}[{LRM}--version] [ملف]...\n"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c

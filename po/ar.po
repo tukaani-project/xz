@@ -185,7 +185,7 @@ msgstr "خطأ أثناء إنشاء أنبوب: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: poll() failed: %s"
-msgstr "{RLM}%s: فشل {RLM}poll{RLM}():{RLM} %s"
+msgstr "{RLM}%s: فشل poll(){LRM}{RLM}: %s"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks

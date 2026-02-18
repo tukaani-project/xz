@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2024-02-17 18:35+0100\n"
 "Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
 "Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
@@ -22,12 +22,10 @@ msgstr ""
 "X-Generator: Poedit 3.4\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "Érvénytelen argumentum a --block-list kapcsolóhoz"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "Túl sok argumentum a --block-list kapcsolóhoz"
 
@@ -41,27 +39,16 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "A 0 csak utolsó elemként használható a --block-list kapcsolónál"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "Ismeretlen fájlformátumtípus"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "Nem támogatott integritás-ellenőrzési típus"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Csak egy fájl adható meg a „--files” vagy „--files0” kapcsolóknál."
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, c-format
-msgid "%s: %s"
-msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -180,95 +167,86 @@ msgstr "A --filters%2$u szűrőhöz tartozó LZMA%1$c szótár méretének módo
 msgid "Error changing to filter chain %u: %s"
 msgstr "Hiba a(z) %u. szűrőlánc létrehozásakor: %s"
 
-#: src/xz/file_io.c
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/file_io.c
 msgid "Error creating a pipe"
 msgstr "Hiba a csővezeték létrehozásakor"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "poll() sikertelen"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "Úgy tűnik, hogy a fájl át lett helyezve, nincs eltávolítás"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot remove"
 msgstr "Nem távolítható el"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "A fájl tulajdonosa nem adható meg"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "A fájl csoportja nem adható meg"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "A fájl jogosultságai nem adhatók meg"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the file failed"
 msgstr "A fájl lezárása sikertelen"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the directory of the file failed"
 msgstr "A fájl lezárása sikertelen"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "Hiba a fájl állapotjelzőinek lekérdezésekor a szabványos bemenetről"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a symbolic link, skipping"
 msgstr "Szimbolikus link, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a directory, skipping"
 msgstr "Könyvtár, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Not a regular file, skipping"
 msgstr "Nem szabályos fájl, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "A fájlon setuid vagy setgid bit van beállítva, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "A fájlon sticky bit van beállítva, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "A bemeneti fájlhoz több mint egy hard link tartozik, kihagyás"
 
@@ -277,59 +255,50 @@ msgid "Empty filename, skipping"
 msgstr "Üres fájlnév, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "Hiba a fájl állapotjelzőinek visszaállításakor a szabványos bemenetre"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "Hiba a fájl állapotjelzőinek lekérdezésekor a szabványos kimenetről"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Opening the directory failed"
 msgstr "A fájl lezárása sikertelen"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Not a regular file, skipping"
 msgid "Destination is not a regular file"
 msgstr "Nem szabályos fájl, kihagyás"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "Hiba az O_APPEND visszaállításakor a szabványos kimenetre"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "A fájl lezárása sikertelen"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "A pozícionálás sikertelen a ritka fájl létrehozásának kísérletekor"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "Olvasási hiba"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "Hiba a fájlban pozícionáláskor"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "Váratlan fájlvég"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "Írási hiba"
 
@@ -534,12 +503,10 @@ msgid "Unknown-15"
 msgstr "Névtelen-15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "A fájl üres"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "Túl kicsi, hogy érvényes .xz fájl legyen"
 
@@ -591,17 +558,14 @@ msgid "--list does not support reading from standard input"
 msgstr "A --list nem támogatja a szabványos bemenetről beolvasást"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "Hiba a fájlnevek olvasásakor"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "A bemenet váratlanul véget ért a fájlnevek olvasásakor"
 
 #: src/xz/main.c
-#, c-format
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "Null karakter található a fájlnevek olvasásakor; talán a „--files0” kapcsolóra gondolt a „--files” helyett?"
 
@@ -612,6 +576,12 @@ msgstr "A tömörítés és kibontás még nem támogatott a --robot kapcsolóva
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Az adatok nem olvashatók be a szabványos bemenetről a fájlnevek olvasásakor"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+msgid "LTR"
+msgstr ""
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -669,7 +639,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "%s MiB memória szükséges. A korlát %s."
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "Szűrőlánc"
 
@@ -1294,7 +1263,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "%s: A kapcsolóknak vesszőkkel elválasztott „név=érték” pároknak kell lenniük"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "Érvénytelen kapcsolónév"
 
@@ -1305,7 +1273,6 @@ msgid "Invalid option value"
 msgstr "%s: Érvénytelen kapcsolóérték"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "Nem támogatott LZMA1/LZMA2 előbeállítás"
 
@@ -1314,7 +1281,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "Az lc és lp összege nem haladhatja meg a 4-et"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "A fájlnév utótagja ismeretlen, kihagyás"
 
@@ -1324,7 +1290,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "A fájlnak már van „%s” utótagja, kihagyás"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "Érvénytelen fájlnév utótag"
 
@@ -1335,7 +1300,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "%s: Az érték nem nemnegatív decimális egész szám"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "Érvénytelen szorzó utótag"
 

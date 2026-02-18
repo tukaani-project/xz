@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2025-01-24 11:03+0100\n"
 "Last-Translator: Luna Jernberg <droidbittin@gmail.com>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -26,12 +26,10 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,10,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "Ogiltigt argument till --block-list"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "För många argument till --block-list"
 
@@ -45,27 +43,16 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "0 kan endast användas som det sista elementet i --block-list"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "Okänd filformatstyp"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "Integritetskontrolltyp stöds inte"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Endast en fil kan anges med ”--files” eller ”--files0”."
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, c-format
-msgid "%s: %s"
-msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -184,93 +171,82 @@ msgstr "Justerade storlek för LZMA%c-lexikon för --filters%u från %s MiB till
 msgid "Error changing to filter chain %u: %s"
 msgstr "Fel vid ändring till filterkedja %u: %s"
 
-#: src/xz/file_io.c
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/file_io.c
 msgid "Error creating a pipe"
 msgstr "Fel vid skapande av rörledning"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "poll() misslyckades"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "Filen verkar ha flyttats, tar inte bort"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot remove"
 msgstr "Kan inte ta bort"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "Kan inte sätta filägaren"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "Kan inte sätta filgruppen"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "Kan inte sätta filrättigheterna"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Synchronizing the file failed"
 msgstr "Synkroniseringen av filen misslyckades"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Synchronizing the directory of the file failed"
 msgstr "Synkroniseringen av filens katalog misslyckades"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "Fel vid hämtning av filstatusflaggor från standard in"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a symbolic link, skipping"
 msgstr "Är en symbolisk länk, hoppar över"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a directory, skipping"
 msgstr "Är en katalog, hoppar över"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Not a regular file, skipping"
 msgstr "Är inte en vanlig fil, hoppar över"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "Filen har setuid- eller setgid-biten satt, hoppar över"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "Filen har stickybiten satt, hoppar över"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "Indatafilen har mer än en hårdlänk, hoppar över"
 
@@ -279,57 +255,46 @@ msgid "Empty filename, skipping"
 msgstr "Tomt filnamn, hoppar över"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "Fel vid återställning av statusflaggorna för standard in"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "Fel vid hämtning av filstatusflaggorna från standard ut"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Opening the directory failed"
 msgstr "Att öppna katalogen misslyckades"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Destination is not a regular file"
 msgstr "Destinationen är inte en vanlig fil"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "Fel vid återställning av O_APPEND-flaggan till standard ut"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "Stängning av filen misslyckades"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "Sökning misslyckades vid skapande av gles fil"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "Läsfel"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "Fel vid sökning i fil"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "Oväntat filslut"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "Skrivfel"
 
@@ -534,12 +499,10 @@ msgid "Unknown-15"
 msgstr "Okänd-15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "Fil är tom"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "För liten för att vara en giltig .xz-fil"
 
@@ -589,17 +552,14 @@ msgid "--list does not support reading from standard input"
 msgstr "--list saknar stöd för att läsa från standard in"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "Fel vid läsning av filnamn"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "Oväntat slut av indata vid läsning av filnamn"
 
 #: src/xz/main.c
-#, c-format
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "Nulltecken hittades vid läsning av filnamn; kanske du menade att använda ”--files0” istället för ”--files”?"
 
@@ -610,6 +570,14 @@ msgstr "Komprimering och dekomprimering med --robot stöds inte än."
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Kan inte läsa data från standard in när filnamn läses från standard in"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#, fuzzy
+#| msgid "FILTERS"
+msgid "LTR"
+msgstr "FILTER"
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -667,7 +635,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "%s MiB minne krävs. Begränsningen är %s."
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "Filterkedja"
 
@@ -1126,7 +1093,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "Alternativ måste vara ”namn=värde”-par separerade med kommatecken"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "Ogiltigt flaggnamn"
 
@@ -1135,7 +1101,6 @@ msgid "Invalid option value"
 msgstr "Ogiltigt alternativvärde"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "LZMA1/LZMA2-förinställning stöds inte"
 
@@ -1144,7 +1109,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "Summan av lc och lp får inte överstiga 4"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "Filnamn har okänd filändelse, hoppar över"
 
@@ -1154,7 +1118,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "Filen har redan ändelsen ”%s”, hoppar över"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "Ogiltig filnamnsändelse"
 
@@ -1163,7 +1126,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "Värdet är inte ett icke-negativt, decimalt heltal"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "Ogiltig multipeländelse"
 

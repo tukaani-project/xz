@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2024-08-27 13:08+0800\n"
 "Last-Translator: Mingye Wang (Artoria2e5) <arthur200126@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -23,12 +23,10 @@ msgstr ""
 "X-Generator: Poedit 3.4.4\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "--block-list 的无效参数"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "--block-list 得到过多参数"
 
@@ -42,27 +40,16 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "0 仅可用于 --block-list 的最后一个元素"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "未知文件格式类型"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "不支持的完整性检查类型"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "仅可使用 '--files' 或 '--files0' 指定单个文件。"
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, c-format
-msgid "%s: %s"
-msgstr "%s：%s"
 
 #: src/xz/args.c
 #, c-format
@@ -181,95 +168,86 @@ msgstr "已调整 --filters%2$u LZMA%1$c 字典大小（从 %3$s MiB 调整为 %
 msgid "Error changing to filter chain %u: %s"
 msgstr "更改为过滤器链 %u 时出错：%s"
 
-#: src/xz/file_io.c
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
+msgid "%s: %s"
+msgstr "%s：%s"
+
+#: src/xz/file_io.c
 msgid "Error creating a pipe"
 msgstr "创建管道时出错"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "poll() 失败"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "文件似乎已移动，不再进行删除操作"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot remove"
 msgstr "无法删除"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "无法设置文件所有者"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "无法设置文件所有组"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "无法设置文件权限"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the file failed"
 msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the directory of the file failed"
 msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "从标准输入获取文件状态标志出错"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a symbolic link, skipping"
 msgstr "是符号链接，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a directory, skipping"
 msgstr "是目录，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Not a regular file, skipping"
 msgstr "不是标准文件，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "文件有设置用户ID或设置组ID标识，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "文件有粘滞位标识，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "输入文件有多于一个硬链接，跳过"
 
@@ -278,59 +256,50 @@ msgid "Empty filename, skipping"
 msgstr "空文件名，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "回复标准输入的状态标志时出错"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "获取标准输出的文件状态标志时出错"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Opening the directory failed"
 msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Not a regular file, skipping"
 msgid "Destination is not a regular file"
 msgstr "不是标准文件，跳过"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "恢复标准输出的 O_APPEND 标志时出错"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "尝试创建稀疏文件时 seek 失败"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "读取错误"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "seek 文件时出错"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "未预期的文件结束"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "写入错误"
 
@@ -535,12 +504,10 @@ msgid "Unknown-15"
 msgstr "未知-15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "文件为空"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "过小，不可能是有效的 .xz 文件"
 
@@ -591,17 +558,14 @@ msgid "--list does not support reading from standard input"
 msgstr "--list 不支持从标准输入读取"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "读取文件名列表时出错"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "读取文件名列表时遇到未预期的输入结束"
 
 #: src/xz/main.c
-#, c-format
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "读取文件名列表时获得了空字符；您可能想要使用 '--files0' 而非 '--files'？"
 
@@ -612,6 +576,12 @@ msgstr "尚不支持带 --robot 的压缩和解压缩。"
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "无法同时从标准输入读取数据和文件名列表"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+msgid "LTR"
+msgstr ""
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -669,7 +639,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "需要 %s MiB 的内存空间。限制为 %s。"
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "过滤器链"
 
@@ -1284,7 +1253,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "%s：选项必须按照 '名称=值' 的格式成对出现，使用半角逗号分隔"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "无效的选项名称"
 
@@ -1295,7 +1263,6 @@ msgid "Invalid option value"
 msgstr "%s：无效的选项值"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "不支持的 LZMA1/LZMA2 预设等级"
 
@@ -1304,7 +1271,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "lc 和 lp 的和必须不大于 4"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "文件名有未知后缀，跳过"
 
@@ -1314,7 +1280,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "文件已有 '%s' 后缀名，跳过"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "无效的文件名后缀"
 
@@ -1325,7 +1290,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "%s：值不是非负十进制整数"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "无效的乘数后缀"
 

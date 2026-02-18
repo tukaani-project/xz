@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.6.0-pre2\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2024-02-24 10:23+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
@@ -22,12 +22,10 @@ msgstr ""
 "X-Generator: Gtranslator 42.0\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "Đối số cho --block-list không hợp lệ"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "Quá nhiều đối số cho --block-list"
 
@@ -41,27 +39,16 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "0 chỉ có thể dùng như là phần tử cuối trong --block-list"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "Không hiểu kiểu định dạng tập tin"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "Không hỗ trợ kiểu kiểm tra toàn vẹn"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Chỉ được đưa ra một tập tin cho “--files” hay “--files0”."
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, c-format
-msgid "%s: %s"
-msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -180,95 +167,86 @@ msgstr "Chỉnh cỡ từ điển LZMA%c cho --filters%u từ %s MiB thành %s M
 msgid "Error changing to filter chain %u: %s"
 msgstr "Gặp lỗi thay đổi chuỗi móc xích lọc %u: %s"
 
-#: src/xz/file_io.c
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/file_io.c
 msgid "Error creating a pipe"
 msgstr "Gặp lỗi khi tạo một ống dẫn"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "hàm poll() bị lỗi"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "Tập tin có lẽ đã bị di chuyển, không phải gỡ bỏ"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot remove"
 msgstr "Không thể gỡ bỏ"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "Không thể đặt chủ sở hữu tập tin"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "Không thể đặt nhóm tập tin"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "Không thể đặt chế độ đọc ghi cho tập tin"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the file failed"
 msgstr "Gặp lỗi khi đóng tập tin"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the directory of the file failed"
 msgstr "Gặp lỗi khi đóng tập tin"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "Gặp lỗi khi lấy các cờ trạng thái tập tin từ đầu vào tiêu chuẩn"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a symbolic link, skipping"
 msgstr "Là một liên kết mềm nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a directory, skipping"
 msgstr "Không phải là một thư mục nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Not a regular file, skipping"
 msgstr "Không phải là tập tin thường nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "Tập tin có đặt bít setuid hoặc setgid nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "Tập tin có bít sticky nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "Tập tin đầu vào có nhiều hơn một liên kết cứng nên bỏ qua"
 
@@ -277,59 +255,50 @@ msgid "Empty filename, skipping"
 msgstr "Tên tập tin trống rỗng nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "Gặp lỗi khi phục hồi các cờ trạng thái tới đầu vào tiêu chuẩn"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "Gặp lỗi khi lấy các cờ trạng thái tập tin từ đầu vào tiêu chuẩn"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Opening the directory failed"
 msgstr "Gặp lỗi khi đóng tập tin"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Not a regular file, skipping"
 msgid "Destination is not a regular file"
 msgstr "Không phải là tập tin thường nên bỏ qua"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "Gặp lỗi khi phục hồi cờ O_APPEND trên đầu ra tiêu chuẩn"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "Gặp lỗi khi đóng tập tin"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "Gặp lỗi khi di chuyển vị trí đọc khi cố tạo một tập tin rải rác"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "Lỗi đọc"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "Gặp lỗi khi di chuyển vị trí đọc tập tin"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "Kết thúc tập tin bất ngờ"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "Lỗi ghi"
 
@@ -534,12 +503,10 @@ msgid "Unknown-15"
 msgstr "ChưaBiết15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "Tập tin trống rỗng"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "Là quá nhỏ đối với tập tin .xz hợp lệ"
 
@@ -590,17 +557,14 @@ msgid "--list does not support reading from standard input"
 msgstr "--list không hỗ trợ đọc từ đầu vào tiêu chuẩn"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "Gặp lỗi khi đọc tên tập tin"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "Gặp kết thúc đầu vào bất ngờ khi đọc các tên tập tin"
 
 #: src/xz/main.c
-#, c-format
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "Gặp ký hiệu null khi đọc tên tập tin; có lẽ ý bạn muốn là dùng “--files0” chứ không phải “--files'?"
 
@@ -611,6 +575,12 @@ msgstr "Nén và giải nén với --robot vẫn chưa được hỗ trợ."
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Không thể đọc dữ liệu từ đầu vào tiêu chuẩn khi đọc tập tin từ đầu vào tiêu chuẩn"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+msgid "LTR"
+msgstr ""
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -668,7 +638,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "Yêu cầu cần có %s MiB bộ nhớ. Nhưng giới hạn là %s."
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "Móc xích lọc"
 
@@ -1292,7 +1261,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "%s: Các tùy chọn phải là các cặp “tên=giá_trị” ngăn cách nhau bằng dấu phẩy"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "Tên tùy chọn không hợp lệ"
 
@@ -1303,7 +1271,6 @@ msgid "Invalid option value"
 msgstr "%s: Giá trị của tùy chọn không hợp lệ"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "Hiện nay chưa hỗ trợ LZMA1/LZMA2"
 
@@ -1312,7 +1279,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "Tổng số lượng lc và lp không được vượt quá 4"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "Tên tập tin có phần hậu tố chưa biết nên bỏ qua"
 
@@ -1322,7 +1288,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "Tập tin đã sẵn có hậu tố “%s” nên bỏ qua"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "Hậu tố tên tập tin không hợp lệ"
 
@@ -1333,7 +1298,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "%s: Giá trị không phải là số thập phân nguyên không âm"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "Hậu tố (đơn vị) nhân tố không hợp lệ"
 

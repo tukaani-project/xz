@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.7.1-dev1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2025-03-02 06:03+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <(nothing)>\n"
@@ -21,12 +21,10 @@ msgstr ""
 "X-Generator: Poedit 3.5\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "--block-list -ის არასწორი არგუმენტი"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "--block-list -ის მეტისმეტად ბევრი არგუმენტი"
 
@@ -40,27 +38,16 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "ნული --block-list -ის მხოლოდ ბოლო ელემენტი შეიძლება იყოს"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "ფაილის ფორმატის უცნობი ტიპი"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "სიმრთელის შემოწმების მხარდაუჭერელი ტიპი"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "'--files' ან '--files0' -თან ერთად, მხოლოდ, ერთი ფაილის მითითება შეიძლება."
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, c-format
-msgid "%s: %s"
-msgstr "%s: %s"
 
 #: src/xz/args.c
 #, c-format
@@ -179,93 +166,82 @@ msgstr "LZMA%c-ის ლექსიკონის ზომა შესწ�
 msgid "Error changing to filter chain %u: %s"
 msgstr "ფილტრების ჯაჭვზე %u შეცვლის შეცდომა: %s"
 
-#: src/xz/file_io.c
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/xz/file_io.c
 msgid "Error creating a pipe"
 msgstr "ფაიფის შექმნის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "poll() -ის შეცდომა"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "როგორც ჩანს, ფაილი გადატანილია. არ წავშლი"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot remove"
 msgstr "წაშლა შეუძლებელია"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "ფაილის მფლობელის დაყენების შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "ფაილის ჯგუფის დაყენების შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "ფაილის წვდომების დაყენების შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Synchronizing the file failed"
 msgstr "ფაილის სინქრონიზაციის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Synchronizing the directory of the file failed"
 msgstr "ფაილის საქაღალდის სინქრონიზაციის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "ფაილის სტატუსის ალმები მიღების შეცდომა სტანდარტული შეყვანიდან"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a symbolic link, skipping"
 msgstr "სიმბმულია. გამოტოვება"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Is a directory, skipping"
 msgstr "საქაღალდეა, გამოტოვება"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Not a regular file, skipping"
 msgstr "ჩვეულებრივი ფაილი არაა. გამოტოვება"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "ფაილს setuid ან setgit ბიტი აქვს დაყენებული. გამოტოვება"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "ფაილს წებოვანი ბიტი აქვს. გამოტოვება"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "შეყვანილ ფაილს ერთზე მეტი მყარი ბმული გააჩნია. გამოტოვება"
 
@@ -274,57 +250,46 @@ msgid "Empty filename, skipping"
 msgstr "ცარიელი ფაილის სახელი. გამოტოვება"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "სტატუსის ალმების აღდგენის შეცდომა სტანდარტულ შეყვანაზე"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "ფაილის სტატუსის ალმების მიღების შეცდომა სტანრარტული გამოტანიდან"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Opening the directory failed"
 msgstr "საქაღალდის გახსნის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Destination is not a regular file"
 msgstr "სამიზნე ჩვეულებრივი ფაილი არაა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "O_APPEND ალმის აღდგენის შეცდომა სტანდარტულ გამოტანაზე"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "ფაილის დახურვის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "გადახვევის შეცდომა დამატებითი ფაილის შექმნის მცდელობისას"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "წაკითხვის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "ფაილის გადახვევის შეცდომა"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "ფაილის მოულოდნელი დასასრული"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "ჩაწერის შეცდომა"
 
@@ -529,12 +494,10 @@ msgid "Unknown-15"
 msgstr "უცნობი-15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "ფაილი ცარიელია"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "მეტისმეტად პატარაა, რომ სწორ .xz ფაილს წარმოადგენდეს"
 
@@ -584,17 +547,14 @@ msgid "--list does not support reading from standard input"
 msgstr "--list -ს სტანდარტული შეყვანიდან წაკითხვის მხარდაჭერა არ გააჩნია"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "ფაილის სახელების წაკითხვის შეცდომა"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "შეყვანის მოულოდნელი დასასრული ფაილის სახელების კითხვისას"
 
 #: src/xz/main.c
-#, c-format
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "ფაილის სახელების კითხვისა აღმოჩენილია ნულოვანი სიმბოლო. შეიძლება, '--files'-ის მაგიერ '--files0'-ის გამოყენება გნებავდათ?"
 
@@ -605,6 +565,14 @@ msgstr "--robot -ან ერთად შეკუმშვა და გა�
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "მონაცემების სტანდარტული შეყვანიდან წაკითხვა მაშინ, როცა ფაილების სახელებიც სტანდარტული შეყვანიდან იკითხება, შეუძლებელია"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+#, fuzzy
+#| msgid "FILTERS"
+msgid "LTR"
+msgstr "ფილტრები"
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -662,7 +630,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "საჭიროა %s მბ მეხსიერება. ზღვარია: %s."
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "ფილტრის ჯაჭვი"
 
@@ -1119,7 +1086,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "პარამეტრები უნდა წარმოადგენდეს \"სახელი=მნიშვნელობა\" ტიპის წყვილებს, მძიმეებით გამოყოფილს"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "არასწორი პარამეტრის სახელი"
 
@@ -1128,7 +1094,6 @@ msgid "Invalid option value"
 msgstr "არასწორი პარამეტრის მნიშვნელობა"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "მხარდაუჭერელი LZMA1/LZMA2 პრესეტი"
 
@@ -1137,7 +1102,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "\"lc\" და \"lp\"-ის ჯამი 4-ზე მეტი არ უნდა იყო"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "ფაილის სახელის უცნობი სუფიქსი. გამოტოვება"
 
@@ -1147,7 +1111,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "ფაილს სუფიქსი `%s' უკვე გააჩნა. გამოტოვება"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "ფაილის სახელის არასწორი სუფიქსი"
 
@@ -1156,7 +1119,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "მნიშვნელობა არაუარყოფით მთელ რიცხვს არ წარმოადგენს"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "არასწორი მამრავლის სუფიქსი"
 

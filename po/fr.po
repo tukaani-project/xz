@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xz-5.4.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2025-01-29 20:59+0200\n"
+"POT-Creation-Date: 2026-02-15 16:24+0200\n"
 "PO-Revision-Date: 2023-12-19 04:12+0100\n"
 "Last-Translator: Stéphane Aulery <lkppo@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -19,12 +19,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
 #: src/xz/args.c
-#, c-format
 msgid "Invalid argument to --block-list"
 msgstr "argument de l'option --block-list invalide"
 
 #: src/xz/args.c
-#, c-format
 msgid "Too many arguments to --block-list"
 msgstr "trop d'arguments pour l'option --block-list"
 
@@ -38,12 +36,10 @@ msgid "0 can only be used as the last element in --block-list"
 msgstr "0 peut seulement être utilisé en dernier élément de --block-list"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unknown file format type"
 msgstr "Format de fichier inconnu"
 
 #: src/xz/args.c
-#, c-format
 msgid "Unsupported integrity check type"
 msgstr "Type de vérification d'intégrité inconnu"
 
@@ -52,16 +48,6 @@ msgstr "Type de vérification d'intégrité inconnu"
 #| msgid "Only one file can be specified with `--files' or `--files0'."
 msgid "Only one file can be specified with '--files' or '--files0'."
 msgstr "Un seul fichier peut être spécifié avec `--files' ou `--files0'."
-
-#. TRANSLATORS: This is a translatable
-#. string because French needs a space
-#. before the colon ("%s : %s").
-#: src/xz/args.c src/xz/coder.c src/xz/file_io.c src/xz/list.c src/xz/options.c
-#: src/xz/util.c
-#, fuzzy, c-format
-#| msgid "%s: "
-msgid "%s: %s"
-msgstr "%s : "
 
 #: src/xz/args.c
 #, c-format
@@ -186,59 +172,58 @@ msgstr "Taille du dictionnaire LZMA%c réduite de %s MiB à %s MiB pour ne pas d
 msgid "Error changing to filter chain %u: %s"
 msgstr "Impossible de créer un tube anonyme (pipe) : %s"
 
+#. TRANSLATORS: This is a translatable
+#. string because French needs a space
+#. before the colon ("%s : %s").
+#: src/xz/file_io.c src/xz/main.c src/xz/message.c
+#, fuzzy, c-format
+#| msgid "%s: "
+msgid "%s: %s"
+msgstr "%s : "
+
 #: src/xz/file_io.c
-#, c-format
 msgid "Error creating a pipe"
 msgstr "Impossible de créer un tube anonyme (pipe)"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "poll() failed"
 msgstr "L'appel à la fonction poll() a échoué"
 
-#. TRANSLATORS: When compression or decompression finishes,
-#. and xz is going to remove the source file, xz first checks
-#. if the source file still exists, and if it does, does its
-#. device and inode numbers match what xz saw when it opened
-#. the source file. If these checks fail, this message is
-#. shown, %s being the filename, and the file is not deleted.
-#. The check for device and inode numbers is there, because
-#. it is possible that the user has put a new file in place
-#. of the original file, and in that case it obviously
-#. shouldn't be removed.
+#. TRANSLATORS: When compression or decompression
+#. finishes, and xz is going to remove the source
+#. file, xz first checks if the source file still
+#. exists, and that it hasn't been replaced with
+#. a new file. If these checks fail, this message
+#. is shown and the file is not deleted.
 #: src/xz/file_io.c
-#, c-format
 msgid "File seems to have been moved, not removing"
 msgstr "Le fichier a apparemment été déplacé, suppression annulée"
 
+#. TRANSLATORS: Deleting a file failed
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot remove"
 msgstr "Impossible de supprimer"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file owner"
 msgstr "Impossible de modifier le propriétaire du fichier"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file group"
 msgstr "Impossible de modifier le groupe propriétaire du fichier"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Cannot set the file permissions"
 msgstr "Impossible de modifier les permissions du fichier"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the file failed"
 msgstr "Impossible de fermer le fichier"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Synchronizing the directory of the file failed"
 msgstr "Impossible de fermer le fichier"
@@ -252,40 +237,33 @@ msgstr "Impossible de fermer le fichier"
 # a million times, if we dilute the error message in 20 languages, it will be
 # almost impossible to find an explanation and support for the error.
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard input"
 msgstr "Echec de la lecture du drapeau d'état du fichier depuis la sortie standard"
 
 #: src/xz/file_io.c
-#, c-format
 #, fuzzy
 msgid "Is a symbolic link, skipping"
 msgstr "%s est un lien symbolique : ignoré"
 
 #: src/xz/file_io.c
-#, c-format
 #, fuzzy
 msgid "Is a directory, skipping"
 msgstr "%s est un répertoire : ignoré"
 
 #: src/xz/file_io.c
-#, c-format
 #, fuzzy
 msgid "Not a regular file, skipping"
 msgstr "%s n'est pas un fichier régulier : ignoré"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has setuid or setgid bit set, skipping"
 msgstr "Le fichier possède les bits `setuid' ou `setgid' : ignoré"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "File has sticky bit set, skipping"
 msgstr "Le fichier possède le bit `sticky' : ignoré"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Input file has more than one hard link, skipping"
 msgstr "Le fichier d'entrée a plus d'un lien matériel : ignoré"
 
@@ -295,60 +273,51 @@ msgstr "Nom de fichier vide, ignoré"
 
 # See note from translator above titled "file status flags".
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the status flags to standard input"
 msgstr "Erreur de restauration du drapeau d'état de l'entrée standard"
 
 # See note from translator above titled "file status flags".
 #: src/xz/file_io.c
-#, c-format
 msgid "Error getting the file status flags from standard output"
 msgstr "Erreur de lecture du drapeau d'état du fichier depuis la sortie standard"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Closing the file failed: %s"
 msgid "Opening the directory failed"
 msgstr "Impossible de fermer le fichier"
 
 #: src/xz/file_io.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Not a regular file, skipping"
 msgid "Destination is not a regular file"
 msgstr "%s n'est pas un fichier régulier : ignoré"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error restoring the O_APPEND flag to standard output"
 msgstr "Impossible de rétablir le drapeau O_APPEND sur la sortie standard"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Closing the file failed"
 msgstr "Impossible de fermer le fichier"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Seeking failed when trying to create a sparse file"
 msgstr "Impossible de se déplacer dans le fichier pour créer un 'sparse file'"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Read error"
 msgstr "Erreur d'écriture"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Error seeking the file"
 msgstr "Impossible de se déplacer dans le fichier"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Unexpected end of file"
 msgstr "Fin de fichier inattendue"
 
 #: src/xz/file_io.c
-#, c-format
 msgid "Write error"
 msgstr "Erreur d'écriture"
 
@@ -563,12 +532,10 @@ msgid "Unknown-15"
 msgstr "Inconnue-15"
 
 #: src/xz/list.c
-#, c-format
 msgid "File is empty"
 msgstr "Le fichier est vide"
 
 #: src/xz/list.c
-#, c-format
 msgid "Too small to be a valid .xz file"
 msgstr "Trop petit pour être un fichier xz valide."
 
@@ -620,17 +587,15 @@ msgid "--list does not support reading from standard input"
 msgstr "--list est incompatible avec la lecture sur l'entrée standard"
 
 #: src/xz/main.c
-#, c-format
 msgid "Error reading filenames"
 msgstr "Erreur lors de la lecture des noms de fichiers"
 
 #: src/xz/main.c
-#, c-format
 msgid "Unexpected end of input when reading filenames"
 msgstr "Fin des données inattendue lors de la lecture des noms de fichiers"
 
 #: src/xz/main.c
-#, fuzzy, c-format
+#, fuzzy
 #| msgid "%s: Null character found when reading filenames; maybe you meant to use `--files0' instead of `--files'?"
 msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr "Caractère NULL détecté lors de la lecture des noms de fichiers ; peut-être pensiez-vous à `--files0' plutot qu'a `--files' ?"
@@ -642,6 +607,12 @@ msgstr "La compression et la décompression ne marchent pas encore avec --robot.
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
 msgstr "Impossible de lire à la fois les données et les noms de fichiers depuis l'entrée standard"
+
+#. TRANSLATORS: If the language is written right-to-left,
+#. translate this to "RTL". Otherwise translate to "LTR".
+#: src/xz/message.c src/lzmainfo/lzmainfo.c
+msgid "LTR"
+msgstr ""
 
 #. TRANSLATORS: This is the program name in the beginning
 #. of the line in messages. Usually it becomes "xz: ".
@@ -699,7 +670,6 @@ msgid "%s MiB of memory is required. The limit is %s."
 msgstr "%s MiB de mémoire sont nécessaires, la limite étant %s."
 
 #: src/xz/message.c
-#, c-format
 msgid "Filter chain"
 msgstr "Enchaînement de filtres"
 
@@ -1293,7 +1263,6 @@ msgid "Options must be 'name=value' pairs separated with commas"
 msgstr "%s: Les options doivent être des paires `nom=valeur' séparées par des virgules"
 
 #: src/xz/options.c
-#, c-format
 msgid "Invalid option name"
 msgstr "Nom d'option invalide"
 
@@ -1304,7 +1273,6 @@ msgid "Invalid option value"
 msgstr "%s : Valeur d'option invalide"
 
 #: src/xz/options.c
-#, c-format
 msgid "Unsupported LZMA1/LZMA2 preset"
 msgstr "Préréglage LZMA1/LZMA2 non reconnu"
 
@@ -1313,7 +1281,6 @@ msgid "The sum of lc and lp must not exceed 4"
 msgstr "La somme de lc et lp ne doit pas dépasser 4"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Filename has an unknown suffix, skipping"
 msgstr "Le fichier a un suffixe inconnu, ignoré"
 
@@ -1324,7 +1291,6 @@ msgid "File already has '%s' suffix, skipping"
 msgstr "Le fichier a déjà le suffixe '%s', ignoré"
 
 #: src/xz/suffix.c
-#, c-format
 msgid "Invalid filename suffix"
 msgstr "Suffixe de nom de fichier invalide"
 
@@ -1335,7 +1301,6 @@ msgid "Value is not a non-negative decimal integer"
 msgstr "%s : La valeur n'est pas un entier décimal non négatif"
 
 #: src/xz/util.c
-#, c-format
 msgid "Invalid multiplier suffix"
 msgstr "Suffixe multiplicateur invalide"
 

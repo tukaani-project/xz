@@ -9,6 +9,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+// Implicit directional marks for RTL mode:
+#define LRM "\342\200\216" /* U+200E as UTF-8, left-to-right mark */
+#define RLM "\342\200\217" /* U+200F as UTF-8, right-to-left mark */
+
+// Isolate formatting characters for RTL mode:
+#define LRI "\342\201\246" /* U+2066 as UTF-8  */
+#define RLI "\342\201\247" /* U+2067 as UTF-8  */
+#define FSI "\342\201\250" /* U+2068 as UTF-8  */
+#define PDI "\342\201\251" /* U+2069 as UTF-8  */
+
+
 /// Verbosity levels
 enum message_verbosity {
 	V_SILENT,   ///< No messages

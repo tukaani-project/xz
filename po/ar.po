@@ -621,7 +621,7 @@ msgstr "RTL"
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
-msgstr "{RLM}%s: "
+msgstr "%s: "
 
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 msgid "Internal error (bug)"

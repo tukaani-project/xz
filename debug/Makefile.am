@@ -2,7 +2,8 @@
 ## Author: Lasse Collin
 
 EXTRA_DIST = \
-	translation.bash
+	translation.bash \
+	utf8-bidi-fmt-conv.bash
 
 noinst_PROGRAMS = \
 	repeat \

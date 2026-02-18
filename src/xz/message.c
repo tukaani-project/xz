@@ -716,7 +716,7 @@ vmessage(enum message_verbosity v, const char *prefix,
 		// the message to the the right edge of the terminal:
 		//   - TERM_SET_RTL is needed in VTE.
 		//   - RLM works in some terminals with autodetection
-		//     (as of early 2026, it doesn't in Konsole).
+		//     (as of 2026-02, it doesn't in Konsole).
 		//
 		// progress_automatic is true if stderr is a tty.
 		if (is_rtl && progress_automatic)
@@ -1034,6 +1034,9 @@ message_help(bool long_help)
 	const struct tuklib_wrap_opt wrap1 = {  1,  1,  1,  1, 79, flags };
 	const struct tuklib_wrap_opt wrap2 = {  2,  2, 22, 22, 79, flags };
 	const struct tuklib_wrap_opt wrap3 = { 24, 24, 36, 36, 79, flags };
+
+	if (is_rtl && is_tty(STDOUT_FILENO))
+		fputs(TERM_SET_RTL, stdout);
 
 	// Accumulated error codes from tuklib_wraps() and tuklib_wrapf()
 	int e = 0;
@@ -1362,6 +1365,9 @@ message_help(bool long_help)
 "THIS IS A DEVELOPMENT VERSION NOT INTENDED FOR PRODUCTION USE."));
 #endif
 
+	if (is_rtl && is_tty(STDOUT_FILENO))
+		fputs(TERM_RESTORE, stdout);
+
 	detect_wrapping_errors(e);
 	tuklib_exit(E_SUCCESS, E_ERROR, verbosity != V_SILENT);
 }
@@ -1379,6 +1385,9 @@ message_filters_help(void)
 		message_bug();
 
 	if (!opt_robot) {
+		if (is_rtl && is_tty(STDOUT_FILENO))
+			fputs(TERM_SET_RTL, stdout);
+
 		int e = tuklib_wrapf(stdout, &wrap,
 W_("Filter chains are set using the --filters=FILTERS or "
 "--filters1=FILTERS ... --filters9=FILTERS options. "
@@ -1388,6 +1397,9 @@ W_("Filter chains are set using the --filters=FILTERS or "
 		putchar('\n');
 		e |= tuklib_wraps(stdout, &wrap,
 			W_("The supported filters and their options are:"));
+
+		if (is_rtl && is_tty(STDOUT_FILENO))
+			fputs(TERM_RESTORE, stdout);
 
 		detect_wrapping_errors(e);
 	}

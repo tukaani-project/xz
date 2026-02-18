@@ -762,7 +762,7 @@ msgstr "اسم"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "integrity check type: 'none' (use with caution), 'crc32', 'crc64' (default), or 'sha256'"
-msgstr "نوع فحص السلامة: 'none' (استخدمه بحذر)، 'crc32'، 'crc64' (مبدئي)، أو 'sha256'"
+msgstr "نوع فحص السلامة: 'none' (استخدمه بحذر)، أو 'crc32'، أو 'crc64' (مبدئي)، أو 'sha256'"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c

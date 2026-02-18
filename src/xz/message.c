@@ -929,6 +929,26 @@ message_filters_show(enum message_verbosity v, const lzma_filter *filters)
 	if (ret != LZMA_OK)
 		message_fatal(NULL, "%s", message_strm(ret));
 
+	// Don't print the filter chain message with message(v, ...)
+	// because in RTL mode it puts the message in an isolate (RLI),
+	// which isn't ideal when most of the text is LTR. The LTR text
+	// would need to be put in LRI to keep the dashes in --options
+	// at the left side and prevent numbers from becoming RTL.
+	//
+	//     xz: {RLI}FILTER CHAIN: {LRI}--lzma2=....mf=bt4,depth=0
+	//
+	// The line is easily so long that terminal might wrap it.
+	// Especially if the terminal uses LTR base direction, the
+	// wrapping can look really weird with the above isolates because
+	// the wrapping happens from the middle of the visual line:
+	//
+	//     xz: --lzma2=...............mf=bt4,de :NIAHC RETLIF
+	//     pth=0
+	//
+	// In this case the simplest method produces the least bad result.
+	//
+	// * * *
+	//
 	// This message is printed before signal handlers have been
 	// established, so there is no need to block/unblock signals.
 	//

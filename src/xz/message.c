@@ -721,8 +721,10 @@ vmessage(enum message_verbosity v, const char *prefix,
 		if (prefix != NULL) {
 			// The va_list may contain a string that was masked
 			// with tuklib_mask_nonprint, so use the _r variant.
+			//
+			// In RTL mode, the "%s: " string isn't translated.
 			char *mem = NULL;
-			fprintf(stderr, _("%s: "),
+			fprintf(stderr, is_rtl ? FSI "%s" PDI ": " : _("%s: "),
 					tuklib_mask_nonprint_r(prefix, &mem));
 			free(mem);
 		}
@@ -731,6 +733,9 @@ vmessage(enum message_verbosity v, const char *prefix,
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
+		if (is_rtl)
+			fputs(RLI, stderr);
+
 		vfprintf(stderr, fmt, ap);
 #ifdef __clang__
 #	pragma GCC diagnostic pop

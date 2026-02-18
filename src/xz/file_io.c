@@ -143,7 +143,7 @@ io_init(void)
 
 	// Create a pipe for the self-pipe trick.
 	if (pipe(user_abort_pipe))
-		message_fatal(_("%s: %s"), _("Error creating a pipe"),
+		message_fatal(NULL, _("%s: %s"), _("Error creating a pipe"),
 				strerror(errno));
 
 	// Make both ends of the pipe non-blocking.
@@ -151,7 +151,8 @@ io_init(void)
 		int flags = fcntl(user_abort_pipe[i], F_GETFL);
 		if (flags == -1 || fcntl(user_abort_pipe[i], F_SETFL,
 				flags | O_NONBLOCK) == -1)
-			message_fatal(_("%s: %s"), _("Error creating a pipe"),
+			message_fatal(NULL, _("%s: %s"),
+					_("Error creating a pipe"),
 					strerror(errno));
 	}
 #endif

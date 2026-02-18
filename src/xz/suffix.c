@@ -390,8 +390,7 @@ suffix_set(const char *suffix)
 	// Empty suffix and suffixes having a directory separator are
 	// rejected. Such suffixes would break things later.
 	if (suffix[0] == '\0' || has_dir_sep(suffix))
-		message_fatal(_("%s: %s"), tuklib_mask_nonprint(suffix),
-				_("Invalid filename suffix"));
+		message_fatal(suffix, _("Invalid filename suffix"));
 
 	// Replace the old custom_suffix (if any) with the new suffix.
 	free(custom_suffix);

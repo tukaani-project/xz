@@ -153,7 +153,11 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 			multiplier = 0;
 
 		if (multiplier == 0) {
-			message(V_ERROR, _("%s: %s"), value - 1,
+			// Use message_error() because it masks unprintable
+			// characters in the value string. It also sets
+			// the exit status but it doesn't matter because
+			// we call message_fatal() next.
+			message_error(value - 1,
 					_("Invalid multiplier suffix"));
 			message_fatal(NULL,
 					_("Valid suffixes are 'KiB' (2^10), "

@@ -86,18 +86,20 @@ read_name(const args_info *args)
 			if (errno == EINTR)
 				continue;
 
-			message_error(_("%s: Error reading filenames: %s"),
+			message_error(_("%s: %s: %s"),
 				tuklib_mask_nonprint(args->files_name),
+				_("Error reading filenames"),
 				strerror(errno));
 			return NULL;
 		}
 
 		if (feof(args->files_file)) {
 			if (pos != 0)
-				message_error(_("%s: Unexpected end of input "
-						"when reading filenames"),
+				message_error(_("%s: %s"),
 						tuklib_mask_nonprint(
-							args->files_name));
+							args->files_name),
+						_("Unexpected end of input "
+						"when reading filenames"));
 
 			return NULL;
 		}
@@ -119,12 +121,12 @@ read_name(const args_info *args)
 			// A null character was found when using --files,
 			// which expects plain text input separated with
 			// newlines.
-			message_error(_("%s: Null character found when "
+			message_error(_("%s: %s"),
+					tuklib_mask_nonprint(args->files_name),
+					_("Null character found when "
 					"reading filenames; maybe you meant "
 					"to use '--files0' instead "
-					"of '--files'?"),
-					tuklib_mask_nonprint(
-						args->files_name));
+					"of '--files'?"));
 			return NULL;
 		}
 

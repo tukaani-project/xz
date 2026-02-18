@@ -347,14 +347,16 @@ static bool
 parse_indexes(xz_file_info *xfi, file_pair *pair)
 {
 	if (pair->src_st.st_size <= 0) {
-		message_error(_("%s: File is empty"),
-				tuklib_mask_nonprint(pair->src_name));
+		message_error(_("%s: %s"),
+				tuklib_mask_nonprint(pair->src_name),
+				_("File is empty"));
 		return true;
 	}
 
 	if (pair->src_st.st_size < 2 * LZMA_STREAM_HEADER_SIZE) {
-		message_error(_("%s: Too small to be a valid .xz file"),
-				tuklib_mask_nonprint(pair->src_name));
+		message_error(_("%s: %s"),
+				tuklib_mask_nonprint(pair->src_name),
+				_("Too small to be a valid .xz file"));
 		return true;
 	}
 

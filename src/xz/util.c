@@ -153,8 +153,9 @@ str_to_uint64(const char *name, const char *value, uint64_t min, uint64_t max)
 			multiplier = 0;
 
 		if (multiplier == 0) {
-			message(V_ERROR, _("%s: Invalid multiplier suffix"),
-					tuklib_mask_nonprint(value - 1));
+			message(V_ERROR, _("%s: %s"),
+					tuklib_mask_nonprint(value - 1),
+					_("Invalid multiplier suffix"));
 			message_fatal(_("Valid suffixes are 'KiB' (2^10), "
 					"'MiB' (2^20), and 'GiB' (2^30)."));
 		}

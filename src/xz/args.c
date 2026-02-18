@@ -75,7 +75,8 @@ parse_block_list(const char *str_const)
 
 	// It must be non-empty and not begin with a comma.
 	if (str[0] == '\0' || str[0] == ',')
-		message_fatal(_("%s: Invalid argument to --block-list"),
+		message_fatal(_("%s: %s"),
+				_("Invalid argument to --block-list"),
 				tuklib_mask_nonprint(str));
 
 	// Count the number of comma-separated strings.
@@ -560,7 +561,8 @@ parse_real(args_info *args, int argc, char **argv)
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0)
 				if (++i == ARRAY_SIZE(types))
-					message_fatal(_("%s: Unknown file "
+					message_fatal(_("%s: %s"),
+							_("Unknown file "
 							"format type"),
 							tuklib_mask_nonprint(
 								optarg));
@@ -584,7 +586,8 @@ parse_real(args_info *args, int argc, char **argv)
 			size_t i = 0;
 			while (strcmp(types[i].str, optarg) != 0) {
 				if (++i == ARRAY_SIZE(types))
-					message_fatal(_("%s: Unsupported "
+					message_fatal(_("%s: %s"),
+						_("Unsupported "
 						"integrity check type"),
 						tuklib_mask_nonprint(optarg));
 			}
@@ -592,7 +595,8 @@ parse_real(args_info *args, int argc, char **argv)
 			// Use a separate check in case we are using different
 			// liblzma than what was used to compile us.
 			if (!lzma_check_is_supported(types[i].check))
-				message_fatal(_("%s: Unsupported "
+				message_fatal(_("%s: %s"),
+						_("Unsupported "
 						"integrity check type"),
 						tuklib_mask_nonprint(optarg));
 

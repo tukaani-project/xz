@@ -712,6 +712,16 @@ vmessage(enum message_verbosity v, const char *prefix,
 
 		progress_flush(false);
 
+		// In RTL mode, if stderr is a terminal, try to align
+		// the message to the the right edge of the terminal:
+		//   - TERM_SET_RTL is needed in VTE.
+		//   - RLM works in some terminals with autodetection
+		//     (as of early 2026, it doesn't in Konsole).
+		//
+		// progress_automatic is true if stderr is a tty.
+		if (is_rtl && progress_automatic)
+			fputs(TERM_SET_RTL RLM, stderr);
+
 		// TRANSLATORS: This is the program name in the beginning
 		// of the line in messages. Usually it becomes "xz: ".
 		// This is a translatable string because French needs
@@ -742,6 +752,9 @@ vmessage(enum message_verbosity v, const char *prefix,
 #endif
 
 		fputc('\n', stderr);
+
+		if (is_rtl && progress_automatic)
+			fputs(TERM_RESTORE, stderr);
 
 		signals_unblock();
 	}

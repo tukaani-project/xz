@@ -969,10 +969,11 @@ detect_wrapping_errors(int error_mask)
 extern void
 message_help(bool long_help)
 {
-	static const struct tuklib_wrap_opt wrap0 = {  0,  0,  0,  0, 79 };
-	static const struct tuklib_wrap_opt wrap1 = {  1,  1,  1,  1, 79 };
-	static const struct tuklib_wrap_opt wrap2 = {  2,  2, 22, 22, 79 };
-	static const struct tuklib_wrap_opt wrap3 = { 24, 24, 36, 36, 79 };
+	const int flags = is_rtl ? TUKLIB_WRAP_F_RTL : 0;
+	const struct tuklib_wrap_opt wrap0 = {  0,  0,  0,  0, 79, flags };
+	const struct tuklib_wrap_opt wrap1 = {  1,  1,  1,  1, 79, flags };
+	const struct tuklib_wrap_opt wrap2 = {  2,  2, 22, 22, 79, flags };
+	const struct tuklib_wrap_opt wrap3 = { 24, 24, 36, 36, 79, flags };
 
 	// Accumulated error codes from tuklib_wraps() and tuklib_wrapf()
 	int e = 0;
@@ -1100,9 +1101,9 @@ message_help(bool long_help)
 				"all pending data is flushed out"));
 
 		e |= tuklib_wrapf(stdout, &wrap2,
-			"    --memlimit-compress=%s\n"
-			"    --memlimit-decompress=%s\n"
-			"    --memlimit-mt-decompress=%s\n"
+			"    --memlimit-compress=%s\v\r"
+			"    --memlimit-decompress=%s\v\r"
+			"    --memlimit-mt-decompress=%s\v\r"
 			"-M, --memlimit=%s\v%s\r"
 			"    --no-adjust\v%s",
 			_("LIMIT"),
@@ -1148,7 +1149,7 @@ message_help(bool long_help)
 		|| defined(HAVE_ENCODER_LZMA2) || defined(HAVE_DECODER_LZMA2)
 		e |= tuklib_wrapf(stdout, &wrap2,
 			"\n"
-			"--lzma1[=%s]\n"
+			"--lzma1[=%s]\v\r"
 			"--lzma2[=%s]\v%s",
 			// TRANSLATORS: Short for OPTIONS.
 			_("OPTS"),
@@ -1309,7 +1310,8 @@ message_help(bool long_help)
 extern void
 message_filters_help(void)
 {
-	static const struct tuklib_wrap_opt wrap = { .right_margin = 76 };
+	const int flags = is_rtl ? TUKLIB_WRAP_F_RTL : 0;
+	const struct tuklib_wrap_opt wrap = { 0, 0, 0, 0, 76, flags };
 
 	char *encoder_options;
 	if (lzma_str_list_filters(&encoder_options, LZMA_VLI_UNKNOWN,

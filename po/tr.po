@@ -22,13 +22,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: --block-list için geçersiz argüman"
+msgid "Invalid argument to --block-list"
+msgstr "--block-list için geçersiz argüman"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: --block-list için çok fazla argüman"
+msgid "Too many arguments to --block-list"
+msgstr "--block-list için çok fazla argüman"
 
 #: src/xz/args.c
 #, c-format
@@ -41,13 +41,13 @@ msgstr "0, yalnızca --block-list içindeki son öge olarak kullanılabilir"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Bilinmeyen dosya biçimi türü"
+msgid "Unknown file format type"
+msgstr "Bilinmeyen dosya biçimi türü"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Desteklenmeyen bütünlük denetimi türü"
+msgid "Unsupported integrity check type"
+msgstr "Desteklenmeyen bütünlük denetimi türü"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -181,13 +181,13 @@ msgstr "Süzgeç zinciri %u olarak değiştirilirken hata: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Veriyolu oluştururken hata: %s"
+msgid "Error creating a pipe"
+msgstr "Veriyolu oluştururken hata"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() başarısız oldu: %s"
+msgid "poll() failed"
+msgstr "poll() başarısız oldu"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -201,73 +201,73 @@ msgstr "%s: poll() başarısız oldu: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Dosya taşınmış gibi görünüyor, kaldırılmıyor"
+msgid "File seems to have been moved, not removing"
+msgstr "Dosya taşınmış gibi görünüyor, kaldırılmıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Kaldırılamıyor: %s"
+msgid "Cannot remove"
+msgstr "Kaldırılamıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Dosya sahibi ayarlanamıyor: %s"
+msgid "Cannot set the file owner"
+msgstr "Dosya sahibi ayarlanamıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Dosya grubu ayarlanamıyor: %s"
+msgid "Cannot set the file group"
+msgstr "Dosya grubu ayarlanamıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Dosya izinleri ayarlanamıyor: %s"
+msgid "Cannot set the file permissions"
+msgstr "Dosya izinleri ayarlanamıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Dosyayı eşzamanlama başarısız: %s"
+msgid "Synchronizing the file failed"
+msgstr "Dosyayı eşzamanlama başarısız"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Dosyanın dizinini eşzamanlama başarısız: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Dosyanın dizinini eşzamanlama başarısız"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Standart girdi'den dosya durum bayrakları alınırken hata: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Standart girdi'den dosya durum bayrakları alınırken hata"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Bir sembolik bağ, atlanıyor"
+msgid "Is a symbolic link, skipping"
+msgstr "Bir sembolik bağ, atlanıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Bir dizin, atlanıyor"
+msgid "Is a directory, skipping"
+msgstr "Bir dizin, atlanıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Olağan bir dosya değil, atlanıyor"
+msgid "Not a regular file, skipping"
+msgstr "Olağan bir dosya değil, atlanıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Dosyanın setuid'si veya setgid biti ayarlanmış, atlanıyor"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Dosyanın setuid'si veya setgid biti ayarlanmış, atlanıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Dosyanın yapışkan bit seti var, atlanıyor"
+msgid "File has sticky bit set, skipping"
+msgstr "Dosyanın yapışkan bit seti var, atlanıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Girdi dosyasında birden çok sabit bağ var, atlanıyor"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Girdi dosyasında birden çok sabit bağ var, atlanıyor"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -275,58 +275,58 @@ msgstr "Boş dosya adı, atlanıyor"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Standart girdi'ye durum bayrakları geri yüklenirken hata: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Standart girdi'ye durum bayrakları geri yüklenirken hata"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Standart çıktı'dan dosya durum bayrakları alınırken hata: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Standart çıktı'dan dosya durum bayrakları alınırken hata"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Dizini açma başarısız: %s"
+msgid "Opening the directory failed"
+msgstr "Dizini açma başarısız"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Hedef olağan bir dosya değil"
+msgid "Destination is not a regular file"
+msgstr "Hedef olağan bir dosya değil"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Standart çıktı'dan O_APPEND bayrağı geri yüklenirken hata: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Standart çıktı'dan O_APPEND bayrağı geri yüklenirken hata"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Dosyayı kapatma başarısız: %s"
+msgid "Closing the file failed"
+msgstr "Dosyayı kapatma başarısız"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Bir aralıklı dosya oluşturmaya çalışırken arama başarısız: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Bir aralıklı dosya oluşturmaya çalışırken arama başarısız"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Okuma hatası: %s"
+msgid "Read error"
+msgstr "Okuma hatası"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Dosyayı ararken hata: %s"
+msgid "Error seeking the file"
+msgstr "Dosyayı ararken hata"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Dosyanın beklenmedik sonu"
+msgid "Unexpected end of file"
+msgstr "Dosyanın beklenmedik sonu"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Yazma hatası: %s"
+msgid "Write error"
+msgstr "Yazma hatası"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -530,13 +530,13 @@ msgstr "?-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Dosya boş"
+msgid "File is empty"
+msgstr "Dosya boş"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Geçerli bir .xz dosyası olabilmek için pek küçük"
+msgid "Too small to be a valid .xz file"
+msgstr "Geçerli bir .xz dosyası olabilmek için pek küçük"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -585,18 +585,18 @@ msgstr "--list, standart girdi'den okumayı desteklemez"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Dosya adları okunurken hata: %s"
+msgid "Error reading filenames"
+msgstr "Dosya adları okunurken hata"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Dosya adları okunurken beklenmedik girdi sonu"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Dosya adları okunurken beklenmedik girdi sonu"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Dosya adları okunurken boş karakter bulundu; '--files' yerine '--files0' mı demek istediniz?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Dosya adları okunurken boş karakter bulundu; '--files' yerine '--files0' mı demek istediniz?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -663,8 +663,8 @@ msgstr "%s MiB bellek gerekiyor. Sınır, %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Süzgeç zinciri: %s\n"
+msgid "Filter chain"
+msgstr "Süzgeç zinciri"
 
 #: src/xz/message.c
 #, c-format
@@ -1120,8 +1120,8 @@ msgstr "Seçenekler, virgülle ayrılmış 'ad=değer' çiftleri olmalıdır"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Geçersiz seçenek adı"
+msgid "Invalid option name"
+msgstr "Geçersiz seçenek adı"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1129,8 +1129,8 @@ msgstr "Geçersiz seçenek değeri"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Desteklenmeyen LZMA1/LZMA2 önayarı: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Desteklenmeyen LZMA1/LZMA2 önayarı"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1138,18 +1138,18 @@ msgstr "lc ve lp'nin toplamı 4'ü geçmemelidir"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Dosya adında bilinmeyen sonek var, atlanıyor"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Dosya adında bilinmeyen sonek var, atlanıyor"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Dosyada '%s' soneki halihazırda var, atlanıyor"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Dosyada '%s' soneki halihazırda var, atlanıyor"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Geçersiz dosya adı soneki"
+msgid "Invalid filename suffix"
+msgstr "Geçersiz dosya adı soneki"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1157,8 +1157,8 @@ msgstr "Değer, bir negatif olmayan ondalık tamsayı"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Geçersiz çoklayıcı soneki"
+msgid "Invalid multiplier suffix"
+msgstr "Geçersiz çoklayıcı soneki"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

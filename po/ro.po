@@ -38,13 +38,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: Argument nevalid pentru opțiunea „--block-list”"
+msgid "Invalid argument to --block-list"
+msgstr "Argument nevalid pentru opțiunea „--block-list”"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: Prea multe argumente pentru opțiunea „--block-list”"
+msgid "Too many arguments to --block-list"
+msgstr "Prea multe argumente pentru opțiunea „--block-list”"
 
 #: src/xz/args.c
 #, c-format
@@ -57,13 +57,13 @@ msgstr "0 poate fi folosit doar ca ultimul element din opțiunea „--block-list
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Tip de format de fișier necunoscut"
+msgid "Unknown file format type"
+msgstr "Tip de format de fișier necunoscut"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Tip de verificare a integrității neacceptat"
+msgid "Unsupported integrity check type"
+msgstr "Tip de verificare a integrității neacceptat"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -208,13 +208,13 @@ msgstr "Eroare la schimbarea lanțului de filtrare %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Eroare la crearea unei conducte: %s"
+msgid "Error creating a pipe"
+msgstr "Eroare la crearea unei conducte"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() a eșuat: %s"
+msgid "poll() failed"
+msgstr "poll() a eșuat"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -228,73 +228,73 @@ msgstr "%s: poll() a eșuat: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Fișierul pare să fi fost mutat, nu eliminat"
+msgid "File seems to have been moved, not removing"
+msgstr "Fișierul pare să fi fost mutat, nu eliminat"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Nu se poate elimina: %s"
+msgid "Cannot remove"
+msgstr "Nu se poate elimina"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Nu se poate configura proprietarul fișierului: %s"
+msgid "Cannot set the file owner"
+msgstr "Nu se poate configura proprietarul fișierului"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Nu se poate configura grupul proprietar al fișierului: %s"
+msgid "Cannot set the file group"
+msgstr "Nu se poate configura grupul proprietar al fișierului"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Nu se pot configura permisiunile fișierului: %s"
+msgid "Cannot set the file permissions"
+msgstr "Nu se pot configura permisiunile fișierului"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Sincronizarea fișierului a eșuat: %s"
+msgid "Synchronizing the file failed"
+msgstr "Sincronizarea fișierului a eșuat"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Sincronizarea directorului fișierului a eșuat: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Sincronizarea directorului fișierului a eșuat"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Eroare la obținerea indicatorilor de stare a fișierului de la intrarea standard: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Eroare la obținerea indicatorilor de stare a fișierului de la intrarea standard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Este o legătură simbolică, se omite"
+msgid "Is a symbolic link, skipping"
+msgstr "Este o legătură simbolică, se omite"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Este un director, se omite"
+msgid "Is a directory, skipping"
+msgstr "Este un director, se omite"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Nu este un fișier obișnuit, se omite"
+msgid "Not a regular file, skipping"
+msgstr "Nu este un fișier obișnuit, se omite"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Fișierul are activați biții «setuid» sau «setgid», se omite"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Fișierul are activați biții «setuid» sau «setgid», se omite"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Fișierul are activat bitul lipicios(sticky), se omite"
+msgid "File has sticky bit set, skipping"
+msgstr "Fișierul are activat bitul lipicios(sticky), se omite"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Fișierul de intrare are mai mult de o legătură dură, se omite"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Fișierul de intrare are mai mult de o legătură dură, se omite"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -302,58 +302,58 @@ msgstr "Numele fișierului este gol, se omite"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Eroare la restabilirea indicatorilor de stare la intrarea standard: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Eroare la restabilirea indicatorilor de stare la intrarea standard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Eroare la obținerea indicatorilor de stare a fișierului de la ieșirea standard: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Eroare la obținerea indicatorilor de stare a fișierului de la ieșirea standard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Deschiderea directorului a eșuat: %s"
+msgid "Opening the directory failed"
+msgstr "Deschiderea directorului a eșuat"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Destinația nu este un fișier obișnuit"
+msgid "Destination is not a regular file"
+msgstr "Destinația nu este un fișier obișnuit"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Eroare la restabilirea indicatorului O_APPEND la ieșirea standard: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Eroare la restabilirea indicatorului O_APPEND la ieșirea standard"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Închiderea fișierului a eșuat: %s"
+msgid "Closing the file failed"
+msgstr "Închiderea fișierului a eșuat"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Căutarea a eșuat când se încerca crearea unui fișier dispers(sparse): %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Căutarea a eșuat când se încerca crearea unui fișier dispers(sparse)"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Eroare de citire: %s"
+msgid "Read error"
+msgstr "Eroare de citire"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Eroare la explorarea fișierului: %s"
+msgid "Error seeking the file"
+msgstr "Eroare la explorarea fișierului"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Sfârșit neașteptat al fișierului"
+msgid "Unexpected end of file"
+msgstr "Sfârșit neașteptat al fișierului"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Eroare de scriere: %s"
+msgid "Write error"
+msgstr "Eroare de scriere"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -565,13 +565,13 @@ msgstr "Necunos-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Fișierul este gol"
+msgid "File is empty"
+msgstr "Fișierul este gol"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Prea mic pentru a fi un fișier .xz valid"
+msgid "Too small to be a valid .xz file"
+msgstr "Prea mic pentru a fi un fișier .xz valid"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -622,13 +622,13 @@ msgstr "„--list” nu acceptă citirea de la intrarea standard"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Eroare la citirea numelor de fișiere: %s"
+msgid "Error reading filenames"
+msgstr "Eroare la citirea numelor de fișiere"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Sfârșit neașteptat al intrării la citirea numelor de fișiere"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Sfârșit neașteptat al intrării la citirea numelor de fișiere"
 
 # Adaptînd sugestia făcută de Daniel Șerbănescu asupra traducerii cuvîntului „null”, am modificat
 # traducerea de la:„Caracter nul găsit...”, la:
@@ -640,8 +640,8 @@ msgstr "%s: Sfârșit neașteptat al intrării la citirea numelor de fișiere"
 # - utilizatorul software-ului «xz», direct de la linia de comandă, mă îndoiesc că va fi un utilizator ce nu este familiarizat cu nomenclatura din informatică (pentru restul utilizatorilor, acest mesaj nu va fi vizibil, pentru că-l vor utiliza din spatele unui software „IGU” «InterfațăGrafică(de)Utilizator»
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Caracter nul(null) găsit la citirea numelor de fișiere; poate ați vrut să utilizați „--files0” în loc de „--files”?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Caracter nul(null) găsit la citirea numelor de fișiere; poate ați vrut să utilizați „--files0” în loc de „--files”?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -708,8 +708,8 @@ msgstr "Se necesită %sMio de memorie. Limita este de %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Lanț de filtre: %s\n"
+msgid "Filter chain"
+msgstr "Lanț de filtre"
 
 #: src/xz/message.c
 #, c-format
@@ -1167,8 +1167,8 @@ msgstr "Opțiunile trebuie să fie perechi „nume=valoare” separate prin virg
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Nume de opțiune nevalid"
+msgid "Invalid option name"
+msgstr "Nume de opțiune nevalid"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1176,8 +1176,8 @@ msgstr "Valoare nevalidă a opțiunii"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Presetare LZMA1/LZMA2 neacceptată: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Presetare LZMA1/LZMA2 neacceptată"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1185,18 +1185,18 @@ msgstr "Suma de lc și lp nu trebuie să depășească 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Numele fișierului are un sufix necunoscut, se omite"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Numele fișierului are un sufix necunoscut, se omite"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Fișierul are deja sufixul „%s”, se omite"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Fișierul are deja sufixul „%s”, se omite"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Sufixul numelui de fișier nu este valid"
+msgid "Invalid filename suffix"
+msgstr "Sufixul numelui de fișier nu este valid"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1204,8 +1204,8 @@ msgstr "Valoarea nu este un număr întreg zecimal nenegativ"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Sufix multiplicator nevalid"
+msgid "Invalid multiplier suffix"
+msgstr "Sufix multiplicator nevalid"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

@@ -24,13 +24,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s：--block-list 的无效参数"
+msgid "Invalid argument to --block-list"
+msgstr "--block-list 的无效参数"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s：--block-list 得到过多参数"
+msgid "Too many arguments to --block-list"
+msgstr "--block-list 得到过多参数"
 
 #: src/xz/args.c
 #, c-format
@@ -43,13 +43,13 @@ msgstr "0 仅可用于 --block-list 的最后一个元素"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s：未知文件格式类型"
+msgid "Unknown file format type"
+msgstr "未知文件格式类型"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s：不支持的完整性检查类型"
+msgid "Unsupported integrity check type"
+msgstr "不支持的完整性检查类型"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -183,13 +183,13 @@ msgstr "更改为过滤器链 %u 时出错：%s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "创建管道时出错：%s"
+msgid "Error creating a pipe"
+msgstr "创建管道时出错"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s：poll() 失败：%s"
+msgid "poll() failed"
+msgstr "poll() 失败"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -203,75 +203,75 @@ msgstr "%s：poll() 失败：%s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s：文件似乎已移动，不再进行删除操作"
+msgid "File seems to have been moved, not removing"
+msgstr "文件似乎已移动，不再进行删除操作"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s：无法删除：%s"
+msgid "Cannot remove"
+msgstr "无法删除"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s：无法设置文件所有者：%s"
+msgid "Cannot set the file owner"
+msgstr "无法设置文件所有者"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s：无法设置文件所有组：%s"
+msgid "Cannot set the file group"
+msgstr "无法设置文件所有组"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s：无法设置文件权限：%s"
+msgid "Cannot set the file permissions"
+msgstr "无法设置文件权限"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s：关闭文件失败：%s"
+msgid "Synchronizing the file failed"
+msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s：关闭文件失败：%s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "从标准输入获取文件状态标志出错：%s"
+msgid "Error getting the file status flags from standard input"
+msgstr "从标准输入获取文件状态标志出错"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s：是符号链接，跳过"
+msgid "Is a symbolic link, skipping"
+msgstr "是符号链接，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s：是目录，跳过"
+msgid "Is a directory, skipping"
+msgstr "是目录，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s：不是标准文件，跳过"
+msgid "Not a regular file, skipping"
+msgstr "不是标准文件，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s：文件有设置用户ID或设置组ID标识，跳过"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "文件有设置用户ID或设置组ID标识，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s：文件有粘滞位标识，跳过"
+msgid "File has sticky bit set, skipping"
+msgstr "文件有粘滞位标识，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s：输入文件有多于一个硬链接，跳过"
+msgid "Input file has more than one hard link, skipping"
+msgstr "输入文件有多于一个硬链接，跳过"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -279,60 +279,60 @@ msgstr "空文件名，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "回复标准输入的状态标志时出错：%s"
+msgid "Error restoring the status flags to standard input"
+msgstr "回复标准输入的状态标志时出错"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "获取标准输出的文件状态标志时出错：%s"
+msgid "Error getting the file status flags from standard output"
+msgstr "获取标准输出的文件状态标志时出错"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s：关闭文件失败：%s"
+msgid "Opening the directory failed"
+msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Not a regular file, skipping"
-msgid "%s: Destination is not a regular file"
-msgstr "%s：不是标准文件，跳过"
+msgid "Destination is not a regular file"
+msgstr "不是标准文件，跳过"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "恢复标准输出的 O_APPEND 标志时出错：%s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "恢复标准输出的 O_APPEND 标志时出错"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s：关闭文件失败：%s"
+msgid "Closing the file failed"
+msgstr "关闭文件失败"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s：尝试创建稀疏文件时 seek 失败：%s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "尝试创建稀疏文件时 seek 失败"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s：读取错误：%s"
+msgid "Read error"
+msgstr "读取错误"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s：seek 文件时出错：%s"
+msgid "Error seeking the file"
+msgstr "seek 文件时出错"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s：未预期的文件结束"
+msgid "Unexpected end of file"
+msgstr "未预期的文件结束"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s：写入错误：%s"
+msgid "Write error"
+msgstr "写入错误"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -536,13 +536,13 @@ msgstr "未知-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s：文件为空"
+msgid "File is empty"
+msgstr "文件为空"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s：过小，不可能是有效的 .xz 文件"
+msgid "Too small to be a valid .xz file"
+msgstr "过小，不可能是有效的 .xz 文件"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -592,18 +592,18 @@ msgstr "--list 不支持从标准输入读取"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s：读取文件名列表时出错：%s"
+msgid "Error reading filenames"
+msgstr "读取文件名列表时出错"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s：读取文件名列表时遇到未预期的输入结束"
+msgid "Unexpected end of input when reading filenames"
+msgstr "读取文件名列表时遇到未预期的输入结束"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s：读取文件名列表时获得了空字符；您可能想要使用 '--files0' 而非 '--files'？"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "读取文件名列表时获得了空字符；您可能想要使用 '--files0' 而非 '--files'？"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -670,8 +670,8 @@ msgstr "需要 %s MiB 的内存空间。限制为 %s。"
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s：过滤器链：%s\n"
+msgid "Filter chain"
+msgstr "过滤器链"
 
 #: src/xz/message.c
 #, c-format
@@ -1285,8 +1285,8 @@ msgstr "%s：选项必须按照 '名称=值' 的格式成对出现，使用半�
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s：无效的选项名称"
+msgid "Invalid option name"
+msgstr "无效的选项名称"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1296,8 +1296,8 @@ msgstr "%s：无效的选项值"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "不支持的 LZMA1/LZMA2 预设等级：%s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "不支持的 LZMA1/LZMA2 预设等级"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1305,18 +1305,18 @@ msgstr "lc 和 lp 的和必须不大于 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s：文件名有未知后缀，跳过"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "文件名有未知后缀，跳过"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s：文件已有 '%s' 后缀名，跳过"
+msgid "File already has '%s' suffix, skipping"
+msgstr "文件已有 '%s' 后缀名，跳过"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s：无效的文件名后缀"
+msgid "Invalid filename suffix"
+msgstr "无效的文件名后缀"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1326,8 +1326,8 @@ msgstr "%s：值不是非负十进制整数"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s：无效的乘数后缀"
+msgid "Invalid multiplier suffix"
+msgstr "无效的乘数后缀"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

@@ -23,13 +23,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: Virheellinen argumentti valitsimelle --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "Virheellinen argumentti valitsimelle --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: Liian monta argumenttia valitsimelle --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "Liian monta argumenttia valitsimelle --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -42,13 +42,13 @@ msgstr "0 kelpaa vain viimeiseksi alkioksi valitsimen --block-list kanssa"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Tuntematon tiedostomuototyyppi"
+msgid "Unknown file format type"
+msgstr "Tuntematon tiedostomuototyyppi"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Eheystarkistuksen tyyppiä ei tueta"
+msgid "Unsupported integrity check type"
+msgstr "Eheystarkistuksen tyyppiä ei tueta"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -182,13 +182,13 @@ msgstr "Virhe vaihdettaessa suodinketjuun %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Virhe putkea luodessa: %s"
+msgid "Error creating a pipe"
+msgstr "Virhe putkea luodessa"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll()-kutsu epäonnistui: %s"
+msgid "poll() failed"
+msgstr "poll()-kutsu epäonnistui"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -202,73 +202,73 @@ msgstr "%s: poll()-kutsu epäonnistui: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Tiedosto on nähtävästi siirretty, ei poisteta"
+msgid "File seems to have been moved, not removing"
+msgstr "Tiedosto on nähtävästi siirretty, ei poisteta"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Ei voi poistaa: %s"
+msgid "Cannot remove"
+msgstr "Ei voi poistaa"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Tiedoston omistajaa ei voi asettaa: %s"
+msgid "Cannot set the file owner"
+msgstr "Tiedoston omistajaa ei voi asettaa"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Tiedoston ryhmää ei voi asettaa: %s"
+msgid "Cannot set the file group"
+msgstr "Tiedoston ryhmää ei voi asettaa"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Tiedoston oikeuksia ei voi asettaa: %s"
+msgid "Cannot set the file permissions"
+msgstr "Tiedoston oikeuksia ei voi asettaa"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Tiedoston synkronointi epäonnistui: %s"
+msgid "Synchronizing the file failed"
+msgstr "Tiedoston synkronointi epäonnistui"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Tiedoston hakemiston synkronointi epäonnistui: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Tiedoston hakemiston synkronointi epäonnistui"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Virhe tiedoston tilalippujen noutamisessa vakiosyötteelle: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Virhe tiedoston tilalippujen noutamisessa vakiosyötteelle"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: On symbolinen linkki, ohitetaan"
+msgid "Is a symbolic link, skipping"
+msgstr "On symbolinen linkki, ohitetaan"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: On hakemisto, ohitetaan"
+msgid "Is a directory, skipping"
+msgstr "On hakemisto, ohitetaan"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Ei ole tavallinen tiedosto, ohitetaan"
+msgid "Not a regular file, skipping"
+msgstr "Ei ole tavallinen tiedosto, ohitetaan"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Tiedostolla on setuid- tai setgid-bitti, ohitetaan"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Tiedostolla on setuid- tai setgid-bitti, ohitetaan"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Tiedostolla on sticky-bitti, ohitetaan"
+msgid "File has sticky bit set, skipping"
+msgstr "Tiedostolla on sticky-bitti, ohitetaan"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Syötetiedostoon on yli yksi kova linkki, ohitetaan"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Syötetiedostoon on yli yksi kova linkki, ohitetaan"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -276,58 +276,58 @@ msgstr "Tyhjä tiedostonimi, ohitetaan"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Virhe tilalippujen palauttamisessa vakiosyötteelle: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Virhe tilalippujen palauttamisessa vakiosyötteelle"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Virhe tiedoston tilalippujen noutamisessa vakiotulosteelle: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Virhe tiedoston tilalippujen noutamisessa vakiotulosteelle"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Hakemiston avaaminen epäonnistui: %s"
+msgid "Opening the directory failed"
+msgstr "Hakemiston avaaminen epäonnistui"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Kohde ei ole tavallinen tiedosto"
+msgid "Destination is not a regular file"
+msgstr "Kohde ei ole tavallinen tiedosto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Virhe O_APPEND-lipun palauttamisessa vakiosyötteelle: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Virhe O_APPEND-lipun palauttamisessa vakiosyötteelle"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Tiedoston sulkeminen epäonnistui: %s"
+msgid "Closing the file failed"
+msgstr "Tiedoston sulkeminen epäonnistui"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Siirtyminen epäonnistui yritettäessä luoda hajanaista tiedostoa: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Siirtyminen epäonnistui yritettäessä luoda hajanaista tiedostoa"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Lukuvirhe: %s"
+msgid "Read error"
+msgstr "Lukuvirhe"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Virhe tiedostossa siirtymisessä: %s"
+msgid "Error seeking the file"
+msgstr "Virhe tiedostossa siirtymisessä"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Odottamaton tiedoston loppu"
+msgid "Unexpected end of file"
+msgstr "Odottamaton tiedoston loppu"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Kirjoitusvirhe: %s"
+msgid "Write error"
+msgstr "Kirjoitusvirhe"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -531,13 +531,13 @@ msgstr "Tuntematon-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Tiedosto on tyhjä"
+msgid "File is empty"
+msgstr "Tiedosto on tyhjä"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Liian pieni kelvolliseksi .xz-tiedostoksi"
+msgid "Too small to be a valid .xz file"
+msgstr "Liian pieni kelvolliseksi .xz-tiedostoksi"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -586,18 +586,18 @@ msgstr "--list ei tue lukemista vakiosyötteestä"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Virhe luettaessa tiedostonimiä: %s"
+msgid "Error reading filenames"
+msgstr "Virhe luettaessa tiedostonimiä"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Odottamaton syötteen loppu tiedostonimiä luettaessa"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Odottamaton syötteen loppu tiedostonimiä luettaessa"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Nul-merkki kohdattiin tiedostonimiä lukiessa; oliko tarkoitus antaa valitsin ”--files0” eikä ”--files”?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Nul-merkki kohdattiin tiedostonimiä lukiessa; oliko tarkoitus antaa valitsin ”--files0” eikä ”--files”?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -664,8 +664,8 @@ msgstr "%s MiB muistia vaaditaan. Raja on %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Suodinketju: %s\n"
+msgid "Filter chain"
+msgstr "Suodinketju"
 
 #: src/xz/message.c
 #, c-format
@@ -1122,8 +1122,8 @@ msgstr "Valitsinten on oltava pilkuilla eroteltuja ”nimi=arvo”-pareja"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Virheellinen asetuksen nimi"
+msgid "Invalid option name"
+msgstr "Virheellinen asetuksen nimi"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1131,8 +1131,8 @@ msgstr "Virheellinen asetuksen arvo"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Ei-tuettu LZMA1/LZMA2-esiasetus: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Ei-tuettu LZMA1/LZMA2-esiasetus"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1140,18 +1140,18 @@ msgstr "lc:n ja lp:n summa ei saa olla yli 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Tiedostonimen pääte on tuntematon, ohitetaan"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Tiedostonimen pääte on tuntematon, ohitetaan"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Tiedostolla on jo ”%s”-pääte, ohitetaan"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Tiedostolla on jo ”%s”-pääte, ohitetaan"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Virheellinen tiedostonimen pääte"
+msgid "Invalid filename suffix"
+msgstr "Virheellinen tiedostonimen pääte"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1159,8 +1159,8 @@ msgstr "Arvo ei ole ei ole epänegatiivinen kymmenkantainen kokonaisluku"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Tuntematon kerroin"
+msgid "Invalid multiplier suffix"
+msgstr "Tuntematon kerroin"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

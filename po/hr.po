@@ -26,13 +26,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: nevaljani argument za --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "nevaljani argument za --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: Previše argumenata za --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "Previše argumenata za --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -45,13 +45,13 @@ msgstr "za '--block-list' može se koristiti '0' samo kao posljednji element"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Nepoznata vrsta formata datoteke"
+msgid "Unknown file format type"
+msgstr "Nepoznata vrsta formata datoteke"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Nepodržani način (tip) provjere integriteta"
+msgid "Unsupported integrity check type"
+msgstr "Nepodržani način (tip) provjere integriteta"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -185,13 +185,13 @@ msgstr "Greška pri prebacivanju na lanac filtra %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Greška pri stvaranju cijevi: %s"
+msgid "Error creating a pipe"
+msgstr "Greška pri stvaranju cijevi"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() nije uspjela: %s"
+msgid "poll() failed"
+msgstr "poll() nije uspjela"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -205,73 +205,74 @@ msgstr "%s: poll() nije uspjela: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Izgleda da je datoteka premještena -- nije izbrisana"
+msgid "File seems to have been moved, not removing"
+msgstr "Izgleda da je datoteka premještena -- nije izbrisana"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "Brisanje %s nije moguće: %s"
+#, fuzzy
+msgid "Cannot remove"
+msgstr "Brisanje %s nije moguće"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Nije moguće promijeniti vlasnika datoteke: %s"
+msgid "Cannot set the file owner"
+msgstr "Nije moguće promijeniti vlasnika datoteke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Nije moguće promijeniti grupu datoteke: %s"
+msgid "Cannot set the file group"
+msgstr "Nije moguće promijeniti grupu datoteke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Nije moguće postaviti prava dostupa datoteci: %s"
+msgid "Cannot set the file permissions"
+msgstr "Nije moguće postaviti prava dostupa datoteci"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Nije uspjelo sinkronizirati datoteku: %s"
+msgid "Synchronizing the file failed"
+msgstr "Nije uspjelo sinkronizirati datoteku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Nije uspjelo sinkronizirati direktorij datoteke: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Nije uspjelo sinkronizirati direktorij datoteke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Greška pri pokušaju dobivanja oznaka statusa datoteke iz standardnog ulaza: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Greška pri pokušaju dobivanja oznaka statusa datoteke iz standardnog ulaza"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: To je simbolična poveznica -- preskočeno"
+msgid "Is a symbolic link, skipping"
+msgstr "To je simbolična poveznica -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: To je direktorij -- preskočeno"
+msgid "Is a directory, skipping"
+msgstr "To je direktorij -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: To nije regularna datoteka -- preskočeno"
+msgid "Not a regular file, skipping"
+msgstr "To nije regularna datoteka -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Datoteka ima postavljen SETUID- ili SETGID bit -- preskočeno"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Datoteka ima postavljen SETUID- ili SETGID bit -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Datoteka ima postavljen ljepljivi bit -- preskočeno"
+msgid "File has sticky bit set, skipping"
+msgstr "Datoteka ima postavljen ljepljivi bit -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Ulazna datoteka ima više od jednog tvrdog linka -- preskočeno"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Ulazna datoteka ima više od jednog tvrdog linka -- preskočeno"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -279,58 +280,58 @@ msgstr "Prazna datoteka -- preskočeno"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Greška pri vraćanju statusnih flags na standardni ulaz: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Greška pri vraćanju statusnih flags na standardni ulaz"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Greška pri dobivanju oznaka statusa datoteke iz standardnog izlaza: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Greška pri dobivanju oznaka statusa datoteke iz standardnog izlaza"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Nije uspjelo otvoriti direktorij: %s"
+msgid "Opening the directory failed"
+msgstr "Nije uspjelo otvoriti direktorij"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Odredište nije obična datoteka"
+msgid "Destination is not a regular file"
+msgstr "Odredište nije obična datoteka"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Greška pri vraćanju 'O_APPEND' oznaka na standardni izlaz: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Greška pri vraćanju 'O_APPEND' oznaka na standardni izlaz"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Nije uspjelo zatvoriti datoteku: %s"
+msgid "Closing the file failed"
+msgstr "Nije uspjelo zatvoriti datoteku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: 'Seeking' (traženje) nije uspjelo pri pokušaju stvaranja raštrkane datoteke: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "'Seeking' (traženje) nije uspjelo pri pokušaju stvaranja raštrkane datoteke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Greška pri čitanju: %s"
+msgid "Read error"
+msgstr "Greška pri čitanju"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Greška pri 'seeking' (traženju) datoteke: %s"
+msgid "Error seeking the file"
+msgstr "Greška pri 'seeking' (traženju) datoteke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Neočekivani kraj datoteke"
+msgid "Unexpected end of file"
+msgstr "Neočekivani kraj datoteke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Greška pri pisanju: %s"
+msgid "Write error"
+msgstr "Greška pri pisanju"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -534,13 +535,13 @@ msgstr "Nepoznat-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Datoteka je prazna"
+msgid "File is empty"
+msgstr "Datoteka je prazna"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Datoteka je premala da bude valjana .xz datoteka"
+msgid "Too small to be a valid .xz file"
+msgstr "Datoteka je premala da bude valjana .xz datoteka"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -590,18 +591,18 @@ msgstr "'--list' ne podržava čitanje iz standardnog izlaza"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Greška pri čitanju datoteka: %s"
+msgid "Error reading filenames"
+msgstr "Greška pri čitanju datoteka"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Neočekivani kraj ulaznih podataka tijekom čitanja imena datoteka"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Neočekivani kraj ulaznih podataka tijekom čitanja imena datoteka"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Prazni NULA-znak pronađen pri čitanju imena datoteka; možda ste mislili koristiti '--files0' umjesto '--files'?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Prazni NULA-znak pronađen pri čitanju imena datoteka; možda ste mislili koristiti '--files0' umjesto '--files'?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -668,8 +669,8 @@ msgstr "%s Potrebno je MiB memorije. Ograničenje je %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Lanac filtara: %s\n"
+msgid "Filter chain"
+msgstr "Lanac filtara"
 
 #: src/xz/message.c
 #, c-format
@@ -1127,8 +1128,8 @@ msgstr "Opcije moraju biti parovi 'name=value' odvojeni zarezima"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Nevaljano ime opcije"
+msgid "Invalid option name"
+msgstr "Nevaljano ime opcije"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1136,8 +1137,8 @@ msgstr "Nevaljana vrijednost opcije"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Nepodržana LZMA1/LZMA2 početna postavka: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Nepodržana LZMA1/LZMA2 početna postavka"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1145,18 +1146,18 @@ msgstr "Zbroj lc i lp ne smije biti veći od 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Ime datoteke nema poznatu ekstenziju, preskačemo"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Ime datoteke nema poznatu ekstenziju, preskačemo"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Datoteka već ima '%s' ekstenziju, preskačemo"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Datoteka već ima '%s' ekstenziju, preskačemo"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Nevaljana ekstenzija u imenu datoteke"
+msgid "Invalid filename suffix"
+msgstr "Nevaljana ekstenzija u imenu datoteke"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1164,8 +1165,8 @@ msgstr "Vrijednost nije nula ili pozitivni dekadski cijeli broj"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Nevaljani sufiks-množitelj"
+msgid "Invalid multiplier suffix"
+msgstr "Nevaljani sufiks-množitelj"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

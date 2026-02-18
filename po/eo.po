@@ -21,13 +21,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: Nevalida parametro por --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "Nevalida parametro por --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: Tro da argumentoj por --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "Tro da argumentoj por --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -40,13 +40,13 @@ msgstr "0 povas nur esti uzata kiel la lasta elemento en --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Nekonata dosierformata tipo"
+msgid "Unknown file format type"
+msgstr "Nekonata dosierformata tipo"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Nekomprenata tipo de integra kontrolo"
+msgid "Unsupported integrity check type"
+msgstr "Nekomprenata tipo de integra kontrolo"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -180,13 +180,13 @@ msgstr "Eraro dum ŝanĝiĝo al filtrila ĉeno %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Eraro dum krei dukton: %s"
+msgid "Error creating a pipe"
+msgstr "Eraro dum krei dukton"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() malsukcesis: %s"
+msgid "poll() failed"
+msgstr "poll() malsukcesis"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -200,75 +200,75 @@ msgstr "%s: poll() malsukcesis: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Dosiero ŝajne estis movita, ne forigos"
+msgid "File seems to have been moved, not removing"
+msgstr "Dosiero ŝajne estis movita, ne forigos"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Ne eblas forigi: %s"
+msgid "Cannot remove"
+msgstr "Ne eblas forigi"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Ne eblas agordi la dosieran estron: %s"
+msgid "Cannot set the file owner"
+msgstr "Ne eblas agordi la dosieran estron"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Ne eblas agordi la dosieran grupon: %s"
+msgid "Cannot set the file group"
+msgstr "Ne eblas agordi la dosieran grupon"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Ne eblas agordi la dosierajn atingopermesojn: %s"
+msgid "Cannot set the file permissions"
+msgstr "Ne eblas agordi la dosierajn atingopermesojn"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Fermo de la dosiero malsukcesis: %s"
+msgid "Synchronizing the file failed"
+msgstr "Fermo de la dosiero malsukcesis"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Fermo de la dosiero malsukcesis: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Fermo de la dosiero malsukcesis"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Eraro dum atingi la dosierstatajn flagojn de ĉefenigujon: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Eraro dum atingi la dosierstatajn flagojn de ĉefenigujon"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Estas simbola ligilo, preterpasas"
+msgid "Is a symbolic link, skipping"
+msgstr "Estas simbola ligilo, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Estas dosierujo, preterpasas"
+msgid "Is a directory, skipping"
+msgstr "Estas dosierujo, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Ne regula dosiero, preterpasas"
+msgid "Not a regular file, skipping"
+msgstr "Ne regula dosiero, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Dosiero havas setuid- aŭ setgid-biton, preterpasas"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Dosiero havas setuid- aŭ setgid-biton, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Dosiero havas glueman biton, preterpasas"
+msgid "File has sticky bit set, skipping"
+msgstr "Dosiero havas glueman biton, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Enmeta dosiero havas pli ol rektan ligilon, preterpasas"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Enmeta dosiero havas pli ol rektan ligilon, preterpasas"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -276,60 +276,60 @@ msgstr "Malplena dosiero, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Eraro dum restarigi la statajn flagojn de la ĉefenigujo: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Eraro dum restarigi la statajn flagojn de la ĉefenigujo"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Eraro dum atingi la dosierstatajn flagojn el la ĉefenigujo: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Eraro dum atingi la dosierstatajn flagojn el la ĉefenigujo"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Fermo de la dosiero malsukcesis: %s"
+msgid "Opening the directory failed"
+msgstr "Fermo de la dosiero malsukcesis"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Not a regular file, skipping"
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Ne regula dosiero, preterpasas"
+msgid "Destination is not a regular file"
+msgstr "Ne regula dosiero, preterpasas"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Eraro dum restarigi la flagon O_APPEND de la ĉefenigujo: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Eraro dum restarigi la flagon O_APPEND de la ĉefenigujo"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Fermo de la dosiero malsukcesis: %s"
+msgid "Closing the file failed"
+msgstr "Fermo de la dosiero malsukcesis"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Serĉado malsukcesis dum provi krei maldensan dosieron: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Serĉado malsukcesis dum provi krei maldensan dosieron"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Legeraro: %s"
+msgid "Read error"
+msgstr "Legeraro"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Eraro dum serĉi la dosieron: %s"
+msgid "Error seeking the file"
+msgstr "Eraro dum serĉi la dosieron"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Neatendita dosierfino"
+msgid "Unexpected end of file"
+msgstr "Neatendita dosierfino"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Skriberaro: %s"
+msgid "Write error"
+msgstr "Skriberaro"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -533,13 +533,13 @@ msgstr "Nekonata-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Dosiero malplenas"
+msgid "File is empty"
+msgstr "Dosiero malplenas"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Tro malgranda por esti valida .xz-dosiero"
+msgid "Too small to be a valid .xz file"
+msgstr "Tro malgranda por esti valida .xz-dosiero"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -590,18 +590,18 @@ msgstr "--list ne regas legadon el la ĉefenigujo"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Eraro dum legi dosiernomojn: %s"
+msgid "Error reading filenames"
+msgstr "Eraro dum legi dosiernomojn"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Neatendita fino de enigo dum legi dosiernomojn"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Neatendita fino de enigo dum legi dosiernomojn"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Nula signo trovita dum legi dosiernomojn; eble vi celis uzi la parametron '--files0' anstataŭ '--files'"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Nula signo trovita dum legi dosiernomojn; eble vi celis uzi la parametron '--files0' anstataŭ '--files'"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -668,8 +668,8 @@ msgstr "%s megabajtoj da memoro estas postulata. La limigo estas %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Filtrila ĉeno: %s\n"
+msgid "Filter chain"
+msgstr "Filtrila ĉeno"
 
 #: src/xz/message.c
 #, c-format
@@ -1291,8 +1291,8 @@ msgstr "%s: Elektoj devas esti paroj de 'name=value', apartigitaj per komoj"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Nevalida elekto-nomo"
+msgid "Invalid option name"
+msgstr "Nevalida elekto-nomo"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1302,8 +1302,8 @@ msgstr "%s: Nevalida elekto-valoro"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Nevalida LZMA1/LZMA2 antaŭagordaĵo: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Nevalida LZMA1/LZMA2 antaŭagordaĵo"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1311,18 +1311,18 @@ msgstr "La sumo de lc kaj lp devas ne esti pli ol 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Dosiernomo havas nekonatan sufikson, preterpasas"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Dosiernomo havas nekonatan sufikson, preterpasas"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Dosiero jam havas la sufikson '%s', preterpasas"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Dosiero jam havas la sufikson '%s', preterpasas"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Nevalida dosiernoma sufikso"
+msgid "Invalid filename suffix"
+msgstr "Nevalida dosiernoma sufikso"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1332,8 +1332,8 @@ msgstr "%s: Valoro ne estas nenegativa dekuma entjero"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Nevalida multiplika sufikso"
+msgid "Invalid multiplier suffix"
+msgstr "Nevalida multiplika sufikso"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

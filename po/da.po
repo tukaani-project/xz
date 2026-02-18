@@ -19,13 +19,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: Ugyldigt parameter til --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "Ugyldigt parameter til --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: For mange argumenter til --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "For mange argumenter til --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -38,13 +38,13 @@ msgstr "0 kan kun bruges som det sidste element i --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Ukendt filformattype"
+msgid "Unknown file format type"
+msgstr "Ukendt filformattype"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Typen for integritetkontrol er ikke understøttet"
+msgid "Unsupported integrity check type"
+msgstr "Typen for integritetkontrol er ikke understøttet"
 
 #: src/xz/args.c
 #, fuzzy
@@ -189,13 +189,13 @@ msgstr "Det opstod en fejl under oprettelse af en datakanal: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Det opstod en fejl under oprettelse af en datakanal: %s"
+msgid "Error creating a pipe"
+msgstr "Det opstod en fejl under oprettelse af en datakanal"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() mislykkedes: %s"
+msgid "poll() failed"
+msgstr "poll() mislykkedes"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -209,75 +209,75 @@ msgstr "%s: poll() mislykkedes: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Filen er vist blevet flyttet, sletter ikke"
+msgid "File seems to have been moved, not removing"
+msgstr "Filen er vist blevet flyttet, sletter ikke"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Kan ikke fjerne: %s"
+msgid "Cannot remove"
+msgstr "Kan ikke fjerne"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Kan ikke angive filejeren: %s"
+msgid "Cannot set the file owner"
+msgstr "Kan ikke angive filejeren"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Kan ikke angive filgruppen: %s"
+msgid "Cannot set the file group"
+msgstr "Kan ikke angive filgruppen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Kan ikke angive filtilladelser: %s"
+msgid "Cannot set the file permissions"
+msgstr "Kan ikke angive filtilladelser"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Lukning af filen fejlede: %s"
+msgid "Synchronizing the file failed"
+msgstr "Lukning af filen fejlede"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Lukning af filen fejlede: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Lukning af filen fejlede"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Der opstod en fejl under indhentelse af filstatusflag fra standardind: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Der opstod en fejl under indhentelse af filstatusflag fra standardind"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Er en symbolsk henvisning, udelader"
+msgid "Is a symbolic link, skipping"
+msgstr "Er en symbolsk henvisning, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Er en mappe, udelader"
+msgid "Is a directory, skipping"
+msgstr "Er en mappe, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Er ikke en normal fil, udelader"
+msgid "Not a regular file, skipping"
+msgstr "Er ikke en normal fil, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Filen har setuid- eller setgid-bitsæt, udelader"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Filen har setuid- eller setgid-bitsæt, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Fil har klæbende bitsæt, udelader"
+msgid "File has sticky bit set, skipping"
+msgstr "Fil har klæbende bitsæt, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Inddatafil har mere end en hård henvisning, udelader"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Inddatafil har mere end en hård henvisning, udelader"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -285,60 +285,60 @@ msgstr "Tomt filnavn, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Der opstod en fejl under gendannelse af statusflagene til standardind: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Der opstod en fejl under gendannelse af statusflagene til standardind"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Der opstod en fejl under indhentelse af filstatusflag fra standardud: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Der opstod en fejl under indhentelse af filstatusflag fra standardud"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Closing the file failed: %s"
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Lukning af filen fejlede: %s"
+msgid "Opening the directory failed"
+msgstr "Lukning af filen fejlede"
 
 #: src/xz/file_io.c
 #, fuzzy, c-format
 #| msgid "%s: Not a regular file, skipping"
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Er ikke en normal fil, udelader"
+msgid "Destination is not a regular file"
+msgstr "Er ikke en normal fil, udelader"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Der opstod en fejl under gendannelse af flaget O_APPEND til standardud: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Der opstod en fejl under gendannelse af flaget O_APPEND til standardud"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Lukning af filen fejlede: %s"
+msgid "Closing the file failed"
+msgstr "Lukning af filen fejlede"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Søgning fejlede under forsøg på at oprette en tynd fil: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Søgning fejlede under forsøg på at oprette en tynd fil"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Læsefejl: %s"
+msgid "Read error"
+msgstr "Læsefejl"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Der opstod en fejl under søgning efter filen: %s"
+msgid "Error seeking the file"
+msgstr "Der opstod en fejl under søgning efter filen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Uventet filafslutning"
+msgid "Unexpected end of file"
+msgstr "Uventet filafslutning"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Skrivefejl: %s"
+msgid "Write error"
+msgstr "Skrivefejl"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -562,13 +562,13 @@ msgstr "Ukendt-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Filen er tom"
+msgid "File is empty"
+msgstr "Filen er tom"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: For lille til at være en gyldig .xz-fil"
+msgid "Too small to be a valid .xz file"
+msgstr "For lille til at være en gyldig .xz-fil"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -619,17 +619,17 @@ msgstr "--list understøtter ikke læsning fra standardind"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Der opstod en fejl under forsøg på læsning af filnavne: %s"
+msgid "Error reading filenames"
+msgstr "Der opstod en fejl under forsøg på læsning af filnavne"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Uventet afslutning på inddata under forsøg på læsning af filnavne"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Uventet afslutning på inddata under forsøg på læsning af filnavne"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
 msgstr ""
 
 #: src/xz/main.c
@@ -697,8 +697,8 @@ msgstr "%s MiB hukommelse er krævet. Begrænsningen er %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Filterkæde: %s\n"
+msgid "Filter chain"
+msgstr "Filterkæde"
 
 #: src/xz/message.c
 #, fuzzy, c-format
@@ -1201,8 +1201,8 @@ msgstr "%s: Tilvalg skal være »navne=værdi«-par adskilt med kommaer"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Ugyldigt tilvalgsnavn"
+msgid "Invalid option name"
+msgstr "Ugyldigt tilvalgsnavn"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1212,8 +1212,8 @@ msgstr "%s: Ugyldigt tilvalgsværdi"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "LZMA1/LZMA2-forhåndskonfiguration er ikke understøttet: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "LZMA1/LZMA2-forhåndskonfiguration er ikke understøttet"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1221,19 +1221,19 @@ msgstr "Summen af lc og lp må ikke være højere end 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Filnavn har ukendt endelse, udelader"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Filnavn har ukendt endelse, udelader"
 
 #: src/xz/suffix.c
 #, fuzzy, c-format
 #| msgid "%s: File already has `%s' suffix, skipping"
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Filen har allrede endelsen »%s«, udelader."
+msgid "File already has '%s' suffix, skipping"
+msgstr "Filen har allrede endelsen »%s«, udelader."
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Ugyldig filnavnendelse"
+msgid "Invalid filename suffix"
+msgstr "Ugyldig filnavnendelse"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 #, fuzzy
@@ -1243,8 +1243,8 @@ msgstr "%s: Værdi er ikke et positivt decimalheltal"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Ugyldig multiplikatorendelse"
+msgid "Invalid multiplier suffix"
+msgstr "Ugyldig multiplikatorendelse"
 
 #: src/xz/util.c
 #, fuzzy

@@ -23,13 +23,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: Ongeldig argument bij --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "Ongeldig argument bij --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: Te veel argumenten bij --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "Te veel argumenten bij --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -42,13 +42,13 @@ msgstr "Bij '--block-list' kan '0' alleen het laatste element zijn"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Onbekend soort bestandsindeling"
+msgid "Unknown file format type"
+msgstr "Onbekend soort bestandsindeling"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Niet-ondersteund soort integriteitscontrole"
+msgid "Unsupported integrity check type"
+msgstr "Niet-ondersteund soort integriteitscontrole"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -182,13 +182,13 @@ msgstr "Fout bij overgaan naar filterketen %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Fout bij aanmaken van pijp: %s"
+msgid "Error creating a pipe"
+msgstr "Fout bij aanmaken van pijp"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() is mislukt: %s"
+msgid "poll() failed"
+msgstr "poll() is mislukt"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -202,73 +202,74 @@ msgstr "%s: poll() is mislukt: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
+msgid "File seems to have been moved, not removing"
 msgstr "Bestand '%s' schijnt verplaatst te zijn -- niet verwijderd"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "Kan '%s' niet verwijderen: %s"
+#, fuzzy
+msgid "Cannot remove"
+msgstr "Kan '%s' niet verwijderen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Kan bestandseigenaar niet instellen: %s"
+msgid "Cannot set the file owner"
+msgstr "Kan bestandseigenaar niet instellen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Kan bestandsgroep niet instellen: %s"
+msgid "Cannot set the file group"
+msgstr "Kan bestandsgroep niet instellen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Kan de toegangsrechten niet instellen: %s"
+msgid "Cannot set the file permissions"
+msgstr "Kan de toegangsrechten niet instellen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Synchroniseren van bestand is mislukt: %s"
+msgid "Synchronizing the file failed"
+msgstr "Synchroniseren van bestand is mislukt"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Synchroniseren van bestandsmap is mislukt: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Synchroniseren van bestandsmap is mislukt"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Fout bij verkrijgen van de bestandstoestandsvlaggen van standaardinvoer: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Fout bij verkrijgen van de bestandstoestandsvlaggen van standaardinvoer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Is een symbolische koppeling -- overgeslagen"
+msgid "Is a symbolic link, skipping"
+msgstr "Is een symbolische koppeling -- overgeslagen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Is een map -- overgeslagen"
+msgid "Is a directory, skipping"
+msgstr "Is een map -- overgeslagen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Is geen gewoon bestand -- overgeslagen"
+msgid "Not a regular file, skipping"
+msgstr "Is geen gewoon bestand -- overgeslagen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Bestand heeft SETUID- of SETGID-bit gezet -- overgeslagen"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Bestand heeft SETUID- of SETGID-bit gezet -- overgeslagen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Bestand heeft 'sticky'-bit gezet -- overgeslagen"
+msgid "File has sticky bit set, skipping"
+msgstr "Bestand heeft 'sticky'-bit gezet -- overgeslagen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Invoerbestand heeft meer dan één harde koppeling -- overgeslagen"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Invoerbestand heeft meer dan één harde koppeling -- overgeslagen"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -276,58 +277,58 @@ msgstr "Lege bestandsnaam -- overgeslagen"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Fout bij herstellen van de bestandstoestandsvlaggen naar standaardinvoer: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Fout bij herstellen van de bestandstoestandsvlaggen naar standaardinvoer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Fout bij verkrijgen van de bestandstoestandsvlaggen van standaarduitvoer: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Fout bij verkrijgen van de bestandstoestandsvlaggen van standaarduitvoer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Openen van map is mislukt: %s"
+msgid "Opening the directory failed"
+msgstr "Openen van map is mislukt"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Doel is geen gewoon bestand"
+msgid "Destination is not a regular file"
+msgstr "Doel is geen gewoon bestand"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Fout bij herstellen van de 'O_APPEND'-vlag naar standaardinvoer: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Fout bij herstellen van de 'O_APPEND'-vlag naar standaardinvoer"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Sluiten van bestand is mislukt: %s"
+msgid "Closing the file failed"
+msgstr "Sluiten van bestand is mislukt"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: 'Seeken' is mislukt bij aanmaken van een bestand met gaten: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "'Seeken' is mislukt bij aanmaken van een bestand met gaten"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Leesfout: %s"
+msgid "Read error"
+msgstr "Leesfout"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Fout bij 'seeken': %s"
+msgid "Error seeking the file"
+msgstr "Fout bij 'seeken'"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Onverwacht einde van bestand"
+msgid "Unexpected end of file"
+msgstr "Onverwacht einde van bestand"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Schrijffout: %s"
+msgid "Write error"
+msgstr "Schrijffout"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -531,13 +532,13 @@ msgstr "Onbekend-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Bestand is leeg"
+msgid "File is empty"
+msgstr "Bestand is leeg"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Te klein om een geldig .xz-bestand te zijn"
+msgid "Too small to be a valid .xz file"
+msgstr "Te klein om een geldig .xz-bestand te zijn"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -586,18 +587,18 @@ msgstr "'--list' is niet mogelijk bij lezen van standaardinvoer"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Fout bij lezen van bestandsnamen: %s"
+msgid "Error reading filenames"
+msgstr "Fout bij lezen van bestandsnamen"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Onverwacht einde van invoer tijdens lezen van bestandsnamen"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Onverwacht einde van invoer tijdens lezen van bestandsnamen"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: NUL-teken gevonden bij lezen van bestandsnamen; misschien bedoelde u '--files0' i.p.v. '--files'?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "NUL-teken gevonden bij lezen van bestandsnamen; misschien bedoelde u '--files0' i.p.v. '--files'?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -664,8 +665,8 @@ msgstr "%s MiB aan geheugen is nodig.  De grens is %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Filterketen: %s\n"
+msgid "Filter chain"
+msgstr "Filterketen"
 
 #: src/xz/message.c
 #, c-format
@@ -1125,8 +1126,8 @@ msgstr "Opties moeten 'naam=waarde'-paren zijn, gescheiden door komma's"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Ongeldige optienaam"
+msgid "Invalid option name"
+msgstr "Ongeldige optienaam"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1134,8 +1135,8 @@ msgstr "Ongeldige optiewaarde"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Niet-ondersteunde LZMA1/LZMA2-voorinstelling: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Niet-ondersteunde LZMA1/LZMA2-voorinstelling"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1143,18 +1144,18 @@ msgstr "De som van lc en lp mag niet groter zijn dan 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Bestand heeft onbekende extensie -- overgeslagen"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Bestand heeft onbekende extensie -- overgeslagen"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Bestand heeft al '%s'-extensie -- overgeslagen"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Bestand heeft al '%s'-extensie -- overgeslagen"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Ongeldige bestandsnaamextensie"
+msgid "Invalid filename suffix"
+msgstr "Ongeldige bestandsnaamextensie"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1162,8 +1163,8 @@ msgstr "Waarde is geen niet-negatief tientallig geheel getal"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Ongeldig vermenigvuldigingsachtervoegsel"
+msgid "Invalid multiplier suffix"
+msgstr "Ongeldig vermenigvuldigingsachtervoegsel"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

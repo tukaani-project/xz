@@ -21,13 +21,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: Błędny argument dla --block-list"
+msgid "Invalid argument to --block-list"
+msgstr "Błędny argument dla --block-list"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: Zbyt dużo argumentów dla --block-list"
+msgid "Too many arguments to --block-list"
+msgstr "Zbyt dużo argumentów dla --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -40,13 +40,13 @@ msgstr "0 w --block-list może być użyte wyłącznie jako ostatni element"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: Nieznany typ formatu pliku"
+msgid "Unknown file format type"
+msgstr "Nieznany typ formatu pliku"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: Nieobsługiwany typ kontroli spójności"
+msgid "Unsupported integrity check type"
+msgstr "Nieobsługiwany typ kontroli spójności"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -180,13 +180,13 @@ msgstr "Błąd podczas zmiany w łańcuchu filtrów %u: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "Błąd tworzenia potoku: %s"
+msgid "Error creating a pipe"
+msgstr "Błąd tworzenia potoku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() nie powiodło się: %s"
+msgid "poll() failed"
+msgstr "poll() nie powiodło się"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -200,73 +200,73 @@ msgstr "%s: poll() nie powiodło się: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: Plik wygląda na przeniesiony, nie zostanie usunięty"
+msgid "File seems to have been moved, not removing"
+msgstr "Plik wygląda na przeniesiony, nie zostanie usunięty"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: Nie można usunąć: %s"
+msgid "Cannot remove"
+msgstr "Nie można usunąć"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: Nie można ustawić właściciela pliku: %s"
+msgid "Cannot set the file owner"
+msgstr "Nie można ustawić właściciela pliku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: Nie można ustawić grupy pliku: %s"
+msgid "Cannot set the file group"
+msgstr "Nie można ustawić grupy pliku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: Nie można ustawić uprawnień pliku: %s"
+msgid "Cannot set the file permissions"
+msgstr "Nie można ustawić uprawnień pliku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: Synchronizacja pliku nie powiodła się: %s"
+msgid "Synchronizing the file failed"
+msgstr "Synchronizacja pliku nie powiodła się"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: Synchronizacja katalogu z plikiem nie powiodła się: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "Synchronizacja katalogu z plikiem nie powiodła się"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "Błąd podczas pobierania flag stanu pliku ze standardowego wejścia: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "Błąd podczas pobierania flag stanu pliku ze standardowego wejścia"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: Jest dowiązaniem symbolicznym, pominięto"
+msgid "Is a symbolic link, skipping"
+msgstr "Jest dowiązaniem symbolicznym, pominięto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: Jest katalogiem, pominięto"
+msgid "Is a directory, skipping"
+msgstr "Jest katalogiem, pominięto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: Nie jest zwykłym plikiem, pominięto"
+msgid "Not a regular file, skipping"
+msgstr "Nie jest zwykłym plikiem, pominięto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: Plik ma ustawiony bit setuid lub setgid, pominięto"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "Plik ma ustawiony bit setuid lub setgid, pominięto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: Plik ma ustawiony bit sticky, pominięto"
+msgid "File has sticky bit set, skipping"
+msgstr "Plik ma ustawiony bit sticky, pominięto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: Plik wejściowy ma więcej niż jedno dowiązanie zwykłe, pominięto"
+msgid "Input file has more than one hard link, skipping"
+msgstr "Plik wejściowy ma więcej niż jedno dowiązanie zwykłe, pominięto"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -274,58 +274,58 @@ msgstr "Pusta nazwa pliku, pominięto"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "Błąd podczas odtwarzania flag stanu dla standardowego wejścia: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "Błąd podczas odtwarzania flag stanu dla standardowego wejścia"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "Błąd podczas pobierania flag stanu pliku ze standardowego wyjścia: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "Błąd podczas pobierania flag stanu pliku ze standardowego wyjścia"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: Otwarcie katalogu nie powiodło się: %s"
+msgid "Opening the directory failed"
+msgstr "Otwarcie katalogu nie powiodło się"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: Cel nie jest zwykłym plikiem"
+msgid "Destination is not a regular file"
+msgstr "Cel nie jest zwykłym plikiem"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "Błąd podczas odtwarzania flagi O_APPEND dla standardowego wyjścia: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "Błąd podczas odtwarzania flagi O_APPEND dla standardowego wyjścia"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: Zamknięcie pliku nie powiodło się: %s"
+msgid "Closing the file failed"
+msgstr "Zamknięcie pliku nie powiodło się"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Zmiana pozycji nie powiodła się podczas próby utworzenia pliku rzadkiego: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "Zmiana pozycji nie powiodła się podczas próby utworzenia pliku rzadkiego"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: Błąd odczytu: %s"
+msgid "Read error"
+msgstr "Błąd odczytu"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: Błąd podczas zmiany pozycji w pliku: %s"
+msgid "Error seeking the file"
+msgstr "Błąd podczas zmiany pozycji w pliku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: Nieoczekiwany koniec pliku"
+msgid "Unexpected end of file"
+msgstr "Nieoczekiwany koniec pliku"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: Błąd zapisu: %s"
+msgid "Write error"
+msgstr "Błąd zapisu"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -529,13 +529,13 @@ msgstr "Nieznany15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: Plik jest pusty"
+msgid "File is empty"
+msgstr "Plik jest pusty"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: Za mały na poprawny plik .xz"
+msgid "Too small to be a valid .xz file"
+msgstr "Za mały na poprawny plik .xz"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -585,18 +585,18 @@ msgstr "--list nie obsługuje odczytu ze standardowego wejścia"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: Błąd odczytu nazw plików: %s"
+msgid "Error reading filenames"
+msgstr "Błąd odczytu nazw plików"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: Nieoczekiwany koniec wejścia podczas odczytu nazw plików"
+msgid "Unexpected end of input when reading filenames"
+msgstr "Nieoczekiwany koniec wejścia podczas odczytu nazw plików"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: Napotkano znak NUL podczas odczytu nazw plików; może miało być „--files0” zamiast „--files”?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "Napotkano znak NUL podczas odczytu nazw plików; może miało być „--files0” zamiast „--files”?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -663,8 +663,8 @@ msgstr "Wymagane jest %s MiB pamięci. Limit to %s."
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: Łańcuch filtrów: %s\n"
+msgid "Filter chain"
+msgstr "Łańcuch filtrów"
 
 #: src/xz/message.c
 #, c-format
@@ -1122,8 +1122,8 @@ msgstr "Opcje muszą być parami „nazwa=wartość” rozdzielonymi przecinkami
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: Błędna nazwa opcji"
+msgid "Invalid option name"
+msgstr "Błędna nazwa opcji"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1131,8 +1131,8 @@ msgstr "Błędna wartość opcji"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "Nieobsługiwane ustawienie predefiniowane LZMA1/LZMA2: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "Nieobsługiwane ustawienie predefiniowane LZMA1/LZMA2"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1140,18 +1140,18 @@ msgstr "Suma lc i lp nie może przekroczyć 4"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Nazwa pliku ma nieznane rozszerzenie, pominięto"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "Nazwa pliku ma nieznane rozszerzenie, pominięto"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Plik już ma rozszerzenie „%s”, pominięto"
+msgid "File already has '%s' suffix, skipping"
+msgstr "Plik już ma rozszerzenie „%s”, pominięto"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: Błędne rozszerzenie nazwy pliku"
+msgid "Invalid filename suffix"
+msgstr "Błędne rozszerzenie nazwy pliku"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1159,8 +1159,8 @@ msgstr "Wartość nie jest nieujemną liczbą całkowitą"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Błędny przyrostek mnożnika"
+msgid "Invalid multiplier suffix"
+msgstr "Błędny przyrostek mnożnika"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

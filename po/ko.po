@@ -21,13 +21,13 @@ msgstr ""
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Invalid argument to --block-list"
-msgstr "%s: --block-list의 인자값이 잘못됨"
+msgid "Invalid argument to --block-list"
+msgstr "--block-list의 인자값이 잘못됨"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Too many arguments to --block-list"
-msgstr "%s: --block-list 인자 갯수가 너무 많음"
+msgid "Too many arguments to --block-list"
+msgstr "--block-list 인자 갯수가 너무 많음"
 
 #: src/xz/args.c
 #, c-format
@@ -40,13 +40,13 @@ msgstr "0 값은 --block-list의 마지막 원소로만 사용할 수 있습니�
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unknown file format type"
-msgstr "%s: 알 수 없는 파일 형식"
+msgid "Unknown file format type"
+msgstr "알 수 없는 파일 형식"
 
 #: src/xz/args.c
 #, c-format
-msgid "%s: Unsupported integrity check type"
-msgstr "%s: 지원하지 않는 무결성 검사 형식"
+msgid "Unsupported integrity check type"
+msgstr "지원하지 않는 무결성 검사 형식"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -180,13 +180,13 @@ msgstr "필터 체인 %u번 전환 오류: %s"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error creating a pipe: %s"
-msgstr "파이프 생성 오류: %s"
+msgid "Error creating a pipe"
+msgstr "파이프 생성 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: poll() failed: %s"
-msgstr "%s: poll() 실패: %s"
+msgid "poll() failed"
+msgstr "poll() 실패"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -200,73 +200,73 @@ msgstr "%s: poll() 실패: %s"
 #. shouldn't be removed.
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File seems to have been moved, not removing"
-msgstr "%s: 파일을 이동한 것 같음, 제거 안함"
+msgid "File seems to have been moved, not removing"
+msgstr "파일을 이동한 것 같음, 제거 안함"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot remove: %s"
-msgstr "%s: 제거할 수 없음: %s"
+msgid "Cannot remove"
+msgstr "제거할 수 없음"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file owner: %s"
-msgstr "%s: 파일 소유자를 설정할 수 없음: %s"
+msgid "Cannot set the file owner"
+msgstr "파일 소유자를 설정할 수 없음"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file group: %s"
-msgstr "%s: 파일 소유 그룹을 설정할 수 없음: %s"
+msgid "Cannot set the file group"
+msgstr "파일 소유 그룹을 설정할 수 없음"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Cannot set the file permissions: %s"
-msgstr "%s: 파일 권한을 설정할 수 없음: %s"
+msgid "Cannot set the file permissions"
+msgstr "파일 권한을 설정할 수 없음"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the file failed: %s"
-msgstr "%s: 파일 동기화 실패: %s"
+msgid "Synchronizing the file failed"
+msgstr "파일 동기화 실패"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "%s: 파일의 디렉터리 동기화 실패: %s"
+msgid "Synchronizing the directory of the file failed"
+msgstr "파일의 디렉터리 동기화 실패"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard input: %s"
-msgstr "표준 입력에서 파일 상태 플래그 가져오기 오류: %s"
+msgid "Error getting the file status flags from standard input"
+msgstr "표준 입력에서 파일 상태 플래그 가져오기 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a symbolic link, skipping"
-msgstr "%s: 심볼릭 링크, 건너뜀"
+msgid "Is a symbolic link, skipping"
+msgstr "심볼릭 링크, 건너뜀"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Is a directory, skipping"
-msgstr "%s: 디렉터리입니다, 건너뜀"
+msgid "Is a directory, skipping"
+msgstr "디렉터리입니다, 건너뜀"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Not a regular file, skipping"
-msgstr "%s: 일반 파일 아님, 건너뜀"
+msgid "Not a regular file, skipping"
+msgstr "일반 파일 아님, 건너뜀"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "%s: setuid 또는 setgid 비트 설정 있음, 건너뜀"
+msgid "File has setuid or setgid bit set, skipping"
+msgstr "setuid 또는 setgid 비트 설정 있음, 건너뜀"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: File has sticky bit set, skipping"
-msgstr "%s: 끈적이 비트 설정이 있는 파일, 건너뜀"
+msgid "File has sticky bit set, skipping"
+msgstr "끈적이 비트 설정이 있는 파일, 건너뜀"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Input file has more than one hard link, skipping"
-msgstr "%s: 입력 파일에 하나 이상의 하드링크가 있습니다, 건너뜀"
+msgid "Input file has more than one hard link, skipping"
+msgstr "입력 파일에 하나 이상의 하드링크가 있습니다, 건너뜀"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -274,58 +274,58 @@ msgstr "파일 이름 없음, 건너뜀"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the status flags to standard input: %s"
-msgstr "표준 입력으로의 상태 플래그 복원 오류: %s"
+msgid "Error restoring the status flags to standard input"
+msgstr "표준 입력으로의 상태 플래그 복원 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error getting the file status flags from standard output: %s"
-msgstr "표준 출력에서 파일 상태 플래그 가져오기 오류: %s"
+msgid "Error getting the file status flags from standard output"
+msgstr "표준 출력에서 파일 상태 플래그 가져오기 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Opening the directory failed: %s"
-msgstr "%s: 디렉터리 열기 실패: %s"
+msgid "Opening the directory failed"
+msgstr "디렉터리 열기 실패"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Destination is not a regular file"
-msgstr "%s: 대상이 일반 파일이 아닙니다"
+msgid "Destination is not a regular file"
+msgstr "대상이 일반 파일이 아닙니다"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "Error restoring the O_APPEND flag to standard output: %s"
-msgstr "표준 출력으로의 O_APPEND 플래그 복원 오류: %s"
+msgid "Error restoring the O_APPEND flag to standard output"
+msgstr "표준 출력으로의 O_APPEND 플래그 복원 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Closing the file failed: %s"
-msgstr "%s: 파일 닫기 실패: %s"
+msgid "Closing the file failed"
+msgstr "파일 닫기 실패"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: 분할 파일 생성 시도시 탐색 실패: %s"
+msgid "Seeking failed when trying to create a sparse file"
+msgstr "분할 파일 생성 시도시 탐색 실패"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Read error: %s"
-msgstr "%s: 읽기 오류: %s"
+msgid "Read error"
+msgstr "읽기 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Error seeking the file: %s"
-msgstr "%s: 파일 탐색 오류: %s"
+msgid "Error seeking the file"
+msgstr "파일 탐색 오류"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Unexpected end of file"
-msgstr "%s: 예상치 못한 파일의 끝"
+msgid "Unexpected end of file"
+msgstr "예상치 못한 파일의 끝"
 
 #: src/xz/file_io.c
 #, c-format
-msgid "%s: Write error: %s"
-msgstr "%s: 쓰기 오류: %s"
+msgid "Write error"
+msgstr "쓰기 오류"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -529,13 +529,13 @@ msgstr "알 수 없음-15"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: File is empty"
-msgstr "%s: 파일 내용 없음"
+msgid "File is empty"
+msgstr "파일 내용 없음"
 
 #: src/xz/list.c
 #, c-format
-msgid "%s: Too small to be a valid .xz file"
-msgstr "%s: 유효한 .xz 파일로 보기에는 너무 작습니다"
+msgid "Too small to be a valid .xz file"
+msgstr "유효한 .xz 파일로 보기에는 너무 작습니다"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -584,18 +584,18 @@ msgstr "--list 옵션은 표준 입력 읽기를 지원하지 않습니다"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Error reading filenames: %s"
-msgstr "%s: 파일 이름 읽기 오류: %s"
+msgid "Error reading filenames"
+msgstr "파일 이름 읽기 오류"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Unexpected end of input when reading filenames"
-msgstr "%s: 파일 이름 읽는 중 예상치 못한 입력 끝"
+msgid "Unexpected end of input when reading filenames"
+msgstr "파일 이름 읽는 중 예상치 못한 입력 끝"
 
 #: src/xz/main.c
 #, c-format
-msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "%s: 파일 이름을 읽는 도중 NULL 문자 발견. '--files' 옵션 대신 '--files0' 옵션을 사용하시려는게 아닙니까?"
+msgid "Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
+msgstr "파일 이름을 읽는 도중 NULL 문자 발견. '--files' 옵션 대신 '--files0' 옵션을 사용하시려는게 아닙니까?"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -662,8 +662,8 @@ msgstr "%s MiB 메모리 용량이 필요합니다. 제한 용량은 %s 입니�
 
 #: src/xz/message.c
 #, c-format
-msgid "%s: Filter chain: %s\n"
-msgstr "%s: 필터 체인: %s\n"
+msgid "Filter chain"
+msgstr "필터 체인"
 
 #: src/xz/message.c
 #, c-format
@@ -1122,8 +1122,8 @@ msgstr "옵션은 쉼표로 구분한 '이름=값' 쌍이어야합니다"
 
 #: src/xz/options.c
 #, c-format
-msgid "%s: Invalid option name"
-msgstr "%s: 잘못된 옵션 이름"
+msgid "Invalid option name"
+msgstr "잘못된 옵션 이름"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1131,8 +1131,8 @@ msgstr "잘못된 옵션 값"
 
 #: src/xz/options.c
 #, c-format
-msgid "Unsupported LZMA1/LZMA2 preset: %s"
-msgstr "지원하지 않는 LZMA1/LZMA2 사전 설정: %s"
+msgid "Unsupported LZMA1/LZMA2 preset"
+msgstr "지원하지 않는 LZMA1/LZMA2 사전 설정"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
@@ -1140,18 +1140,18 @@ msgstr "lc값과 lp값의 합이 4를 초과하면 안됩니다"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: 파일 이름에 알 수 없는 확장자 붙음, 건너뜀"
+msgid "Filename has an unknown suffix, skipping"
+msgstr "파일 이름에 알 수 없는 확장자 붙음, 건너뜀"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: 파일에 이미 '%s' 확장자가 붙음, 건너뜀"
+msgid "File already has '%s' suffix, skipping"
+msgstr "파일에 이미 '%s' 확장자가 붙음, 건너뜀"
 
 #: src/xz/suffix.c
 #, c-format
-msgid "%s: Invalid filename suffix"
-msgstr "%s: 잘못된 파일 이름 확장자"
+msgid "Invalid filename suffix"
+msgstr "잘못된 파일 이름 확장자"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1159,8 +1159,8 @@ msgstr "값이 10진 양의 정수가 아닙니다"
 
 #: src/xz/util.c
 #, c-format
-msgid "%s: Invalid multiplier suffix"
-msgstr "%s: 잘못된 승수 단위"
+msgid "Invalid multiplier suffix"
+msgstr "잘못된 승수 단위"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

@@ -21,21 +21,21 @@ msgstr ""
 #: src/xz/args.c
 #, c-format
 msgid "%s: Invalid argument to --block-list"
-msgstr "{RLM}%s: معطى غير صالح لـ --block-list"
+msgstr "{RLM}%s: معطى غير صالح لـ {LRM}--block-list"
 
 #: src/xz/args.c
 #, c-format
 msgid "%s: Too many arguments to --block-list"
-msgstr "{RLM}%s: معطيات كثيرة جداً لـ --block-list"
+msgstr "{RLM}%s: معطيات كثيرة جداً لـ {LRM}--block-list"
 
 #: src/xz/args.c
 #, c-format
 msgid "In --block-list, block size is missing after filter chain number '%c:'"
-msgstr "في --block-list، حجم الكتلة مفقود بعد رقم تسلسل المرشح '%c:'"
+msgstr "في {LRM}--block-list، حجم الكتلة مفقود بعد رقم تسلسل المرشح '%c:'"
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
-msgstr "يمكن استخدام 0 فقط كعنصر أخير في --block-list"
+msgstr "يمكن استخدام 0 فقط كعنصر أخير في {LRM}--block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -49,7 +49,7 @@ msgstr "{RLM}%s: نوع فحص سلامة غير مدعوم"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
-msgstr "يمكن تحديد ملف واحد فقط باستخدام '--files' أو '--files0'."
+msgstr "يمكن تحديد ملف واحد فقط باستخدام '{LRM}--files' أو '{LRM}--files0'."
 
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
@@ -79,11 +79,11 @@ msgstr "ضغط ملفات lzip (.lz) غير مدعوم"
 
 #: src/xz/args.c
 msgid "--block-list is ignored unless compressing to the .xz format"
-msgstr "يُتجاهل --block-list إلا عند الضغط لتنسيق .xz"
+msgstr "يُتجاهل {LRM}--block-list إلا عند الضغط لتنسيق .xz"
 
 #: src/xz/args.c
 msgid "With --format=raw, --suffix=.SUF is required unless writing to stdout"
-msgstr "مع --format=raw، يلزم --suffix=.SUF إلا عند الكتابة للمخرجات القياسية"
+msgstr "مع {LRM}--format=raw، يلزم {LRM}--suffix=.SUF إلا عند الكتابة للمخرجات القياسية"
 
 #: src/xz/coder.c
 msgid "Maximum number of filters is four"
@@ -92,7 +92,7 @@ msgstr "أقصى عدد للمرشحات هو أربعة"
 #: src/xz/coder.c
 #, c-format
 msgid "Error in --filters%s=FILTERS option:"
-msgstr "خطأ في خيار --filters%s=FILTERS:"
+msgstr "خطأ في خيار {LRM}--filters%s=FILTERS:"
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
@@ -101,7 +101,7 @@ msgstr "حد استخدام الذاكرة منخفض جداً لإعداد ال
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr "تسلسل المرشح %u مستخدم بواسطة --block-list لكن لم يحدد مع --filters%u="
+msgstr "تسلسل المرشح %u مستخدم بواسطة {LRM}--block-list لكن لم يحدد مع {LRM}--filters%u="
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -122,11 +122,11 @@ msgstr "لا يمكن استخدام LZMA1 مع تنسيق .xz"
 #: src/xz/coder.c
 #, c-format
 msgid "Filter chain %u is incompatible with --flush-timeout"
-msgstr "تسلسل المرشح %u غير متوافق مع --flush-timeout"
+msgstr "تسلسل المرشح %u غير متوافق مع {LRM}--flush-timeout"
 
 #: src/xz/coder.c
 msgid "Switching to single-threaded mode due to --flush-timeout"
-msgstr "التحول إلى وضع الخيط الواحد بسبب --flush-timeout"
+msgstr "التحول إلى وضع الخيط الواحد بسبب {LRM}--flush-timeout"
 
 #: src/xz/coder.c
 #, c-format
@@ -170,7 +170,7 @@ msgstr "عُدل حجم قاموس LZMA%c من %s ميجابايت إلى %s م�
 #: src/xz/coder.c
 #, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "عُدل حجم قاموس LZMA%c لـ --filters%u من %s ميجابايت إلى %s ميجابايت لعدم تجاوز حد استخدام الذاكرة البالغ %s ميجابايت"
+msgstr "عُدل حجم قاموس LZMA%c لـ {LRM}--filters%u من %s ميجابايت إلى %s ميجابايت لعدم تجاوز حد استخدام الذاكرة البالغ %s ميجابايت"
 
 #: src/xz/coder.c
 #, c-format
@@ -575,7 +575,7 @@ msgstr "المجاميع:"
 
 #: src/xz/list.c
 msgid "--list works only on .xz files (--format=xz or --format=auto)"
-msgstr "--list يعمل فقط على ملفات .xz (--format=xz أو --format=auto)"
+msgstr "{LRM}--list يعمل فقط على ملفات .xz ({LRM}--format=xz أو {LRM}--format=auto)"
 
 #: src/xz/list.c
 msgid "Try 'lzmainfo' with .lzma files."
@@ -583,7 +583,7 @@ msgstr "جرب 'lzmainfo' مع ملفات .lzma."
 
 #: src/xz/list.c
 msgid "--list does not support reading from standard input"
-msgstr "--list لا يدعم القراءة من المدخلات القياسية"
+msgstr "{LRM}--list لا يدعم القراءة من المدخلات القياسية"
 
 #: src/xz/main.c
 #, c-format
@@ -598,11 +598,11 @@ msgstr "{RLM}%s: نهاية مدخلات غير متوقعة عند قراءة �
 #: src/xz/main.c
 #, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "{RLM}%s: عُثر على محرف فارغ (Null) عند قراءة أسماء الملفات؛ ربما قصدت استخدام '--files0' بدلاً من '--files'؟"
+msgstr "{RLM}%s: عُثر على محرف فارغ (Null) عند قراءة أسماء الملفات؛ ربما قصدت استخدام '{LRM}--files0' بدلاً من '{LRM}--files'؟"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
-msgstr "الضغط وفك الضغط باستخدام --robot غير مدعومين بعد."
+msgstr "الضغط وفك الضغط باستخدام {LRM}--robot غير مدعومين بعد."
 
 #: src/xz/main.c
 msgid "Cannot read data from standard input when reading filenames from standard input"
@@ -677,7 +677,7 @@ msgstr "{RLM}%s: تسلسل المرشح: %s\n"
 #: src/xz/message.c
 #, c-format
 msgid "Try '%s --help' for more information."
-msgstr "جرب '%s --help' لمزيد من المعلومات."
+msgstr "جرب '%s {LRM}--help' لمزيد من المعلومات."
 
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
@@ -780,7 +780,7 @@ msgstr "قراءة أسماء الملفات لمعالجتها من 'ملف'؛ 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "like --files but use the null character as terminator"
-msgstr "مثل --files ولكن استخدم المحرف الفارغ (Null) كمنهٍ"
+msgstr "مثل {LRM}--files ولكن استخدم المحرف الفارغ (Null) كمنهٍ"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -881,12 +881,12 @@ msgstr "مرشحات"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "set the filter chain using the liblzma filter string syntax; use --filters-help for more information"
-msgstr "ضبط تسلسل المرشح باستخدام بناء جملة سلسلة مرشح liblzma؛ استخدم --filters-help لمزيد من المعلومات"
+msgstr "ضبط تسلسل المرشح باستخدام بناء جملة سلسلة مرشح liblzma؛ استخدم {LRM}--filters-help لمزيد من المعلومات"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "set additional filter chains using the liblzma filter string syntax to use with --block-list"
-msgstr "ضبط تسلسلات مرشحات إضافية باستخدام بناء جملة سلسلة مرشح liblzma للاستخدام مع --block-list"
+msgstr "ضبط تسلسلات مرشحات إضافية باستخدام بناء جملة سلسلة مرشح liblzma للاستخدام مع {LRM}--block-list"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1115,7 +1115,7 @@ msgstr "هذا إصدار تطويري غير مخصص للاستخدام الإ
 #: src/xz/message.c
 #, c-format
 msgid "Filter chains are set using the --filters=FILTERS or --filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain can be separated by spaces or '--'. Alternatively a preset %s can be specified instead of a filter chain."
-msgstr "تُضبط تسلسلات المرشحات باستخدام الخيارات --filters=FILTERS أو --filters1=FILTERS ... --filters9=FILTERS. يمكن فصل كل مرشح في التسلسل بمسافات أو '--'. بدلاً من ذلك، يمكن تحديد مسبق ضبط %s بدلاً من تسلسل المرشح."
+msgstr "تُضبط تسلسلات المرشحات باستخدام الخيارات {LRM}--filters=FILTERS أو {LRM}--filters1=FILTERS ... {LRM}--filters9=FILTERS. يمكن فصل كل مرشح في التسلسل بمسافات أو '--'. بدلاً من ذلك، يمكن تحديد مسبق ضبط %s بدلاً من تسلسل المرشح."
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1188,7 +1188,7 @@ msgstr "لا يمكن كتابة البيانات المضغوطة إلى طرف
 #: src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
-msgstr "الاستخدام: %s [--help] [--version] [ملف]...\n"
+msgstr "الاستخدام: %s [{LRM}--help] [{LRM}--version] [ملف]...\n"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c

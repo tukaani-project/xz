@@ -186,16 +186,23 @@ round_up_to_mib(uint64_t n)
 
 
 extern const char *
-uint64_to_str(uint64_t value, uint32_t slot)
+uint64_to_str_suffix(uint64_t value, uint32_t slot, const char *suffix)
 {
 	assert(slot < ARRAY_SIZE(bufs));
 
 	check_thousand_sep(slot);
 
 	snprintf(bufs[slot], sizeof(bufs[slot]),
-			FORMAT_THOUSAND_SEP("%", PRIu64), value);
+			FORMAT_THOUSAND_SEP("%", PRIu64 "%s"), value, suffix);
 
 	return bufs[slot];
+}
+
+
+extern const char *
+uint64_to_str(uint64_t value, uint32_t slot)
+{
+	return uint64_to_str_suffix(value, slot, "");
 }
 
 

@@ -1124,7 +1124,7 @@ msgstr "لاحقة مضاعف غير صالحة"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
-msgstr "اللاحقات الصالحة هي 'KiB' (2^10)، و 'MiB' (2^20)، و 'GiB' (2^30)."
+msgstr "اللاحقات الصالحة هي KiB (2^10)، و MiB (2^20)، و GiB (2^30)."
 
 #: src/xz/util.c
 #, c-format

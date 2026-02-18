@@ -236,8 +236,8 @@ uint64_to_nicestr(uint64_t value, enum nicestr_unit unit_min,
 	my_snprintf(&pos, &left, " %s", suffix[unit]);
 
 	if (always_also_bytes && value >= 10000)
-		snprintf(pos, left, FORMAT_THOUSAND_SEP(" (%", PRIu64 " B)"),
-				value);
+		snprintf(pos, left, FORMAT_THOUSAND_SEP("%s (%", PRIu64 " B)"),
+				is_rtl ? RLM : "", value);
 
 	return bufs[slot];
 }

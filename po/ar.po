@@ -21,12 +21,12 @@ msgstr ""
 #: src/xz/args.c
 #, c-format
 msgid "%s: Invalid argument to --block-list"
-msgstr "‏%s: معطى غير صالح لـ --block-list"
+msgstr "{RLM}%s: معطى غير صالح لـ --block-list"
 
 #: src/xz/args.c
 #, c-format
 msgid "%s: Too many arguments to --block-list"
-msgstr "‏%s: معطيات كثيرة جداً لـ --block-list"
+msgstr "{RLM}%s: معطيات كثيرة جداً لـ --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -40,12 +40,12 @@ msgstr "يمكن استخدام 0 فقط كعنصر أخير في --block-list"
 #: src/xz/args.c
 #, c-format
 msgid "%s: Unknown file format type"
-msgstr "‏%s: نوع تنسيق ملف مجهول"
+msgstr "{RLM}%s: نوع تنسيق ملف مجهول"
 
 #: src/xz/args.c
 #, c-format
 msgid "%s: Unsupported integrity check type"
-msgstr "‏%s: نوع فحص سلامة غير مدعوم"
+msgstr "{RLM}%s: نوع فحص سلامة غير مدعوم"
 
 #: src/xz/args.c
 msgid "Only one file can be specified with '--files' or '--files0'."
@@ -58,7 +58,7 @@ msgstr "يمكن تحديد ملف واحد فقط باستخدام '--files' أ
 #: src/xz/util.c
 #, c-format
 msgid "%s: %s"
-msgstr "‏%s: ‏%s"
+msgstr "{RLM}%s: {RLM}%s"
 
 #: src/xz/args.c
 #, c-format
@@ -175,7 +175,7 @@ msgstr "عُدل حجم قاموس LZMA%c لـ --filters%u من %s ميجابا�
 #: src/xz/coder.c
 #, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "خطأ أثناء التغيير إلى تسلسل المرشح %u:‏ %s"
+msgstr "خطأ أثناء التغيير إلى تسلسل المرشح %u:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -185,7 +185,7 @@ msgstr "خطأ أثناء إنشاء أنبوب: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: poll() failed: %s"
-msgstr "‏%s: فشل ‏poll‏():‏ %s"
+msgstr "{RLM}%s: فشل {RLM}poll{RLM}():{RLM} %s"
 
 #. TRANSLATORS: When compression or decompression finishes,
 #. and xz is going to remove the source file, xz first checks
@@ -200,37 +200,37 @@ msgstr "‏%s: فشل ‏poll‏():‏ %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: File seems to have been moved, not removing"
-msgstr "‏%s: يبدو أن الملف نُقل، لن يُحذف"
+msgstr "{RLM}%s: يبدو أن الملف نُقل، لن يُحذف"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot remove: %s"
-msgstr "‏%s: لا يمكن الحذف: %s"
+msgstr "{RLM}%s: لا يمكن الحذف: %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot set the file owner: %s"
-msgstr "‏%s: لا يمكن ضبط مالك الملف:‏ %s"
+msgstr "{RLM}%s: لا يمكن ضبط مالك الملف:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot set the file group: %s"
-msgstr "‏%s: لا يمكن ضبط مجموعة الملف:‏ %s"
+msgstr "{RLM}%s: لا يمكن ضبط مجموعة الملف:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Cannot set the file permissions: %s"
-msgstr "‏%s: لا يمكن ضبط أذونات الملف:‏ %s"
+msgstr "{RLM}%s: لا يمكن ضبط أذونات الملف:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Synchronizing the file failed: %s"
-msgstr "‏%s: فشلت مزامنة الملف:‏ %s"
+msgstr "{RLM}%s: فشلت مزامنة الملف:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Synchronizing the directory of the file failed: %s"
-msgstr "‏%s: فشلت مزامنة دليل الملف:‏ %s"
+msgstr "{RLM}%s: فشلت مزامنة دليل الملف:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -240,32 +240,32 @@ msgstr "خطأ أثناء جلب أعلام حالة الملف من المدخ�
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Is a symbolic link, skipping"
-msgstr "‏%s: وصلة رمزية، سيُتجاوز"
+msgstr "{RLM}%s: وصلة رمزية، سيُتجاوز"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Is a directory, skipping"
-msgstr "‏%s: دليل، سيُتجاوز"
+msgstr "{RLM}%s: دليل، سيُتجاوز"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Not a regular file, skipping"
-msgstr "‏%s: ليس ملفاً عادياً، سيُتجاوز"
+msgstr "{RLM}%s: ليس ملفاً عادياً، سيُتجاوز"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: File has setuid or setgid bit set, skipping"
-msgstr "‏%s: للملف بت setuid أو setgid مضبوط، سيُتجاوز"
+msgstr "{RLM}%s: للملف بت setuid أو setgid مضبوط، سيُتجاوز"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: File has sticky bit set, skipping"
-msgstr "‏%s: للملف بت sticky مضبوط، سيُتجاوز"
+msgstr "{RLM}%s: للملف بت sticky مضبوط، سيُتجاوز"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Input file has more than one hard link, skipping"
-msgstr "‏%s: ملف المدخلات له أكثر من وصلة صلبة واحدة، سيُتجاوز"
+msgstr "{RLM}%s: ملف المدخلات له أكثر من وصلة صلبة واحدة، سيُتجاوز"
 
 #: src/xz/file_io.c
 msgid "Empty filename, skipping"
@@ -284,12 +284,12 @@ msgstr "خطأ أثناء جلب أعلام حالة الملف من المخر�
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Opening the directory failed: %s"
-msgstr "‏%s: فشل فتح الدليل:‏ %s"
+msgstr "{RLM}%s: فشل فتح الدليل:{RLM} %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Destination is not a regular file"
-msgstr "‏%s: الوجهة ليست ملفاً عادياً"
+msgstr "{RLM}%s: الوجهة ليست ملفاً عادياً"
 
 #: src/xz/file_io.c
 #, c-format
@@ -299,32 +299,32 @@ msgstr "خطأ أثناء استعادة علم O_APPEND للمخرجات الق
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Closing the file failed: %s"
-msgstr "‏%s: فشل إغلاق الملف: %s"
+msgstr "{RLM}%s: فشل إغلاق الملف: %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "‏%s: فشل السعي عند محاولة إنشاء ملف مبعثر: %s"
+msgstr "{RLM}%s: فشل السعي عند محاولة إنشاء ملف مبعثر: %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Read error: %s"
-msgstr "‏%s: خطأ قراءة: %s"
+msgstr "{RLM}%s: خطأ قراءة: %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Error seeking the file: %s"
-msgstr "‏%s: خطأ سعي في الملف: %s"
+msgstr "{RLM}%s: خطأ سعي في الملف: %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Unexpected end of file"
-msgstr "‏%s: نهاية ملف غير متوقعة"
+msgstr "{RLM}%s: نهاية ملف غير متوقعة"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Write error: %s"
-msgstr "‏%s: خطأ كتابة: %s"
+msgstr "{RLM}%s: خطأ كتابة: %s"
 
 #: src/xz/hardware.c
 msgid "Disabled"
@@ -529,12 +529,12 @@ msgstr "مجهول-15"
 #: src/xz/list.c
 #, c-format
 msgid "%s: File is empty"
-msgstr "‏%s: الملف فارغ"
+msgstr "{RLM}%s: الملف فارغ"
 
 #: src/xz/list.c
 #, c-format
 msgid "%s: Too small to be a valid .xz file"
-msgstr "‏%s: صغير جداً ليكون ملف .xz صالحاً"
+msgstr "{RLM}%s: صغير جداً ليكون ملف .xz صالحاً"
 
 #. TRANSLATORS: These are column headings. From Strms (Streams)
 #. to Ratio, the columns are right aligned. Check and Filename
@@ -588,17 +588,17 @@ msgstr "--list لا يدعم القراءة من المدخلات القياسي
 #: src/xz/main.c
 #, c-format
 msgid "%s: Error reading filenames: %s"
-msgstr "‏%s: خطأ أثناء قراءة أسماء الملفات: %s"
+msgstr "{RLM}%s: خطأ أثناء قراءة أسماء الملفات: %s"
 
 #: src/xz/main.c
 #, c-format
 msgid "%s: Unexpected end of input when reading filenames"
-msgstr "‏%s: نهاية مدخلات غير متوقعة عند قراءة أسماء الملفات"
+msgstr "{RLM}%s: نهاية مدخلات غير متوقعة عند قراءة أسماء الملفات"
 
 #: src/xz/main.c
 #, c-format
 msgid "%s: Null character found when reading filenames; maybe you meant to use '--files0' instead of '--files'?"
-msgstr "‏%s: عُثر على محرف فارغ (Null) عند قراءة أسماء الملفات؛ ربما قصدت استخدام '--files0' بدلاً من '--files'؟"
+msgstr "{RLM}%s: عُثر على محرف فارغ (Null) عند قراءة أسماء الملفات؛ ربما قصدت استخدام '--files0' بدلاً من '--files'؟"
 
 #: src/xz/main.c
 msgid "Compression and decompression with --robot are not supported yet."
@@ -621,7 +621,7 @@ msgstr "RTL"
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s: "
-msgstr "‏%s: "
+msgstr "{RLM}%s: "
 
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 msgid "Internal error (bug)"
@@ -672,7 +672,7 @@ msgstr "يلزم %s ميجابايت من الذاكرة. الحد هو %s."
 #: src/xz/message.c
 #, c-format
 msgid "%s: Filter chain: %s\n"
-msgstr "‏%s: تسلسل المرشح: %s\n"
+msgstr "{RLM}%s: تسلسل المرشح: %s\n"
 
 #: src/xz/message.c
 #, c-format
@@ -906,7 +906,7 @@ msgstr "خيارات"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
-msgstr "‏LZMA1 أو LZMA2؛ الخيارات هي قائمة مفصولة بفاصلة من صفر أو أكثر من الخيارات التالية (قيم صالحة؛ مبدئي):"
+msgstr "{RLM}LZMA1 أو LZMA2؛ الخيارات هي قائمة مفصولة بفاصلة من صفر أو أكثر من الخيارات التالية (قيم صالحة؛ مبدئي):"
 
 #. TRANSLATORS: Short for PRESET. A longer string is
 #. fine but wider than 4 columns makes --long-help
@@ -1104,7 +1104,7 @@ msgstr "أبلغ عن العلل إلى <%s> (بالانجليزية أو الف
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "%s home page: <%s>"
-msgstr "الصفحة الرئيسية لـ %s‏: <%s>"
+msgstr "الصفحة الرئيسية لـ %s{RLM}: <%s>"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpret as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1129,7 +1129,7 @@ msgstr "يجب أن تكون الخيارات أزواج 'name=value' مفصول
 #: src/xz/options.c
 #, c-format
 msgid "%s: Invalid option name"
-msgstr "‏%s: اسم خيار غير صالح"
+msgstr "{RLM}%s: اسم خيار غير صالح"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "Invalid option value"
@@ -1147,17 +1147,17 @@ msgstr "يجب ألا يتجاوز مجموع lc و lp العدد 4"
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "‏%s: اسم الملف له لاحقة مجهولة، سيُتجاوز"
+msgstr "{RLM}%s: اسم الملف له لاحقة مجهولة، سيُتجاوز"
 
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: File already has '%s' suffix, skipping"
-msgstr "‏%s: الملف لديه بالفعل اللاحقة '%s'، سيُتجاوز"
+msgstr "{RLM}%s: الملف لديه بالفعل اللاحقة '%s'، سيُتجاوز"
 
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: Invalid filename suffix"
-msgstr "‏%s: لاحقة اسم ملف غير صالحة"
+msgstr "{RLM}%s: لاحقة اسم ملف غير صالحة"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1166,7 +1166,7 @@ msgstr "القيمة ليست عدداً صحيحاً عشرياً غير سال
 #: src/xz/util.c
 #, c-format
 msgid "%s: Invalid multiplier suffix"
-msgstr "‏%s: لاحقة مضاعف غير صالحة"
+msgstr "{RLM}%s: لاحقة مضاعف غير صالحة"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."

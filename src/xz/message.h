@@ -74,8 +74,11 @@ extern void message(enum message_verbosity verbosity, const char *fmt, ...);
 ///
 /// The message is printed only if verbosity level is at least V_WARNING.
 /// The exit status is set to WARNING unless it was already at ERROR.
-lzma_attribute((__format__(__printf__, 1, 2)))
-extern void message_warning(const char *fmt, ...);
+///
+/// The prefix is an untrusted string that will be sanitized using
+/// tuklib_mask_nonprint_r(). If the prefix is NULL, it's not printed.
+lzma_attribute((__format__(__printf__, 2, 3)))
+extern void message_warning(const char *prefix, const char *fmt, ...);
 
 
 /// \brief      Prints an error message and sets exit status

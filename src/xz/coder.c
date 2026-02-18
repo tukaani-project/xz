@@ -1000,9 +1000,8 @@ coder_init(file_pair *pair)
 			strm.avail_out = 0;
 			while ((ret = lzma_code(&strm, LZMA_RUN))
 					== LZMA_UNSUPPORTED_CHECK)
-				message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					message_strm(ret));
+				message_warning(pair->src_name, "%s",
+						message_strm(ret));
 
 			// With --single-stream lzma_code won't wait for
 			// LZMA_FINISH and thus it can return LZMA_STREAM_END
@@ -1324,9 +1323,8 @@ coder_normal(file_pair *pair)
 					tuklib_mask_nonprint(pair->src_name),
 					message_strm(ret));
 			} else {
-				message_warning(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					message_strm(ret));
+				message_warning(pair->src_name, "%s",
+						message_strm(ret));
 
 				// When compressing, all possible errors set
 				// stop to true.

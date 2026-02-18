@@ -228,10 +228,9 @@ io_wait(file_pair *pair, int timeout, bool is_reading)
 			if (errno == EINTR || errno == EAGAIN)
 				continue;
 
-			message_error("%s: %s: %s",
-					tuklib_mask_nonprint(is_reading
-						? pair->src_name
-						: pair->dest_name),
+			message_error(is_reading ? pair->src_name
+						: pair->dest_name,
+					_("%s: %s"),
 					_("poll() failed"),
 					strerror(errno));
 			return IO_WAIT_ERROR;
@@ -484,8 +483,7 @@ io_sync_dest(file_pair *pair)
 	assert(pair->dest_fd != STDOUT_FILENO);
 
 	if (fsync(pair->dest_fd)) {
-		message_error(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_error(pair->dest_name, _("%s: %s"),
 				_("Synchronizing the file failed"),
 				strerror(errno));
 		return true;
@@ -495,8 +493,7 @@ io_sync_dest(file_pair *pair)
 	// On AIX, this would fail with EBADF.
         // On QNX, this would fail with EINVAL.
 	if (fsync(pair->dir_fd)) {
-		message_error(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_error(pair->dest_name, _("%s: %s"),
 				_("Synchronizing the directory of "
 					"the file failed"),
 				strerror(errno));
@@ -525,7 +522,7 @@ io_open_src_real(file_pair *pair)
 		// same applies to stdout in io_open_dest_real().
 		stdin_flags = fcntl(STDIN_FILENO, F_GETFL);
 		if (stdin_flags == -1) {
-			message_error(_("%s: %s"),
+			message_error(NULL, _("%s: %s"),
 					_("Error getting the file status "
 					"flags from standard input"),
 					strerror(errno));
@@ -579,9 +576,7 @@ io_open_src_real(file_pair *pair)
 	if (!follow_symlinks) {
 		struct stat st;
 		if (lstat(pair->src_name, &st)) {
-			message_error(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					strerror(errno));
+			message_error(pair->src_name, "%s", strerror(errno));
 			return true;
 
 		} else if (S_ISLNK(st.st_mode)) {
@@ -654,9 +649,7 @@ io_open_src_real(file_pair *pair)
 			// Something else than O_NOFOLLOW failing
 			// (assuming that the race conditions didn't
 			// confuse us).
-			message_error(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					strerror(errno));
+			message_error(pair->src_name, "%s", strerror(errno));
 
 		return true;
 	}
@@ -741,8 +734,7 @@ io_open_src_real(file_pair *pair)
 	return false;
 
 error_msg:
-	message_error(_("%s: %s"), tuklib_mask_nonprint(pair->src_name),
-			strerror(errno));
+	message_error(pair->src_name, "%s", strerror(errno));
 error:
 	(void)close(pair->src_fd);
 	return true;
@@ -753,7 +745,7 @@ extern file_pair *
 io_open_src(const char *src_name)
 {
 	if (src_name[0] == '\0') {
-		message_error(_("Empty filename, skipping"));
+		message_error(NULL, _("Empty filename, skipping"));
 		return NULL;
 	}
 
@@ -811,7 +803,7 @@ io_close_src(file_pair *pair, bool success)
 		restore_stdin_flags = false;
 
 		if (fcntl(STDIN_FILENO, F_SETFL, stdin_flags) == -1)
-			message_error(_("%s: %s"),
+			message_error(NULL, _("%s: %s"),
 					_("Error restoring the status flags "
 						"to standard input"),
 					strerror(errno));
@@ -860,7 +852,7 @@ io_open_dest_real(file_pair *pair)
 		// and it relies on stdout_flags being set here.
 		stdout_flags = fcntl(STDOUT_FILENO, F_GETFL);
 		if (stdout_flags == -1) {
-			message_error(_("%s: %s"),
+			message_error(NULL, _("%s: %s"),
 					_("Error getting the file status "
 						"flags from standard output"),
 					strerror(errno));
@@ -915,8 +907,7 @@ io_open_dest_real(file_pair *pair)
 				// syncing would be impossible. But let's be
 				// strict about syncing and require users to
 				// explicitly disable it if they don't want it.
-				message_error(_("%s: %s: %s"),
-					tuklib_mask_nonprint(dir_name),
+				message_error(dir_name, _("%s: %s"),
 					_("Opening the directory failed"),
 					strerror(errno));
 				free(buf);
@@ -932,20 +923,18 @@ io_open_dest_real(file_pair *pair)
 		if (stat(pair->dest_name, &st) == 0) {
 			// Check that it isn't a special file like "prn".
 			if (st.st_dev == -1) {
-				message_error("%s: Refusing to write to "
-						"a DOS special file",
-						tuklib_mask_nonprint(
-							pair->dest_name));
+				message_error(pair->dest_name,
+						"Refusing to write to "
+						"a DOS special file");
 				goto error;
 			}
 
 			// Check that we aren't overwriting the source file.
 			if (st.st_dev == pair->src_st.st_dev
 					&& st.st_ino == pair->src_st.st_ino) {
-				message_error("%s: Output file is the same "
-						"as the input file",
-						tuklib_mask_nonprint(
-							pair->dest_name));
+				message_error(pair->dest_name,
+						"Output file is the same "
+						"as the input file");
 				goto error;
 			}
 		}
@@ -953,8 +942,7 @@ io_open_dest_real(file_pair *pair)
 
 		// If --force was used, unlink the target file first.
 		if (opt_force && unlink(pair->dest_name) && errno != ENOENT) {
-			message_error(_("%s: %s: %s"),
-					tuklib_mask_nonprint(pair->dest_name),
+			message_error(pair->dest_name, _("%s: %s"),
 					// TRANSLATORS: Deleting a file failed
 					_("Cannot remove"),
 					strerror(errno));
@@ -971,9 +959,7 @@ io_open_dest_real(file_pair *pair)
 		pair->dest_fd = open(pair->dest_name, flags, mode);
 
 		if (pair->dest_fd == -1) {
-			message_error(_("%s: %s"),
-					tuklib_mask_nonprint(pair->dest_name),
-					strerror(errno));
+			message_error(pair->dest_name, "%s", strerror(errno));
 			goto error;
 		}
 
@@ -1005,8 +991,7 @@ io_open_dest_real(file_pair *pair)
 	// With fstat()/_fstat64() it works.
 	else if (pair->dest_fd != STDOUT_FILENO
 			&& !S_ISREG(pair->dest_st.st_mode)) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_error(pair->dest_name,
 				_("Destination is not a regular file"));
 
 		// dest_fd needs to be reset to -1 to keep io_close() working.
@@ -1127,7 +1112,7 @@ io_close_dest(file_pair *pair, bool success)
 		restore_stdout_flags = false;
 
 		if (fcntl(STDOUT_FILENO, F_SETFL, stdout_flags) == -1) {
-			message_error(_("%s: %s"),
+			message_error(NULL, _("%s: %s"),
 					_("Error restoring the O_APPEND flag "
 					"to standard output"),
 					strerror(errno));
@@ -1147,8 +1132,7 @@ io_close_dest(file_pair *pair, bool success)
 #endif
 
 	if (close(pair->dest_fd)) {
-		message_error(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->dest_name),
+		message_error(pair->dest_name, _("%s: %s"),
 				_("Closing the file failed"),
 				strerror(errno));
 
@@ -1185,8 +1169,7 @@ io_close(file_pair *pair, bool success)
 		// want to create corrupt files on it).
 		if (lseek(pair->dest_fd, pair->dest_pending_sparse - 1,
 				SEEK_CUR) == -1) {
-			message_error(_("%s: %s: %s"),
-					tuklib_mask_nonprint(pair->dest_name),
+			message_error(pair->dest_name, _("%s: %s"),
 					_("Seeking failed when trying "
 						"to create a sparse file"),
 					strerror(errno));
@@ -1292,8 +1275,7 @@ io_read(file_pair *pair, io_buf *buf, size_t size)
 			}
 #endif
 
-			message_error(_("%s: %s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
+			message_error(pair->src_name, _("%s: %s"),
 					_("Read error"),
 					strerror(errno));
 
@@ -1324,8 +1306,7 @@ io_seek_src(file_pair *pair, uint64_t pos)
 		message_bug();
 
 	if (lseek(pair->src_fd, (off_t)(pos), SEEK_SET) == -1) {
-		message_error(_("%s: %s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
+		message_error(pair->src_name, _("%s: %s"),
 				_("Error seeking the file"),
 				strerror(errno));
 		return true;
@@ -1350,9 +1331,7 @@ io_pread(file_pair *pair, io_buf *buf, size_t size, uint64_t pos)
 		return true;
 
 	if (amount != size) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
-				_("Unexpected end of file"));
+		message_error(pair->src_name, _("Unexpected end of file"));
 		return true;
 	}
 
@@ -1423,8 +1402,7 @@ io_write_buf(file_pair *pair, const uint8_t *buf, size_t size)
 			// will handle it like other signals by setting
 			// user_abort, and get EPIPE here.
 			if (errno != EPIPE)
-				message_error(_("%s: %s: %s"),
-					tuklib_mask_nonprint(pair->dest_name),
+				message_error(pair->dest_name, _("%s: %s"),
 					_("Write error"),
 					strerror(errno));
 
@@ -1474,9 +1452,7 @@ io_write(file_pair *pair, const io_buf *buf, size_t size)
 		if (pair->dest_pending_sparse > 0) {
 			if (lseek(pair->dest_fd, pair->dest_pending_sparse,
 					SEEK_CUR) == -1) {
-				message_error(_("%s: %s: %s"),
-						tuklib_mask_nonprint(
-							pair->dest_name),
+				message_error(pair->dest_name, _("%s: %s"),
 						_("Seeking failed when "
 							"trying to create "
 							"a sparse file"),

@@ -1016,9 +1016,7 @@ coder_init(file_pair *pair)
 	}
 
 	if (ret != LZMA_OK) {
-		message_error(_("%s: %s"),
-				tuklib_mask_nonprint(pair->src_name),
-				message_strm(ret));
+		message_error(pair->src_name, "%s", message_strm(ret));
 		if (ret == LZMA_MEMLIMIT_ERROR)
 			message_mem_needed(V_ERROR, lzma_memusage(&strm));
 
@@ -1319,9 +1317,8 @@ coder_normal(file_pair *pair)
 			// wrong and we print an error. Otherwise it's just
 			// a warning and coding can continue.
 			if (stop) {
-				message_error(_("%s: %s"),
-					tuklib_mask_nonprint(pair->src_name),
-					message_strm(ret));
+				message_error(pair->src_name, "%s",
+						message_strm(ret));
 			} else {
 				message_warning(pair->src_name, "%s",
 						message_strm(ret));

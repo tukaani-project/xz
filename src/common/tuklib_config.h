@@ -10,3 +10,8 @@
 #	include <inttypes.h>
 #	include <limits.h>
 #endif
+
+// Omit unneeded code when NLS is disabled.
+#ifndef ENABLE_NLS
+#	define TUKLIB_MBSTR_WRAP_ENABLE_RTL 0
+#endif

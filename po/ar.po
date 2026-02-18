@@ -554,7 +554,7 @@ msgstr "لا"
 
 #: src/xz/list.c
 msgid "Minimum XZ Utils version:"
-msgstr "أدنى إصدار لـ XZ Utils:"
+msgstr "أدنى إصدار لـ XZ Utils{RLM}:"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

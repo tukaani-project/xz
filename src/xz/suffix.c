@@ -181,10 +181,8 @@ uncompressed_name(const char *src_name, const size_t src_len)
 static void
 msg_suffix(const char *src_name, const char *suffix)
 {
-	char *mem = NULL;
 	message_warning(src_name, _("File already has '%s' suffix, skipping"),
-			tuklib_mask_nonprint_r(suffix, &mem));
-	free(mem);
+			tuklib_mask_nonprint(suffix));
 	return;
 }
 

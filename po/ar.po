@@ -162,7 +162,7 @@ msgstr "عُدل حجم قاموس LZMA%c لـ {LRM}--filters%u من %s ميجا
 #: src/xz/coder.c
 #, c-format
 msgid "Error changing to filter chain %u: %s"
-msgstr "خطأ أثناء التغيير إلى تسلسل المرشح %u:{RLM} %s"
+msgstr "خطأ أثناء التغيير إلى تسلسل المرشح %u: %s"
 
 #. TRANSLATORS: This is a translatable
 #. string because French needs a space
@@ -170,7 +170,7 @@ msgstr "خطأ أثناء التغيير إلى تسلسل المرشح %u:{RLM}
 #: src/xz/file_io.c src/xz/main.c src/xz/message.c
 #, c-format
 msgid "%s: %s"
-msgstr "{RLM}%s: {RLM}%s"
+msgstr "%s: %s"
 
 #: src/xz/file_io.c
 msgid "Error creating a pipe"

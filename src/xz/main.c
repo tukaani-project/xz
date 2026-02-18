@@ -178,6 +178,8 @@ main(int argc, char **argv)
 
 	// Initialize progress message handling. It's not always needed
 	// but it's simpler to do this unconditionally.
+	//
+	// If NLS is enabled, initialize also the global variable is_rtl.
 	message_init();
 
 	// Set hardware-dependent default values. These can be overridden

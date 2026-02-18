@@ -19,6 +19,15 @@ enum message_verbosity {
 };
 
 
+/// \brief      True if the messages are in a right-to-left language
+///
+/// In RTL mode the character set is assumed to be UTF-8.
+extern bool is_rtl;
+#ifndef ENABLE_NLS
+#define is_rtl false
+#endif
+
+
 /// \brief      Signals used for progress message handling
 extern const int message_progress_sigs[];
 

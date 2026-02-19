@@ -293,6 +293,20 @@ else
 fi
 
 
+AC_MSG_CHECKING([if SHA-256 from libcrypto should be used])
+AC_ARG_WITH([libcrypto], AS_HELP_STRING([--with-libcrypto],
+		[Use SHA-256 code from libcrypto (OpenSSL)]),
+		[], [with_libcrypto=no])
+if test "x$with_libcrypto" != "xyes"; then
+	with_libcrypto=no
+fi
+if test "x$with_libcrypto" = xyes; then
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi
+
+
 #############
 # MicroLZMA #
 #############
@@ -1065,7 +1079,23 @@ AS_IF([test "x$enable_external_sha256" = "xyes"], [
 		fi
 	fi
 ])
-AM_CONDITIONAL([COND_INTERNAL_SHA256], [test "x$sha256_func_found" = xno])
+
+LIBLZMA_PC_LIBCRYPTO=
+AS_IF([test "x$with_libcrypto" = xyes], [
+	PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto], [
+		AC_DEFINE([HAVE_LIBCRYPTO], [1],
+			[Define to 1 if using SHA-256 from OpenSSL's libcrypto.])
+		# Don't add the flags to AM_CFLAGS and LIBS because LIBS goes
+		# to liblzma.pc. We only want "Requires: libcrypto" in .pc.
+		LIBLZMA_PC_LIBCRYPTO=libcrypto
+	], [
+		AC_MSG_ERROR([OpenSSL's libcrypto was not found even though --with-openssl was specified.])
+	])
+])
+AC_SUBST([LIBLZMA_PC_LIBCRYPTO])
+
+AM_CONDITIONAL([COND_INTERNAL_SHA256],
+	[test "x$sha256_func_found" = xno && test "x$with_libcrypto" = xno])
 if test "x$enable_external_sha256$sha256_func_found" = xyesno; then
 	AC_MSG_ERROR([--enable-external-sha256 was specified but no supported external SHA-256 implementation was found])
 fi

@@ -76,6 +76,9 @@ lzma_index_hash_init(lzma_index_hash *index_hash,
 		index_hash = lzma_alloc(sizeof(lzma_index_hash), allocator);
 		if (index_hash == NULL)
 			return NULL;
+
+		lzma_check_create(&index_hash->blocks.check);
+		lzma_check_create(&index_hash->records.check);
 	}
 
 	index_hash->sequence = SEQ_BLOCK;
@@ -93,8 +96,13 @@ lzma_index_hash_init(lzma_index_hash *index_hash,
 	index_hash->crc32 = 0;
 
 	// LZMA_CHECK_BEST is known to be supported.
-	lzma_check_init(&index_hash->blocks.check, LZMA_CHECK_BEST);
-	lzma_check_init(&index_hash->records.check, LZMA_CHECK_BEST);
+	if (lzma_check_init(&index_hash->blocks.check, LZMA_CHECK_BEST)
+				!= LZMA_OK
+			|| lzma_check_init(&index_hash->records.check,
+				LZMA_CHECK_BEST) != LZMA_OK) {
+		lzma_free(index_hash, allocator);
+		return NULL;
+	}
 
 	return index_hash;
 }
@@ -104,6 +112,8 @@ extern LZMA_API(void)
 lzma_index_hash_end(lzma_index_hash *index_hash,
 		const lzma_allocator *allocator)
 {
+	lzma_check_destroy(&index_hash->blocks.check);
+	lzma_check_destroy(&index_hash->records.check);
 	lzma_free(index_hash, allocator);
 	return;
 }

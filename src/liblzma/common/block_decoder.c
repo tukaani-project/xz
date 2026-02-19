@@ -204,6 +204,7 @@ block_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
 {
 	lzma_block_coder *coder = coder_ptr;
 	lzma_next_end(&coder->next, allocator);
+	lzma_check_destroy(&coder->check);
 	lzma_free(coder, allocator);
 	return;
 }
@@ -233,6 +234,7 @@ lzma_block_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->code = &block_decode;
 		next->end = &block_decoder_end;
 		coder->next = LZMA_NEXT_CODER_INIT;
+		lzma_check_create(&coder->check);
 	}
 
 	// Basic initializations
@@ -263,7 +265,7 @@ lzma_block_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// supported, and the Block decoder cannot verify the Check field.
 	// Caller can test lzma_check_is_supported(block->check).
 	coder->check_pos = 0;
-	lzma_check_init(&coder->check, block->check);
+	return_if_error(lzma_check_init(&coder->check, block->check));
 
 	coder->ignore_check = block->version >= 1
 			? block->ignore_check : false;

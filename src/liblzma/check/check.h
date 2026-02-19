@@ -17,7 +17,8 @@
 // If the function for external SHA-256 is missing, use the internal SHA-256
 // code. Due to how configure works, these defines can only get defined when
 // both a usable header and a type have already been found.
-#if !(defined(HAVE_CC_SHA256_INIT) \
+#if !(defined(HAVE_LIBCRYPTO) \
+		|| defined(HAVE_CC_SHA256_INIT) \
 		|| defined(HAVE_SHA256_INIT) \
 		|| defined(HAVE_SHA256INIT))
 #	define HAVE_INTERNAL_SHA256 1
@@ -25,6 +26,8 @@
 
 #if defined(HAVE_INTERNAL_SHA256)
 // Nothing
+#elif defined(HAVE_LIBCRYPTO)
+#	include <openssl/evp.h>
 #elif defined(HAVE_COMMONCRYPTO_COMMONDIGEST_H)
 #	include <CommonCrypto/CommonDigest.h>
 #elif defined(HAVE_SHA256_H)
@@ -89,14 +92,54 @@ typedef struct {
 	union {
 		uint32_t crc32;
 		uint64_t crc64;
+#ifndef HAVE_LIBCRYPTO
 		lzma_sha256_state sha256;
+#endif
 	} state;
+
+#ifdef HAVE_LIBCRYPTO
+	// These cannot be in the above union because these must stay valid
+	// if the same lzma_check_state is used with different check types.
+	EVP_MD_CTX *sha256_ctx;
+	EVP_MD *sha256_md;
+#endif
 
 } lzma_check_state;
 
 
+static inline void
+lzma_check_create(lzma_check_state *check)
+{
+#ifdef HAVE_LIBCRYPTO
+	check->sha256_ctx = NULL;
+	check->sha256_md = NULL;
+#else
+	(void)check;
+#endif
+}
+
+
+static inline void
+lzma_check_destroy(lzma_check_state *check)
+{
+#ifdef HAVE_LIBCRYPTO
+	EVP_MD_CTX_free(check->sha256_ctx);
+	check->sha256_ctx = NULL;
+
+	EVP_MD_free(check->sha256_md);
+	check->sha256_md = NULL;
+#else
+	(void)check;
+#endif
+}
+
+
 /// \brief      Initialize *check depending on type
-extern void lzma_check_init(lzma_check_state *check, lzma_check type);
+///
+/// It can only fail if type equals LZMA_CHECK_SHA256 and we are using
+/// OpenSSL's libcrypto.
+extern lzma_ret lzma_check_init(lzma_check_state *check, lzma_check type)
+		lzma_attr_warn_unused_result;
 
 /// Update the check state
 extern void lzma_check_update(lzma_check_state *check, lzma_check type,
@@ -106,7 +149,7 @@ extern void lzma_check_update(lzma_check_state *check, lzma_check type,
 extern void lzma_check_finish(lzma_check_state *check, lzma_check type);
 
 
-#ifndef LZMA_SHA256FUNC
+#ifdef HAVE_INTERNAL_SHA256
 
 /// Prepare SHA-256 state for new input.
 extern void lzma_sha256_init(lzma_check_state *check);
@@ -117,6 +160,23 @@ extern void lzma_sha256_update(
 
 /// Finish the SHA-256 calculation and store the result to check->buffer.u8.
 extern void lzma_sha256_finish(lzma_check_state *check);
+
+
+#elif defined(HAVE_LIBCRYPTO)
+
+static inline void lzma_sha256_update(
+		const uint8_t *buf, size_t size, lzma_check_state *check)
+{
+	// FIXME? Error check?
+	EVP_DigestUpdate(check->sha256_ctx, buf, size);
+}
+
+
+static inline void lzma_sha256_finish(lzma_check_state *check)
+{
+	// FIXME? Error check?
+	EVP_DigestFinal_ex(check->sha256_ctx, check->buffer.u8, NULL);
+}
 
 
 #else

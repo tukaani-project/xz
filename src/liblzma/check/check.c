@@ -79,7 +79,7 @@ lzma_check_size(lzma_check type)
 }
 
 
-extern void
+extern lzma_ret
 lzma_check_init(lzma_check_state *check, lzma_check type)
 {
 	switch (type) {
@@ -100,7 +100,40 @@ lzma_check_init(lzma_check_state *check, lzma_check type)
 
 #ifdef HAVE_CHECK_SHA256
 	case LZMA_CHECK_SHA256:
+#	ifdef HAVE_LIBCRYPTO
+		if (check->sha256_ctx == NULL) {
+			check->sha256_md = EVP_MD_fetch(
+					NULL, "SHA2-256", NULL);
+			if (check->sha256_md == NULL) {
+				// We have been built against OpenSSL
+				// but SHA-256 cannot be used from libcrypto.
+				// Maybe this could be a memory allocation
+				// issue but more likely it's a broken config.
+				// We don't have a good error code for this.
+				return LZMA_PROG_ERROR;
+			}
+
+			check->sha256_ctx = EVP_MD_CTX_new();
+			if (check->sha256_ctx == NULL) {
+				EVP_MD_free(check->sha256_md);
+				check->sha256_md = NULL;
+				return LZMA_MEM_ERROR;
+			}
+		}
+
+		if (!EVP_DigestInit_ex(check->sha256_ctx,
+				check->sha256_md, NULL)) {
+			EVP_MD_CTX_free(check->sha256_ctx);
+			check->sha256_ctx = NULL;
+
+			EVP_MD_free(check->sha256_md);
+			check->sha256_md = NULL;
+
+			return LZMA_MEM_ERROR;
+		}
+#	else
 		lzma_sha256_init(check);
+#	endif
 		break;
 #endif
 
@@ -108,7 +141,7 @@ lzma_check_init(lzma_check_state *check, lzma_check type)
 		break;
 	}
 
-	return;
+	return LZMA_OK;
 }
 
 

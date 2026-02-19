@@ -140,6 +140,7 @@ block_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
 {
 	lzma_block_coder *coder = coder_ptr;
 	lzma_next_end(&coder->next, allocator);
+	lzma_check_destroy(&coder->check);
 	lzma_free(coder, allocator);
 	return;
 }
@@ -194,6 +195,7 @@ lzma_block_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->end = &block_encoder_end;
 		next->update = &block_encoder_update;
 		coder->next = LZMA_NEXT_CODER_INIT;
+		lzma_check_create(&coder->check);
 	}
 
 	// Basic initializations
@@ -204,7 +206,7 @@ lzma_block_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	coder->pos = 0;
 
 	// Initialize the check
-	lzma_check_init(&coder->check, block->check);
+	return_if_error(lzma_check_init(&coder->check, block->check));
 
 	// Initialize the requested filters.
 	return lzma_raw_encoder_init(&coder->next, allocator, block->filters);

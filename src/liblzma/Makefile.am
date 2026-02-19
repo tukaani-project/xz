@@ -20,6 +20,8 @@ liblzma_la_CPPFLAGS = \
 	-I$(top_srcdir)/src/liblzma/simple \
 	-I$(top_srcdir)/src/common \
 	-DTUKLIB_SYMBOL_PREFIX=lzma_
+liblzma_la_CFLAGS = $(LIBCRYPTO_CFLAGS)
+liblzma_la_LIBADD = $(LIBCRYPTO_LIBS)
 liblzma_la_LDFLAGS = -no-undefined -version-info 13:2:8
 
 EXTRA_DIST += liblzma_generic.map liblzma_linux.map validate_map.sh
@@ -122,6 +124,7 @@ liblzma.pc: $(srcdir)/liblzma.pc.in
 		-e 's,@PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
 		-e 's,@PTHREAD_CFLAGS[@],$(PTHREAD_CFLAGS),g' \
 		-e 's,@LIBS[@],$(LIBS),g' \
+		-e 's,@LIBLZMA_PC_LIBCRYPTO[@],$(LIBLZMA_PC_LIBCRYPTO),g' \
 		< $(srcdir)/liblzma.pc.in > $@ || { rm -f $@; exit 1; }
 
 clean-local:

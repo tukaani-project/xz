@@ -15,3 +15,4 @@ Cflags: -I${includedir}
 Cflags.private: -DLZMA_API_STATIC
 Libs: -L${libdir} -llzma
 Libs.private: @PTHREAD_CFLAGS@ @LIBS@
+Requires: @LIBLZMA_PC_LIBCRYPTO@

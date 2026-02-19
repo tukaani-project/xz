@@ -1919,9 +1919,6 @@ if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^landlock$")
         HAVE_LINUX_LANDLOCK)
 
     if(HAVE_LINUX_LANDLOCK)
-        set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK")
-        set(SANDBOX_FOUND ON)
-
         # Of our three sandbox methods, only Landlock is incompatible
         # with -fsanitize. FreeBSD 13.2 with Capsicum was tested with
         # -fsanitize=address,undefined and had no issues. OpenBSD (as
@@ -1935,11 +1932,16 @@ if(NOT SANDBOX_FOUND AND XZ_SANDBOX MATCHES "^auto$|^landlock$")
         # build that cannot compress or decompress a single file to
         # standard out.
         if(CMAKE_C_FLAGS MATCHES "-fsanitize=")
-            message(SEND_ERROR
-                    "CMAKE_C_FLAGS or the environment variable CFLAGS "
-                    "contains '-fsanitize=' which is incompatible "
-                    "with Landlock sandboxing. Use -DXZ_SANDBOX=no "
-                    "as an argument to 'cmake' when using '-fsanitize'.")
+            if (XZ_SANDBOX STREQUAL "landlock")
+                message(SEND_ERROR
+                        "CMAKE_C_FLAGS or the environment variable CFLAGS "
+                        "contains '-fsanitize=' which is incompatible "
+                        "with Landlock sandboxing. Use -DXZ_SANDBOX=no "
+                        "as an argument to 'cmake' when using '-fsanitize'.")
+            endif()
+        else()
+            set(SANDBOX_COMPILE_DEFINITION "HAVE_LINUX_LANDLOCK")
+            set(SANDBOX_FOUND ON)
         endif()
     endif()
 endif()

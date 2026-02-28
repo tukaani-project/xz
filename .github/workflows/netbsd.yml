@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 10
     name: NetBSD
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Test in NetBSD
         id: test

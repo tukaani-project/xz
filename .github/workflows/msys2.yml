@@ -78,7 +78,7 @@ jobs:
         # text file and will not match the output from xzgrep.
         run: git config --global core.autocrlf false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: CMake (full, shared)
         run: |
@@ -137,7 +137,7 @@ jobs:
           make -j"$(nproc)" check
 
       # Upload the test logs as artifacts if any step has failed.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: test-logs-${{ matrix.sys }}

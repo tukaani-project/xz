@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 10
     name: OpenBSD
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Test in OpenBSD
         uses: vmactions/openbsd-vm@2e29de1eb150dfe1c9c97b84ff2b7896f14ca690 #v1.2.5

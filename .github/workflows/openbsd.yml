@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Test in OpenBSD
-        uses: vmactions/openbsd-vm@2e29de1eb150dfe1c9c97b84ff2b7896f14ca690 #v1.2.5
+        uses: vmactions/openbsd-vm@9a8e4351a4a0dc6238e7c69276dcbf6c03bea576  # v1.3.6
         with:
           usesh: true
           prepare: >

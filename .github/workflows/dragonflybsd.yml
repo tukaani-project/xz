@@ -21,7 +21,7 @@ jobs:
 
       - name: Test in DragonFly BSD
         id: test
-        uses: vmactions/dragonflybsd-vm@4ffb90652b45abc8156f89ede453c85f7ea257bb #v1.1.4
+        uses: vmactions/dragonflybsd-vm@04601322b25fa8eb14f0394e46e1103084ea0199  # v1.2.6
         with:
           usesh: true
           prepare: >

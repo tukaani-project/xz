@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Test in Solaris
-        uses: vmactions/solaris-vm@47bea106d03acaf91084e52548ee460556011602 #v1.1.8
+        uses: vmactions/solaris-vm@69d382b4a775b25ea5955e6c1730e9d05047ca0d  # v1.3.1
         with:
           release: 11.4-gcc
           usesh: true

@@ -92,6 +92,7 @@ include(cmake/tuklib_cpucores.cmake)
 include(cmake/tuklib_physmem.cmake)
 include(cmake/tuklib_progname.cmake)
 include(cmake/tuklib_mbstr.cmake)
+check_linker_flag(C "-Wl,--output-def,liblzma.def.in" HAVE_LINKER_OUTPUT_DEF)
 
 set(PACKAGE_NAME "XZ Utils")
 set(PACKAGE_BUGREPORT "xz@tukaani.org")
@@ -1467,7 +1468,10 @@ if(WIN32 OR CYGWIN)
         # Export the public API symbols with __declspec(dllexport).
         target_compile_definitions(liblzma PRIVATE DLL_EXPORT)
 
-        if(NOT MSVC AND NOT CYGWIN)
+        if(HAVE_LINKER_OUTPUT_DEF AND NOT CYGWIN)
+            # If you need to export symbols, ensure you have:
+            set_target_properties(liblzma PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+        elseif(HAVE_LINKER_OUTPUT_DEF AND NOT CYGWIN)
             # Create a DEF file. The Autotools-based build creates a DEF file
             # under Cygwin & MSYS2 too but it almost certainly is a useless
             # file in that context, so the CMake build omits it.

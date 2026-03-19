@@ -57,6 +57,31 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
 	assert(limit <= UINT32_MAX / 2);
 
 #if defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
+		&& defined(__AVX512BW__)
+#	define LZMA_MEMCMPLEN_EXTRA 64
+	while (len < limit) {
+		const uint64_t x = ~_mm512_cmpeq_epu8_mask(
+			_mm512_loadu_si512((const __m512i *)(buf1 + len)),
+			_mm512_loadu_si512((const __m512i *)(buf2 + len)));
+		if (x != 0) {
+#	if defined(_MSC_VER)
+			// MSVC
+			unsigned long tmp;
+			_BitScanForward64(&tmp, x);
+			len += (uint32_t)tmp;
+#	else
+			// GCC or Clang
+			len += (uint32_t)__builtin_ctzll(x);
+#	endif
+			return my_min(len, limit);
+		}
+
+		len += 64;
+	}
+
+	return limit;
+
+#elif defined(TUKLIB_FAST_UNALIGNED_ACCESS) \
 		&& (((TUKLIB_GNUC_REQ(3, 4) || defined(__clang__)) \
 				&& SIZE_MAX == UINT64_MAX) \
 			|| (defined(__INTEL_COMPILER) && defined(__x86_64__)) \

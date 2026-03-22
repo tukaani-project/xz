@@ -134,6 +134,9 @@ read_name(const args_info *args)
 		// at least for one character to allow terminating the string
 		// with '\0'.
 		if (pos == size) {
+			if (size > SIZE_MAX / 2) {
+				message_fatal(_("Filename is too long"));
+			}
 			size *= 2;
 			name = xrealloc(name, size);
 		}

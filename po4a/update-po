@@ -80,6 +80,13 @@ po4a --force --verbose \
 	--copyright-holder="The XZ Utils authors and contributors" \
 	po4a.conf
 
+# Non-ASCII characters in table data can cause groff to merge UTF-8 escapes with
+# internal table markup like [tbl], creating invalid character names. Insert \&
+# (zero-width space) after non-ASCII characters in table data rows (lines
+# containing ;) to prevent this.
+echo "po4a/update-po: Fix syntax issues in generated man pages"
+find man/ -name '*.1' -exec perl -i -CSD -pe '/;/ && s/([^\x00-\x7F])/\1\\&/g' {} +
+
 # Remove the *.po.authors files that were generated above.
 # This way they won't get included in distribution tarballs.
 rm -f -- *.po.authors

@@ -770,12 +770,10 @@ This also means that the amount of uncompressed output
 produced per second can vary a lot.
 .IP ""
 The following table summarises the features of the presets:
-.RS
-.RS
 .PP
-.TS
+.TS expand nowarn
 tab(;);
-c c c c c
+c c c c l
 n n n n n.
 Preset;DictSize;CompCPU;CompMem;DecMem
 \-0;256 KiB;0;3 MiB;1 MiB
@@ -789,8 +787,6 @@ Preset;DictSize;CompCPU;CompMem;DecMem
 \-8;32 MiB;6;370 MiB;33 MiB
 \-9;64 MiB;6;674 MiB;65 MiB
 .TE
-.RE
-.RE
 .IP ""
 Column descriptions:
 .RS
@@ -858,12 +854,10 @@ and
 .BR \-6e ,
 respectively.
 That way no two presets are identical.
-.RS
-.RS
 .PP
-.TS
+.TS expand nowarn
 tab(;);
-c c c c c
+c c c c l
 n n n n n.
 Preset;DictSize;CompCPU;CompMem;DecMem
 \-0e;256 KiB;8;4 MiB;1 MiB
@@ -877,8 +871,6 @@ Preset;DictSize;CompCPU;CompMem;DecMem
 \-8e;32 MiB;8;370 MiB;33 MiB
 \-9e;64 MiB;8;674 MiB;65 MiB
 .TE
-.RE
-.RE
 .IP ""
 For example, there are a total of four presets that use
 8\ MiB dictionary, whose order from the fastest to the slowest is
@@ -1905,10 +1897,8 @@ which is better in each situation.
 Different instruction sets have different alignment:
 the executable file must be aligned to a multiple of
 this value in the input data to make the filter work.
-.RS
-.RS
 .PP
-.TS
+.TS expand
 tab(;);
 l n l
 l n l.
@@ -1922,8 +1912,6 @@ IA-64;16;Itanium
 SPARC;4;
 RISC-V;2;
 .TE
-.RE
-.RE
 .IP ""
 Since the BCJ-filtered data is usually compressed with LZMA2,
 the compression ratio may be improved slightly if
@@ -2684,9 +2672,8 @@ and LZMA Utils.
 The most important difference is how dictionary sizes
 are mapped to different presets.
 Dictionary size is roughly equal to the decompressor memory usage.
-.RS
 .PP
-.TS
+.TS expand
 tab(;);
 c c c
 c n n.
@@ -2702,16 +2689,14 @@ Level;xz;LZMA Utils
 \-8;32 MiB;16 MiB
 \-9;64 MiB;32 MiB
 .TE
-.RE
 .PP
 The dictionary size differences affect
 the compressor memory usage too,
 but there are some other differences between
 LZMA Utils and XZ Utils, which
 make the difference even bigger:
-.RS
 .PP
-.TS
+.TS expand
 tab(;);
 c c c
 c n n.
@@ -2727,7 +2712,6 @@ Level;xz;LZMA Utils 4.32.x
 \-8;370 MiB;159 MiB
 \-9;674 MiB;311 MiB
 .TE
-.RE
 .PP
 The default preset level in LZMA Utils is
 .B \-7
@@ -3074,9 +3058,8 @@ and
 .B \-\-extreme
 are useful when customizing LZMA2 presets.
 Here are the relevant parts collected from those two tables:
-.RS
 .PP
-.TS
+.TS expand
 tab(;);
 c c
 n n.
@@ -3091,7 +3074,6 @@ Preset;CompCPU
 \-5e;7
 \-6e;8
 .TE
-.RE
 .PP
 If you know that a file requires
 somewhat big dictionary (for example, 32\ MiB) to compress well,

@@ -30,6 +30,39 @@ lzma_version_string(void)
 }
 
 
+////////////////////
+// Error messages //
+///////////////////
+
+// Static error message strings for all error codes
+static const char *error_messages[] = {
+	[LZMA_OK] = NULL,  // No error
+	[LZMA_STREAM_END] = NULL,  // Not an error
+	[LZMA_NO_CHECK] = "Input stream has no integrity check",
+	[LZMA_UNSUPPORTED_CHECK] = "Cannot calculate the requested integrity check",
+	[LZMA_GET_CHECK] = NULL,  // Not an error
+	[LZMA_MEM_ERROR] = "Cannot allocate memory",
+	[LZMA_MEMLIMIT_ERROR] = "Memory usage limit was reached",
+	[LZMA_FORMAT_ERROR] = "File format not recognized",
+	[LZMA_OPTIONS_ERROR] = "Invalid or unsupported options",
+	[LZMA_DATA_ERROR] = "Data is corrupt",
+	[LZMA_BUF_ERROR] = "No progress is possible",
+	[LZMA_PROG_ERROR] = "Programming error",
+	[LZMA_SEEK_NEEDED] = "Request to change the input file position",
+};
+
+
+// Helper function to set the error message in the stream
+static void
+lzma_set_error_message(lzma_stream *strm, lzma_ret ret)
+{
+	if (strm != NULL && ret >= 0 && ret < (int)ARRAY_SIZE(error_messages))
+		strm->reserved_ptr1 = error_messages[ret];
+	else if (strm != NULL)
+		strm->reserved_ptr1 = NULL;
+}
+
+
 ///////////////////////
 // Memory allocation //
 ///////////////////////
@@ -209,21 +242,26 @@ lzma_code(lzma_stream *strm, lzma_action action)
 			|| strm->internal == NULL
 			|| strm->internal->next.code == NULL
 			|| (unsigned int)(action) > LZMA_ACTION_MAX
-			|| !strm->internal->supported_actions[action])
+			|| !strm->internal->supported_actions[action]) {
+		lzma_set_error_message(strm, LZMA_PROG_ERROR);
 		return LZMA_PROG_ERROR;
+		
+	}
 
 	// Check if unsupported members have been set to non-zero or non-NULL,
 	// which would indicate that some new feature is wanted.
-	if (strm->reserved_ptr1 != NULL
-			|| strm->reserved_ptr2 != NULL
+	// Note: reserved_ptr1 is now used for error messages, so we don't check it here.
+	if (strm->reserved_ptr2 != NULL
 			|| strm->reserved_ptr3 != NULL
 			|| strm->reserved_ptr4 != NULL
 			|| strm->reserved_int2 != 0
 			|| strm->reserved_int3 != 0
 			|| strm->reserved_int4 != 0
 			|| strm->reserved_enum1 != LZMA_RESERVED_ENUM
-			|| strm->reserved_enum2 != LZMA_RESERVED_ENUM)
+			|| strm->reserved_enum2 != LZMA_RESERVED_ENUM) {
+		lzma_set_error_message(strm, LZMA_OPTIONS_ERROR);
 		return LZMA_OPTIONS_ERROR;
+	}
 
 	switch (strm->internal->sequence) {
 	case ISEQ_RUN:
@@ -254,29 +292,37 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		// The same action must be used until we return
 		// LZMA_STREAM_END, and the amount of input must not change.
 		if (action != LZMA_SYNC_FLUSH
-				|| strm->internal->avail_in != strm->avail_in)
+				|| strm->internal->avail_in != strm->avail_in) {
+			lzma_set_error_message(strm, LZMA_PROG_ERROR);
 			return LZMA_PROG_ERROR;
+		}
 
 		break;
 
 	case ISEQ_FULL_FLUSH:
 		if (action != LZMA_FULL_FLUSH
-				|| strm->internal->avail_in != strm->avail_in)
+				|| strm->internal->avail_in != strm->avail_in) {
+			lzma_set_error_message(strm, LZMA_PROG_ERROR);
 			return LZMA_PROG_ERROR;
+		}
 
 		break;
 
 	case ISEQ_FINISH:
 		if (action != LZMA_FINISH
-				|| strm->internal->avail_in != strm->avail_in)
+				|| strm->internal->avail_in != strm->avail_in) {
+			lzma_set_error_message(strm, LZMA_PROG_ERROR);
 			return LZMA_PROG_ERROR;
+		}
 
 		break;
 
 	case ISEQ_FULL_BARRIER:
 		if (action != LZMA_FULL_BARRIER
-				|| strm->internal->avail_in != strm->avail_in)
+				|| strm->internal->avail_in != strm->avail_in) {
+			lzma_set_error_message(strm, LZMA_PROG_ERROR);
 			return LZMA_PROG_ERROR;
+		}
 
 		break;
 
@@ -285,6 +331,7 @@ lzma_code(lzma_stream *strm, lzma_action action)
 
 	case ISEQ_ERROR:
 	default:
+		lzma_set_error_message(strm, LZMA_PROG_ERROR);
 		return LZMA_PROG_ERROR;
 	}
 
@@ -372,7 +419,18 @@ lzma_code(lzma_stream *strm, lzma_action action)
 		break;
 	}
 
+	lzma_set_error_message(strm, ret);
 	return ret;
+}
+
+
+extern LZMA_API(const char *)
+lzma_get_error_message(const lzma_stream *strm)
+{
+	if (strm == NULL)
+		return NULL;
+
+	return strm->reserved_ptr1;
 }
 
 
@@ -383,6 +441,7 @@ lzma_end(lzma_stream *strm)
 		lzma_next_end(&strm->internal->next, strm->allocator);
 		lzma_free(strm->internal, strm->allocator);
 		strm->internal = NULL;
+		strm->reserved_ptr1 = NULL;
 	}
 
 	return;

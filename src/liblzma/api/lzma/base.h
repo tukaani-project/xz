@@ -547,8 +547,17 @@ typedef struct {
 	 * may change.
 	 */
 
-	/** \private     Reserved member. */
-	void *reserved_ptr1;
+	/**
+	 * \brief       Error message string
+	 *
+	 * This member stores a pointer to a detailed error message string
+	 * when lzma_code() returns an error code. The string is valid until
+	 * the next call to lzma_code() or lzma_end(). The application should
+	 * not modify this pointer.
+	 *
+	 * To retrieve the error message, call lzma_get_error_message().
+	 */
+	const char *reserved_ptr1;
 
 	/** \private     Reserved member. */
 	void *reserved_ptr2;
@@ -635,6 +644,29 @@ typedef struct {
  */
 extern LZMA_API(lzma_ret) lzma_code(lzma_stream *strm, lzma_action action)
 		lzma_nothrow lzma_attr_warn_unused_result;
+
+
+/**
+ * \brief       Get error message string
+ *
+ * This function returns a detailed error message string corresponding to
+ * the most recent lzma_code() call. The message provides additional context
+ * about why the error occurred.
+ *
+ * The returned string is valid until the next call to lzma_code() or
+ * lzma_end(). The application must not modify the returned string.
+ *
+ * If no error has occurred or if the error code doesn't have an associated
+ * message, this function returns NULL.
+ *
+ * \param       strm    Pointer to lzma_stream that is at least initialized
+ *                      with LZMA_STREAM_INIT.
+ *
+ * \return      Pointer to a static error message string, or NULL if no
+ *              error message is available.
+ */
+extern LZMA_API(const char *) lzma_get_error_message(const lzma_stream *strm)
+		lzma_nothrow lzma_attr_pure;
 
 
 /**

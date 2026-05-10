@@ -56,10 +56,6 @@ Missing features
     Support LZMA_FULL_FLUSH for lzma_stream_decoder() to stop at
     Block and Stream boundaries.
 
-    Error codes from lzma_code() aren't very specific. A more detailed
-    error message (string) could be provided too. It could be returned
-    by a new function or use a currently-reserved member of lzma_stream.
-
     Make it possible to adjust LZMA2 options in the middle of a Block
     so that the encoding speed vs. compression ratio can be optimized
     when the compressed data is streamed over network.

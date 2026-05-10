@@ -63,6 +63,7 @@ if(BUILD_TESTING)
         test_memlimit
         test_stream_flags
         test_vli
+        test_error_messages
     )
 
     # MicroLZMA encoder is needed for both encoder and decoder tests.

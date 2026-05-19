@@ -627,8 +627,10 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 /// to the filename. Otherwise the filename is used as is (and so
 /// the behavior is identical to tuktest_file_from_builddir() below).
 ///
-/// On success the a pointer to malloc'ed memory is returned.
+/// On success a pointer to allocated memory is returned.
 /// The size of the allocation and the file is stored in *size.
+/// The allocation is done like by tuktest_malloc(), so there
+/// usually is no need to explicitly free the memory.
 ///
 /// If anything goes wrong, a hard error is reported and this function
 /// won't return. Possible other tests won't be run (this will call exit()).
@@ -637,8 +639,7 @@ tuktest_run_test(void (*testfunc)(void), const char *testfunc_str)
 /// The assumption is that something is wrong in these cases.
 ///
 /// This function can be called either from outside the tests (like in main())
-/// or from tests run via tuktest_run(). Remember to free() the memory to
-/// keep Valgrind happy.
+/// or from tests run via tuktest_run().
 #define tuktest_file_from_srcdir(filename, sizeptr) \
 	tuktest_file_from_x(getenv("srcdir"), filename, sizeptr, \
 			__FILE__, __LINE__)

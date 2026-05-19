@@ -2,14 +2,13 @@
 # German translation for xz-man.
 # This file is published under the BSD Zero Clause License.
 # Copyright (C) The XZ Utils authors and contributors
-#
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2015, 2019-2020, 2022-2025.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2015, 2019-2020, 2022-2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz-man 5.8.0-pre1\n"
+"Project-Id-Version: xz-man 5.8.2-pre1\n"
 "Report-Msgid-Bugs-To: lasse.collin@tukaani.org\n"
-"POT-Creation-Date: 2025-03-08 14:50+0200\n"
-"PO-Revision-Date: 2025-03-10 16:39+0100\n"
+"POT-Creation-Date: 2025-10-31 13:23+0200\n"
+"PO-Revision-Date: 2026-05-17 09:11+0200\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 24.12.1\n"
+"X-Generator: Lokalize 26.04.0\n"
 
 #. type: TH
 #: ../src/xz/xz.1
@@ -583,13 +582,8 @@ msgstr "Akzeptiert nur B<.lz>-Dateien bei der Dekompression. Kompression wird ni
 
 #. type: Plain text
 #: ../src/xz/xz.1
-msgid "The B<.lz> format version 0 and the unextended version 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18."
-msgstr "Das B<.lz>-Format wird in Version 0 und der unerweiterten Version 1 unterstützt. Dateien der Version 0 wurden von B<lzip> 1.3 und älter erstellt. Solche Dateien sind nicht sehr weit verbreitet, können aber in Dateiarchiven gefunden werden, da einige Quellpakete in diesem Format veröffentlicht wurden. Es ist auch möglich, dass Benutzer alte persönliche Dateien in diesem Format haben. Die Dekompressionsunterstützung für das Format der Version 0 wurde mit der Version 1.18 aus B<lzip> entfernt."
-
-#. type: Plain text
-#: ../src/xz/xz.1
-msgid "B<lzip> 1.4 and later create files in the format version 1.  The sync flush marker extension to the format version 1 was added in B<lzip> 1.6.  This extension is rarely used and isn't supported by B<xz> (diagnosed as corrupt input)."
-msgstr "B<lzip>-Versionen ab 1.4 erstellen Dateien im Format der Version 0. Die Erweiterung »Sync Flush Marker« zur Formatversion 1 wurde in B<lzip> 1.6 hinzugefügt. Diese Erweiterung wird sehr selten verwendet und wird von B<xz> nicht unterstützt (die Eingabe wird als beschädigt erkannt)."
+msgid "The B<.lz> format versions 0 and 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18.  B<lzip> 1.4 and later create files in the format version 1."
+msgstr "Das B<.lz>-Format wird in den Versionen 0 und 1 unterstützt. Dateien der Version 0 wurden von B<lzip> 1.3 und älter erstellt. Solche Dateien sind nicht sehr weit verbreitet, können aber in Dateiarchiven gefunden werden, da einige Quellpakete in diesem Format veröffentlicht wurden. Es ist auch möglich, dass Benutzer alte persönliche Dateien in diesem Format haben. Die Dekompressionsunterstützung für das Format der Version 0 wurde mit der Version 1.18 aus B<lzip> entfernt. B<lzip> 1.4 und neuer erzeugen Dateien in der Formatversion 1."
 
 #. type: TP
 #: ../src/xz/xz.1

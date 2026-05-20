@@ -3185,7 +3185,7 @@ msgstr "\\f(CRxz -dk bar.xz\\fR\n"
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Create I<baz.tar.xz> with the preset B<-4e> (B<-4 --extreme>), which is slower than the default B<-6>, but needs less memory for compression and decompression (48\\ MiB and 5\\ MiB, respectively):"
-msgstr "기본 사전 설정 B<-6> 보다는 느리지만, 압축 및 압축 해제시 메모리를 적게 차지(각각 48\\ Mib, 5\\MiB)는 B<-4e> 사전 설정(B<-4 --extreme>)을 활용하여 I<baz.tar.xz> 파일을 만듭니다:"
+msgstr "기본 사전 설정 B<-6> 보다는 느리지만, 압축 및 압축 해제시 메모리를 적게 차지(각각 48\\ Mib, 5\\ MiB)는 B<-4e> 사전 설정(B<-4 --extreme>)을 활용하여 I<baz.tar.xz> 파일을 만듭니다:"
 
 #. type: Plain text
 #: ../src/xz/xz.1
@@ -3445,12 +3445,12 @@ msgstr "xzdec, lzmadec - .xz와 .lzma용 작은 압축 해제 프로그램"
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "B<xzdec> [I<option...>] [I<file...>]"
-msgstr "B<xzdec> [I<<옵션>...>] [I<E<lt>파일E<gt>...>]"
+msgstr "B<xzdec> [I<옵션...>] [I<파일...>]"
 
 #. type: Plain text
 #: ../src/xzdec/xzdec.1
 msgid "B<lzmadec> [I<option...>] [I<file...>]"
-msgstr "B<lzmadec> [I<<옵션>...>] [I<E<lt>파일E<gt>...>]"
+msgstr "B<lzmadec> [I<옵션...>] [I<파일...>]"
 
 #. type: Plain text
 #: ../src/xzdec/xzdec.1

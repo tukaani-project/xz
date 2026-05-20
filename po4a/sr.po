@@ -1422,8 +1422,7 @@ msgstr "Да користите вишенитни режим са само је
 #: ../src/xz/xz.1
 msgid "If an automatic number of threads has been requested and no memory usage limit has been specified, then a system-specific default soft limit will be used to possibly limit the number of threads.  It is a soft limit in sense that it is ignored if the number of threads becomes one, thus a soft limit will never stop B<xz> from compressing or decompressing.  This default soft limit will not make B<xz> switch from multi-threaded mode to single-threaded mode.  The active limits can be seen with B<xz --info-memory>."
 msgstr ""
-"Ако је затражен аутоматски број нити и није наведено ограничење коришћења меморије, тада ће се користити основно меко ограничење специфично за систем за могуће ограничење броја нити.  То је меко ограничење у смислу да се занемарује ако број нити постане један, дакле меко ограничење никада неће зауставити B<xz> од запакивања или распакивања. Ово основно меко ограничење неће учинити да се B<xz> пребаци из режима више нити у режим једне нити.  Активно ограничење се може видети са\n"
-" B<xz --info-memory>."
+"Ако је затражен аутоматски број нити и није наведено ограничење коришћења меморије, тада ће се користити основно меко ограничење специфично за систем за могуће ограничење броја нити.  То је меко ограничење у смислу да се занемарује ако број нити постане један, дакле меко ограничење никада неће зауставити B<xz> од запакивања или распакивања. Ово основно меко ограничење неће учинити да се B<xz> пребаци из режима више нити у режим једне нити.  Активно ограничење се може видети са B<xz --info-memory>."
 
 #. type: Plain text
 #: ../src/xz/xz.1

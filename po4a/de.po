@@ -1024,7 +1024,7 @@ msgstr "DekompSpeich enthält den Speicherbedarf für die Dekompression. Das bed
 #. type: Plain text
 #: ../src/xz/xz.1
 msgid "Memory requirements of the multi-threaded mode are significantly higher than that of the single-threaded mode.  With the default value of B<--block-size>, each thread needs 3*3*DictSize plus CompMem or DecMem.  For example, four threads with preset B<-6> needs 660\\(en670\\ MiB of memory."
-msgstr " Der Speicherbedarf einiger der zukünftigen Multithread-Modi kann dramatisch höher sein als im Einzel-Thread-Modus. Mit dem Standardwert von B<--block-size> benötigt jeder Thread 3*3*Wörtb.Gr plus KompSpeich oder DekompSpeich. Beispielsweise benötigen vier Threads mit der Voreinstellung B<-6> etwa 660 bis 670 MiB Speicher."
+msgstr "Der Speicherbedarf einiger der zukünftigen Multithread-Modi kann dramatisch höher sein als im Einzel-Thread-Modus. Mit dem Standardwert von B<--block-size> benötigt jeder Thread 3*3*Wörtb.Gr plus KompSpeich oder DekompSpeich. Beispielsweise benötigen vier Threads mit der Voreinstellung B<-6> etwa 660 bis 670 MiB Speicher."
 
 #. type: TP
 #: ../src/xz/xz.1

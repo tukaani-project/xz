@@ -26,7 +26,7 @@
 
 // In case we are being compiled against an old <linux/landlock.h>,
 // provide fallbacks for handled_access_fs flags that were added in
-// Landlock ABI versions 2, 3, and 5. This way we need fewer #ifdefs
+// Landlock ABI versions 2, 3, 5, and 9. This way we need fewer #ifdefs
 // later on and, more importantly, these flags are then supported if
 // the program is run under a kernel that supports a newer Landlock ABI
 // than the current <linux/landlock.h>.
@@ -41,6 +41,9 @@
 #endif
 #ifndef LANDLOCK_ACCESS_FS_IOCTL_DEV
 #	define LANDLOCK_ACCESS_FS_IOCTL_DEV     (1ULL << 15)
+#endif
+#ifndef LANDLOCK_ACCESS_FS_RESOLVE_UNIX
+#	define LANDLOCK_ACCESS_FS_RESOLVE_UNIX  (1ULL << 16)
 #endif
 
 
@@ -110,6 +113,7 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 			| LANDLOCK_ACCESS_FS_REFER // ABI 2
 			| LANDLOCK_ACCESS_FS_TRUNCATE // ABI 3
 			| LANDLOCK_ACCESS_FS_IOCTL_DEV // ABI 5
+			| LANDLOCK_ACCESS_FS_RESOLVE_UNIX // ABI 9
 			;
 
 #ifdef LANDLOCK_ACCESS_NET_BIND_TCP
@@ -158,6 +162,11 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 			attr->scoped &= ~LANDLOCK_SCOPE_SIGNAL;
 #endif
 
+		FALLTHROUGH;
+
+	case 7:
+	case 8:
+		attr->handled_access_fs &= ~LANDLOCK_ACCESS_FS_RESOLVE_UNIX;
 		FALLTHROUGH;
 
 	default:

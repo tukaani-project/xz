@@ -147,7 +147,7 @@ while test $# -ne 0; do
   esac
 
   case $option in
-  (*\'?*)
+  (*\'*)
     option=\'$(printf '%sX\n' "$option" | LC_ALL=C sed "$escape");;
   (*)
     option="'$option'";;

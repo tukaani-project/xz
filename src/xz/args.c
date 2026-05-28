@@ -641,15 +641,20 @@ parse_real(args_info *args, int argc, char **argv)
 				args->files_name = stdin_filename;
 				args->files_file = stdin;
 			} else {
-				args->files_name = optarg;
-				args->files_file = fopen(optarg,
+				// optarg may point into a buffer that doesn't
+				// outlive parse_real() (parse_environment()
+				// frees its copy of the env string when it
+				// returns), so keep our own copy.
+				args->files_name = xstrdup(optarg);
+				args->files_file = fopen(args->files_name,
 						c == OPT_FILES ? "r" : "rb");
 				if (args->files_file == NULL)
 					// TRANSLATORS: This is a translatable
 					// string because French needs a space
 					// before the colon ("%s : %s").
 					message_fatal(_("%s: %s"),
-						tuklib_mask_nonprint(optarg),
+						tuklib_mask_nonprint(
+							args->files_name),
 						strerror(errno));
 			}
 

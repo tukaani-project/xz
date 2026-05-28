@@ -499,11 +499,16 @@ parse_real(args_info *args, int argc, char **argv)
 				args->files_name = stdin_filename;
 				args->files_file = stdin;
 			} else {
-				args->files_name = optarg;
-				args->files_file = fopen(optarg,
+				// If we are called from parse_environment(),
+				// the memory pointed by optarg will be freed
+				// after we return to parse_environment().
+				// We need to duplicate the string.
+				args->files_name = xstrdup(optarg);
+				args->files_file = fopen(args->files_name,
 						c == OPT_FILES ? "r" : "rb");
 				if (args->files_file == NULL)
-					message_fatal("%s: %s", optarg,
+					message_fatal("%s: %s",
+							args->files_name,
 							strerror(errno));
 			}
 

@@ -722,7 +722,11 @@ file_info_decoder_memconfig(void *coder_ptr, uint64_t *memusage,
 	// acceptable as lzma_memusage() has to return non-zero on success
 	// and even with an empty .xz file we will end up with a lzma_index
 	// that takes some memory.
-	*memusage = combined_index_memusage + this_index_memusage;
+	if (UINT64_MAX - combined_index_memusage < this_index_memusage)
+		*memusage = UINT64_MAX;
+	else
+		*memusage = combined_index_memusage + this_index_memusage;
+
 	if (*memusage == 0)
 		*memusage = lzma_index_memusage(1, 0);
 
@@ -737,8 +741,11 @@ file_info_decoder_memconfig(void *coder_ptr, uint64_t *memusage,
 		// its new memory usage limit.
 		if (coder->this_index == NULL
 				&& coder->sequence == SEQ_INDEX_DECODE) {
-			const uint64_t idec_new_memlimit = new_memlimit
-					- combined_index_memusage;
+			const uint64_t idec_new_memlimit
+					= new_memlimit == UINT64_MAX
+						? UINT64_MAX
+						: new_memlimit
+							- combined_index_memusage;
 
 			assert(this_index_memusage > 0);
 			assert(idec_new_memlimit > 0);

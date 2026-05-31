@@ -102,6 +102,83 @@ test_lzma_index_memused(void)
 
 
 static void
+test_lzma_file_info_decoder_memusage(void)
+{
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
+	// Find the largest Block count whose memory usage estimate fits in
+	// uint64_t. A concatenated file with a small valid final Stream and an
+	// earlier Stream that declares this many Blocks makes the combined
+	// memory usage overflow if the two estimates are added unchecked.
+	lzma_vli left = 0;
+	lzma_vli right = LZMA_VLI_MAX;
+	while (left + 1 < right) {
+		const lzma_vli middle = left + (right - left) / 2;
+		if (lzma_index_memusage(1, middle) == UINT64_MAX)
+			right = middle;
+		else
+			left = middle;
+	}
+
+	const uint64_t large_memusage = lzma_index_memusage(1, left);
+	assert_uint(large_memusage, <, UINT64_MAX);
+
+	size_t good_size;
+	const uint8_t *good = tuktest_file_from_srcdir(
+			"files/good-1-check-crc32.xz", &good_size);
+
+	uint8_t index[LZMA_VLI_BYTES_MAX + 8] = { 0 };
+	size_t index_pos = 1;
+	size_t vli_pos = 0;
+	lzma_ret ret;
+	do {
+		ret = lzma_vli_encode(left, &vli_pos, index, &index_pos,
+				sizeof(index));
+	} while (ret == LZMA_OK);
+	assert_lzma_ret(ret, LZMA_STREAM_END);
+
+	// Index Padding plus CRC32 make the Index four-byte aligned.
+	const size_t index_size = (index_pos + 3) & ~((size_t)(3));
+	const size_t malformed_size = LZMA_STREAM_HEADER_SIZE + index_size
+			+ 4 + LZMA_STREAM_HEADER_SIZE;
+	uint8_t *malformed = tuktest_malloc(malformed_size + good_size);
+
+	lzma_stream_flags flags = {
+		.version = 0,
+		.backward_size = index_size + 4,
+		.check = LZMA_CHECK_CRC32,
+	};
+
+	assert_lzma_ret(lzma_stream_header_encode(
+			&flags, malformed), LZMA_OK);
+	memcpy(malformed + LZMA_STREAM_HEADER_SIZE, index, index_size);
+	assert_lzma_ret(lzma_stream_footer_encode(&flags,
+			malformed + LZMA_STREAM_HEADER_SIZE + index_size + 4),
+			LZMA_OK);
+	memcpy(malformed + malformed_size, good, good_size);
+
+	lzma_index *idx = NULL;
+	lzma_stream strm = LZMA_STREAM_INIT;
+	assert_lzma_ret(lzma_file_info_decoder(&strm, &idx,
+			large_memusage - 1, malformed_size + good_size),
+			LZMA_OK);
+
+	strm.next_in = malformed;
+	strm.avail_in = malformed_size + good_size;
+	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_MEMLIMIT_ERROR);
+	assert_uint_eq(lzma_memusage(&strm), UINT64_MAX);
+	assert_lzma_ret(lzma_memlimit_set(&strm, UINT64_MAX),
+			LZMA_OK);
+	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_DATA_ERROR);
+
+	lzma_end(&strm);
+	lzma_index_end(idx, NULL);
+#endif
+}
+
+
+static void
 test_lzma_index_append(void)
 {
 	// Basic input-output test done here.
@@ -1799,6 +1876,7 @@ main(int argc, char **argv)
 	generate_index_decode_buffer();
 	tuktest_run(test_lzma_index_memusage);
 	tuktest_run(test_lzma_index_memused);
+	tuktest_run(test_lzma_file_info_decoder_memusage);
 	tuktest_run(test_lzma_index_append);
 	tuktest_run(test_lzma_index_stream_flags);
 	tuktest_run(test_lzma_index_checks);

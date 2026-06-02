@@ -22,6 +22,12 @@
 /// Maximum Unpadded Size
 #define UNPADDED_SIZE_MAX (LZMA_VLI_MAX & ~LZMA_VLI_C(3))
 
+/// Maximum number of Records if all sizes fit in one byte:
+/// Index Indicator (1) + Number of Records (5) + List of Records + CRC32 (4)
+/// Larger value isn't possible because then the Index would grow larger than
+/// what Backward Size in Stream Footer can encode (2^34 bytes).
+#define INDEX_RECORDS_MAX ((LZMA_BACKWARD_SIZE_MAX - 1 - 5 - 4) / 2)
+
 
 /// Get the size of the Index Padding field. This is needed by Index encoder
 /// and decoder, but applications should have no use for this.

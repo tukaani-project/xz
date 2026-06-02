@@ -92,6 +92,13 @@ index_decode(void *coder_ptr, const lzma_allocator *allocator,
 		if (ret != LZMA_STREAM_END)
 			goto out;
 
+		// If the Number of Records field has so large value that the
+		// Index would have to be larger than LZMA_BACKWARD_SIZE_MAX,
+		// don't even try to decode the Index because clearly it's
+		// not a valid .xz file.
+		if (coder->count > INDEX_RECORDS_MAX)
+			return LZMA_DATA_ERROR;
+
 		coder->pos = 0;
 		coder->sequence = SEQ_MEMUSAGE;
 

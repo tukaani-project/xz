@@ -28,7 +28,7 @@ jobs:
     steps:
     - name: Build Fuzzers (${{ matrix.sanitizer }})
       id: build
-      uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@master
+      uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@10d372d86bc3ca5d662790345c2f4e146367e4c4 # master
       with:
         oss-fuzz-project-name: 'xz'
         # The language must match the one in project.yaml in OSS-Fuzz:
@@ -38,7 +38,7 @@ jobs:
         sanitizer: ${{ matrix.sanitizer }}
 
     - name: Run Fuzzers (${{ matrix.sanitizer }})
-      uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@master
+      uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@10d372d86bc3ca5d662790345c2f4e146367e4c4 # master
       with:
         oss-fuzz-project-name: 'xz'
         language: c++
@@ -48,7 +48,7 @@ jobs:
         report-ooms: true
 
     - name: Upload Crash
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       if: failure() && steps.build.outcome == 'success'
       with:
         name: ${{ matrix.sanitizer }}-artifacts

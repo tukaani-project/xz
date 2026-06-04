@@ -56,7 +56,7 @@ while :; do
     --h*) printf '%s\n' "$usage" || exit 2; exit;;
     --v*) printf '%s\n' "$version" || exit 2; exit;;
     --) shift; break;;
-    -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
+    -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | LC_ALL=C sed "$escape"`;;
     -?*) cmp="$cmp '$1'";;
     *) break;;
   esac

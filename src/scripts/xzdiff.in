@@ -56,7 +56,7 @@ while :; do
     --h*) printf '%s\n' "$usage" || exit 2; exit;;
     --v*) printf '%s\n' "$version" || exit 2; exit;;
     --) shift; break;;
-    -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
+    -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | LC_ALL=C sed "$escape"`;;
     -?*) cmp="$cmp '$1'";;
     *) break;;
   esac
@@ -96,15 +96,15 @@ if test $# -eq 1; then
   # shellcheck disable=SC2034
   case $1 in
     *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *[-.]lzo | *[-.]zst | *[-.]lz4)
-      FILE=`expr "X$1" : 'X\(.*\)[-.][abglmostxzZ24]*$'`;;
+      FILE=`LC_ALL=C expr "X$1" : 'X\(.*\)[-.][abglmostxzZ24]*$'`;;
     *.t[abglx]z)
-      FILE=`expr "X$1" : 'X\(.*[-.]t\)[abglx]z$'`ar;;
+      FILE=`LC_ALL=C expr "X$1" : 'X\(.*[-.]t\)[abglx]z$'`ar;;
     *.tbz2)
-      FILE=`expr "X$1" : 'X\(.*[-.]t\)bz2$'`ar;;
+      FILE=`LC_ALL=C expr "X$1" : 'X\(.*[-.]t\)bz2$'`ar;;
     *.tzo)
-      FILE=`expr "X$1" : 'X\(.*[-.]t\)zo$'`ar;;
+      FILE=`LC_ALL=C expr "X$1" : 'X\(.*[-.]t\)zo$'`ar;;
     *.tzst)
-      FILE=`expr "X$1" : 'X\(.*[-.]t\)zst$'`ar;;
+      FILE=`LC_ALL=C expr "X$1" : 'X\(.*[-.]t\)zst$'`ar;;
   esac
   xz_status=$(
     exec 4>&1
@@ -145,7 +145,7 @@ elif test $# -eq 2; then
                 eval "$cmp" /dev/fd/5 - >&3) 5<&0
             )
           else
-            F=`expr "/$2" : '.*/\(.*\)[-.][ablmotxz2]*$'` || F=$prog
+            F=`LC_ALL=C expr "/$2" : '.*/\(.*\)[-.][ablmotxz2]*$'` || F=$prog
             tmp=
             trap '
               test -n "$tmp" && rm -rf "$tmp"

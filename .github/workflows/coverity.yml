@@ -8,6 +8,8 @@ on:
   push:
     branches: [coverity_scan]
 
+permissions: {}
+
 jobs:
   coverity:
     runs-on: ubuntu-latest

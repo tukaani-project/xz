@@ -20,7 +20,7 @@ jobs:
 
       - name: Test in Haiku
         id: test
-        uses: vmactions/haiku-vm@dd2b1b3b180e8e1eac82f5c209485d376e4f48c0 #v1.0.7
+        uses: vmactions/haiku-vm@v1
         with:
           usesh: true
           prepare: >

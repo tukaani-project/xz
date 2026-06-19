@@ -18,7 +18,8 @@ on:
   # Allows running workflow manually
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   POSIX:

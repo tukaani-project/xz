@@ -77,7 +77,7 @@ jobs:
         # text file and will not match the output from xzgrep.
         run: git config --global core.autocrlf false
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: CMake (full, shared)
         run: |

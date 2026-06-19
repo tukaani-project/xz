@@ -33,7 +33,7 @@ jobs:
     name: FreeBSD
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Test in FreeBSD
         uses: vmactions/freebsd-vm@4807432c7cab1c3f97688665332c0b932062d31f #v1.4.3

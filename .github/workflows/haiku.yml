@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     name: Haiku
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Test in Haiku
         id: test

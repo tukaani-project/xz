@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     name: Solaris
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Test in Solaris
         uses: vmactions/solaris-vm@0a231b94365d1911cf62097ef342f6b30d95598f #v1.3.2

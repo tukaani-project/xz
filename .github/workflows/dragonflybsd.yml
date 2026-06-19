@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     name: DragonFly BSD
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Test in DragonFly BSD
         id: test

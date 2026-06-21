@@ -782,7 +782,7 @@ msgstr "ذ_الفك"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-0"
-msgstr "-0"
+msgstr "‏‎-0‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -812,7 +812,7 @@ msgstr "1 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-1"
-msgstr "-1"
+msgstr "‏‎-1‏"
 
 #. type: TP
 #: ../src/xz/xz.1 ../src/scripts/xzgrep.1
@@ -836,7 +836,7 @@ msgstr "2 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-2"
-msgstr "-2"
+msgstr "‏‎-2‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -854,7 +854,7 @@ msgstr "17 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-3"
-msgstr "-3"
+msgstr "‏‎-3‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -884,7 +884,7 @@ msgstr "5 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-4"
-msgstr "-4"
+msgstr "‏‎-4‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -902,7 +902,7 @@ msgstr "48 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-5"
-msgstr "-5"
+msgstr "‏‎-5‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -926,7 +926,7 @@ msgstr "94 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-6"
-msgstr "-6"
+msgstr "‏‎-6‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -938,7 +938,7 @@ msgstr "6"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-7"
-msgstr "-7"
+msgstr "‏‎-7‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -956,7 +956,7 @@ msgstr "186 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-8"
-msgstr "-8"
+msgstr "‏‎-8‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -974,7 +974,7 @@ msgstr "33 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-9"
-msgstr "-9"
+msgstr "‏‎-9‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -1044,7 +1044,7 @@ msgstr "بما أن هناك مستويين بحجم قاموس 4 ميجاباي
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-0e"
-msgstr "-0e"
+msgstr "‏‎-0e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -1056,7 +1056,7 @@ msgstr "8"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-1e"
-msgstr "-1e"
+msgstr "‏‎-1e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -1068,7 +1068,7 @@ msgstr "13 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-2e"
-msgstr "-2e"
+msgstr "‏‎-2e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -1080,7 +1080,7 @@ msgstr "25 ميجابايت"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-3e"
-msgstr "-3e"
+msgstr "‏‎-3e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
@@ -1092,37 +1092,37 @@ msgstr "7"
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-4e"
-msgstr "-4e"
+msgstr "‏‎-4e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-5e"
-msgstr "-5e"
+msgstr "‏‎-5e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-6e"
-msgstr "-6e"
+msgstr "‏‎-6e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-7e"
-msgstr "-7e"
+msgstr "‏‎-7e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-8e"
-msgstr "-8e"
+msgstr "‏‎-8e‏"
 
 #. type: tbl table
 #: ../src/xz/xz.1
 #, no-wrap
 msgid "-9e"
-msgstr "-9e"
+msgstr "‏‎-9e‏"
 
 #. type: Plain text
 #: ../src/xz/xz.1

@@ -93,6 +93,10 @@ include(cmake/tuklib_physmem.cmake)
 include(cmake/tuklib_progname.cmake)
 include(cmake/tuklib_mbstr.cmake)
 
+if(CMAKE_C_COMPILER_LOADED)
+    check_linker_flag(C "-Wl,--output-def,liblzma.def.in" HAVE_LINKER_OUTPUT_DEF)
+endif()
+
 set(PACKAGE_NAME "XZ Utils")
 set(PACKAGE_BUGREPORT "xz@tukaani.org")
 set(PACKAGE_URL "https://tukaani.org/xz/")
@@ -1485,7 +1489,7 @@ if(WIN32 OR CYGWIN)
         # Export the public API symbols with __declspec(dllexport).
         target_compile_definitions(liblzma PRIVATE DLL_EXPORT)
 
-        if(NOT MSVC AND NOT CYGWIN)
+        if(HAVE_LINKER_OUTPUT_DEF AND NOT CYGWIN)
             # Create a DEF file. The Autotools-based build creates a DEF file
             # under Cygwin & MSYS2 too but it almost certainly is a useless
             # file in that context, so the CMake build omits it.
@@ -1507,6 +1511,11 @@ if(WIN32 OR CYGWIN)
                     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/remove-ordinals.cmake"
                 BYPRODUCTS "liblzma.def"
                 VERBATIM)
+
+        elseif(MSVC OR (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND WIN32))
+            # Since lld-link doesn't auto-generate .def files like GNU ld,
+            # we tell CMake to handle exports automatically.
+            set_target_properties(liblzma PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
         endif()
     else()
         # Disable __declspec(dllimport) when linking against static liblzma.

@@ -80,7 +80,7 @@ lzma_block_buffer_bound(size_t uncompressed_size)
 		return 0;
 #endif
 
-	return ret;
+	return (size_t)ret;
 }
 
 
@@ -143,7 +143,7 @@ block_encode_uncompressed(lzma_block *block, const uint8_t *in, size_t in_size,
 		// Size of the uncompressed chunk
 		const size_t copy_size
 				= my_min(in_size - in_pos, LZMA2_CHUNK_MAX);
-		out[(*out_pos)++] = (copy_size - 1) >> 8;
+		out[(*out_pos)++] = (uint8_t)((copy_size - 1) >> 8);
 		out[(*out_pos)++] = (copy_size - 1) & 0xFF;
 
 		// The actual data
@@ -180,7 +180,7 @@ block_encode_normal(lzma_block *block, const lzma_allocator *allocator,
 	// Limit out_size so that we stop encoding if the output would grow
 	// bigger than what uncompressed Block would be.
 	if (out_size - *out_pos > block->compressed_size)
-		out_size = *out_pos + block->compressed_size;
+		out_size = *out_pos + (size_t)block->compressed_size;
 
 	// TODO: In many common cases this could be optimized to use
 	// significantly less memory.

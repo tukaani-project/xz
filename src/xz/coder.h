@@ -95,10 +95,8 @@ extern void coder_set_compression_settings(void);
 /// Compress or decompress the given file
 extern void coder_run(const char *filename);
 
-#ifndef NDEBUG
 /// Free the memory allocated for the coder and kill the worker threads.
 extern void coder_free(void);
-#endif
 
 /// Create filter chain from string
 extern void coder_add_filters_from_str(const char *filter_str);

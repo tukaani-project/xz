@@ -1760,6 +1760,8 @@ test_lzma_index_buffer_decode(void)
 
 // With liblzma <= 5.8.2 (before the commit c8c22869e780),
 // this triggers a buffer overflow in lzma_index_append().
+// This test might require building with -fsanitize=undefined,address
+// to catch the bug.
 static void
 test_decode_empty_and_append(void)
 {

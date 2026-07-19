@@ -16,6 +16,9 @@
 #endif
 
 
+/// Number of threads supported by the hardware.
+static uint32_t cputhreads = 1;
+
 /// Maximum number of worker threads. This can be set with
 /// the --threads=NUM command line option.
 static uint32_t threads_max;
@@ -74,18 +77,7 @@ hardware_threads_set(uint32_t n)
 		// mode will still be used if memory limit allows.
 		threads_are_automatic = true;
 		use_mt_mode_with_one_thread = true;
-
-		// If threading support was enabled at build time,
-		// use the number of available CPU cores. Otherwise
-		// use one thread since disabling threading support
-		// omits lzma_cputhreads() from liblzma.
-#ifdef MYTHREAD_ENABLED
-		threads_max = lzma_cputhreads();
-		if (threads_max == 0)
-			threads_max = 1;
-#else
-		threads_max = 1;
-#endif
+		threads_max = cputhreads;
 	} else if (n == UINT32_MAX) {
 		use_mt_mode_with_one_thread = true;
 		threads_max = 1;
@@ -251,13 +243,6 @@ memlimit_show(const char *str, size_t str_columns, uint64_t value)
 extern void
 hardware_memlimit_show(void)
 {
-	uint32_t cputhreads = 1;
-#ifdef MYTHREAD_ENABLED
-	cputhreads = lzma_cputhreads();
-	if (cputhreads == 0)
-		cputhreads = 1;
-#endif
-
 	if (opt_robot) {
 		printf("%" PRIu64 "\t%" PRIu64 "\t%" PRIu64 "\t%" PRIu64
 				"\t%" PRIu64 "\t%" PRIu32 "\n",
@@ -403,6 +388,13 @@ hardware_init(void)
 	const size_t mem_ceiling = 1400U << 20;
 	if (memlimit_mt_default > mem_ceiling)
 		memlimit_mt_default = mem_ceiling;
+#endif
+
+#ifdef MYTHREAD_ENABLED
+	// Cache the number of hardware threads.
+	cputhreads = lzma_cputhreads();
+	if (cputhreads == 0)
+		cputhreads = 1;
 #endif
 
 	// Enable threaded mode by default. xz 5.4.x and older

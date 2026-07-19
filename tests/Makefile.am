@@ -15,6 +15,7 @@ EXTRA_DIST = \
 	test_compress_generated_text \
 	test_scripts.sh \
 	test_suffix.sh \
+	test_linux_cgroup.sh \
 	xzgrep_expected_output
 
 AM_CPPFLAGS = \
@@ -67,6 +68,7 @@ TESTS = \
 	test_vli \
 	test_files.sh \
 	test_suffix.sh \
+	test_linux_cgroup.sh \
 	test_compress_generated_abc \
 	test_compress_generated_random \
 	test_compress_generated_text

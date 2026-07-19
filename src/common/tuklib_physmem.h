@@ -4,6 +4,8 @@
 //
 /// \file       tuklib_physmem.h
 /// \brief      Get the amount of physical memory
+///
+/// This depends on tuklib_cgroup.c.
 //
 //  Author:     Lasse Collin
 //
@@ -19,6 +21,9 @@ TUKLIB_DECLS_BEGIN
 extern uint64_t tuklib_physmem(void);
 ///<
 /// \brief      Get the amount of physical memory in bytes
+///
+/// On Linux, if cgroup v2 memory.max is lower than the amount of physical
+/// memory, the memory.max value is returned.
 ///
 /// \return     Amount of physical memory in bytes. On error, zero is
 ///             returned.

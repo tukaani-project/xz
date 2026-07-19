@@ -4,6 +4,8 @@
 //
 /// \file       tuklib_cpucores.h
 /// \brief      Get the number of CPU cores online
+///
+/// This depends on tuklib_cgroup.c.
 //
 //  Author:     Lasse Collin
 //

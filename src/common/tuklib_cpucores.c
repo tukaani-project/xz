@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tuklib_cpucores.h"
+#include "tuklib_cgroup.h"
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #	ifndef _WIN32_WINNT
@@ -102,6 +103,16 @@ tuklib_cpucores(void)
 	struct pst_dynamic pst;
 	if (pstat_getdynamic(&pst, sizeof(pst), 1, 0) != -1)
 		ret = (uint32_t)pst.psd_proc_cnt;
+#endif
+
+#ifdef __linux__
+	// Find the effective value of Linux cgroup v2 cpu.max.
+	// If it is lower than the number of processors online,
+	// pretend that we only have the number of cores that
+	// cpu.max allows us to actually use.
+	const unsigned long long cpu_max = tuklib_cgroup_cpu_max();
+	if (ret > cpu_max)
+		ret = cpu_max;
 #endif
 
 	return ret;

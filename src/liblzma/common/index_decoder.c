@@ -28,6 +28,10 @@ typedef struct {
 	/// Memory usage limit
 	uint64_t memlimit;
 
+	// Memory used for lzma_index once it has been allocated.
+	// Before that, this holds a tiny value.
+	uint64_t memused;
+
 	/// Target Index
 	lzma_index *index;
 
@@ -103,7 +107,13 @@ index_decode(void *coder_ptr, const lzma_allocator *allocator,
 		FALLTHROUGH;
 
 	case SEQ_MEMUSAGE:
-		if (lzma_index_memusage(1, coder->count) > coder->memlimit) {
+		coder->memused = lzma_index_memusage(1, coder->count);
+
+		// We sanity-checked coder->count in SEQ_COUNT, which
+		// guarantees that lzma_index_memusage() won't fail.
+		assert(coder->memused != UINT64_MAX);
+
+		if (coder->memused > coder->memlimit) {
 			ret = LZMA_MEMLIMIT_ERROR;
 			goto out;
 		}
@@ -237,7 +247,10 @@ index_decoder_memconfig(void *coder_ptr, uint64_t *memusage,
 {
 	lzma_index_coder *coder = coder_ptr;
 
-	*memusage = lzma_index_memusage(1, coder->count);
+	// Index decoder is special in sense that the returned memusage
+	// doesn't include the memory usage of the decoder itself; only
+	// the resulting lzma_index is counted.
+	*memusage = coder->memused;
 	*old_memlimit = coder->memlimit;
 
 	if (new_memlimit != 0) {
@@ -270,7 +283,7 @@ index_decoder_reset(lzma_index_coder *coder, const lzma_allocator *allocator,
 	// Initialize the rest.
 	coder->sequence = SEQ_INDICATOR;
 	coder->memlimit = my_max(1, memlimit);
-	coder->count = 0; // Needs to be initialized due to _memconfig().
+	coder->memused = 1; // If _memconfig() is called before SEQ_MEMUSAGE.
 	coder->pos = 0;
 	coder->crc32 = 0;
 
@@ -368,7 +381,7 @@ lzma_index_buffer_decode(lzma_index **i, uint64_t *memlimit,
 		} else if (ret == LZMA_MEMLIMIT_ERROR) {
 			// Tell the caller how much memory would have
 			// been needed.
-			*memlimit = lzma_index_memusage(1, coder.count);
+			*memlimit = coder.memused;
 		}
 	}
 

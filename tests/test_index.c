@@ -1625,8 +1625,8 @@ test_lzma_index_decoder(void)
 static void
 test_lzma_index_decoder_memusage(void)
 {
-#ifndef HAVE_DECODERS
-	assert_skip("Decoder support disabled");
+#if !defined(HAVE_ENCODERS) || !defined(HAVE_DECODERS)
+	assert_skip("Encoder or decoder support disabled");
 #else
 	assert_uint(decode_buffer_size, >, 20);
 

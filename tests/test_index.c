@@ -1852,6 +1852,50 @@ test_decode_empty_and_append(void)
 }
 
 
+static void
+test_huge_number_of_records(void)
+{
+#ifndef HAVE_DECODERS
+	assert_skip("Decoder support disabled");
+#else
+	size_t in_size;
+	uint8_t *in = tuktest_file_from_srcdir(
+			"files/bad-0-index-1.xz", &in_size);
+	assert_uint_eq(in_size, 32);
+
+	lzma_index *i = NULL;
+
+	// When using the the public API of the multi-call decoder,
+	// we cannot inform it how big the Index may be at most.
+	// Thus, a huge value in Number of Records looks valid to it
+	// and we get LZMA_MEMLIMIT_ERROR.
+	lzma_stream strm = LZMA_STREAM_INIT;
+	assert_lzma_ret(lzma_index_decoder(&strm, &i, MEMLIMIT), LZMA_OK);
+	strm.next_in = in + LZMA_STREAM_HEADER_SIZE;
+	strm.avail_in = in_size - LZMA_STREAM_HEADER_SIZE;
+	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_MEMLIMIT_ERROR);
+	assert_uint(lzma_memusage(&strm), >, UINT64_C(100) << 30);
+	lzma_end(&strm);
+
+	// In contrast, lzma_index_buffer_decode() and
+	// lzma_file_info_decoder() know the input size. With these decoders,
+	// liblzma <= 5.8.3 returns LZMA_MEMLIMIT_ERROR because it doesn't
+	// sanity check the value in Number of Records against the input size.
+	uint64_t memlimit = MEMLIMIT;
+	size_t in_pos = LZMA_STREAM_HEADER_SIZE;
+	assert_lzma_ret(lzma_index_buffer_decode(&i, &memlimit, NULL,
+			in, &in_pos, in_size), LZMA_DATA_ERROR);
+
+	assert_lzma_ret(lzma_file_info_decoder(&strm, &i, MEMLIMIT, in_size),
+			LZMA_OK);
+	strm.next_in = in;
+	strm.avail_in = in_size;
+	assert_lzma_ret(lzma_code(&strm, LZMA_RUN), LZMA_DATA_ERROR);
+	lzma_end(&strm);
+#endif
+}
+
+
 extern int
 main(int argc, char **argv)
 {
@@ -1882,6 +1926,7 @@ main(int argc, char **argv)
 	tuktest_run(test_lzma_index_buffer_encode);
 	tuktest_run(test_lzma_index_buffer_decode);
 	tuktest_run(test_decode_empty_and_append);
+	tuktest_run(test_huge_number_of_records);
 	lzma_index_end(decode_test_index, NULL);
 	return tuktest_end();
 }

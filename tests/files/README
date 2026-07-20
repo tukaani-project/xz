@@ -170,6 +170,9 @@
 
     bad-0-backward_size.xz has wrong Backward Size in Stream Footer.
 
+    bad-0-index-1.xz has truncated Index that starts with a huge value
+    in Number of Records.
+
     bad-1-stream_flags-1.xz has different Stream Flags in Stream Header
     and Stream Footer.
 

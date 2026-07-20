@@ -30,15 +30,15 @@
 #define INDEX_INDICATOR 0
 
 
+/// Like lzma_index_init() but the second argument specifies for how many
+/// Records to preallocate memory. This is used by the Index decoder.
+extern lzma_index *lzma_index_init2(
+		const lzma_allocator *allocator, lzma_vli records_prealloc);
+
+
 /// Get the size of the Index Padding field. This is needed by Index encoder
 /// and decoder, but applications should have no use for this.
 extern uint32_t lzma_index_padding_size(const lzma_index *i);
-
-
-/// Set for how many Records to allocate memory the next time
-/// lzma_index_append() needs to allocate space for a new Record.
-/// This is used only by the Index decoder.
-extern void lzma_index_prealloc(lzma_index *i, lzma_vli records);
 
 
 /// Round the variable-length integer to the next multiple of four.

@@ -121,9 +121,11 @@ index_decode(void *coder_ptr, const lzma_allocator *allocator,
 			goto out;
 		}
 
-		// Tell the Index handling code how many Records this
-		// Index has to allow it to allocate memory more efficiently.
-		lzma_index_prealloc(coder->index, coder->count);
+		// When initializing lzma_index, preallocate memory for
+		// the correct number of Records.
+		coder->index = lzma_index_init2(allocator, coder->count);
+		if (coder->index == NULL)
+			return LZMA_MEM_ERROR;
 
 		ret = LZMA_OK;
 		coder->sequence = coder->count == 0
@@ -267,9 +269,9 @@ index_decoder_memconfig(void *coder_ptr, uint64_t *memusage,
 }
 
 
-static lzma_ret
-index_decoder_reset(lzma_index_coder *coder, const lzma_allocator *allocator,
-		lzma_index **i, uint64_t memlimit, uint64_t input_size_max)
+static void
+index_decoder_reset(lzma_index_coder *coder, lzma_index **i, uint64_t memlimit,
+		uint64_t input_size_max)
 {
 	// Remember the pointer given by the application. We will set it
 	// to point to the decoded Index only if decoding is successful.
@@ -277,11 +279,6 @@ index_decoder_reset(lzma_index_coder *coder, const lzma_allocator *allocator,
 	// pass it to lzma_index_end() no matter did decoding succeed or not.
 	coder->index_ptr = i;
 	*i = NULL;
-
-	// We always allocate a new lzma_index.
-	coder->index = lzma_index_init(allocator);
-	if (coder->index == NULL)
-		return LZMA_MEM_ERROR;
 
 	// Approximate how many Records the Index may contain at most when
 	// we know that the Index won't be larger than input_size_max bytes.
@@ -296,10 +293,10 @@ index_decoder_reset(lzma_index_coder *coder, const lzma_allocator *allocator,
 	coder->sequence = SEQ_INDICATOR;
 	coder->memlimit = my_max(1, memlimit);
 	coder->memused = 1; // If _memconfig() is called before SEQ_MEMUSAGE.
+	coder->index = NULL;
 	coder->pos = 0;
 	coder->crc32 = 0;
-
-	return LZMA_OK;
+	return;
 }
 
 
@@ -322,13 +319,12 @@ lzma_index_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		next->code = &index_decode;
 		next->end = &index_decoder_end;
 		next->memconfig = &index_decoder_memconfig;
-		coder->index = NULL;
 	} else {
 		lzma_index_end(coder->index, allocator);
 	}
 
-	return index_decoder_reset(
-			coder, allocator, i, memlimit, input_size_max);
+	index_decoder_reset(coder, i, memlimit, input_size_max);
+	return LZMA_OK;
 }
 
 
@@ -369,8 +365,8 @@ lzma_index_buffer_decode(lzma_index **i, uint64_t *memlimit,
 	// Initialize the decoder.
 	lzma_index_coder coder;
 	const uint64_t input_size_max = in_size - *in_pos;
-	return_if_error(index_decoder_reset(&coder, allocator, i, *memlimit,
-			my_min(input_size_max, LZMA_BACKWARD_SIZE_MAX)));
+	index_decoder_reset(&coder, i, *memlimit,
+			my_min(input_size_max, LZMA_BACKWARD_SIZE_MAX));
 
 	// Store the input start position so that we can restore it in case
 	// of an error.

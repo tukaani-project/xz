@@ -1175,6 +1175,17 @@ test_lzma_index_iter_locate(void)
 			LZMA_STREAM_HEADER_SIZE + group_multiple * 8);
 	assert_uint_eq(iter.block.uncompressed_file_offset, 0);
 
+	lzma_index *idx2 = lzma_index_init(NULL);
+	assert_true(idx != NULL);
+	assert_lzma_ret(lzma_index_append(idx2, NULL, 16, 1), LZMA_OK);
+	assert_lzma_ret(lzma_index_cat(idx, idx2, NULL), LZMA_OK);
+	assert_false(lzma_index_iter_locate(&iter, 0));
+	assert_uint_eq(iter.block.total_size, 16);
+	assert_uint_eq(iter.block.uncompressed_size, 1);
+	assert_uint_eq(iter.block.compressed_file_offset,
+			LZMA_STREAM_HEADER_SIZE + group_multiple * 8);
+	assert_uint_eq(iter.block.uncompressed_file_offset, 0);
+
 	lzma_index_end(idx, NULL);
 }
 

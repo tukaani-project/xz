@@ -333,6 +333,13 @@ extern void *lzma_alloc(size_t size, const lzma_allocator *allocator);
 lzma_attr_alloc_size(1)
 extern void *lzma_alloc_zero(size_t size, const lzma_allocator *allocator);
 
+/// Reallocates memory. If allocator != NULL && allocator->alloc != NULL,
+/// realloc() is emulated with ->alloc + memcpy() + lzma_free(). In this
+/// case, old_size is needed for the memcpy() step.
+lzma_attr_alloc_size(2)
+extern void *lzma_realloc(void *old_ptr, size_t new_size, size_t old_size,
+		const lzma_allocator *allocator);
+
 /// Frees memory
 extern void lzma_free(void *ptr, const lzma_allocator *allocator);
 

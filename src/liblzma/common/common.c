@@ -75,6 +75,31 @@ lzma_alloc_zero(size_t size, const lzma_allocator *allocator)
 }
 
 
+lzma_attr_alloc_size(2)
+extern void *
+lzma_realloc(void *old_ptr, size_t new_size, size_t old_size,
+		const lzma_allocator *allocator)
+{
+	// Avoid realloc(ptr, 0) which has implementation-defined behavior.
+	if (new_size == 0)
+		new_size = 1;
+
+	void *new_ptr;
+
+	if (allocator != NULL && allocator->alloc != NULL) {
+		new_ptr = allocator->alloc(allocator->opaque, 1, new_size);
+		if (new_ptr != NULL && old_ptr != NULL) {
+			memcpy(new_ptr, old_ptr, my_min(old_size, new_size));
+			lzma_free(old_ptr, allocator);
+		}
+	} else {
+		new_ptr = realloc(old_ptr, new_size);
+	}
+
+	return new_ptr;
+}
+
+
 extern void
 lzma_free(void *ptr, const lzma_allocator *allocator)
 {

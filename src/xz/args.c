@@ -638,7 +638,7 @@ parse_real(args_info *args, int argc, char **argv)
 						"or '--files0'."));
 
 			if (optarg == NULL) {
-				args->files_name = stdin_filename;
+				args->files_name = (char *)stdin_filename;
 				args->files_file = stdin;
 			} else {
 				// If we are called from parse_environment(),

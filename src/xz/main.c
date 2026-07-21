@@ -335,8 +335,10 @@ main(int argc, char **argv)
 			run(name);
 		}
 
-		if (args.files_name != stdin_filename)
+		if (args.files_name != stdin_filename) {
 			(void)fclose(args.files_file);
+			free(args.files_name);
+		}
 	}
 
 #ifdef HAVE_DECODERS

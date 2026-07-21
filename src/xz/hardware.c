@@ -15,6 +15,10 @@
 #	include <sys/resource.h>
 #endif
 
+#ifdef __linux__
+#	include <limits.h>
+#endif
+
 
 /// Maximum number of worker threads. This can be set with
 /// the --threads=NUM command line option.
@@ -59,6 +63,152 @@ static uint64_t memlimit_mtdec;
 
 /// Total amount of physical RAM
 static uint64_t total_ram;
+
+/// Amount of RAM that xz can use for automatic memory usage limits.
+static uint64_t usable_ram;
+
+
+/// Lower a memory limit if a finite lower limit is known.
+static void
+limit_to(uint64_t *limit, uint64_t new_limit)
+{
+	if (new_limit != 0 && new_limit < *limit)
+		*limit = new_limit;
+
+	return;
+}
+
+
+#ifdef __linux__
+/// Decode the octal escapes used for paths in procfs files.
+static bool
+procfs_path_unescape(char *dest, size_t dest_size, const char *src)
+{
+	size_t out = 0;
+	while (*src != '\0') {
+		unsigned char c = (unsigned char)*src++;
+		if (c == '\\' && src[0] >= '0' && src[0] <= '7'
+				&& src[1] >= '0' && src[1] <= '7'
+				&& src[2] >= '0' && src[2] <= '7') {
+			c = (unsigned char)(((src[0] - '0') << 6)
+					| ((src[1] - '0') << 3) | (src[2] - '0'));
+			src += 3;
+		}
+
+		if (out + 1 >= dest_size)
+			return false;
+		dest[out++] = (char)c;
+	}
+
+	dest[out] = '\0';
+	return true;
+}
+
+
+/// Find the cgroup v2 mountpoint for this process.
+static bool
+cgroup2_mountpoint(char *mountpoint, size_t mountpoint_size)
+{
+	FILE *f = fopen("/proc/self/mountinfo", "r");
+	if (f == NULL)
+		return false;
+
+	char line[PATH_MAX + 256];
+	while (fgets(line, sizeof(line), f) != NULL) {
+		char *separator = strstr(line, " - cgroup2 ");
+		if (separator == NULL)
+			continue;
+
+		// The fifth whitespace-separated field is the mountpoint.
+		*separator = '\0';
+		char *field = strtok(line, " ");
+		for (unsigned i = 0; i < 4 && field != NULL; ++i)
+			field = strtok(NULL, " ");
+		if (field == NULL)
+			continue;
+
+		if (!procfs_path_unescape(mountpoint, mountpoint_size, field))
+			continue;
+		fclose(f);
+		return true;
+	}
+
+	fclose(f);
+	return false;
+}
+
+
+/// Read the effective cgroup v2 memory limit of this process.
+///
+/// A value of zero means that no finite limit could be determined. The
+/// cgroup limit is hierarchical, so check this cgroup and each parent.
+static uint64_t
+cgroup_memory_limit(void)
+{
+	FILE *f = fopen("/proc/self/cgroup", "r");
+	if (f == NULL)
+		return 0;
+
+	char line[PATH_MAX + 32];
+	char cgroup_path[PATH_MAX];
+	cgroup_path[0] = '\0';
+	while (fgets(line, sizeof(line), f) != NULL) {
+		if (strncmp(line, "0::", 3) == 0) {
+			size_t len = strcspn(line + 3, "\n");
+			if (len >= sizeof(cgroup_path))
+				break;
+			memcpy(cgroup_path, line + 3, len);
+			cgroup_path[len] = '\0';
+			break;
+		}
+	}
+	fclose(f);
+
+	if (cgroup_path[0] == '\0')
+		return 0;
+
+	char mountpoint[PATH_MAX];
+	if (!cgroup2_mountpoint(mountpoint, sizeof(mountpoint)))
+		return 0;
+
+	uint64_t limit = UINT64_MAX;
+	for (;;) {
+		char filename[PATH_MAX];
+		const int n = snprintf(filename, sizeof(filename),
+				"%s%s/memory.max", mountpoint, cgroup_path);
+		if (n < 0 || (size_t)n >= sizeof(filename))
+			break;
+
+		f = fopen(filename, "r");
+		if (f != NULL) {
+			char value[64];
+			if (fgets(value, sizeof(value), f) != NULL
+					&& strncmp(value, "max", 3) != 0) {
+				char *end;
+				const unsigned long long bytes =
+						strtoull(value, &end, 10);
+				if (end != value && bytes > 0
+						&& (uint64_t)bytes < limit)
+					limit = (uint64_t)bytes;
+			}
+			fclose(f);
+		}
+
+		if (strcmp(cgroup_path, "/") == 0)
+			break;
+
+		char *slash = strrchr(cgroup_path, '/');
+		if (slash == NULL)
+			break;
+		if (slash == cgroup_path)
+			cgroup_path[1] = '\0';
+		else
+			*slash = '\0';
+	}
+
+	return limit == UINT64_MAX ? 0 : limit;
+}
+#endif
 
 
 extern void
@@ -123,7 +273,7 @@ hardware_memlimit_set(uint64_t new_memlimit,
 	if (is_percentage) {
 		assert(new_memlimit > 0);
 		assert(new_memlimit <= 100);
-		new_memlimit = (uint32_t)new_memlimit * total_ram / 100;
+		new_memlimit = (uint32_t)new_memlimit * usable_ram / 100;
 	}
 
 	if (set_compress) {
@@ -320,10 +470,16 @@ hardware_init(void)
 	if (total_ram == 0)
 		total_ram = (uint64_t)(ASSUME_RAM) * 1024 * 1024;
 
-	// FIXME? There may be better methods to determine the default value.
-	// One Linux-specific suggestion is to use MemAvailable from
-	// /proc/meminfo as the starting point.
-	memlimit_mt_default = total_ram / 4;
+	// Use physical RAM unless the operating system reports a lower limit.
+	usable_ram = total_ram;
+
+#ifdef __linux__
+	// sysinfo() and sysconf() may report the host's RAM from inside a
+	// container, so use the effective cgroup v2 limit when it is lower.
+	limit_to(&usable_ram, cgroup_memory_limit());
+#endif
+
+	memlimit_mt_default = my_max(1, usable_ram / 4);
 
 #ifdef HAVE_GETRLIMIT
 	// Try to set the default multithreaded memory usage limit so that
@@ -386,9 +542,7 @@ hardware_init(void)
 			const uint64_t rl_with_margin = rl.rlim_cur > margin
 					? (uint64_t)(rl.rlim_cur - margin) : 1;
 
-			// Lower the memory usage limit if needed.
-			if (memlimit_mt_default > rl_with_margin)
-				memlimit_mt_default = rl_with_margin;
+			limit_to(&memlimit_mt_default, rl_with_margin);
 		}
 	}
 #endif

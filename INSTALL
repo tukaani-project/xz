@@ -555,7 +555,7 @@ XZ Utils Installation
                 detect the amount of physical memory on the system. This
                 information is used by the options --memlimit-compress,
                 --memlimit-decompress, and --memlimit when setting the
-                limit to a percentage of total RAM.
+                limit to a percentage of RAM available to xz.
 
                 On some systems, there is no code to detect the amount of
                 RAM though. Using --enable-assume-ram one can set how much
@@ -973,4 +973,3 @@ XZ Utils Installation
     about liblzma.so (or a similarly named file) being missing, try
     running "ldconfig" to update the run-time linker cache (if your
     operating system has such a command).
-

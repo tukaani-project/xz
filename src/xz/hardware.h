@@ -30,7 +30,7 @@ extern bool hardware_threads_is_mt(void);
 /// decompression (also includes --list), and multithreaded decompression.
 /// Any combination of these can be set with a single call to this function.
 /// Zero indicates resetting the limit back to the defaults.
-/// The limit can also be set as a percentage of installed RAM; the
+/// The limit can also be set as a percentage of the RAM available to xz; the
 /// percentage must be in the range [1, 100].
 extern void hardware_memlimit_set(uint64_t new_memlimit,
 		bool set_compress, bool set_decompress, bool set_mtdec,

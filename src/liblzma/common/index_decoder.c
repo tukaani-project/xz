@@ -367,11 +367,10 @@ lzma_index_buffer_decode(lzma_index **i, uint64_t *memlimit,
 		return LZMA_PROG_ERROR;
 
 	// Initialize the decoder.
-	// in_size64 is to silence gcc -Wtype-limits on 32-bit targets.
 	lzma_index_coder coder;
-	const uint64_t in_size64 = in_size;
+	const uint64_t input_size_max = in_size - *in_pos;
 	return_if_error(index_decoder_reset(&coder, allocator, i, *memlimit,
-			my_min(in_size64, LZMA_BACKWARD_SIZE_MAX)));
+			my_min(input_size_max, LZMA_BACKWARD_SIZE_MAX)));
 
 	// Store the input start position so that we can restore it in case
 	// of an error.

@@ -85,6 +85,9 @@ extern const uint64_t lzma_crc64_table[4][256];
 // 64-bit LoongArch has CRC32 instructions.
 #undef CRC32_LOONGARCH
 
+// RISC-V Vector extension has CRC32 instructions.
+#undef CRC32_RISCV_VECTOR
+
 
 // ARM64
 //
@@ -123,6 +126,23 @@ extern const uint64_t lzma_crc64_table[4][256];
 #ifdef HAVE_LOONGARCH_CRC32
 #	define CRC32_ARCH_OPTIMIZED 1
 #	define CRC32_LOONGARCH 1
+#endif
+
+
+// RISC-V Vector
+//
+// When __riscv_vector is defined by the compiler (e.g. -march=rv64gcv),
+// include the RVV-optimized CRC32 implementation. Both generic and
+// arch-specific versions are built so that runtime detection can select
+// between them based on hardware support.
+//
+// NOTE: On RISC-V, a binary compiled with the V extension might still
+// run on a CPU without V. The is_arch_extension_supported() function in
+// crc32_rvv.h handles the runtime check.
+#ifdef __riscv_vector
+#	define CRC32_ARCH_OPTIMIZED 1
+#	define CRC32_RISCV_VECTOR 1
+#	define CRC32_GENERIC 1
 #endif
 
 

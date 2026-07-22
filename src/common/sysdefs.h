@@ -159,8 +159,12 @@
 #ifdef HAVE_STDBOOL_H
 #	include <stdbool.h>
 #else
-#	if ! HAVE__BOOL
+#	if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L
+#	ifndef __cplusplus
+#		if ! HAVE__BOOL
 typedef unsigned char _Bool;
+#		endif
+#	endif
 #	endif
 #	define bool _Bool
 #	define false 0

@@ -20,6 +20,8 @@
 #	include "crc32_arm64.h"
 #elif defined(CRC32_LOONGARCH)
 #	include "crc32_loongarch.h"
+#elif defined(CRC32_RISCV_VECTOR)
+#	include "crc32_rvv.h"
 #endif
 
 

@@ -57,13 +57,10 @@ typedef struct {
 	/// Root node
 	index_tree_node *root;
 
-	/// Leftmost node. Since the tree will be filled sequentially,
-	/// this won't change after the first node has been added to
-	/// the tree.
+	/// Leftmost (first) node
 	index_tree_node *leftmost;
 
-	/// The rightmost node in the tree. Since the tree is filled
-	/// sequentially, this is always the node where to add the new data.
+	/// Rightmost (last) node
 	index_tree_node *rightmost;
 
 	/// Number of nodes in the tree
@@ -246,10 +243,13 @@ index_tree_end(index_tree *tree, const lzma_allocator *allocator,
 
 /// Add a new node to the tree. node->uncompressed_base and
 /// node->compressed_base must have been set by the caller already.
+///
+/// The tree is always filled sequentially: index_streams are prepended
+/// and index_groups are appended.
 static void
-index_tree_append(index_tree *tree, index_tree_node *node)
+index_tree_append(index_tree *tree, index_tree_node *node, bool prepend)
 {
-	node->parent = tree->rightmost;
+	node->parent = prepend ? tree->leftmost : tree->rightmost;
 	node->left = NULL;
 	node->right = NULL;
 
@@ -263,14 +263,22 @@ index_tree_append(index_tree *tree, index_tree_node *node)
 		return;
 	}
 
-	// The tree is always filled sequentially.
-	assert(tree->rightmost->uncompressed_base <= node->uncompressed_base);
-	assert(tree->rightmost->compressed_base < node->compressed_base);
-
-	// Add the new node after the rightmost node. It's the correct
-	// place due to the reason above.
-	tree->rightmost->right = node;
-	tree->rightmost = node;
+	// Add the new node before the leftmost or after the rightmost node.
+	if (prepend) {
+		assert(tree->leftmost->uncompressed_base
+				>= node->uncompressed_base);
+		assert(tree->leftmost->compressed_base
+				> node->compressed_base);
+		tree->leftmost->left = node;
+		tree->leftmost = node;
+	} else {
+		assert(tree->rightmost->uncompressed_base
+				<= node->uncompressed_base);
+		assert(tree->rightmost->compressed_base
+				< node->compressed_base);
+		tree->rightmost->right = node;
+		tree->rightmost = node;
+	}
 
 	// Balance the AVL-tree if needed. We don't need to keep the balance
 	// factors in nodes, because we always fill the tree sequentially,
@@ -285,11 +293,14 @@ index_tree_append(index_tree *tree, index_tree_node *node)
 			node = node->parent;
 		} while (--up > 0);
 
-		// Rotate left using node as the rotation root.
-		index_tree_node *pivot = node->right;
+		// Rotate right/left using node as the rotation root.
+		index_tree_node *pivot = prepend ? node->left : node->right;
 
 		if (node->parent == NULL) {
 			tree->root = pivot;
+		} else if (prepend) {
+			assert(node->parent->left == node);
+			node->parent->left = pivot;
 		} else {
 			assert(node->parent->right == node);
 			node->parent->right = pivot;
@@ -297,11 +308,20 @@ index_tree_append(index_tree *tree, index_tree_node *node)
 
 		pivot->parent = node->parent;
 
-		node->right = pivot->left;
-		if (node->right != NULL)
-			node->right->parent = node;
+		if (prepend) {
+			node->left = pivot->right;
+			if (node->left != NULL)
+				node->left->parent = node;
 
-		pivot->left = node;
+			pivot->right = node;
+		} else {
+			node->right = pivot->left;
+			if (node->right != NULL)
+				node->right->parent = node;
+
+			pivot->left = node;
+		}
+
 		node->parent = pivot;
 	}
 
@@ -429,7 +449,7 @@ lzma_index_init(const lzma_allocator *allocator)
 		return NULL;
 	}
 
-	index_tree_append(&i->streams, &s->node);
+	index_tree_append(&i->streams, &s->node, false);
 
 	return i;
 }
@@ -745,7 +765,7 @@ lzma_index_append(lzma_index *i, const lzma_allocator *allocator,
 		g->number_base = s->record_count + 1;
 
 		// Add the new group to the Stream.
-		index_tree_append(&s->groups, &g->node);
+		index_tree_append(&s->groups, &g->node, false);
 	}
 
 	// Add the new Record to the group.
@@ -805,7 +825,7 @@ index_cat_helper(const index_cat_info *info, index_stream *this)
 	this->node.compressed_base += info->file_size;
 	this->number += info->stream_number_add;
 	this->block_number_base += info->block_number_add;
-	index_tree_append(info->streams, &this->node);
+	index_tree_append(info->streams, &this->node, false);
 
 	if (right != NULL)
 		index_cat_helper(info, right);
@@ -980,7 +1000,7 @@ index_dup_stream(const index_stream *src, const lzma_allocator *allocator)
 	assert(i == destg->allocated);
 
 	// Add the group to the new Stream.
-	index_tree_append(&dest->groups, &destg->node);
+	index_tree_append(&dest->groups, &destg->node, false);
 
 	return dest;
 }
@@ -1014,7 +1034,7 @@ lzma_index_dup(const lzma_index *src, const lzma_allocator *allocator)
 			return NULL;
 		}
 
-		index_tree_append(&dest->streams, &deststream->node);
+		index_tree_append(&dest->streams, &deststream->node, false);
 
 		srcstream = index_tree_next(&srcstream->node);
 	} while (srcstream != NULL);

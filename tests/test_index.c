@@ -1362,7 +1362,24 @@ test_lzma_index_dup(void)
 	assert_true(copy != NULL);
 	assert_true(index_is_equal(idx, copy));
 
-	lzma_index_end(copy, NULL);
+	const lzma_vli file_size = lzma_index_file_size(idx);
+	const lzma_vli uncomp_size = lzma_index_uncompressed_size(idx);
+	const lzma_vli block_count = lzma_index_block_count(idx);
+
+	assert_lzma_ret(lzma_index_append(copy, NULL, 11, 22), LZMA_OK);
+	assert_lzma_ret(lzma_index_cat(idx, copy, NULL), LZMA_OK);
+	assert_uint_eq(lzma_index_file_size(idx), 2 * file_size + 11 + 1 + 4);
+	assert_uint_eq(lzma_index_uncompressed_size(idx),
+			2 * uncomp_size + 22);
+	assert_uint_eq(lzma_index_block_count(idx), 2 * block_count + 1);
+
+	assert_lzma_ret(lzma_index_append(idx, NULL, 77, 99), LZMA_OK);
+	assert_uint_eq(lzma_index_file_size(idx),
+			2 * file_size + (11 + 1 + 4) + (77 + 3 + 0));
+	assert_uint_eq(lzma_index_uncompressed_size(idx),
+			2 * uncomp_size + 22 + 99);
+	assert_uint_eq(lzma_index_block_count(idx), 2 * block_count + 1 + 1);
+
 	lzma_index_end(idx, NULL);
 }
 

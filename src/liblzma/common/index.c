@@ -14,6 +14,14 @@
 #include "stream_flags_common.h"
 
 
+/// \brief      Maximum number of Streams supported in lzma_index
+///
+/// This was UINT32_MAX in liblzma <= 5.8.3. A smaller limit makes
+/// integer overflows simpler to avoid. This is still a ridiculously
+/// large value.
+#define STREAMS_MAX (UINT32_MAX / 4)
+
+
 /// \brief      How many Records to allocate at once
 ///
 /// This should be big enough to avoid making lots of tiny allocations
@@ -494,10 +502,8 @@ lzma_index_memusage(lzma_vli streams, lzma_vli blocks)
 	const uint64_t index_base = sizeof(lzma_index) + alloc_overhead;
 
 	// Validate the arguments and catch integer overflows.
-	// Maximum number of Streams is "only" UINT32_MAX, because
-	// that limit is used by the tree containing the Streams.
 	const uint64_t limit = UINT64_MAX - index_base;
-	if (streams == 0 || streams > UINT32_MAX || blocks > LZMA_VLI_MAX
+	if (streams == 0 || streams > STREAMS_MAX || blocks > LZMA_VLI_MAX
 			|| streams > limit / stream_base
 			|| groups > limit / group_base
 			|| limit - streams_mem < groups_mem)
@@ -800,6 +806,11 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 {
 	if (dest == NULL || src == NULL)
 		return LZMA_PROG_ERROR;
+
+	// Check that we don't exceed the maximum number of Streams
+	// per lzma_index.
+	if (dest->streams.count + src->streams.count > STREAMS_MAX)
+		return LZMA_DATA_ERROR;
 
 	const lzma_vli dest_file_size = lzma_index_file_size(dest);
 

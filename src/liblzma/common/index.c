@@ -435,11 +435,11 @@ lzma_index_end(lzma_index *i, const lzma_allocator *allocator)
 }
 
 
-extern void
+extern bool
 lzma_index_prealloc(lzma_index *i, lzma_vli records)
 {
 	if (records > PREALLOC_MAX)
-		records = PREALLOC_MAX;
+		return true;
 
 	// If index_decoder.c calls us with records == 0, it's decoding
 	// an Index that has no Records. In that case the decoder won't call
@@ -462,7 +462,7 @@ lzma_index_prealloc(lzma_index *i, lzma_vli records)
 		records = INDEX_GROUP_SIZE;
 
 	i->prealloc = (size_t)(records);
-	return;
+	return false;
 }
 
 

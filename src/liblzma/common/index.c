@@ -115,7 +115,10 @@ typedef struct {
 	/// Every index_stream is a node in the tree of Streams.
 	index_tree_node node;
 
-	/// Number of this Stream (first one is 1)
+	/// Number of this Stream counted in reverse: the last Stream
+	/// in the lzma_index has .number == 0. In the API, the first
+	/// Stream is 1, so the real number of this Stream is
+	/// lzma_index.streams.count - .number.
 	uint32_t number;
 
 	/// Total number of Blocks before this Stream relative to
@@ -462,13 +465,13 @@ lzma_index_init(const lzma_allocator *allocator)
 
 	index_stream *s = index_stream_init(
 			i->compressed_bias, i->uncompressed_bias,
-			1, i->block_number_bias, allocator);
+			0, i->block_number_bias, allocator);
 	if (s == NULL) {
 		lzma_free(i, allocator);
 		return NULL;
 	}
 
-	index_tree_append(&i->streams, &s->node, false);
+	index_tree_append(&i->streams, &s->node, true);
 
 	return i;
 }
@@ -808,23 +811,11 @@ lzma_index_append(lzma_index *i, const lzma_allocator *allocator,
 
 /// Structure to pass info to index_cat_helper()
 typedef struct {
-	/// Uncompressed size of the destination
-	lzma_vli uncompressed_size;
-
-	/// Compressed file size of the destination
-	lzma_vli file_size;
-
-	/// Same as above but for Block numbers
-	lzma_vli block_number_add;
-
-	/// Number of Streams that were in the destination index before we
-	/// started appending new Streams from the source index. This is
-	/// used to fix the Stream numbering.
-	uint32_t stream_number_add;
-
-	/// Destination index' Stream tree
+	lzma_vli uncompressed_adjust;
+	lzma_vli compressed_adjust;
+	lzma_vli block_number_adjust;
+	uint32_t stream_number_adjust;
 	index_tree *streams;
-
 } index_cat_info;
 
 
@@ -837,17 +828,18 @@ index_cat_helper(const index_cat_info *info, index_stream *this)
 	index_stream *left = (index_stream *)(this->node.left);
 	index_stream *right = (index_stream *)(this->node.right);
 
-	if (left != NULL)
-		index_cat_helper(info, left);
-
-	this->node.uncompressed_base += info->uncompressed_size;
-	this->node.compressed_base += info->file_size;
-	this->number += info->stream_number_add;
-	this->block_number_base += info->block_number_add;
-	index_tree_append(info->streams, &this->node, false);
-
 	if (right != NULL)
 		index_cat_helper(info, right);
+
+	// The Stream number counts in reverse, thus += instead of -=.
+	this->node.uncompressed_base -= info->uncompressed_adjust;
+	this->node.compressed_base -= info->compressed_adjust;
+	this->number += info->stream_number_adjust;
+	this->block_number_base -= info->block_number_adjust;
+	index_tree_append(info->streams, &this->node, true);
+
+	if (left != NULL)
+		index_cat_helper(info, left);
 
 	return;
 }
@@ -934,29 +926,38 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	}
 
 	// dest->checks includes the check types of all except the last Stream
-	// in dest. Set the bit for the check type of the last Stream now so
-	// that it won't get lost when Stream(s) from src are appended to dest.
-	dest->checks = lzma_index_checks(dest);
+	// in dest, so use lzma_index_checks() to get that check type of the
+	// last Stream too. This needs to be done before the Streams are
+	// moved from dest to src.
+	src->checks |= lzma_index_checks(dest);
 
-	// Add all the Streams from src to dest. Update the base offsets
-	// of each Stream from src.
+	// Update the biases.
+	src->uncompressed_bias -= dest->uncompressed_size;
+	src->compressed_bias -= dest_file_size;
+	src->block_number_bias -= dest->record_count;
+
+	// Prepend all the Streams from dest to src.
 	const index_cat_info info = {
-		.uncompressed_size = dest->uncompressed_size,
-		.file_size = dest_file_size,
-		.stream_number_add = dest->streams.count,
-		.block_number_add = dest->record_count,
-		.streams = &dest->streams,
+		.uncompressed_adjust = dest->uncompressed_bias
+				- src->uncompressed_bias,
+		.compressed_adjust = dest->compressed_bias
+				- src->compressed_bias,
+		.stream_number_adjust = src->streams.count,
+		.block_number_adjust = src->record_count,
+		.streams = &src->streams,
 	};
-	index_cat_helper(&info, (index_stream *)(src->streams.root));
+	index_cat_helper(&info, (index_stream *)(dest->streams.root));
 
 	// Update info about all the combined Streams.
-	dest->uncompressed_size += src->uncompressed_size;
-	dest->total_size += src->total_size;
-	dest->record_count += src->record_count;
-	dest->index_list_size += src->index_list_size;
-	dest->checks |= src->checks;
+	src->uncompressed_size += dest->uncompressed_size;
+	src->total_size += dest->total_size;
+	src->record_count += dest->record_count;
+	src->index_list_size += dest->index_list_size;
 
-	// There's nothing else left in src than the base structure.
+	// There's nothing else left in dest than the base structure.
+	// The API is defined so that dest is modified and src is freed,
+	// so copy src to dest and free the base struct of src.
+	*dest = *src;
 	lzma_free(src, allocator);
 
 	return LZMA_OK;
@@ -1044,7 +1045,7 @@ lzma_index_dup(const lzma_index *src, const lzma_allocator *allocator)
 
 	// Copy the Streams and the groups in them.
 	const index_stream *srcstream
-			= (const index_stream *)(src->streams.leftmost);
+			= (const index_stream *)(src->streams.rightmost);
 	do {
 		index_stream *deststream = index_dup_stream(
 				srcstream, allocator);
@@ -1053,9 +1054,9 @@ lzma_index_dup(const lzma_index *src, const lzma_allocator *allocator)
 			return NULL;
 		}
 
-		index_tree_append(&dest->streams, &deststream->node, false);
+		index_tree_append(&dest->streams, &deststream->node, true);
 
-		srcstream = index_tree_next(&srcstream->node);
+		srcstream = index_tree_prev(&srcstream->node);
 	} while (srcstream != NULL);
 
 	return dest;
@@ -1119,8 +1120,9 @@ iter_set_info(lzma_index_iter *iter)
 	}
 
 	// NOTE: lzma_index_iter.stream.number is lzma_vli but we use uint32_t
-	// internally.
-	iter->stream.number = stream->number;
+	// internally. The internal value counts in reverse (last one is 0)
+	// but in lzma_index_iter.stream.number the first Stream is 1.
+	iter->stream.number = i->streams.count - stream->number;
 	iter->stream.block_count = stream->record_count;
 	iter->stream.compressed_offset = stream->node.compressed_base
 			- i->compressed_bias;

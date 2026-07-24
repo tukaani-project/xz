@@ -36,12 +36,14 @@
 /// \brief      Base structure for index_stream and index_group structures
 typedef struct index_tree_node_s index_tree_node;
 struct index_tree_node_s {
-	/// Uncompressed start offset of this Stream (relative to the
-	/// beginning of the file) or Block (relative to the beginning
-	/// of the Stream)
+	/// Uncompressed start offset of this Stream (relative to
+	/// lzma_index.uncompressed_bias) or Block (relative to
+	/// the beginning of the Stream)
 	lzma_vli uncompressed_base;
 
-	/// Compressed start offset of this Stream or Block
+	/// Compressed start offset of this Stream (relative to
+	/// lzma_index.compressed_bias) or Block (relative to
+	/// the beginning of the Stream)
 	lzma_vli compressed_base;
 
 	index_tree_node *parent;
@@ -119,7 +121,8 @@ typedef struct {
 	/// Number of this Stream (first one is 1)
 	uint32_t number;
 
-	/// Total number of Blocks before this Stream
+	/// Total number of Blocks before this Stream relative to
+	/// lzma_index.block_number_base.
 	lzma_vli block_number_base;
 
 	/// Record groups of this Stream are stored in a tree.
@@ -155,6 +158,15 @@ struct lzma_index_s {
 	/// Stream, but using a tree keeps lookups fast even when there
 	/// are many concatenated Streams.
 	index_tree streams;
+
+	/// In index_stream, node.uncompressed_base, node.compressed_base,
+	/// and block_number_base are relative to these _bias members
+	/// instead of being relative to 0. If a new index_stream is
+	/// prepended before the existing index_streams, the offsets of all
+	/// existing index_streams can be changed by updating these _biases.
+	lzma_vli uncompressed_bias;
+	lzma_vli compressed_bias;
+	lzma_vli block_number_bias;
 
 	/// Uncompressed size of all the Blocks in the Stream(s)
 	lzma_vli uncompressed_size;
@@ -325,9 +337,6 @@ index_tree_locate(const index_tree *tree, lzma_vli target)
 	const index_tree_node *result = NULL;
 	const index_tree_node *node = tree->root;
 
-	assert(tree->leftmost == NULL
-			|| tree->leftmost->uncompressed_base == 0);
-
 	// Consecutive nodes may have the same uncompressed_base.
 	// We must pick the rightmost one.
 	while (node != NULL) {
@@ -390,6 +399,9 @@ index_init_plain(const lzma_allocator *allocator)
 	lzma_index *i = lzma_alloc(sizeof(lzma_index), allocator);
 	if (i != NULL) {
 		index_tree_init(&i->streams);
+		i->uncompressed_bias = LZMA_VLI_MAX;
+		i->compressed_bias = LZMA_VLI_MAX;
+		i->block_number_bias = LZMA_VLI_MAX;
 		i->uncompressed_size = 0;
 		i->total_size = 0;
 		i->record_count = 0;
@@ -409,7 +421,9 @@ lzma_index_init(const lzma_allocator *allocator)
 	if (i == NULL)
 		return NULL;
 
-	index_stream *s = index_stream_init(0, 0, 1, 0, allocator);
+	index_stream *s = index_stream_init(
+			i->compressed_bias, i->uncompressed_bias,
+			1, i->block_number_bias, allocator);
 	if (s == NULL) {
 		lzma_free(i, allocator);
 		return NULL;
@@ -587,7 +601,7 @@ lzma_index_file_size(const lzma_index *i)
 {
 	const index_stream *s = (const index_stream *)(i->streams.rightmost);
 	const index_group *g = (const index_group *)(s->groups.rightmost);
-	return index_file_size(s->node.compressed_base,
+	return index_file_size(s->node.compressed_base - i->compressed_bias,
 			g == NULL ? 0 : g->records[g->last].unpadded_sum,
 			s->record_count, s->index_list_size,
 			s->stream_padding);
@@ -693,7 +707,7 @@ lzma_index_append(lzma_index *i, const lzma_allocator *allocator,
 		return LZMA_DATA_ERROR;
 
 	// Check that the file size will stay within limits.
-	if (index_file_size(s->node.compressed_base,
+	if (index_file_size(s->node.compressed_base - i->compressed_bias,
 			compressed_base + unpadded_size, s->record_count + 1,
 			s->index_list_size + index_list_size_add,
 			s->stream_padding) == LZMA_VLI_UNKNOWN)
@@ -981,6 +995,9 @@ lzma_index_dup(const lzma_index *src, const lzma_allocator *allocator)
 		return NULL;
 
 	// Copy the totals.
+	dest->uncompressed_bias = src->uncompressed_bias;
+	dest->compressed_bias = src->compressed_bias;
+	dest->block_number_bias = src->block_number_bias;
 	dest->uncompressed_size = src->uncompressed_size;
 	dest->total_size = src->total_size;
 	dest->record_count = src->record_count;
@@ -1066,8 +1083,10 @@ iter_set_info(lzma_index_iter *iter)
 	// internally.
 	iter->stream.number = stream->number;
 	iter->stream.block_count = stream->record_count;
-	iter->stream.compressed_offset = stream->node.compressed_base;
-	iter->stream.uncompressed_offset = stream->node.uncompressed_base;
+	iter->stream.compressed_offset = stream->node.compressed_base
+			- i->compressed_bias;
+	iter->stream.uncompressed_offset = stream->node.uncompressed_base
+			- i->uncompressed_bias;
 
 	// iter->stream.flags will be NULL if the Stream Flags haven't been
 	// set with lzma_index_stream_flags().
@@ -1096,7 +1115,7 @@ iter_set_info(lzma_index_iter *iter)
 	if (group != NULL) {
 		iter->block.number_in_stream = group->number_base + record;
 		iter->block.number_in_file = iter->block.number_in_stream
-				+ stream->block_number_base;
+			+ (stream->block_number_base - i->block_number_bias);
 
 		iter->block.compressed_stream_offset
 				= record == 0 ? group->node.compressed_base
@@ -1266,9 +1285,12 @@ lzma_index_iter_locate(lzma_index_iter *iter, lzma_vli target)
 		return true;
 
 	// Locate the Stream containing the target offset.
+	// NOTE: Adding the bias can make target > LZMA_VLI_MAX.
+	target += i->uncompressed_bias;
 	const index_stream *stream = index_tree_locate(&i->streams, target);
 	assert(stream != NULL);
 	target -= stream->node.uncompressed_base;
+	assert(target <= LZMA_VLI_MAX);
 
 	// Locate the group containing the target offset.
 	const index_group *group = index_tree_locate(&stream->groups, target);

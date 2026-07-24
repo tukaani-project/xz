@@ -123,7 +123,10 @@ index_decode(void *coder_ptr, const lzma_allocator *allocator,
 
 		// Tell the Index handling code how many Records this
 		// Index has to allow it to allocate memory more efficiently.
-		lzma_index_prealloc(coder->index, coder->count);
+		// If the Record count is so high that memory allocation would
+		// fail later, return LZMA_MEM_ERROR now.
+		if (lzma_index_prealloc(coder->index, coder->count))
+			return LZMA_MEM_ERROR;
 
 		ret = LZMA_OK;
 		coder->sequence = coder->count == 0

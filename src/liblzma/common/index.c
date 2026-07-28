@@ -974,6 +974,7 @@ lzma_index_dup(const lzma_index *src, const lzma_allocator *allocator)
 	dest->total_size = src->total_size;
 	dest->record_count = src->record_count;
 	dest->index_list_size = src->index_list_size;
+	dest->checks = src->checks;
 
 	// Copy the Streams and the groups in them.
 	const index_stream *srcstream

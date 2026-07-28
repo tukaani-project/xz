@@ -1319,6 +1319,13 @@ test_lzma_index_dup(void)
 	lzma_index *idx = lzma_index_init(NULL);
 	assert_true(idx != NULL);
 
+	lzma_stream_flags flags = {
+		.version = 0,
+		.backward_size = LZMA_BACKWARD_SIZE_MIN,
+		.check = LZMA_CHECK_CRC32,
+	};
+	assert_lzma_ret(lzma_index_stream_flags(idx, &flags), LZMA_OK);
+
 	// Test for the bug fix 21515d79d778b8730a434f151b07202d52a04611:
 	// liblzma: Fix lzma_index_dup() for empty Streams.
 	assert_lzma_ret(lzma_index_stream_padding(idx, 4), LZMA_OK);
@@ -1343,10 +1350,16 @@ test_lzma_index_dup(void)
 	lzma_index *second = lzma_index_init(NULL);
 	assert_true(second != NULL);
 
+	flags.check = LZMA_CHECK_CRC64;
+	assert_lzma_ret(lzma_index_stream_flags(second, &flags), LZMA_OK);
+
 	assert_lzma_ret(lzma_index_stream_padding(second, 16), LZMA_OK);
 
 	lzma_index *third = lzma_index_init(NULL);
 	assert_true(third != NULL);
+
+	flags.check = LZMA_CHECK_SHA256;
+	assert_lzma_ret(lzma_index_stream_flags(third, &flags), LZMA_OK);
 
 	assert_lzma_ret(lzma_index_append(third, NULL,
 			UNPADDED_SIZE_MIN * 10, 40), LZMA_OK);
@@ -1361,6 +1374,7 @@ test_lzma_index_dup(void)
 	copy = lzma_index_dup(idx, NULL);
 	assert_true(copy != NULL);
 	assert_true(index_is_equal(idx, copy));
+	assert_uint_eq(lzma_index_checks(copy), lzma_index_checks(idx));
 
 	lzma_index_end(copy, NULL);
 	lzma_index_end(idx, NULL);

@@ -25,8 +25,13 @@ MEM=16
 SYSTEMD_RUN="systemd-run --user --quiet --wait --pipe --collect -p MemoryMax=${MEM}M"
 
 # A transient systemd unit gives the test its own cgroup without changing the
-# host's cgroup hierarchy. --pipe is needed to capture xz's output.
-output=$($SYSTEMD_RUN "$XZ" -M0 --robot --info-memory) || exit 77
+# host's cgroup hierarchy. --pipe is needed to capture xz's output. If running
+# xz fails, use /bin/true to distinguish an unavailable systemd user manager
+# from a failure in the program under test.
+if ! output=$($SYSTEMD_RUN "$XZ" -M0 --robot --info-memory); then
+	$SYSTEMD_RUN /bin/true > /dev/null 2>&1 || exit 77
+	exit 1
+fi
 
 # Remember the number of threads when CPUQuota isn't set.
 default_threads=$(printf '%s\n' "$output" | cut -f6)
@@ -43,8 +48,11 @@ test "$default_memlimit" -le $(($MEM * 1024 * 1024 / 4)) || {
 
 # Percentage limits use the same memory basis as automatic limits.
 # Specify CPUQuota to test cpu.max at the same time.
-output=$($SYSTEMD_RUN -p CPUQuota=277% \
-	"$XZ" -M0 --memlimit-compress=50% --robot --info-memory) || exit 77
+if ! output=$($SYSTEMD_RUN -p CPUQuota=277% \
+		"$XZ" -M0 --memlimit-compress=50% --robot --info-memory); then
+	$SYSTEMD_RUN -p CPUQuota=277% /bin/true > /dev/null 2>&1 || exit 77
+	exit 1
+fi
 compression_memlimit=$(printf '%s\n' "$output" | cut -f2)
 test "$compression_memlimit" -eq $(($MEM * 1024 * 1024 / 2)) || {
 	echo "xz ignored the cgroup memory limit for percentages: $output"

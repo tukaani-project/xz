@@ -114,23 +114,23 @@ get_cgroup_limit(const char *filename,
 		// the directory separator (slash) in buf.
 		memcpy(buf + len, filename, filename_size);
 
-		// The file should exist in all non-root cgroups.
-		// If opening it fails, don't waste time looking at
-		// parent directories.
+		// A controller file may be missing if the controller wasn't
+		// enabled for this part of the subtree. An ancestor can still
+		// impose a limit, so keep walking towards the root if opening
+		// the file fails.
 		const int fd = open(buf, O_RDONLY);
-		if (fd == -1)
-			break;
+		if (fd != -1) {
+			// The file should contain one short line.
+			char line[64];
+			const ssize_t read_size = read(fd, line, sizeof(line));
+			(void)close(fd);
 
-		// The file should contain one short line.
-		char line[64];
-		const ssize_t read_size = read(fd, line, sizeof(line));
-		(void)close(fd);
-
-		if (read_size > 0 && line[read_size - 1] == '\n') {
-			line[read_size - 1] = '\0';
-			const unsigned long long value = parse(line);
-			if (ret > value)
-				ret = value;
+			if (read_size > 0 && line[read_size - 1] == '\n') {
+				line[read_size - 1] = '\0';
+				const unsigned long long value = parse(line);
+				if (ret > value)
+					ret = value;
+			}
 		}
 
 		// Continue from the parent directory.

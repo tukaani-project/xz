@@ -7,6 +7,36 @@
 #
 ###############################################################################
 
+# This mode is invoked inside a transient unit with Delegate=yes. Create a
+# child cgroup without controller files so that xz has to find the limits from
+# the parent cgroup.
+if test "${1-}" = "--in-delegated-cgroup"; then
+	shift
+	test "$#" -ge 1 || exit 1
+	XZ=$1
+	shift
+
+	cgroup_path=$(sed -n 's/^0:://p' /proc/self/cgroup)
+	test -n "$cgroup_path" || exit 77
+	cgroup_dir=/sys/fs/cgroup$cgroup_path
+	test -f "$cgroup_dir/memory.max" || exit 77
+	test -f "$cgroup_dir/cpu.max" || exit 77
+
+	child_dir=$cgroup_dir/xz-test-$$
+	mkdir "$child_dir" || exit 77
+	trap 'rmdir "$child_dir" 2> /dev/null' 0
+	test ! -e "$child_dir/memory.max" || exit 77
+	test ! -e "$child_dir/cpu.max" || exit 77
+
+	/bin/sh -c '
+		child_dir=$1
+		shift
+		echo $$ > "$child_dir/cgroup.procs" || exit 77
+		exec "$@"
+	' sh "$child_dir" "$XZ" "$@"
+	exit $?
+fi
+
 test -f /proc/self/cgroup || exit 77
 test -f /sys/fs/cgroup/cgroup.controllers || exit 77
 command -v systemd-run > /dev/null 2>&1 || exit 77
@@ -18,6 +48,15 @@ test "$systemd_version" -ge 236 || exit 77
 
 XZ=${1:-../src/xz/xz}
 test -x "$XZ" || exit 77
+case $XZ in
+	/*) ;;
+	*) XZ=$PWD/$XZ ;;
+esac
+
+case $0 in
+	/*) TEST_SCRIPT=$0 ;;
+	*) TEST_SCRIPT=$PWD/$0 ;;
+esac
 
 # Use low enough MemoryMax so that the test works on a system with
 # a low amount of RAM.
@@ -46,11 +85,17 @@ test "$default_memlimit" -le $(($MEM * 1024 * 1024 / 4)) || {
 	exit 1
 }
 
-# Percentage limits use the same memory basis as automatic limits.
-# Specify CPUQuota to test cpu.max at the same time.
-if ! output=$($SYSTEMD_RUN -p CPUQuota=277% \
-		"$XZ" -M0 --memlimit-compress=50% --robot --info-memory); then
-	$SYSTEMD_RUN -p CPUQuota=277% /bin/true > /dev/null 2>&1 || exit 77
+# Percentage limits use the same memory basis as automatic limits. Specify
+# CPUQuota to test cpu.max at the same time. Delegate the transient unit so
+# the helper can put xz in a child cgroup that has neither controller file.
+output=$($SYSTEMD_RUN -p CPUQuota=277% -p Delegate=yes \
+		"$TEST_SCRIPT" --in-delegated-cgroup "$XZ" -M0 \
+		--memlimit-compress=50% --robot --info-memory)
+status=$?
+if test "$status" -ne 0; then
+	test "$status" -eq 77 && exit 77
+	$SYSTEMD_RUN -p CPUQuota=277% -p Delegate=yes \
+		/bin/true > /dev/null 2>&1 || exit 77
 	exit 1
 fi
 compression_memlimit=$(printf '%s\n' "$output" | cut -f2)

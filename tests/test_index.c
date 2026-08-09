@@ -42,6 +42,7 @@ test_lzma_index_memusage(void)
 
 	// The maximum number of Streams should be UINT32_MAX in the
 	// current implementation even though the parameter is lzma_vli.
+	assert_uint(lzma_index_memusage(UINT32_MAX, 1), <, UINT64_MAX / 8);
 	assert_uint_eq(lzma_index_memusage((lzma_vli)UINT32_MAX + 1, 1),
 			UINT64_MAX);
 

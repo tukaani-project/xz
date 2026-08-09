@@ -807,6 +807,11 @@ lzma_index_cat(lzma_index *restrict dest, lzma_index *restrict src,
 	if (dest == NULL || src == NULL)
 		return LZMA_PROG_ERROR;
 
+	// Check that we don't exceed the maximum number of Streams
+	// per lzma_index.
+	if (STREAMS_MAX - dest->streams.count < src->streams.count)
+		return LZMA_DATA_ERROR;
+
 	const lzma_vli dest_file_size = lzma_index_file_size(dest);
 
 	// Check that we don't exceed the file size limits.

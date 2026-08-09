@@ -14,6 +14,14 @@
 #include "stream_flags_common.h"
 
 
+/// \brief      Maximum number of Streams supported in lzma_index
+///
+/// The maximum number of Streams is UINT32_MAX, because index_tree.count
+/// is uint32_t. This is unlikely to be reached in practice because it
+/// would require allocating hundreds of gigabytes of memory.
+#define STREAMS_MAX UINT32_MAX
+
+
 /// \brief      How many Records to allocate at once
 ///
 /// This should be big enough to avoid making lots of tiny allocations
@@ -494,10 +502,8 @@ lzma_index_memusage(lzma_vli streams, lzma_vli blocks)
 	const uint64_t index_base = sizeof(lzma_index) + alloc_overhead;
 
 	// Validate the arguments and catch integer overflows.
-	// Maximum number of Streams is "only" UINT32_MAX, because
-	// that limit is used by the tree containing the Streams.
 	const uint64_t limit = UINT64_MAX - index_base;
-	if (streams == 0 || streams > UINT32_MAX || blocks > LZMA_VLI_MAX
+	if (streams == 0 || streams > STREAMS_MAX || blocks > LZMA_VLI_MAX
 			|| streams > limit / stream_base
 			|| groups > limit / group_base
 			|| limit - streams_mem < groups_mem)

@@ -180,6 +180,18 @@ if(BUILD_TESTING)
         )
     endif()
 
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        add_test(NAME test_linux_cgroup.sh
+            COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_linux_cgroup.sh"
+                    "${CMAKE_CURRENT_BINARY_DIR}/xz"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+
+        set_tests_properties(test_linux_cgroup.sh PROPERTIES
+            SKIP_RETURN_CODE 77
+        )
+    endif()
+
     # The test_compress.sh based tests compress and decompress using different
     # filters so run it only if all encoders and decoders have been enabled.
     if(UNIX AND HAVE_ALL_ENCODERS AND HAVE_ALL_DECODERS)

@@ -93,6 +93,16 @@ if(BUILD_TESTING)
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tests_bin"
         )
 
+        # Copy liblzma.dll to the test directory on Windows if building shared
+        # libs because it has to be in the same directory as the test binaries.
+        if(WIN32 AND BUILD_SHARED_LIBS)
+            add_custom_command(TARGET "${TEST}" POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    $<TARGET_FILE:liblzma>
+                    $<TARGET_FILE_DIR:${TEST}>
+            )
+        endif()
+
         add_test(NAME "${TEST}"
                  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/tests_bin/${TEST}"
         )

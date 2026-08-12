@@ -213,6 +213,11 @@ static struct {
 	bool all_have_sizes;
 } totals = { 0, 0, 0, 0, 0, 0, 0, 0, 50000002, true };
 
+/// If calculating the totals overflows, don't print a partial totals line.
+/// In particular, --robot output may be used by scripts that expect the
+/// numeric fields to be trustworthy.
+static bool totals_overflow = false;
+
 
 /// Initialize colon_strs_fw[].
 static void
@@ -1142,12 +1147,33 @@ print_info_robot(xz_file_info *xfi, file_pair *pair)
 static void
 update_totals(const xz_file_info *xfi)
 {
-	// TODO: Integer overflow checks
+	if (totals_overflow)
+		return;
+
+	const uint64_t streams = lzma_index_stream_count(xfi->idx);
+	const uint64_t blocks = lzma_index_block_count(xfi->idx);
+	const uint64_t compressed_size = lzma_index_file_size(xfi->idx);
+	const uint64_t uncompressed_size
+			= lzma_index_uncompressed_size(xfi->idx);
+
+	if (totals.files == UINT64_MAX
+			|| UINT64_MAX - totals.streams < streams
+			|| UINT64_MAX - totals.blocks < blocks
+			|| UINT64_MAX - totals.compressed_size < compressed_size
+			|| UINT64_MAX - totals.uncompressed_size
+				< uncompressed_size
+			|| UINT64_MAX - totals.stream_padding
+				< xfi->stream_padding) {
+		message_error(_("The totals exceed the supported 64-bit range"));
+		totals_overflow = true;
+		return;
+	}
+
 	++totals.files;
-	totals.streams += lzma_index_stream_count(xfi->idx);
-	totals.blocks += lzma_index_block_count(xfi->idx);
-	totals.compressed_size += lzma_index_file_size(xfi->idx);
-	totals.uncompressed_size += lzma_index_uncompressed_size(xfi->idx);
+	totals.streams += streams;
+	totals.blocks += blocks;
+	totals.compressed_size += compressed_size;
+	totals.uncompressed_size += uncompressed_size;
 	totals.stream_padding += xfi->stream_padding;
 	totals.checks |= lzma_index_checks(xfi->idx);
 
@@ -1271,6 +1297,9 @@ print_totals_robot(void)
 extern void
 list_totals(void)
 {
+	if (totals_overflow)
+		return;
+
 	if (opt_robot) {
 		// Always print totals in --robot mode. It can be convenient
 		// in some cases and doesn't complicate usage of the

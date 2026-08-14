@@ -130,6 +130,47 @@ if test -n "$XZ" && "$XZ" -l "$I" > /dev/null 2>&1; then
 	exit 1
 fi
 
+# Each of these two files has a valid Index for list mode. The first claims
+# LZMA_VLI_MAX bytes and the second claims two bytes. Listing the first file
+# twice and then the second used to wrap the total uncompressed size from
+# exactly 2^64 to zero. The fourth argument verifies that xz exits immediately
+# when the overflow is detected instead of processing more files.
+if test -n "$XZ"; then
+	LIST_MAX=list-overflow-max.xz
+	LIST_TWO=list-overflow-two.xz
+	LIST_OUTPUT=list-overflow-output
+	trap 'rm -f "$LIST_MAX" "$LIST_TWO" "$LIST_OUTPUT"' 0
+
+	printf '%b' \
+		'\375\067\172\130\132\000\000\000\377\022\331\101\000\000\000\000' \
+		'\000\000\000\000\000\001\005\377\377\377\377\377\377\377\377\177' \
+		'\365\135\343\274\015\323\126\067\003\000\000\000\000\000\131\132' \
+		> "$LIST_MAX" \
+		|| exit 1
+	printf '%b' \
+		'\375\067\172\130\132\000\000\000\377\022\331\101\000\000\000\000' \
+		'\000\000\000\000\000\001\005\002\102\040\377\263\006\162\236\172' \
+		'\001\000\000\000\000\000\131\132' \
+		> "$LIST_TWO" \
+		|| exit 1
+
+	if "$XZ" --robot -l "$LIST_MAX" "$LIST_MAX" "$LIST_TWO" \
+			"$LIST_TWO" > "$LIST_OUTPUT" 2> /dev/null; then
+		echo "xz -l accepted totals exceeding the 64-bit range"
+		exit 1
+	fi
+
+	if grep '^totals' "$LIST_OUTPUT" > /dev/null; then
+		echo "xz -l printed wrapped totals exceeding the 64-bit range"
+		exit 1
+	fi
+
+	if test "$(grep -c '^name	' "$LIST_OUTPUT")" -ne 3; then
+		echo "xz -l continued processing files after a totals overflow"
+		exit 1
+	fi
+fi
+
 for I in "$srcdir"/files/unsupported-*.xz
 do
 	# Test these only with xz as unsupported-check.xz will exit

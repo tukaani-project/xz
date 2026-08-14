@@ -213,11 +213,6 @@ static struct {
 	bool all_have_sizes;
 } totals = { 0, 0, 0, 0, 0, 0, 0, 0, 50000002, true };
 
-/// If calculating the totals overflows, don't print a partial totals line.
-/// In particular, --robot output may be used by scripts that expect the
-/// numeric fields to be trustworthy.
-static bool totals_overflow = false;
-
 
 /// Initialize colon_strs_fw[].
 static void
@@ -1147,9 +1142,6 @@ print_info_robot(xz_file_info *xfi, file_pair *pair)
 static void
 update_totals(const xz_file_info *xfi)
 {
-	if (totals_overflow)
-		return;
-
 	const uint64_t streams = lzma_index_stream_count(xfi->idx);
 	const uint64_t blocks = lzma_index_block_count(xfi->idx);
 	const uint64_t compressed_size = lzma_index_file_size(xfi->idx);
@@ -1163,11 +1155,8 @@ update_totals(const xz_file_info *xfi)
 			|| UINT64_MAX - totals.uncompressed_size
 				< uncompressed_size
 			|| UINT64_MAX - totals.stream_padding
-				< xfi->stream_padding) {
-		message_error(_("The totals exceed the supported 64-bit range"));
-		totals_overflow = true;
-		return;
-	}
+				< xfi->stream_padding)
+		message_fatal(_("The totals exceed the supported 64-bit range"));
 
 	++totals.files;
 	totals.streams += streams;
@@ -1297,9 +1286,6 @@ print_totals_robot(void)
 extern void
 list_totals(void)
 {
-	if (totals_overflow)
-		return;
-
 	if (opt_robot) {
 		// Always print totals in --robot mode. It can be convenient
 		// in some cases and doesn't complicate usage of the

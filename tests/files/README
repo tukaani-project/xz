@@ -213,6 +213,11 @@
     xz -lvv in XZ Utils 5.0.3 and earlier. It was fixed in the commit
     c0297445064951807803457dca1611b3c47e7f0f.
 
+    bad-1-index-huge-uncomp.xz has Index where Uncompressed Size is
+    UINT64_MAX / 3 + 1 bytes. With XZ Utils 5.8.3 and older, passing
+    this file thrice to xz --list produces incorrect totals due to
+    integer overflow.
+
     bad-2-index-1.xz has wrong Unpadded Sizes in Index.
 
     bad-2-index-2.xz has wrong Uncompressed Sizes in Index.

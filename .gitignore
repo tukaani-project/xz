@@ -98,7 +98,7 @@ coverage
 /liblzma-config-version.cmake
 /liblzma-config.cmake
 /Testing
-/tests_bin/
+/test_*
 /xz
 /xzdec
 /lzmadec

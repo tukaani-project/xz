@@ -130,6 +130,21 @@ if test -n "$XZ" && "$XZ" -l "$I" > /dev/null 2>&1; then
 	exit 1
 fi
 
+# Test that integer overflow in --list totals is caught.
+# It should succeed when the file is passed twice to xz -l and
+# fail when passed thrice.
+I="$srcdir/files/bad-1-index-huge-uncomp.xz"
+if test -n "$XZ" && "$XZ" -l "$I" "$I" > /dev/null 2>&1; then
+	:
+else
+	echo "xz -l unexpectedly failed when the file was used twice: $I"
+	exit 1
+fi
+if test -n "$XZ" && "$XZ" -l "$I" "$I" "$I" > /dev/null 2>&1; then
+	echo "xz -l unexpectedly succeeded when the file was used thrice: $I"
+	exit 1
+fi
+
 for I in "$srcdir"/files/unsupported-*.xz
 do
 	# Test these only with xz as unsupported-check.xz will exit

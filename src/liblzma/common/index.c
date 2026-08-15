@@ -348,6 +348,25 @@ index_tree_next(const index_tree_node *node)
 }
 
 
+/// Get the previous node in the tree. Return NULL if there are no more nodes.
+static void *
+index_tree_prev(const index_tree_node *node)
+{
+	if (node->left != NULL) {
+		node = node->left;
+		while (node->right != NULL)
+			node = node->right;
+
+		return (void *)(node);
+	}
+
+	while (node->parent != NULL && node->parent->left == node)
+		node = node->parent;
+
+	return (void *)(node->parent);
+}
+
+
 /// Locate a node that contains the given uncompressed offset. It is
 /// caller's job to check that target is not bigger than the uncompressed
 /// size of the tree (the last node would be returned in that case still).

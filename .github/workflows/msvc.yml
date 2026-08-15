@@ -30,6 +30,7 @@ jobs:
           cmake
           -A Win32
           -B build-msvc-win32
+          -DBUILD_SHARED_LIBS=ON
 
       - name: Build Win32 Debug
         run: >
@@ -63,6 +64,7 @@ jobs:
           cmake
           -A x64
           -B build-msvc-x64
+          -DBUILD_SHARED_LIBS=ON
 
       - name: Build x64 Debug
         run: >
@@ -96,6 +98,7 @@ jobs:
           -T ClangCL
           -A x64
           -B build-clangcl-x64
+          -DBUILD_SHARED_LIBS=ON
 
       - name: Build ClangCL x64 Debug
         run: >

@@ -64,7 +64,7 @@ static const uint8_t vmasks[64] = {
 };
 
 
-// Clear the lowest (16 - count) bytes and keep the highest "count" bytes.
+// Keep the highest "count" bytes as is and clear the remaining low bytes.
 static inline uint8x16_t
 keep_high_bytes(uint8x16_t v, size_t count)
 {
@@ -72,7 +72,7 @@ keep_high_bytes(uint8x16_t v, size_t count)
 }
 
 
-// Shift left by "amount" bytes. The lowest "amount" bytes are cleared.
+// Shift the 128-bit value left by "amount" bytes (not bits).
 static inline uint8x16_t
 shift_left(uint8x16_t v, size_t amount)
 {
@@ -80,7 +80,7 @@ shift_left(uint8x16_t v, size_t amount)
 }
 
 
-// Shift right by "amount" bytes. The highest "amount" bytes are cleared.
+// Shift the 128-bit value right by "amount" bytes (not bits).
 static inline uint8x16_t
 shift_right(uint8x16_t v, size_t amount)
 {
@@ -240,20 +240,17 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 		if (size > 0) {
 			// We want the last "size" number of input bytes to
 			// be at the high bits of v1. First do a full 16-byte
-			// unaligned load from the end of the input buffer.
+			// load and then mask the low bytes to zeros.
 			v1 = vld1q_u8(buf + size - 16);
-
-			// Clear the lowest (16 - size) bytes and keep the highest
-			// "size" bytes.
 			v1 = keep_high_bytes(v1, size);
 
-			// Shift the already processed bytes in v0 so that
-			// the high bytes (which are from the end of the
-			// previously loaded block) are shifted to the low
-			// bits. Combine the low and high bytes to get the
-			// full 16-byte vector.
+			// Shift high bytes from v0 to the low bytes of v1.
 			v1 = vorrq_u8(v1, shift_right(v0, size));
+
+			// Shift high bytes of v0 away, padding the
+			// low bytes with zeros.
 			v0 = shift_left(v0, 16 - size);
+
 			v0 = veorq_u8(v1, fold(v0, fold128));
 		}
 

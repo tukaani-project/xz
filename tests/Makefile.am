@@ -40,6 +40,7 @@ check_PROGRAMS = \
 	test_check \
 	test_hardware \
 	test_stream_buffer_decode \
+	test_stream_buffer_encode \
 	test_stream_flags \
 	test_filter_flags \
 	test_filter_str \
@@ -55,6 +56,7 @@ TESTS = \
 	test_check \
 	test_hardware \
 	test_stream_buffer_decode \
+	test_stream_buffer_encode \
 	test_stream_flags \
 	test_filter_flags \
 	test_filter_str \

@@ -62,6 +62,7 @@ if(BUILD_TESTING)
         test_lzip_decoder
         test_memlimit
         test_stream_buffer_decode
+        test_stream_buffer_encode
         test_stream_flags
         test_vli
     )

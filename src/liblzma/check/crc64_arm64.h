@@ -64,7 +64,7 @@ static const uint8_t vmasks[64] = {
 };
 
 
-// Keep the highest "count" bytes as is and clear the remaining low bytes.
+// Clear the lowest (16 - count) bytes and keep the highest "count" bytes.
 static inline uint8x16_t
 keep_high_bytes(uint8x16_t v, size_t count)
 {
@@ -72,7 +72,7 @@ keep_high_bytes(uint8x16_t v, size_t count)
 }
 
 
-// Shift right by "amount" bytes. The lowest "amount" bytes are cleared.
+// Shift left by "amount" bytes. The lowest "amount" bytes are cleared.
 static inline uint8x16_t
 shift_left(uint8x16_t v, size_t amount)
 {
@@ -80,7 +80,7 @@ shift_left(uint8x16_t v, size_t amount)
 }
 
 
-// Shift left by "amount" bytes. The highest "amount" bytes are cleared.
+// Shift right by "amount" bytes. The highest "amount" bytes are cleared.
 static inline uint8x16_t
 shift_right(uint8x16_t v, size_t amount)
 {
@@ -243,8 +243,8 @@ crc64_arch_optimized(const uint8_t *buf, size_t size, uint64_t crc)
 			// unaligned load from the end of the input buffer.
 			v1 = vld1q_u8(buf + size - 16);
 
-			// Shift the bytes so that the last "size" bytes are
-			// at the high bits and clear the low bytes.
+			// Clear the lowest (16 - size) bytes and keep the highest
+			// "size" bytes.
 			v1 = keep_high_bytes(v1, size);
 
 			// Shift the already processed bytes in v0 so that
@@ -297,10 +297,10 @@ is_arch_extension_supported(void)
 	size_t size = sizeof(has_pmull);
 
 	if (sysctlbyname("hw.optional.arm.FEAT_PMULL", &has_pmull,
-			&size, NULL, 0) == 0 && has_pmull)
-		return true;
+			&size, NULL, 0) != 0)
+		return false;
 
-	return true;
+	return has_pmull != 0;
 
 #else
 	// If a runtime detection method cannot be found, then this must

@@ -1858,6 +1858,8 @@ and
 \fB\-\-sparc\fR[\fB=\fIoptions\fR]
 .TP
 \fB\-\-riscv\fR[\fB=\fIoptions\fR]
+.TP
+\fB\-\-loongarch\fR[\fB=\fIoptions\fR]
 .PD
 Add a branch/call/jump (BCJ) filter to the filter chain.
 These filters can be used only as a non-last filter
@@ -1916,6 +1918,7 @@ PowerPC;4;Big endian only
 IA-64;16;Itanium
 SPARC;4;
 RISC-V;2;
+LoongArch;4;
 .TE
 .RE
 .IP
@@ -1945,6 +1948,10 @@ is the best.
 .B readelf \-h
 can be used to check if "RVC"
 appears on the "Flags" line.
+.IP \(bu 3
+LoongArch is always 4-byte aligned so
+.B pb=2,lp=2,lc=2
+is the best.
 .IP \(bu 3
 ARM64 is always 4-byte aligned so
 .B pb=2,lp=2,lc=2

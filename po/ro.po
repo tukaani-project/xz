@@ -2,9 +2,10 @@
 #
 # Romanian translation for XZ Utils package.
 # Mesajele în limba română pentru pachetul XZ Utils.
+# Copyright © 2022, 2023, 2024, 2025, 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
 #
-# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022 - 2025.
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2022 - 2026.
 #
 # Cronologia traducerii fișierului „xz”:
 # Traducerea inițială, făcută de R-GC, pentru versiunea xz 5.2.5.
@@ -18,14 +19,15 @@
 # Actualizare a traducerii pentru versiunea 5.6.0-pre2, făcută de R-GC, feb-2024.
 # Actualizare a traducerii pentru versiunea 5.7.1-dev1, făcută de R-GC, ian-2025.
 # Actualizare a traducerii pentru versiunea 5.8.0-pre1, făcută de R-GC, mar-2025.
+# Actualizare a traducerii pentru versiunea 5.8.4-pre1, făcută de R-GC, aug-2026.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.8.0-pre1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-03-09 19:21+0100\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-18 18:57+0200\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -34,7 +36,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=((n==1) ? 0 : (n==2) ? 1 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 2 : 3);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
 #: src/xz/args.c
 #, c-format
@@ -592,6 +594,10 @@ msgstr "Nu"
 #: src/xz/list.c
 msgid "Minimum XZ Utils version:"
 msgstr "Versiunea minimă XZ Utils:"
+
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "Eroare: Dimensiunea totală a fișierelor, comprimate sau necomprimate, este prea mare"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

@@ -2,15 +2,15 @@
 #
 # Ukrainian translation for xz.
 # This file is published under the BSD Zero Clause License.
-# Copyright (C) The XZ Utils authors and contributors
+# Copyright (C) 2026 the last and past translators
 #
-# Yuri Chornoivan <yurchor@ukr.net>, 2019, 2022, 2023, 2024, 2025.
+# Yuri Chornoivan <yurchor@ukr.net>, 2019, 2022-2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-01-24 13:54+0200\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-18 12:42+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 23.04.3\n"
+"X-Generator: Lokalize 25.12.1\n"
 
 #: src/xz/args.c
 #, c-format
@@ -560,6 +560,10 @@ msgstr "Ні"
 #: src/xz/list.c
 msgid "Minimum XZ Utils version:"
 msgstr "Мінімальна версія програм XZ:"
+
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "Помилка: загальний розмір стиснених або нестиснених файлів є надто великим"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

@@ -1,17 +1,18 @@
 # SPDX-License-Identifier: 0BSD
 #
 # Dutch translation for xz-utils.
+# Copyright (C) 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
 #
 # "Wie soll ich wissen was ich meine bevor ich höre was ich sage."
 #
-# Benno Schulenberg <vertaling@coevern.nl>, 2019, 2024, 2025.
+# Benno Schulenberg <vertaling@coevern.nl>, 2019, 2024, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-01-25 15:51+0100\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-19 11:24+0200\n"
 "Last-Translator: Benno Schulenberg <vertaling@coevern.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -558,6 +559,10 @@ msgstr "Nee"
 #: src/xz/list.c
 msgid "Minimum XZ Utils version:"
 msgstr "Minimale XZ-Utils-versie:"
+
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "Fout: de totale gecomprimeerde of ongecomprimeerde grootte van de bestanden is te groot"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

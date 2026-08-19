@@ -1,15 +1,16 @@
 # SPDX-License-Identifier: 0BSD
 #
 # Polish translation for xz.
+# Copyright (C) 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
-# Jakub Bogusz <qboosh@pld-linux.org>, 2011-2025.
+# Jakub Bogusz <qboosh@pld-linux.org>, 2011-2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-02-08 08:02+0100\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-19 21:33+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "Language: pl\n"
@@ -102,7 +103,7 @@ msgstr "Limit użycia pamięci jest zbyt mały dla podanej konfiguracji filtra."
 #: src/xz/coder.c
 #, c-format
 msgid "filter chain %u used by --block-list but not specified with --filters%u="
-msgstr "łańcuch filtrów %u użyty w --block-list, ale nie podany przez --filters%u="
+msgstr "łańcuch filtrów %u użyty w --block-list, ale niepodany przez --filters%u="
 
 #: src/xz/coder.c
 msgid "Using a preset in raw mode is discouraged."
@@ -557,6 +558,10 @@ msgstr "Nie"
 msgid "Minimum XZ Utils version:"
 msgstr "Minimalna wersja XZ Utils:"
 
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "Błąd: Całkowity rozmiar plików przed lub po kompresji jest zbyt duży"
+
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
 #: src/xz/list.c
@@ -637,7 +642,7 @@ msgstr "Osiągnięto limit użycia pamięci"
 
 #: src/xz/message.c
 msgid "File format not recognized"
-msgstr "Nie rozpoznany format pliku"
+msgstr "Nierozpoznany format pliku"
 
 #: src/xz/message.c
 msgid "Unsupported options"

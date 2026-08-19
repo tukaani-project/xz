@@ -1,14 +1,15 @@
 # SPDX-License-Identifier: 0BSD
-# Korean translation for the xz.
+# Korean translation for the xz
+# Copyright (C) 2019, 2022, 2023, 2024, 2025, 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
-# Seong-ho Cho <darkcircle.0426@gmail.com>, 2019, 2022, 2023, 2024, 2025.
+# Seong-ho Cho <darkcircle.0426@gmail.com>, 2019, 2022, 2023, 2024, 2025, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-01-24 23:22+0900\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-19 19:37+0900\n"
 "Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
 "Language: ko\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.7\n"
 
 #: src/xz/args.c
 #, c-format
@@ -557,6 +558,10 @@ msgstr "아니요"
 #: src/xz/list.c
 msgid "Minimum XZ Utils version:"
 msgstr "최소 XZ 유틸리티 버전:"
+
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "오류: 파일의 전체 압축/해체 용량이 너무 큽니다"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

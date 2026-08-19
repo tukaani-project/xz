@@ -1,16 +1,17 @@
 # SPDX-License-Identifier: 0BSD
 #
 # German translation for xz.
+# Copyright © 2022, 2023, 2024, 2025, 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
 # André Noll <maan@tuebingen.mpg.de>, 2010.
 # Anna Henningsen <sqrt@entless.org>, 2015.
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2019, 2022-2025.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019, 2022-2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.7.1-dev1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-01-26 11:02+0100\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-19 18:19+0200\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 24.12.1\n"
+"X-Generator: Lokalize 26.04.3\n"
 
 #: src/xz/args.c
 #, c-format
@@ -558,6 +559,10 @@ msgstr "Nein"
 #: src/xz/list.c
 msgid "Minimum XZ Utils version:"
 msgstr "Minimal erforderliche XZ Utils-Version:"
+
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "Fehler: Die Gesamtgröße der Dateien (komprimiert oder unkomprimiert) ist zu groß"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

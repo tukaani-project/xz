@@ -378,7 +378,7 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 			}
 
 			// Write decoded literal to dictionary
-			dict_put(&dict, symbol);
+			dict_put(&dict, (uint8_t)symbol);
 			continue;
 		}
 
@@ -742,7 +742,7 @@ slow:
 			}
 
 	case SEQ_LITERAL_WRITE:
-			if (dict_put_safe(&dict, symbol)) {
+			if (dict_put_safe(&dict, (uint8_t)symbol)) {
 				coder->sequence = SEQ_LITERAL_WRITE;
 				goto out;
 			}
@@ -1203,7 +1203,7 @@ lzma_lzma_lclppb_decode(lzma_options_lzma *options, uint8_t byte)
 
 	// See the file format specification to understand this.
 	options->pb = byte / (9 * 5);
-	byte -= options->pb * 9 * 5;
+	byte -= (uint8_t)(options->pb * 9 * 5);
 	options->lp = byte / 9;
 	options->lc = byte - options->lp * 9;
 

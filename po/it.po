@@ -1,18 +1,19 @@
 # SPDX-License-Identifier: 0BSD
 #
 # Italian translation for xz
+# Copyright (C) 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
 # Gruppo traduzione italiano di Ubuntu-it <gruppo-traduzione@ubuntu-it.org>, 2009, 2010
 # Lorenzo De Liso <blackz@ubuntu.com>, 2010.
 # Milo Casagrande <milo@milo.name>, 2009, 2010, 2011, 2014, 2019.
-# Luca Vercelli <luca.vercelli.to@gmail.com> 2025.
+# Luca Vercelli <luca.vercelli.to@gmail.com> 2025, 2026
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.8.0-pre1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
-"POT-Creation-Date: 2026-03-30 17:13+0300\n"
-"PO-Revision-Date: 2025-03-10 11:31+0000\n"
+"POT-Creation-Date: 2026-08-15 19:56+0300\n"
+"PO-Revision-Date: 2026-08-20 09:20+0200\n"
 "Last-Translator: Luca Vercelli <luca.vercelli.to@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -562,6 +563,10 @@ msgstr "No"
 msgid "Minimum XZ Utils version:"
 msgstr "Versione \"XZ Utils\" minima:"
 
+#: src/xz/list.c
+msgid "Error: The total compressed or uncompressed size of the files is too large"
+msgstr "Errore: la dimensione totale compressa o non compressa dei file è troppo grande"
+
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".
 #: src/xz/list.c
@@ -757,7 +762,7 @@ msgstr "non creare file sparsi durante la decompressione"
 
 #: src/xz/message.c
 msgid ".SUF"
-msgstr ""
+msgstr ".SUF"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -901,8 +906,6 @@ msgstr "OPZIONI"
 #. the supported values and the default value.
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
-#, fuzzy
-#| msgid "LZMA1 or LZMA2; OPZ is a comma-separated list of zero or more of the following options (valid values; default):"
 msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
 msgstr "LZMA1 o LZMA2; OPZIONI è una lista separata da virgole di zero o più delle seguenti opzioni (valori validi; predefinito):"
 

@@ -11,6 +11,8 @@ PROGS = \
 	03_compress_custom \
 	04_compress_easy_mt \
 	05_decompress_mt \
+	06_buffer_to_buffer \
+	07_custom_allocator \
 	11_file_info
 
 all: $(PROGS)

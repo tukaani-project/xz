@@ -204,6 +204,9 @@ lz_decoder_end(void *coder_ptr, const lzma_allocator *allocator)
 
 	lzma_next_end(&coder->next, allocator);
 	lzma_free(coder->dict.buf, allocator);
+	/* counted_by: drop pointer then size after free */
+	coder->dict.buf = NULL;
+	coder->dict.size = 0;
 
 	if (coder->lz.end != NULL)
 		coder->lz.end(coder->lz.coder, allocator);
@@ -278,22 +281,27 @@ lzma_lz_decoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 	// Allocate and initialize the dictionary.
 	if (coder->dict.size != alloc_size) {
+		/* counted_by: clear pointer then size before free/realloc */
+		uint8_t *old_buf = coder->dict.buf;
+		coder->dict.buf = NULL;
 		coder->dict.size = 0;
-		lzma_free(coder->dict.buf, allocator);
+		lzma_free(old_buf, allocator);
 
 		// The LZ_DICT_EXTRA bytes at the end of the buffer aren't
 		// included in alloc_size. These extra bytes allow
 		// dict_repeat() to read and write more data than requested.
 		// Otherwise this extra space is ignored.
-		coder->dict.buf = lzma_alloc(alloc_size + LZ_DICT_EXTRA,
+		uint8_t *new_buf = lzma_alloc(alloc_size + LZ_DICT_EXTRA,
 				allocator);
-		if (coder->dict.buf == NULL)
+		if (new_buf == NULL)
 			return LZMA_MEM_ERROR;
 
 		// NOTE: Yes, alloc_size, not lz_options.dict_size. The way
 		// coder->dict.full is updated will take care that we will
 		// still reject distances larger than lz_options.dict_size.
+		/* counted_by: set capacity before pointer */
 		coder->dict.size = alloc_size;
+		coder->dict.buf = new_buf;
 	}
 
 	lz_decoder_reset(next->coder);

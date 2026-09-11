@@ -492,6 +492,16 @@ endif()
 
 option(BUILD_SHARED_LIBS "Build liblzma as a shared library instead of static")
 
+# Optional Clang -fbounds-safety. Default OFF: LZMA_*COUNTED_BY* macros in
+# lzma_bounds_safety.h are inert and the ABI/build is unchanged. When ON,
+# requires a Clang that provides -fbounds-safety / <ptrcheck.h>.
+option(XZ_ENABLE_FBOUNDS_SAFETY
+       "Enable Clang -fbounds-safety annotations (experimental toolchain)" OFF)
+if(XZ_ENABLE_FBOUNDS_SAFETY)
+    add_compile_definitions(LZMA_SUPPORT_FBOUNDS_SAFETY)
+    add_compile_options(-fbounds-safety)
+endif()
+
 # Symbol versioning is supported with ELF shared libraries on certain OSes.
 # First assume that symbol versioning isn't supported.
 set(SYMBOL_VERSIONING "no")
@@ -629,6 +639,7 @@ add_library(liblzma
     src/liblzma/common/block_util.c
     src/liblzma/common/common.c
     src/liblzma/common/common.h
+    src/liblzma/common/lzma_bounds_safety.h
     src/liblzma/common/easy_preset.c
     src/liblzma/common/easy_preset.h
     src/liblzma/common/filter_common.c

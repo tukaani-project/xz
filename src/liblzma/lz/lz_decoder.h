@@ -14,6 +14,7 @@
 #define LZMA_LZ_DECODER_H
 
 #include "common.h"
+#include "lzma_bounds_safety.h"
 
 #ifdef HAVE_IMMINTRIN_H
 #	include <immintrin.h>
@@ -79,8 +80,16 @@
 
 
 typedef struct {
-	/// Pointer to the dictionary buffer.
-	uint8_t *buf;
+	/// Allocated size of buf (not counting LZ_DICT_EXTRA). This is
+	/// 2 * LZ_DICT_REPEAT_MAX bytes larger than the actual dictionary
+	/// size. This is enforced by how the value for "full" is set; it
+	/// can be at most "size - 2 * LZ_DICT_REPEAT_MAX".
+	/// Declared before buf so LZMA_COUNTED_BY_OR_NULL can name it.
+	/// Capacity is assigned before the pointer at update sites.
+	size_t size;
+
+	/// Pointer to the dictionary buffer. May be NULL when size is 0.
+	uint8_t * LZMA_COUNTED_BY_OR_NULL(size) buf;
 
 	/// Write position in dictionary. The next byte will be written to
 	/// buf[pos].
@@ -93,12 +102,6 @@ typedef struct {
 
 	/// Write limit
 	size_t limit;
-
-	/// Allocated size of buf. This is 2 * LZ_DICT_REPEAT_MAX bytes
-	/// larger than the actual dictionary size. This is enforced by
-	/// how the value for "full" is set; it can be at most
-	/// "size - 2 * LZ_DICT_REPEAT_MAX".
-	size_t size;
 
 	/// True once the dictionary has become full and the writing position
 	/// has been wrapped in decode_buffer() in lz_decoder.c.

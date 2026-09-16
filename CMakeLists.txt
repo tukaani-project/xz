@@ -626,6 +626,7 @@ add_library(liblzma
     src/liblzma/check/crc_x86_clmul.h
     src/liblzma/check/crc32_arm64.h
     src/liblzma/check/crc32_loongarch.h
+    src/liblzma/check/crc64_riscv_zbc.h
     src/liblzma/common/block_util.c
     src/liblzma/common/common.c
     src/liblzma/common/common.h
@@ -1442,6 +1443,67 @@ if(XZ_LOONGARCH_CRC32)
         "
         HAVE_LOONGARCH_CRC32)
     tuklib_add_definition_if(liblzma HAVE_LOONGARCH_CRC32)
+endif()
+
+option(XZ_RISCV_ZBC_CRC64
+       "Use RISC-V Zbc instructions for CRC64 (with runtime detection) \
+if supported by the toolchain and operating system" ON)
+
+if(XZ_RISCV_ZBC_CRC64)
+    check_c_source_compiles([=[
+            #if !defined(__riscv) || !defined(__riscv_xlen) || __riscv_xlen != 64
+            #   error
+            #endif
+
+            int main(void)
+            {
+                __asm__ volatile(
+                    ".option push\\n\\t"
+                    ".option arch, +zbc\\n\\t"
+                    "clmul  x0, x0, x0\\n\\t"
+                    "clmulh x0, x0, x0\\n\\t"
+                    ".option pop");
+
+                return 0;
+            }
+        ]=]
+        HAVE_RISCV_ZBC_CRC64)
+
+    tuklib_add_definition_if(liblzma HAVE_RISCV_ZBC_CRC64)
+
+    if(HAVE_RISCV_ZBC_CRC64)
+        check_c_source_compiles([=[
+                #include <stddef.h>
+                #include <asm/hwprobe.h>
+                #include <sys/syscall.h>
+                #include <unistd.h>
+
+                int main(void)
+                {
+                    struct riscv_hwprobe pair = {
+                        .key = RISCV_HWPROBE_KEY_IMA_EXT_0,
+                        .value = 0,
+                    };
+
+                    #if defined(SYS_riscv_hwprobe)
+                    const long ret = syscall(SYS_riscv_hwprobe,
+                            &pair, 1, 0, NULL, 0);
+                    #elif defined(__NR_riscv_hwprobe)
+                    const long ret = syscall(__NR_riscv_hwprobe,
+                            &pair, 1, 0, NULL, 0);
+                    #else
+                    #   error
+                    #endif
+
+                    return (int)ret
+                            + ((pair.value
+                                & RISCV_HWPROBE_EXT_ZBC) != 0);
+                }
+            ]=]
+            HAVE_RISCV_HWPROBE)
+
+        tuklib_add_definition_if(liblzma HAVE_RISCV_HWPROBE)
+    endif()
 endif()
 
 

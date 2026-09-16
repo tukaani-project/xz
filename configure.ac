@@ -403,6 +403,15 @@ AC_ARG_ENABLE([loongarch-crc32], AS_HELP_STRING([--disable-loongarch-crc32],
 		them is detected.]),
 	[], [enable_loongarch_crc32=yes])
 
+#################################
+# RISC-V Zbc CRC64 Instructions #
+#################################
+
+AC_ARG_ENABLE([riscv-zbc-crc64],
+	AS_HELP_STRING([--disable-riscv-zbc-crc64],
+	[Do not use RISC-V Zbc instructions for CRC64 calculation
+	even if support for them is detected.]),
+	[], [enable_riscv_zbc_crc64=yes])
 
 #####################
 # Size optimization #
@@ -641,6 +650,79 @@ fi
 AM_PROG_CC_C_O
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
+
+if test "x$enable_riscv_zbc_crc64" = xyes; then
+	AC_MSG_CHECKING([if RISC-V Zbc instructions can be used])
+
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if !defined(__riscv) || !defined(__riscv_xlen) || __riscv_xlen != 64
+# error Not RV64
+#endif
+
+int
+main(void)
+{
+	__asm__ volatile(
+		".option push\n\t"
+		".option arch, +zbc\n\t"
+		"clmul x0, x0, x0\n\t"
+		"clmulh x0, x0, x0\n\t"
+		".option pop");
+
+	return 0;
+}
+	]])], [
+		AC_DEFINE([HAVE_RISCV_ZBC_CRC64], [1],
+			[Define to 1 if RISC-V Zbc can be used for CRC64.])
+		have_riscv_zbc_crc64=yes
+		AC_MSG_RESULT([yes])
+	], [
+		have_riscv_zbc_crc64=no
+		AC_MSG_RESULT([no])
+	])
+else
+	have_riscv_zbc_crc64=no
+fi
+
+if test "x$have_riscv_zbc_crc64" = xyes; then
+	AC_MSG_CHECKING([if Linux RISC-V hwprobe is available])
+
+	AC_LINK_IFELSE([AC_LANG_SOURCE([[
+#include <stddef.h>
+#include <asm/hwprobe.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+int
+main(void)
+{
+	struct riscv_hwprobe pair = {
+		.key = RISCV_HWPROBE_KEY_IMA_EXT_0,
+		.value = 0,
+	};
+
+#if defined(SYS_riscv_hwprobe)
+	const long ret = syscall(SYS_riscv_hwprobe,
+			&pair, 1, 0, NULL, 0);
+#elif defined(__NR_riscv_hwprobe)
+	const long ret = syscall(__NR_riscv_hwprobe,
+			&pair, 1, 0, NULL, 0);
+#else
+# error No riscv_hwprobe syscall number
+#endif
+
+	return (int)ret
+			+ ((pair.value & RISCV_HWPROBE_EXT_ZBC) != 0);
+}
+	]])], [
+		AC_DEFINE([HAVE_RISCV_HWPROBE], [1],
+			[Define to 1 if Linux RISC-V hwprobe is available.])
+		AC_MSG_RESULT([yes])
+	], [
+		AC_MSG_RESULT([no])
+	])
+fi
+
 
 # If using GCC or compatible compiler, verify that CFLAGS doesn't contain
 # something that makes -Werror unhappy. It's important to check this after

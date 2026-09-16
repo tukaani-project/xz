@@ -467,6 +467,16 @@ XZ Utils Installation
                 all 64-bit LoongArch processors should support
                 the CRC32 instructions.
 
+    --disable-riscv-zbc-crc64
+    XZ_RISCV_ZBC_CRC64=OFF
+        Disable the use of RISC-V Zbc carry-less multiplication
+        instructions for CRC64 calculation even if toolchain support
+        is detected.
+
+        On Linux, support for Zbc is detected at runtime using
+        riscv_hwprobe when it isn't enabled unconditionally by
+        compiler options.
+
     --enable-unaligned-access
     TUKLIB_FAST_UNALIGNED_ACCESS=ON
                 Allow liblzma to use unaligned memory access for 16-bit,

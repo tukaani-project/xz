@@ -18,6 +18,9 @@
 #	include "crc_x86_clmul.h"
 #endif
 
+#if defined(CRC64_RISCV_ZBC)
+#	include "crc64_riscv_zbc.h"
+#endif
 
 #ifdef CRC64_GENERIC
 

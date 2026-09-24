@@ -91,6 +91,12 @@ test_lzma_stream_header_encode(void)
 			LZMA_PROG_ERROR);
 	flags.check = LZMA_CHECK_CRC32;
 
+	// Should fail if options or header pointer is NULL
+	assert_lzma_ret(lzma_stream_header_encode(NULL, header),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_stream_header_encode(&flags, NULL),
+			LZMA_PROG_ERROR);
+
 	// Should pass even if Backward Size is invalid
 	// because Stream Header doesn't have that field.
 	flags.backward_size = LZMA_VLI_MAX + 1;
@@ -182,6 +188,12 @@ test_lzma_stream_footer_encode(void)
 			LZMA_PROG_ERROR);
 	flags.backward_size = LZMA_BACKWARD_SIZE_MAX + 4;
 	assert_lzma_ret(lzma_stream_footer_encode(&flags, footer),
+			LZMA_PROG_ERROR);
+
+	// Should fail if options or footer pointer is NULL
+	assert_lzma_ret(lzma_stream_footer_encode(NULL, footer),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_stream_footer_encode(&flags, NULL),
 			LZMA_PROG_ERROR);
 #endif
 }
@@ -279,6 +291,12 @@ test_lzma_stream_header_decode(void)
 	*crc32_ptr ^= 1;
 	assert_lzma_ret(lzma_stream_header_decode(&dest, header),
 			LZMA_DATA_ERROR);
+
+	// Should fail if options or header pointer is NULL
+	assert_lzma_ret(lzma_stream_header_decode(NULL, header),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_stream_header_decode(&dest, NULL),
+			LZMA_PROG_ERROR);
 #endif
 }
 
@@ -378,6 +396,12 @@ test_lzma_stream_footer_decode(void)
 	*crc32_ptr ^= 1;
 	assert_lzma_ret(lzma_stream_footer_decode(&dest, footer),
 			LZMA_DATA_ERROR);
+
+	// Should fail if options or footer pointer is NULL
+	assert_lzma_ret(lzma_stream_footer_decode(NULL, footer),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_stream_footer_decode(&dest, NULL),
+			LZMA_PROG_ERROR);
 #endif
 }
 
@@ -461,6 +485,14 @@ test_lzma_stream_flags_compare(void)
 	first.backward_size = LZMA_BACKWARD_SIZE_MAX + 1;
 	second.backward_size = LZMA_BACKWARD_SIZE_MAX + 1;
 	assert_lzma_ret(lzma_stream_flags_compare(&first, &second),
+			LZMA_PROG_ERROR);
+
+	// Should fail if either pointer is NULL
+	assert_lzma_ret(lzma_stream_flags_compare(NULL, &second),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_stream_flags_compare(&first, NULL),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_stream_flags_compare(NULL, NULL),
 			LZMA_PROG_ERROR);
 }
 

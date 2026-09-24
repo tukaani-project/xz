@@ -20,6 +20,9 @@ extern LZMA_API(lzma_ret)
 lzma_stream_flags_compare(
 		const lzma_stream_flags *a, const lzma_stream_flags *b)
 {
+	if (a == NULL || b == NULL)
+		return LZMA_PROG_ERROR;
+
 	// We can compare only version 0 structures.
 	if (a->version != 0 || b->version != 0)
 		return LZMA_OPTIONS_ERROR;

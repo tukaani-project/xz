@@ -15,6 +15,9 @@
 extern LZMA_API(lzma_ret)
 lzma_filter_flags_size(uint32_t *size, const lzma_filter *filter)
 {
+	if (size == NULL || filter == NULL)
+		return LZMA_PROG_ERROR;
+
 	if (filter->id >= LZMA_FILTER_RESERVED_START)
 		return LZMA_PROG_ERROR;
 
@@ -30,6 +33,9 @@ extern LZMA_API(lzma_ret)
 lzma_filter_flags_encode(const lzma_filter *filter,
 		uint8_t *out, size_t *out_pos, size_t out_size)
 {
+	if (filter == NULL || out == NULL || out_pos == NULL)
+		return LZMA_PROG_ERROR;
+
 	// Filter ID
 	if (filter->id >= LZMA_FILTER_RESERVED_START)
 		return LZMA_PROG_ERROR;

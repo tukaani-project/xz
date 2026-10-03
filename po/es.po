@@ -1,16 +1,16 @@
 # SPDX-License-Identifier: 0BSD
-#
-# Spanish translation for xz-5.8.0-pre1.
-# Copyright (C) 2024, 2025 The XZ Utils authors and contributors
+# Spanish translation for XZ Utils package.
+# Copyright (C) 2022, 2023, 2024, 2025, 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
-# Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023, 2024, 2025.
+#
+# Cristian Othón Martínez Vera <cfuga@cfuga.mx>, 2022, 2023, 2024, 2025, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xz 5.8.0-pre1\n"
+"Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2026-08-15 19:56+0300\n"
-"PO-Revision-Date: 2025-05-14 14:23-0600\n"
+"PO-Revision-Date: 2026-09-17 16:57-0600\n"
 "Last-Translator: Cristian Othón Martínez Vera <cfuga@cfuga.mx>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -560,7 +560,7 @@ msgstr "Versión mínima de Herramientas XZ:"
 
 #: src/xz/list.c
 msgid "Error: The total compressed or uncompressed size of the files is too large"
-msgstr ""
+msgstr "Error: El tamaño total comprimido o sin comprimir de los ficheros es demasiado grande"
 
 #. TRANSLATORS: %s is an integer. Only the plural form of this
 #. message is used (e.g. "2 files"). Test with "xz -l foo.xz bar.xz".

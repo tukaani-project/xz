@@ -112,6 +112,15 @@ if(BUILD_TESTING)
     # Command line tool tests #
     ###########################
 
+    if(TARGET lzmainfo AND "lzma1" IN_LIST XZ_DECODERS)
+        add_test(NAME test_lzmainfo
+            COMMAND "${CMAKE_COMMAND}"
+                    "-DLZMAINFO=$<TARGET_FILE:lzmainfo>"
+                    "-DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests"
+                    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_lzmainfo.cmake"
+        )
+    endif()
+
     # Since the CMake-based build doesn't use config.h, the test scripts
     # cannot grep the contents of config.h to know which features have
     # been disabled. When config.h is missing, they assume that all

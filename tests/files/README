@@ -314,6 +314,13 @@
     correct uncompressed output.
 
 
+    good-known_size-26.lzma and good-known_size-2573.lzma contain
+    26 and 2573 copies of the byte 0x61, respectively, and have an end
+    of payload marker. The known sizes put 0x1A and 0x0D 0x0A into the
+    headers to test that lzmainfo doesn't use text mode on Windows.
+    Both files use a 256 KiB dictionary and lc=3, lp=0, pb=2.
+
+
 3.2. Bad Files
 
     bad-unknown_size-without_eopm.lzma has unknown size in the header

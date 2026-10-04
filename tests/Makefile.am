@@ -5,6 +5,7 @@ EXTRA_DIST = \
 	files \
 	ossfuzz \
 	tests.cmake \
+	test_lzmainfo.cmake \
 	tuktest.h \
 	tests.h \
 	tests_w32res.rc \

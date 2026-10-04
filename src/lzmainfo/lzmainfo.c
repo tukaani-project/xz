@@ -219,7 +219,7 @@ main(int argc, char **argv)
 				if (lzmainfo("(stdin)", stdin))
 					ret = EXIT_FAILURE;
 			} else {
-				FILE *f = fopen(argv[optind], "r");
+				FILE *f = fopen(argv[optind], "rb");
 				if (f == NULL) {
 					ret = EXIT_FAILURE;
 					fprintf(stderr, "%s: %s: %s\n",

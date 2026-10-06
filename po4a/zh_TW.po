@@ -1,0 +1,3904 @@
+# SPDX-License-Identifier: 0BSD
+# Traditional Chinese Messages for xz-man
+# Copyright (C) 2026 the last and past translators
+# This file is published under the BSD Zero Clause License.
+# Alang Hsu <alang.hsu@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xz-man 5.8.2-pre1\n"
+"POT-Creation-Date: 2025-10-31 13:23+0200\n"
+"PO-Revision-Date: 2026-09-29 16:35+0800\n"
+"Last-Translator: Alang Hsu <alang.hsu@gmail.com>\n"
+"Language-Team: Chinese (traditional) <zh-l10n@lists.slat.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+
+#. type: TH
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "XZ"
+msgstr "XZ"
+
+#. type: TH
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "2025-03-08"
+msgstr "2025-03-08"
+
+#. type: TH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "Tukaani"
+msgstr "Tukaani"
+
+#. type: TH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "XZ Utils"
+msgstr "XZ Utils"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "NAME"
+msgstr "名稱"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "xz, unxz, xzcat, lzma, unlzma, lzcat - Compress or decompress .xz and .lzma files"
+msgstr "xz、unxz、xzcat、lzma、unlzma、lzcat - 壓縮或解壓縮 .xz 與 .lzma 檔案"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "概要"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz> [I<option...>] [I<file...>]"
+msgstr "B<xz> [I<option...>] [I<file...>]"
+
+#. type: SH
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "COMMAND ALIASES"
+msgstr "命令別名"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<unxz> is equivalent to B<xz --decompress>."
+msgstr "B<unxz> 等同於 B<xz --decompress>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xzcat> is equivalent to B<xz --decompress --stdout>."
+msgstr "B<xzcat> 等同於 B<xz --decompress --stdout>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<lzma> is equivalent to B<xz --format=lzma>."
+msgstr "B<lzma> 等同於 B<xz --format=lzma>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<unlzma> is equivalent to B<xz --format=lzma --decompress>."
+msgstr "B<unlzma> 等同於 B<xz --format=lzma --decompress>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<lzcat> is equivalent to B<xz --format=lzma --decompress --stdout>."
+msgstr "B<lzcat> 等同於 B<xz --format=lzma --decompress --stdout>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When writing scripts that need to decompress files, it is recommended to always use the name B<xz> with appropriate arguments (B<xz -d> or B<xz -dc>)  instead of the names B<unxz> and B<xzcat>."
+msgstr "撰寫需要解壓縮檔案的指令碼時，建議一律使用名稱 B<xz> 搭配適當引數（B<xz -d> 或 B<xz -dc>），而非名稱 B<unxz> 與 B<xzcat>。"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "說明"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz> is a general-purpose data compression tool with command line syntax similar to B<gzip>(1)  and B<bzip2>(1).  The native file format is the B<.xz> format, but the legacy B<.lzma> format used by LZMA Utils and raw compressed streams with no container format headers are also supported.  In addition, decompression of the B<.lz> format used by B<lzip> is supported."
+msgstr "B<xz> 是一般用途的資料壓縮工具，其命令列語法類似 B<gzip>(1) 與 B<bzip2>(1)。原生檔案格式為 B<.xz> 格式，但亦支援 LZMA Utils 所使用的舊版 B<.lzma> 格式，以及不含容器格式標頭的原始壓縮串流。此外，也支援解壓縮 B<lzip> 所使用的 B<.lz> 格式。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz> compresses or decompresses each I<file> according to the selected operation mode.  If no I<files> are given or I<file> is B<->, B<xz> reads from standard input and writes the processed data to standard output.  B<xz> will refuse (display an error and skip the I<file>)  to write compressed data to standard output if it is a terminal.  Similarly, B<xz> will refuse to read compressed data from standard input if it is a terminal."
+msgstr "B<xz> 會依選定的操作模式壓縮或解壓縮每個 I<file>。若未指定 I<files>，或 I<file> 為 B<->，B<xz> 便會從標準輸入讀取，並將處理後的資料寫至標準輸出。若標準輸出是終端機，B<xz> 將拒絕把壓縮資料寫入標準輸出（顯示錯誤並略過該 I<file>）。同樣地，若標準輸入是終端機，B<xz> 也會拒絕從標準輸入讀取壓縮資料。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Unless B<--stdout> is specified, I<files> other than B<-> are written to a new file whose name is derived from the source I<file> name:"
+msgstr "除非指定 B<--stdout>，否則 B<-> 以外的 I<files> 都會寫入新檔案，其檔名由來源 I<file> 的檔名衍生而來："
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\(bu"
+msgstr "\\(bu"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing, the suffix of the target file format (B<.xz> or B<.lzma>)  is appended to the source filename to get the target filename."
+msgstr "壓縮時，會將目標檔案格式的副檔名（B<.xz> 或 B<.lzma>）附加到來源檔名之後，以取得目標檔名。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When decompressing, the B<.xz>, B<.lzma>, or B<.lz> suffix is removed from the filename to get the target filename.  B<xz> also recognizes the suffixes B<.txz> and B<.tlz>, and replaces them with the B<.tar> suffix."
+msgstr "解壓縮時，會從檔名移除 B<.xz>、B<.lzma> 或 B<.lz> 副檔名，以取得目標檔名。B<xz> 也認得 B<.txz> 與 B<.tlz> 副檔名，並將其換成 B<.tar> 副檔名。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If the target file already exists, an error is displayed and the I<file> is skipped."
+msgstr "若目標檔案已存在，便會顯示錯誤並略過該 I<file>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Unless writing to standard output, B<xz> will display a warning and skip the I<file> if any of the following applies:"
+msgstr "除非寫入標準輸出，否則符合下列任一情況時，B<xz> 會顯示警告並略過該 I<file>："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<File> is not a regular file.  Symbolic links are not followed, and thus they are not considered to be regular files."
+msgstr "I<File> 不是一般檔案。符號連結不會被跟隨，因此不被視為一般檔案。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<File> has more than one hard link."
+msgstr "I<File> 具有一個以上的硬連結。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<File> has setuid, setgid, or sticky bit set."
+msgstr "I<File> 設定了 setuid、setgid 或黏著位元。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The operation mode is set to compress and the I<file> already has a suffix of the target file format (B<.xz> or B<.txz> when compressing to the B<.xz> format, and B<.lzma> or B<.tlz> when compressing to the B<.lzma> format)."
+msgstr "操作模式設為壓縮，而 I<file> 已經具有目標檔案格式的副檔名（壓縮成 B<.xz> 格式時為 B<.xz> 或 B<.txz>，壓縮成 B<.lzma> 格式時為 B<.lzma> 或 B<.tlz>）。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The operation mode is set to decompress and the I<file> doesn't have a suffix of any of the supported file formats (B<.xz>, B<.txz>, B<.lzma>, B<.tlz>, or B<.lz>)."
+msgstr "操作模式設為解壓縮，而 I<file> 沒有任何受支援檔案格式的副檔名（B<.xz>、B<.txz>、B<.lzma>、B<.tlz> 或 B<.lz>）。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "After successfully compressing or decompressing the I<file>, B<xz> copies the owner, group, permissions, access time, and modification time from the source I<file> to the target file.  If copying the group fails, the permissions are modified so that the target file doesn't become accessible to users who didn't have permission to access the source I<file>.  B<xz> doesn't support copying other metadata like access control lists or extended attributes yet."
+msgstr "成功壓縮或解壓縮 I<file> 之後，B<xz> 會將來源 I<file> 的擁有者、群組、權限、存取時間與修改時間複製到目標檔案。若複製群組失敗，便會調整權限，使目標檔案不會變成無權存取來源 I<file> 的使用者也能存取。B<xz> 目前尚不支援複製存取控制清單或擴充屬性等其他中繼資料。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Once the target file has been successfully closed, the source I<file> is removed unless B<--keep> was specified.  The source I<file> is never removed if the output is written to standard output or if an error occurs."
+msgstr "目標檔案成功關閉後，除非有指定 B<--keep>，否則會移除來源 I<file>。若輸出是寫至標準輸出，或發生錯誤，則絕不會移除來源 I<file>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Sending B<SIGINFO> or B<SIGUSR1> to the B<xz> process makes it print progress information to standard error.  This has only limited use since when standard error is a terminal, using B<--verbose> will display an automatically updating progress indicator."
+msgstr "向 B<xz> 程序送出 B<SIGINFO> 或 B<SIGUSR1>，可使其將進度資訊列印到標準錯誤。此功能用途有限，因為當標準錯誤是終端機時，使用 B<--verbose> 便會顯示自動更新的進度指示器。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Memory usage"
+msgstr "記憶體用量"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The memory usage of B<xz> varies from a few hundred kilobytes to several gigabytes depending on the compression settings.  The settings used when compressing a file determine the memory requirements of the decompressor.  Typically the decompressor needs 5\\ % to 20\\ % of the amount of memory that the compressor needed when creating the file.  For example, decompressing a file created with B<xz -9> currently requires 65\\ MiB of memory.  Still, it is possible to have B<.xz> files that require several gigabytes of memory to decompress."
+msgstr "B<xz> 的記憶體用量會隨壓縮設定而異，從數百個位元組到數個 GB 不等。壓縮檔案時所用的設定，決定了解壓縮器的記憶體需求。解壓縮器通常只需要壓縮器建立該檔案時所用記憶體的 5\\ % 到 20\\ %。例如，目前解壓縮以 B<xz -9> 建立的檔案需要 65\\ MiB 記憶體。不過，確實存在需要數個 GB 記憶體才能解壓縮的 B<.xz> 檔案。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Especially users of older systems may find the possibility of very large memory usage annoying.  To prevent uncomfortable surprises, B<xz> has a built-in memory usage limiter, which is disabled by default.  While some operating systems provide ways to limit the memory usage of processes, relying on it wasn't deemed to be flexible enough (for example, using B<ulimit>(1)  to limit virtual memory tends to cripple B<mmap>(2))."
+msgstr "尤其是舊系統的使用者，可能會對記憶體用量極大的可能性感到困擾。為避免令人不快的意外，B<xz> 內建了記憶體用量限制器，預設為停用。雖然某些作業系統提供限制程序記憶體用量的方法，但依賴它仍不夠有彈性（例如，使用 B<ulimit>(1) 限制虛擬記憶體，往往會使 B<mmap>(2) 效能受限）。"
+
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS.
+#.  It's a name of an environment variable.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The memory usage limiter can be enabled with the command line option B<--memlimit=>I<limit>.  Often it is more convenient to enable the limiter by default by setting the environment variable B<XZ_DEFAULTS>, for example, B<XZ_DEFAULTS=--memlimit=150MiB>.  It is possible to set the limits separately for compression and decompression by using B<--memlimit-compress=>I<limit> and B<--memlimit-decompress=>I<limit>.  Using these two options outside B<XZ_DEFAULTS> is rarely useful because a single run of B<xz> cannot do both compression and decompression and B<--memlimit=>I<limit> (or B<-M> I<limit>)  is shorter to type on the command line."
+msgstr "記憶體用量限制器可透過命令列選項 B<--memlimit=>I<limit> 啟用。通常較方便的做法是設定環境變數 B<XZ_DEFAULTS> 來預設啟用限制器，例如 B<XZ_DEFAULTS=--memlimit=150MiB>。也可以使用 B<--memlimit-compress=>I<limit> 與 B<--memlimit-decompress=>I<limit> 分別為壓縮與解壓縮設定限制。在 B<XZ_DEFAULTS> 之外使用這兩個選項很少有用，因為 B<xz> 的單次執行無法同時進行壓縮與解壓縮，而 B<--memlimit=>I<limit>（或 B<-M> I<limit>）在命令列上輸入較簡短。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If the specified memory usage limit is exceeded when decompressing, B<xz> will display an error and decompressing the file will fail.  If the limit is exceeded when compressing, B<xz> will try to scale the settings down so that the limit is no longer exceeded (except when using B<--format=raw> or B<--no-adjust>).  This way the operation won't fail unless the limit is very small.  The scaling of the settings is done in steps that don't match the compression level presets, for example, if the limit is only slightly less than the amount required for B<xz -9>, the settings will be scaled down only a little, not all the way down to B<xz -8>."
+msgstr "若解壓縮時超出指定的記憶體用量限制，B<xz> 會顯示錯誤，且解壓縮該檔案將會失敗。若壓縮時超出限制，B<xz> 會嘗試調低設定，使限制不再被超出（使用 B<--format=raw> 或 B<--no-adjust> 時除外）。如此一來，除非限制極小，否則操作不會失敗。設定的調降是以不同於壓縮等級預設值的步階進行；例如，若限制只比 B<xz -9> 所需的量稍小，設定只會略微調低，而不會一路降到 B<xz -8>。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Concatenation and padding with .xz files"
+msgstr "以 .xz 檔案串接與填充"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "It is possible to concatenate B<.xz> files as is.  B<xz> will decompress such files as if they were a single B<.xz> file."
+msgstr "可以直接串接 B<.xz> 檔案。B<xz> 會將這類檔案當成單一 B<.xz> 檔案來解壓縮。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "It is possible to insert padding between the concatenated parts or after the last part.  The padding must consist of null bytes and the size of the padding must be a multiple of four bytes.  This can be useful, for example, if the B<.xz> file is stored on a medium that measures file sizes in 512-byte blocks."
+msgstr "可以在串接的各部分之間，或在最後一部分之後插入填充。填充必須由 null 位元組組成，且填充的大小必須是四個位元組的倍數。舉例而言，若 B<.xz> 檔案儲存在以 512 位元組區塊計算檔案大小的介質上，這項功能就很有用。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Concatenation and padding are not allowed with B<.lzma> files or raw streams."
+msgstr "B<.lzma> 檔案或原始串流不允許串接與填充。"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "OPTIONS"
+msgstr "選項"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Integer suffixes and special values"
+msgstr "整數後綴與特殊值"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "In most places where an integer argument is expected, an optional suffix is supported to easily indicate large integers.  There must be no space between the integer and the suffix."
+msgstr "在大多數需要整數引數的地方，都支援選用的後綴，以便輕鬆表示大整數。整數與後綴之間不得有空格。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<KiB>"
+msgstr "B<KiB>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Multiply the integer by 1,024 (2^10).  B<Ki>, B<k>, B<kB>, B<K>, and B<KB> are accepted as synonyms for B<KiB>."
+msgstr "將整數乘以 1,024（2^10）。B<Ki>、B<k>、B<kB>、B<K> 與 B<KB> 都可作為 B<KiB> 的同義詞使用。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<MiB>"
+msgstr "B<MiB>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Multiply the integer by 1,048,576 (2^20).  B<Mi>, B<m>, B<M>, and B<MB> are accepted as synonyms for B<MiB>."
+msgstr "將整數乘以 1,048,576（2^20）。B<Mi>、B<m>、B<M> 與 B<MB> 都可作為 B<MiB> 的同義詞使用。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<GiB>"
+msgstr "B<GiB>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Multiply the integer by 1,073,741,824 (2^30).  B<Gi>, B<g>, B<G>, and B<GB> are accepted as synonyms for B<GiB>."
+msgstr "將整數乘以 1,073,741,824（2^30）。B<Gi>、B<g>、B<G> 與 B<GB> 都可作為 B<GiB> 的同義詞使用。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The special value B<max> can be used to indicate the maximum integer value supported by the option."
+msgstr "特殊值 B<max> 可用來表示該選項所支援的最大整數值。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Operation mode"
+msgstr "操作模式"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If multiple operation mode options are given, the last one takes effect."
+msgstr "若指定多個操作模式選項，以最後一個為準。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-z>, B<--compress>"
+msgstr "B<-z>、B<--compress>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compress.  This is the default operation mode when no operation mode option is specified and no other operation mode is implied from the command name (for example, B<unxz> implies B<--decompress>)."
+msgstr "壓縮。當未指定操作模式選項，且命令名稱本身也未隱含其他操作模式時，這是預設的操作模式（例如，B<unxz> 隱含 B<--decompress>）。"
+
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "After successful compression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr "成功壓縮後，除非是寫入標準輸出或有指定 B<--keep>，否則會移除來源檔案。"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-d>, B<--decompress>, B<--uncompress>"
+msgstr "B<-d>、B<--decompress>、B<--uncompress>"
+
+#.  The DESCRIPTION section already says this but it's good to repeat it
+#.  here because the default behavior is a bit dangerous and new users
+#.  in a hurry may skip reading the DESCRIPTION section.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Decompress.  After successful decompression, the source file is removed unless writing to standard output or B<--keep> was specified."
+msgstr "解壓縮。成功解壓縮後，除非是寫入標準輸出或有指定 B<--keep>，否則會移除來源檔案。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-t>, B<--test>"
+msgstr "B<-t>、B<--test>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Test the integrity of compressed I<files>.  This option is equivalent to B<--decompress --stdout> except that the decompressed data is discarded instead of being written to standard output.  No files are created or removed."
+msgstr "測試壓縮 I<files> 的完整性。此選項等同於 B<--decompress --stdout>，差別在於解壓縮後的資料會被丟棄而非寫入標準輸出。不會建立或移除任何檔案。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-l>, B<--list>"
+msgstr "B<-l>、B<--list>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Print information about compressed I<files>.  No uncompressed output is produced, and no files are created or removed.  In list mode, the program cannot read the compressed data from standard input or from other unseekable sources."
+msgstr "列印壓縮 I<files> 的資訊。不會產生未壓縮的輸出，也不會建立或移除任何檔案。在列表模式下，程式無法從標準輸入或其他不可定位的來源讀取壓縮資料。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The default listing shows basic information about I<files>, one file per line.  To get more detailed information, use also the B<--verbose> option.  For even more information, use B<--verbose> twice, but note that this may be slow, because getting all the extra information requires many seeks.  The width of verbose output exceeds 80 characters, so piping the output to, for example, B<less\\ -S> may be convenient if the terminal isn't wide enough."
+msgstr "預設的列表會每行顯示一個 I<files> 的基本資訊。若要取得更詳細的資訊，請一併使用 B<--verbose> 選項。若要更多資訊，可使用兩次 B<--verbose>，但請注意這可能較慢，因為取得所有額外資訊需要許多定位操作。詳細輸出的寬度超過 80 個字元，因此若終端機寬度不足，將輸出管接給 B<less\\ -S> 之類的工具可能會比較方便。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The exact output may vary between B<xz> versions and different locales.  For machine-readable output, B<--robot --list> should be used."
+msgstr "確切的輸出可能因 B<xz> 版本與語系而異。若需要機器可讀的輸出，應使用 B<--robot --list>。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Operation modifiers"
+msgstr "操作修飾符"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-k>, B<--keep>"
+msgstr "B<-k>、B<--keep>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Don't delete the input files."
+msgstr "不要刪除輸入檔案。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since B<xz> 5.2.6, this option also makes B<xz> compress or decompress even if the input is a symbolic link to a regular file, has more than one hard link, or has the setuid, setgid, or sticky bit set.  The setuid, setgid, and sticky bits are not copied to the target file.  In earlier versions this was only done with B<--force>."
+msgstr "自 B<xz> 5.2.6 起，此選項也會讓 B<xz> 在輸入為指向一般檔案的符號連結、具有一個以上的硬連結，或設定了 setuid、setgid、黏著位元時仍進行壓縮或解壓縮。setuid、setgid 與黏著位元不會被複製到目標檔案。在較早的版本中，只有搭配 B<--force> 時才會如此。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-f>, B<--force>"
+msgstr "B<-f>、B<--force>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This option has several effects:"
+msgstr "此選項具有以下幾項作用："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If the target file already exists, delete it before compressing or decompressing."
+msgstr "若目標檔案已存在，則在壓縮或解壓縮前先將其刪除。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compress or decompress even if the input is a symbolic link to a regular file, has more than one hard link, or has the setuid, setgid, or sticky bit set.  The setuid, setgid, and sticky bits are not copied to the target file."
+msgstr "即使輸入為指向一般檔案的符號連結、具有一個以上的硬連結，或設定了 setuid、setgid、黏著位元，仍進行壓縮或解壓縮。setuid、setgid 與黏著位元不會被複製到目標檔案。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When used with B<--decompress> B<--stdout> and B<xz> cannot recognize the type of the source file, copy the source file as is to standard output.  This allows B<xzcat> B<--force> to be used like B<cat>(1)  for files that have not been compressed with B<xz>.  Note that in future, B<xz> might support new compressed file formats, which may make B<xz> decompress more types of files instead of copying them as is to standard output.  B<--format=>I<format> can be used to restrict B<xz> to decompress only a single file format."
+msgstr "當搭配 B<--decompress> B<--stdout> 使用，且 B<xz> 無法判別來源檔案的類型時，會將來源檔案原樣複製到標準輸出。這讓 B<xzcat> B<--force> 能以類似 B<cat>(1) 的方式處理未以 B<xz> 壓縮的檔案。請注意，B<xz> 未來可能支援新的壓縮檔案格式，屆時 B<xz> 或許便能解壓縮更多類型的檔案，而非原樣複製到標準輸出。可使用 B<--format=>I<format> 將 B<xz> 限制為只解壓縮單一檔案格式。"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-c>, B<--stdout>, B<--to-stdout>"
+msgstr "B<-c>、B<--stdout>、B<--to-stdout>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Write the compressed or decompressed data to standard output instead of a file.  This implies B<--keep>."
+msgstr "將壓縮或解壓縮後的資料寫入標準輸出而非檔案。這隱含啟用 B<--keep>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--single-stream>"
+msgstr "B<--single-stream>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Decompress only the first B<.xz> stream, and silently ignore possible remaining input data following the stream.  Normally such trailing garbage makes B<xz> display an error."
+msgstr "只解壓縮第一個 B<.xz> 串流，並無聲忽略該串流之後可能剩餘的輸入資料。正常情況下，這類尾隨的垃圾資料會讓 B<xz> 顯示錯誤。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz> never decompresses more than one stream from B<.lzma> files or raw streams, but this option still makes B<xz> ignore the possible trailing data after the B<.lzma> file or raw stream."
+msgstr "B<xz> 從不會解壓縮 B<.lzma> 檔案或原始串流中的一個以上串流，但此選項仍會讓 B<xz> 忽略 B<.lzma> 檔案或原始串流之後可能存在的尾隨資料。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This option has no effect if the operation mode is not B<--decompress> or B<--test>."
+msgstr "若操作模式不是 B<--decompress> 或 B<--test>，此選項不會有任何作用。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since B<xz> 5.7.1alpha, B<--single-stream> implies B<--keep>."
+msgstr "自 B<xz> 5.7.1alpha 起，B<--single-stream> 隱含啟用 B<--keep>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--no-sparse>"
+msgstr "B<--no-sparse>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Disable creation of sparse files.  By default, if decompressing into a regular file, B<xz> tries to make the file sparse if the decompressed data contains long sequences of binary zeros.  It also works when writing to standard output as long as standard output is connected to a regular file and certain additional conditions are met to make it safe.  Creating sparse files may save disk space and speed up the decompression by reducing the amount of disk I/O."
+msgstr "停用稀疏檔案的建立。預設情況下，若解壓縮至一般檔案，且解壓縮後的資料含有長串的二進位零，B<xz> 便會嘗試將該檔案變成稀疏檔案。只要標準輸出連接的是一般檔案，且滿足確保安全的其他條件，此機制在寫入標準輸出時也同樣有效。建立稀疏檔案可藉由減少磁碟 I/O 量來節省磁碟空間並加快解壓縮速度。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-S> I<.suf>, B<--suffix=>I<.suf>"
+msgstr "B<-S> I<.suf>、B<--suffix=>I<.suf>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing, use I<.suf> as the suffix for the target file instead of B<.xz> or B<.lzma>.  If not writing to standard output and the source file already has the suffix I<.suf>, a warning is displayed and the file is skipped."
+msgstr "壓縮時，以 I<.suf> 作為目標檔案的副檔名，而非 B<.xz> 或 B<.lzma>。若不是寫入標準輸出，而來源檔案已具有副檔名 I<.suf>，則會顯示警告並略過該檔案。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When decompressing, recognize files with the suffix I<.suf> in addition to files with the B<.xz>, B<.txz>, B<.lzma>, B<.tlz>, or B<.lz> suffix.  If the source file has the suffix I<.suf>, the suffix is removed to get the target filename."
+msgstr "解壓縮時，除了具有 B<.xz>、B<.txz>、B<.lzma>、B<.tlz> 或 B<.lz> 副檔名的檔案外，也會辨識具有副檔名 I<.suf> 的檔案。若來源檔案的副檔名為 I<.suf>，則移除該副檔名以取得目標檔名。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing or decompressing raw streams (B<--format=raw>), the suffix must always be specified unless writing to standard output, because there is no default suffix for raw streams."
+msgstr "壓縮或解壓縮原始串流（B<--format=raw>）時，除非是寫入標準輸出，否則一律必須指定副檔名，因為原始串流沒有預設的副檔名。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--files>[B<=>I<file>]"
+msgstr "B<--files>[B<=>I<file>]"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Read the filenames to process from I<file>; if I<file> is omitted, filenames are read from standard input.  Filenames must be terminated with the newline character.  A dash (B<->)  is taken as a regular filename; it doesn't mean standard input.  If filenames are given also as command line arguments, they are processed before the filenames read from I<file>."
+msgstr "從 I<file> 讀取要處理的檔名；若省略 I<file>，則從標準輸入讀取檔名。檔名必須以換行字元結尾。連字號（B<->）會被視為一般檔名，並不表示標準輸入。若也有以命令列引數指定檔名，這些檔名會先於從 I<file> 讀取的檔名處理。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--files0>[B<=>I<file>]"
+msgstr "B<--files0>[B<=>I<file>]"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This is identical to B<--files>[B<=>I<file>] except that each filename must be terminated with the null character."
+msgstr "此選項與 B<--files>[B<=>I<file>] 完全相同，差別在於每個檔名都必須以 null 字元結尾。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Basic file format and compression options"
+msgstr "基本檔案格式與壓縮選項"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-F> I<format>, B<--format=>I<format>"
+msgstr "B<-F> I<format>、B<--format=>I<format>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the file I<format> to compress or decompress:"
+msgstr "指定要壓縮或解壓縮的檔案 I<format>："
+
+#.  TRANSLATORS: Don't translate bold string B<auto>.
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<auto>"
+msgstr "B<auto>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This is the default.  When compressing, B<auto> is equivalent to B<xz>.  When decompressing, the format of the input file is automatically detected.  Note that raw streams (created with B<--format=raw>)  cannot be auto-detected."
+msgstr "這是預設值。壓縮時，B<auto> 等同於 B<xz>。解壓縮時會自動偵測輸入檔案的格式。請注意，原始串流（以 B<--format=raw> 建立）無法自動偵測。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<xz>"
+msgstr "B<xz>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compress to the B<.xz> file format, or accept only B<.xz> files when decompressing."
+msgstr "壓縮成 B<.xz> 檔案格式，或在解壓縮時只接受 B<.xz> 檔案。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<lzma>, B<alone>"
+msgstr "B<lzma>、B<alone>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compress to the legacy B<.lzma> file format, or accept only B<.lzma> files when decompressing.  The alternative name B<alone> is provided for backwards compatibility with LZMA Utils."
+msgstr "壓縮成舊版 B<.lzma> 檔案格式，或在解壓縮時只接受 B<.lzma> 檔案。備用名稱 B<alone> 為與 LZMA Utils 保持相容而提供。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<lzip>"
+msgstr "B<lzip>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Accept only B<.lz> files when decompressing.  Compression is not supported."
+msgstr "解壓縮時只接受 B<.lz> 檔案。不支援壓縮。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The B<.lz> format versions 0 and 1 are supported.  Version 0 files were produced by B<lzip> 1.3 and older.  Such files aren't common but may be found from file archives as a few source packages were released in this format.  People might have old personal files in this format too.  Decompression support for the format version 0 was removed in B<lzip> 1.18.  B<lzip> 1.4 and later create files in the format version 1."
+msgstr "支援 B<.lz> 格式的第 0 版與第 1 版。第 0 版檔案由 B<lzip> 1.3 及更早的版本產生。這類檔案並不常見，但因為有少數原始碼套件以此格式發布，仍可能從檔案庫中找到。使用者的舊個人檔案也可能是這個格式。B<lzip> 1.18 已移除對第 0 版格式的解壓縮支援。B<lzip> 1.4 及之後的版本會建立第 1 版格式的檔案。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<raw>"
+msgstr "B<raw>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compress or uncompress a raw stream (no headers).  This is meant for advanced users only.  To decode raw streams, you need use B<--format=raw> and explicitly specify the filter chain, which normally would have been stored in the container headers."
+msgstr "壓縮或解壓縮原始串流（無標頭）。這僅供進階使用者使用。要解碼原始串流，你必須使用 B<--format=raw>，並明確指定過濾器鏈；這些過濾器鏈通常會儲存在容器標頭中。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-C> I<check>, B<--check=>I<check>"
+msgstr "B<-C> I<check>、B<--check=>I<check>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the type of the integrity check.  The check is calculated from the uncompressed data and stored in the B<.xz> file.  This option has an effect only when compressing into the B<.xz> format; the B<.lzma> format doesn't support integrity checks.  The integrity check (if any) is verified when the B<.xz> file is decompressed."
+msgstr "指定完整性檢查的類型。檢查值由未壓縮的資料計算而來，並儲存在 B<.xz> 檔案中。此選項僅在壓縮成 B<.xz> 格式時有效；B<.lzma> 格式不支援完整性檢查。完整性檢查（若有）會在解壓縮 B<.xz> 檔案時驗證。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Supported I<check> types:"
+msgstr "支援的 I<check> 類型："
+
+#.  TRANSLATORS: Don't translate the bold strings B<none>, B<crc32>,
+#.  B<crc64>, and B<sha256>. The command line option --check accepts
+#.  only the untranslated strings.
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<none>"
+msgstr "B<none>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Don't calculate an integrity check at all.  This is usually a bad idea.  This can be useful when integrity of the data is verified by other means anyway."
+msgstr "完全不計算完整性檢查。這通常不是好主意。當資料的完整性原本就由其他方式驗證時，這項功能才可能有用。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<crc32>"
+msgstr "B<crc32>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Calculate CRC32 using the polynomial from IEEE-802.3 (Ethernet)."
+msgstr "使用 IEEE-802.3（Ethernet）的多項式計算 CRC32。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<crc64>"
+msgstr "B<crc64>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Calculate CRC64 using the polynomial from ECMA-182.  This is the default, since it is slightly better than CRC32 at detecting damaged files and the speed difference is negligible."
+msgstr "使用 ECMA-182 的多項式計算 CRC64。這是預設值，因為它在偵測損毀檔案方面略優於 CRC32，而速度差異微乎其微。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<sha256>"
+msgstr "B<sha256>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Calculate SHA-256.  This is somewhat slower than CRC32 and CRC64."
+msgstr "計算 SHA-256。這比 CRC32 與 CRC64 稍慢。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Integrity of the B<.xz> headers is always verified with CRC32.  It is not possible to change or disable it."
+msgstr "B<.xz> 標頭的完整性一律以 CRC32 驗證。無法變更或停用。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--ignore-check>"
+msgstr "B<--ignore-check>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Don't verify the integrity check of the compressed data when decompressing.  The CRC32 values in the B<.xz> headers will still be verified normally."
+msgstr "解壓縮時不驗證壓縮資料的完整性檢查。B<.xz> 標頭中的 CRC32 值仍會照常驗證。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<Do not use this option unless you know what you are doing.> Possible reasons to use this option:"
+msgstr "B<除非你清楚自己在做什麼，否則請勿使用此選項。> 使用此選項的可能理由："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Trying to recover data from a corrupt .xz file."
+msgstr "嘗試從損毀的 .xz 檔案中復原資料。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Speeding up decompression.  This matters mostly with SHA-256 or with files that have compressed extremely well.  It's recommended to not use this option for this purpose unless the file integrity is verified externally in some other way."
+msgstr "加快解壓縮速度。這對 SHA-256 而言特別重要，也適用於壓縮率極佳的檔案。除非檔案完整性已透過其他外部方式驗證，否則建議不要為此目的使用此選項。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-0> ... B<-9>"
+msgstr "B<-0> ... B<-9>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Select a compression preset level.  The default is B<-6>.  If multiple preset levels are specified, the last one takes effect.  If a custom filter chain was already specified, setting a compression preset level clears the custom filter chain."
+msgstr "選擇壓縮預設等級。預設值為 B<-6>。若指定多個預設等級，以最後一個為準。若先前已指定自訂過濾器鏈，設定壓縮預設等級會清除該自訂過濾器鏈。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The differences between the presets are more significant than with B<gzip>(1)  and B<bzip2>(1).  The selected compression settings determine the memory requirements of the decompressor, thus using a too high preset level might make it painful to decompress the file on an old system with little RAM.  Specifically, B<it's not a good idea to blindly use -9 for everything> like it often is with B<gzip>(1)  and B<bzip2>(1)."
+msgstr "各預設值之間的差異，比 B<gzip>(1) 與 B<bzip2>(1) 的情況更為顯著。所選的壓縮設定決定解壓縮器的記憶體需求，因此使用過高的預設等級，可能會讓在 RAM 不多的舊系統上解壓縮檔案變得痛苦。特別是，B<把 -9 一律用在所有東西上並不是好主意>，而這在 B<gzip>(1) 與 B<bzip2>(1) 中卻很常見。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-0> ... B<-3>"
+msgstr "B<-0> ... B<-3>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "These are somewhat fast presets.  B<-0> is sometimes faster than B<gzip -9> while compressing much better.  The higher ones often have speed comparable to B<bzip2>(1)  with comparable or better compression ratio, although the results depend a lot on the type of data being compressed."
+msgstr "這些預設值算是快速的。B<-0> 有時比 B<gzip -9> 還快，卻能壓縮得好得多。較高等的預設值，速度通常與 B<bzip2>(1) 相當，壓縮率則相若或更佳，不過結果相當依賴被壓縮資料的類型。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-4> ... B<-6>"
+msgstr "B<-4> ... B<-6>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Good to very good compression while keeping decompressor memory usage reasonable even for old systems.  B<-6> is the default, which is usually a good choice for distributing files that need to be decompressible even on systems with only 16\\ MiB RAM.  (B<-5e> or B<-6e> may be worth considering too.  See B<--extreme>.)"
+msgstr "在舊系統上也能維持合理的解壓縮記憶體用量，壓縮效果良好至非常好。B<-6> 是預設值，通常很適合用來散播那些在只有 16\\ MiB RAM 的系統上仍須能解壓縮的檔案。（B<-5e> 或 B<-6e> 也值得考慮。請參閱 B<--extreme>。）"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-7 ... -9>"
+msgstr "B<-7 ... -9>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "These are like B<-6> but with higher compressor and decompressor memory requirements.  These are useful only when compressing files bigger than 8\\ MiB, 16\\ MiB, and 32\\ MiB, respectively."
+msgstr "這些類似 B<-6>，但對壓縮器與解壓縮器的記憶體需求較高。只有在壓縮大於 8\\ MiB、16\\ MiB 與 32\\ MiB 的檔案時，它們才分別有用。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "On the same hardware, the decompression speed is approximately a constant number of bytes of compressed data per second.  In other words, the better the compression, the faster the decompression will usually be.  This also means that the amount of uncompressed output produced per second can vary a lot."
+msgstr "在相同硬體上，解壓縮速度約為每秒處理固定位元組數的壓縮資料。換句話說，壓縮效果越好，解壓縮通常也就越快。這同時表示每秒產生的未壓縮輸出量可能有很大差異。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The following table summarises the features of the presets:"
+msgstr "下表彙整了各預設值的特性："
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Preset"
+msgstr "預設值"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "DictSize"
+msgstr "字典大小"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "CompCPU"
+msgstr "壓縮 CPU 用量"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "CompMem"
+msgstr "壓縮記憶體用量"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "DecMem"
+msgstr "解壓縮記憶體用量"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-0"
+msgstr "-0"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "256 KiB"
+msgstr "256 KiB"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/scripts/xzgrep.1
+#, no-wrap
+msgid "0"
+msgstr "0"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "3 MiB"
+msgstr "3 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "1 MiB"
+msgstr "1 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-1"
+msgstr "-1"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/scripts/xzgrep.1
+#, no-wrap
+msgid "1"
+msgstr "1"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "9 MiB"
+msgstr "9 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "2 MiB"
+msgstr "2 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-2"
+msgstr "-2"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "2"
+msgstr "2"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "17 MiB"
+msgstr "17 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-3"
+msgstr "-3"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "4 MiB"
+msgstr "4 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "3"
+msgstr "3"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "32 MiB"
+msgstr "32 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "5 MiB"
+msgstr "5 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-4"
+msgstr "-4"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "4"
+msgstr "4"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "48 MiB"
+msgstr "48 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-5"
+msgstr "-5"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "8 MiB"
+msgstr "8 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "5"
+msgstr "5"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "94 MiB"
+msgstr "94 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-6"
+msgstr "-6"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "6"
+msgstr "6"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-7"
+msgstr "-7"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "16 MiB"
+msgstr "16 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "186 MiB"
+msgstr "186 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-8"
+msgstr "-8"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "370 MiB"
+msgstr "370 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "33 MiB"
+msgstr "33 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-9"
+msgstr "-9"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "64 MiB"
+msgstr "64 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "674 MiB"
+msgstr "674 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "65 MiB"
+msgstr "65 MiB"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Column descriptions:"
+msgstr "各欄說明："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "DictSize is the LZMA2 dictionary size.  It is waste of memory to use a dictionary bigger than the size of the uncompressed file.  This is why it is good to avoid using the presets B<-7> ... B<-9> when there's no real need for them.  At B<-6> and lower, the amount of memory wasted is usually low enough to not matter."
+msgstr "字典大小是 LZMA2 字典的大小。使用比未壓縮檔案更大的字典會浪費記憶體。因此，在沒有實際需求時，最好避免使用預設值 B<-7> ... B<-9>。在 B<-6> 與更低的等級，浪費的記憶體量通常小到不足以造成影響。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "CompCPU is a simplified representation of the LZMA2 settings that affect compression speed.  The dictionary size affects speed too, so while CompCPU is the same for levels B<-6> ... B<-9>, higher levels still tend to be a little slower.  To get even slower and thus possibly better compression, see B<--extreme>."
+msgstr "壓縮 CPU 用量是影響壓縮速度的 LZMA2 設定的簡化表示。字典大小也會影響速度，因此儘管 B<-6> ... B<-9> 等級的壓縮 CPU 用量相同，等級愈高通常仍會稍微慢一點。若想要更慢、因而可能壓縮得更好的效果，請參閱 B<--extreme>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "CompMem contains the compressor memory requirements in the single-threaded mode.  It may vary slightly between B<xz> versions."
+msgstr "壓縮記憶體用量是單執行緒模式下的壓縮器記憶體需求。它可能因 B<xz> 版本而略有差異。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "DecMem contains the decompressor memory requirements.  That is, the compression settings determine the memory requirements of the decompressor.  The exact decompressor memory usage is slightly more than the LZMA2 dictionary size, but the values in the table have been rounded up to the next full MiB."
+msgstr "解壓縮記憶體用量是解壓縮器的記憶體需求。也就是說，壓縮設定決定了解壓縮器的記憶體需求。解壓縮器的實際記憶體用量略高於 LZMA2 字典大小，但表中的數值已向上取整至完整的 MiB。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Memory requirements of the multi-threaded mode are significantly higher than that of the single-threaded mode.  With the default value of B<--block-size>, each thread needs 3*3*DictSize plus CompMem or DecMem.  For example, four threads with preset B<-6> needs 660\\(en670\\ MiB of memory."
+msgstr "多執行緒模式的記憶體需求明顯高於單執行緒模式。在 B<--block-size> 的預設值下，每個執行緒需要 3*3*字典大小再加上壓縮記憶體用量或解壓縮記憶體用量。舉例而言，使用預設值 B<-6> 的四個執行緒需要 660\\(en670\\ MiB 記憶體。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-e>, B<--extreme>"
+msgstr "B<-e>、B<--extreme>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Use a slower variant of the selected compression preset level (B<-0> ... B<-9>)  to hopefully get a little bit better compression ratio, but with bad luck this can also make it worse.  Decompressor memory usage is not affected, but compressor memory usage increases a little at preset levels B<-0> ... B<-3>."
+msgstr "使用所選壓縮預設等級（B<-0> ... B<-9>）的較慢變體，希望取得稍好一點的壓縮率，但運氣不佳時也可能反而更差。這不會影響解壓縮器的記憶體用量，但在預設等級 B<-0> ... B<-3> 時，壓縮器的記憶體用量會稍微增加。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since there are two presets with dictionary sizes 4\\ MiB and 8\\ MiB, the presets B<-3e> and B<-5e> use slightly faster settings (lower CompCPU) than B<-4e> and B<-6e>, respectively.  That way no two presets are identical."
+msgstr "因為有兩個預設值的字典大小分別為 4\\ MiB 與 8\\ MiB，所以預設值 B<-3e> 與 B<-5e> 分別採用比 B<-4e> 與 B<-6e> 稍快的設定（較低的壓縮 CPU 用量）。如此便不會有任何兩個預設值完全相同。"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-0e"
+msgstr "-0e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "8"
+msgstr "8"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-1e"
+msgstr "-1e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "13 MiB"
+msgstr "13 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-2e"
+msgstr "-2e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "25 MiB"
+msgstr "25 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-3e"
+msgstr "-3e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "7"
+msgstr "7"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-4e"
+msgstr "-4e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-5e"
+msgstr "-5e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-6e"
+msgstr "-6e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-7e"
+msgstr "-7e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-8e"
+msgstr "-8e"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "-9e"
+msgstr "-9e"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "For example, there are a total of four presets that use 8\\ MiB dictionary, whose order from the fastest to the slowest is B<-5>, B<-6>, B<-5e>, and B<-6e>."
+msgstr "舉例而言，總共有四個預設值使用 8\\ MiB 字典，由最快到最慢的順序為 B<-5>、B<-6>、B<-5e> 與 B<-6e>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--fast>"
+msgstr "B<--fast>"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--best>"
+msgstr "B<--best>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "These are somewhat misleading aliases for B<-0> and B<-9>, respectively.  These are provided only for backwards compatibility with LZMA Utils.  Avoid using these options."
+msgstr "這兩者分別是 B<-0> 與 B<-9> 的別名，多少有些誤導。它們純粹是為與 LZMA Utils 保持相容而提供。請避免使用這些選項。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--block-size=>I<size>"
+msgstr "B<--block-size=>I<size>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing to the B<.xz> format, split the input data into blocks of I<size> bytes.  The blocks are compressed independently from each other, which helps with multi-threading and makes limited random-access decompression possible.  This option is typically used to override the default block size in multi-threaded mode, but this option can be used in single-threaded mode too."
+msgstr "壓縮成 B<.xz> 格式時，將輸入資料分割成 I<size> 位元組的區塊。各區塊會彼此獨立壓縮，這有助於多執行緒處理，並使有限度的隨機存取解壓縮成為可能。此選項通常用於覆寫多執行緒模式下的預設區塊大小，但單執行緒模式也可使用。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "In multi-threaded mode about three times I<size> bytes will be allocated in each thread for buffering input and output.  The default I<size> is three times the LZMA2 dictionary size or 1 MiB, whichever is more.  Typically a good value is 2\\(en4 times the size of the LZMA2 dictionary or at least 1 MiB.  Using I<size> less than the LZMA2 dictionary size is waste of RAM because then the LZMA2 dictionary buffer will never get fully used.  In multi-threaded mode, the sizes of the blocks are stored in the block headers.  This size information is required for multi-threaded decompression."
+msgstr "在多執行緒模式下，每個執行緒會配置約三倍 I<size> 的位元組，用於緩衝輸入與輸出。預設的 I<size> 是 LZMA2 字典大小的三倍或 1 MiB，以較大者為準。通常良好的取值是 LZMA2 字典大小的 2\\(en4 倍，或至少 1 MiB。使用小於 LZMA2 字典大小的 I<size> 會浪費 RAM，因為 LZMA2 字典緩衝區將永遠無法被充分利用。在多執行緒模式下，各區塊的大小會儲存在區塊標頭中。進行多執行緒解壓縮時需要這項大小資訊。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "In single-threaded mode no block splitting is done by default.  Setting this option doesn't affect memory usage.  No size information is stored in block headers, thus files created in single-threaded mode won't be identical to files created in multi-threaded mode.  The lack of size information also means that B<xz> won't be able decompress the files in multi-threaded mode."
+msgstr "在單執行緒模式下，預設不會進行區塊分割。設定此選項不會影響記憶體用量。區塊標頭中不會儲存大小資訊，因此在單執行緒模式建立的檔案，不會與在多執行緒模式建立的檔案完全相同。缺少大小資訊也意味著 B<xz> 無法以多執行緒模式解壓縮這些檔案。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--block-list=>I<items>"
+msgstr "B<--block-list=>I<items>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing to the B<.xz> format, start a new block with an optional custom filter chain after the given intervals of uncompressed data."
+msgstr "壓縮成 B<.xz> 格式時，在指定的未壓縮資料區間之後，以選用的自訂過濾器鏈開始一個新區塊。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The I<items> are a comma-separated list.  Each item consists of an optional filter chain number between 0 and 9 followed by a colon (B<:>)  and a required size of uncompressed data.  Omitting an item (two or more consecutive commas) is a shorthand to use the size and filters of the previous item."
+msgstr "I<items> 是以逗號分隔的清單。每個項目由 0 到 9 之間的選用過濾器鏈編號、後接冒號（B<:>），以及必要的未壓縮資料大小所組成。省略某個項目（兩個或更多個連續逗號）是使用前一項目的大小與過濾器鏈的簡寫。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If the input file is bigger than the sum of the sizes in I<items>, the last item is repeated until the end of the file.  A special value of B<0> may be used as the last size to indicate that the rest of the file should be encoded as a single block."
+msgstr "若輸入檔案大於 I<items> 中各項大小的總和，便會重複最後一個項目直到檔案結尾。可將特殊值 B<0> 用作最後一個大小，表示檔案的其餘部分應編碼成單一區塊。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "An alternative filter chain for each block can be specified in combination with the B<--filters1=>I<filters> \\&...\\& B<--filters9=>I<filters> options.  These options define filter chains with an identifier between 1\\(en9.  Filter chain 0 can be used to refer to the default filter chain, which is the same as not specifying a filter chain.  The filter chain identifier can be used before the uncompressed size, followed by a colon (B<:>).  For example, if one specifies B<--block-list=1:2MiB,3:2MiB,2:4MiB,,2MiB,0:4MiB> then blocks will be created using:"
+msgstr "每個區塊的替代過濾器鏈可搭配 B<--filters1=>I<filters> \\&...\\& B<--filters9=>I<filters> 選項指定。這些選項定義編號介於 1\\(en9 之間的過濾器鏈。過濾器鏈 0 可用來代表預設過濾器鏈，與不指定過濾器鏈相同。過濾器鏈編號可寫在未壓縮資料大小之前，後接冒號（B<:>）。例如，若指定 B<--block-list=1:2MiB,3:2MiB,2:4MiB,,2MiB,0:4MiB>，各區塊會依下列方式建立："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The filter chain specified by B<--filters1> and 2 MiB input"
+msgstr "B<--filters1> 指定的過濾器鏈，以及 2 MiB 輸入"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The filter chain specified by B<--filters3> and 2 MiB input"
+msgstr "B<--filters3> 指定的過濾器鏈，以及 2 MiB 輸入"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The filter chain specified by B<--filters2> and 4 MiB input"
+msgstr "B<--filters2> 指定的過濾器鏈，以及 4 MiB 輸入"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The default filter chain and 2 MiB input"
+msgstr "預設過濾器鏈，以及 2 MiB 輸入"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The default filter chain and 4 MiB input for every block until end of input."
+msgstr "預設過濾器鏈，以及每個區塊 4 MiB 輸入，直到輸入結尾。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If one specifies a size that exceeds the encoder's block size (either the default value in threaded mode or the value specified with B<--block-size=>I<size>), the encoder will create additional blocks while keeping the boundaries specified in I<items>.  For example, if one specifies B<--block-size=10MiB> B<--block-list=5MiB,10MiB,8MiB,12MiB,24MiB> and the input file is 80 MiB, one will get 11 blocks: 5, 10, 8, 10, 2, 10, 10, 4, 10, 10, and 1 MiB."
+msgstr "若指定的大小超過編碼器的區塊大小（多執行緒模式下的預設值，或以 B<--block-size=>I<size> 指定的值），編碼器會在維持 I<items> 所指定邊界的前提下建立額外區塊。舉例而言，若指定 B<--block-size=10MiB> B<--block-list=5MiB,10MiB,8MiB,12MiB,24MiB> 而輸入檔案為 80 MiB，就會得到 11 個區塊：5、10、8、10、2、10、10、4、10、10 與 1 MiB。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "In multi-threaded mode the sizes of the blocks are stored in the block headers.  This isn't done in single-threaded mode, so the encoded output won't be identical to that of the multi-threaded mode."
+msgstr "在多執行緒模式下，各區塊的大小會儲存在區塊標頭中。單執行緒模式下則不會如此，因此編碼後的輸出不會與多執行緒模式相同。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--flush-timeout=>I<timeout>"
+msgstr "B<--flush-timeout=>I<timeout>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing, if more than I<timeout> milliseconds (a positive integer) has passed since the previous flush and reading more input would block, all the pending input data is flushed from the encoder and made available in the output stream.  This can be useful if B<xz> is used to compress data that is streamed over a network.  Small I<timeout> values make the data available at the receiving end with a small delay, but large I<timeout> values give better compression ratio."
+msgstr "壓縮時，若自上次清空以來已經過超過 I<timeout> 毫秒（正整數），且讀取更多輸入會造成阻塞，便會將編碼器中所有待處理的輸入資料清空，使其可在輸出串流中取得。若使用 B<xz> 壓縮透過網路串流的資料，這項功能會很有用。較小的 I<timeout> 值能讓接收端較快取得資料，但較大的 I<timeout> 值能提供更好的壓縮率。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This feature is disabled by default.  If this option is specified more than once, the last one takes effect.  The special I<timeout> value of B<0> can be used to explicitly disable this feature."
+msgstr "此功能預設為停用。若此選項被指定多次，以最後一個為準。可使用特殊 I<timeout> 值 B<0> 來明確停用此功能。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This feature is not available on non-POSIX systems."
+msgstr "此功能在非 POSIX 系統上無法使用。"
+
+#.  FIXME
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<This feature is still experimental.> Currently B<xz> is unsuitable for decompressing the stream in real time due to how B<xz> does buffering."
+msgstr "B<此功能仍屬實驗性。>由於 B<xz> 的緩衝方式，目前 B<xz> 並不適合即時解壓縮串流。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--no-sync>"
+msgstr "B<--no-sync>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Do not synchronize the target file and its directory to the storage device before removing the source file.  This can improve performance if compressing or decompressing many small files.  However, if the system crashes soon after the deletion, it is possible that the target file was not written to the storage device but the delete operation was.  In that case neither the original source file nor the target file is available."
+msgstr "在移除來源檔案之前，不要將目標檔案及其目錄同步至儲存裝置。若壓縮或解壓縮大量小檔案，這可改善效能。不過，若系統在刪除後不久就當機，可能出現目標檔案尚未寫入儲存裝置、但刪除動作卻已完成的情況。這時原始來源檔案與目標檔案都無法取得。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This option has an effect only when B<xz> is going to remove the source file.  In other cases synchronization is never done."
+msgstr "此選項僅在 B<xz> 將要移除來源檔案時才有效。其他情況下從不做同步。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The synchronization and B<--no-sync> were added in B<xz> 5.7.1alpha."
+msgstr "同步功能與 B<--no-sync> 是在 B<xz> 5.7.1alpha 中加入的。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--memlimit-compress=>I<limit>"
+msgstr "B<--memlimit-compress=>I<limit>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Set a memory usage limit for compression.  If this option is specified multiple times, the last one takes effect."
+msgstr "設定壓縮時的記憶體用量限制。若此選項被指定多次，以最後一個為準。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If the compression settings exceed the I<limit>, B<xz> will attempt to adjust the settings downwards so that the limit is no longer exceeded and display a notice that automatic adjustment was done.  The adjustments are done in this order: reducing the number of threads, switching to single-threaded mode if even one thread in multi-threaded mode exceeds the I<limit>, and finally reducing the LZMA2 dictionary size."
+msgstr "若壓縮設定超出 I<limit>，B<xz> 會嘗試向下調整設定，使限制不再被超出，並顯示已完成自動調整的提示。調整依序進行：先減少執行緒數目；若多執行緒模式下連一個執行緒都超出 I<limit>，則切換為單執行緒模式；最後才縮小 LZMA2 字典大小。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When compressing with B<--format=raw> or if B<--no-adjust> has been specified, only the number of threads may be reduced since it can be done without affecting the compressed output."
+msgstr "以 B<--format=raw> 壓縮時，或已指定 B<--no-adjust> 時，由於減少執行緒數目不會影響壓縮後的輸出，因此只有執行緒數目可能減少。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If the I<limit> cannot be met even with the adjustments described above, an error is displayed and B<xz> will exit with exit status 1."
+msgstr "若即使經過上述調整仍無法滿足 I<limit>，便會顯示錯誤，且 B<xz> 會以結束狀態 1 結束。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The I<limit> can be specified in multiple ways:"
+msgstr "I<limit> 可以用多種方式指定："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The I<limit> can be an absolute value in bytes.  Using an integer suffix like B<MiB> can be useful.  Example: B<--memlimit-compress=80MiB>"
+msgstr "I<limit> 可以是以位元組表示的絕對值。使用 B<MiB> 之類的整數後綴會很方便。範例：B<--memlimit-compress=80MiB>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The I<limit> can be specified as a percentage of total physical memory (RAM).  This can be useful especially when setting the B<XZ_DEFAULTS> environment variable in a shell initialization script that is shared between different computers.  That way the limit is automatically bigger on systems with more memory.  Example: B<--memlimit-compress=70%>"
+msgstr "I<limit> 可指定為實體記憶體（RAM）總量的百分比。當在多台電腦共用的 shell 啟動指令碼中設定 B<XZ_DEFAULTS> 環境變數時，這特別有用。如此一來，記憶體較多的系統上限制會自動較大。範例：B<--memlimit-compress=70%>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The I<limit> can be reset back to its default value by setting it to B<0>.  This is currently equivalent to setting the I<limit> to B<max> (no memory usage limit)."
+msgstr "將 I<limit> 設為 B<0>，便可重設回其預設值。這目前等同於將 I<limit> 設為 B<max>（不限制記憶體用量）。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "For 32-bit B<xz> there is a special case: if the I<limit> would be over B<4020\\ MiB>, the I<limit> is set to B<4020\\ MiB>.  On MIPS32 B<2000\\ MiB> is used instead.  (The values B<0> and B<max> aren't affected by this.  A similar feature doesn't exist for decompression.)  This can be helpful when a 32-bit executable has access to 4\\ GiB address space (2 GiB on MIPS32)  while hopefully doing no harm in other situations."
+msgstr "對 32 位元的 B<xz> 有一項特殊處理：若 I<limit> 會超過 B<4020\\ MiB>，便將 I<limit> 設為 B<4020\\ MiB>。在 MIPS32 上則改用 B<2000\\ MiB>。（B<0> 與 B<max> 這兩個值不受此影響。解壓縮方面沒有類似的功能。）當 32 位元的執行檔程式能使用 4\\ GiB 位址空間（MIPS32 上為 2 GiB）時，這會有所幫助，同時希望在其他情況下不會造成任何損害。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "See also the section B<Memory usage>."
+msgstr "另請參閱 B<記憶體用量> 一節。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--memlimit-decompress=>I<limit>"
+msgstr "B<--memlimit-decompress=>I<limit>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Set a memory usage limit for decompression.  This also affects the B<--list> mode.  If the operation is not possible without exceeding the I<limit>, B<xz> will display an error and decompressing the file will fail.  See B<--memlimit-compress=>I<limit> for possible ways to specify the I<limit>."
+msgstr "設定解壓縮時的記憶體用量限制。這也會影響 B<--list> 模式。若不超出 I<limit> 就無法進行該操作，B<xz> 便會顯示錯誤，且解壓縮該檔案將會失敗。I<limit> 的各種指定方式請參閱 B<--memlimit-compress=>I<limit>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--memlimit-mt-decompress=>I<limit>"
+msgstr "B<--memlimit-mt-decompress=>I<limit>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Set a memory usage limit for multi-threaded decompression.  This can only affect the number of threads; this will never make B<xz> refuse to decompress a file.  If I<limit> is too low to allow any multi-threading, the I<limit> is ignored and B<xz> will continue in single-threaded mode.  Note that if also B<--memlimit-decompress> is used, it will always apply to both single-threaded and multi-threaded modes, and so the effective I<limit> for multi-threading will never be higher than the limit set with B<--memlimit-decompress>."
+msgstr "設定多執行緒解壓縮時的記憶體用量限制。這只會影響執行緒數目，絕不會讓 B<xz> 拒絕解壓縮檔案。若 I<limit> 低到無法進行任何多執行緒處理，便會忽略 I<limit>，而 B<xz> 將以單執行緒模式繼續。請注意，若同時使用 B<--memlimit-decompress>，它會同時套用於單執行緒與多執行緒模式，因此多執行緒實際生效的 I<limit> 絕不會高於以 B<--memlimit-decompress> 設定的限制。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "In contrast to the other memory usage limit options, B<--memlimit-mt-decompress=>I<limit> has a system-specific default I<limit>.  B<xz --info-memory> can be used to see the current value."
+msgstr "與其他記憶體用量限制選項不同，B<--memlimit-mt-decompress=>I<limit> 有一套依系統而定的預設 I<limit>。可使用 B<xz --info-memory> 查看目前的值。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This option and its default value exist because without any limit the threaded decompressor could end up allocating an insane amount of memory with some input files.  If the default I<limit> is too low on your system, feel free to increase the I<limit> but never set it to a value larger than the amount of usable RAM as with appropriate input files B<xz> will attempt to use that amount of memory even with a low number of threads.  Running out of memory or swapping will not improve decompression performance."
+msgstr "此選項及其預設值存在的原因，是因為若完全沒有限制，多執行緒解壓縮器在遇到某些輸入檔案時，可能會配置過多的記憶體。若你系統上的預設 I<limit> 太低，可以自行提高 I<limit>，但絕不要設成大於可用 RAM 總量的值，因為遇到適當的輸入檔案時，即便執行緒數目很少，B<xz> 仍會試著使用那麼多記憶體。記憶體耗盡或開始置換並不會改善解壓縮效能。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "See B<--memlimit-compress=>I<limit> for possible ways to specify the I<limit>.  Setting I<limit> to B<0> resets the I<limit> to the default system-specific value."
+msgstr "I<limit> 的各種指定方式請參閱 B<--memlimit-compress=>I<limit>。將 I<limit> 設為 B<0>，便可將 I<limit> 重設為依系統而定的預設值。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-M> I<limit>, B<--memlimit=>I<limit>, B<--memory=>I<limit>"
+msgstr "B<-M> I<limit>、B<--memlimit=>I<limit>、B<--memory=>I<limit>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This is equivalent to specifying B<--memlimit-compress=>I<limit> B<--memlimit-decompress=>I<limit> B<--memlimit-mt-decompress=>I<limit>."
+msgstr "這等同於同時指定 B<--memlimit-compress=>I<limit> B<--memlimit-decompress=>I<limit> B<--memlimit-mt-decompress=>I<limit>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--no-adjust>"
+msgstr "B<--no-adjust>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Display an error and exit if the memory usage limit cannot be met without adjusting settings that affect the compressed output.  That is, this prevents B<xz> from switching the encoder from multi-threaded mode to single-threaded mode and from reducing the LZMA2 dictionary size.  Even when this option is used the number of threads may be reduced to meet the memory usage limit as that won't affect the compressed output."
+msgstr "若必須調整會影響壓縮後輸出的設定才能滿足記憶體用量限制，便顯示錯誤並結束。也就是說，這會防止 B<xz> 將編碼器從多執行緒模式切換為單執行緒模式，也防止其縮小 LZMA2 字典大小。即使使用此選項，執行緒數目仍可能為了滿足記憶體用量限制而減少，因為這不會影響壓縮後的輸出。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Automatic adjusting is always disabled when creating raw streams (B<--format=raw>)."
+msgstr "建立原始串流（B<--format=raw>）時，一律會停用自動調整。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-T> I<threads>, B<--threads=>I<threads>"
+msgstr "B<-T> I<threads>、B<--threads=>I<threads>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the number of worker threads to use.  Setting I<threads> to a special value B<0> makes B<xz> use up to as many threads as the processor(s) on the system support.  The actual number of threads can be fewer than I<threads> if the input file is not big enough for threading with the given settings or if using more threads would exceed the memory usage limit."
+msgstr "指定要使用的工作執行緒數目。將 I<threads> 設為特殊值 B<0>，會讓 B<xz> 最多使用系統處理器所支援的執行緒數目。若輸入檔案在目前設定下不夠大，無法進行多執行緒處理，或使用更多執行緒會超出記憶體用量限制，實際的執行緒數目可能少於 I<threads>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The single-threaded and multi-threaded compressors produce different output.  Single-threaded compressor will give the smallest file size but only the output from the multi-threaded compressor can be decompressed using multiple threads.  Setting I<threads> to B<1> will use the single-threaded mode.  Setting I<threads> to any other value, including B<0>, will use the multi-threaded compressor even if the system supports only one hardware thread.  (B<xz> 5.2.x used single-threaded mode in this situation.)"
+msgstr "單執行緒與多執行緒壓縮器產生的輸出並不相同。單執行緒壓縮器會產生最小的檔案大小，但只有多執行緒壓縮器的輸出才能以多執行緒解壓縮。將 I<threads> 設為 B<1> 會使用單執行緒模式。將 I<threads> 設為其他任何值（包括 B<0>）都會使用多執行緒壓縮器，即使系統只支援一個硬體執行緒亦然。（B<xz> 5.2.x 在這種情況下會使用單執行緒模式。）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "To use multi-threaded mode with only one thread, set I<threads> to B<+1>.  The B<+> prefix has no effect with values other than B<1>.  A memory usage limit can still make B<xz> switch to single-threaded mode unless B<--no-adjust> is used.  Support for the B<+> prefix was added in B<xz> 5.4.0."
+msgstr "若要以只有一個執行緒的多執行緒模式運作，請將 I<threads> 設為 B<+1>。B<+> 前綴對 B<1> 以外的值沒有作用。除非使用 B<--no-adjust>，否則記憶體用量限制仍可能讓 B<xz> 切換為單執行緒模式。B<+> 前綴的支援是在 B<xz> 5.4.0 中加入的。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If an automatic number of threads has been requested and no memory usage limit has been specified, then a system-specific default soft limit will be used to possibly limit the number of threads.  It is a soft limit in sense that it is ignored if the number of threads becomes one, thus a soft limit will never stop B<xz> from compressing or decompressing.  This default soft limit will not make B<xz> switch from multi-threaded mode to single-threaded mode.  The active limits can be seen with B<xz --info-memory>."
+msgstr "若已要求自動決定執行緒數目，但未指定記憶體用量限制，便會採用一套依系統而定的預設軟性限制，視需要限制執行緒數目。之所以稱為軟性限制，是因為當執行緒數目變成 1 時便會被忽略，因此軟性限制絕不會阻止 B<xz> 進行壓縮或解壓縮。此預設軟性限制也不會讓 B<xz> 從多執行緒模式切換為單執行緒模式。目前生效的限制可用 B<xz --info-memory> 查看。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Currently the only threading method is to split the input into blocks and compress them independently from each other.  The default block size depends on the compression level and can be overridden with the B<--block-size=>I<size> option."
+msgstr "目前唯一的多執行緒處理方式，是將輸入分割成區塊並彼此獨立壓縮。預設的區塊大小取決於壓縮等級，並可用 B<--block-size=>I<size> 選項覆寫。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Threaded decompression only works on files that contain multiple blocks with size information in block headers.  All large enough files compressed in multi-threaded mode meet this condition, but files compressed in single-threaded mode don't even if B<--block-size=>I<size> has been used."
+msgstr "多執行緒解壓縮只適用於含有多個區塊、且區塊標頭中帶有大小資訊的檔案。以多執行緒模式壓縮的檔案，只要夠大都符合此條件；但單執行緒模式壓縮的檔案則不符合，即使使用了 B<--block-size=>I<size> 也是如此。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The default value for I<threads> is B<0>.  In B<xz> 5.4.x and older the default is B<1>."
+msgstr "I<threads> 的預設值為 B<0>。在 B<xz> 5.4.x 與更早的版本中，預設值為 B<1>。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Custom compressor filter chains"
+msgstr "自訂壓縮器過濾器鏈"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "A custom filter chain allows specifying the compression settings in detail instead of relying on the settings associated to the presets.  When a custom filter chain is specified, preset options (B<-0> \\&...\\& B<-9> and B<--extreme>)  earlier on the command line are forgotten.  If a preset option is specified after one or more custom filter chain options, the new preset takes effect and the custom filter chain options specified earlier are forgotten."
+msgstr "自訂過濾器鏈可讓你詳細指定壓縮設定，而不必依賴與預設值相關聯的設定。當指定自訂過濾器鏈時，命令列較前面出現的預設值選項（B<-0> \\&...\\& B<-9> 與 B<--extreme>）都會被忽略。若在一個或多個自訂過濾器鏈選項之後指定預設值選項，則新的預設值會生效，而較早指定的自訂過濾器鏈選項會被忽略。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "A filter chain is comparable to piping on the command line.  When compressing, the uncompressed input goes to the first filter, whose output goes to the next filter (if any).  The output of the last filter gets written to the compressed file.  The maximum number of filters in the chain is four, but typically a filter chain has only one or two filters."
+msgstr "過濾器鏈可比擬為命令列上的管線。壓縮時，未壓縮的輸入會進入第一個過濾器，其輸出再送入下一個過濾器（若有）。最後一個過濾器的輸出會寫入壓縮檔案。鏈中的過濾器最多四個，不過過濾器鏈通常只有一或兩個過濾器。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Many filters have limitations on where they can be in the filter chain: some filters can work only as the last filter in the chain, some only as a non-last filter, and some work in any position in the chain.  Depending on the filter, this limitation is either inherent to the filter design or exists to prevent security issues."
+msgstr "許多過濾器對自己在過濾器鏈中的位置有所限制：有些過濾器只能作為鏈中最後一個過濾器，有些只能作為非最後一個過濾器，也有些在鏈中任何位置都能運作。視過濾器而定，這項限制可能是過濾器設計本身的特性，也可能是為了避免安全問題。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "A custom filter chain can be specified in two different ways.  The options B<--filters=>I<filters> and B<--filters1=>I<filters> \\&...\\& B<--filters9=>I<filters> allow specifying an entire filter chain in one option using the liblzma filter string syntax.  Alternatively, a filter chain can be specified by using one or more individual filter options in the order they are wanted in the filter chain.  That is, the order of the individual filter options is significant! When decoding raw streams (B<--format=raw>), the filter chain must be specified in the same order as it was specified when compressing.  Any individual filter or preset options specified before the full chain option (B<--filters=>I<filters>)  will be forgotten.  Individual filters specified after the full chain option will reset the filter chain."
+msgstr "自訂過濾器鏈有兩種指定方式。選項 B<--filters=>I<filters> 與 B<--filters1=>I<filters> \\&...\\& B<--filters9=>I<filters> 允許使用 liblzma 過濾器字串語法，在單一選項中指定完整的過濾器鏈。另一種方式是依過濾器鏈中想要的順序，使用一個或多個個別過濾器選項來指定。也就是說，個別過濾器選項的順序具有意義！解碼原始串流（B<--format=raw>）時，過濾器鏈必須與壓縮時指定的順序相同。完整鏈選項（B<--filters=>I<filters>）之前指定的任何個別過濾器或預設值選項都會被忽略。完整鏈選項之後指定的個別過濾器則會重設過濾器鏈。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Both the full and individual filter options take filter-specific I<options> as a comma-separated list.  Extra commas in I<options> are ignored.  Every option has a default value, so specify those you want to change."
+msgstr "完整過濾器選項與個別過濾器選項都會以逗號分隔的清單接受該過濾器專屬的 I<options>。I<options> 中多餘的逗號會被忽略。每個選項都有預設值，因此請只指定你想變更的部分。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "To see the whole filter chain and I<options>, use B<xz -vv> (that is, use B<--verbose> twice).  This works also for viewing the filter chain options used by presets."
+msgstr "若要查看完整的過濾器鏈與 I<options>，請使用 B<xz -vv>（也就是使用兩次 B<--verbose>）。這同樣可用於檢視預設值所使用的過濾器鏈選項。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--filters=>I<filters>"
+msgstr "B<--filters=>I<filters>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the full filter chain or a preset in a single option.  Each filter can be separated by spaces or two dashes (B<-->).  I<filters> may need to be quoted on the shell command line so it is parsed as a single option.  To denote I<options>, use B<:> or B<=>.  A preset can be prefixed with a B<-> and followed with zero or more flags.  The only supported flag is B<e> to apply the same options as B<--extreme>."
+msgstr "在單一選項中指定完整的過濾器鏈或預設值。各過濾器可用空格或兩個連字號（B<-->）分隔。I<filters> 在 shell 命令列上可能需要加引號，才會被解析成單一選項。要表示 I<options>，請使用 B<:> 或 B<=>。預設值可加上 B<-> 前綴，後接零或多個旗標。唯一支援的旗標是 B<e>，用來套用與 B<--extreme> 相同的選項。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--filters1>=I<filters> ... B<--filters9>=I<filters>"
+msgstr "B<--filters1>=I<filters> ... B<--filters9=>I<filters>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify up to nine additional filter chains that can be used with B<--block-list>."
+msgstr "指定最多九個額外的過濾器鏈，可搭配 B<--block-list> 使用。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "For example, when compressing an archive with executable files followed by text files, the executable part could use a filter chain with a BCJ filter and the text part only the LZMA2 filter."
+msgstr "舉例而言，當壓縮的封裝內容是先執行檔、後文字檔時，執行檔部分可使用含 BCJ 過濾器的過濾器鏈，而文字部分只使用 LZMA2 過濾器。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--filters-help>"
+msgstr "B<--filters-help>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Display a help message describing how to specify presets and custom filter chains in the B<--filters> and B<--filters1=>I<filters> \\&...\\& B<--filters9=>I<filters> options, and exit successfully."
+msgstr "顯示說明訊息，介紹如何在 B<--filters> 與 B<--filters1=>I<filters> \\&...\\& B<--filters9=>I<filters> 選項中指定預設值與自訂過濾器鏈，然後成功結束。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--lzma1>[B<=>I<options>]"
+msgstr "B<--lzma1>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--lzma2>[B<=>I<options>]"
+msgstr "B<--lzma2>[B<=>I<options>]"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Add LZMA1 or LZMA2 filter to the filter chain.  These filters can be used only as the last filter in the chain."
+msgstr "將 LZMA1 或 LZMA2 過濾器加入過濾器鏈。這些過濾器只能作為鏈中最後一個過濾器。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "LZMA1 is a legacy filter, which is supported almost solely due to the legacy B<.lzma> file format, which supports only LZMA1.  LZMA2 is an updated version of LZMA1 to fix some practical issues of LZMA1.  The B<.xz> format uses LZMA2 and doesn't support LZMA1 at all.  Compression speed and ratios of LZMA1 and LZMA2 are practically the same."
+msgstr "LZMA1 是舊版過濾器，幾乎純粹是為了支援只支援 LZMA1 的舊版 B<.lzma> 檔案格式而保留。LZMA2 是 LZMA1 的更新版本，修復了 LZMA1 的一些實務問題。B<.xz> 格式使用 LZMA2，完全不支援 LZMA1。LZMA1 與 LZMA2 的壓縮速度與壓縮率實務上相同。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "LZMA1 and LZMA2 share the same set of I<options>:"
+msgstr "LZMA1 與 LZMA2 共用同一組 I<options>："
+
+#.  TRANSLATORS: Don't translate bold strings like B<preset>, B<dict>,
+#.  B<mode>, B<nice>, B<fast>, or B<normal> because those are command line
+#.  options. On the other hand, do translate the italic strings like
+#.  I<preset>, I<size>, and I<mode>, because such italic strings are
+#.  placeholders which a user replaces with an actual value.
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<preset=>I<preset>"
+msgstr "B<preset=>I<preset>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Reset all LZMA1 or LZMA2 I<options> to I<preset>.  I<Preset> consist of an integer, which may be followed by single-letter preset modifiers.  The integer can be from B<0> to B<9>, matching the command line options B<-0> \\&...\\& B<-9>.  The only supported modifier is currently B<e>, which matches B<--extreme>.  If no B<preset> is specified, the default values of LZMA1 or LZMA2 I<options> are taken from the preset B<6>."
+msgstr "將所有 LZMA1 或 LZMA2 I<options> 重設為 I<preset>。I<Preset> 由一個整數構成，後可接單字母的預設值修飾符。整數可為 B<0> 到 B<9>，對應命令列選項 B<-0> \\&...\\& B<-9>。目前唯一支援的修飾符是 B<e>，對應 B<--extreme>。若未指定 B<preset>，LZMA1 或 LZMA2 I<options> 的預設值會取自預設值 B<6>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<dict=>I<size>"
+msgstr "B<dict=>I<size>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Dictionary (history buffer)  I<size> indicates how many bytes of the recently processed uncompressed data is kept in memory.  The algorithm tries to find repeating byte sequences (matches) in the uncompressed data, and replace them with references to the data currently in the dictionary.  The bigger the dictionary, the higher is the chance to find a match.  Thus, increasing dictionary I<size> usually improves compression ratio, but a dictionary bigger than the uncompressed file is waste of memory."
+msgstr "字典（歷史緩衝區）  I<size> 表示記憶體中保留多少位元組近期處理過的未壓縮資料。演算法會嘗試在未壓縮資料中找出重複的位元組序列（比對），並將其換成對字典中目前資料的參照。字典越大，找到比對的機會就越高。因此，增大字典 I<size> 通常能改善壓縮率，但比未壓縮檔案更大的字典會浪費記憶體。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Typical dictionary I<size> is from 64\\ KiB to 64\\ MiB.  The minimum is 4\\ KiB.  The maximum for compression is currently 1.5\\ GiB (1536\\ MiB).  The decompressor already supports dictionaries up to one byte less than 4\\ GiB, which is the maximum for the LZMA1 and LZMA2 stream formats."
+msgstr "字典 I<size> 的典型值從 64\\ KiB 到 64\\ MiB。最小值為 4\\ KiB。目前壓縮的最大值為 1.5\\ GiB（1536\\ MiB）。解壓縮器已支援最大到比 4\\ GiB 少一個位元組的字典，這是 LZMA1 與 LZMA2 串流格式的上限。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Dictionary I<size> and match finder (I<mf>)  together determine the memory usage of the LZMA1 or LZMA2 encoder.  The same (or bigger) dictionary I<size> is required for decompressing that was used when compressing, thus the memory usage of the decoder is determined by the dictionary size used when compressing.  The B<.xz> headers store the dictionary I<size> either as 2^I<n> or 2^I<n> + 2^(I<n>-1), so these I<sizes> are somewhat preferred for compression.  Other I<sizes> will get rounded up when stored in the B<.xz> headers."
+msgstr "字典 I<size> 與比對器（I<mf>）共同決定 LZMA1 或 LZMA2 編碼器的記憶體用量。解壓縮時需要與壓縮時所用相同（或更大）的字典 I<size>，因此解碼器的記憶體用量由壓縮時所用的字典大小決定。B<.xz> 標頭會將字典 I<size> 儲存為 2^I<n> 或 2^I<n> + 2^(I<n>-1)，因此這些 I<sizes> 在壓縮時略為優先。其他 I<sizes> 在存入 B<.xz> 標頭時會被向上取整。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<lc=>I<lc>"
+msgstr "B<lc=>I<lc>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the number of literal context bits.  The minimum is 0 and the maximum is 4; the default is 3.  In addition, the sum of I<lc> and I<lp> must not exceed 4."
+msgstr "指定文字情境位元數。最小值為 0，最大值為 4；預設值為 3。此外，I<lc> 與 I<lp> 的總和不得超過 4。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "All bytes that cannot be encoded as matches are encoded as literals.  That is, literals are simply 8-bit bytes that are encoded one at a time."
+msgstr "所有無法編碼為比對的位元組都會編碼為文字。也就是說，文字就是一次編碼一個的 8 位元位元組。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The literal coding makes an assumption that the highest I<lc> bits of the previous uncompressed byte correlate with the next byte.  For example, in typical English text, an upper-case letter is often followed by a lower-case letter, and a lower-case letter is usually followed by another lower-case letter.  In the US-ASCII character set, the highest three bits are 010 for upper-case letters and 011 for lower-case letters.  When I<lc> is at least 3, the literal coding can take advantage of this property in the uncompressed data."
+msgstr "文字編碼假設前一個未壓縮位元組的最高 I<lc> 個位元與下一個位元組有所關聯。例如，在典型的英文文字中，大寫字母後常接小寫字母，而小寫字母後通常也是小寫字母。在 US-ASCII 字元集裡，大寫字母的最高三個位元為 010，小寫字母則為 011。當 I<lc> 至少為 3 時，文字編碼便能利用未壓縮資料的這項特性。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The default value (3) is usually good.  If you want maximum compression, test B<lc=4>.  Sometimes it helps a little, and sometimes it makes compression worse.  If it makes it worse, test B<lc=2> too."
+msgstr "預設值（3）通常就很好。若你想要最大程度的壓縮，請試試 B<lc=4>。有時它會帶來一點幫助，有時反而使壓縮變差。若結果變差，也請試試 B<lc=2>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<lp=>I<lp>"
+msgstr "B<lp=>I<lp>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the number of literal position bits.  The minimum is 0 and the maximum is 4; the default is 0."
+msgstr "指定文字位置位元數。最小值為 0，最大值為 4；預設值為 0。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<Lp> affects what kind of alignment in the uncompressed data is assumed when encoding literals.  See I<pb> below for more information about alignment."
+msgstr "I<Lp> 會影響編碼文字時，對未壓縮資料的對齊方式所做的假設。關於對齊的更多資訊，請參閱下文的 I<pb>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<pb=>I<pb>"
+msgstr "B<pb=>I<pb>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the number of position bits.  The minimum is 0 and the maximum is 4; the default is 2."
+msgstr "指定位置位元數。最小值為 0，最大值為 4；預設值為 2。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<Pb> affects what kind of alignment in the uncompressed data is assumed in general.  The default means four-byte alignment (2^I<pb>=2^2=4), which is often a good choice when there's no better guess."
+msgstr "I<Pb> 一般來說會影響對未壓縮資料的對齊方式所做的假設。預設值代表四個位元組對齊（2^I<pb>=2^2=4），在沒有更好的推測時，這通常是個不錯的選擇。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When the alignment is known, setting I<pb> accordingly may reduce the file size a little.  For example, with text files having one-byte alignment (US-ASCII, ISO-8859-*, UTF-8), setting B<pb=0> can improve compression slightly.  For UTF-16 text, B<pb=1> is a good choice.  If the alignment is an odd number like 3 bytes, B<pb=0> might be the best choice."
+msgstr "當對齊方式已知時，相應地設定 I<pb> 可略微減少檔案大小。例如，對齊方式為一個位元組的文字檔案（US-ASCII、ISO-8859-*、UTF-8），設定 B<pb=0> 可略微改善壓縮。對 UTF-16 文字而言，B<pb=1> 是個不錯的選擇。若對齊方式像 3 個位元組這樣的奇數，B<pb=0> 可能是最佳的選擇。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Even though the assumed alignment can be adjusted with I<pb> and I<lp>, LZMA1 and LZMA2 still slightly favor 16-byte alignment.  It might be worth taking into account when designing file formats that are likely to be often compressed with LZMA1 or LZMA2."
+msgstr "即使可用 I<pb> 與 I<lp> 調整所假設的對齊方式，LZMA1 與 LZMA2 仍略偏好 16 個位元組的對齊。設計可能經常以 LZMA1 或 LZMA2 壓縮的檔案格式時，值得將這點納入考量。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<mf=>I<mf>"
+msgstr "B<mf=>I<mf>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Match finder has a major effect on encoder speed, memory usage, and compression ratio.  Usually Hash Chain match finders are faster than Binary Tree match finders.  The default depends on the I<preset>: 0 uses B<hc3>, 1\\(en3 use B<hc4>, and the rest use B<bt4>."
+msgstr "比對器對編碼器速度、記憶體用量與壓縮率有重大影響。雜湊鏈比對器通常比二元樹比對器快。預設值取決於 I<preset>：0 使用 B<hc3>，1\\(en3 使用 B<hc4>，其餘則使用 B<bt4>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The following match finders are supported.  The memory usage formulas below are rough approximations, which are closest to the reality when I<dict> is a power of two."
+msgstr "支援下列比對器。以下的記憶體用量公式為概略估計，當 I<dict> 為 2 的冪次時最接近實際情況。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<hc3>"
+msgstr "B<hc3>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Hash Chain with 2- and 3-byte hashing"
+msgstr "採用 2 位元組與 3 位元組雜湊的雜湊鏈"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Minimum value for I<nice>: 3"
+msgstr "I<nice> 的最小值：3"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Memory usage:"
+msgstr "記憶體用量："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 7.5 (if I<dict> E<lt>= 16 MiB);"
+msgstr "I<dict> * 7.5（若 I<dict> E<lt>= 16 MiB）；"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 5.5 + 64 MiB (if I<dict> E<gt> 16 MiB)"
+msgstr "I<dict> * 5.5 + 64 MiB（若 I<dict> E<gt> 16 MiB）"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<hc4>"
+msgstr "B<hc4>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Hash Chain with 2-, 3-, and 4-byte hashing"
+msgstr "採用 2、3 與 4 位元組雜湊的雜湊鏈"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Minimum value for I<nice>: 4"
+msgstr "I<nice> 的最小值：4"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 7.5 (if I<dict> E<lt>= 32 MiB);"
+msgstr "I<dict> * 7.5（若 I<dict> E<lt>= 32 MiB）；"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 6.5 (if I<dict> E<gt> 32 MiB)"
+msgstr "I<dict> * 6.5（若 I<dict> E<gt> 32 MiB）"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<bt2>"
+msgstr "B<bt2>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Binary Tree with 2-byte hashing"
+msgstr "採用 2 位元組雜湊的二元樹"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Minimum value for I<nice>: 2"
+msgstr "I<nice> 的最小值：2"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Memory usage: I<dict> * 9.5"
+msgstr "記憶體用量：I<dict> * 9.5"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<bt3>"
+msgstr "B<bt3>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Binary Tree with 2- and 3-byte hashing"
+msgstr "採用 2 位元組與 3 位元組雜湊的二元樹"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 11.5 (if I<dict> E<lt>= 16 MiB);"
+msgstr "I<dict> * 11.5（若 I<dict> E<lt>= 16 MiB）；"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 9.5 + 64 MiB (if I<dict> E<gt> 16 MiB)"
+msgstr "I<dict> * 9.5 + 64 MiB（若 I<dict> E<gt> 16 MiB）"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<bt4>"
+msgstr "B<bt4>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Binary Tree with 2-, 3-, and 4-byte hashing"
+msgstr "採用 2、3 與 4 位元組雜湊的二元樹"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 11.5 (if I<dict> E<lt>= 32 MiB);"
+msgstr "I<dict> * 11.5（若 I<dict> E<lt>= 32 MiB）；"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<dict> * 10.5 (if I<dict> E<gt> 32 MiB)"
+msgstr "I<dict> * 10.5（若 I<dict> E<gt> 32 MiB）"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<mode=>I<mode>"
+msgstr "B<mode=>I<mode>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compression I<mode> specifies the method to analyze the data produced by the match finder.  Supported I<modes> are B<fast> and B<normal>.  The default is B<fast> for I<presets> 0\\(en3 and B<normal> for I<presets> 4\\(en9."
+msgstr "壓縮 I<mode> 指定用來分析比對器所產生資料的方法。支援的 I<modes> 為 B<fast> 與 B<normal>。I<presets> 0\\(en3 的預設值是 B<fast>，I<presets> 4\\(en9 的預設值則是 B<normal>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Usually B<fast> is used with Hash Chain match finders and B<normal> with Binary Tree match finders.  This is also what the I<presets> do."
+msgstr "通常雜湊鏈比對器會搭配 B<fast>，二元樹比對器則搭配 B<normal>。I<presets> 也是如此。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<nice=>I<nice>"
+msgstr "B<nice=>I<nice>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify what is considered to be a nice length for a match.  Once a match of at least I<nice> bytes is found, the algorithm stops looking for possibly better matches."
+msgstr "指定被視為理想長度的比對長度。一旦找到至少 I<nice> 個位元組的比對，演算法便停止尋找可能更好的比對。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<Nice> can be 2\\(en273 bytes.  Higher values tend to give better compression ratio at the expense of speed.  The default depends on the I<preset>."
+msgstr "I<Nice> 可為 2\\(en273 個位元組。較高的值通常能以速度為代價換取更好的壓縮率。預設值取決於 I<preset>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<depth=>I<depth>"
+msgstr "B<depth=>I<depth>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the maximum search depth in the match finder.  The default is the special value of 0, which makes the compressor determine a reasonable I<depth> from I<mf> and I<nice>."
+msgstr "指定比對器中的最大搜尋深度。預設值為特殊值 0，這會讓壓縮器依 I<mf> 與 I<nice> 決定合理的 I<depth>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Reasonable I<depth> for Hash Chains is 4\\(en100 and 16\\(en1000 for Binary Trees.  Using very high values for I<depth> can make the encoder extremely slow with some files.  Avoid setting the I<depth> over 1000 unless you are prepared to interrupt the compression in case it is taking far too long."
+msgstr "雜湊鏈的合理 I<depth> 為 4\\(en100，二元樹則為 16\\(en1000。對某些檔案使用非常高的 I<depth> 值，可能會使編碼器極度緩慢。除非你已準備好在壓縮耗時過久時中斷它，否則請避免將 I<depth> 設為超過 1000。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When decoding raw streams (B<--format=raw>), LZMA2 needs only the dictionary I<size>.  LZMA1 needs also I<lc>, I<lp>, and I<pb>."
+msgstr "解碼原始串流（B<--format=raw>）時，LZMA2 只需要字典 I<size>。LZMA1 還需要 I<lc>、I<lp> 與 I<pb>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--x86>[B<=>I<options>]"
+msgstr "B<--x86>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--arm>[B<=>I<options>]"
+msgstr "B<--arm>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--armthumb>[B<=>I<options>]"
+msgstr "B<--armthumb>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--arm64>[B<=>I<options>]"
+msgstr "B<--arm64>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--powerpc>[B<=>I<options>]"
+msgstr "B<--powerpc>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--ia64>[B<=>I<options>]"
+msgstr "B<--ia64>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--sparc>[B<=>I<options>]"
+msgstr "B<--sparc>[B<=>I<options>]"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--riscv>[B<=>I<options>]"
+msgstr "B<--riscv>[B<=>I<options>]"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Add a branch/call/jump (BCJ) filter to the filter chain.  These filters can be used only as a non-last filter in the filter chain."
+msgstr "將分支／呼叫／跳轉（BCJ）過濾器加入過濾器鏈。這些過濾器只能作為過濾器鏈中的非最後一個過濾器。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "A BCJ filter converts relative addresses in the machine code to their absolute counterparts.  This doesn't change the size of the data but it increases redundancy, which can help LZMA2 to produce 0\\(en15\\ % smaller B<.xz> file.  The BCJ filters are always reversible, so using a BCJ filter for wrong type of data doesn't cause any data loss, although it may make the compression ratio slightly worse.  The BCJ filters are very fast and use an insignificant amount of memory."
+msgstr "BCJ 過濾器會將機器碼中的相對位址轉換為其絕對對應位址。這不會改變資料大小，卻會增加重複性，有助於 LZMA2 產生小 0\\(en15\\ % 的 B<.xz> 檔案。BCJ 過濾器永遠是可逆的，因此對錯誤類型的資料使用 BCJ 過濾器不會造成任何資料遺失，儘管可能使壓縮率略微變差。BCJ 過濾器速度非常快，且只佔用微不足道的記憶體。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "These BCJ filters have known problems related to the compression ratio:"
+msgstr "這些 BCJ 過濾器有已知的壓縮率相關問題："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Some types of files containing executable code (for example, object files, static libraries, and Linux kernel modules)  have the addresses in the instructions filled with filler values.  These BCJ filters will still do the address conversion, which will make the compression worse with these files."
+msgstr "某些含有可執行碼的檔案類型（例如目的檔、靜態函式庫與 Linux 核心模組），其指令中的位址會填入填充值。這些 BCJ 過濾器仍會進行位址轉換，使得這類檔案的壓縮結果變差。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If a BCJ filter is applied on an archive, it is possible that it makes the compression ratio worse than not using a BCJ filter.  For example, if there are similar or even identical executables then filtering will likely make the files less similar and thus compression is worse.  The contents of non-executable files in the same archive can matter too.  In practice one has to try with and without a BCJ filter to see which is better in each situation."
+msgstr "若對封裝檔套用 BCJ 過濾器，壓縮率可能比不使用 BCJ 過濾器更差。例如，若其中有相似甚至完全相同的執行檔，過濾很可能會讓這些檔案變得較不相似，因而使壓縮結果變差。同一封裝檔中非執行檔的內容也可能有影響。實務上必須分別在有、無 BCJ 過濾器的情況下試驗，才能知道哪種情況較好。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Different instruction sets have different alignment: the executable file must be aligned to a multiple of this value in the input data to make the filter work."
+msgstr "不同指令集有不同的對齊要求：輸入資料中的可執行檔必須對齊到此值的倍數，過濾器才能正常運作。"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Filter"
+msgstr "過濾器"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Alignment"
+msgstr "對齊"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Notes"
+msgstr "備註"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "x86"
+msgstr "x86"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "32-bit or 64-bit x86"
+msgstr "32 位元或 64 位元 x86"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "ARM"
+msgstr "ARM"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "ARM-Thumb"
+msgstr "ARM-Thumb"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "ARM64"
+msgstr "ARM64"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "4096-byte alignment is best"
+msgstr "以 4096 位元組對齊最佳"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "PowerPC"
+msgstr "PowerPC"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Big endian only"
+msgstr "僅支援大端序"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "IA-64"
+msgstr "IA-64"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "16"
+msgstr "16"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Itanium"
+msgstr "Itanium"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "SPARC"
+msgstr "SPARC"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "RISC-V"
+msgstr "RISC-V"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since the BCJ-filtered data is usually compressed with LZMA2, the compression ratio may be improved slightly if the LZMA2 options are set to match the alignment of the selected BCJ filter.  Examples:"
+msgstr "由於經 BCJ 過濾的資料通常以 LZMA2 壓縮，若將 LZMA2 選項設成與所選 BCJ 過濾器的對齊方式相符，壓縮率可能會略微改善。範例："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "IA-64 filter has 16-byte alignment so B<pb=4,lp=4,lc=0> is good with LZMA2 (2^4=16)."
+msgstr "IA-64 過濾器為 16 位元組對齊，因此 B<pb=4,lp=4,lc=0> 搭配 LZMA2（2^4=16）效果良好。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "RISC-V code has 2-byte or 4-byte alignment depending on whether the file contains 16-bit compressed instructions (the C extension).  When 16-bit instructions are used, B<pb=2,lp=1,lc=3> or B<pb=1,lp=1,lc=3> is good.  When 16-bit instructions aren't present, B<pb=2,lp=2,lc=2> is the best.  B<readelf -h> can be used to check if \"RVC\" appears on the \"Flags\" line."
+msgstr "RISC-V 程式碼的對齊方式為 2 位元組或 4 位元組，取決於檔案是否含有 16 位元壓縮指令（C 擴充）。使用 16 位元指令時，B<pb=2,lp=1,lc=3> 或 B<pb=1,lp=1,lc=3> 效果良好。沒有 16 位元指令時，B<pb=2,lp=2,lc=2> 是最佳的。可用 B<readelf -h> 檢查「Flags」那一行是否出現「RVC」。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "ARM64 is always 4-byte aligned so B<pb=2,lp=2,lc=2> is the best."
+msgstr "ARM64 一律為 4 位元組對齊，因此 B<pb=2,lp=2,lc=2> 是最佳的。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The x86 filter is an exception.  It's usually good to stick to LZMA2's defaults (B<pb=2,lp=0,lc=3>)  when compressing x86 executables."
+msgstr "x86 過濾器是個例外。壓縮 x86 執行檔時，通常維持 LZMA2 的預設值（B<pb=2,lp=0,lc=3>）較好。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "All BCJ filters support the same I<options>:"
+msgstr "所有 BCJ 過濾器都支援同一組 I<options>："
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<start=>I<offset>"
+msgstr "B<start=>I<offset>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the start I<offset> that is used when converting between relative and absolute addresses.  The I<offset> must be a multiple of the alignment of the filter (see the table above).  The default is zero.  In practice, the default is good; specifying a custom I<offset> is almost never useful."
+msgstr "指定在相對位址與絕對位址之間轉換時所使用的起始 I<offset>。I<offset> 必須是過濾器對齊值的倍數（請參閱上表）。預設值為零。實務上預設值就很好；指定自訂 I<offset> 幾乎從來沒有用處。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--delta>[B<=>I<options>]"
+msgstr "B<--delta>[B<=>I<options>]"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Add the Delta filter to the filter chain.  The Delta filter can be only used as a non-last filter in the filter chain."
+msgstr "將 Delta 過濾器加入過濾器鏈。Delta 過濾器只能作為過濾器鏈中的非最後一個過濾器。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Currently only simple byte-wise delta calculation is supported.  It can be useful when compressing, for example, uncompressed bitmap images or uncompressed PCM audio.  However, special purpose algorithms may give significantly better results than Delta + LZMA2.  This is true especially with audio, which compresses faster and better, for example, with B<flac>(1)."
+msgstr "目前只支援簡單的逐位元組差分計算。壓縮未壓縮的點陣圖影像或未壓縮的 PCM 音訊時，這可能會有幫助。不過，專用演算法可能比 Delta + LZMA2 產生顯著更好的結果。音訊尤其如此，例如使用 B<flac>(1) 就壓縮得更快也更好。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Supported I<options>:"
+msgstr "支援的 I<options>："
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<dist=>I<distance>"
+msgstr "B<dist=>I<distance>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Specify the I<distance> of the delta calculation in bytes.  I<distance> must be 1\\(en256.  The default is 1."
+msgstr "指定差分計算的 I<distance>，以位元組為單位。I<distance> 必須為 1\\(en256。預設值為 1。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "For example, with B<dist=2> and eight-byte input A1 B1 A2 B3 A3 B5 A4 B7, the output will be A1 B1 01 02 01 02 01 02."
+msgstr "例如，使用 B<dist=2> 且八個位元組的輸入為 A1 B1 A2 B3 A3 B5 A4 B7 時，輸出會是 A1 B1 01 02 01 02 01 02。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Other options"
+msgstr "其他選項"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-q>, B<--quiet>"
+msgstr "B<-q>、B<--quiet>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Suppress warnings and notices.  Specify this twice to suppress errors too.  This option has no effect on the exit status.  That is, even if a warning was suppressed, the exit status to indicate a warning is still used."
+msgstr "抑制警告與提示。指定兩次可連錯誤一併抑制。此選項對結束狀態沒有影響。也就是說，即使警告被抑制了，仍會使用表示警告的結束狀態。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-v>, B<--verbose>"
+msgstr "B<-v>、B<--verbose>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Be verbose.  If standard error is connected to a terminal, B<xz> will display a progress indicator.  Specifying B<--verbose> twice will give even more verbose output."
+msgstr "輸出詳細資訊。若標準錯誤連接的是終端機，B<xz> 便會顯示進度指示器。指定兩次 B<--verbose> 會產生更詳細的輸出。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The progress indicator shows the following information:"
+msgstr "進度指示器會顯示下列資訊："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Completion percentage is shown if the size of the input file is known.  That is, the percentage cannot be shown in pipes."
+msgstr "若已知輸入檔案大小，便會顯示完成百分比。也就是說，在管線中無法顯示百分比。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Amount of compressed data produced (compressing)  or consumed (decompressing)."
+msgstr "已產生的壓縮資料量（壓縮時），或已消耗的壓縮資料量（解壓縮時）。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Amount of uncompressed data consumed (compressing)  or produced (decompressing)."
+msgstr "已消耗的未壓縮資料量（壓縮時），或已產生的未壓縮資料量（解壓縮時）。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compression ratio, which is calculated by dividing the amount of compressed data processed so far by the amount of uncompressed data processed so far."
+msgstr "壓縮率，以目前已處理的壓縮資料量除以目前已處理的未壓縮資料量計算而得。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compression or decompression speed.  This is measured as the amount of uncompressed data consumed (compression) or produced (decompression) per second.  It is shown after a few seconds have passed since B<xz> started processing the file."
+msgstr "壓縮或解壓縮速度。以每秒消耗（壓縮）或產生（解壓縮）的未壓縮資料量計算。會在 B<xz> 開始處理檔案數秒之後顯示。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Elapsed time in the format M:SS or H:MM:SS."
+msgstr "經過時間，格式為 M:SS 或 H:MM:SS。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Estimated remaining time is shown only when the size of the input file is known and a couple of seconds have already passed since B<xz> started processing the file.  The time is shown in a less precise format which never has any colons, for example, 2 min 30 s."
+msgstr "只有在已知輸入檔案大小，且 B<xz> 開始處理檔案數秒之後，才會顯示預估的剩餘時間。時間以精確度較低的格式顯示，且完全不含冒號，例如 2 min 30 s。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When standard error is not a terminal, B<--verbose> will make B<xz> print the filename, compressed size, uncompressed size, compression ratio, and possibly also the speed and elapsed time on a single line to standard error after compressing or decompressing the file.  The speed and elapsed time are included only when the operation took at least a few seconds.  If the operation didn't finish, for example, due to user interruption, also the completion percentage is printed if the size of the input file is known."
+msgstr "當標準錯誤不是終端機時，B<--verbose> 會讓 B<xz> 在壓縮或解壓縮檔案之後，將檔名、壓縮後大小、未壓縮大小、壓縮率，以及可能的速率與經過時間，以單行列印到標準錯誤。只有當操作至少耗費數秒時，才會包含速率與經過時間。若操作未完成（例如因使用者中斷），且已知輸入檔案大小，則也會列印完成百分比。"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-Q>, B<--no-warn>"
+msgstr "B<-Q>、B<--no-warn>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Don't set the exit status to 2 even if a condition worth a warning was detected.  This option doesn't affect the verbosity level, thus both B<--quiet> and B<--no-warn> have to be used to not display warnings and to not alter the exit status."
+msgstr "即使偵測到值得警告的情況，也不要將結束狀態設為 2。此選項不影響詳細程度，因此必須同時使用 B<--quiet> 與 B<--no-warn>，才能既不顯示警告又不改變結束狀態。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--robot>"
+msgstr "B<--robot>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Print messages in a machine-parsable format.  This is intended to ease writing frontends that want to use B<xz> instead of liblzma, which may be the case with various scripts.  The output with this option enabled is meant to be stable across B<xz> releases.  See the section B<ROBOT MODE> for details."
+msgstr "以機器可解析的格式列印訊息。這是為了讓各種指令碼更容易撰寫改用 B<xz> 而非 liblzma 的前端程式。啟用此選項後的輸出，設計上會在各個 B<xz> 版本間保持穩定。詳情請參閱 B<ROBOT MODE> 一節。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<--info-memory>"
+msgstr "B<--info-memory>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Display, in human-readable format, how much physical memory (RAM)  and how many processor threads B<xz> thinks the system has and the memory usage limits for compression and decompression, and exit successfully."
+msgstr "以人類可讀的格式顯示 B<xz> 所判斷的系統實體記憶體（RAM）容量與處理器執行緒數目，以及壓縮與解壓縮的記憶體用量限制，然後成功結束。"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-h>, B<--help>"
+msgstr "B<-h>、B<--help>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Display a help message describing the most commonly used options, and exit successfully."
+msgstr "顯示說明訊息，介紹最常用的選項，然後成功結束。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<-H>, B<--long-help>"
+msgstr "B<-H>、B<--long-help>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Display a help message describing all features of B<xz>, and exit successfully"
+msgstr "顯示說明訊息，介紹 B<xz> 的所有功能，然後成功結束"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "B<-V>, B<--version>"
+msgstr "B<-V>、B<--version>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Display the version number of B<xz> and liblzma in human readable format.  To get machine-parsable output, specify B<--robot> before B<--version>."
+msgstr "以人類可讀的格式顯示 B<xz> 與 liblzma 的版本號碼。若要取得機器可解析的輸出，請在 B<--version> 之前指定 B<--robot>。"
+
+#. type: SH
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "ROBOT MODE"
+msgstr "ROBOT 模式"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The robot mode is activated with the B<--robot> option.  It makes the output of B<xz> easier to parse by other programs.  Currently B<--robot> is supported only together with B<--list>, B<--filters-help>, B<--info-memory>, and B<--version>.  It will be supported for compression and decompression in the future."
+msgstr "Robot 模式以 B<--robot> 選項啟用。它讓其他程式更容易解析 B<xz> 的輸出。目前 B<--robot> 只能與 B<--list>、B<--filters-help>、B<--info-memory> 與 B<--version> 搭配使用。未來將支援壓縮與解壓縮。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "List mode"
+msgstr "列表模式"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz --robot --list> uses tab-separated output.  The first column of every line has a string that indicates the type of the information found on that line:"
+msgstr "B<xz --robot --list> 採用以製表符分隔的輸出。每一行的第一欄都有一個字串，用來表示該行所含資訊的類型："
+
+#.  TRANSLATORS: The bold strings B<name>, B<file>, B<stream>, B<block>,
+#.  B<summary>, and B<totals> are produced by the xz tool for scripts to
+#.  parse, thus the untranslated strings must be included in the translated
+#.  man page. It may be useful to provide a translated string in parenthesis
+#.  without bold, for example: "B<name> (nimi)"
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<name>"
+msgstr "B<name>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This is always the first line when starting to list a file.  The second column on the line is the filename."
+msgstr "開始列出檔案時，這永遠是第一行。該行的第二欄是檔名。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<file>"
+msgstr "B<file>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This line contains overall information about the B<.xz> file.  This line is always printed after the B<name> line."
+msgstr "此行含有關於 B<.xz> 檔案的整體資訊。它永遠列印在 B<name> 行之後。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<stream>"
+msgstr "B<stream>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This line type is used only when B<--verbose> was specified.  There are as many B<stream> lines as there are streams in the B<.xz> file."
+msgstr "只有在指定 B<--verbose> 時才會使用這種行類型。B<.xz> 檔案中有多少個串流，就會有多少行 B<stream>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<block>"
+msgstr "B<block>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This line type is used only when B<--verbose> was specified.  There are as many B<block> lines as there are blocks in the B<.xz> file.  The B<block> lines are shown after all the B<stream> lines; different line types are not interleaved."
+msgstr "只有在指定 B<--verbose> 時才會使用這種行類型。B<.xz> 檔案中有多少個區塊，就會有多少行 B<block>。所有 B<block> 行都會顯示在 B<stream> 行之後；不同類型的行不會交錯出現。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<summary>"
+msgstr "B<summary>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This line type is used only when B<--verbose> was specified twice.  This line is printed after all B<block> lines.  Like the B<file> line, the B<summary> line contains overall information about the B<.xz> file."
+msgstr "只有當 B<--verbose> 被指定兩次時才會使用這種行類型。此行會列印在所有 B<block> 行之後。與 B<file> 行相同，B<summary> 行含有關於 B<.xz> 檔案的整體資訊。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<totals>"
+msgstr "B<totals>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This line is always the very last line of the list output.  It shows the total counts and sizes."
+msgstr "這永遠是列表輸出的最後一行。它會顯示總數與總大小。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The columns of the B<file> lines:"
+msgstr "B<file> 行的各欄："
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "2."
+msgstr "2."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Number of streams in the file"
+msgstr "檔案中的串流數目"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "3."
+msgstr "3."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Total number of blocks in the stream(s)"
+msgstr "串流中的區塊總數"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "4."
+msgstr "4."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compressed size of the file"
+msgstr "檔案的壓縮後大小"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "5."
+msgstr "5."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Uncompressed size of the file"
+msgstr "檔案的未壓縮大小"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "6."
+msgstr "6."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compression ratio, for example, B<0.123>.  If ratio is over 9.999, three dashes (B<--->)  are displayed instead of the ratio."
+msgstr "壓縮率，例如 B<0.123>。若比值超過 9.999，則會顯示三個連字號（B<--->）取代比值。"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "7."
+msgstr "7."
+
+#.  TRANSLATORS: Don't translate the bold strings B<None>, B<CRC32>,
+#.  B<CRC64>, B<SHA-256>, or B<Unknown-> here. In robot mode, xz produces
+#.  them in untranslated form for scripts to parse.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Comma-separated list of integrity check names.  The following strings are used for the known check types: B<None>, B<CRC32>, B<CRC64>, and B<SHA-256>.  For unknown check types, B<Unknown->I<N> is used, where I<N> is the Check ID as a decimal number (one or two digits)."
+msgstr "以逗號分隔的完整性檢查名稱清單。已知檢查類型使用下列字串：B<None>、B<CRC32>、B<CRC64> 與 B<SHA-256>。未知的檢查類型則使用 B<Unknown->I<N>，其中 I<N> 是以十進位表示的 Check ID（一或兩位數字）。"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "8."
+msgstr "8."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Total size of stream padding in the file"
+msgstr "檔案中串流填充的總大小"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The columns of the B<stream> lines:"
+msgstr "B<stream> 行的各欄："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Stream number (the first stream is 1)"
+msgstr "串流編號（第一個串流為 1）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Number of blocks in the stream"
+msgstr "串流中的區塊數目"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compressed start offset"
+msgstr "壓縮後起始位移"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Uncompressed start offset"
+msgstr "未壓縮起始位移"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compressed size (does not include stream padding)"
+msgstr "壓縮後大小（不含串流填充）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Uncompressed size"
+msgstr "未壓縮大小"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compression ratio"
+msgstr "壓縮率"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "9."
+msgstr "9."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Name of the integrity check"
+msgstr "完整性檢查的名稱"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "10."
+msgstr "10."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Size of stream padding"
+msgstr "串流填充的大小"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The columns of the B<block> lines:"
+msgstr "B<block> 行的各欄："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Number of the stream containing this block"
+msgstr "含有此區塊的串流編號"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Block number relative to the beginning of the stream (the first block is 1)"
+msgstr "相對於串流開頭的區塊編號（第一個區塊為 1）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Block number relative to the beginning of the file"
+msgstr "相對於檔案開頭的區塊編號"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compressed start offset relative to the beginning of the file"
+msgstr "相對於檔案開頭的壓縮後起始位移"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Uncompressed start offset relative to the beginning of the file"
+msgstr "相對於檔案開頭的未壓縮起始位移"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Total compressed size of the block (includes headers)"
+msgstr "區塊的壓縮後總大小（含標頭）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If B<--verbose> was specified twice, additional columns are included on the B<block> lines.  These are not displayed with a single B<--verbose>, because getting this information requires many seeks and can thus be slow:"
+msgstr "若 B<--verbose> 被指定兩次，B<block> 行會加入額外的欄位。只指定一次 B<--verbose> 時不會顯示這些欄位，因為取得這些資訊需要許多定位操作，因此可能較慢："
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "11."
+msgstr "11."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Value of the integrity check in hexadecimal"
+msgstr "完整性檢查的值（十六進位）"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "12."
+msgstr "12."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Block header size"
+msgstr "區塊標頭大小"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "13."
+msgstr "13."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Block flags: B<c> indicates that compressed size is present, and B<u> indicates that uncompressed size is present.  If the flag is not set, a dash (B<->)  is shown instead to keep the string length fixed.  New flags may be added to the end of the string in the future."
+msgstr "區塊旗標：B<c> 表示含有壓縮後大小，B<u> 表示含有未壓縮大小。若未設定該旗標，則顯示連字號（B<->）以維持字串長度固定。未來可能會在字串尾端加入新的旗標。"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "14."
+msgstr "14."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Size of the actual compressed data in the block (this excludes the block header, block padding, and check fields)"
+msgstr "區塊中實際壓縮資料的大小（不含區塊標頭、區塊填充與檢查欄位）"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "15."
+msgstr "15."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Amount of memory (in bytes) required to decompress this block with this B<xz> version"
+msgstr "以這個 B<xz> 版本解壓縮此區塊所需的記憶體量（以位元組為單位）"
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "16."
+msgstr "16."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Filter chain.  Note that most of the options used at compression time cannot be known, because only the options that are needed for decompression are stored in the B<.xz> headers."
+msgstr "過濾器鏈。請注意，壓縮時使用的大部分選項都無法得知，因為只有解壓縮所需的選項才會儲存在 B<.xz> 標頭中。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The columns of the B<summary> lines:"
+msgstr "B<summary> 行的各欄："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Amount of memory (in bytes) required to decompress this file with this B<xz> version"
+msgstr "以這個 B<xz> 版本解壓縮此檔案所需的記憶體量（以位元組為單位）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<yes> or B<no> indicating if all block headers have both compressed size and uncompressed size stored in them"
+msgstr "B<yes> 或 B<no>，表示所有區塊標頭是否都同時儲存了壓縮後大小與未壓縮大小"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<Since> B<xz> I<5.1.2alpha:>"
+msgstr "I<Since> B<xz> I<5.1.2alpha:>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Minimum B<xz> version required to decompress the file"
+msgstr "解壓縮此檔案所需的最低 B<xz> 版本"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The columns of the B<totals> line:"
+msgstr "B<totals> 行的各欄："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Number of streams"
+msgstr "串流數目"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Number of blocks"
+msgstr "區塊數目"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compressed size"
+msgstr "壓縮後大小"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Average compression ratio"
+msgstr "平均壓縮率"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Comma-separated list of integrity check names that were present in the files"
+msgstr "檔案中出現過的完整性檢查名稱，以逗號分隔的清單"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Stream padding size"
+msgstr "串流填充大小"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Number of files.  This is here to keep the order of the earlier columns the same as on B<file> lines."
+msgstr "檔案數目。保留此欄是為了讓前面各欄的順序與 B<file> 行相同。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If B<--verbose> was specified twice, additional columns are included on the B<totals> line:"
+msgstr "若 B<--verbose> 被指定兩次，B<totals> 行會加入額外的欄位："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Maximum amount of memory (in bytes) required to decompress the files with this B<xz> version"
+msgstr "以這個 B<xz> 版本解壓縮這些檔案所需的最大記憶體量（以位元組為單位）"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Future versions may add new line types and new columns can be added to the existing line types, but the existing columns won't be changed."
+msgstr "未來的版本可能會加入新的行類型，也可能在既有的行類型中加入新欄位，但既有欄位不會變更。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Filters help"
+msgstr "過濾器說明"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz --robot --filters-help> prints the supported filters in the following format:"
+msgstr "B<xz --robot --filters-help> 會以下列格式印出支援的過濾器："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<filter>B<:>I<option>B<=E<lt>>I<value>B<E<gt>,>I<option>B<=E<lt>>I<value>B<E<gt>>..."
+msgstr "I<filter>B<:>I<option>B<=E<lt>>I<value>B<E<gt>,>I<option>B<=E<lt>>I<value>B<E<gt>>..."
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<filter>"
+msgstr "I<filter>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Name of the filter"
+msgstr "過濾器名稱"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<option>"
+msgstr "I<option>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Name of a filter specific option"
+msgstr "過濾器專屬選項的名稱"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<value>"
+msgstr "I<value>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Numeric I<value> ranges appear as B<E<lt>>I<min>B<->I<max>B<E<gt>>.  String I<value> choices are shown within B<E<lt> E<gt>> and separated by a B<|> character."
+msgstr "數值 I<value> 的範圍會顯示為 B<E<lt>>I<min>B<->I<max>B<E<gt>>。字串 I<value> 的選項會顯示在 B<E<lt> E<gt>> 之間，並以 B<|> 字元分隔。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Each filter is printed on its own line."
+msgstr "每個過濾器會各自印在一行。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Memory limit information"
+msgstr "記憶體限制資訊"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz --robot --info-memory> prints a single line with multiple tab-separated columns:"
+msgstr "B<xz --robot --info-memory> 會印出單一行，其中含多個以製表符分隔的欄位："
+
+#. type: IP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "1."
+msgstr "1."
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Total amount of physical memory (RAM) in bytes."
+msgstr "實體記憶體（RAM）總量，以位元組為單位。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Memory usage limit for compression in bytes (B<--memlimit-compress>).  A special value of B<0> indicates the default setting which for single-threaded mode is the same as no limit."
+msgstr "壓縮時的記憶體用量限制，以位元組為單位（B<--memlimit-compress>）。特殊值 B<0> 表示預設設定，對單執行緒模式而言等同於不限制。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Memory usage limit for decompression in bytes (B<--memlimit-decompress>).  A special value of B<0> indicates the default setting which for single-threaded mode is the same as no limit."
+msgstr "解壓縮時的記憶體用量限制，以位元組為單位（B<--memlimit-decompress>）。特殊值 B<0> 表示預設設定，對單執行緒模式而言等同於不限制。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since B<xz> 5.3.4alpha: Memory usage for multi-threaded decompression in bytes (B<--memlimit-mt-decompress>).  This is never zero because a system-specific default value shown in the column 5 is used if no limit has been specified explicitly.  This is also never greater than the value in the column 3 even if a larger value has been specified with B<--memlimit-mt-decompress>."
+msgstr "自 B<xz> 5.3.4alpha 起：多執行緒解壓縮的記憶體用量，以位元組為單位（B<--memlimit-mt-decompress>）。若未明確指定限制，便會採用第 5 欄所顯示的依系統而定預設值，因此此值絕不會是零。即使以 B<--memlimit-mt-decompress> 指定了較大的值，此值也絕不會大於第 3 欄的值。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since B<xz> 5.3.4alpha: A system-specific default memory usage limit that is used to limit the number of threads when compressing with an automatic number of threads (B<--threads=0>)  and no memory usage limit has been specified (B<--memlimit-compress>).  This is also used as the default value for B<--memlimit-mt-decompress>."
+msgstr "自 B<xz> 5.3.4alpha 起：依系統而定的預設記憶體用量限制，當以自動執行緒數目（B<--threads=0>）壓縮且未指定記憶體用量限制（B<--memlimit-compress>）時，用來限制執行緒數目。此值也用作 B<--memlimit-mt-decompress> 的預設值。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Since B<xz> 5.3.4alpha: Number of available processor threads."
+msgstr "自 B<xz> 5.3.4alpha 起：可用的處理器執行緒數目。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "In the future, the output of B<xz --robot --info-memory> may have more columns, but never more than a single line."
+msgstr "未來 B<xz --robot --info-memory> 的輸出可能會有更多欄位，但永遠不會超過單一行。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Version"
+msgstr "版本"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz --robot --version> prints the version number of B<xz> and liblzma in the following format:"
+msgstr "B<xz --robot --version> 會以下列格式印出 B<xz> 與 liblzma 的版本號碼："
+
+#.  TRANSLATORS: Don't translate the uppercase XZ_VERSION or LIBLZMA_VERSION.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<XZ_VERSION=>I<XYYYZZZS>"
+msgstr "B<XZ_VERSION=>I<XYYYZZZS>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<LIBLZMA_VERSION=>I<XYYYZZZS>"
+msgstr "B<LIBLZMA_VERSION=>I<XYYYZZZS>"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<X>"
+msgstr "I<X>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Major version."
+msgstr "主要版本。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<YYY>"
+msgstr "I<YYY>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Minor version.  Even numbers are stable.  Odd numbers are alpha or beta versions."
+msgstr "次要版本。偶數為穩定版本，奇數為 alpha 或 beta 版本。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<ZZZ>"
+msgstr "I<ZZZ>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Patch level for stable releases or just a counter for development releases."
+msgstr "穩定發行版的修補層級，或開發發行版的單純計數。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "I<S>"
+msgstr "I<S>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Stability.  0 is alpha, 1 is beta, and 2 is stable.  I<S> should be always 2 when I<YYY> is even."
+msgstr "穩定性。0 為 alpha，1 為 beta，2 為穩定版。當 I<YYY> 為偶數時，I<S> 應永遠是 2。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "I<XYYYZZZS> are the same on both lines if B<xz> and liblzma are from the same XZ Utils release."
+msgstr "若 B<xz> 與 liblzma 來自同一次 XZ Utils 發行版，兩行的 I<XYYYZZZS> 會相同。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Examples: 4.999.9beta is B<49990091> and 5.0.0 is B<50000002>."
+msgstr "範例：4.999.9beta 是 B<49990091>，而 5.0.0 是 B<50000002>。"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1
+#, no-wrap
+msgid "EXIT STATUS"
+msgstr "結束狀態"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#, no-wrap
+msgid "B<0>"
+msgstr "B<0>"
+
+#. type: Plain text
+#: ../src/xz/xz.1 ../src/lzmainfo/lzmainfo.1
+msgid "All is good."
+msgstr "一切正常。"
+
+#. type: TP
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#, no-wrap
+msgid "B<1>"
+msgstr "B<1>"
+
+#. type: Plain text
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+msgid "An error occurred."
+msgstr "發生錯誤。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<2>"
+msgstr "B<2>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Something worth a warning occurred, but no actual errors occurred."
+msgstr "發生值得警告的情況，但沒有實際錯誤。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Notices (not warnings or errors) printed on standard error don't affect the exit status."
+msgstr "列印到標準錯誤的提示（非警告或錯誤）不影響結束狀態。"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "ENVIRONMENT"
+msgstr "環境變數"
+
+#.  TRANSLATORS: Don't translate the uppercase XZ_DEFAULTS or XZ_OPT.
+#.  They are names of environment variables.
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz> parses space-separated lists of options from the environment variables B<XZ_DEFAULTS> and B<XZ_OPT>, in this order, before parsing the options from the command line.  Note that only options are parsed from the environment variables; all non-options are silently ignored.  Parsing is done with B<getopt_long>(3)  which is used also for the command line arguments."
+msgstr "B<xz> 會先依序從環境變數 B<XZ_DEFAULTS> 與 B<XZ_OPT> 解析以空格分隔的選項清單，然後才解析命令列的選項。請注意，從環境變數只會解析選項；所有非選項的內容都會被無聲忽略。解析是以 B<getopt_long>(3) 進行，命令列引數也使用同一方式。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<Warning:> By setting these environment variables, one is effectively modifying programs and scripts that run B<xz>.  Most of the time it is safe to set memory usage limits, number of threads, and compression options via the environment variables.  However, some options can break scripts.  An obvious example is B<--help> which makes B<xz> show the help text instead of compressing or decompressing a file.  More subtle examples are B<--quiet> and B<--verbose>.  In many cases it works well to enable the progress indicator using B<--verbose>, but in some situations the extra messages create problems.  The verbosity level also affects the behavior of B<--list>."
+msgstr "B<警告：> 設定這些環境變數，實際上等同於修改執行 B<xz> 的程式與指令碼。大多數時候，透過環境變數設定記憶體用量限制、執行緒數目與壓縮選項是安全的。不過，某些選項可能會讓指令碼出問題。顯而易見的例子是 B<--help>，它會讓 B<xz> 顯示說明文字而不進行壓縮或解壓縮。較不顯而易見的例子則是 B<--quiet> 與 B<--verbose>。在許多情況下，用 B<--verbose> 啟用進度指示器的效果很好，但在某些狀況下，額外的訊息會造成問題。詳細程度也會影響 B<--list> 的行為。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<XZ_DEFAULTS>"
+msgstr "B<XZ_DEFAULTS>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "User-specific or system-wide default options.  Typically this is set in a shell initialization script to enable B<xz>'s memory usage limiter by default or set the default number of threads.  Excluding shell initialization scripts and similar special cases, scripts should never set or unset B<XZ_DEFAULTS>."
+msgstr "使用者專屬或全系統共用的預設選項。通常會在 shell 啟動指令碼中設定，用以預設啟用 B<xz> 的記憶體用量限制器或設定預設的執行緒數目。除 shell 啟動指令碼與類似的特殊情況外，指令碼絕不應設定或取消設定 B<XZ_DEFAULTS>。"
+
+#. type: TP
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "B<XZ_OPT>"
+msgstr "B<XZ_OPT>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "This is for passing options to B<xz> when it is not possible to set the options directly on the B<xz> command line.  This is the case when B<xz> is run by a script or tool, for example, GNU B<tar>(1):"
+msgstr "當無法直接於 B<xz> 命令列上設定選項時，可用此環境變數把選項傳給 B<xz>。例如當 B<xz> 是由指令碼或工具（像 GNU B<tar>(1)）執行時，就屬於這種情況："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
+msgstr "\\f(CRXZ_OPT=-2v tar caf foo.tar.xz foo\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Scripts may use B<XZ_OPT>, for example, to set script-specific default compression options.  It is still recommended to allow users to override B<XZ_OPT> if that is reasonable.  For example, in B<sh>(1)  scripts one may use something like this:"
+msgstr "指令碼可以使用 B<XZ_OPT>，例如設定指令碼專屬的預設壓縮選項。不過，若合理，仍建議允許使用者覆寫 B<XZ_OPT>。例如在 B<sh>(1) 指令碼中，可以使用類似這樣的寫法："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid ""
+"\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
+"export XZ_OPT\\fR\n"
+msgstr ""
+"\\f(CRXZ_OPT=${XZ_OPT-\"-7e\"}\n"
+"export XZ_OPT\\fR\n"
+
+#. type: SH
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "LZMA UTILS COMPATIBILITY"
+msgstr "與 LZMA UTILS 的相容性"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The command line syntax of B<xz> is practically a superset of B<lzma>, B<unlzma>, and B<lzcat> as found from LZMA Utils 4.32.x.  In most cases, it is possible to replace LZMA Utils with XZ Utils without breaking existing scripts.  There are some incompatibilities though, which may sometimes cause problems."
+msgstr "B<xz> 的命令列語法實際上是 LZMA Utils 4.32.x 中 B<lzma>、B<unlzma> 與 B<lzcat> 的超集。在多數情況下，都可以用 XZ Utils 取代 LZMA Utils 而不會破壞既有的指令碼。不過仍存在一些不相容之處，有時可能會造成問題。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Compression preset levels"
+msgstr "壓縮預設等級"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The numbering of the compression level presets is not identical in B<xz> and LZMA Utils.  The most important difference is how dictionary sizes are mapped to different presets.  Dictionary size is roughly equal to the decompressor memory usage."
+msgstr "壓縮等級預設值的編號方式，在 B<xz> 與 LZMA Utils 中並不相同。最大的差異在於字典大小如何對應到不同的預設值。字典大小大致等於解壓縮器的記憶體用量。"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Level"
+msgstr "等級"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "xz"
+msgstr "xz"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "LZMA Utils"
+msgstr "LZMA Utils"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "N/A"
+msgstr "不適用"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "64 KiB"
+msgstr "64 KiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "512 KiB"
+msgstr "512 KiB"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The dictionary size differences affect the compressor memory usage too, but there are some other differences between LZMA Utils and XZ Utils, which make the difference even bigger:"
+msgstr "字典大小的差異也會影響壓縮器的記憶體用量，不過 LZMA Utils 與 XZ Utils 之間還有一些其他差異，使差距更大："
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "LZMA Utils 4.32.x"
+msgstr "LZMA Utils 4.32.x"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "12 MiB"
+msgstr "12 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "26 MiB"
+msgstr "26 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "45 MiB"
+msgstr "45 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "83 MiB"
+msgstr "83 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "159 MiB"
+msgstr "159 MiB"
+
+#. type: tbl table
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "311 MiB"
+msgstr "311 MiB"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The default preset level in LZMA Utils is B<-7> while in XZ Utils it is B<-6>, so both use an 8 MiB dictionary by default."
+msgstr "LZMA Utils 的預設等級是 B<-7>，而 XZ Utils 則是 B<-6>，因此兩者預設都使用 8 MiB 字典。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Streamed vs. non-streamed .lzma files"
+msgstr "串流與非串流的 .lzma 檔案"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The uncompressed size of the file can be stored in the B<.lzma> header.  LZMA Utils does that when compressing regular files.  The alternative is to mark that uncompressed size is unknown and use end-of-payload marker to indicate where the decompressor should stop.  LZMA Utils uses this method when uncompressed size isn't known, which is the case, for example, in pipes."
+msgstr "檔案的未壓縮大小可以儲存在 B<.lzma> 標頭中。LZMA Utils 壓縮一般檔案時會這麼做。另一種做法是標記未壓縮大小未知，並使用資料結尾標記來指示解壓縮器應在哪裡停止。當未壓縮大小未知時（例如在管線中），LZMA Utils 就會採用這種方法。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xz> supports decompressing B<.lzma> files with or without end-of-payload marker, but all B<.lzma> files created by B<xz> will use end-of-payload marker and have uncompressed size marked as unknown in the B<.lzma> header.  This may be a problem in some uncommon situations.  For example, a B<.lzma> decompressor in an embedded device might work only with files that have known uncompressed size.  If you hit this problem, you need to use LZMA Utils or LZMA SDK to create B<.lzma> files with known uncompressed size."
+msgstr "B<xz> 支援解壓縮有或沒有資料結尾標記的 B<.lzma> 檔案，但 B<xz> 建立的所有 B<.lzma> 檔案都會使用資料結尾標記，並在 B<.lzma> 標頭中將未壓縮大小標記為未知。這在某些不常見的情況下可能會造成問題。舉例而言，內嵌裝置中的 B<.lzma> 解壓縮器可能只能處理未壓縮大小已知的檔案。若遇到這個問題，你必須使用 LZMA Utils 或 LZMA SDK 來建立未壓縮大小已知的 B<.lzma> 檔案。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Unsupported .lzma files"
+msgstr "不支援的 .lzma 檔案"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The B<.lzma> format allows I<lc> values up to 8, and I<lp> values up to 4.  LZMA Utils can decompress files with any I<lc> and I<lp>, but always creates files with B<lc=3> and B<lp=0>.  Creating files with other I<lc> and I<lp> is possible with B<xz> and with LZMA SDK."
+msgstr "B<.lzma> 格式允許 I<lc> 值最大為 8，I<lp> 值最大為 4。LZMA Utils 可以解壓縮具有任何 I<lc> 與 I<lp> 的檔案，但建立檔案時一律使用 B<lc=3> 與 B<lp=0>。使用其他 I<lc> 與 I<lp> 建立檔案，則可用 B<xz> 或 LZMA SDK 做到。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The implementation of the LZMA1 filter in liblzma requires that the sum of I<lc> and I<lp> must not exceed 4.  Thus, B<.lzma> files, which exceed this limitation, cannot be decompressed with B<xz>."
+msgstr "liblzma 中 LZMA1 過濾器的實作要求 I<lc> 與 I<lp> 的總和不得超過 4。因此，超出這項限制的 B<.lzma> 檔案無法以 B<xz> 解壓縮。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "LZMA Utils creates only B<.lzma> files which have a dictionary size of 2^I<n> (a power of 2) but accepts files with any dictionary size.  liblzma accepts only B<.lzma> files which have a dictionary size of 2^I<n> or 2^I<n> + 2^(I<n>-1).  This is to decrease false positives when detecting B<.lzma> files."
+msgstr "LZMA Utils 只會建立字典大小為 2^I<n>（2 的冪次）的 B<.lzma> 檔案，但可接受任何字典大小的檔案。liblzma 則只接受字典大小為 2^I<n> 或 2^I<n> + 2^(I<n>-1) 的 B<.lzma> 檔案。這是為了減少偵測 B<.lzma> 檔案時的誤判。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "These limitations shouldn't be a problem in practice, since practically all B<.lzma> files have been compressed with settings that liblzma will accept."
+msgstr "實務上這些限制不應造成問題，因為幾乎所有 B<.lzma> 檔案都是以 liblzma 能接受的設定壓縮而成。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Trailing garbage"
+msgstr "尾隨垃圾資料"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "When decompressing, LZMA Utils silently ignore everything after the first B<.lzma> stream.  In most situations, this is a bug.  This also means that LZMA Utils don't support decompressing concatenated B<.lzma> files."
+msgstr "解壓縮時，LZMA Utils 會無聲忽略第一個 B<.lzma> 串流之後的所有內容。在多數情況下，這是個缺陷。這也表示 LZMA Utils 不支援解壓縮串接而成的 B<.lzma> 檔案。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If there is data left after the first B<.lzma> stream, B<xz> considers the file to be corrupt unless B<--single-stream> was used.  This may break obscure scripts which have assumed that trailing garbage is ignored."
+msgstr "若第一個 B<.lzma> 串流之後還有殘留資料，除非使用了 B<--single-stream>，否則 B<xz> 會認為該檔案已損毀。這可能會讓某些預期尾隨垃圾資料會被忽略的冷門指令碼出問題。"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "NOTES"
+msgstr "備註"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Compressed output may vary"
+msgstr "壓縮後的輸出可能有所不同"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The exact compressed output produced from the same uncompressed input file may vary between XZ Utils versions even if compression options are identical.  This is because the encoder can be improved (faster or better compression)  without affecting the file format.  The output can vary even between different builds of the same XZ Utils version, if different build options are used."
+msgstr "即使壓縮選項完全相同，同一個未壓縮輸入檔案所產生的確切壓縮輸出，也可能因 XZ Utils 版本而異。這是因為編碼器可以在不影響檔案格式的前提下獲得改進（更快或壓縮更好）。若採用不同的建置選項，即使是同一個 XZ Utils 版本的不同組建，輸出也可能有所不同。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The above means that once B<--rsyncable> has been implemented, the resulting files won't necessarily be rsyncable unless both old and new files have been compressed with the same xz version.  This problem can be fixed if a part of the encoder implementation is frozen to keep rsyncable output stable across xz versions."
+msgstr "上述情況意味著，一旦 B<--rsyncable> 實作出來，除非新舊檔案都是以同一個 xz 版本壓縮的，否則所產生的檔案不一定能讓 rsync 有效率地同步。若凍結編碼器實作的某個部分，讓 rsyncable 輸出在各 xz 版本間維持穩定，就可以解決這個問題。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Embedded .xz decompressors"
+msgstr "內嵌的 .xz 解壓縮器"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Embedded B<.xz> decompressor implementations like XZ Embedded don't necessarily support files created with integrity I<check> types other than B<none> and B<crc32>.  Since the default is B<--check=crc64>, you must use B<--check=none> or B<--check=crc32> when creating files for embedded systems."
+msgstr "像 XZ Embedded 這類內嵌 B<.xz> 解壓縮器實作，未必支援以 B<none> 與 B<crc32> 以外的完整性 I<check> 類型建立的檔案。由於預設值為 B<--check=crc64>，為內嵌系統建立檔案時，必須使用 B<--check=none> 或 B<--check=crc32>。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Outside embedded systems, all B<.xz> format decompressors support all the I<check> types, or at least are able to decompress the file without verifying the integrity check if the particular I<check> is not supported."
+msgstr "在內嵌系統之外，所有 B<.xz> 格式的解壓縮器都支援全部的 I<check> 類型，或至少能在特定 I<check> 不受支援時，不驗證完整性檢查就完成解壓縮。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "XZ Embedded supports BCJ filters, but only with the default start offset."
+msgstr "XZ Embedded 支援 BCJ 過濾器，但僅限搭配預設的起始位移。"
+
+#. type: SH
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "EXAMPLES"
+msgstr "範例"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Basics"
+msgstr "基本用法"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Compress the file I<foo> into I<foo.xz> using the default compression level (B<-6>), and remove I<foo> if compression is successful:"
+msgstr "以預設壓縮等級（B<-6>）將檔案 I<foo> 壓縮成 I<foo.xz>，若壓縮成功則移除 I<foo>："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz foo\\fR\n"
+msgstr "\\f(CRxz foo\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Decompress I<bar.xz> into I<bar> and don't remove I<bar.xz> even if decompression is successful:"
+msgstr "將 I<bar.xz> 解壓縮成 I<bar>，即使解壓縮成功也不移除 I<bar.xz>："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz -dk bar.xz\\fR\n"
+msgstr "\\f(CRxz -dk bar.xz\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Create I<baz.tar.xz> with the preset B<-4e> (B<-4 --extreme>), which is slower than the default B<-6>, but needs less memory for compression and decompression (48\\ MiB and 5\\ MiB, respectively):"
+msgstr "以預設值 B<-4e>（B<-4 --extreme>）建立 I<baz.tar.xz>，它比預設的 B<-6> 慢，但壓縮與解壓縮所需的記憶體較少（分別為 48\\ MiB 與 5\\ MiB）："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
+msgstr "\\f(CRtar cf - baz | xz -4e E<gt> baz.tar.xz\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "A mix of compressed and uncompressed files can be decompressed to standard output with a single command:"
+msgstr "混合的已壓縮與未壓縮檔案，可用單一命令解壓縮到標準輸出："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
+msgstr "\\f(CRxz -dcf a.txt b.txt.xz c.txt d.txt.lzma E<gt> abcd.txt\\fR\n"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Parallel compression of many files"
+msgstr "平行壓縮大量檔案"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "On GNU and *BSD, B<find>(1)  and B<xargs>(1)  can be used to parallelize compression of many files:"
+msgstr "在 GNU 與 *BSD 上，可以使用 B<find>(1) 與 B<xargs>(1) 平行壓縮大量檔案："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid ""
+"\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
+"    | xargs -0r -P4 -n16 xz -T1\\fR\n"
+msgstr ""
+"\\f(CRfind . -type f \\e! -name '*.xz' -print0 \\e\n"
+"    | xargs -0r -P4 -n16 xz -T1\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The B<-P> option to B<xargs>(1)  sets the number of parallel B<xz> processes.  The best value for the B<-n> option depends on how many files there are to be compressed.  If there are only a couple of files, the value should probably be 1; with tens of thousands of files, 100 or even more may be appropriate to reduce the number of B<xz> processes that B<xargs>(1)  will eventually create."
+msgstr "B<xargs>(1) 的 B<-P> 選項可設定平行的 B<xz> 程序數目。B<-n> 選項的最佳取值取決於要壓縮的檔案數量。若只有幾個檔案，這個值大概應設為 1；若有数萬個檔案，則 100 甚至更大的值可能更合適，以減少 B<xargs>(1) 最終建立的 B<xz> 程序數目。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The option B<-T1> for B<xz> is there to force it to single-threaded mode, because B<xargs>(1)  is used to control the amount of parallelization."
+msgstr "B<xz> 的 B<-T1> 選項是為了強制其以單執行緒模式運作，因為平行化的程度是由 B<xargs>(1) 控制的。"
+
+#. type: SS
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "Robot mode"
+msgstr "Robot 模式"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Calculate how many bytes have been saved in total after compressing multiple files:"
+msgstr "計算壓縮多個檔案後總共節省了多少位元組："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
+msgstr "\\f(CRxz --robot --list *.xz | awk '/^totals/{print $5-$4}'\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "A script may want to know that it is using new enough B<xz>.  The following B<sh>(1)  script checks that the version number of the B<xz> tool is at least 5.0.0.  This method is compatible with old beta versions, which didn't support the B<--robot> option:"
+msgstr "指令碼可能需要知道自己使用的 B<xz> 是否夠新。下列 B<sh>(1) 指令碼會檢查 B<xz> 工具的版本號碼是否至少為 5.0.0。此方法與不支援 B<--robot> 選項的舊 beta 版本相容："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid ""
+"\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
+"        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
+"    echo \"Your xz is too old.\"\n"
+"fi\n"
+"unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
+msgstr ""
+"\\f(CRif ! eval \"$(xz --robot --version 2E<gt> /dev/null)\" ||\n"
+"        [ \"$XZ_VERSION\" -lt 50000002 ]; then\n"
+"    echo \"Your xz is too old.\"\n"
+"fi\n"
+"unset XZ_VERSION LIBLZMA_VERSION\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Set a memory usage limit for decompression using B<XZ_OPT>, but if a limit has already been set, don't increase it:"
+msgstr "使用 B<XZ_OPT> 設定解壓縮時的記憶體用量限制，但若已設定過限制，就不要提高它："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid ""
+"\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
+"OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
+"if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
+"    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
+"    export XZ_OPT\n"
+"fi\\fR\n"
+msgstr ""
+"\\f(CRNEWLIM=$((123 E<lt>E<lt> 20))\\ \\ # 123 MiB\n"
+"OLDLIM=$(xz --robot --info-memory | cut -f3)\n"
+"if [ $OLDLIM -eq 0 -o $OLDLIM -gt $NEWLIM ]; then\n"
+"    XZ_OPT=\"$XZ_OPT --memlimit-decompress=$NEWLIM\"\n"
+"    export XZ_OPT\n"
+"fi\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The simplest use for custom filter chains is customizing a LZMA2 preset.  This can be useful, because the presets cover only a subset of the potentially useful combinations of compression settings."
+msgstr "自訂過濾器鏈最簡單的用法，是自訂 LZMA2 預設值。這可能很有用，因為預設值只涵蓋了可能有用的壓縮設定組合中的一小部分。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The CompCPU columns of the tables from the descriptions of the options B<-0> ... B<-9> and B<--extreme> are useful when customizing LZMA2 presets.  Here are the relevant parts collected from those two tables:"
+msgstr "B<-0> ... B<-9> 與 B<--extreme> 選項說明中表格的壓縮 CPU 用量欄，在自訂 LZMA2 預設值時相當有用。以下是從那兩個表格中彙整出來的相關部分："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If you know that a file requires somewhat big dictionary (for example, 32\\ MiB) to compress well, but you want to compress it quicker than B<xz -8> would do, a preset with a low CompCPU value (for example, 1)  can be modified to use a bigger dictionary:"
+msgstr "若你已知某個檔案需要頗大的字典（例如 32\\ MiB）才能壓縮得好，但又希望比 B<xz -8> 壓縮得更快，可以修改一個壓縮 CPU 用量值較低的預設值（例如 1），讓它使用更大的字典："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
+msgstr "\\f(CRxz --lzma2=preset=1,dict=32MiB foo.tar\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "With certain files, the above command may be faster than B<xz -6> while compressing significantly better.  However, it must be emphasized that only some files benefit from a big dictionary while keeping the CompCPU value low.  The most obvious situation, where a big dictionary can help a lot, is an archive containing very similar files of at least a few megabytes each.  The dictionary size has to be significantly bigger than any individual file to allow LZMA2 to take full advantage of the similarities between consecutive files."
+msgstr "對某些檔案而言，上述命令可能比 B<xz -6> 更快，卻能顯著壓縮得更好。不過必須強調，只有部分檔案能在維持低壓縮 CPU 用量的同時受惠於大字典。大字典最能發揮作用的情況，是封裝檔中含有非常相似、且每個至少有數百 KB 的檔案。字典大小必須明顯大於任何單一檔案，LZMA2 才能充分利用相鄰檔案之間的相似性。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If very high compressor and decompressor memory usage is fine, and the file being compressed is at least several hundred megabytes, it may be useful to use an even bigger dictionary than the 64 MiB that B<xz -9> would use:"
+msgstr "若可以接受非常高的壓縮器與解壓縮器記憶體用量，而且要壓縮的檔案至少有數百 MB，那麼使用比 B<xz -9> 所用的 64 MiB 更大的字典可能會有用："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
+msgstr "\\f(CRxz -vv --lzma2=dict=192MiB big_foo.tar\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Using B<-vv> (B<--verbose --verbose>)  like in the above example can be useful to see the memory requirements of the compressor and decompressor.  Remember that using a dictionary bigger than the size of the uncompressed file is waste of memory, so the above command isn't useful for small files."
+msgstr "如上例所示使用 B<-vv>（B<--verbose --verbose>）有助於查看壓縮器與解壓縮器的記憶體需求。請記得，使用比未壓縮檔案更大的字典會浪費記憶體，因此上述命令對小檔案沒有用處。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Sometimes the compression time doesn't matter, but the decompressor memory usage has to be kept low, for example, to make it possible to decompress the file on an embedded system.  The following command uses B<-6e> (B<-6 --extreme>)  as a base and sets the dictionary to only 64\\ KiB.  The resulting file can be decompressed with XZ Embedded (that's why there is B<--check=crc32>)  using about 100\\ KiB of memory."
+msgstr "有時壓縮時間並不重要，但解壓縮器的記憶體用量必須維持很低，例如為了能在內嵌系統上解壓縮該檔案。下列命令以 B<-6e>（B<-6 --extreme>）為基礎，並將字典設為僅 64\\ KiB。產生的檔案可以用 XZ Embedded（這就是有 B<--check=crc32> 的原因）以約 100\\ KiB 記憶體解壓縮。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
+msgstr "\\f(CRxz --check=crc32 --lzma2=preset=6e,dict=64KiB foo\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If you want to squeeze out as many bytes as possible, adjusting the number of literal context bits (I<lc>)  and number of position bits (I<pb>)  can sometimes help.  Adjusting the number of literal position bits (I<lp>)  might help too, but usually I<lc> and I<pb> are more important.  For example, a source code archive contains mostly US-ASCII text, so something like the following might give slightly (like 0.1\\ %) smaller file than B<xz -6e> (try also without B<lc=4>):"
+msgstr "若你想盡可能擠出更多位元組，調整文字情境位元數（I<lc>）與位置位元數（I<pb>）有時會有幫助。調整文字位置位元數（I<lp>）也可能有幫助，但通常 I<lc> 與 I<pb> 更為重要。舉例而言，一個原始碼封裝檔大多含有 US-ASCII 文字，因此類似下列的命令，可能比 B<xz -6e> 產生稍小（約 0.1\\ %）的檔案（也請試試不加 B<lc=4>）："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
+msgstr "\\f(CRxz --lzma2=preset=6e,pb=0,lc=4 source_code.tar\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Using another filter together with LZMA2 can improve compression with certain file types.  For example, to compress a x86-32 or x86-64 shared library using the x86 BCJ filter:"
+msgstr "將另一個過濾器與 LZMA2 搭配使用，可改善某些檔案類型的壓縮效果。舉例而言，若要以 x86 BCJ 過濾器壓縮 x86-32 或 x86-64 共用函式庫："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
+msgstr "\\f(CRxz --x86 --lzma2 libfoo.so\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "Note that the order of the filter options is significant.  If B<--x86> is specified after B<--lzma2>, B<xz> will give an error, because there cannot be any filter after LZMA2, and also because the x86 BCJ filter cannot be used as the last filter in the chain."
+msgstr "請注意，過濾器選項的順序具有意義。若在 B<--lzma2> 之後指定 B<--x86>，B<xz> 會回報錯誤，因為 LZMA2 之後不能有任何過濾器，而且 x86 BCJ 過濾器也不能作為過濾器鏈中最後一個過濾器。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The Delta filter together with LZMA2 can give good results with bitmap images.  It should usually beat PNG, which has a few more advanced filters than simple delta but uses Deflate for the actual compression."
+msgstr "Delta 過濾器搭配 LZMA2 對點陣圖影像可以產生不錯的結果。它通常會勝過 PNG，因為 PNG 雖然有幾個比單純差分更進階的過濾器，但實際壓縮採用的是 Deflate。"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "The image has to be saved in uncompressed format, for example, as uncompressed TIFF.  The distance parameter of the Delta filter is set to match the number of bytes per pixel in the image.  For example, 24-bit RGB bitmap needs B<dist=3>, and it is also good to pass B<pb=0> to LZMA2 to accommodate the three-byte alignment:"
+msgstr "影像必須以未壓縮格式儲存，例如未壓縮的 TIFF。Delta 過濾器的距離參數要設定為與影像每個像素的位元組數相符。舉例而言，24 位元 RGB 點陣圖需要 B<dist=3>，同時把 B<pb=0> 傳給 LZMA2 以配合三個位元組的對齊也是不錯的選擇："
+
+#. type: Plain text
+#: ../src/xz/xz.1
+#, no-wrap
+msgid "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
+msgstr "\\f(CRxz --delta=dist=3 --lzma2=pb=0 foo.tiff\\fR\n"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "If multiple images have been put into a single archive (for example, B<.tar>), the Delta filter will work on that too as long as all images have the same number of bytes per pixel."
+msgstr "若多個影像被放進單一封裝檔（例如 B<.tar>），只要所有影像每個像素的位元組數都相同，Delta 過濾器也能對其發揮作用。"
+
+#. type: SH
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "參考資料"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "B<xzdec>(1), B<xzdiff>(1), B<xzgrep>(1), B<xzless>(1), B<xzmore>(1), B<gzip>(1), B<bzip2>(1), B<7z>(1)"
+msgstr "B<xzdec>(1)、B<xzdiff>(1)、B<xzgrep>(1)、B<xzless>(1)、B<xzmore>(1)、B<gzip>(1)、B<bzip2>(1)、B<7z>(1)"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "XZ Utils: E<lt>https://tukaani.org/xz/E<gt>"
+msgstr "XZ Utils：E<lt>https://tukaani.org/xz/E<gt>"
+
+#. type: Plain text
+#: ../src/xz/xz.1 ../src/xzdec/xzdec.1
+msgid "XZ Embedded: E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
+msgstr "XZ Embedded：E<lt>https://tukaani.org/xz/embedded.htmlE<gt>"
+
+#. type: Plain text
+#: ../src/xz/xz.1
+msgid "LZMA SDK: E<lt>https://7-zip.org/sdk.htmlE<gt>"
+msgstr "LZMA SDK：E<lt>https://7-zip.org/sdk.htmlE<gt>"
+
+#. type: TH
+#: ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "XZDEC"
+msgstr "XZDEC"
+
+#. type: TH
+#: ../src/xzdec/xzdec.1
+#, no-wrap
+msgid "2024-04-08"
+msgstr "2024-04-08"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "xzdec, lzmadec - Small .xz and .lzma decompressors"
+msgstr "xzdec、lzmadec - 小型的 .xz 與 .lzma 解壓縮器"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "B<xzdec> [I<option...>] [I<file...>]"
+msgstr "B<xzdec> [I<option...>] [I<file...>]"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "B<lzmadec> [I<option...>] [I<file...>]"
+msgstr "B<lzmadec> [I<option...>] [I<file...>]"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "B<xzdec> is a liblzma-based decompression-only tool for B<.xz> (and only B<.xz>)  files.  B<xzdec> is intended to work as a drop-in replacement for B<xz>(1)  in the most common situations where a script has been written to use B<xz --decompress --stdout> (and possibly a few other commonly used options) to decompress B<.xz> files.  B<lzmadec> is identical to B<xzdec> except that B<lzmadec> supports B<.lzma> files instead of B<.xz> files."
+msgstr "B<xzdec> 是以 liblzma 為基礎、只能解壓縮 B<.xz>（而且只有 B<.xz>）檔案的工具。B<xzdec> 的設計目的是，在最常見的情境中充當 B<xz>(1) 的直接替代品，也就是指令碼原本是使用 B<xz --decompress --stdout>（可能還有其他幾個常用選項）來解壓縮 B<.xz> 檔案的場合。B<lzmadec> 與 B<xzdec> 完全相同，差別在於 B<lzmadec> 支援的是 B<.lzma> 檔案而非 B<.xz> 檔案。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "To reduce the size of the executable, B<xzdec> doesn't support multithreading or localization, and doesn't read options from B<XZ_DEFAULTS> and B<XZ_OPT> environment variables.  B<xzdec> doesn't support displaying intermediate progress information: sending B<SIGINFO> to B<xzdec> does nothing, but sending B<SIGUSR1> terminates the process instead of displaying progress information."
+msgstr "為了縮減執行檔的大小，B<xzdec> 不支援多執行緒或在地化，也不從 B<XZ_DEFAULTS> 與 B<XZ_OPT> 環境變數讀取選項。B<xzdec> 不支援顯示中途的進度資訊：向 B<xzdec> 送出 B<SIGINFO> 不會有任何作用，但送出 B<SIGUSR1> 會終止程序，而非顯示進度資訊。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Ignored for B<xz>(1)  compatibility.  B<xzdec> supports only decompression."
+msgstr "為了與 B<xz>(1) 相容而忽略。B<xzdec> 只支援解壓縮。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Ignored for B<xz>(1)  compatibility.  B<xzdec> never creates or removes any files."
+msgstr "為了與 B<xz>(1) 相容而忽略。B<xzdec> 絕不會建立或移除任何檔案。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Ignored for B<xz>(1)  compatibility.  B<xzdec> always writes the decompressed data to standard output."
+msgstr "為了與 B<xz>(1) 相容而忽略。B<xzdec> 一律將解壓縮後的資料寫入標準輸出。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Specifying this once does nothing since B<xzdec> never displays any warnings or notices.  Specify this twice to suppress errors."
+msgstr "指定一次不會有任何作用，因為 B<xzdec> 絕不會顯示任何警告或提示。指定兩次則會抑制錯誤。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Ignored for B<xz>(1)  compatibility.  B<xzdec> never uses the exit status 2."
+msgstr "為了與 B<xz>(1) 相容而忽略。B<xzdec> 絕不會使用結束狀態 2。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Display a help message and exit successfully."
+msgstr "顯示說明訊息並成功結束。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Display the version number of B<xzdec> and liblzma."
+msgstr "顯示 B<xzdec> 與 liblzma 的版本號碼。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "All was good."
+msgstr "一切正常。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "B<xzdec> doesn't have any warning messages like B<xz>(1)  has, thus the exit status 2 is not used by B<xzdec>."
+msgstr "B<xzdec> 沒有像 B<xz>(1) 那樣的警告訊息，因此 B<xzdec> 不會使用結束狀態 2。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "Use B<xz>(1)  instead of B<xzdec> or B<lzmadec> for normal everyday use.  B<xzdec> or B<lzmadec> are meant only for situations where it is important to have a smaller decompressor than the full-featured B<xz>(1)."
+msgstr "一般日常使用請改用 B<xz>(1)，而非 B<xzdec> 或 B<lzmadec>。B<xzdec> 或 B<lzmadec> 只適用於必須使用比功能完整的 B<xz>(1) 更小的解壓縮器的情境。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1
+msgid "B<xzdec> and B<lzmadec> are not really that small.  The size can be reduced further by dropping features from liblzma at compile time, but that shouldn't usually be done for executables distributed in typical non-embedded operating system distributions.  If you need a truly small B<.xz> decompressor, consider using XZ Embedded."
+msgstr "B<xzdec> 與 B<lzmadec> 其實並沒有那麼小。還可以在編譯時從 liblzma 移除部分功能來進一步縮小，但對一般非內嵌作業系統發行版所散佈的執行檔而言，通常不該這麼做。若你真的需要極小的 B<.xz> 解壓縮器，請考慮使用 XZ Embedded。"
+
+#. type: Plain text
+#: ../src/xzdec/xzdec.1 ../src/lzmainfo/lzmainfo.1
+msgid "B<xz>(1)"
+msgstr "B<xz>(1)"
+
+#. type: TH
+#: ../src/lzmainfo/lzmainfo.1
+#, no-wrap
+msgid "LZMAINFO"
+msgstr "LZMAINFO"
+
+#. type: TH
+#: ../src/lzmainfo/lzmainfo.1
+#, no-wrap
+msgid "2013-06-30"
+msgstr "2013-06-30"
+
+#. type: Plain text
+#: ../src/lzmainfo/lzmainfo.1
+msgid "lzmainfo - show information stored in the .lzma file header"
+msgstr "lzmainfo - 顯示儲存在 .lzma 檔案標頭中的資訊"
+
+#. type: Plain text
+#: ../src/lzmainfo/lzmainfo.1
+msgid "B<lzmainfo> [B<--help>] [B<--version>] [I<file...>]"
+msgstr "B<lzmainfo> [B<--help>] [B<--version>] [I<file...>]"
+
+#. type: Plain text
+#: ../src/lzmainfo/lzmainfo.1
+msgid "B<lzmainfo> shows information stored in the B<.lzma> file header.  It reads the first 13 bytes from the specified I<file>, decodes the header, and prints it to standard output in human readable format.  If no I<files> are given or I<file> is B<->, standard input is read."
+msgstr "B<lzmainfo> 顯示儲存在 B<.lzma> 檔案標頭中的資訊。它會從指定的 I<file> 讀取前 13 個位元組，解碼標頭，並以人類可讀的格式列印到標準輸出。若未指定 I<files>，或 I<file> 為 B<->，便會讀取標準輸入。"
+
+#. type: Plain text
+#: ../src/lzmainfo/lzmainfo.1
+msgid "Usually the most interesting information is the uncompressed size and the dictionary size.  Uncompressed size can be shown only if the file is in the non-streamed B<.lzma> format variant.  The amount of memory required to decompress the file is a few dozen kilobytes plus the dictionary size."
+msgstr "通常最有趣的資訊是未壓縮大小與字典大小。只有當檔案採用非串流的 B<.lzma> 格式變體時，才能顯示未壓縮大小。解壓縮該檔案所需的記憶體量為數十 KB 加上字典大小。"
+
+#. type: Plain text
+#: ../src/lzmainfo/lzmainfo.1
+msgid "B<lzmainfo> is included in XZ Utils primarily for backward compatibility with LZMA Utils."
+msgstr "XZ Utils 收錄 B<lzmainfo>，主要是為了與 LZMA Utils 保持相容。"
+
+#. type: SH
+#: ../src/lzmainfo/lzmainfo.1
+#, no-wrap
+msgid "BUGS"
+msgstr "相關問題"
+
+#. type: Plain text
+#: ../src/lzmainfo/lzmainfo.1
+msgid "B<lzmainfo> uses B<MB> while the correct suffix would be B<MiB> (2^20 bytes).  This is to keep the output compatible with LZMA Utils."
+msgstr "B<lzmainfo> 使用 B<MB>，而正確的後綴應是 B<MiB>（2^20 個位元組）。這是為了讓輸出與 LZMA Utils 相容。"
+
+#. type: TH
+#: ../src/scripts/xzdiff.1
+#, no-wrap
+msgid "XZDIFF"
+msgstr "XZDIFF"
+
+#. type: TH
+#: ../src/scripts/xzdiff.1 ../src/scripts/xzgrep.1 ../src/scripts/xzless.1
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "2025-03-06"
+msgstr "2025-03-06"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "xzcmp, xzdiff, lzcmp, lzdiff - compare compressed files"
+msgstr "xzcmp、xzdiff、lzcmp、lzdiff - 比較壓縮檔案"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "B<xzcmp> [I<option...>] I<file1> [I<file2>]"
+msgstr "B<xzcmp> [I<option...>] I<file1> [I<file2>]"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "B<xzdiff> \\&..."
+msgstr "B<xzdiff> \\&..."
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "B<lzcmp> \\&...  (DEPRECATED)"
+msgstr "B<lzcmp> \\&...（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "B<lzdiff> \\&...  (DEPRECATED)"
+msgstr "B<lzdiff> \\&...（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "B<xzcmp> and B<xzdiff> compare uncompressed contents of two files.  Uncompressed data and options are passed to B<cmp>(1)  or B<diff>(1)  unless B<--help> or B<--version> is specified."
+msgstr "B<xzcmp> 與 B<xzdiff> 比較兩個檔案的未壓縮內容。除非指定 B<--help> 或 B<--version>，否則未壓縮的資料與選項會傳給 B<cmp>(1) 或 B<diff>(1)。"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "If both I<file1> and I<file2> are specified, they can be uncompressed files or files in formats that B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), or B<lz4>(1)  can decompress.  The required decompression commands are determined from the filename suffixes of I<file1> and I<file2>.  A file with an unknown suffix is assumed to be either uncompressed or in a format that B<xz>(1)  can decompress."
+msgstr "若同時指定 I<file1> 與 I<file2>，它們可以是未壓縮的檔案，也可以是 B<xz>(1)、B<gzip>(1)、B<bzip2>(1)、B<lzop>(1)、B<zstd>(1) 或 B<lz4>(1) 能解壓縮的格式。所需的解壓縮命令是依 I<file1> 與 I<file2> 的檔名副檔名來判定的。副檔名未知的檔案會被視為未壓縮，或是 B<xz>(1) 能解壓縮的格式。"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "If only one filename is provided, I<file1> must have a suffix of a supported compression format and the name for I<file2> is assumed to be I<file1> with the compression format suffix removed."
+msgstr "若只提供一個檔名，I<file1> 必須具有受支援壓縮格式的副檔名，而 I<file2> 的名稱則推定為移除該壓縮格式副檔名後的 I<file1>。"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "The commands B<lzcmp> and B<lzdiff> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
+msgstr "命令 B<lzcmp> 與 B<lzdiff> 是為了與 LZMA Utils 保持相容而提供。它們已棄用，未來版本將會移除。"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "If a decompression error occurs, the exit status is B<2>.  Otherwise the exit status of B<cmp>(1)  or B<diff>(1)  is used."
+msgstr "若發生解壓縮錯誤，結束狀態為 B<2>。否則會使用 B<cmp>(1) 或 B<diff>(1) 的結束狀態。"
+
+#. type: Plain text
+#: ../src/scripts/xzdiff.1
+msgid "B<cmp>(1), B<diff>(1), B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), B<lz4>(1)"
+msgstr "B<cmp>(1)、B<diff>(1)、B<xz>(1)、B<gzip>(1)、B<bzip2>(1)、B<lzop>(1)、B<zstd>(1)、B<lz4>(1)"
+
+#. type: TH
+#: ../src/scripts/xzgrep.1
+#, no-wrap
+msgid "XZGREP"
+msgstr "XZGREP"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "xzgrep - search possibly-compressed files for patterns"
+msgstr "xzgrep - 在可能已壓縮的檔案中搜尋樣式"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<xzgrep> [I<option...>] [I<pattern_list>] [I<file...>]"
+msgstr "B<xzgrep> [I<option...>] [I<pattern_list>] [I<file...>]"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<xzegrep> \\&..."
+msgstr "B<xzegrep> \\&..."
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<xzfgrep> \\&..."
+msgstr "B<xzfgrep> \\&..."
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<lzgrep> \\&...  (DEPRECATED)"
+msgstr "B<lzgrep> \\&...（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<lzegrep> \\&...  (DEPRECATED)"
+msgstr "B<lzegrep> \\&...（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<lzfgrep> \\&...  (DEPRECATED)"
+msgstr "B<lzfgrep> \\&...（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<xzgrep> invokes B<grep>(1)  on uncompressed contents of files.  The formats of the I<files> are determined from the filename suffixes.  Any I<file> with a suffix supported by B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), or B<lz4>(1)  will be decompressed; all other files are assumed to be uncompressed."
+msgstr "B<xzgrep> 會對檔案的未壓縮內容呼叫 B<grep>(1)。I<files> 的格式依檔名副檔名判定。副檔名受 B<xz>(1)、B<gzip>(1)、B<bzip2>(1)、B<lzop>(1)、B<zstd>(1) 或 B<lz4>(1) 支援的任何 I<file> 都會被解壓縮；其餘檔案則視為未壓縮。"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "If no I<files> are specified or I<file> is B<-> then standard input is read.  When reading from standard input, only files supported by B<xz>(1)  are decompressed.  Other files are assumed to be in uncompressed form already."
+msgstr "若未指定 I<files>，或 I<file> 為 B<->，便會讀取標準輸入。從標準輸入讀取時，只會解壓縮 B<xz>(1) 支援的檔案。其他檔案則視為已是未壓縮格式。"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "Most I<options> of B<grep>(1)  are supported.  However, the following options are not supported:"
+msgstr "支援 B<grep>(1) 的大部分 I<options>。但下列選項不受支援："
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<-r>, B<--recursive>"
+msgstr "B<-r>、B<--recursive>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<-R>, B<--dereference-recursive>"
+msgstr "B<-R>、B<--dereference-recursive>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<-d>, B<--directories=>I<action>"
+msgstr "B<-d>、B<--directories=>I<action>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<-Z>, B<--null>"
+msgstr "B<-Z>、B<--null>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<-z>, B<--null-data>"
+msgstr "B<-z>、B<--null-data>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<--include=>I<glob>"
+msgstr "B<--include=>I<glob>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<--exclude=>I<glob>"
+msgstr "B<--exclude=>I<glob>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<--exclude-from=>I<file>"
+msgstr "B<--exclude-from=>I<file>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<--exclude-dir=>I<glob>"
+msgstr "B<--exclude-dir=>I<glob>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<xzegrep> is an alias for B<xzgrep -E>.  B<xzfgrep> is an alias for B<xzgrep -F>."
+msgstr "B<xzegrep> 是 B<xzgrep -E> 的別名。B<xzfgrep> 是 B<xzgrep -F> 的別名。"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "The commands B<lzgrep>, B<lzegrep>, and B<lzfgrep> are provided for backward compatibility with LZMA Utils.  They are deprecated and will be removed in a future version."
+msgstr "命令 B<lzgrep>、B<lzegrep> 與 B<lzfgrep> 是為了與 LZMA Utils 保持相容而提供。它們已棄用，未來版本將會移除。"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "At least one match was found from at least one of the input files.  No errors occurred."
+msgstr "至少在一個輸入檔案中找到了相符項目。未發生錯誤。"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "No matches were found from any of the input files.  No errors occurred."
+msgstr "所有輸入檔案中都沒有找到相符項目。未發生錯誤。"
+
+#. type: TP
+#: ../src/scripts/xzgrep.1
+#, no-wrap
+msgid "E<gt>1"
+msgstr "E<gt>1"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "One or more errors occurred.  It is unknown if matches were found."
+msgstr "發生一個以上的錯誤。無法得知是否找到相符項目。"
+
+#. type: TP
+#: ../src/scripts/xzgrep.1
+#, no-wrap
+msgid "B<GREP>"
+msgstr "B<GREP>"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "If B<GREP> is set to a non-empty value, it is used instead of B<grep>, B<grep -E>, or B<grep -F>."
+msgstr "若 B<GREP> 被設為非空值，就會用它取代 B<grep>、B<grep -E> 或 B<grep -F>。"
+
+#. type: Plain text
+#: ../src/scripts/xzgrep.1
+msgid "B<grep>(1), B<xz>(1), B<gzip>(1), B<bzip2>(1), B<lzop>(1), B<zstd>(1), B<lz4>(1), B<zgrep>(1)"
+msgstr "B<grep>(1)、B<xz>(1)、B<gzip>(1)、B<bzip2>(1)、B<lzop>(1)、B<zstd>(1)、B<lz4>(1)、B<zgrep>(1)"
+
+#. type: TH
+#: ../src/scripts/xzless.1
+#, no-wrap
+msgid "XZLESS"
+msgstr "XZLESS"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "xzless, lzless - view xz or lzma compressed (text) files"
+msgstr "xzless、lzless - 檢視以 xz 或 lzma 壓縮的（文字）檔案"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "B<xzless> [I<file>...]"
+msgstr "B<xzless> [I<file>...]"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "B<lzless> [I<file>...] (DEPRECATED)"
+msgstr "B<lzless> [I<file>...]（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "B<xzless> is a filter that displays text from compressed files to a terminal.  Files supported by B<xz>(1)  are decompressed; other files are assumed to be in uncompressed form already.  If no I<files> are given, B<xzless> reads from standard input."
+msgstr "B<xzless> 是一個過濾器，會把壓縮檔案中的文字顯示到終端機。B<xz>(1) 支援的檔案會被解壓縮；其他檔案則視為已是未壓縮格式。若未指定 I<files>，B<xzless> 便會從標準輸入讀取。"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "B<xzless> uses B<less>(1)  to present its output.  Unlike B<xzmore>, its choice of pager cannot be altered by setting an environment variable.  Commands are based on both B<more>(1)  and B<vi>(1)  and allow back and forth movement and searching.  See the B<less>(1)  manual for more information."
+msgstr "B<xzless> 使用 B<less>(1) 呈現輸出。與 B<xzmore> 不同，其分頁程式的選擇無法透過設定環境變數來改變。其命令以 B<more>(1) 與 B<vi>(1) 為基礎，可用於前後移動與搜尋。更多資訊請參閱 B<less>(1) 手冊。"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "The command named B<lzless> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
+msgstr "名為 B<lzless> 的命令是為了與 LZMA Utils 保持相容而提供。它已棄用，未來版本將會移除。"
+
+#. type: TP
+#: ../src/scripts/xzless.1
+#, no-wrap
+msgid "B<LESSMETACHARS>"
+msgstr "B<LESSMETACHARS>"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "A list of characters special to the shell.  Set by B<xzless> unless it is already set in the environment."
+msgstr "對 shell 而言具有特殊意義的字元清單。若環境中尚未設定，便會由 B<xzless> 設定。"
+
+#. type: TP
+#: ../src/scripts/xzless.1
+#, no-wrap
+msgid "B<LESSOPEN>"
+msgstr "B<LESSOPEN>"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "Set to a command line to invoke the B<xz>(1)  decompressor for preprocessing the input files to B<less>(1)."
+msgstr "設定為一個命令列，用以呼叫 B<xz>(1) 解壓縮器來預處理傳給 B<less>(1) 的輸入檔案。"
+
+#. type: Plain text
+#: ../src/scripts/xzless.1
+msgid "B<less>(1), B<xz>(1), B<xzmore>(1), B<zless>(1)"
+msgstr "B<less>(1)、B<xz>(1)、B<xzmore>(1)、B<zless>(1)"
+
+#. type: TH
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "XZMORE"
+msgstr "XZMORE"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "xzmore, lzmore - view xz or lzma compressed (text) files"
+msgstr "xzmore、lzmore - 檢視以 xz 或 lzma 壓縮的（文字）檔案"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "B<xzmore> [I<file>...]"
+msgstr "B<xzmore> [I<file>...]"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "B<lzmore> [I<file>...] (DEPRECATED)"
+msgstr "B<lzmore> [I<file>...]（已棄用）"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "B<xzmore> displays text from compressed files to a terminal using B<more>(1).  Files supported by B<xz>(1)  are decompressed; other files are assumed to be in uncompressed form already.  If no I<files> are given, B<xzmore> reads from standard input.  See the B<more>(1)  manual for the keyboard commands."
+msgstr "B<xzmore> 使用 B<more>(1) 把壓縮檔案中的文字顯示到終端機。B<xz>(1) 支援的檔案會被解壓縮；其他檔案則視為已是未壓縮格式。若未指定 I<files>，B<xzmore> 便會從標準輸入讀取。鍵盤命令請參閱 B<more>(1) 手冊。"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "Note that scrolling backwards might not be possible depending on the implementation of B<more>(1).  This is because B<xzmore> uses a pipe to pass the decompressed data to B<more>(1).  B<xzless>(1)  uses B<less>(1)  which provides more advanced features."
+msgstr "請注意，依 B<more>(1) 的實作而定，可能無法往回捲動。這是因為 B<xzmore> 使用管線將解壓縮後的資料傳給 B<more>(1)。B<xzless>(1) 使用 B<less>(1)，而後者提供更進階的功能。"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "The command B<lzmore> is provided for backward compatibility with LZMA Utils.  It is deprecated and will be removed in a future version."
+msgstr "命令 B<lzmore> 是為了與 LZMA Utils 保持相容而提供。它已棄用，未來版本將會移除。"
+
+#.  TRANSLATORS: Don't translate the uppercase PAGER.
+#.  It is a name of an environment variable.
+#. type: TP
+#: ../src/scripts/xzmore.1
+#, no-wrap
+msgid "B<PAGER>"
+msgstr "B<PAGER>"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "If B<PAGER> is set, its value is used as the pager instead of B<more>(1)."
+msgstr "若設定了 B<PAGER>，便會以其值作為分頁程式，而不使用 B<more>(1)。"
+
+#. type: Plain text
+#: ../src/scripts/xzmore.1
+msgid "B<more>(1), B<xz>(1), B<xzless>(1), B<zmore>(1)"
+msgstr "B<more>(1)、B<xz>(1)、B<xzless>(1)、B<zmore>(1)"

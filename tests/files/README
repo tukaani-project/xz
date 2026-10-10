@@ -297,6 +297,9 @@
     Uncompressed Size bytes of output will have been produced but
     the LZMA2 decoder doesn't indicate end of stream.
 
+    bad-1-powerpc-1.xz has invalid PowerPC filter start offset (21) in
+    Filter Properties. XZ for Java <= 1.12 doesn't reject this file.
+
 
 3. Descriptions of Individual .lzma Files
 

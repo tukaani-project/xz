@@ -36,6 +36,9 @@
  * usage limit for decompressing or how much memory it is OK to use
  * for compressing.
  *
+ * Since liblzma 5.8.4: On Linux, if cgroup v2 memory.max is lower than
+ * the amount of physical memory, the memory.max value is returned.
+ *
  * \return      On success, the total amount of physical memory in bytes
  *              is returned. If the amount of RAM cannot be determined,
  *              zero is returned. This can happen if an error occurs
@@ -51,6 +54,11 @@ extern LZMA_API(uint64_t) lzma_physmem(void) lzma_nothrow;
  * This function may be useful when determining how many threads to use.
  * If the hardware supports more than one thread per CPU core, the number
  * of hardware threads is returned if that information is available.
+ *
+ * Since liblzma 5.8.4: On Linux, if cgroup v2 cpu.max is lower than the
+ * available hardware threads, the return value is the number of threads
+ * that can be fully utilitized without being throttled or at least 1 (in
+ * case cpu.max is less than 100 % of one core).
  *
  * \return      On success, the number of available CPU threads or cores is
  *              returned. If this information isn't available or an error

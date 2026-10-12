@@ -13,12 +13,11 @@
 #include "simple_private.h"
 
 
-#define Test86MSByte(b) ((b) == 0 || (b) == 0xFF)
+#define x86_test_msbyte(b) ((((b) + 1) & 0xFE) == 0)
 
 
 typedef struct {
 	uint32_t prev_mask;
-	uint32_t prev_pos;
 } lzma_simple_x86;
 
 
@@ -26,94 +25,72 @@ static size_t
 x86_code(void *simple_ptr, uint32_t now_pos, bool is_encoder,
 		uint8_t *buffer, size_t size)
 {
-	static const uint32_t MASK_TO_BIT_NUMBER[5] = { 0, 1, 2, 2, 3 };
+	if (size <= 4)
+		return 0;
+
+	size -= 4;
+
+	now_pos += 5;
 
 	lzma_simple_x86 *simple = simple_ptr;
 	uint32_t prev_mask = simple->prev_mask;
-	uint32_t prev_pos = simple->prev_pos;
+	size_t prev_pos = 0;
 
-	if (size < 5)
-		return 0;
-
-	if (now_pos - prev_pos > 5)
-		prev_pos = now_pos - 5;
-
-	const size_t limit = size - 5;
-	size_t buffer_pos = 0;
-
-	while (buffer_pos <= limit) {
-		uint8_t b = buffer[buffer_pos];
-		if (b != 0xE8 && b != 0xE9) {
-			++buffer_pos;
+	size_t i;
+	for (i = 0; i < size; ++i) {
+#if defined(HAVE_SMALL)
+		if ((buffer[i] & 0xFE) != 0xE8)
 			continue;
+#else
+		if ((buffer[i] & 0xFE) != 0xE8) {
+			if ((buffer[++i] & 0xFE) != 0xE8
+					&& (buffer[++i] & 0xFE) != 0xE8
+					&& (buffer[++i] & 0xFE) != 0xE8
+					&& (buffer[++i] & 0xFE) != 0xE8)
+				continue;
+
+			if (i >= size)
+				break;
 		}
+#endif
 
-		const uint32_t offset = now_pos + (uint32_t)(buffer_pos)
-				- prev_pos;
-		prev_pos = now_pos + (uint32_t)(buffer_pos);
+		prev_pos = i - prev_pos;
+		prev_mask = prev_pos > 3 ? 0 : prev_mask >> prev_pos;
+		prev_pos = i;
 
-		if (offset > 5) {
-			prev_mask = 0;
-		} else {
-			for (uint32_t i = 0; i < offset; ++i) {
-				prev_mask &= 0x77;
-				prev_mask <<= 1;
-			}
-		}
+		if (x86_test_msbyte(buffer[i + 4]) && (prev_mask == 0
+				|| (prev_mask <= 4 && prev_mask != 3
+					&& !x86_test_msbyte(buffer[
+						i + 1 + (prev_mask >> 1)])))) {
+			const uint32_t src = read32le(buffer + i + 1);
 
-		b = buffer[buffer_pos + 4];
+			uint32_t pc = now_pos + (uint32_t)i;
+			if (!is_encoder)
+				pc = 0U - pc;
 
-		if (Test86MSByte(b) && (prev_mask >> 1) <= 4
-			&& (prev_mask >> 1) != 3) {
+			uint32_t dest = src + pc;
 
-			uint32_t src = ((uint32_t)(b) << 24)
-				| ((uint32_t)(buffer[buffer_pos + 3]) << 16)
-				| ((uint32_t)(buffer[buffer_pos + 2]) << 8)
-				| (buffer[buffer_pos + 1]);
-
-			uint32_t dest;
-			while (true) {
-				if (is_encoder)
-					dest = src + (now_pos + (uint32_t)(
-							buffer_pos) + 5);
-				else
-					dest = src - (now_pos + (uint32_t)(
-							buffer_pos) + 5);
-
-				if (prev_mask == 0)
-					break;
-
-				const uint32_t i = MASK_TO_BIT_NUMBER[
-						prev_mask >> 1];
-
-				b = (uint8_t)(dest >> (24 - i * 8));
-
-				if (!Test86MSByte(b))
-					break;
-
-				src = dest ^ ((1U << (32 - i * 8)) - 1);
+			if (prev_mask != 0) {
+				const uint32_t j = (prev_mask & 6) << 2;
+				if (x86_test_msbyte(dest >> j)) {
+					dest ^= (UINT32_C(0x100) << j) - 1;
+					dest += pc;
+					assert(!x86_test_msbyte(dest >> j));
+				}
 			}
 
-			buffer[buffer_pos + 4]
-					= (uint8_t)(~(((dest >> 24) & 1) - 1));
-			buffer[buffer_pos + 3] = (uint8_t)(dest >> 16);
-			buffer[buffer_pos + 2] = (uint8_t)(dest >> 8);
-			buffer[buffer_pos + 1] = (uint8_t)(dest);
-			buffer_pos += 5;
-			prev_mask = 0;
-
+			dest &= 0x01FFFFFF;
+			dest |= 0U - (dest & 0x01000000);
+			write32le(buffer + i + 1, dest);
+			i += 4;
 		} else {
-			++buffer_pos;
-			prev_mask |= 1;
-			if (Test86MSByte(b))
-				prev_mask |= 0x10;
+			prev_mask |= 1 << 3;
 		}
 	}
 
-	simple->prev_mask = prev_mask;
-	simple->prev_pos = prev_pos;
-
-	return buffer_pos;
+	prev_pos = i - prev_pos;
+	simple->prev_mask = prev_pos > 3 ? 0 : prev_mask >> prev_pos;
+	return i;
 }
 
 
@@ -128,7 +105,6 @@ x86_coder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		lzma_simple_coder *coder = next->coder;
 		lzma_simple_x86 *simple = coder->simple;
 		simple->prev_mask = 0;
-		simple->prev_pos = (uint32_t)(-5);
 	}
 
 	return ret;
@@ -150,7 +126,6 @@ lzma_bcj_x86_encode(uint32_t start_offset, uint8_t *buf, size_t size)
 {
 	lzma_simple_x86 simple = {
 		.prev_mask = 0,
-		.prev_pos = (uint32_t)(-5),
 	};
 
 	return x86_code(&simple, start_offset, true, buf, size);
@@ -173,7 +148,6 @@ lzma_bcj_x86_decode(uint32_t start_offset, uint8_t *buf, size_t size)
 {
 	lzma_simple_x86 simple = {
 		.prev_mask = 0,
-		.prev_pos = (uint32_t)(-5),
 	};
 
 	return x86_code(&simple, start_offset, false, buf, size);

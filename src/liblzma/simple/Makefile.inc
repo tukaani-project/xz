@@ -49,3 +49,7 @@ endif
 if COND_FILTER_RISCV
 liblzma_la_SOURCES += simple/riscv.c
 endif
+
+if COND_FILTER_LOONGARCH
+liblzma_la_SOURCES += simple/loongarch.c
+endif

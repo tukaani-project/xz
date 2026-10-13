@@ -547,12 +547,23 @@ parse_block_header(file_pair *pair, const lzma_index_iter *iter,
 		xfi->memusage_max = bhi->memusage;
 
 	// Determine the minimum XZ Utils version that supports this Block.
+	//   - LoongArch filter needs 5.8.0.
+	//
 	//   - RISC-V filter needs 5.6.0.
 	//
 	//   - ARM64 filter needs 5.4.0.
 	//
 	//   - 5.0.0 doesn't support empty LZMA2 streams and thus empty
 	//     Blocks that use LZMA2. This decoder bug was fixed in 5.0.2.
+	if (xfi->min_version < 50080002U) {
+		for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
+			if (filters[i].id == LZMA_FILTER_LOONGARCH) {
+				xfi->min_version = 50080002U;
+				break;
+			}
+		}
+	}
+
 	if (xfi->min_version < 50060002U) {
 		for (size_t i = 0; filters[i].id != LZMA_VLI_UNKNOWN; ++i) {
 			if (filters[i].id == LZMA_FILTER_RISCV) {

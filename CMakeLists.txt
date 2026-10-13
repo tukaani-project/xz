@@ -970,6 +970,7 @@ set(SIMPLE_FILTERS
     ia64
     sparc
     riscv
+    alpha
 )
 
 # The SUPPORTED_FILTERS are shared between Encoders and Decoders

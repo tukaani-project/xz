@@ -104,10 +104,10 @@ typedef enum {
 } io_wait_ret;
 
 
+#ifndef TUKLIB_DOSLIKE
 /// If true, try to create sparse files when decompressing.
 static bool try_sparse = true;
 
-#ifndef TUKLIB_DOSLIKE
 /// File status flags of standard input. This is used by io_open_src()
 /// and io_close_src().
 static int stdin_flags;
@@ -186,7 +186,9 @@ io_write_to_user_abort_pipe(void)
 extern void
 io_no_sparse(void)
 {
+#ifndef TUKLIB_DOSLIKE
 	try_sparse = false;
+#endif
 	return;
 }
 

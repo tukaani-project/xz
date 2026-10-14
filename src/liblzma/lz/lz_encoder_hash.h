@@ -74,6 +74,20 @@
 	const uint32_t hash_value = (temp ^ ((uint32_t)(cur[2]) << 8) \
 			^ (hash_table[cur[3]] << 5)) & mf->hash_mask
 
+// Prefetch the buckets that hash_4_calc() will read for ptr. The indexes
+// must match hash_4_calc(); if they drift apart the wrong lines are fetched
+// and the only symptom is lost speed.
+#define hash_4_prefetch(ptr) \
+do { \
+	const uint32_t pf_temp = hash_table[(ptr)[0]] ^ (ptr)[1]; \
+	const uint32_t pf_h3 = pf_temp ^ ((uint32_t)((ptr)[2]) << 8); \
+	lzma_prefetch(&mf->hash[pf_temp & HASH_2_MASK]); \
+	lzma_prefetch(&mf->hash[FIX_3_HASH_SIZE + (pf_h3 & HASH_3_MASK)]); \
+	lzma_prefetch(&mf->hash[FIX_4_HASH_SIZE \
+			+ ((pf_h3 ^ (hash_table[(ptr)[3]] << 5)) \
+				& mf->hash_mask)]); \
+} while (0)
+
 
 // The following are not currently used.
 

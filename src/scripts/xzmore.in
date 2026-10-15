@@ -46,9 +46,9 @@ else
 	cb='min 1 -icanon'; ncb='icanon eof ^d'
 fi
 if test $? -eq 0 && test -n "$oldtty"; then
-	trap 'stty $oldtty 2>/dev/null; exit' 0 2 3 5 10 13 15
+	trap 'stty $oldtty 2>/dev/null; exit' EXIT INT QUIT TRAP USR1 PIPE TERM
 else
-	trap 'stty $ncb echo 2>/dev/null; exit' 0 2 3 5 10 13 15
+	trap 'stty $ncb echo 2>/dev/null; exit' EXIT INT QUIT TRAP USR1 PIPE TERM
 fi
 
 if test $# = 0; then

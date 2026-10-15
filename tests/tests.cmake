@@ -74,7 +74,7 @@ if(BUILD_TESTING)
     # not possible in the Autotools build, so the test was not made to
     # support it since it would have required additional changes.
     if (XZ_MICROLZMA_ENCODER AND (XZ_MICROLZMA_DECODER
-            OR NOT "lzma1" IN_LIST DECODERS))
+            OR NOT "lzma1" IN_LIST XZ_DECODERS))
         list(APPEND LIBLZMA_TESTS test_microlzma)
     endif()
 

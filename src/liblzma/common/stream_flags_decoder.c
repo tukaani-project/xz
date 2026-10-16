@@ -29,6 +29,9 @@ stream_flags_decode(lzma_stream_flags *options, const uint8_t *in)
 extern LZMA_API(lzma_ret)
 lzma_stream_header_decode(lzma_stream_flags *options, const uint8_t *in)
 {
+	if (options == NULL || in == NULL)
+		return LZMA_PROG_ERROR;
+
 	// Magic
 	if (memcmp(in, lzma_header_magic, sizeof(lzma_header_magic)) != 0)
 		return LZMA_FORMAT_ERROR;
@@ -61,6 +64,9 @@ lzma_stream_header_decode(lzma_stream_flags *options, const uint8_t *in)
 extern LZMA_API(lzma_ret)
 lzma_stream_footer_decode(lzma_stream_flags *options, const uint8_t *in)
 {
+	if (options == NULL || in == NULL)
+		return LZMA_PROG_ERROR;
+
 	// Magic
 	if (memcmp(in + sizeof(uint32_t) * 2 + LZMA_STREAM_FLAGS_SIZE,
 			lzma_footer_magic, sizeof(lzma_footer_magic)) != 0)

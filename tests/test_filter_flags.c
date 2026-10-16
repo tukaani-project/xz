@@ -136,6 +136,12 @@ test_lzma_filter_flags_size(void)
 	bad_filter.id = LZMA_FILTER_RESERVED_START;
 	assert_lzma_ret(lzma_filter_flags_size(&size, &bad_filter),
 			LZMA_PROG_ERROR);
+
+	// Test NULL pointers
+	assert_lzma_ret(lzma_filter_flags_size(NULL, &bad_filter),
+			LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_filter_flags_size(&size, NULL),
+			LZMA_PROG_ERROR);
 #endif
 }
 
@@ -275,6 +281,14 @@ test_lzma_filter_flags_encode(void)
 	assert_lzma_ret(lzma_filter_flags_encode(&bad_filter, out, &out_pos,
 			out_size), LZMA_PROG_ERROR);
 	out_pos = 0;
+
+	// Should fail if filter, out, or out_pos pointer is NULL
+	assert_lzma_ret(lzma_filter_flags_encode(NULL, out, &out_pos,
+			out_size), LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_filter_flags_encode(&bad_filter, NULL, &out_pos,
+			out_size), LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_filter_flags_encode(&bad_filter, out, NULL,
+			out_size), LZMA_PROG_ERROR);
 
 	// Invalid Filter ID
 	bad_filter.id = 2;
@@ -442,6 +456,17 @@ test_lzma_filter_flags_decode(void)
 	lzma_vli bad_filter_id = LZMA_FILTER_RESERVED_START;
 	size_t bad_encoded_out_pos = 0;
 	size_t in_pos = 0;
+
+	// Should fail if filter, in, or in_pos pointer is NULL
+	assert_lzma_ret(lzma_filter_flags_decode(NULL, NULL,
+			bad_encoded_filter, &in_pos,
+			LZMA_BLOCK_HEADER_SIZE_MAX), LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_filter_flags_decode(&bad_filter, NULL,
+			NULL, &in_pos,
+			LZMA_BLOCK_HEADER_SIZE_MAX), LZMA_PROG_ERROR);
+	assert_lzma_ret(lzma_filter_flags_decode(&bad_filter, NULL,
+			bad_encoded_filter, NULL,
+			LZMA_BLOCK_HEADER_SIZE_MAX), LZMA_PROG_ERROR);
 
 	assert_lzma_ret(lzma_vli_encode(bad_filter_id, NULL,
 			bad_encoded_filter, &bad_encoded_out_pos,

@@ -17,8 +17,14 @@ lzma_filter_flags_decode(
 		lzma_filter *filter, const lzma_allocator *allocator,
 		const uint8_t *in, size_t *in_pos, size_t in_size)
 {
+	if (filter == NULL)
+		return LZMA_PROG_ERROR;
+
 	// Set the pointer to NULL so the caller can always safely free it.
 	filter->options = NULL;
+
+	if (in == NULL || in_pos == NULL)
+		return LZMA_PROG_ERROR;
 
 	// Filter ID
 	return_if_error(lzma_vli_decode(&filter->id, NULL,

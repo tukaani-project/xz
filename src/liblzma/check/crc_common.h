@@ -113,6 +113,18 @@ extern const uint64_t lzma_crc64_table[4][256];
 #	endif
 #endif
 
+// ARM64 PMULL is used for 64-bit CRC
+#if (defined(__aarch64__) || defined(_M_ARM64)) && !defined(WORDS_BIGENDIAN)
+#	if defined(__ARM_FEATURE_CRYPTO) || defined(__ARM_FEATURE_AES) || defined(__APPLE__)
+#		define CRC64_ARCH_OPTIMIZED 1
+#		define CRC64_ARM64 1
+#	elif defined(CRC_ARM64_RUNTIME_DETECTION)
+#		define CRC64_ARCH_OPTIMIZED 1
+#		define CRC64_ARM64 1
+#		define CRC64_GENERIC 1
+#	endif
+#endif
+
 
 // LoongArch
 //

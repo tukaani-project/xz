@@ -16,6 +16,8 @@
 #if defined(CRC_X86_CLMUL)
 #	define BUILDING_CRC_CLMUL 64
 #	include "crc_x86_clmul.h"
+#elif defined(CRC64_ARM64)
+#	include "crc64_arm64.h"
 #endif
 
 

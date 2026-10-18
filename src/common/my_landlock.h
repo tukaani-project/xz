@@ -117,10 +117,20 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 			;
 
 #ifdef LANDLOCK_ACCESS_NET_BIND_TCP
+	// Both of these were added in ABI 10. Provide them if they are not
+	// defined, in case we are compiled against older headers than the
+	// running kernel.
+#	ifndef LANDLOCK_ACCESS_NET_BIND_UDP
+#		define LANDLOCK_ACCESS_NET_BIND_UDP         (1ULL << 2)
+#		define LANDLOCK_ACCESS_NET_CONNECT_SEND_UDP (1ULL << 3)
+#	endif
 	// ABI 4
 	attr->handled_access_net
 			= LANDLOCK_ACCESS_NET_BIND_TCP
-			| LANDLOCK_ACCESS_NET_CONNECT_TCP;
+			| LANDLOCK_ACCESS_NET_CONNECT_TCP
+			| LANDLOCK_ACCESS_NET_BIND_UDP // ABI 10
+			| LANDLOCK_ACCESS_NET_CONNECT_SEND_UDP // ABI 10
+			;
 #endif
 
 #ifdef LANDLOCK_SCOPE_SIGNAL
@@ -168,9 +178,16 @@ my_landlock_ruleset_attr_forbid_all(struct landlock_ruleset_attr *attr)
 	case 8:
 		attr->handled_access_fs &= ~LANDLOCK_ACCESS_FS_RESOLVE_UNIX;
 		FALLTHROUGH;
+	case 9:
+#ifdef LANDLOCK_ACCESS_NET_BIND_TCP
+		attr->handled_access_net &=
+			~(LANDLOCK_ACCESS_NET_BIND_UDP
+			  | LANDLOCK_ACCESS_NET_CONNECT_SEND_UDP);
+#endif
+		FALLTHROUGH;
 
 	default:
-		// We only know about the features of the ABIs 1-6.
+		// We only know about the features of the ABIs 1-10.
 		break;
 	}
 

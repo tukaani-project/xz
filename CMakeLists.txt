@@ -614,6 +614,8 @@ set(LIBLZMA_API_HEADERS
 add_library(liblzma
     src/common/mythread.h
     src/common/sysdefs.h
+    src/common/tuklib_cgroup.c
+    src/common/tuklib_cgroup.h
     src/common/tuklib_common.h
     src/common/tuklib_config.h
     src/common/tuklib_integer.h

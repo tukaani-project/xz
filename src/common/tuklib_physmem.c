@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "tuklib_physmem.h"
+#include "tuklib_cgroup.h"
 
 // We want to use Windows-specific code on Cygwin, which also has memory
 // information available via sysconf(), but on Cygwin 1.5 and older it
@@ -218,6 +219,15 @@ tuklib_physmem(void)
 	struct sysinfo si;
 	if (sysinfo(&si) == 0)
 		ret = (uint64_t)si.totalram * si.mem_unit;
+#endif
+
+#ifdef __linux__
+	// Find the effective value of Linux cgroup v2 memory.max.
+	// If it is lower than the physical amount of RAM, pretend
+	// that we only have memory.max bytes of RAM.
+	const unsigned long long memory_max = tuklib_cgroup_memory_max();
+	if (ret > memory_max)
+		ret = memory_max;
 #endif
 
 	return ret;

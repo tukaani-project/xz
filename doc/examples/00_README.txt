@@ -29,3 +29,12 @@ List of examples
                                         compression using a compression
                                         preset
 
+    05_decompress_mt.c                  Multi-threaded multi-call
+                                        decompression
+
+    06_buffer_to_buffer.c               In-memory buffer-to-buffer
+                                        compression and decompression
+
+    07_custom_allocator.c               Streaming compression using a
+                                        custom memory allocator
+

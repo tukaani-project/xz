@@ -95,8 +95,10 @@ if test $# -eq 1; then
   # The FILE variable is used with eval, and shellcheck doesn't see that.
   # shellcheck disable=SC2034
   case $1 in
-    *[-.][zZ] | *_z | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *[-.]lzo | *[-.]zst | *[-.]lz4)
+    *[-.][zZ] | *[-.][gx]z | *[-.]bz2 | *[-.]lzma | *[-.]lz | *[-.]lzo | *[-.]zst | *[-.]lz4)
       FILE=`LC_ALL=C expr "X$1" : 'X\(.*\)[-.][abglmostxzZ24]*$'`;;
+    *_z)
+      FILE=`LC_ALL=C expr "X$1" : 'X\(.*\)_z$'`;;
     *.t[abglx]z)
       FILE=`LC_ALL=C expr "X$1" : 'X\(.*[-.]t\)[abglx]z$'`ar;;
     *.tbz2)

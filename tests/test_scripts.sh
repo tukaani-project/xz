@@ -60,6 +60,25 @@ if test "$status" != 2 ; then
 	exit 1
 fi
 
+# With one operand, the file is compared to the same name without the suffix.
+"$XZ" -dc "$preimage" > xzdiff_test
+cp "$preimage" xzdiff_test.xz
+"$XZDIFF" xzdiff_test.xz >/dev/null
+status=$?
+if test "$status" != 0 ; then
+	echo "xzdiff with one .xz operand exited with status $status != 0"
+	exit 1
+fi
+
+if gzip -c xzdiff_test > xzdiff_test_z 2>/dev/null ; then
+	"$XZDIFF" xzdiff_test_z >/dev/null
+	status=$?
+	if test "$status" != 0 ; then
+		echo "xzdiff with one _z operand exited with status $status != 0"
+		exit 1
+	fi
+fi
+
 # The exit status must be 0 when a match was found at least from one file,
 # and 1 when no match was found in any file.
 cp "$srcdir/files/good-1-lzma2-1.xz" xzgrep_test_1.xz

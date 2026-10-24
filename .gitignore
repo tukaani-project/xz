@@ -74,6 +74,9 @@ coverage
 /tests/test_memlimit
 /tests/test_stream_flags
 /tests/test_vli
+/tests/xzdiff_test
+/tests/xzdiff_test.xz
+/tests/xzdiff_test_z
 /tests/xzgrep_test_1.xz
 /tests/xzgrep_test_2.xz
 /tests/xzgrep_test_output

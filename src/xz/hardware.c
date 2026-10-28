@@ -15,6 +15,10 @@
 #	include <sys/resource.h>
 #endif
 
+#if !defined(MYTHREAD_ENABLED) && defined(__clang__) && __clang_major__ >= 23
+#	pragma GCC diagnostic ignored "-Wunused-but-set-global"
+#endif
+
 
 /// Maximum number of worker threads. This can be set with
 /// the --threads=NUM command line option.

@@ -378,6 +378,9 @@ lzma_mf_hc4_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 	mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
 
+	if (len_limit > 4) // hash_4_prefetch() reads cur[1..4]
+		hash_4_prefetch(cur + 1);
+
 	uint32_t len_best = 1;
 
 	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
@@ -686,6 +689,9 @@ lzma_mf_bt4_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[hash_2_value] = pos;
 	mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 	mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
+
+	if (len_limit > 4) // hash_4_prefetch() reads cur[1..4]
+		hash_4_prefetch(cur + 1);
 
 	uint32_t len_best = 1;
 

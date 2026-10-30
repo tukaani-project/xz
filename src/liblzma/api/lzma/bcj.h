@@ -57,6 +57,11 @@
  */
 #define LZMA_FILTER_RISCV       LZMA_VLI_C(0x0B)
 
+/**
+ * \brief       Filter for DEC Alpha binaries
+ */
+#define LZMA_FILTER_ALPHA       LZMA_VLI_C(0x3F048B03BC530001)
+
 
 /**
  * \brief       Options for BCJ filters
@@ -96,6 +101,37 @@ typedef struct {
 	uint32_t start_offset;
 
 } lzma_options_bcj;
+
+
+/**
+ * \brief       Raw DEC Alpha BCJ encoder
+ *
+ * This is for special use cases only.
+ *
+ * \param       start_offset  The lowest 32 bits of the offset in the
+ *                            executable being filtered. For the DEC Alpha
+ *                            filter, this must be a multiple of four.
+ * \param       buf           Buffer to be filtered in place
+ * \param       size          Size of the buffer
+ *
+ * \return      Number of bytes that were processed in `buf`. This is at most
+ *              `size`. With the DEC Alpha filter, the return value is always
+ *              a multiple of 4, and at most 19 bytes are left unfiltered.
+ *
+ * \since       5.9.1alpha
+ */
+extern LZMA_API(size_t) lzma_bcj_alpha_encode(
+		uint32_t start_offset, uint8_t *buf, size_t size) lzma_nothrow;
+
+/**
+ * \brief       Raw DEC Alpha BCJ decoder
+ *
+ * See lzma_bcj_alpha_encode().
+ *
+ * \since       5.9.1alpha
+ */
+extern LZMA_API(size_t) lzma_bcj_alpha_decode(
+		uint32_t start_offset, uint8_t *buf, size_t size) lzma_nothrow;
 
 
 /**

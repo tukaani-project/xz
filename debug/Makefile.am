@@ -12,7 +12,8 @@ noinst_PROGRAMS = \
 	crc32 \
 	known_sizes \
 	hex2bin \
-	testfilegen-arm64
+	testfilegen-arm64 \
+	testfilegen-alpha
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/common \

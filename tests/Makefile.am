@@ -47,6 +47,7 @@ check_PROGRAMS = \
 	test_block_header \
 	test_index \
 	test_index_hash \
+	test_bcj_alpha \
 	test_bcj_exact_size \
 	test_memlimit \
 	test_alone_decoder \
@@ -64,6 +65,7 @@ TESTS = \
 	test_block_header \
 	test_index \
 	test_index_hash \
+	test_bcj_alpha \
 	test_bcj_exact_size \
 	test_memlimit \
 	test_alone_decoder \

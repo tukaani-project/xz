@@ -91,6 +91,11 @@ do
 			have_feature DECODER_RISCV "$I" || continue
 			;;
 	esac
+	case $I in
+		*/good-1-alpha-lzma2-*.xz)
+			have_feature DECODER_ALPHA "$I" || continue
+			;;
+	esac
 
 	if test -z "$XZ" || "$XZ" $NO_WARN -dc "$I" > /dev/null; then
 		:

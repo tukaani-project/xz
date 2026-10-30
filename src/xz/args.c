@@ -215,6 +215,7 @@ parse_real(args_info *args, int argc, char **argv)
 		OPT_ARM64,
 		OPT_SPARC,
 		OPT_RISCV,
+		OPT_ALPHA,
 		OPT_DELTA,
 		OPT_LZMA1,
 		OPT_LZMA2,
@@ -301,6 +302,7 @@ parse_real(args_info *args, int argc, char **argv)
 		{ "arm64",        optional_argument, NULL,  OPT_ARM64 },
 		{ "sparc",        optional_argument, NULL,  OPT_SPARC },
 		{ "riscv",        optional_argument, NULL,  OPT_RISCV },
+		{ "alpha",        optional_argument, NULL,  OPT_ALPHA },
 		{ "delta",        optional_argument, NULL,  OPT_DELTA },
 
 		// Other options
@@ -519,6 +521,11 @@ parse_real(args_info *args, int argc, char **argv)
 
 		case OPT_RISCV:
 			coder_add_filter(LZMA_FILTER_RISCV,
+					options_bcj(optarg));
+			break;
+
+		case OPT_ALPHA:
+			coder_add_filter(LZMA_FILTER_ALPHA,
 					options_bcj(optarg));
 			break;
 

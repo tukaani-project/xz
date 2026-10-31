@@ -162,5 +162,6 @@ test_filter ARMTHUMB armthumb
 test_filter ARM64 arm64
 test_filter SPARC sparc
 test_filter RISCV riscv
+test_filter LOONGARCH loongarch
 
 exit 0

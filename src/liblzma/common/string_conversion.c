@@ -258,7 +258,9 @@ static const char *parse_options(const char **const str, const char *str_end,
 		|| defined(HAVE_ENCODER_SPARC) \
 		|| defined(HAVE_DECODER_SPARC) \
 		|| defined(HAVE_ENCODER_RISCV) \
-		|| defined(HAVE_DECODER_RISCV)
+		|| defined(HAVE_DECODER_RISCV) \
+		|| defined(HAVE_ENCODER_LOONGARCH) \
+		|| defined(HAVE_DECODER_LOONGARCH)
 static const option_map bcj_optmap[] = {
 	{
 		.name = "start",
@@ -523,6 +525,11 @@ static const struct {
 
 #if defined(HAVE_ENCODER_RISCV) || defined(HAVE_DECODER_RISCV)
 	{ "riscv",        sizeof(lzma_options_bcj),   LZMA_FILTER_RISCV,
+	  &parse_bcj,     bcj_optmap, 1, 1, true },
+#endif
+
+#if defined(HAVE_ENCODER_LOONGARCH) || defined(HAVE_DECODER_LOONGARCH)
+	{ "loongarch",        sizeof(lzma_options_bcj),   LZMA_FILTER_LOONGARCH,
 	  &parse_bcj,     bcj_optmap, 1, 1, true },
 #endif
 

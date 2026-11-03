@@ -1019,7 +1019,12 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		const size_t in_old = *in_pos;
 		lzma_bufcpy(in, in_pos, in_size, coder->buffer, &coder->pos,
 				LZMA_STREAM_HEADER_SIZE);
-		coder->progress_in += *in_pos - in_old;
+
+		// Worker threads may update coder->progress_in at the same
+		// time, and lzma_get_progress() may read it concurrently.
+		mythread_sync(coder->mutex) {
+			coder->progress_in += *in_pos - in_old;
+		}
 
 		// Return if we didn't get the whole Stream Header yet.
 		if (coder->pos < LZMA_STREAM_HEADER_SIZE)
@@ -1619,8 +1624,13 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 				coder->block_decoder.coder, allocator,
 				in, in_pos, in_size, out, out_pos, out_size,
 				action);
-		coder->progress_in += *in_pos - in_old;
-		coder->progress_out += *out_pos - out_old;
+
+		// Worker threads may update coder->progress_* at the same
+		// time, and lzma_get_progress() may read it concurrently.
+		mythread_sync(coder->mutex) {
+			coder->progress_in += *in_pos - in_old;
+			coder->progress_out += *out_pos - out_old;
+		}
 
 		if (ret != LZMA_STREAM_END)
 			return ret;
@@ -1661,7 +1671,13 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		const size_t in_old = *in_pos;
 		const lzma_ret ret = lzma_index_hash_decode(coder->index_hash,
 				in, in_pos, in_size);
-		coder->progress_in += *in_pos - in_old;
+
+		// Worker threads may update coder->progress_in at the same
+		// time, and lzma_get_progress() may read it concurrently.
+		mythread_sync(coder->mutex) {
+			coder->progress_in += *in_pos - in_old;
+		}
+
 		if (ret != LZMA_STREAM_END)
 			return ret;
 
@@ -1674,7 +1690,12 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		const size_t in_old = *in_pos;
 		lzma_bufcpy(in, in_pos, in_size, coder->buffer, &coder->pos,
 				LZMA_STREAM_HEADER_SIZE);
-		coder->progress_in += *in_pos - in_old;
+
+		// Worker threads may update coder->progress_in at the same
+		// time, and lzma_get_progress() may read it concurrently.
+		mythread_sync(coder->mutex) {
+			coder->progress_in += *in_pos - in_old;
+		}
 
 		// Return if we didn't get the whole Stream Footer yet.
 		if (coder->pos < LZMA_STREAM_HEADER_SIZE)
@@ -1710,12 +1731,22 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		FALLTHROUGH;
 	}
 
-	case SEQ_STREAM_PADDING:
+	case SEQ_STREAM_PADDING: {
 		assert(coder->concatenated);
+
+		// Account for the Stream Padding bytes consumed below as a
+		// single coder->progress_in update under coder->mutex, since
+		// worker threads may update it and lzma_get_progress() may
+		// read it concurrently.
+		const size_t in_old = *in_pos;
 
 		// Skip over possible Stream Padding.
 		while (true) {
 			if (*in_pos >= in_size) {
+				mythread_sync(coder->mutex) {
+					coder->progress_in += *in_pos - in_old;
+				}
+
 				// Unless LZMA_FINISH was used, we cannot
 				// know if there's more input coming later.
 				if (action != LZMA_FINISH)
@@ -1734,7 +1765,6 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 				break;
 
 			++*in_pos;
-			++coder->progress_in;
 			coder->pos = (coder->pos + 1) & 3;
 		}
 
@@ -1742,13 +1772,21 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		// Stream Padding is OK).
 		if (coder->pos != 0) {
 			++*in_pos;
-			++coder->progress_in;
+			mythread_sync(coder->mutex) {
+				coder->progress_in += *in_pos - in_old;
+			}
+
 			return LZMA_DATA_ERROR;
+		}
+
+		mythread_sync(coder->mutex) {
+			coder->progress_in += *in_pos - in_old;
 		}
 
 		// Prepare to decode the next Stream.
 		return_if_error(stream_decoder_reset(coder, allocator));
 		break;
+	}
 
 	case SEQ_ERROR:
 		if (!coder->fail_fast) {

@@ -374,14 +374,15 @@ io_copy_attrs(const file_pair *pair)
 	// Copy the timestamps. We have several possible ways to do this, of
 	// which some are better in both security and precision.
 	//
-	// First, get the nanosecond part of the timestamps. As of writing,
-	// it's not standardized by POSIX, and there are several names for
-	// the same thing in struct stat.
+	// First, get the nanosecond part of the timestamps. It was
+	// standardized in POSIX.1-2008. Older systems use various
+	// names for the same thing in struct stat. Of those, old
+	// GNU and BSD names are still supported.
 	long atime_nsec;
 	long mtime_nsec;
 
 #	if defined(HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC)
-	// GNU and Solaris
+	// POSIX.1-2008, GNU, and Solaris
 	atime_nsec = pair->src_st.st_atim.tv_nsec;
 	mtime_nsec = pair->src_st.st_mtim.tv_nsec;
 

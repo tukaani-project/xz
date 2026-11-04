@@ -179,6 +179,15 @@ typedef struct {
 	/// This is ignored if uncompressed_size == LZMA_VLI_UNKNOWN.
 	bool allow_eopm;
 
+	/// This is true when the next LZMA symbol is allowed to be EOPM.
+	/// That is, if this is false, then EOPM is considered
+	/// an invalid symbol and we will return LZMA_DATA_ERROR.
+	///
+	/// This is always true when uncompressed_size == LZMA_VLI_UNKNOWN.
+	/// If allow_eopm is true, eopm_is_valid might be set to true after
+	/// the expected amount of uncompressed output has been produced.
+	bool eopm_is_valid;
+
 	////////////////////////////////
 	// State of incomplete symbol //
 	////////////////////////////////
@@ -287,15 +296,6 @@ lzma_decode(void *coder_ptr, lzma_dict *restrict dictptr,
 	uint32_t pos_state = dict.pos & pos_mask;
 
 	lzma_ret ret = LZMA_OK;
-
-	// This is true when the next LZMA symbol is allowed to be EOPM.
-	// That is, if this is false, then EOPM is considered
-	// an invalid symbol and we will return LZMA_DATA_ERROR.
-	//
-	// EOPM is always required (not just allowed) when
-	// the uncompressed size isn't known. When uncompressed size
-	// is known, eopm_is_valid may be set to true later.
-	bool eopm_is_valid = coder->uncompressed_size == LZMA_VLI_UNKNOWN;
 
 	// If uncompressed size is known and there is enough output space
 	// to decode all the data, limit the available buffer space so that
@@ -684,7 +684,7 @@ slow:
 
 			// Otherwise continue decoding with the expectation
 			// that the next LZMA symbol is EOPM.
-			eopm_is_valid = true;
+			coder->eopm_is_valid = true;
 		}
 
 		rc_if_0_safe(coder->is_match[state][pos_state], SEQ_IS_MATCH) {
@@ -856,7 +856,7 @@ slow:
 #ifndef HAVE_SMALL
 eopm:
 #endif
-						if (!eopm_is_valid) {
+						if (!coder->eopm_is_valid) {
 							ret = LZMA_DATA_ERROR;
 							goto out;
 						}
@@ -1028,6 +1028,7 @@ lzma_decoder_uncompressed(void *coder_ptr, lzma_vli uncompressed_size,
 	lzma_lzma1_decoder *coder = coder_ptr;
 	coder->uncompressed_size = uncompressed_size;
 	coder->allow_eopm = allow_eopm;
+	coder->eopm_is_valid = uncompressed_size == LZMA_VLI_UNKNOWN;
 }
 
 

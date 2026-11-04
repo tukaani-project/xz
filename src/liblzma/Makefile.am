@@ -34,7 +34,9 @@ liblzma_la_LDFLAGS += \
 	-Wl,--version-script=$(top_srcdir)/src/liblzma/liblzma_linux.map
 endif
 
-liblzma_la_SOURCES += ../common/tuklib_physmem.c
+liblzma_la_SOURCES += \
+	../common/tuklib_physmem.c \
+	../common/tuklib_cgroup.c
 
 if COND_THREADS
 liblzma_la_SOURCES += ../common/tuklib_cpucores.c

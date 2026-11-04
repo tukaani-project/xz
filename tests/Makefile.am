@@ -37,6 +37,7 @@ endif
 
 check_PROGRAMS = \
 	create_compress_files \
+	decode_byte_by_byte \
 	test_check \
 	test_hardware \
 	test_stream_buffer_decode \

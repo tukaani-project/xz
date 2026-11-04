@@ -105,6 +105,8 @@ do
 		echo "Good file failed: $I"
 		exit 1
 	fi
+
+	./decode_byte_by_byte "$I" > /dev/null || exit 1
 done
 
 for I in "$srcdir"/files/bad-*.xz
@@ -185,6 +187,8 @@ do
 		echo "Good file failed: $I"
 		exit 1
 	fi
+
+	./decode_byte_by_byte "$I" > /dev/null || exit 1
 done
 
 for I in "$srcdir"/files/bad-*.lzma
@@ -209,6 +213,11 @@ if have_feature LZIP_DECODER ".lz files" ; then
 			echo "Good file failed: $I"
 			exit 1
 		fi
+
+		case $I in
+			*trailing*) ;;
+			*) ./decode_byte_by_byte "$I" > /dev/null || exit 1 ;;
+		esac
 	done
 
 	for I in "$srcdir"/files/bad-*.lz "$srcdir"/files/unsupported-*.lz

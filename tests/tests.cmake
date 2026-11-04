@@ -216,6 +216,18 @@ if(BUILD_TESTING)
         # files outside the build directory!
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_files")
 
+        # test_files.sh needs the decode_byte_by_byte program.
+        # Put the executable in the above-created directory so that
+        # test_files.sh can run it with ./decode_byte_by_byte.
+        add_executable(decode_byte_by_byte tests/decode_byte_by_byte.c)
+        target_include_directories(decode_byte_by_byte PRIVATE
+            src/common
+            src/liblzma/api
+        )
+        target_link_libraries(decode_byte_by_byte PRIVATE liblzma tests_w32res)
+        set_target_properties(decode_byte_by_byte PROPERTIES
+                              RUNTIME_OUTPUT_DIRECTORY test_files)
+
         add_test(NAME test_files.sh
             COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_files.sh" ".."
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_files"

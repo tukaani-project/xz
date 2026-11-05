@@ -37,7 +37,6 @@ endif
 
 check_PROGRAMS = \
 	create_compress_files \
-	decode_byte_by_byte \
 	test_check \
 	test_hardware \
 	test_stream_buffer_decode \
@@ -75,6 +74,10 @@ TESTS = \
 	test_compress_generated_abc \
 	test_compress_generated_random \
 	test_compress_generated_text
+
+if COND_DECODER_LZMA1
+check_PROGRAMS += decode_byte_by_byte
+endif
 
 if COND_MICROLZMA
 check_PROGRAMS += test_microlzma

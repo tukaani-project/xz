@@ -848,8 +848,13 @@ stream_encode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		// Stream Footer into account. Those are very fast to encode
 		// so in terms of progress information they can be thought
 		// to be ready to be copied out.
-		coder->progress_out += lzma_index_size(coder->index)
-				+ LZMA_STREAM_HEADER_SIZE;
+		//
+		// lzma_get_progress() may read coder->progress_out
+		// concurrently, so update it while holding coder->mutex.
+		mythread_sync(coder->mutex) {
+			coder->progress_out += lzma_index_size(coder->index)
+					+ LZMA_STREAM_HEADER_SIZE;
+		}
 
 		FALLTHROUGH;
 	}

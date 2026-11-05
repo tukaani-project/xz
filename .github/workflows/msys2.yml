@@ -60,7 +60,6 @@ jobs:
           msystem: ${{ matrix.sys }}
           update: true
           pacboy: >
-            make:p
             ninja:p
             autotools:p
             cmake:p

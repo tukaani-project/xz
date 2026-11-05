@@ -13,6 +13,7 @@
 # If both xz and xzdec were not built, skip this test.
 XZ=${1:-../src/xz}/xz
 XZDEC=${1:-../src/xzdec}/xzdec
+DECODE_BYTE_BY_BYTE=${1:-.}/decode_byte_by_byte
 test -x "$XZ" || XZ=
 test -x "$XZDEC" || XZDEC=
 if test -z "$XZ$XZDEC"; then
@@ -106,7 +107,7 @@ do
 		exit 1
 	fi
 
-	./decode_byte_by_byte "$I" > /dev/null || exit 1
+	"${DECODE_BYTE_BY_BYTE}" "$I" > /dev/null || exit 1
 done
 
 for I in "$srcdir"/files/bad-*.xz
@@ -188,7 +189,7 @@ do
 		exit 1
 	fi
 
-	./decode_byte_by_byte "$I" > /dev/null || exit 1
+	"${DECODE_BYTE_BY_BYTE}" "$I" > /dev/null || exit 1
 done
 
 for I in "$srcdir"/files/bad-*.lzma
@@ -216,7 +217,8 @@ if have_feature LZIP_DECODER ".lz files" ; then
 
 		case $I in
 			*trailing*) ;;
-			*) ./decode_byte_by_byte "$I" > /dev/null || exit 1 ;;
+			*) "${DECODE_BYTE_BY_BYTE}" "$I" > /dev/null \
+					|| exit 1 ;;
 		esac
 	done
 

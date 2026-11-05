@@ -1456,7 +1456,6 @@ coder_run(const char *filename)
 }
 
 
-#ifndef NDEBUG
 extern void
 coder_free(void)
 {
@@ -1473,4 +1472,3 @@ coder_free(void)
 	lzma_end(&strm);
 	return;
 }
-#endif

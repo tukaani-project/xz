@@ -203,7 +203,7 @@ then
 
 		cd "$DEST_DIR"
 
-		add_to_filter_list "$BCJ" ",x86,powerpc,ia64,arm,armthumb,arm64,sparc,riscv"
+		add_to_filter_list "$BCJ" ",x86,powerpc,ia64,arm,armthumb,arm64,sparc,riscv,loongarch"
 		add_to_filter_list "$DELTA" ",delta"
 
 		add_extra_option "$ENCODERS" "--enable-encoders=$FILTER_LIST" "--disable-encoders"
@@ -234,7 +234,7 @@ then
 	cmake)
 		cd "$DEST_DIR"
 
-		add_to_filter_list "$BCJ" ";x86;powerpc;ia64;arm;armthumb;arm64;sparc;riscv"
+		add_to_filter_list "$BCJ" ";x86;powerpc;ia64;arm;armthumb;arm64;sparc;riscv;loongarch"
 		add_to_filter_list "$DELTA" ";delta"
 
 		add_extra_option "$THREADS" "-DXZ_THREADS=yes" "-DXZ_THREADS=no"

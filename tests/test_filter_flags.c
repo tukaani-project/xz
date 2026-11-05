@@ -50,6 +50,9 @@ static lzma_filter bcj_filters_encoders[] = {
 #ifdef HAVE_ENCODER_RISCV
 	{ LZMA_FILTER_RISCV, NULL },
 #endif
+#ifdef HAVE_ENCODER_LOONGARCH
+	{ LZMA_FILTER_LOONGARCH, NULL },
+#endif
 	{ LZMA_VLI_UNKNOWN, NULL }
 };
 
@@ -82,6 +85,9 @@ static lzma_filter bcj_filters_decoders[] = {
 #endif
 #ifdef HAVE_DECODER_RISCV
 	{ LZMA_FILTER_RISCV, NULL },
+#endif
+#ifdef HAVE_DECODER_LOONGARCH
+	{ LZMA_FILTER_LOONGARCH, NULL },
 #endif
 	{ LZMA_VLI_UNKNOWN, NULL }
 };

@@ -8,11 +8,11 @@
 ###############################################################################
 
 # Optional argument:
-# $1 = directory of the xz executable
+# $1 = directory of the xz and xzdec executables
 
 # If both xz and xzdec were not built, skip this test.
 XZ=${1:-../src/xz}/xz
-XZDEC=${2:-../src/xzdec}/xzdec
+XZDEC=${1:-../src/xzdec}/xzdec
 test -x "$XZ" || XZ=
 test -x "$XZDEC" || XZDEC=
 if test -z "$XZ$XZDEC"; then

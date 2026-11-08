@@ -671,6 +671,41 @@ lzma_mf_bt3_skip(lzma_mf *mf, uint32_t amount)
 
 
 #ifdef HAVE_MF_BT4
+/// Check the match candidates from the 2- and 3-byte hash tables.
+/// delta2 and delta3 are the distances to them. Returns the number of
+/// matches written to matches[] and sets *len_best to the longest one.
+static inline uint32_t
+bt4_hash_matches(const uint8_t *cur, uint32_t delta2, uint32_t delta3,
+		uint32_t cyclic_size, uint32_t len_limit,
+		lzma_match *matches, uint32_t *len_best)
+{
+	uint32_t matches_count = 0;
+	*len_best = 1;
+
+	if (delta2 < cyclic_size && *(cur - delta2) == *cur) {
+		*len_best = 2;
+		matches[0].len = 2;
+		matches[0].dist = delta2 - 1;
+		matches_count = 1;
+	}
+
+	if (delta2 != delta3 && delta3 < cyclic_size
+			&& *(cur - delta3) == *cur) {
+		*len_best = 3;
+		matches[matches_count++].dist = delta3 - 1;
+		delta2 = delta3;
+	}
+
+	if (matches_count != 0) {
+		*len_best = lzma_memcmplen(
+				cur, cur - delta2, *len_best, len_limit);
+		matches[matches_count - 1].len = *len_best;
+	}
+
+	return matches_count;
+}
+
+
 extern uint32_t
 lzma_mf_bt4_find(lzma_mf *mf, lzma_match *matches)
 {
@@ -678,7 +713,7 @@ lzma_mf_bt4_find(lzma_mf *mf, lzma_match *matches)
 
 	hash_4_calc();
 
-	uint32_t delta2 = pos - mf->hash[hash_2_value];
+	const uint32_t delta2 = pos - mf->hash[hash_2_value];
 	const uint32_t delta3
 			= pos - mf->hash[FIX_3_HASH_SIZE + hash_3_value];
 	const uint32_t cur_match = mf->hash[FIX_4_HASH_SIZE + hash_value];
@@ -687,32 +722,13 @@ lzma_mf_bt4_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 	mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
 
-	uint32_t len_best = 1;
+	uint32_t len_best;
+	matches_count = bt4_hash_matches(cur, delta2, delta3,
+			mf->cyclic_size, len_limit, matches, &len_best);
 
-	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
-		len_best = 2;
-		matches[0].len = 2;
-		matches[0].dist = delta2 - 1;
-		matches_count = 1;
-	}
-
-	if (delta2 != delta3 && delta3 < mf->cyclic_size
-			&& *(cur - delta3) == *cur) {
-		len_best = 3;
-		matches[matches_count++].dist = delta3 - 1;
-		delta2 = delta3;
-	}
-
-	if (matches_count != 0) {
-		len_best = lzma_memcmplen(
-				cur, cur - delta2, len_best, len_limit);
-
-		matches[matches_count - 1].len = len_best;
-
-		if (len_best == len_limit) {
-			bt_skip();
-			return matches_count;
-		}
+	if (len_best == len_limit) {
+		bt_skip();
+		return matches_count;
 	}
 
 	if (len_best < 3)

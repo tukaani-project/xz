@@ -761,6 +761,10 @@ lzma_mf_bt4_skip(lzma_mf *mf, uint32_t amount)
 
 
 #ifdef HAVE_MF_BT4MT
+/// How many positions ahead the BT4MT threads prefetch
+#define BT4MT_PREFETCH 8
+
+
 /// \brief      Do the hashing part of BT4 for a range of positions
 ///
 /// This updates the hash tables like lzma_mf_bt4_find() does. For each
@@ -775,6 +779,19 @@ lzma_mf_bt4mt_hash(const lzma_mf *mf, uint32_t pos, uint32_t count,
 	uint32_t *hash = mf->hash;
 
 	for (uint32_t i = 0; i < count; ++i) {
+#if defined(__GNUC__) || defined(__clang__)
+		if (count - i > BT4MT_PREFETCH) {
+			const uint8_t *p = cur + BT4MT_PREFETCH;
+			const uint32_t t = hash_table[p[0]] ^ p[1];
+			const uint32_t t3 = t ^ ((uint32_t)(p[2]) << 8);
+			__builtin_prefetch(&hash[FIX_3_HASH_SIZE
+					+ (t3 & HASH_3_MASK)], 1, 3);
+			__builtin_prefetch(&hash[FIX_4_HASH_SIZE
+					+ ((t3 ^ (hash_table[p[3]] << 5))
+						& mf->hash_mask)], 1, 3);
+		}
+#endif
+
 		hash_4_calc();
 
 		out[0] = hash[FIX_4_HASH_SIZE + hash_value];
@@ -822,6 +839,26 @@ lzma_mf_bt4mt_fill(const lzma_mf *mf, uint32_t pos, uint32_t *cyclic_pos,
 	const lzma_match *out_limit = out + out_size - nice_len;
 
 	while (done < count && out < out_limit) {
+#if defined(__GNUC__) || defined(__clang__)
+		// The first node of the tree and the data it points to
+		// are usually not in the cache. The match candidate of
+		// a later position is already known, so fetch them early.
+		if (count - done > BT4MT_PREFETCH) {
+			const uint32_t delta = pos + BT4MT_PREFETCH
+					- heads[3 * BT4MT_PREFETCH];
+			if (delta < cyclic_size) {
+				uint32_t c = cyc + BT4MT_PREFETCH;
+				if (c >= cyclic_size)
+					c -= cyclic_size;
+
+				c = c - delta + (delta > c ? cyclic_size : 0);
+				__builtin_prefetch(son + (c << 1), 0, 3);
+				__builtin_prefetch(cur + BT4MT_PREFETCH - delta,
+						0, 3);
+			}
+		}
+#endif
+
 		lzma_match *end = bt_find_func(nice_len, pos, cur, heads[0],
 				mf->depth, son, cyc, cyclic_size, out + 2, 3);
 

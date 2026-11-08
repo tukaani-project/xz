@@ -3,24 +3,23 @@
 # Latvian translation for xz utils.
 # Copyright (C) 2026 the last and past translators
 # This file is published under the BSD Zero Clause License.
-# Rihards Prieditis <rprieditis@gmail.com>, 2026.
+# Rihards Priedītis <rprieditis@gmail.com>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: xz 5.8.4-pre1\n"
 "Report-Msgid-Bugs-To: xz@tukaani.org\n"
 "POT-Creation-Date: 2026-08-15 19:56+0300\n"
-"PO-Revision-Date: 2026-09-28 09:43+0300\n"
-"Last-Translator: Rihards Prieditis <rprieditis@gmail.com>\n"
-"Language-Team: Latvian <translation-team-lv@lists.sourceforge.net>\n"
+"PO-Revision-Date: 2026-11-07 20:06+0200\n"
+"Last-Translator: Rihards Priedītis <rprieditis@gmail.com>\n"
+"Language-Team: Latvian <translation-team-lv@googlegroups.com>\n"
 "Language: lv\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==0 || (n%100>=11 && n%100<=19) ? 0 : n%10==1 && n%100!=11 ? 1 : 2);\n"
-"X-Generator: Poedit 3.9\n"
+"X-Generator: Poedit 3.10\n"
 
 #: src/xz/args.c
 #, c-format
@@ -39,7 +38,7 @@ msgstr "Opcijā --block-list trūkst bloka izmēra aiz filtra ķēdes numura '%c
 
 #: src/xz/args.c
 msgid "0 can only be used as the last element in --block-list"
-msgstr "0 drīkst izmantot tikai kā pēdējo elementu opcijā --block-list."
+msgstr "0 drīkst izmantot tikai kā pēdējo elementu opcijā --block-list"
 
 #: src/xz/args.c
 #, c-format
@@ -71,11 +70,11 @@ msgstr "Vides mainīgais %s satur pārāk daudz argumentu"
 
 #: src/xz/args.c
 msgid "Compression support was disabled at build time"
-msgstr "Saspiešanas atbalsts tika atslēgts būvēšanas laikā"
+msgstr "Saspiešanas atbalsts tika atspējots būvēšanas laikā"
 
 #: src/xz/args.c
 msgid "Decompression support was disabled at build time"
-msgstr "Atspiešanas atbalsts tika atslēgts būvēšanas laikā"
+msgstr "Atspiešanas atbalsts tika atspējots būvēšanas laikā"
 
 #: src/xz/args.c
 msgid "Compression of lzip files (.lz) is not supported"
@@ -100,7 +99,7 @@ msgstr "Kļūda opcijā --filters%s=FILTRI:"
 
 #: src/xz/coder.c
 msgid "Memory usage limit is too low for the given filter setup."
-msgstr "Atmiņas lietojuma limits ir pārāk zems norādītajiem filtru iestatījumiem."
+msgstr "Atmiņas lietojuma ierobežojums ir pārāk zems norādītajiem filtru iestatījumiem."
 
 #: src/xz/coder.c
 #, c-format
@@ -144,37 +143,37 @@ msgstr "Tiek izmantoti līdz %<PRIu32> pavedieniem."
 
 #: src/xz/coder.c
 msgid "Unsupported filter chain or filter options"
-msgstr "Neatbalstīta filtru ķēde vai opcijas"
+msgstr "Neatbalstīta filtru ķēde vai filtru opcijas"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Decompression will need %s MiB of memory."
-msgstr "Atspoiešanai būs nepieciešami %s MiB atmiņas."
+msgstr "Atspiešanai būs nepieciešami %s MiB atmiņas."
 
 #: src/xz/coder.c
 #, c-format
 msgid "Reduced the number of threads from %s to %s to not exceed the memory usage limit of %s MiB"
-msgstr "Samazināts pavedienu skaits no %s līdz %s, lai nepārsniegtu atmiņas lietojuma limitu %s MiB"
+msgstr "Samazināts pavedienu skaits no %s līdz %s, lai nepārsniegtu atmiņas lietojuma ierobežojumu %s MiB"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Reduced the number of threads from %s to one. The automatic memory usage limit of %s MiB is still being exceeded. %s MiB of memory is required. Continuing anyway."
-msgstr "Pavedienu skaits samazināts no %s līdz vienam. Automātiskais atmiņas lietojuma limits %s MiB joprojām tiek pārsniegts. Nepieciešami %s MiB atmiņas. Darbība tiek turpināta."
+msgstr "Pavedienu skaits samazināts no %s līdz vienam. Automātiskais atmiņas lietojuma ierobežojums %s MiB joprojām tiek pārsniegts. Nepieciešami %s MiB atmiņas. Darbība tiek turpināta."
 
 #: src/xz/coder.c
 #, c-format
 msgid "Switching to single-threaded mode to not exceed the memory usage limit of %s MiB"
-msgstr "Pārslēdzas uz viena pavediena režīmu, lai nepārsniegtu atmiņas lietojuma limitu %s MiB"
+msgstr "Pārslēdzas uz viena pavediena režīmu, lai nepārsniegtu atmiņas lietojuma ierobežojumu %s MiB"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Adjusted LZMA%c dictionary size from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "Pielāgots LZMA%c vārdnīcas izmērs no %s MiB uz %s MiB, lai nepārsniegtu atmiņas lietojuma limitu %s MiB"
+msgstr "Pielāgots LZMA%c vārdnīcas izmērs no %s MiB uz %s MiB, lai nepārsniegtu atmiņas lietojuma ierobežojumu %s MiB"
 
 #: src/xz/coder.c
 #, c-format
 msgid "Adjusted LZMA%c dictionary size for --filters%u from %s MiB to %s MiB to not exceed the memory usage limit of %s MiB"
-msgstr "Pielāgots LZMA%c vārdnīcas izmērs opcijai --filters%u no %s MiB uz %s MiB, lai nepārsniegtu atmiņas lietojuma limitu %s MiB"
+msgstr "Pielāgots LZMA%c vārdnīcas izmērs opcijai --filters%u no %s MiB uz %s MiB, lai nepārsniegtu atmiņas lietojuma ierobežojumu %s MiB"
 
 #: src/xz/coder.c
 #, c-format
@@ -184,7 +183,7 @@ msgstr "Kļūda, pārslēdzoties uz filtru ķēdi %u: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "Error creating a pipe: %s"
-msgstr "Kļūda, veidojot kanālu: %s"
+msgstr "Kļūda, veidojot cauruļvadu: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -239,7 +238,7 @@ msgstr "%s: Neizdevās sinhronizēt faila direktoriju: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "Error getting the file status flags from standard input: %s"
-msgstr "Kļūda, iegūstot faila statusa karogu no standarta ievades: %s"
+msgstr "Kļūda, iegūstot faila statusa karogus no standarta ievades: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -278,12 +277,12 @@ msgstr "Tukšs faila nosaukums, tiek izlaists"
 #: src/xz/file_io.c
 #, c-format
 msgid "Error restoring the status flags to standard input: %s"
-msgstr "Kļūda, atjaunojot statusa karogu standarta ievadei: %s"
+msgstr "Kļūda, atjaunojot statusa karogus standarta ievadei: %s"
 
 #: src/xz/file_io.c
 #, c-format
 msgid "Error getting the file status flags from standard output: %s"
-msgstr "Kļūda, iegūstot faila statusa karogu no standarta izvades: %s"
+msgstr "Kļūda, iegūstot faila statusa karogus no standarta izvades: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -308,7 +307,7 @@ msgstr "%s: Neizdevās aizvērt failu: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Seeking failed when trying to create a sparse file: %s"
-msgstr "%s: Neizdevās pozicionēt, mēģinot izveidot retinātu failu: %s"
+msgstr "%s: Neizdevās pārvietoties, mēģinot izveidot retinātu failu: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -318,7 +317,7 @@ msgstr "%s: Lasīšanas kļūda: %s"
 #: src/xz/file_io.c
 #, c-format
 msgid "%s: Error seeking the file: %s"
-msgstr "%s: Kļūda, pozicionējot failu: %s"
+msgstr "%s: Kļūda, pārvietojoties failā: %s"
 
 #: src/xz/file_io.c
 #, c-format
@@ -364,7 +363,7 @@ msgstr "Aparatūras informācija:"
 
 #: src/xz/hardware.c
 msgid "Memory usage limits:"
-msgstr "Atmiņas izmantošanas ierobežojumi:"
+msgstr "Atmiņas lietojuma ierobežojumi:"
 
 #: src/xz/list.c
 msgid "Streams:"
@@ -546,7 +545,7 @@ msgstr "%s: Pārāk mazs, lai būtu derīgs .xz fails"
 #. use two lines here. Test with "xz -l foo.xz".
 #: src/xz/list.c
 msgid "Strms  Blocks   Compressed Uncompressed  Ratio  Check   Filename"
-msgstr "Straumes  Bloki   Saspiests  Nesaspiests  Attiecība  Pārbaude   Faila nosaukums"
+msgstr " Str.   Bloki    Saspiests  Nesaspiests  Koef.  Pārb.   Faila nosaukums"
 
 #: src/xz/list.c
 msgid "Yes"
@@ -640,7 +639,7 @@ msgstr "Neatbalstīts integritātes pārbaudes veids; faila integritāte netiek 
 
 #: src/xz/message.c
 msgid "Memory usage limit reached"
-msgstr "Sasniegts atmiņas lietojuma limits"
+msgstr "Sasniegts atmiņas lietojuma ierobežojums"
 
 #: src/xz/message.c
 msgid "File format not recognized"
@@ -666,7 +665,7 @@ msgstr "Nepieciešami %s MiB atmiņas. Ierobežotājs ir atspējots."
 #: src/xz/message.c
 #, c-format
 msgid "%s MiB of memory is required. The limit is %s."
-msgstr "Nepieciešami %s MiB atmiņas. Limits ir %s."
+msgstr "Nepieciešami %s MiB atmiņas. Ierobežojums ir %s."
 
 #: src/xz/message.c
 #, c-format
@@ -676,22 +675,22 @@ msgstr "%s: Filtru ķēde: %s\n"
 #: src/xz/message.c
 #, c-format
 msgid "Try '%s --help' for more information."
-msgstr "Lai iegūtu papildu informāciju, palaidiet '%s --help'."
+msgstr "Mēģiniet '%s --help', lai iegūtu vairāk informācijas."
 
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Error printing the help text (error code %d)"
-msgstr "Neizdevās izdrukāt palīdzības tekstu (kļūdas kods %d)"
+msgstr "Neizdevās izvadīt palīdzības tekstu (kļūdas kods %d)"
 
 #: src/xz/message.c
 #, c-format
 msgid "Usage: %s [OPTION]... [FILE]...\n"
-msgstr "Lietojums: %s [OPCIJA]... [FAILS]...\n"
+msgstr "Lietošana: %s [OPCIJA]... [FAILS]...\n"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "Compress or decompress FILEs in the .xz format."
-msgstr "Saspiest vai atspiest failus .xz formātā."
+msgstr "Saspiest vai atspiest FAILUS .xz formātā."
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -736,7 +735,7 @@ msgstr "saglabāt (nedzēst) ievades failus"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "force overwrite of output file and (de)compress links"
-msgstr "piespiest pārrakstīt izvades failu un (at)spiest saites"
+msgstr "piespiest pārrakstīt izvades failu un saspiest/atspiest saites"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -765,7 +764,7 @@ msgstr ".SUF"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "use the suffix '.SUF' on compressed files"
-msgstr "lietot piedēkli '.SUF' saspiestajiem failiem"
+msgstr "izmantot piedēkli '.SUF' saspiestajiem failiem"
 
 #: src/xz/message.c
 msgid "FILE"
@@ -774,12 +773,12 @@ msgstr "FAILS"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "read filenames to process from FILE; if FILE is omitted, filenames are read from the standard input; filenames must be terminated with the newline character"
-msgstr "nolasīt apstrādājamo failu nosaukumus no FAILS; ja FAILS nav norādīts, failu nosaukumi tiek nolasīti no standarta ievades; failu nosaukumiem jābeidzas ar jaunrindas rakstzīmi"
+msgstr "nolasīt apstrādājamo failu nosaukumus no FAILA; ja FAILS nav norādīts, failu nosaukumi tiek nolasīti no standarta ievades; failu nosaukumiem jābeidzas ar jaunas rindas rakstzīmi"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "like --files but use the null character as terminator"
-msgstr "tāpat kā --files, bet kā atdalītāju izmanto nulles rakstzīmi"
+msgstr "tāpat kā --files, bet kā beigu rakstzīmi izmantot nulles rakstzīmi"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -807,7 +806,7 @@ msgstr "integritātes pārbaudes veids: 'none' (lietot uzmanīgi), 'crc32', 'crc
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "don't verify the integrity check when decompressing"
-msgstr "neveikt integritātes pārbaudi, atspiežot"
+msgstr "nepārbaudīt integritāti, atspiežot"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -828,7 +827,7 @@ msgstr "SKAITS"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "use at most NUM threads; the default is 0 which uses as many threads as there are processor cores"
-msgstr "izmantot ne vairāk kā SKAITA pavedienu; noklusējums ir 0, kas izmanto tik daudz pavedienu, cik ir procesora kodolu"
+msgstr "izmantot ne vairāk kā SKAITS pavedienus; noklusējums ir 0, kas izmanto tik pavedienu, cik ir procesora kodolu"
 
 #: src/xz/message.c
 msgid "SIZE"
@@ -837,7 +836,7 @@ msgstr "IZMĒRS"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "start a new .xz block after every SIZE bytes of input; use this to set the block size for threaded compression"
-msgstr "sākt jaunu .xz bloku pēc katriem IZMĒRA baitiem ievades; izmantojiet šo, lai iestatītu bloka izmēru pavedienu saspiešanai"
+msgstr "sākt jaunu .xz bloku pēc katriem IZMĒRS ievades baitiem; izmantojiet to, lai iestatītu bloka izmēru vairākpavedienu saspiešanai"
 
 #: src/xz/message.c
 msgid "BLOCKS"
@@ -846,12 +845,12 @@ msgstr "BLOKI"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "start a new .xz block after the given comma-separated intervals of uncompressed data; optionally, specify a filter chain number (0-9) followed by a ':' before the uncompressed data size"
-msgstr "sākt jaunu .xz bloku pēc norādītajiem ar komatiem atdalītiem nekompresēto datu intervāliem; pēc izvēles var norādīt filtra ķēdes numuru (0-9), kam seko ':', pirms nekompresēto datu izmēra"
+msgstr "sākt jaunu .xz bloku pēc norādītajiem ar komatiem atdalītiem nesaspiesto datu intervāliem; pēc izvēles pirms nesaspiesto datu izmēra var norādīt filtru ķēdes numuru (0-9), kam seko ':'"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "when compressing, if more than NUM milliseconds has passed since the previous flush and reading more input would block, all pending data is flushed out"
-msgstr "saspiežot, ja kopš iepriekšējās iztukšošanas ir pagājušas vairāk nekā NUM milisekundes un turpmākas ievades nolasīšana tiktu bloķēta, visi gaidošie dati tiek iztukšoti"
+msgstr "saspiežot, ja kopš iepriekšējās iztukšošanas ir pagājušas vairāk nekā SKAITS milisekundes un turpmākas ievades nolasīšana bloķētu, visi gaidošie dati tiek iztukšoti"
 
 #: src/xz/message.c
 msgid "LIMIT"
@@ -861,17 +860,17 @@ msgstr "IEROBEŽOJUMS"
 #: src/xz/message.c
 #, no-c-format
 msgid "set memory usage limit for compression, decompression, threaded decompression, or all of these; LIMIT is in bytes, % of RAM, or 0 for defaults"
-msgstr "iestatīt atmiņas patēriņa ierobežojumu saspiešanai, atspiešana, vairāku pavedienu atspiešana vai visiem iepriekš minētajiem; IEROBEŽOJUMS ir norādīts baitos, % no RAM vai 0 noklusējuma vērtībām"
+msgstr "iestatīt atmiņas lietojuma ierobežojumu saspiešanai, atspiešanai, vairākpavedienu atspiešanai vai visām tām; IEROBEŽOJUMS ir baitos, % no RAM vai 0 noklusējuma vērtībām"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "if compression settings exceed the memory usage limit, give an error instead of adjusting the settings downwards"
-msgstr "ja kompresēšanas iestatījumi pārsniedz atmiņas patēriņa ierobežojumu, ziņot par kļūdu, nevis pazemināt iestatījumus"
+msgstr "ja saspiešanas iestatījumi pārsniedz atmiņas lietojuma ierobežojumu, ziņot par kļūdu, nevis samazināt iestatījumus"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "Custom filter chain for compression (an alternative to using presets):"
-msgstr "Pielāgota filtru ķēde kompresēšanai (alternatīva priekšiestatījumu izmantošanai):"
+msgstr "Pielāgota filtru ķēde saspiešanai (alternatīva priekšiestatījumu izmantošanai):"
 
 #: src/xz/message.c
 msgid "FILTERS"
@@ -880,12 +879,12 @@ msgstr "FILTRI"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "set the filter chain using the liblzma filter string syntax; use --filters-help for more information"
-msgstr "iestatiet filtru ķēdi, izmantojot liblzma filtra virknes sintaksi; papildinformācijai izmantojiet --filters-help"
+msgstr "iestatīt filtru ķēdi, izmantojot liblzma filtru virknes sintaksi; papildinformācijai izmantojiet --filters-help"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "set additional filter chains using the liblzma filter string syntax to use with --block-list"
-msgstr "iestatiet papildu filtru ķēdes, izmantojot liblzma filtra virknes sintaksi, lietošanai kopā ar --block-list"
+msgstr "iestatīt papildu filtru ķēdes, izmantojot liblzma filtru virknes sintaksi, lietošanai kopā ar --block-list"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -895,7 +894,7 @@ msgstr "parādīt papildinformāciju par liblzma filtra virknes sintaksi un izie
 #. TRANSLATORS: Short for OPTIONS.
 #: src/xz/message.c
 msgid "OPTS"
-msgstr "OPTS"
+msgstr "OPC"
 
 #. TRANSLATORS: Use semicolon (or its fullwidth form)
 #. in "(valid values; default)" even if it is weird in
@@ -905,7 +904,7 @@ msgstr "OPTS"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "LZMA1 or LZMA2; OPTS is a comma-separated list of zero or more of the following options (valid values; default):"
-msgstr "LZMA1 vai LZMA2; OPTS ir ar komatiem atdalīts saraksts ar nulli vai vairāk no šādām opcijām (derīgās vērtības; noklusējums):"
+msgstr "LZMA1 vai LZMA2; OPC ir ar komatiem atdalīts saraksts ar nulli vai vairāk no šādām opcijām (derīgās vērtības; noklusējums):"
 
 #. TRANSLATORS: Short for PRESET. A longer string is
 #. fine but wider than 4 columns makes --long-help
@@ -917,7 +916,7 @@ msgstr "PRE"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "reset options to a preset"
-msgstr "atiestatīt opcijas uz sākotnējo iestatījumu"
+msgstr "atiestatīt opcijas uz priekšiestatījumu"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1010,7 +1009,7 @@ msgstr "RISC-V BCJ filtrs"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "Valid OPTS for all BCJ filters:"
-msgstr "Derīgas OPTS visiem BCJ filtriem:"
+msgstr "Derīgās OPC visiem BCJ filtriem:"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1020,7 +1019,7 @@ msgstr "konvertēšanas sākuma nobīde (noklusējums=0)"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "Delta filter; valid OPTS (valid values; default):"
-msgstr "Delta filtrs; derīgi OPTS (derīgās vērtības; noklusējums):"
+msgstr "Delta filtrs; derīgās OPC (derīgās vērtības; noklusējums):"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1045,7 +1044,7 @@ msgstr "izvadīt detalizētu informāciju; norādiet divreiz, lai iegūtu vēl d
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "make warnings not affect the exit status"
-msgstr "neļaut brīdinājumiem ietekmēt izejas statusu"
+msgstr "neļaut brīdinājumiem ietekmēt izpildes statusu"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1055,7 +1054,7 @@ msgstr "izmantot mašīnlasāmus ziņojumus (noderīgi skriptiem)"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "display the total amount of RAM and the currently active memory usage limits, and exit"
-msgstr "parādīt kopējo RAM apjomu un pašreizēji aktīvos atmiņas izmantošanas ierobežojumus, un iziet"
+msgstr "parādīt kopējo RAM apjomu un pašlaik aktīvos atmiņas lietojuma ierobežojumus, un iziet"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1075,7 +1074,7 @@ msgstr "parādīt šo īso palīdzību un iziet"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
 msgid "display the long help (lists also the advanced options)"
-msgstr "parādīt detalizēto palīdzību (uzskaita arī papildu opcijas)"
+msgstr "parādīt pilno palīdzību (uzskaita arī papildu opcijas)"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1085,7 +1084,7 @@ msgstr "parādīt versijas numuru un iziet"
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 msgid "With no FILE, or when FILE is -, read standard input."
-msgstr "Ja nav norādīts FAILS vai ja tas ir '-', lasīt standarta ievadi."
+msgstr "Ja FAILS nav norādīts vai ir -, lasīt standarta ievadi."
 
 #. TRANSLATORS: This message indicates the bug reporting
 #. address for this package. Please add another line saying
@@ -1095,7 +1094,9 @@ msgstr "Ja nav norādīts FAILS vai ja tas ir '-', lasīt standarta ievadi."
 #: src/xz/message.c src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Report bugs to <%s> (in English or Finnish)."
-msgstr "Par kļūdām ziņojiet uz <%s> (angliski vai somiski)."
+msgstr ""
+"Ziņojiet par kļūdām uz <%s> (angliski vai somiski).\n"
+"Ziņot par tulkošanas kļūdām: <translation-team-lv@googlegroups.com>."
 
 #. TRANSLATORS: The first %s is the name of this software.
 #. The second <%s> is an URL.
@@ -1114,7 +1115,7 @@ msgstr "ŠĪ IR IZSTRĀDES VERSIJA, KAS NAV PAREDZĒTA LIETOŠANAI REĀLOS DARBA
 #: src/xz/message.c
 #, c-format
 msgid "Filter chains are set using the --filters=FILTERS or --filters1=FILTERS ... --filters9=FILTERS options. Each filter in the chain can be separated by spaces or '--'. Alternatively a preset %s can be specified instead of a filter chain."
-msgstr "Filtrēšanas ķēdes tiek iestatītas, izmantojot opcijas --filters=FILTRI vai --filters1=FILTRS ... --filters9=FILTRS. Katru filtru ķēdē var atdalīt ar atstarpēm vai '--'. Alternatīvi, filtra ķēdes vietā var norādīt iepriekš iestatītu %s."
+msgstr "Filtru ķēdes tiek iestatītas, izmantojot opcijas --filters=FILTRI vai --filters1=FILTRI ... --filters9=FILTRI. Katru filtru ķēdē var atdalīt ar atstarpēm vai '--'. Alternatīvi filtru ķēdes vietā var norādīt priekšiestatījumu %s."
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/xz/message.c
@@ -1141,22 +1142,22 @@ msgstr "Neatbalstīts LZMA1/LZMA2 priekšiestatījums: %s"
 
 #: src/xz/options.c src/liblzma/common/string_conversion.c
 msgid "The sum of lc and lp must not exceed 4"
-msgstr "Lc un lp summa nedrīkst pārsniegt 4"
+msgstr "lc un lp summa nedrīkst pārsniegt 4"
 
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: Filename has an unknown suffix, skipping"
-msgstr "%s: Failam ir nezināms sufikss, tas tiek izlaists"
+msgstr "%s: Failam ir nezināms piedēklis, tas tiek izlaists"
 
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: File already has '%s' suffix, skipping"
-msgstr "%s: Failam jau ir sufikss '%s', tas tiek izlaists"
+msgstr "%s: Failam jau ir piedēklis '%s', tas tiek izlaists"
 
 #: src/xz/suffix.c
 #, c-format
 msgid "%s: Invalid filename suffix"
-msgstr "%s: Nederīgs faila sufikss"
+msgstr "%s: Nederīgs faila nosaukuma piedēklis"
 
 #: src/xz/util.c src/liblzma/common/string_conversion.c
 msgid "Value is not a non-negative decimal integer"
@@ -1165,11 +1166,11 @@ msgstr "Vērtībai jābūt nenegatīvam veselam decimālskaitlim"
 #: src/xz/util.c
 #, c-format
 msgid "%s: Invalid multiplier suffix"
-msgstr "%s: Nederīgs reizinātāja sufikss"
+msgstr "%s: Nederīgs reizinātāja piedēklis"
 
 #: src/xz/util.c
 msgid "Valid suffixes are 'KiB' (2^10), 'MiB' (2^20), and 'GiB' (2^30)."
-msgstr "Derīgie sufiksi ir 'KiB' (2^10), 'MiB' (2^20) un 'GiB' (2^30)."
+msgstr "Derīgie piedēkļi ir 'KiB' (2^10), 'MiB' (2^20) un 'GiB' (2^30)."
 
 #: src/xz/util.c
 #, c-format
@@ -1187,12 +1188,12 @@ msgstr "Saspiestus datus nevar ierakstīt terminālī"
 #: src/lzmainfo/lzmainfo.c
 #, c-format
 msgid "Usage: %s [--help] [--version] [FILE]...\n"
-msgstr "Lietojums: %s [--help] [--version] [FAILI]...\n"
+msgstr "Lietošana: %s [--help] [--version] [FAILS]...\n"
 
 #. This is word wrapped at spaces. The Unicode character U+00A0 works as a non-breaking space. Tab (\t) is interpreted as a zero-width space (the tab itself is not displayed); U+200B is NOT supported. Manual word wrapping with \n is supported but requires care.
 #: src/lzmainfo/lzmainfo.c
 msgid "Show information stored in the .lzma file header."
-msgstr "Rādīt informāciju, kas saglabāta .lzma faila galvenē."
+msgstr "Parādīt informāciju, kas saglabāta .lzma faila galvenē."
 
 #: src/lzmainfo/lzmainfo.c
 msgid "File is too small to be a .lzma file"
@@ -1232,7 +1233,7 @@ msgstr "Vērtība ārpus diapazona"
 
 #: src/liblzma/common/string_conversion.c
 msgid "This option does not support any multiplier suffixes"
-msgstr "Šī opcija neatbalsta reizinātāju sufiksus"
+msgstr "Šī opcija neatbalsta reizinātāju piedēkļus"
 
 #. TRANSLATORS: Don't translate the
 #. suffixes "KiB", "MiB", or "GiB"
@@ -1240,7 +1241,7 @@ msgstr "Šī opcija neatbalsta reizinātāju sufiksus"
 #. untranslated suffixes.
 #: src/liblzma/common/string_conversion.c
 msgid "Invalid multiplier suffix (KiB, MiB, or GiB)"
-msgstr "Nederīgs reizinātāja sufikss (KiB, MiB vai GiB)"
+msgstr "Nederīgs reizinātāja piedēklis (KiB, MiB vai GiB)"
 
 #: src/liblzma/common/string_conversion.c
 msgid "Unknown filter name"
@@ -1264,8 +1265,8 @@ msgstr "Maksimālais filtru skaits ir četri"
 
 #: src/liblzma/common/string_conversion.c
 msgid "Filter name is missing"
-msgstr "Trūkst filtra nosaukums"
+msgstr "Trūkst filtra nosaukuma"
 
 #: src/liblzma/common/string_conversion.c
 msgid "Invalid filter chain ('lzma2' missing at the end?)"
-msgstr "Nederīga filtru ķēde (vai beigās trūkst 'lzma2'?)."
+msgstr "Nederīga filtru ķēde (vai beigās trūkst 'lzma2'?)"

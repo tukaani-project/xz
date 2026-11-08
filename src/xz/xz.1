@@ -1674,6 +1674,13 @@ and the rest use
 gives the same output as
 .B bt4
 but uses two extra threads.
+In multi-threaded mode,
+.B xz
+uses
+.B bt4mt
+instead of
+.B bt4
+if the input file has at most a third as many blocks as there are threads.
 .IP
 The following match finders are supported.
 The memory usage formulas below are rough approximations,

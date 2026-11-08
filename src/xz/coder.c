@@ -798,6 +798,45 @@ is_format_lzip(void)
 #endif
 
 
+#if defined(HAVE_ENCODERS) && defined(MYTHREAD_ENABLED)
+/// If the file has so few Blocks that at least two thirds of the threads
+/// would be idle, change LZMA_MF_BT4 to LZMA_MF_BT4MT so that each Block
+/// gets two more threads. Return the changed options so that the caller
+/// can change them back, or NULL if nothing was changed.
+static lzma_options_lzma *
+use_bt4mt(const file_pair *pair)
+{
+	if (opt_block_list != NULL || pair->src_st.st_size <= 0
+			|| !lzma_mf_is_supported(LZMA_MF_BT4MT))
+		return NULL;
+
+	const uint64_t size = (uint64_t)pair->src_st.st_size;
+	const uint64_t blocks = size / mt_options.block_size
+			+ (size % mt_options.block_size != 0);
+	if (blocks > mt_options.threads / 3)
+		return NULL;
+
+	lzma_options_lzma *opt = NULL;
+	for (size_t i = 0; mt_options.filters[i].id != LZMA_VLI_UNKNOWN; ++i)
+		if (mt_options.filters[i].id == LZMA_FILTER_LZMA2)
+			opt = mt_options.filters[i].options;
+
+	if (opt == NULL || opt->mf != LZMA_MF_BT4)
+		return NULL;
+
+	opt->mf = LZMA_MF_BT4MT;
+
+	if (lzma_stream_encoder_mt_memusage(&mt_options)
+			> hardware_memlimit_mtenc_get()) {
+		opt->mf = LZMA_MF_BT4;
+		return NULL;
+	}
+
+	return opt;
+}
+#endif
+
+
 /// Detect the input file type (for now, this done only when decompressing),
 /// and initialize an appropriate coder. Return value indicates if a normal
 /// liblzma-based coder was initialized (CODER_INIT_NORMAL), if passthru
@@ -832,10 +871,15 @@ coder_init(file_pair *pair)
 		case FORMAT_XZ:
 #	ifdef MYTHREAD_ENABLED
 			mt_options.filters = active_filters;
-			if (hardware_threads_is_mt())
+			if (hardware_threads_is_mt()) {
+				lzma_options_lzma *bt4mt = use_bt4mt(pair);
+
 				ret = lzma_stream_encoder_mt(
 						&strm, &mt_options);
-			else
+
+				if (bt4mt != NULL)
+					bt4mt->mf = LZMA_MF_BT4;
+			} else
 #	endif
 				ret = lzma_stream_encoder(
 						&strm, active_filters, check);

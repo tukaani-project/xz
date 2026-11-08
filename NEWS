@@ -17,7 +17,8 @@ XZ Utils Release Notes
           invalid memory access after memory allocation has failed and
           the application reinitializes the existing decoder to decode
           a different file. This bug could at least result in a crash.
-          This is tracked as GHSA-5qpq-xqfv-j9pg. CVE number is pending.
+          This is tracked as GHSA-5qpq-xqfv-j9pg; a CVE number was
+          requested via GitHub on 2026-08-21 but was never assigned.
           (Also in v5.2, v5.4, and v5.6.)
 
         - lzma_stream_buffer_decode(): Fix wrong error code and,

@@ -758,3 +758,149 @@ lzma_mf_bt4_skip(lzma_mf *mf, uint32_t amount)
 	} while (--amount != 0);
 }
 #endif
+
+
+#ifdef HAVE_MF_BT4MT
+/// \brief      Do the hashing part of BT4 for a range of positions
+///
+/// This updates the hash tables like lzma_mf_bt4_find() does. For each
+/// position, out[] gets three values: the old 4-byte hash table entry
+/// and the distances to the old 2- and 3-byte hash table entries.
+/// At least count + 3 bytes must be available from pos.
+extern void
+lzma_mf_bt4mt_hash(const lzma_mf *mf, uint32_t pos, uint32_t count,
+		uint32_t *out)
+{
+	const uint8_t *cur = mf->buffer + (pos - mf->offset);
+	uint32_t *hash = mf->hash;
+
+	for (uint32_t i = 0; i < count; ++i) {
+		hash_4_calc();
+
+		out[0] = hash[FIX_4_HASH_SIZE + hash_value];
+		out[1] = pos - hash[hash_2_value];
+		out[2] = pos - hash[FIX_3_HASH_SIZE + hash_3_value];
+
+		hash[hash_2_value] = pos;
+		hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
+		hash[FIX_4_HASH_SIZE + hash_value] = pos;
+
+		out += 3;
+		++cur;
+		++pos;
+	}
+
+	return;
+}
+
+
+/// \brief      Do the binary tree part of BT4 for a range of positions
+///
+/// heads[] is from lzma_mf_bt4mt_hash(). Only mf->son and *cyclic_pos
+/// are modified. For each position, out[] gets an element whose .len is
+/// the number of matches and .dist is the 2-byte hash distance, an
+/// element whose .len is the 3-byte hash distance, and then the matches
+/// from bt_find_func() with len_best = 3. Every position must have
+/// nice_len + LZMA_MEMCMPLEN_EXTRA bytes of input available.
+///
+/// \return     Number of positions processed. It is less than count
+///             if out[] is full.
+extern uint32_t
+lzma_mf_bt4mt_fill(const lzma_mf *mf, uint32_t pos, uint32_t *cyclic_pos,
+		uint32_t count, const uint32_t *heads,
+		lzma_match *out, size_t out_size)
+{
+	const uint32_t nice_len = mf->nice_len;
+	const uint32_t cyclic_size = mf->cyclic_size;
+	uint32_t *son = mf->son;
+	const uint8_t *cur = mf->buffer + (pos - mf->offset);
+	uint32_t cyc = *cyclic_pos;
+	uint32_t done = 0;
+
+	// One position needs at most two elements plus nice_len - 3 matches.
+	assert(out_size > nice_len);
+	const lzma_match *out_limit = out + out_size - nice_len;
+
+	while (done < count && out < out_limit) {
+		lzma_match *end = bt_find_func(nice_len, pos, cur, heads[0],
+				mf->depth, son, cyc, cyclic_size, out + 2, 3);
+
+		out[0].len = (uint32_t)(end - out - 2);
+		out[0].dist = heads[1];
+		out[1].len = heads[2];
+		out[1].dist = 0;
+		out = end;
+
+		if (++cyc == cyclic_size)
+			cyc = 0;
+
+		heads += 3;
+		++cur;
+		++pos;
+		++done;
+	}
+
+	*cyclic_pos = cyc;
+	return done;
+}
+
+
+extern uint32_t
+lzma_mf_bt4mt_find(lzma_mf *mf, lzma_match *matches)
+{
+	const lzma_match *entry = lzma_mf_mt_next(mf);
+	if (entry == NULL) {
+		const uint32_t count = lzma_mf_bt4_find(mf, matches);
+		lzma_mf_mt_resync(mf);
+		return count;
+	}
+
+	// The threads process only positions that have at least
+	// nice_len bytes available.
+	const uint32_t len_limit = mf->nice_len;
+	assert(mf_avail(mf) >= len_limit);
+
+	const uint8_t *cur = mf_ptr(mf);
+
+	uint32_t len_best;
+	uint32_t matches_count = bt4_hash_matches(cur, entry[0].dist,
+			entry[1].len, mf->cyclic_size, len_limit, matches,
+			&len_best);
+
+	if (len_best == len_limit) {
+		move_pos(mf);
+		return matches_count;
+	}
+
+	if (len_best < 3)
+		len_best = 3;
+
+	// The binary tree matches have increasing lengths. With a bigger
+	// len_best, bt_find_func() would have returned only the ones
+	// that are longer than len_best.
+	const lzma_match *bt = entry + 2;
+	const uint32_t bt_count = entry[0].len;
+	for (uint32_t i = 0; i < bt_count; ++i)
+		if (bt[i].len > len_best)
+			matches[matches_count++] = bt[i];
+
+	move_pos(mf);
+	return matches_count;
+}
+
+
+extern void
+lzma_mf_bt4mt_skip(lzma_mf *mf, uint32_t amount)
+{
+	do {
+		if (lzma_mf_mt_next(mf) == NULL) {
+			lzma_mf_bt4_skip(mf, amount);
+			lzma_mf_mt_resync(mf);
+			return;
+		}
+
+		move_pos(mf);
+
+	} while (--amount != 0);
+}
+#endif

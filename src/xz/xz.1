@@ -1670,6 +1670,10 @@ use
 .BR hc4 ,
 and the rest use
 .BR bt4 .
+.B bt4mt
+gives the same output as
+.B bt4
+but uses two extra threads.
 .IP
 The following match finders are supported.
 The memory usage formulas below are rough approximations,
@@ -1764,6 +1768,18 @@ Memory usage:
 * 10.5 (if
 .I dict
 > 32 MiB)
+.TP
+.B bt4mt
+Multi-threaded variant of
+.B bt4
+.br
+Minimum value for
+.IR nice :
+4
+.br
+Memory usage: same as
+.B bt4
++ 1.4 MiB
 .RE
 .TP
 .BI mode= mode

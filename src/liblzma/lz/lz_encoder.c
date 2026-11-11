@@ -21,6 +21,13 @@
 
 #include "memcmplen.h"
 
+// lzma_memcmplen() may read and ignore extra bytes.
+// The hash prefetching in match finders can read extra bytes too.
+// We need to allocate extra space to allow these reads.
+// The extra space must also be initialized to keep Valgrind
+// and sanitizers happy.
+#define LZ_EXTRA_SIZE my_max(LZ_PF_OFF, LZMA_MEMCMPLEN_EXTRA)
+
 
 typedef struct {
 	/// LZ-based encoder e.g. LZMA
@@ -109,11 +116,9 @@ fill_window(lzma_coder *coder, const lzma_allocator *allocator,
 
 	coder->mf.write_pos = write_pos;
 
-	// Silence Valgrind. lzma_memcmplen() can read extra bytes
-	// and Valgrind will give warnings if those bytes are uninitialized
-	// because Valgrind cannot see that the values of the uninitialized
-	// bytes are eventually ignored.
-	memzero(coder->mf.buffer + write_pos, LZMA_MEMCMPLEN_EXTRA);
+	// lzma_memcmplen() and match finder prefetching can read extra bytes.
+	// Initialize the memory to keep Valgrind and sanitizers happy.
+	memzero(coder->mf.buffer + write_pos, LZ_EXTRA_SIZE);
 
 	// If end of stream has been reached or flushing completed, we allow
 	// the encoder to process all the input (that is, read_pos is allowed
@@ -374,11 +379,7 @@ lz_encoder_init(lzma_mf *mf, const lzma_allocator *allocator,
 {
 	// Allocate the history buffer.
 	if (mf->buffer == NULL) {
-		// lzma_memcmplen() is used for the dictionary buffer
-		// so we need to allocate a few extra bytes to prevent
-		// it from reading past the end of the buffer.
-		mf->buffer = lzma_alloc(mf->size + LZMA_MEMCMPLEN_EXTRA,
-				allocator);
+		mf->buffer = lzma_alloc(mf->size + LZ_EXTRA_SIZE, allocator);
 		if (mf->buffer == NULL)
 			return true;
 	}

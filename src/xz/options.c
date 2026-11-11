@@ -326,12 +326,13 @@ options_lzma(const char *str)
 	};
 
 	static const name_id_map mfs[] = {
-		{ "hc3", LZMA_MF_HC3 },
-		{ "hc4", LZMA_MF_HC4 },
-		{ "bt2", LZMA_MF_BT2 },
-		{ "bt3", LZMA_MF_BT3 },
-		{ "bt4", LZMA_MF_BT4 },
-		{ NULL,  0 }
+		{ "hc3",   LZMA_MF_HC3 },
+		{ "hc4",   LZMA_MF_HC4 },
+		{ "bt2",   LZMA_MF_BT2 },
+		{ "bt3",   LZMA_MF_BT3 },
+		{ "bt4",   LZMA_MF_BT4 },
+		{ "bt4mt", LZMA_MF_BT4MT },
+		{ NULL,    0 }
 	};
 
 	static const option_map opts[] = {

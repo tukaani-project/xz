@@ -703,6 +703,8 @@ AS_CASE([$enable_threads],
 	]
 )
 AM_CONDITIONAL([COND_THREADS], [test "x$enable_threads" != xno])
+AM_CONDITIONAL([COND_MF_BT4MT], [test "x$enable_threads" != xno \
+		&& test "x$enable_match_finder_bt4" = xyes])
 
 echo
 echo "Initializing Libtool:"

@@ -1070,6 +1070,10 @@ if(HAVE_ENCODERS)
             src/liblzma/rangecoder/range_encoder.h
         )
 
+        if(XZ_THREADS AND "bt4" IN_LIST XZ_MATCH_FINDERS)
+            target_sources(liblzma PRIVATE src/liblzma/lz/lz_encoder_mt.c)
+        endif()
+
         if(NOT XZ_SMALL)
             target_sources(liblzma PRIVATE src/liblzma/lzma/fastpos_table.c)
         endif()

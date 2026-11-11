@@ -314,6 +314,8 @@ lzma_mf_hc3_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[hash_2_value] = pos;
 	mf->hash[FIX_3_HASH_SIZE + hash_value] = pos;
 
+	hash_3_prefetch();
+
 	uint32_t len_best = 2;
 
 	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
@@ -354,6 +356,8 @@ lzma_mf_hc3_skip(lzma_mf *mf, uint32_t amount)
 		mf->hash[hash_2_value] = pos;
 		mf->hash[FIX_3_HASH_SIZE + hash_value] = pos;
 
+		hash_3_prefetch();
+
 		hc_skip();
 
 	} while (--amount != 0);
@@ -377,6 +381,8 @@ lzma_mf_hc4_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[hash_2_value ] = pos;
 	mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 	mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
+
+	hash_4_prefetch();
 
 	uint32_t len_best = 1;
 
@@ -433,6 +439,8 @@ lzma_mf_hc4_skip(lzma_mf *mf, uint32_t amount)
 		mf->hash[hash_2_value] = pos;
 		mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 		mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
+
+		hash_4_prefetch();
 
 		hc_skip();
 
@@ -629,6 +637,8 @@ lzma_mf_bt3_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[hash_2_value] = pos;
 	mf->hash[FIX_3_HASH_SIZE + hash_value] = pos;
 
+	hash_3_prefetch();
+
 	uint32_t len_best = 2;
 
 	if (delta2 < mf->cyclic_size && *(cur - delta2) == *cur) {
@@ -663,6 +673,8 @@ lzma_mf_bt3_skip(lzma_mf *mf, uint32_t amount)
 		mf->hash[hash_2_value] = pos;
 		mf->hash[FIX_3_HASH_SIZE + hash_value] = pos;
 
+		hash_3_prefetch();
+
 		bt_skip();
 
 	} while (--amount != 0);
@@ -686,6 +698,8 @@ lzma_mf_bt4_find(lzma_mf *mf, lzma_match *matches)
 	mf->hash[hash_2_value] = pos;
 	mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 	mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
+
+	hash_4_prefetch();
 
 	uint32_t len_best = 1;
 
@@ -736,6 +750,8 @@ lzma_mf_bt4_skip(lzma_mf *mf, uint32_t amount)
 		mf->hash[hash_2_value] = pos;
 		mf->hash[FIX_3_HASH_SIZE + hash_3_value] = pos;
 		mf->hash[FIX_4_HASH_SIZE + hash_value] = pos;
+
+		hash_4_prefetch();
 
 		bt_skip();
 

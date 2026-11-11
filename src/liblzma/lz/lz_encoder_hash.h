@@ -74,6 +74,50 @@
 	const uint32_t hash_value = (temp2 \
 			^ (hash_table[cur[3]] << 5)) & mf->hash_mask
 
+// If supported, prefetch the buckets for the next match finder call.
+// Prefetching from the largest table (pf_hash_value) matters the most.
+// Prefetching the others helps a little or is neutral, so prefetch them too.
+//
+// LZ_PF_OFF is the prefetch offset. The best value for it depends on
+// the computer and compression options.
+//
+// NOTE: Prefetching must be kept in sync with the actual hash calculations!
+// If they differ, the only symptom is lost speed.
+#if defined(__GNUC__) || defined(__clang__)
+#define LZ_PF_OFF 4
+
+#define hash_3_prefetch() \
+do { \
+	const uint32_t pf_temp \
+		= hash_table[cur[0 + LZ_PF_OFF]] ^ cur[1 + LZ_PF_OFF]; \
+	const uint32_t pf_hash_2_value = pf_temp & HASH_2_MASK; \
+	const uint32_t pf_temp2 \
+		= pf_temp ^ ((uint32_t)(cur[2 + LZ_PF_OFF]) << 8); \
+	const uint32_t pf_hash_value = pf_temp2 & mf->hash_mask; \
+	__builtin_prefetch(&mf->hash[pf_hash_2_value]); \
+	__builtin_prefetch(&mf->hash[FIX_3_HASH_SIZE + pf_hash_value]); \
+} while (0)
+
+#define hash_4_prefetch() \
+do { \
+	const uint32_t pf_temp \
+		= hash_table[cur[0 + LZ_PF_OFF]] ^ cur[1 + LZ_PF_OFF]; \
+	const uint32_t pf_hash_2_value = pf_temp & HASH_2_MASK; \
+	const uint32_t pf_temp2 \
+		= pf_temp ^ ((uint32_t)(cur[2 + LZ_PF_OFF]) << 8); \
+	const uint32_t pf_hash_3_value = pf_temp2 & HASH_3_MASK; \
+	const uint32_t pf_hash_value = (pf_temp2 \
+		^ (hash_table[cur[3 + LZ_PF_OFF]] << 5)) & mf->hash_mask; \
+	__builtin_prefetch(&mf->hash[pf_hash_2_value]); \
+	__builtin_prefetch(&mf->hash[FIX_3_HASH_SIZE + pf_hash_3_value]); \
+	__builtin_prefetch(&mf->hash[FIX_4_HASH_SIZE + pf_hash_value]); \
+} while (0)
+#else
+#define LZ_PF_OFF 0
+#define hash_3_prefetch() ((void)0)
+#define hash_4_prefetch() ((void)0)
+#endif
+
 
 // The following are not currently used.
 

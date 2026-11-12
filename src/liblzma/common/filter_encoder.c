@@ -168,6 +168,16 @@ static const lzma_filter_encoder encoders[] = {
 		.props_encode = &lzma_simple_props_encode,
 	},
 #endif
+#ifdef HAVE_ENCODER_ALPHA
+	{
+		.id = LZMA_FILTER_ALPHA,
+		.init = &lzma_simple_alpha_encoder_init,
+		.memusage = NULL,
+		.block_size = NULL,
+		.props_size_get = &lzma_simple_props_size,
+		.props_encode = &lzma_simple_props_encode,
+	},
+#endif
 #ifdef HAVE_ENCODER_DELTA
 	{
 		.id = LZMA_FILTER_DELTA,

@@ -15,6 +15,7 @@ liblzma_la_SOURCES += \
 	check/crc_common.h \
 	check/crc_x86_clmul.h \
 	check/crc32_arm64.h \
+	check/crc64_arm64.h \
 	check/crc32_loongarch.h
 
 if COND_SMALL

@@ -179,6 +179,12 @@ lzma_strm_init(lzma_stream *strm)
 	if (strm == NULL)
 		return LZMA_PROG_ERROR;
 
+	// Initialize these here because the API docs suggest that these
+	// are initialized even if an error occurs. liblzma 5.8.4 and older
+	// didn't initialize these on error.
+	strm->total_in = 0;
+	strm->total_out = 0;
+
 	if (strm->internal == NULL) {
 		strm->internal = lzma_alloc(sizeof(lzma_internal),
 				strm->allocator);
@@ -192,9 +198,6 @@ lzma_strm_init(lzma_stream *strm)
 			sizeof(strm->internal->supported_actions));
 	strm->internal->sequence = ISEQ_RUN;
 	strm->internal->allow_buf_error = false;
-
-	strm->total_in = 0;
-	strm->total_out = 0;
 
 	return LZMA_OK;
 }

@@ -175,6 +175,40 @@ test_lzma_index_append(void)
 
 	lzma_index_end(idx, NULL);
 
+	// Test compressed .xz file size growing too large in
+	// a concatenated case.
+	idx = lzma_index_init(NULL);
+	assert_true(idx != NULL);
+	assert_lzma_ret(lzma_index_append(idx, NULL,
+			UNPADDED_SIZE_MIN, 1), LZMA_OK);
+
+	second = lzma_index_init(NULL);
+	assert_true(second != NULL);
+	assert_lzma_ret(lzma_index_append(second, NULL,
+			UNPADDED_SIZE_MAX - 100, 2), LZMA_OK);
+
+	assert_lzma_ret(lzma_index_cat(second, idx, NULL), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(second, NULL,
+			55555, 3), LZMA_DATA_ERROR);
+	lzma_index_end(second, NULL);
+
+	// Test uncompressed size growing too large in a concatenated case.
+	// This fails with liblzma <= 5.8.4.
+	idx = lzma_index_init(NULL);
+	assert_true(idx != NULL);
+	assert_lzma_ret(lzma_index_append(idx, NULL,
+			UNPADDED_SIZE_MIN, 1), LZMA_OK);
+
+	second = lzma_index_init(NULL);
+	assert_true(second != NULL);
+	assert_lzma_ret(lzma_index_append(second, NULL,
+			UNPADDED_SIZE_MIN, LZMA_VLI_MAX - 5), LZMA_OK);
+
+	assert_lzma_ret(lzma_index_cat(second, idx, NULL), LZMA_OK);
+	assert_lzma_ret(lzma_index_append(second, NULL,
+			UNPADDED_SIZE_MIN, 55555), LZMA_DATA_ERROR);
+	lzma_index_end(second, NULL);
+
 	// Currently not testing for error case when the size of the Index
 	// grows too large to be stored. This was not practical to test for
 	// since too many Blocks needed to be created to cause this.

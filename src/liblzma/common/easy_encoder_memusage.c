@@ -17,7 +17,7 @@ lzma_easy_encoder_memusage(uint32_t preset)
 {
 	lzma_options_easy opt_easy;
 	if (lzma_easy_preset(&opt_easy, preset))
-		return UINT32_MAX;
+		return UINT64_MAX;
 
 	return lzma_raw_encoder_memusage(opt_easy.filters);
 }

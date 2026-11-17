@@ -265,6 +265,8 @@ typedef struct {
  *
  * \return      Number of bytes of memory required for the given
  *              preset when encoding or UINT64_MAX on error.
+ *              liblzma 5.8.4 and older had a bug: they returned
+ *              UINT32_MAX on error instead of UINT64_MAX.
  */
 extern LZMA_API(uint64_t) lzma_easy_encoder_memusage(uint32_t preset)
 		lzma_nothrow lzma_attr_pure;

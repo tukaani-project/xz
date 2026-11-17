@@ -54,6 +54,23 @@ test_stream_buffer_bound(void)
 }
 
 
+static void
+test_easy_encoder_memusage(void)
+{
+#ifndef HAVE_ENCODERS
+	assert_skip("Encoder support is disabled");
+#else
+	// Invalid preset. This fails with liblzma <= 5.8.4.
+	assert_uint_eq(lzma_easy_encoder_memusage(7777), UINT64_MAX);
+
+	uint64_t memusage = lzma_easy_encoder_memusage(
+			6 | LZMA_PRESET_EXTREME);
+	assert_uint(memusage, >, UINT64_C(80) << 20);
+	assert_uint(memusage, <, UINT64_C(110) << 20);
+#endif
+}
+
+
 #ifdef HAVE_ENCODERS
 static void
 decompress_and_compare(const uint8_t *in, size_t in_size,
@@ -257,6 +274,7 @@ main(int argc, char **argv)
 	tuktest_start(argc, argv);
 
 	tuktest_run(test_stream_buffer_bound);
+	tuktest_run(test_easy_encoder_memusage);
 	tuktest_run(test_easy_buffer_encode);
 	tuktest_run(test_stream_buffer_encode);
 

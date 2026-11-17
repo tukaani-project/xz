@@ -491,7 +491,9 @@ extern LZMA_API(lzma_ret) lzma_filter_flags_encode(const lzma_filter *filter,
  *                          Set to NULL to use malloc() and free().
  * \param       in          Beginning of the input buffer
  * \param[out]  in_pos      The next byte will be read from in[*in_pos].
- *                          *in_pos is updated only if decoding succeeds.
+ *                          *in_pos may be updated even if an error occurs. In
+ *                          liblzma 5.8.4 and older, the docs incorrectly said
+ *                          that *in_pos is updated only if decoding succeeds.
  * \param       in_size     Size of the input buffer; the first byte that
  *                          won't be read is in[in_size].
  *

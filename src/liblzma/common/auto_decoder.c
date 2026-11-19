@@ -139,7 +139,10 @@ auto_decoder_memconfig(void *coder_ptr, uint64_t *memusage,
 
 	lzma_ret ret;
 
-	if (coder->next.memconfig != NULL) {
+	// In SEQ_INIT, coder->next may still contain the decoder from
+	// before reinitialization. It doesn't describe the new stream,
+	// so don't pass the call to it.
+	if (coder->sequence != SEQ_INIT && coder->next.memconfig != NULL) {
 		ret = coder->next.memconfig(coder->next.coder,
 				memusage, old_memlimit, new_memlimit);
 		assert(*old_memlimit == coder->memlimit);

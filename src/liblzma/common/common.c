@@ -407,7 +407,10 @@ extern LZMA_API(void)
 lzma_get_progress(lzma_stream *strm,
 		uint64_t *progress_in, uint64_t *progress_out)
 {
-	if (strm->internal->next.get_progress != NULL) {
+	// strm->internal is NULL if no coder has been initialized yet,
+	// after lzma_end(), and after a failed initialization.
+	if (strm->internal != NULL
+			&& strm->internal->next.get_progress != NULL) {
 		strm->internal->next.get_progress(strm->internal->next.coder,
 				progress_in, progress_out);
 	} else {

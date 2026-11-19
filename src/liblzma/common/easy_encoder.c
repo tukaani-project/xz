@@ -16,8 +16,18 @@ extern LZMA_API(lzma_ret)
 lzma_easy_encoder(lzma_stream *strm, uint32_t preset, lzma_check check)
 {
 	lzma_options_easy opt_easy;
-	if (lzma_easy_preset(&opt_easy, preset))
+	if (lzma_easy_preset(&opt_easy, preset)) {
+		// Other initialization functions free the memory associated
+		// with *strm and reset the counters also when they fail.
+		// Do the same here as the API docs promise.
+		if (strm != NULL) {
+			lzma_end(strm);
+			strm->total_in = 0;
+			strm->total_out = 0;
+		}
+
 		return LZMA_OPTIONS_ERROR;
+	}
 
 	return lzma_stream_encoder(strm, opt_easy.filters, check);
 }

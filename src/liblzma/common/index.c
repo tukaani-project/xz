@@ -739,7 +739,8 @@ lzma_index_append(lzma_index *i, const lzma_allocator *allocator,
 			+ lzma_vli_size(uncompressed_size);
 
 	// Check that uncompressed size will not overflow.
-	if (uncompressed_base + uncompressed_size > LZMA_VLI_MAX)
+	assert(uncompressed_base <= i->uncompressed_size);
+	if (i->uncompressed_size + uncompressed_size > LZMA_VLI_MAX)
 		return LZMA_DATA_ERROR;
 
 	// Check that the new unpadded sum will not overflow. This is
@@ -804,6 +805,10 @@ lzma_index_append(lzma_index *i, const lzma_allocator *allocator,
 	i->uncompressed_size += uncompressed_size;
 	++i->record_count;
 	i->index_list_size += index_list_size_add;
+
+	assert(i->total_size <= LZMA_VLI_MAX);
+	assert(i->uncompressed_size <= LZMA_VLI_MAX);
+	assert(i->index_list_size <= LZMA_BACKWARD_SIZE_MAX);
 
 	return LZMA_OK;
 }

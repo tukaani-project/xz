@@ -40,6 +40,7 @@ check_PROGRAMS = \
 	create_compress_files \
 	test_check \
 	test_hardware \
+	test_raw \
 	test_stream_buffer_decode \
 	test_stream_buffer_encode \
 	test_stream_flags \
@@ -57,6 +58,7 @@ check_PROGRAMS = \
 TESTS = \
 	test_check \
 	test_hardware \
+	test_raw \
 	test_stream_buffer_decode \
 	test_stream_buffer_encode \
 	test_stream_flags \

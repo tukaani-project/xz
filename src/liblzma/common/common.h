@@ -124,6 +124,12 @@
 #	define unlikely(expr) (expr)
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#	define lzma_prefetch(ptr) __builtin_prefetch(ptr, 0, 3)
+#else
+#	define lzma_prefetch(ptr) ((void)0)
+#endif
+
 
 /// Size of temporary buffers needed in some filters
 #define LZMA_BUFFER_SIZE 4096

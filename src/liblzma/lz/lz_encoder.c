@@ -381,11 +381,6 @@ lz_encoder_init(lzma_mf *mf, const lzma_allocator *allocator,
 				allocator);
 		if (mf->buffer == NULL)
 			return true;
-
-		// Keep Valgrind happy with lzma_memcmplen() and initialize
-		// the extra bytes whose value may get read but which will
-		// effectively get ignored.
-		memzero(mf->buffer + mf->size, LZMA_MEMCMPLEN_EXTRA);
 	}
 
 	// Use cyclic_size as initial mf->offset. This allows

@@ -63,15 +63,15 @@
 #define hash_3_calc() \
 	const uint32_t temp = hash_table[cur[0]] ^ cur[1]; \
 	const uint32_t hash_2_value = temp & HASH_2_MASK; \
-	const uint32_t hash_value \
-			= (temp ^ ((uint32_t)(cur[2]) << 8)) & mf->hash_mask
+	const uint32_t temp2 = temp ^ ((uint32_t)(cur[2]) << 8); \
+	const uint32_t hash_value = temp2 & mf->hash_mask
 
 #define hash_4_calc() \
 	const uint32_t temp = hash_table[cur[0]] ^ cur[1]; \
 	const uint32_t hash_2_value = temp & HASH_2_MASK; \
-	const uint32_t hash_3_value \
-			= (temp ^ ((uint32_t)(cur[2]) << 8)) & HASH_3_MASK; \
-	const uint32_t hash_value = (temp ^ ((uint32_t)(cur[2]) << 8) \
+	const uint32_t temp2 = temp ^ ((uint32_t)(cur[2]) << 8); \
+	const uint32_t hash_3_value = temp2 & HASH_3_MASK; \
+	const uint32_t hash_value = (temp2 \
 			^ (hash_table[cur[3]] << 5)) & mf->hash_mask
 
 

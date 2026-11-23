@@ -446,6 +446,10 @@ lz_encoder_init(lzma_mf *mf, const lzma_allocator *allocator,
 		memcpy(mf->buffer, lz_options->preset_dict
 				+ lz_options->preset_dict_size - mf->write_pos,
 				mf->write_pos);
+
+		// Keep Valgrind and sanitizers happy.
+		memzero(mf->buffer + mf->write_pos, LZMA_MEMCMPLEN_EXTRA);
+
 		mf->action = LZMA_SYNC_FLUSH;
 		mf->skip(mf, mf->write_pos);
 	}

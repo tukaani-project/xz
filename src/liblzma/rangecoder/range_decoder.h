@@ -930,27 +930,24 @@ do { \
 #define rc_direct(dest_var, count_var) \
 do { \
 	uint32_t t0; \
-	uint32_t t1; \
 	\
 	__asm__( \
 		"2:\n\t" \
 		"add	%[dest], %[dest]\n\t" \
-		"lea	1(%q[dest]), %[t1]\n\t" \
 		\
 		rc_asm_normalize \
 		\
 		"shr	$1, %[range]\n\t" \
 		"mov	%[code], %[t0]\n\t" \
 		"sub	%[range], %[code]\n\t" \
-		"cmovns	%[t1], %[dest]\n\t" \
 		"cmovs	%[t0], %[code]\n\t" \
+		"sbb	$-1, %[dest]\n\t" \
 		"dec	%[count]\n\t" \
 		"jnz	2b\n\t" \
 		: \
 		[range]       "+&r"(rc.range), \
 		[code]        "+&r"(rc.code), \
 		[t0]          "=&r"(t0), \
-		[t1]          "=&r"(t1), \
 		[dest]        "+&r"(dest_var), \
 		[count]       "+&r"(count_var), \
 		[in_ptr]      "+&r"(rc_in_ptr) \

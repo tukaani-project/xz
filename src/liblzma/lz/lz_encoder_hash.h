@@ -80,14 +80,12 @@
 #define hash_5_calc() \
 	const uint32_t temp = hash_table[cur[0]] ^ cur[1]; \
 	const uint32_t hash_2_value = temp & HASH_2_MASK; \
-	const uint32_t hash_3_value \
-			= (temp ^ ((uint32_t)(cur[2]) << 8)) & HASH_3_MASK; \
-	uint32_t hash_4_value = (temp ^ ((uint32_t)(cur[2]) << 8) ^ \
-			^ hash_table[cur[3]] << 5); \
-	const uint32_t hash_value \
-			= (hash_4_value ^ (hash_table[cur[4]] << 3)) \
+	const uint32_t temp2 = temp ^ ((uint32_t)(cur[2]) << 8); \
+	const uint32_t hash_3_value = temp2 & HASH_3_MASK; \
+	const uint32_t temp3 = temp2 ^ (hash_table[cur[3]] << 5); \
+	const uint32_t hash_value = (temp3 ^ (hash_table[cur[4]] << 3)) \
 				& mf->hash_mask; \
-	hash_4_value &= HASH_4_MASK
+	const uint32_t hash_4_value = temp3 & HASH_4_MASK
 
 /*
 #define hash_zip_calc() \
@@ -108,15 +106,16 @@
 #define mt_hash_3_calc() \
 	const uint32_t temp = hash_table[cur[0]] ^ cur[1]; \
 	const uint32_t hash_2_value = temp & HASH_2_MASK; \
-	const uint32_t hash_3_value \
-			= (temp ^ ((uint32_t)(cur[2]) << 8)) & HASH_3_MASK
+	const uint32_t temp2 = temp ^ ((uint32_t)(cur[2]) << 8); \
+	const uint32_t hash_3_value = temp2 & HASH_3_MASK
+
 
 #define mt_hash_4_calc() \
 	const uint32_t temp = hash_table[cur[0]] ^ cur[1]; \
 	const uint32_t hash_2_value = temp & HASH_2_MASK; \
-	const uint32_t hash_3_value \
-			= (temp ^ ((uint32_t)(cur[2]) << 8)) & HASH_3_MASK; \
-	const uint32_t hash_4_value = (temp ^ ((uint32_t)(cur[2]) << 8) ^ \
-			(hash_table[cur[3]] << 5)) & HASH_4_MASK
+	const uint32_t temp2 = temp ^ ((uint32_t)(cur[2]) << 8); \
+	const uint32_t hash_3_value = temp2 & HASH_3_MASK; \
+	const uint32_t temp3 = temp2 ^ (hash_table[cur[3]] << 5); \
+	const uint32_t hash_4_value = temp3 & HASH_4_MASK
 
 #endif

@@ -15,6 +15,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#if !(defined(_WIN32) && !defined(__CYGWIN__)) \
+		&& (!defined(__wasm__) || defined(__EMSCRIPTEN__))
+#	include <signal.h>
+#endif
+
 #include "tuklib_gettext.h"
 #include "tuklib_progname.h"
 #include "tuklib_exit.h"
@@ -23,6 +28,13 @@
 extern void
 tuklib_exit(int status, int err_status, int show_error)
 {
+#if !(defined(_WIN32) && !defined(__CYGWIN__)) \
+		&& (!defined(__wasm__) || defined(__EMSCRIPTEN__))
+	sigset_t set;
+	sigfillset(&set);
+	sigprocmask(SIG_SETMASK, &set, NULL);
+#endif
+
 	if (status != err_status) {
 		// Close stdout. If something goes wrong,
 		// print an error message to stderr.

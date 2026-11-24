@@ -16,6 +16,11 @@
 #include "common.h"
 
 
+#if defined(HAVE_MF_BT4) && defined(MYTHREAD_ENABLED)
+#	define HAVE_MF_BT4MT 1
+#endif
+
+
 // For now, the dictionary size is limited to 1.5 GiB. This may grow
 // in the future if needed, but it needs a little more work than just
 // changing this check.
@@ -33,6 +38,7 @@ typedef struct {
 
 
 typedef struct lzma_mf_s lzma_mf;
+typedef struct lzma_mf_mt_s lzma_mf_mt;
 struct lzma_mf_s {
 	///////////////
 	// In Window //
@@ -130,6 +136,9 @@ struct lzma_mf_s {
 
 	/// Number of elements in son[]
 	uint32_t sons_count;
+
+	/// Thread state for LZMA_MF_BT4MT, NULL with other match finders
+	lzma_mf_mt *mt;
 };
 
 
@@ -348,5 +357,27 @@ extern void lzma_mf_bt3_skip(lzma_mf *dict, uint32_t amount);
 
 extern uint32_t lzma_mf_bt4_find(lzma_mf *dict, lzma_match *matches);
 extern void lzma_mf_bt4_skip(lzma_mf *dict, uint32_t amount);
+
+#ifdef HAVE_MF_BT4MT
+extern uint32_t lzma_mf_bt4mt_find(lzma_mf *dict, lzma_match *matches);
+extern void lzma_mf_bt4mt_skip(lzma_mf *dict, uint32_t amount);
+
+extern void lzma_mf_bt4mt_hash(const lzma_mf *mf, uint32_t pos,
+		uint32_t count, uint32_t *out);
+extern uint32_t lzma_mf_bt4mt_fill(const lzma_mf *mf, uint32_t pos,
+		uint32_t *cyclic_pos, uint32_t count, const uint32_t *heads,
+		lzma_match *out, size_t out_size);
+
+extern uint64_t lzma_mf_mt_memusage(void);
+extern lzma_ret lzma_mf_mt_init(lzma_mf *mf,
+		const lzma_allocator *allocator);
+extern void lzma_mf_mt_stop(lzma_mf *mf);
+extern void lzma_mf_mt_end(lzma_mf *mf, const lzma_allocator *allocator);
+extern void lzma_mf_mt_update(lzma_mf *mf);
+extern void lzma_mf_mt_resync(lzma_mf *mf);
+extern const lzma_match *lzma_mf_mt_next(lzma_mf *mf);
+extern void lzma_mf_mt_pause(lzma_mf *mf);
+extern void lzma_mf_mt_resume(lzma_mf *mf);
+#endif
 
 #endif

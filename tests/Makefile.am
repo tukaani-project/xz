@@ -52,6 +52,7 @@ check_PROGRAMS = \
 	test_memlimit \
 	test_alone_decoder \
 	test_lzip_decoder \
+	test_mf_bt4mt \
 	test_vli
 
 TESTS = \
@@ -69,6 +70,7 @@ TESTS = \
 	test_memlimit \
 	test_alone_decoder \
 	test_lzip_decoder \
+	test_mf_bt4mt \
 	test_vli \
 	test_files.sh \
 	test_suffix.sh \

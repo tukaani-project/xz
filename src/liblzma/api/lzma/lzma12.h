@@ -119,7 +119,7 @@ typedef enum {
 		 *  - dict_size > 16 MiB: dict_size * 9.5 + 64 MiB
 		 */
 
-	LZMA_MF_BT4     = 0x14
+	LZMA_MF_BT4     = 0x14,
 		/**<
 		 * \brief       Binary Tree with 2-, 3-, and 4-byte hashing
 		 *
@@ -128,6 +128,22 @@ typedef enum {
 		 * Memory usage:
 		 *  - dict_size <= 32 MiB: dict_size * 11.5
 		 *  - dict_size > 32 MiB: dict_size * 10.5
+		 */
+
+	LZMA_MF_BT4MT   = 0x114
+		/**<
+		 * \brief       LZMA_MF_BT4 in separate threads
+		 *
+		 * The hashing and the binary tree search are done in two
+		 * separate threads while the encoder runs. The compressed
+		 * output is identical to LZMA_MF_BT4.
+		 *
+		 * This is available only if liblzma was built with
+		 * threading support.
+		 *
+		 * Minimum nice_len: 4
+		 *
+		 * Memory usage: Same as LZMA_MF_BT4 plus 1.4 MiB
 		 */
 } lzma_match_finder;
 

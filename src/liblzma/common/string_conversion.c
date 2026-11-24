@@ -369,12 +369,13 @@ static const name_value_map lzma12_mode_map[] = {
 
 
 static const name_value_map lzma12_mf_map[] = {
-	{ "hc3", LZMA_MF_HC3 },
-	{ "hc4", LZMA_MF_HC4 },
-	{ "bt2", LZMA_MF_BT2 },
-	{ "bt3", LZMA_MF_BT3 },
-	{ "bt4", LZMA_MF_BT4 },
-	{ "",    0 }
+	{ "hc3",   LZMA_MF_HC3 },
+	{ "hc4",   LZMA_MF_HC4 },
+	{ "bt2",   LZMA_MF_BT2 },
+	{ "bt3",   LZMA_MF_BT3 },
+	{ "bt4",   LZMA_MF_BT4 },
+	{ "bt4mt", LZMA_MF_BT4MT },
+	{ "",      0 }
 };
 
 

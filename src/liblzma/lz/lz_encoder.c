@@ -57,12 +57,24 @@ move_window(lzma_mf *mf)
 
 	assert(move_offset + move_size <= mf->size);
 
+#ifdef HAVE_MF_BT4MT
+	// The match finder threads must not read mf->buffer
+	// or mf->offset while they are being changed.
+	if (mf->mt != NULL)
+		lzma_mf_mt_pause(mf);
+#endif
+
 	memmove(mf->buffer, mf->buffer + move_offset, move_size);
 
 	mf->offset += move_offset;
 	mf->read_pos -= move_offset;
 	mf->read_limit -= move_offset;
 	mf->write_pos -= move_offset;
+
+#ifdef HAVE_MF_BT4MT
+	if (mf->mt != NULL)
+		lzma_mf_mt_resume(mf);
+#endif
 
 	return;
 }
@@ -150,6 +162,11 @@ fill_window(lzma_coder *coder, const lzma_allocator *allocator,
 		// mf_skip(), since we don't want to touch mf->read_ahead.
 		coder->mf.skip(&coder->mf, pending);
 	}
+
+#ifdef HAVE_MF_BT4MT
+	if (coder->mf.mt != NULL)
+		lzma_mf_mt_update(&coder->mf);
+#endif
 
 	return ret;
 }
@@ -283,6 +300,12 @@ lz_encoder_prepare(lzma_mf *mf, const lzma_allocator *allocator,
 	case LZMA_MF_BT4:
 		mf->find = &lzma_mf_bt4_find;
 		mf->skip = &lzma_mf_bt4_skip;
+		break;
+#endif
+#ifdef HAVE_MF_BT4MT
+	case LZMA_MF_BT4MT:
+		mf->find = &lzma_mf_bt4mt_find;
+		mf->skip = &lzma_mf_bt4mt_skip;
 		break;
 #endif
 
@@ -442,6 +465,12 @@ lz_encoder_init(lzma_mf *mf, const lzma_allocator *allocator,
 
 	mf->cyclic_pos = 0;
 
+#ifdef HAVE_MF_BT4MT
+	if (lz_options->match_finder == LZMA_MF_BT4MT
+			&& lzma_mf_mt_init(mf, allocator) != LZMA_OK)
+		return true;
+#endif
+
 	// Handle preset dictionary.
 	if (lz_options->preset_dict != NULL
 			&& lz_options->preset_dict_size > 0) {
@@ -478,8 +507,15 @@ lzma_lz_encoder_memusage(const lzma_lz_options *lz_options)
 		return UINT64_MAX;
 
 	// Calculate the memory usage.
-	return ((uint64_t)(mf.hash_count) + mf.sons_count) * sizeof(uint32_t)
-			+ mf.size + sizeof(lzma_coder);
+	uint64_t memusage = ((uint64_t)(mf.hash_count) + mf.sons_count)
+			* sizeof(uint32_t) + mf.size + sizeof(lzma_coder);
+
+#ifdef HAVE_MF_BT4MT
+	if (lz_options->match_finder == LZMA_MF_BT4MT)
+		memusage += lzma_mf_mt_memusage();
+#endif
+
+	return memusage;
 }
 
 
@@ -489,6 +525,10 @@ lz_encoder_end(void *coder_ptr, const lzma_allocator *allocator)
 	lzma_coder *coder = coder_ptr;
 
 	lzma_next_end(&coder->next, allocator);
+
+#ifdef HAVE_MF_BT4MT
+	lzma_mf_mt_end(&coder->mf, allocator);
+#endif
 
 	lzma_free(coder->mf.son, allocator);
 	lzma_free(coder->mf.hash, allocator);
@@ -578,14 +618,27 @@ lzma_lz_encoder_init(lzma_next_coder *next, const lzma_allocator *allocator,
 		coder->mf.son = NULL;
 		coder->mf.hash_count = 0;
 		coder->mf.sons_count = 0;
+		coder->mf.mt = NULL;
 
 		coder->next = LZMA_NEXT_CODER_INIT;
 	}
+
+#ifdef HAVE_MF_BT4MT
+	// If the coder is being reinitialized, the match finder
+	// threads must be idle before the buffers are touched.
+	if (coder->mf.mt != NULL)
+		lzma_mf_mt_stop(&coder->mf);
+#endif
 
 	// Initialize the LZ-based encoder.
 	lzma_lz_options lz_options;
 	return_if_error(lz_init(&coder->lz, allocator,
 			filters[0].id, filters[0].options, &lz_options));
+
+#ifdef HAVE_MF_BT4MT
+	if (lz_options.match_finder != LZMA_MF_BT4MT)
+		lzma_mf_mt_end(&coder->mf, allocator);
+#endif
 
 	// Setup the size information into coder->mf and deallocate
 	// old buffers if they have wrong size.
@@ -624,6 +677,10 @@ lzma_mf_is_supported(lzma_match_finder mf)
 #endif
 #ifdef HAVE_MF_BT4
 	case LZMA_MF_BT4:
+		return true;
+#endif
+#ifdef HAVE_MF_BT4MT
+	case LZMA_MF_BT4MT:
 		return true;
 #endif
 	default:

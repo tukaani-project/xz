@@ -8,6 +8,11 @@ liblzma_la_SOURCES += \
 	lz/lz_encoder_hash.h \
 	lz/lz_encoder_hash_table.h \
 	lz/lz_encoder_mf.c
+
+if COND_MF_BT4MT
+liblzma_la_SOURCES += \
+	lz/lz_encoder_mt.c
+endif
 endif
 
 

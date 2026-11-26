@@ -518,6 +518,9 @@ static const char supported_encoders[][9] = {
 #ifdef HAVE_ENCODER_RISCV
 	"riscv",
 #endif
+#ifdef HAVE_ENCODER_ALPHA
+	"alpha",
+#endif
 #ifdef HAVE_ENCODER_DELTA
 	"delta",
 #endif
@@ -549,6 +552,9 @@ static const char supported_decoders[][9] = {
 #ifdef HAVE_DECODER_RISCV
 	"riscv",
 #endif
+#ifdef HAVE_DECODER_ALPHA
+	"alpha",
+#endif
 #ifdef HAVE_DECODER_DELTA
 	"delta",
 #endif
@@ -579,6 +585,9 @@ static const char supported_filters[][9] = {
 #endif
 #if defined(HAVE_ENCODER_RISCV) || defined(HAVE_DECODER_RISCV)
 	"riscv",
+#endif
+#if defined(HAVE_ENCODER_ALPHA) || defined(HAVE_DECODER_ALPHA)
+	"alpha",
 #endif
 #if defined(HAVE_ENCODER_DELTA) || defined(HAVE_DECODER_DELTA)
 	"delta",

@@ -1191,15 +1191,17 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		}
 
 		// Calculate the memory usage of the filters / Block decoder.
-		coder->mem_next_filters = lzma_raw_decoder_memusage(
+		const uint64_t mem_next_filters = lzma_raw_decoder_memusage(
 				coder->filters);
 
-		if (coder->mem_next_filters == UINT64_MAX) {
+		if (mem_next_filters == UINT64_MAX) {
 			// One or more unknown Filter IDs.
 			coder->pending_error = LZMA_OPTIONS_ERROR;
 			coder->sequence = SEQ_ERROR;
 			break;
 		}
+
+		coder->mem_next_filters = mem_next_filters;
 
 		coder->sequence = SEQ_BLOCK_INIT;
 		FALLTHROUGH;
@@ -1796,6 +1798,9 @@ stream_decoder_mt_end(void *coder_ptr, const lzma_allocator *allocator)
 	lzma_filters_free(coder->filters, allocator);
 	lzma_index_hash_end(coder->index_hash, allocator);
 
+	mythread_cond_destroy(&coder->cond);
+	mythread_mutex_destroy(&coder->mutex);
+
 	lzma_free(coder, allocator);
 	return;
 }
@@ -1843,6 +1848,14 @@ stream_decoder_mt_memconfig(void *coder_ptr, uint64_t *memusage,
 	if (*memusage < LZMA_MEMUSAGE_BASE)
 		*memusage = LZMA_MEMUSAGE_BASE;
 
+	// If decoding stopped in SEQ_BLOCK_INIT because mem_next_filters
+	// exceeded memlimit_stop, report at least mem_next_filters so that
+	// lzma_memusage() returns the required memory and lzma_memlimit_set()
+	// rejects limits that are still too low.
+	if (coder->sequence == SEQ_BLOCK_INIT
+			&& *memusage < coder->mem_next_filters)
+		*memusage = coder->mem_next_filters;
+
 	*old_memlimit = coder->memlimit_stop;
 
 	if (new_memlimit != 0) {
@@ -1887,6 +1900,9 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 {
 	struct lzma_stream_coder *coder;
 
+	if (options == NULL)
+		return LZMA_PROG_ERROR;
+
 	if (options->threads == 0 || options->threads > LZMA_THREADS_MAX)
 		return LZMA_OPTIONS_ERROR;
 
@@ -1903,14 +1919,20 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 		next->coder = coder;
 
+		// For the mutex and condition variable initializations
+		// the error handling has to be done here because
+		// stream_decoder_mt_end() doesn't know if they have
+		// already been initialized or not.
 		if (mythread_mutex_init(&coder->mutex)) {
 			lzma_free(coder, allocator);
+			next->coder = NULL;
 			return LZMA_MEM_ERROR;
 		}
 
 		if (mythread_cond_init(&coder->cond)) {
 			mythread_mutex_destroy(&coder->mutex);
 			lzma_free(coder, allocator);
+			next->coder = NULL;
 			return LZMA_MEM_ERROR;
 		}
 
@@ -1959,6 +1981,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// it will never return less than LZMA_MEMUSAGE_BASE as memory usage.
 	coder->mem_in_use = 0;
 	coder->mem_cached = 0;
+	coder->mem_next_filters = 0;
 	coder->mem_next_block = 0;
 
 	coder->progress_in = 0;

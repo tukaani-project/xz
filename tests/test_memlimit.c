@@ -66,6 +66,8 @@ test_memlimit_stream_decoder_mt(void)
 	assert_skip("Decoder support disabled");
 #else
 	lzma_stream strm = LZMA_STREAM_INIT;
+	assert_lzma_ret(lzma_stream_decoder_mt(&strm, NULL), LZMA_PROG_ERROR);
+
 	lzma_mt mt = {
 		.flags = 0,
 		.threads = 1,
@@ -88,6 +90,30 @@ test_memlimit_stream_decoder_mt(void)
 			LZMA_MEMLIMIT_ERROR);
 	assert_lzma_ret(lzma_memlimit_set(&strm, MEMLIMIT_HIGH_ENOUGH),
 			LZMA_OK);
+
+	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
+	lzma_end(&strm);
+
+	// Test with a limit above LZMA_MEMUSAGE_BASE (32 KiB) so that
+	// lzma_memusage() and lzma_memlimit_set() must account for the
+	// next Block's filter chain memory usage.
+	const uint64_t limit_above_base = 65536U;
+	mt.memlimit_stop = limit_above_base;
+	assert_lzma_ret(lzma_stream_decoder_mt(&strm, &mt), LZMA_OK);
+
+	strm.next_in = in;
+	strm.avail_in = in_size;
+	strm.next_out = out;
+	strm.avail_out = sizeof(out);
+
+	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_MEMLIMIT_ERROR);
+
+	const uint64_t memusage = lzma_memusage(&strm);
+	assert_uint(memusage, >, limit_above_base);
+	assert_uint_eq(lzma_memlimit_get(&strm), limit_above_base);
+	assert_lzma_ret(lzma_memlimit_set(&strm, memusage - 1),
+			LZMA_MEMLIMIT_ERROR);
+	assert_lzma_ret(lzma_memlimit_set(&strm, memusage), LZMA_OK);
 
 	assert_lzma_ret(lzma_code(&strm, LZMA_FINISH), LZMA_STREAM_END);
 	lzma_end(&strm);

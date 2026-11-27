@@ -1796,6 +1796,9 @@ stream_decoder_mt_end(void *coder_ptr, const lzma_allocator *allocator)
 	lzma_filters_free(coder->filters, allocator);
 	lzma_index_hash_end(coder->index_hash, allocator);
 
+	mythread_cond_destroy(&coder->cond);
+	mythread_mutex_destroy(&coder->mutex);
+
 	lzma_free(coder, allocator);
 	return;
 }
@@ -1887,6 +1890,9 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 {
 	struct lzma_stream_coder *coder;
 
+	if (options == NULL)
+		return LZMA_PROG_ERROR;
+
 	if (options->threads == 0 || options->threads > LZMA_THREADS_MAX)
 		return LZMA_OPTIONS_ERROR;
 
@@ -1903,14 +1909,20 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 
 		next->coder = coder;
 
+		// For the mutex and condition variable initializations
+		// the error handling has to be done here because
+		// stream_decoder_mt_end() doesn't know if they have
+		// already been initialized or not.
 		if (mythread_mutex_init(&coder->mutex)) {
 			lzma_free(coder, allocator);
+			next->coder = NULL;
 			return LZMA_MEM_ERROR;
 		}
 
 		if (mythread_cond_init(&coder->cond)) {
 			mythread_mutex_destroy(&coder->mutex);
 			lzma_free(coder, allocator);
+			next->coder = NULL;
 			return LZMA_MEM_ERROR;
 		}
 

@@ -1191,15 +1191,17 @@ stream_decode_mt(void *coder_ptr, const lzma_allocator *allocator,
 		}
 
 		// Calculate the memory usage of the filters / Block decoder.
-		coder->mem_next_filters = lzma_raw_decoder_memusage(
+		const uint64_t mem_next_filters = lzma_raw_decoder_memusage(
 				coder->filters);
 
-		if (coder->mem_next_filters == UINT64_MAX) {
+		if (mem_next_filters == UINT64_MAX) {
 			// One or more unknown Filter IDs.
 			coder->pending_error = LZMA_OPTIONS_ERROR;
 			coder->sequence = SEQ_ERROR;
 			break;
 		}
+
+		coder->mem_next_filters = mem_next_filters;
 
 		coder->sequence = SEQ_BLOCK_INIT;
 		FALLTHROUGH;
@@ -1846,6 +1848,14 @@ stream_decoder_mt_memconfig(void *coder_ptr, uint64_t *memusage,
 	if (*memusage < LZMA_MEMUSAGE_BASE)
 		*memusage = LZMA_MEMUSAGE_BASE;
 
+	// If decoding stopped in SEQ_BLOCK_INIT because mem_next_filters
+	// exceeded memlimit_stop, report at least mem_next_filters so that
+	// lzma_memusage() returns the required memory and lzma_memlimit_set()
+	// rejects limits that are still too low.
+	if (coder->sequence == SEQ_BLOCK_INIT
+			&& *memusage < coder->mem_next_filters)
+		*memusage = coder->mem_next_filters;
+
 	*old_memlimit = coder->memlimit_stop;
 
 	if (new_memlimit != 0) {
@@ -1971,6 +1981,7 @@ stream_decoder_mt_init(lzma_next_coder *next, const lzma_allocator *allocator,
 	// it will never return less than LZMA_MEMUSAGE_BASE as memory usage.
 	coder->mem_in_use = 0;
 	coder->mem_cached = 0;
+	coder->mem_next_filters = 0;
 	coder->mem_next_block = 0;
 
 	coder->progress_in = 0;
